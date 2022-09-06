@@ -20,6 +20,7 @@
 package org.sonar.java.checks.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -89,7 +91,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
 
   private Map<String, List<CredentialMethod>> methods;
-  private static JavaFileScannerContext.Location secondaryLocation;
+  private static List<JavaFileScannerContext.Location> secondaryLocation;
 
   public HardCodedCredentialsShouldNotBeUsedCheck() {
     this(CREDENTIALS_METHODS_FILE);
@@ -116,7 +118,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   @Override
   public void visitNode(Tree tree) {
-    secondaryLocation = null;
+    secondaryLocation = new ArrayList<>();
     String methodName;
     boolean isConstructor = tree.is(Tree.Kind.NEW_CLASS);
     if (isConstructor) {
@@ -150,10 +152,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     for (int targetArgumentIndex : method.indices) {
       ExpressionTree argument = ExpressionUtils.skipParentheses(arguments.get(targetArgumentIndex));
       if (isDerivedFromPlainText(argument)) {
-        if (secondaryLocation == null) {
+        if (secondaryLocation.isEmpty()) {
           reportIssue(argument, ISSUE_MESSAGE);
         } else {
-          reportIssue(argument, ISSUE_MESSAGE, List.of(secondaryLocation), null);
+          reportIssue(argument, ISSUE_MESSAGE, secondaryLocation, null);
         }
       }
     }
@@ -174,6 +176,9 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       case METHOD_INVOCATION:
         MethodInvocationTree methodInvocationTree = (MethodInvocationTree) arg;
         return isDerivedFromPlainText(methodInvocationTree);
+      case CONDITIONAL_EXPRESSION:
+        ConditionalExpressionTree conditionalTree = (ConditionalExpressionTree) arg;
+        return isDerivedFromPlainText(conditionalTree);
       case STRING_LITERAL:
         return !LiteralUtils.isEmptyString(arg);
       case BOOLEAN_LITERAL:
@@ -192,9 +197,9 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     }
     VariableTree variable = (VariableTree) symbol.declaration();
 
-    boolean result = variable != null && (isStringDerivedFromPlainText(variable) || isDerivedFromPlainText(variable));
+    boolean result = variable != null && (isStringDerivedFromPlainText(variable) || isDerivedFromPlainText(variable.initializer()));
     if (result) {
-      secondaryLocation = new JavaFileScannerContext.Location("", variable);
+      secondaryLocation.add(new JavaFileScannerContext.Location("", variable));
     }
     return result;
   }
@@ -212,23 +217,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     return symbol.type().is(JAVA_LANG_STRING) &&
       variable.initializer().asConstant(String.class)
         .map(value -> !value.isEmpty()).orElse(false);
-  }
-
-  private static boolean isDerivedFromPlainText(VariableTree variable) {
-    ExpressionTree initializer = ExpressionUtils.skipParentheses(variable.initializer());
-    if (initializer.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree initializationCall = (MethodInvocationTree) initializer;
-      return isDerivedFromPlainText(initializationCall);
-    }
-    if (initializer.is(Tree.Kind.NEW_ARRAY)) {
-      NewArrayTree initializationCall = (NewArrayTree) initializer;
-      return isDerivedFromPlainText(initializationCall);
-    }
-    if (initializer.is(Tree.Kind.NEW_CLASS)) {
-      NewClassTree initializationCall = (NewClassTree) initializer;
-      return isDerivedFromPlainText(initializationCall);
-    }
-    return false;
   }
 
   private static boolean isDerivedFromPlainText(NewArrayTree invocation) {
@@ -291,5 +279,11 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
         finding = tree;
       }
     }
+  }
+
+  public static boolean isDerivedFromPlainText(ConditionalExpressionTree conditionalTree) {
+    ExpressionTree trueExpression = ExpressionUtils.skipParentheses(conditionalTree.trueExpression());
+    ExpressionTree falseExpression = ExpressionUtils.skipParentheses(conditionalTree.falseExpression());
+    return isDerivedFromPlainText(trueExpression) && isDerivedFromPlainText(falseExpression);
   }
 }

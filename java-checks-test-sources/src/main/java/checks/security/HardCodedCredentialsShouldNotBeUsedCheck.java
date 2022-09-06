@@ -32,7 +32,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
   private static char[] secretCharArrayField = new char[]{0xC, 0xA, 0xF, 0xE};
   private static CharSequence secretCharSequenceField = "Hello, World!".subSequence(0, 12);
 
-  public static void nonCompliant(byte[] message) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+  public static void nonCompliant(byte[] message, boolean condition) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
     String effectivelyConstantString = "s3cr37";
     byte[] key = effectivelyConstantString.getBytes();
 
@@ -56,6 +56,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     request.login("user", plainTextSecret); // Noncompliant
     request.login("user", new String("secret")); // Noncompliant
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, 0, 7)); // Noncompliant
+    String conditionalButPredictable = condition ? FINAL_SECRET_STRING : plainTextSecret;
+    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=28,55,59]]
 
     KeyStore store = KeyStore.getInstance(null);
 
@@ -143,7 +145,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     SHA256.getHMAC(key, message);
   }
 
-  public static void compliantFromEnvironment(KeyStore keyStore, InputStream in) throws CertificateException, IOException, NoSuchAlgorithmException {
+  public static void compliantFromEnvironment(KeyStore keyStore, InputStream in, String parameter) throws CertificateException, IOException, NoSuchAlgorithmException {
     String defaultKeyStorePassword = getProperty("MY_SECRET");
 
     char[] passwd = defaultKeyStorePassword.toCharArray();
@@ -153,7 +155,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     char[] passwdWithDefaultFallback = withDefault.toCharArray();
     keyStore.load(in, passwdWithDefaultFallback); // Compliant, we should not raise when the password is recovered from an external source
 
-    char[] conditionalPasswd = defaultKeyStorePassword == null ? new char[0] : defaultKeyStorePassword.toCharArray();
+    char[] conditionalPasswd = parameter == null ? defaultKeyStorePassword.toCharArray() : parameter.toCharArray();
     keyStore.load(in, conditionalPasswd); // Compliant, we should not raise when the password is recovered from a conditional
   }
 
