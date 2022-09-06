@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -192,16 +193,36 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private static boolean isDerivedFromPlainText(IdentifierTree identifier) {
     Symbol symbol = identifier.symbol();
-    if (!symbol.isVariableSymbol() || JUtils.isParameter(symbol) || isNonFinalField(symbol) || isReassigned(symbol)) {
+    if (!symbol.isVariableSymbol() || JUtils.isParameter(symbol) || isNonFinalField(symbol)) {
       return false;
     }
     VariableTree variable = (VariableTree) symbol.declaration();
-
-    boolean result = variable != null && (isStringDerivedFromPlainText(variable) || isDerivedFromPlainText(variable.initializer()));
-    if (result) {
-      secondaryLocation.add(new JavaFileScannerContext.Location("", variable));
+    if (variable == null) {
+      return JUtils.constantValue((Symbol.VariableSymbol) symbol).isPresent();
     }
-    return result;
+
+    if (isStringDerivedFromPlainText(variable)) {
+      secondaryLocation.add(new JavaFileScannerContext.Location("", variable));
+      return true;
+    }
+
+    ExpressionTree initializer = variable.initializer();
+
+    List<ExpressionTree> assignments = new ArrayList<>();
+    Optional.ofNullable(initializer).ifPresent(assignments::add);
+    ReassignmentFinder.getReassignments(variable, symbol.usages()).stream()
+      .map(AssignmentExpressionTree::expression)
+      .forEach(assignments::add);
+
+    boolean identifierIsDerivedFromPlainText = !assignments.isEmpty() &&
+      assignments.stream()
+        .allMatch(HardCodedCredentialsShouldNotBeUsedCheck::isDerivedFromPlainText);
+
+    if (identifierIsDerivedFromPlainText) {
+      secondaryLocation.add(new JavaFileScannerContext.Location("", variable));
+      return true;
+    }
+    return false;
   }
 
   private static boolean isNonFinalField(Symbol symbol) {

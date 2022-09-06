@@ -69,6 +69,11 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     String passwordAsString = "hunter2";
     store.getKey("", passwordAsString.toCharArray()); // Noncompliant [[sc=22;ec=52]]
 
+    char[] reassignedArray;
+    reassignedArray = new char[]{'a', 'b', 'c', 'd', 'e', 'f'};
+    reassignedArray = new char[]{'a', 'b', 'c', 'd', 'e', 'f'};
+    store.getKey("", reassignedArray); // Noncompliant [[sc=22;ec=37;secondary=-3]]
+
     Encryptors.delux(effectivelyConstantString.subSequence(0, effectivelyConstantString.length()), effectivelyConstantString); // Noncompliant [[sc=22;ec=98]]
     Encryptors.delux("password".subSequence(0, 0), "salt"); // Noncompliant
 
@@ -83,8 +88,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     secretReassginedVariable = "very" + secretReassginedVariable;
     byte[] secretReassignedAsBytesVariable = secretReassginedVariable.getBytes(StandardCharsets.UTF_8);
     secretReassignedAsBytesVariable = message.getBytes(StandardCharsets.UTF_8);
-    char[] secretReassignedAsCharsVariable = secretReassginedVariable.toCharArray();
-    secretReassignedAsCharsVariable = "".toCharArray();
 
     SHA256.getHMAC(secretByteArrayParameter, messageAsBytes); // compliant because we do not check parameters
     SHA256.getHMAC(secretReassignedAsBytesVariable, messageAsBytes); // compliant because we do not check reassigned variables
@@ -93,7 +96,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", secretParameter); // compliant because we do not check parameters
-    request.login("user", secretReassginedVariable); // compliant because we do not check reassigned variables
     request.login("user", secretStringField); // compliant because we do not check non-final fields
     request.login("user", getAString()); // compliant
     request.login("user", new String()); // compliant
@@ -105,7 +107,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
     KeyStore store = KeyStore.getInstance(null);
     store.getKey("", secretCharArrayParameter); // compliant because we do not check parameters
-    store.getKey("", secretReassignedAsCharsVariable); // compliant because we do not check reassigned variables
     store.getKey("", secretCharArrayField); // compliant because we do not check non-final fields
     store.getKey("", convertToCharArray(secretParameter)); // compliant because we do not check calls to methods defined out of String
     store.getKey("", new char[0]); // compliant because we don't consider empty arrays
@@ -115,7 +116,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     secretReassignedAsCharSequence = "world".subSequence(0, 4);
 
     Encryptors.delux(charSequenceParameter, "salt");  // compliant because we do not check parameters
-    Encryptors.delux(secretReassignedAsCharSequence, "salt"); // compliant because we do not check reassigned variables
     Encryptors.delux(secretCharSequenceField, "salt"); // compliant because we do not check non-final fields
     Encryptors.delux(convertToCharSequence("password"), "salt"); // compliant because we do not check calls to methods defined out of String
 
