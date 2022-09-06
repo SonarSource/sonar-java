@@ -91,7 +91,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
 
   private Map<String, List<CredentialMethod>> methods;
-  private static List<JavaFileScannerContext.Location> secondaryLocation;
 
   public HardCodedCredentialsShouldNotBeUsedCheck() {
     this(CREDENTIALS_METHODS_FILE);
@@ -118,7 +117,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   @Override
   public void visitNode(Tree tree) {
-    secondaryLocation = new ArrayList<>();
     String methodName;
     boolean isConstructor = tree.is(Tree.Kind.NEW_CLASS);
     if (isConstructor) {
@@ -151,37 +149,38 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   private void checkArguments(Arguments arguments, CredentialMethod method) {
     for (int targetArgumentIndex : method.indices) {
       ExpressionTree argument = ExpressionUtils.skipParentheses(arguments.get(targetArgumentIndex));
-      if (isDerivedFromPlainText(argument)) {
-        if (secondaryLocation.isEmpty()) {
+      var secondaryLocations = new ArrayList<JavaFileScannerContext.Location>();
+      if (isDerivedFromPlainText(argument, secondaryLocations)) {
+        if (secondaryLocations.isEmpty()) {
           reportIssue(argument, ISSUE_MESSAGE);
         } else {
-          reportIssue(argument, ISSUE_MESSAGE, secondaryLocation, null);
+          reportIssue(argument, ISSUE_MESSAGE, secondaryLocations, null);
         }
       }
     }
   }
 
-  private static boolean isDerivedFromPlainText(ExpressionTree expression) {
+  private static boolean isDerivedFromPlainText(ExpressionTree expression, List<JavaFileScannerContext.Location> secondaryLocations) {
     ExpressionTree arg = ExpressionUtils.skipParentheses(expression);
     switch (arg.kind()) {
       case IDENTIFIER:
         IdentifierTree identifier = (IdentifierTree) arg;
-        return isDerivedFromPlainText(identifier);
+        return isDerivedFromPlainText(identifier, secondaryLocations);
       case NEW_ARRAY:
         NewArrayTree newArrayTree = (NewArrayTree) arg;
-        return isDerivedFromPlainText(newArrayTree);
+        return isDerivedFromPlainText(newArrayTree, secondaryLocations);
       case NEW_CLASS:
         NewClassTree newClassTree = (NewClassTree) arg;
-        return isDerivedFromPlainText(newClassTree);
+        return isDerivedFromPlainText(newClassTree, secondaryLocations);
       case METHOD_INVOCATION:
         MethodInvocationTree methodInvocationTree = (MethodInvocationTree) arg;
-        return isDerivedFromPlainText(methodInvocationTree);
+        return isDerivedFromPlainText(methodInvocationTree, secondaryLocations);
       case CONDITIONAL_EXPRESSION:
         ConditionalExpressionTree conditionalTree = (ConditionalExpressionTree) arg;
-        return isDerivedFromPlainText(conditionalTree);
+        return isDerivedFromPlainText(conditionalTree, secondaryLocations);
       case MEMBER_SELECT:
         MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) arg;
-        return isDerivedFromPlainText(memberSelect.identifier());
+        return isDerivedFromPlainText(memberSelect.identifier(), secondaryLocations);
       case STRING_LITERAL:
         return !LiteralUtils.isEmptyString(arg);
       case BOOLEAN_LITERAL:
@@ -193,7 +192,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     }
   }
 
-  private static boolean isDerivedFromPlainText(IdentifierTree identifier) {
+  private static boolean isDerivedFromPlainText(IdentifierTree identifier, List<JavaFileScannerContext.Location> secondaryLocations) {
     Symbol symbol = identifier.symbol();
     if (!symbol.isVariableSymbol() || JUtils.isParameter(symbol) || isNonFinalField(symbol)) {
       return false;
@@ -204,7 +203,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     }
 
     if (isStringDerivedFromPlainText(variable)) {
-      secondaryLocation.add(new JavaFileScannerContext.Location("", variable));
+      secondaryLocations.add(new JavaFileScannerContext.Location("", variable));
       return true;
     }
 
@@ -218,10 +217,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
     boolean identifierIsDerivedFromPlainText = !assignments.isEmpty() &&
       assignments.stream()
-        .allMatch(HardCodedCredentialsShouldNotBeUsedCheck::isDerivedFromPlainText);
+        .allMatch(expression -> isDerivedFromPlainText(expression, secondaryLocations));
 
     if (identifierIsDerivedFromPlainText) {
-      secondaryLocation.add(new JavaFileScannerContext.Location("", variable));
+      secondaryLocations.add(new JavaFileScannerContext.Location("", variable));
       return true;
     }
     return false;
@@ -238,7 +237,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
         .map(value -> !value.isEmpty()).orElse(false);
   }
 
-  private static boolean isDerivedFromPlainText(NewArrayTree invocation) {
+  private static boolean isDerivedFromPlainText(NewArrayTree invocation, List<JavaFileScannerContext.Location> secondaryLocations) {
     ExpressionTree dimension = invocation.dimensions().get(0).expression();
     if (dimension != null && dimension.is(Tree.Kind.INT_LITERAL)) {
       Optional<Integer> sizeOfArray = dimension.asConstant(Integer.class);
@@ -248,32 +247,34 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     }
     return invocation.initializers().stream()
       .map(ExpressionUtils::skipParentheses)
-      .allMatch(HardCodedCredentialsShouldNotBeUsedCheck::isDerivedFromPlainText);
+      .allMatch(expression -> isDerivedFromPlainText(expression, secondaryLocations));
   }
 
-  private static boolean isDerivedFromPlainText(NewClassTree invocation) {
+  private static boolean isDerivedFromPlainText(NewClassTree invocation, List<JavaFileScannerContext.Location> secondaryLocations) {
     if (!SUPPORTED_CONSTRUCTORS.matches(invocation)) {
       return false;
     }
     return invocation.arguments().stream()
-      .allMatch(HardCodedCredentialsShouldNotBeUsedCheck::isDerivedFromPlainText);
+      .map(ExpressionUtils::skipParentheses)
+      .allMatch(expression -> isDerivedFromPlainText(expression, secondaryLocations));
   }
 
-  private static boolean isDerivedFromPlainText(MethodInvocationTree invocation) {
+  private static boolean isDerivedFromPlainText(MethodInvocationTree invocation, List<JavaFileScannerContext.Location> secondaryLocations) {
     if (!STRING_TO_ARRAY_METHODS.matches(invocation)) {
       return false;
     }
     ExpressionTree methodSelect = ExpressionUtils.skipParentheses(invocation.methodSelect());
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-      return isDerivedFromPlainText(expression);
+      return isDerivedFromPlainText(expression, secondaryLocations);
     }
     return false;
   }
 
-  public static boolean isDerivedFromPlainText(ConditionalExpressionTree conditionalTree) {
+  private static boolean isDerivedFromPlainText(ConditionalExpressionTree conditionalTree, List<JavaFileScannerContext.Location> secondaryLocations) {
     ExpressionTree trueExpression = ExpressionUtils.skipParentheses(conditionalTree.trueExpression());
     ExpressionTree falseExpression = ExpressionUtils.skipParentheses(conditionalTree.falseExpression());
-    return isDerivedFromPlainText(trueExpression) && isDerivedFromPlainText(falseExpression);
+    return isDerivedFromPlainText(trueExpression, secondaryLocations) &&
+      isDerivedFromPlainText(falseExpression, secondaryLocations);
   }
 }
