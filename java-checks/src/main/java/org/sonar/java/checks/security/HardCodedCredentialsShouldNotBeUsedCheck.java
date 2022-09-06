@@ -176,8 +176,9 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
         return isDerivedFromPlainText(methodInvocationTree);
       case STRING_LITERAL:
         return !LiteralUtils.isEmptyString(arg);
-      case INT_LITERAL:
+      case BOOLEAN_LITERAL:
       case CHAR_LITERAL:
+      case INT_LITERAL:
         return true;
       default:
         return false;
@@ -229,8 +230,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     }
     return false;
   }
-
-
 
   private static boolean isDerivedFromPlainText(NewArrayTree invocation) {
     ExpressionTree dimension = invocation.dimensions().get(0).expression();

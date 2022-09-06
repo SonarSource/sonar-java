@@ -55,6 +55,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     String plainTextSecret = new String("BOOM");
     request.login("user", plainTextSecret); // Noncompliant
     request.login("user", new String("secret")); // Noncompliant
+    request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, 0, 7)); // Noncompliant
 
     KeyStore store = KeyStore.getInstance(null);
 
