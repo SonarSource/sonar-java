@@ -41,7 +41,6 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -264,41 +263,12 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     if (!STRING_TO_ARRAY_METHODS.matches(invocation)) {
       return false;
     }
-    StringConstantFinder visitor = new StringConstantFinder();
-    invocation.accept(visitor);
-    return visitor.finding != null;
-  }
-
-  private static class StringConstantFinder extends BaseTreeVisitor {
-    Tree finding;
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree tree) {
-      ExpressionTree expressionTree = tree.methodSelect();
-      if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
-        expressionTree.accept(this);
-      }
+    ExpressionTree methodSelect = ExpressionUtils.skipParentheses(invocation.methodSelect());
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
+      return isDerivedFromPlainText(expression);
     }
-
-    @Override
-    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      ExpressionTree expression = ExpressionUtils.skipParentheses(tree.expression());
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifier = (IdentifierTree) expression;
-        Symbol symbol = identifier.symbol();
-        if (symbol.isVariableSymbol()) {
-          VariableTree variable = (VariableTree) symbol.declaration();
-          if (variable.symbol().type().is(JAVA_LANG_STRING)) {
-            ExpressionTree initializer = variable.initializer();
-            if (initializer != null && initializer.asConstant().isPresent()) {
-              finding = variable;
-            }
-          }
-        }
-      } else if (expression.is(Tree.Kind.STRING_LITERAL)) {
-        finding = tree;
-      }
-    }
+    return false;
   }
 
   public static boolean isDerivedFromPlainText(ConditionalExpressionTree conditionalTree) {

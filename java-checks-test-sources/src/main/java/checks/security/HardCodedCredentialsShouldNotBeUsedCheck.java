@@ -38,8 +38,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     byte[] key = effectivelyConstantString.getBytes();
 
     // byte array based
-    SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant [[sc=20;ec=43;secondary=-11]] {{Revoke and change this password, as it is compromised.}}
-    SHA256.getHMAC(key, message);  // Noncompliant [[sc=20;ec=23;secondary=-4]]
+    SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant [[sc=20;ec=43;secondary=-11,-12]] {{Revoke and change this password, as it is compromised.}}
+    SHA256.getHMAC(key, message);  // Noncompliant [[sc=20;ec=23;secondary=-4,-5]]
     SHA256.getHMAC(effectivelyConstantString.getBytes(), message); // Noncompliant
     SHA256.getHMAC("anotherS3cr37".getBytes(), message); // Noncompliant
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes(), message); // Noncompliant
