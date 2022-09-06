@@ -180,6 +180,9 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       case CONDITIONAL_EXPRESSION:
         ConditionalExpressionTree conditionalTree = (ConditionalExpressionTree) arg;
         return isDerivedFromPlainText(conditionalTree);
+      case MEMBER_SELECT:
+        MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) arg;
+        return isDerivedFromPlainText(memberSelect.identifier());
       case STRING_LITERAL:
         return !LiteralUtils.isEmptyString(arg);
       case BOOLEAN_LITERAL:
@@ -227,10 +230,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private static boolean isNonFinalField(Symbol symbol) {
     return symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !symbol.isFinal();
-  }
-
-  private static boolean isReassigned(Symbol symbol) {
-    return !ReassignmentFinder.getReassignments(symbol.owner().declaration(), symbol.usages()).isEmpty();
   }
 
   private static boolean isStringDerivedFromPlainText(VariableTree variable) {

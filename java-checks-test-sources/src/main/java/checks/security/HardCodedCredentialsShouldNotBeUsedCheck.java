@@ -3,6 +3,7 @@ package checks.security;
 
 import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
+import com.google.api.client.json.Json;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -37,7 +38,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     byte[] key = effectivelyConstantString.getBytes();
 
     // byte array based
-    SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant [[sc=20;ec=43;secondary=29]] {{Revoke and change this password, as it is compromised.}}
+    SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant [[sc=20;ec=43;secondary=-11]] {{Revoke and change this password, as it is compromised.}}
     SHA256.getHMAC(key, message);  // Noncompliant [[sc=20;ec=23;secondary=-4]]
     SHA256.getHMAC(effectivelyConstantString.getBytes(), message); // Noncompliant
     SHA256.getHMAC("anotherS3cr37".getBytes(), message); // Noncompliant
@@ -50,14 +51,15 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
-    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=36]]
-    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=28]]
+    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=-17]]
+    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=-26]]
     String plainTextSecret = new String("BOOM");
     request.login("user", plainTextSecret); // Noncompliant
     request.login("user", new String("secret")); // Noncompliant
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, 0, 7)); // Noncompliant
     String conditionalButPredictable = condition ? FINAL_SECRET_STRING : plainTextSecret;
-    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=28,55,59]]
+    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=-32,-5,-1]]
+    request.login("user", Json.MEDIA_TYPE); // Noncompliant [[sc=27;ec=42]]
 
     KeyStore store = KeyStore.getInstance(null);
 
@@ -110,10 +112,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     store.getKey("", secretCharArrayField); // compliant because we do not check non-final fields
     store.getKey("", convertToCharArray(secretParameter)); // compliant because we do not check calls to methods defined out of String
     store.getKey("", new char[0]); // compliant because we don't consider empty arrays
-
-
-    CharSequence secretReassignedAsCharSequence = "hello".subSequence(0, 4);
-    secretReassignedAsCharSequence = "world".subSequence(0, 4);
 
     Encryptors.delux(charSequenceParameter, "salt");  // compliant because we do not check parameters
     Encryptors.delux(secretCharSequenceField, "salt"); // compliant because we do not check non-final fields
