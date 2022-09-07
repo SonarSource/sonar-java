@@ -46,20 +46,22 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes(StandardCharsets.UTF_8), message); // Noncompliant
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes("UTF-8"), message); // Noncompliant
     SHA256.getHMAC((FINAL_SECRET_STRING).getBytes("UTF-8"), message); // Noncompliant
-    SHA256.getHMAC(new byte[1], message); // Noncompliant
+    SHA256.getHMAC(new byte[]{(byte) 0xC, (byte) 0xA, (byte) 0xF, (byte) 0xE}, message); // Noncompliant
 
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
-    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=-17]]
-    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=-26]]
+    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=37]]
+    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=29]]
     String plainTextSecret = new String("BOOM");
     request.login("user", plainTextSecret); // Noncompliant
     request.login("user", new String("secret")); // Noncompliant
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, 0, 7)); // Noncompliant
     String conditionalButPredictable = condition ? FINAL_SECRET_STRING : plainTextSecret;
-    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=-32,-5,-1]]
+    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=29,-5,-1]]
     request.login("user", Json.MEDIA_TYPE); // Noncompliant [[sc=27;ec=42]]
+    String concatenatedPassword = "abc" + true + ":" + 12 + ":" + 43L + ":" + 'a' + ":" + 0.2f + ":" + 0.2d;
+    request.login("user", concatenatedPassword); // Noncompliant [[sc=27;ec=47;secondary=-1]]
 
     KeyStore store = KeyStore.getInstance(null);
 
@@ -83,7 +85,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     new Pbkdf2PasswordEncoder(("secret")); // Noncompliant
   }
 
-  public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter, CharSequence charSequenceParameter)
+  public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter, CharSequence charSequenceParameter, char character)
     throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
     final byte[] messageAsBytes = message.getBytes(StandardCharsets.UTF_8);
     String secretReassginedVariable = "s3cr37";
@@ -95,6 +97,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     SHA256.getHMAC(secretReassignedAsBytesVariable, messageAsBytes); // compliant because we do not check reassigned variables
     SHA256.getHMAC(secretByteArrayField, messageAsBytes); // compliant because we do not check non-final fields
     SHA256.getHMAC(convertToByteArray(secretParameter), messageAsBytes); // compliant because we do not check calls to methods defined out of String
+    SHA256.getHMAC(new byte[1], messageAsBytes); // compliant FN
+    SHA256.getHMAC(new byte[]{(byte) 0xC, (byte) 0xA, (byte) 0xF, (byte) character}, messageAsBytes); // Compliant
 
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", secretParameter); // compliant because we do not check parameters
@@ -103,6 +107,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     request.login("user", new String()); // compliant
     request.login("user", getProperty("hope")); // compliant
     request.login("user", ""); // compliant
+    String concatenatedPassword = "abc" + secretParameter;
+    request.login("user", concatenatedPassword); // compliant
     final String emptyString = "";
     request.login("user", emptyString); // compliant
 

@@ -2863,7 +2863,7 @@
   },
   {
     "ruleKey": "S6437",
-    "truePositives": 23,
+    "truePositives": 24,
     "falseNegatives": 15,
     "falsePositives": 0
   }
