@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2209")
-public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
+public class StaticMembersAccessCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private QuickFixHelper.ImportSupplier importSupplier;
 
@@ -66,8 +66,7 @@ public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
         ? ((MemberSelectExpressionTree) leftOperand).identifier()
         : leftOperand;
       if (!selectExpression.is(Tree.Kind.IDENTIFIER) || ((IdentifierTree) selectExpression).symbol().isVariableSymbol()) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
+        newIssue()
           .onTree(leftOperand)
           .withMessage("Change this instance-reference to a static reference.")
           .withQuickFix(() -> createQuickFixes(leftOperand, memberSelectSymbol.owner().type()))

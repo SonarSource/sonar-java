@@ -26,12 +26,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -43,9 +41,10 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 @Rule(key = "S2153")
-public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
+public class ImmediateReverseBoxingCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final Map<String, String> PRIMITIVE_TYPES_BY_WRAPPER = MapBuilder.<String, String>newMap()
     .put("java.lang.Boolean", "boolean")
@@ -119,8 +118,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
   private void checkForUselessUnboxing(Type targetType, Tree reportTree, ExpressionTree arg0, Tree originalTree) {
     Type argType = arg0.symbolType();
     if (argType.is(targetType.fullyQualifiedName())) {
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
+      newIssue()
         .onTree(reportTree)
         .withMessage("Remove the boxing to \"%s\"; The argument is already of the same type.", argType.name())
         .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the boxing")
@@ -177,8 +175,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       message = String.format("Remove the boxing to \"%s\".", classSymbol.name());
     }
 
-    QuickFixHelper.newIssue(context)
-      .forRule(this)
+    newIssue()
       .onTree(tree)
       .withMessage(message)
       .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the boxing")
@@ -220,8 +217,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       message = String.format("Remove the unboxing from \"%s\".", name);
     }
 
-    QuickFixHelper.newIssue(context)
-      .forRule(this)
+    newIssue()
       .onTree(expressionTree)
       .withMessage(message)
       .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the unboxing")

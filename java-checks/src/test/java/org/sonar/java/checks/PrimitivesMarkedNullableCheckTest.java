@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class PrimitivesMarkedNullableCheckTest {
 
   @Test
   void test() {
-    ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(testSourcesPath("checks/PrimitivesMarkedNullableCheck.java"))
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/PrimitivesMarkedNullableCheck.java"))
       .withCheck(new PrimitivesMarkedNullableCheck())
       .withQuickFixes()
       .verifyIssues();
@@ -39,7 +39,7 @@ class PrimitivesMarkedNullableCheckTest {
   @Test
   void noSemantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/PrimitivesMarkedNullableCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PrimitivesMarkedNullableCheck.java"))
       .withCheck(new PrimitivesMarkedNullableCheck())
       .withoutSemantic()
       .verifyNoIssues();

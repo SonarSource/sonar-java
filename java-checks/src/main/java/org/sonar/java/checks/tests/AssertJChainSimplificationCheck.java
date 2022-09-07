@@ -30,7 +30,7 @@ import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.ExtendedJavaIssueBuilder;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -94,8 +94,8 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
     );
   }
 
-  private InternalJavaIssueBuilder createIssueBuilder(MethodInvocationTree predicate, AssertJChainSimplificationIndex.Simplification simplification) {
-    InternalJavaIssueBuilder builder = QuickFixHelper.newIssue(context)
+  private ExtendedJavaIssueBuilder createIssueBuilder(MethodInvocationTree predicate, AssertJChainSimplificationIndex.Simplification simplification) {
+    ExtendedJavaIssueBuilder builder = QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(ExpressionUtils.methodName(predicate))
       .withMessage(ISSUE_MESSAGE_FORMAT_STRING, simplification.getReplacement());

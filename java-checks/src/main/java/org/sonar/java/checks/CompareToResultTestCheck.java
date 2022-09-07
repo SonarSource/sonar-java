@@ -23,13 +23,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.ExtendedJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -48,7 +47,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S2200")
-public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
+public class CompareToResultTestCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final MethodMatchers COMPARE_TO = MethodMatchers.create()
     .ofSubTypes("java.lang.Comparable")
@@ -84,8 +83,7 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
   }
 
   private void reportIssue(BinaryExpressionTree binaryExpression, long operandValue, boolean compareToIsLeft) {
-    InternalJavaIssueBuilder builder = QuickFixHelper.newIssue(context)
-      .forRule(this)
+    ExtendedJavaIssueBuilder builder = newIssue()
       .onTree(binaryExpression.operatorToken())
       .withMessage("Only the sign of the result should be examined.");
     if (binaryExpression.is(Kind.EQUAL_TO)) {

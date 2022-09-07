@@ -25,13 +25,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -46,7 +45,7 @@ import org.sonarsource.analyzer.commons.collections.ListUtils;
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @Rule(key = "S1155")
-public class CollectionIsEmptyCheck extends IssuableSubscriptionVisitor {
+public class CollectionIsEmptyCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private enum EmptyComparisonType {
     EMPTY, NOT_EMPTY
@@ -116,8 +115,7 @@ public class CollectionIsEmptyCheck extends IssuableSubscriptionVisitor {
       return;
     }
     getCallToSizeInvocation(tree).ifPresent(callToSizeInvocation ->
-      getEmptyComparisonType(tree).ifPresent(comparisonType -> QuickFixHelper.newIssue(context)
-        .forRule(this)
+      getEmptyComparisonType(tree).ifPresent(comparisonType -> newIssue()
         .onTree(tree)
         .withMessage("Use isEmpty() to check whether the collection is empty or not.")
         .withQuickFix(() -> getQuickFix(tree, callToSizeInvocation, comparisonType))

@@ -29,7 +29,7 @@ class CompareToResultTestCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(TestUtils.testSourcesPath("checks/CompareToResultTestCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/CompareToResultTestCheck.java"))
       .withCheck(new CompareToResultTestCheck())
       .withQuickFixes()
       .verifyIssues();

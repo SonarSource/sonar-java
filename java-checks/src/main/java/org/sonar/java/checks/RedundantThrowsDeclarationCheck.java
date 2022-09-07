@@ -29,8 +29,8 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.Javadoc;
-import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
@@ -38,7 +38,6 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -63,7 +62,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "RedundantThrowsDeclarationCheck", repositoryKey = "squid")
 @Rule(key = "S1130")
-public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor {
+public class RedundantThrowsDeclarationCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -110,8 +109,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   }
 
   private void reportIssueWithQuickfix(MethodTree methodTree, TypeTree clauseToRemove, String message) {
-    QuickFixHelper.newIssue(context)
-      .forRule(this)
+    newIssue()
       .onTree(clauseToRemove)
       .withMessage(message)
       .withQuickFix(() -> createQuickFix(methodTree, clauseToRemove))

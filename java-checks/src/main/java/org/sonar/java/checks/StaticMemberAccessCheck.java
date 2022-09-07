@@ -22,10 +22,9 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -35,7 +34,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3252")
-public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
+public class StaticMemberAccessCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final MethodMatchers LIST_SET_OF = MethodMatchers.create()
     .ofTypes("java.util.List", "java.util.Set")
@@ -59,8 +58,7 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
       Type expressionType = expression.symbolType();
       if (!staticType.isUnknown() && !expressionType.isUnknown()
         && !expressionType.erasure().equals(staticType.erasure())) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
+        newIssue()
           .onTree(mse.identifier())
           .withMessage("Use static access with \"%s\" for \"%s\".", staticType.fullyQualifiedName(), symbol.name())
           .withQuickFix(() -> quickFix(expression, staticType))

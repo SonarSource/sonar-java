@@ -26,10 +26,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -44,7 +44,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @Rule(key = "S1659")
-public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
+public class OneDeclarationPerLineCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final Pattern INDENTATION_PATTERN = Pattern.compile("^(\\s+)");
 
@@ -91,8 +91,7 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
     if (!nodesToReport.isEmpty()) {
       IdentifierTree firstLocation = nodesToReport.get(0).simpleName();
       String moreThanOneMessage = nodesToReport.size() > 1 ? " and all following declarations" : "";
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
+      newIssue()
         .onTree(firstLocation)
         .withMessage("Declare \"%s\"%s on a separate line.", firstLocation.name(), moreThanOneMessage)
         .withSecondaries(nodesToReport.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit.simpleName())).collect(Collectors.toList()))

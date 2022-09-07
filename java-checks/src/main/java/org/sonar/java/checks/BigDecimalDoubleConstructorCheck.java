@@ -22,11 +22,10 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.ast.visitors.IssueBuilderSubscriptionVisitor;
+import org.sonar.java.reporting.ExtendedJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -35,7 +34,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2111")
-public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisitor {
+public class BigDecimalDoubleConstructorCheck extends IssueBuilderSubscriptionVisitor {
 
   private static final MethodMatchers BIG_DECIMAL_DOUBLE_FLOAT =
     MethodMatchers.create().ofTypes("java.math.BigDecimal")
@@ -55,8 +54,7 @@ public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisito
   public void visitNode(Tree tree) {
     NewClassTree newClassTree = (NewClassTree) tree;
     if (BIG_DECIMAL_DOUBLE_FLOAT.matches(newClassTree)) {
-      InternalJavaIssueBuilder builder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
-        .forRule(this)
+      ExtendedJavaIssueBuilder builder = ((ExtendedJavaIssueBuilder) newIssue())
         .onTree(tree);
 
       Arguments arguments = newClassTree.arguments();

@@ -26,8 +26,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -57,7 +56,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2293")
-public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVersionAwareVisitor {
+public class DiamondOperatorCheck extends ExtendedIssueBuilderSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final Tree.Kind[] JAVA_7_KINDS = new Tree.Kind[] {
     Tree.Kind.VARIABLE,
@@ -92,8 +91,7 @@ public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVer
     if ((type != null && isParameterizedType(type))
       || usedAsArgumentWithoutDiamond(newClassTree)) {
       TypeArguments typeArguments = ((ParameterizedTypeTree) newTypeTree).typeArguments();
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
+      newIssue()
         .onTree(typeArguments)
         .withMessage("Replace the type specification in this constructor call with the diamond operator (\"<>\").%s", context.getJavaVersion().java7CompatibilityMessage())
         .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with <>")

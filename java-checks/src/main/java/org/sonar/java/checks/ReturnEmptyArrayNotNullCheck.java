@@ -28,24 +28,23 @@ import java.util.Locale;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
-
 @Rule(key = "S1168")
-public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
+public class ReturnEmptyArrayNotNullCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final MethodMatchers ITEM_PROCESSOR_PROCESS_METHOD = MethodMatchers.create()
     .ofSubTypes("org.springframework.batch.item.ItemProcessor").names("process").withAnyParameters().build();
@@ -132,8 +131,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     if (returnKind.kind == Returns.OTHER) {
       return;
     }
-    QuickFixHelper.newIssue(context)
-      .forRule(this)
+    newIssue()
       .onTree(returnStatement.expression())
       .withMessage("Return an empty %s instead of null.", returnKind.kind.name().toLowerCase(Locale.ROOT))
       .withQuickFixes(() -> quickFix(returnStatement))

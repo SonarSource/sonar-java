@@ -22,11 +22,11 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @Rule(key = "S4454")
-public class EqualsParametersMarkedNonNullCheck extends IssuableSubscriptionVisitor {
+public class EqualsParametersMarkedNonNullCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -57,8 +57,7 @@ public class EqualsParametersMarkedNonNullCheck extends IssuableSubscriptionVisi
     Tree annotationTree = nullabilityData.declaration();
     if (annotationTree != null && annotation != null && nullabilityData.isNonNull(NullabilityLevel.VARIABLE, true, false)) {
       String annotationName = annotation.symbol().name();
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
+      newIssue()
         .onTree(annotationTree)
         .withMessage("\"equals\" method parameters should not be marked \"@%s\".", annotationName)
         .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove \"@%s\"", annotationName)
