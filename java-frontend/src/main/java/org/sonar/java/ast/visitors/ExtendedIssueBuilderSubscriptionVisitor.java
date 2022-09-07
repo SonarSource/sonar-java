@@ -17,15 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.reporting;
+package org.sonar.java.ast.visitors;
 
-import java.util.List;
-import java.util.function.Supplier;
+import org.sonar.java.reporting.ExtendedJavaIssueBuilder;
 
-public interface JavaIssueBuilderExtended extends FluentReporting.JavaIssueBuilder {
+public abstract class ExtendedIssueBuilderSubscriptionVisitor extends IssueBuilderSubscriptionVisitor {
 
-  JavaIssueBuilderExtended withQuickFix(Supplier<JavaQuickFix> quickFixes);
-
-  JavaIssueBuilderExtended withQuickFixes(Supplier<List<JavaQuickFix>> quickFixes);
-
+  @Override
+  public ExtendedJavaIssueBuilder newIssue() {
+    return (ExtendedJavaIssueBuilder) super.newIssue();
+  }
 }

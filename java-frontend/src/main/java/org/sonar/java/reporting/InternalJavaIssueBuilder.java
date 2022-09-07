@@ -19,7 +19,6 @@
  */
 package org.sonar.java.reporting;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,7 +42,7 @@ import org.sonarsource.sonarlint.plugin.api.issue.NewInputFileEdit;
 import org.sonarsource.sonarlint.plugin.api.issue.NewQuickFix;
 import org.sonarsource.sonarlint.plugin.api.issue.NewSonarLintIssue;
 
-public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
+public class InternalJavaIssueBuilder implements ExtendedJavaIssueBuilder {
 
   private static final String RULE_NAME = "rule";
   private static final String TEXT_SPAN_NAME = "position";
