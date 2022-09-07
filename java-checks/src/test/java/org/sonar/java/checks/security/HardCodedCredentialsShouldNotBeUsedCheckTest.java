@@ -55,4 +55,13 @@ class HardCodedCredentialsShouldNotBeUsedCheckTest {
       .withCheck(new HardCodedCredentialsShouldNotBeUsedCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_non_compiling_code() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/security/HardCodedCredentialsShouldNotBeUsedCheck.java"))
+      .withCheck(new HardCodedCredentialsShouldNotBeUsedCheck())
+      .verifyIssues();
+  }
+
 }

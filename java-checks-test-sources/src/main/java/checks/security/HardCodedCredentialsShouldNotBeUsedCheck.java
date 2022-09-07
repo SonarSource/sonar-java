@@ -99,6 +99,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     SHA256.getHMAC(convertToByteArray(secretParameter), messageAsBytes); // compliant because we do not check calls to methods defined out of String
     SHA256.getHMAC(new byte[1], messageAsBytes); // compliant FN
     SHA256.getHMAC(new byte[]{(byte) 0xC, (byte) 0xA, (byte) 0xF, (byte) character}, messageAsBytes); // Compliant
+    SHA256.getHMAC(Thread.currentThread().getName().getBytes(), messageAsBytes); // compliant
 
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", secretParameter); // compliant because we do not check parameters
@@ -109,9 +110,13 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     request.login("user", ""); // compliant
     String concatenatedPassword = "abc" + secretParameter;
     request.login("user", concatenatedPassword); // compliant
+    request.login("user", concatenatedPassword + "abc"); // compliant
+    request.login("user", "abc" + concatenatedPassword); // compliant
     final String emptyString = "";
     request.login("user", emptyString); // compliant
-
+    String[] allPasswords = { "abc" };
+    request.login("user", allPasswords[0]); // false-negative, limitation, we don't follow values at each index of the array
+    request.login("user", new Object().toString()); // compliant
 
     KeyStore store = KeyStore.getInstance(null);
     store.getKey("", secretCharArrayParameter); // compliant because we do not check parameters

@@ -274,11 +274,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       return false;
     }
     ExpressionTree methodSelect = ExpressionUtils.skipParentheses(invocation.methodSelect());
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-      return isExpressionDerivedFromPlainText(expression, secondaryLocations);
-    }
-    return false;
+    return methodSelect.is(Tree.Kind.MEMBER_SELECT) &&
+      isExpressionDerivedFromPlainText(((MemberSelectExpressionTree) methodSelect).expression(), secondaryLocations);
   }
 
   private static boolean isDerivedFromPlainText(ConditionalExpressionTree conditionalTree, List<JavaFileScannerContext.Location> secondaryLocations) {
