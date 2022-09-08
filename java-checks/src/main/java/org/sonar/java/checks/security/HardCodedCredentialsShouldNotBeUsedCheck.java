@@ -81,12 +81,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   );
 
   private static final MethodMatchers SUPPORTED_CONSTRUCTORS = MethodMatchers.create()
-    .ofTypes(
-      JAVA_LANG_STRING,
-      "java.lang.StringBuffer",
-      "java.lang.StringBuilder",
-      "java.nio.CharBuffer"
-    ).constructor()
+    .ofTypes(JAVA_LANG_STRING)
+    .constructor()
     .addParametersMatcher(parameters -> !parameters.isEmpty())
     .build();
   private static final String ISSUE_MESSAGE = "Revoke and change this password, as it is compromised.";

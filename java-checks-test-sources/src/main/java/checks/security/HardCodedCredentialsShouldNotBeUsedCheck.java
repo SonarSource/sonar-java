@@ -128,10 +128,17 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     Encryptors.delux(secretCharSequenceField, "salt"); // compliant because we do not check non-final fields
     Encryptors.delux(convertToCharSequence("password"), "salt"); // compliant because we do not check calls to methods defined out of String
 
-    StringBuilder passwordFromStringBuilder = new StringBuilder();
-    passwordFromStringBuilder.append("secret");
-    Encryptors.delux(passwordFromStringBuilder.subSequence(0, 0), "salt"); // compliant because we do not check CharSequences that are not derived from String.subSequence
+    CharSequence stringHiddenInACharSequence = "abc";
+    // method matcher doesn't resolve the "String" runtime type but only the CharSequence type
+    Encryptors.delux(stringHiddenInACharSequence.subSequence(0, 3), "salt"); // compliant, false-negative, CharSequence could be mutable like a StringBuilder
 
+    StringBuilder constantStringBuilder = new StringBuilder(3);
+    constantStringBuilder.append("abc"); // limitation, we don't analyze all "append(...)" of mutable object
+    Encryptors.delux(constantStringBuilder, "salt"); // compliant, false-negative, mutable object are not supported
+
+    StringBuilder nonConstantStringBuilder = new StringBuilder(3);
+    nonConstantStringBuilder.append(secretParameter);
+    Encryptors.delux(nonConstantStringBuilder, "salt"); // compliant
   }
 
   public static void compliantAzure(SecretClient secretClient, String secretName, byte[] message) {
