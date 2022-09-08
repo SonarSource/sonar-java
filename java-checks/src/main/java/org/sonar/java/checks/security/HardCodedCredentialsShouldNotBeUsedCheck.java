@@ -244,9 +244,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   }
 
   private static boolean isStringDerivedFromPlainText(VariableTree variable) {
-    Symbol symbol = variable.symbol();
-    return symbol.type().is(JAVA_LANG_STRING) &&
-      variable.initializer().asConstant(String.class)
+    ExpressionTree initializer = variable.initializer();
+    return initializer != null &&
+      variable.symbol().type().is(JAVA_LANG_STRING) &&
+      initializer.asConstant(String.class)
         .map(value -> !value.isEmpty()).orElse(false);
   }
 

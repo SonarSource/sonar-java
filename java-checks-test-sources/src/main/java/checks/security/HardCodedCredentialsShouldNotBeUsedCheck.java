@@ -83,6 +83,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
     new Pbkdf2PasswordEncoder("secret"); // Noncompliant
     new Pbkdf2PasswordEncoder(("secret")); // Noncompliant
+
+    String notInitialized;
+    notInitialized = "abc";
+    new Pbkdf2PasswordEncoder(notInitialized); // Noncompliant
   }
 
   public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter, CharSequence charSequenceParameter, char character)
