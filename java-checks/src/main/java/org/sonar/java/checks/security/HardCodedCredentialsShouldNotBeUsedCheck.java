@@ -265,11 +265,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private static boolean isDerivedFromPlainText(NewClassTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
-    if (!SUPPORTED_CONSTRUCTORS.matches(invocation)) {
-      return false;
-    }
-    return invocation.arguments().stream()
-      .allMatch(expression -> isExpressionDerivedFromPlainText(expression, secondaryLocations, visited));
+    return SUPPORTED_CONSTRUCTORS.matches(invocation) &&
+      isExpressionDerivedFromPlainText(invocation.arguments().get(0), secondaryLocations, visited);
   }
 
   private static boolean isDerivedFromPlainText(MethodInvocationTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,

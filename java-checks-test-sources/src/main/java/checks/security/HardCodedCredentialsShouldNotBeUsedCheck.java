@@ -7,6 +7,7 @@ import com.google.api.client.json.Json;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -34,7 +35,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
   private static char[] secretCharArrayField = new char[]{0xC, 0xA, 0xF, 0xE};
   private static CharSequence secretCharSequenceField = "Hello, World!".subSequence(0, 12);
 
-  public static void nonCompliant(byte[] message, boolean condition) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+  public static void nonCompliant(byte[] message, boolean condition, Charset encoding) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
     String effectivelyConstantString = "s3cr37";
     byte[] key = effectivelyConstantString.getBytes();
 
@@ -52,14 +53,15 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
-    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=38]]
-    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=30]]
+    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=39]]
+    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=31]]
     String plainTextSecret = new String("BOOM");
     request.login("user", plainTextSecret); // Noncompliant
     request.login("user", new String("secret")); // Noncompliant
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, 0, 7)); // Noncompliant
+    request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, encoding)); // Noncompliant
     String conditionalButPredictable = condition ? FINAL_SECRET_STRING : plainTextSecret;
-    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=30,-5,-1]]
+    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=31,-6,-1]]
     request.login("user", Json.MEDIA_TYPE); // Noncompliant [[sc=27;ec=42]]
     String concatenatedPassword = "abc" + true + ":" + 12 + ":" + 43L + ":" + 'a' + ":" + 0.2f + ":" + 0.2d;
     request.login("user", concatenatedPassword); // Noncompliant [[sc=27;ec=47;secondary=-1]]
@@ -107,6 +109,12 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
     Object stringAsObject = "abc";
     new Pbkdf2PasswordEncoder(stringAsObject.toString()); // Noncompliant
+
+    java.util.function.Consumer<String> lambda = (arg) -> {
+      new Pbkdf2PasswordEncoder(arg);
+      String variableWithNullOwner = "abc";
+      new Pbkdf2PasswordEncoder(variableWithNullOwner); // Noncompliant
+    };
   }
 
   public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter, CharSequence charSequenceParameter, char character)
