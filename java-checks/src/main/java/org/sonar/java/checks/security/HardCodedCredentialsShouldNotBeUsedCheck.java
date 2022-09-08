@@ -63,20 +63,24 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   private static final MethodMatchers STRING_TO_ARRAY_METHODS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
-      .names("getBytes")
-      .addWithoutParametersMatcher()
-      .addParametersMatcher("java.nio.charset.Charset")
-      .addParametersMatcher(JAVA_LANG_STRING)
+      .names("getBytes", "toLowerCase", "toUpperCase")
+      .withAnyParameters()
       .build(),
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
-      .names("toCharArray")
+      .names("toCharArray", "trim", "strip", "stripIndent", "stripLeading", "stripTrailing", "intern", "translateEscapes")
       .addWithoutParametersMatcher()
       .build(),
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
-      .names("subSequence")
+      .names("subSequence", "substring")
+      .addParametersMatcher("int")
       .addParametersMatcher("int", "int")
+      .build(),
+    MethodMatchers.create()
+      .ofAnyType()
+      .names("toString")
+      .addWithoutParametersMatcher()
       .build()
   );
 

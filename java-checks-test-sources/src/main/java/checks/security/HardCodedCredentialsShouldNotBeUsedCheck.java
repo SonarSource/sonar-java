@@ -13,6 +13,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Locale;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -51,14 +52,14 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
-    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=37]]
-    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=29]]
+    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=38]]
+    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=30]]
     String plainTextSecret = new String("BOOM");
     request.login("user", plainTextSecret); // Noncompliant
     request.login("user", new String("secret")); // Noncompliant
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, 0, 7)); // Noncompliant
     String conditionalButPredictable = condition ? FINAL_SECRET_STRING : plainTextSecret;
-    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=29,-5,-1]]
+    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=30,-5,-1]]
     request.login("user", Json.MEDIA_TYPE); // Noncompliant [[sc=27;ec=42]]
     String concatenatedPassword = "abc" + true + ":" + 12 + ":" + 43L + ":" + 'a' + ":" + 0.2f + ":" + 0.2d;
     request.login("user", concatenatedPassword); // Noncompliant [[sc=27;ec=47;secondary=-1]]
@@ -87,6 +88,25 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     String notInitialized;
     notInitialized = "abc";
     new Pbkdf2PasswordEncoder(notInitialized); // Noncompliant
+
+    String longString = "abcdefghiklmnop";
+    new Pbkdf2PasswordEncoder(longString.substring(2)); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.substring(0, 2)); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.trim()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.strip()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.stripIndent()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.stripLeading()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.stripTrailing()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.translateEscapes()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.intern()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.toLowerCase()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.toLowerCase(Locale.ROOT)); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.toUpperCase()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.toUpperCase(Locale.ROOT)); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString.toString()); // Noncompliant
+
+    Object stringAsObject = "abc";
+    new Pbkdf2PasswordEncoder(stringAsObject.toString()); // Noncompliant
   }
 
   public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter, CharSequence charSequenceParameter, char character)
