@@ -221,13 +221,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       return JUtils.constantValue((Symbol.VariableSymbol) symbol).isPresent();
     }
 
-    if (isStringDerivedFromPlainText(variable)) {
-      secondaryLocations.add(new JavaFileScannerContext.Location("", variable));
-      return true;
-    }
-
     ExpressionTree initializer = variable.initializer();
-
     List<ExpressionTree> assignments = new ArrayList<>();
     Optional.ofNullable(initializer).ifPresent(assignments::add);
     ReassignmentFinder.getReassignments(variable, symbol.usages()).stream()
@@ -247,14 +241,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private static boolean isNonFinalField(Symbol symbol) {
     return symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !symbol.isFinal();
-  }
-
-  private static boolean isStringDerivedFromPlainText(VariableTree variable) {
-    ExpressionTree initializer = variable.initializer();
-    return initializer != null &&
-      variable.symbol().type().is(JAVA_LANG_STRING) &&
-      initializer.asConstant(String.class)
-        .map(value -> !value.isEmpty()).orElse(false);
   }
 
   private static boolean isDerivedFromPlainText(NewArrayTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
