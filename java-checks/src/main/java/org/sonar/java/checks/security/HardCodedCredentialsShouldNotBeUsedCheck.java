@@ -146,7 +146,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private void checkArguments(Arguments arguments, CredentialMethod method) {
     for (int targetArgumentIndex : method.indices) {
-      ExpressionTree argument = ExpressionUtils.skipParentheses(arguments.get(targetArgumentIndex));
+      ExpressionTree argument = arguments.get(targetArgumentIndex);
       var secondaryLocations = new ArrayList<JavaFileScannerContext.Location>();
       if (isExpressionDerivedFromPlainText(argument, secondaryLocations)) {
         if (secondaryLocations.isEmpty()) {
@@ -253,7 +253,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private static boolean isDerivedFromPlainText(NewArrayTree invocation, List<JavaFileScannerContext.Location> secondaryLocations) {
     return !invocation.initializers().isEmpty() && invocation.initializers().stream()
-      .map(ExpressionUtils::skipParentheses)
       .allMatch(expression -> isExpressionDerivedFromPlainText(expression, secondaryLocations));
   }
 
@@ -262,7 +261,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       return false;
     }
     return invocation.arguments().stream()
-      .map(ExpressionUtils::skipParentheses)
       .allMatch(expression -> isExpressionDerivedFromPlainText(expression, secondaryLocations));
   }
 
@@ -276,9 +274,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   }
 
   private static boolean isDerivedFromPlainText(ConditionalExpressionTree conditionalTree, List<JavaFileScannerContext.Location> secondaryLocations) {
-    ExpressionTree trueExpression = ExpressionUtils.skipParentheses(conditionalTree.trueExpression());
-    ExpressionTree falseExpression = ExpressionUtils.skipParentheses(conditionalTree.falseExpression());
-    return isExpressionDerivedFromPlainText(trueExpression, secondaryLocations) &&
-      isExpressionDerivedFromPlainText(falseExpression, secondaryLocations);
+    return isExpressionDerivedFromPlainText(conditionalTree.trueExpression(), secondaryLocations) &&
+      isExpressionDerivedFromPlainText(conditionalTree.falseExpression(), secondaryLocations);
   }
 }
