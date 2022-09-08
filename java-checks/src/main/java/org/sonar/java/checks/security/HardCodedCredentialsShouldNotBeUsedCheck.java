@@ -47,6 +47,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -245,7 +246,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private static boolean isDerivedFromPlainText(NewArrayTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
-    return !invocation.initializers().isEmpty() && invocation.initializers().stream()
+    ListTree<ExpressionTree> initializers = invocation.initializers();
+    return !initializers.isEmpty() && initializers.stream()
       .allMatch(expression -> isExpressionDerivedFromPlainText(expression, secondaryLocations, visited));
   }
 
@@ -257,10 +259,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private static boolean isDerivedFromPlainText(MethodInvocationTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
-    ExpressionTree methodSelect = ExpressionUtils.skipParentheses(invocation.methodSelect());
     if (!STRING_TO_ARRAY_METHODS.matches(invocation)) {
       return false;
     }
+    ExpressionTree methodSelect = ExpressionUtils.skipParentheses(invocation.methodSelect());
     return methodSelect.is(Tree.Kind.MEMBER_SELECT) &&
       isExpressionDerivedFromPlainText(((MemberSelectExpressionTree) methodSelect).expression(), secondaryLocations, visited);
   }
