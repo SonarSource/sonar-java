@@ -1,8 +1,10 @@
 package checks;
 
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.PrimitiveIterator;
 
 class IteratorNextExceptionCheckA implements Iterator<String> {
 
@@ -155,5 +157,27 @@ abstract class IteratorNextExceptionCheckL implements Iterator<String> {
 
   Optional<String> getOptional() {
     return Optional.empty();
+  }
+}
+
+class IteratorNextExceptionCheckM implements Iterator<String> {
+  ListIterator<String> a;
+  public String next() {
+    return a.previous(); // Compliant
+  }
+  @Override
+  public boolean hasNext() {
+    return a.hasPrevious();
+  }
+}
+
+class IteratorNextExceptionCheckN implements Iterator<Double> {
+  PrimitiveIterator.OfDouble a;
+  public Double next() {
+    return a.nextDouble(); // Compliant
+  }
+  @Override
+  public boolean hasNext() {
+    return a.hasNext();
   }
 }

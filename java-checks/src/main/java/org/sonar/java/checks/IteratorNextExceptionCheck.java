@@ -40,7 +40,7 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers NEXT_INVOCATION_MATCHER = MethodMatchers.create()
       .ofSubTypes("java.util.Iterator")
-      .names("next")
+      .name(name -> name.startsWith("next") || name.startsWith("previous"))
       .addWithoutParametersMatcher()
       .build();
 
