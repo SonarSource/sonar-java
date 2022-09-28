@@ -1,9 +1,4 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
-4376,
-4384,
-4444,
-],
 'com.google.guava:guava:src/com/google/common/collect/BinaryTreeTraverser.java':[
 113,
 150,
@@ -15,11 +10,6 @@
 352,
 428,
 498,
-],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
-3707,
-3715,
-3770,
 ],
 'com.google.guava:guava:src/com/google/common/collect/TreeTraverser.java':[
 209,
