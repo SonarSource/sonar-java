@@ -4,7 +4,7 @@
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "10 mn"
+    "constantCost": "10min"
   },
   "tags": [],
   "defaultSeverity": "Major",

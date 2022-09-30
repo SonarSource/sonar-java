@@ -6,7 +6,7 @@
     "func": "Linear with offset",
     "linearDesc": "Number of parents above the defined threshold",
     "linearOffset": "4h",
-    "linearFactor": "30mn"
+    "linearFactor": "30min"
   },
   "tags": [
     "design"

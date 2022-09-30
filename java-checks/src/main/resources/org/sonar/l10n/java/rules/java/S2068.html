@@ -24,25 +24,17 @@ and for variable names that match any of the patterns from the provided list.</p
 </ul>
 <h2>Sensitive Code Example</h2>
 <pre>
-Connection conn = null;
-try {
-  conn = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
-        "user=steve&amp;password=blue"); // Sensitive
-  String uname = "steve";
-  String password = "blue";
-  conn = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
-        "user=" + uname + "&amp;password=" + password); // Sensitive
-
-  java.net.PasswordAuthentication pa = new java.net.PasswordAuthentication("userName", "1234".toCharArray());  // Sensitive
+String username = "steve";
+String password = "blue";
+Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
+                  "user=" + uname + "&amp;password=" + password); // Sensitive
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-Connection conn = null;
-try {
-  String uname = getEncryptedUser();
-  String password = getEncryptedPass();
-  conn = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
-        "user=" + uname + "&amp;password=" + password);
+String username = getEncryptedUser();
+String password = getEncryptedPassword();
+Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
+                  "user=" + uname + "&amp;password=" + password);
 </pre>
 <h2>See</h2>
 <ul>

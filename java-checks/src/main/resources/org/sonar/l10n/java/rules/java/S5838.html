@@ -49,7 +49,7 @@ reported.</p>
     </tr>
     <tr>
       <td><p><code>assertThat(x.hashCode()).isEqualTo(y.hashCode())</code></p></td>
-      <td><p><code>assertThat(x).hasSameHashCodeAs(y));</code></p></td>
+      <td><p><code>assertThat(x).hasSameHashCodeAs(y)</code></p></td>
     </tr>
     <tr>
       <td><p><code>assertThat(getObject() instanceof MyClass).isTrue()</code></p></td>
@@ -64,15 +64,15 @@ reported.</p>
       <td><p><code>assertThat(x).isEqualByComparingTo(y)</code></p></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x &gt;= y).isGreaterThanOrEqualTo(0)</code></p></td>
+      <td><p><code>assertThat(x &gt;= y).isTrue()</code></p></td>
       <td><p><code>assertThat(x).isGreaterThanOrEqualTo(y)</code></p></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x &gt; y).isPositive()</code></p></td>
+      <td><p><code>assertThat(x &gt; y).isTrue()</code></p></td>
       <td><p><code>assertThat(x).isGreaterThan(y)</code></p></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x &lt;= y).isNotPositive()</code></p></td>
+      <td><p><code>assertThat(x &lt;= y).isTrue()</code></p></td>
       <td><p><code>assertThat(x).isLessThanOrEqualTo(y)</code></p></td>
     </tr>
     <tr>
@@ -88,8 +88,8 @@ reported.</p>
       <td><p><code>assertThat(getString()).isEmpty()</code></p></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(</code><code>getString</code><code>()).hasSize(0)</code></p></td>
-      <td><p><code>assertThat(</code><code>getString</code><code>()).isEmpty()</code></p></td>
+      <td><p><code>assertThat(getString()).hasSize(0)</code></p></td>
+      <td><p><code>assertThat(getString()).isEmpty()</code></p></td>
     </tr>
     <tr>
       <td><p><code>assertThat(getString().equals(expected)).isTrue()</code></p></td>
@@ -229,7 +229,7 @@ reported.</p>
     </tr>
     <tr>
       <td><p><code>assertThat(getArray().length).isEqualTo(anotherArray.length)</code></p></td>
-      <td><p><code>assertThat(getArray()).hasSameSizeAs(getAnotherArray())</code></p></td>
+      <td><p><code>assertThat(getArray()).hasSameSizeAs(anotherArray)</code></p></td>
     </tr>
     <tr>
       <td><p><code>assertThat(getArray().length).isLessThanOrEqualTo(expression)</code></p></td>
@@ -293,7 +293,7 @@ reported.</p>
     </tr>
     <tr>
       <td><p><code>assertThat(getMap().values()).contains(value)</code></p></td>
-      <td><p><code>assertThat(getMap()).containsValue(</code><code>value</code><code>)</code></p></td>
+      <td><p><code>assertThat(getMap()).containsValue(value)</code></p></td>
     </tr>
     <tr>
       <td><p><code>assertThat(getMap().get(key)).isEqualTo(value)</code></p></td>
@@ -329,6 +329,7 @@ assertThat(getPath().getParent()).isNull();
 <h2>Compliant Solution</h2>
 <pre>
 assertThat(getObject()).isNull();
+assertThat(getObject()).isNotNull();
 
 assertThat(getString()).isBlank();
 assertThat(getFile()).canRead();
