@@ -24,6 +24,9 @@
     ],
     "OWASP Top 10 2021": [
       "A8"
+    ],
+    "ASVS 4.0": [
+      "5.1.2"
     ]
   },
   "quickfix": "unknown"

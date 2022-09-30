@@ -48,7 +48,7 @@ href="https://blog.mozilla.org/security/2015/04/30/deprecating-non-secure-http">
     </ul>  </li>
   <li> Enable encryption of cloud components communications whenever it’s possible. </li>
   <li> Configure your application to block mixed content when rendering web pages. </li>
-  <li> If available, enforce OS level deativation of all clear-text traffic </li>
+  <li> If available, enforce OS level deactivation of all clear-text traffic </li>
 </ul>
 <p>It is recommended to secure all transport channels (even local network) as it can take a single non secure connection to compromise an entire
 application or system.</p>
@@ -121,8 +121,8 @@ webView.getSettings().setMixedContentMode(MIXED_CONTENT_NEVER_ALLOW);
 <h2>See</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
-  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure
-  </li>
+  <li> <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data
+  Exposure </li>
   <li> <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x10-v5-network_communication_requirements">Mobile AppSec Verification
   Standard</a> - Network Communication Requirements </li>
   <li> <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m3-insecure-communication">OWASP Mobile Top 10 2016 Category M3</a> - Insecure
@@ -131,5 +131,9 @@ webView.getSettings().setMixedContentMode(MIXED_CONTENT_NEVER_ALLOW);
   <li> <a href="https://cwe.mitre.org/data/definitions/319">MITRE, CWE-319</a> - Cleartext Transmission of Sensitive Information </li>
   <li> <a href="https://security.googleblog.com/2016/09/moving-towards-more-secure-web.html">Google, Moving towards more secure web</a> </li>
   <li> <a href="https://blog.mozilla.org/security/2015/04/30/deprecating-non-secure-http/">Mozilla, Deprecating non secure http</a> </li>
+  <li> <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html">AWS Documentation</a> - Listeners
+  for your Application Load Balancers </li>
+  <li> <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html">AWS
+  Documentation</a> - Stream Encryption </li>
 </ul>
 

@@ -1,6 +1,6 @@
 <p>By default XML processors attempt to load all XML schemas and DTD (their locations are defined with <code>xsi:schemaLocation</code> attributes and
 <code>DOCTYPE</code> declarations), potentially from an external storage such as file system or network, which may lead, if no restrictions are put in
-place, to <a href="https://www.owasp.org/index.php/Server_Side_Request_Forgery">server-side request forgery (SSRF)</a> vulnerabilities.</p>
+place, to <a href="https://owasp.org/www-community/attacks/Server_Side_Request_Forgery">server-side request forgery (SSRF)</a> vulnerabilities.</p>
 <h2>Noncompliant Code Example</h2>
 <p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a> and <a
@@ -67,8 +67,8 @@ builder.setEntityResolver(new EntityResolver());
 <ul>
   <li> <a
   href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-8CD65EF5-D113-4D5C-A564-B875C8625FAC">Oracle Java Documentation</a> - XML External Entity Injection Attack </li>
-  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A4-XML_External_Entities_(XXE)">OWASP Top 10 2017 Category A4</a> - XML External Entities
-  (XXE) </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A4_2017-XML_External_Entities_(XXE)">OWASP Top 10 2017 Category A4</a> - XML External
+  Entities (XXE) </li>
   <li> <a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java">OWASP XXE Prevention Cheat
   Sheet</a> </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/611">MITRE, CWE-611</a> - Information Exposure Through XML External Entity Reference </li>

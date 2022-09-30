@@ -1,5 +1,5 @@
 {
-  "title": "Case insensitive Unicode regular expressions should enable the “UNICODE_CASE” flag",
+  "title": "Case insensitive Unicode regular expressions should enable the \"UNICODE_CASE\" flag",
   "type": "BUG",
   "status": "ready",
   "remediation": {

@@ -1,14 +1,8 @@
 <p>Some API, like the AWS SDK, heavily rely on the builder pattern to create different data structures. Despite all the benefits, this pattern can
-become really verbose,</p>
-<pre>
-especially when dealing with nested structures. In order to reach a more concise code, "Consumer Builders", also called "Consumer Interface" are often introduced.
-</pre>
-<pre>
-The idea is to overload the methods taking others structures in a Builder with a Consumer of Builder instead. This enables to use a
-</pre>
-<pre>
-lambda instead of nesting another Builder, resulting in more concise and readable code.
-</pre>
+become really verbose, especially when dealing with nested structures. In order to reach a more concise code, "Consumer Builders", also called
+"Consumer Interface" are often introduced.</p>
+<p>The idea is to overload the methods taking others structures in a Builder with a Consumer of Builder instead. This enables to use a lambda instead
+of nesting another Builder, resulting in more concise and readable code.</p>
 <p>This rule reports an issue when the Consumer Builder methods could be used instead of the classical ones.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

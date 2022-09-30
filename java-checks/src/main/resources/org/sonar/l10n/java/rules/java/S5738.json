@@ -21,6 +21,9 @@
     ],
     "CERT": [
       "MET02-J."
+    ],
+    "ASVS 4.0": [
+      "1.14.6"
     ]
   },
   "quickfix": "unknown"

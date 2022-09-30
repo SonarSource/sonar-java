@@ -3,7 +3,7 @@
   <li> For block cipher encryption algorithms (like AES):
     <ul>
       <li> The ECB (Electronic Codebook) cipher mode doesn’t provide serious message confidentiality: under a given key any given plaintext block
-      always gets encrypted to the same ciphertext block. This mode never be used. </li>
+      always gets encrypted to the same ciphertext block. This mode should never be used. </li>
       <li> The CBC (Cipher Block Chaining) mode by itself provides only data confidentiality. This cipher mode is also vulnerable to <a
       href="https://en.wikipedia.org/wiki/Padding_oracle_attack">padding oracle attacks</a> when used with padding. Using CBC along with Message
       Authentication Code can provide data integrity and should prevent such attacks. In practice the implementation has many pitfalls and it’s
@@ -34,7 +34,7 @@ Cipher c3 = Cipher.getInstance("RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING"); // Comp
 <h2>See</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
-  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
   Misconfiguration </li>
   <li> <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x08-v3-cryptography_verification_requirements">Mobile AppSec
   Verification Standard</a> - Cryptography Requirements </li>

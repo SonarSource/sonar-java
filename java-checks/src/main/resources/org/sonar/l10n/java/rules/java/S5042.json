@@ -30,6 +30,10 @@
     "OWASP Top 10 2021": [
       "A1",
       "A5"
+    ],
+    "ASVS 4.0": [
+      "12.1.2"
     ]
-  }
+  },
+  "quickfix": "unknown"
 }
