@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>it-java-plugin-plugins</artifactId>
-    <version>7.14.0-SNAPSHOT</version>
+    <version>7.15.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>java-extension-plugin</artifactId>
