@@ -1,4 +1,7 @@
-gcp_credentials: ENCRYPTED[!149d4005ecdba4cdd78bb5ba22756ebb98bf8e3367ee2e9ab08c5a1608c0d3e3b501904b67a1d67c0b63085e469d7dde!]
+aws_credentials:
+  role_arn: arn:aws:iam::275878209202:role/CirrusCI-prod
+  role_session_name: cirrus
+  region: eu-central-1
 
 env:
   ARTIFACTORY_URL: ENCRYPTED[!2f8fa307d3289faa0aa6791f18b961627ae44f1ef46b136e1a1e63b0b4c86454dbb25520d49b339e2d50a1e1e5f95c88!]
@@ -20,29 +23,28 @@ env:
   CIRRUS_CLONE_DEPTH: 50
 
 container_definition: &CONTAINER_DEFINITION
-  image: eu.gcr.io/release-engineering-ci-prod/base:j11-latest
-  cluster_name: cirrus-ci
-  zone: europe-west4-b
+  image: 275878209202.dkr.ecr.eu-central-1.amazonaws.com/base:j11-latest
+  cluster_name: CirrusCI-prod
+  region: eu-central-1
   namespace: default
 
 win_vm_definition: &WINDOWS_VM_DEFINITION
-  gce_instance:
-    image_project: release-engineering-ci-prod
-    image_family: lt-base-windows-jdk17
+  ec2_instance:
+    experimental: true # see https://github.com/cirruslabs/cirrus-ci-docs/issues/1051
+    image: base-windows-jdk17-v*
     platform: windows
-    zone: europe-west4-b
-    preemptible: false
+    region: eu-central-1
     disk: 128
-    use_ssd: true
-    type: n2d-standard-16
+    type: m4.4xlarge
+    subnet_id: subnet-063c427f490da35b9
 
 only_sonarsource_qa: &ONLY_SONARSOURCE_QA
   only_if: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_TAG == "" && ($CIRRUS_PR != "" || $CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*" || $CIRRUS_BRANCH =~ "dogfood-on-.*")
 
 build_task:
-  gke_container:
+  eks_container:
     <<: *CONTAINER_DEFINITION
-    image: eu.gcr.io/release-engineering-ci-prod/base:j17-latest
+    image: 275878209202.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 4
     memory: 8G
   env:
@@ -65,7 +67,7 @@ ws_scan_task:
   depends_on:
     - build
   <<: *ONLY_SONARSOURCE_QA
-  gke_container:
+  eks_container:
     <<: *CONTAINER_DEFINITION
     cpu: 4
     memory: 8G
@@ -100,7 +102,7 @@ plugin_qa_task:
   depends_on:
     - build
   <<: *ONLY_SONARSOURCE_QA
-  gke_container:
+  eks_container:
     <<: *CONTAINER_DEFINITION
     cpu: 8
     memory: 16G
@@ -126,9 +128,9 @@ sanity_task:
   depends_on:
     - build
   <<: *ONLY_SONARSOURCE_QA
-  gke_container:
+  eks_container:
     <<: *CONTAINER_DEFINITION
-    image: eu.gcr.io/release-engineering-ci-prod/base:j17-latest
+    image: 275878209202.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 4
     memory: 8G
   maven_cache:
@@ -144,9 +146,9 @@ ruling_task:
   depends_on:
     - build
   <<: *ONLY_SONARSOURCE_QA
-  gke_container:
+  eks_container:
     <<: *CONTAINER_DEFINITION
-    image: eu.gcr.io/release-engineering-ci-prod/base:j17-latest
+    image: 275878209202.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 8
     memory: 16G
   maven_cache:
@@ -185,7 +187,7 @@ promote_task:
     - plugin_qa
     - ws_scan
   <<: *ONLY_SONARSOURCE_QA
-  gke_container:
+  eks_container:
     <<: *CONTAINER_DEFINITION
     cpu: 1
     memory: 1G
