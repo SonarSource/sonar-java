@@ -3,7 +3,7 @@ package checks;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 
-class EmptyMethodsCheck {
+class EmptyMethodsCheckNoSemantics {
   class A {
     // Compliant - there is other constructors
     public A() {

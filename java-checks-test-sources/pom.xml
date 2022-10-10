@@ -855,14 +855,18 @@
       <version>4.4.3</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>com.azure</groupId>
       <artifactId>azure-identity</artifactId>
       <version>1.5.2</version>
       <scope>provided</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>1.9.9.1</version>
+      <scope>provided</scope>
+  </dependency>
   </dependencies>
 
   <profiles>
