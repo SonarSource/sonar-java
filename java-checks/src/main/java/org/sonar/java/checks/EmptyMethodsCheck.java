@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ModifiersUtils;
@@ -34,12 +37,11 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Rule(key = "S1186")
 public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
+
+  // Some methods may legitimately be left empty, e.g. methods annotated with org.aspectj.lang.annotation.Pointcut. We ignore them here.
+  private static String IGNORED_METHODS_ANNOTATION = "org.aspectj.lang.annotation.Pointcut";
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -60,6 +62,12 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
     members.stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
+      .filter(methodTree -> {
+        var annotations = methodTree.modifiers().annotations();
+        return annotations.isEmpty() || annotations.stream().noneMatch(annotationTree ->
+          annotationTree.symbolType().is(IGNORED_METHODS_ANNOTATION)
+        );
+      })
       .forEach(this::checkMethod);
   }
 

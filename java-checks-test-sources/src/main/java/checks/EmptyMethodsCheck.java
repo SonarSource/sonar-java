@@ -1,5 +1,7 @@
 package checks;
 
+import org.aspectj.lang.annotation.Pointcut;
+
 class EmptyMethodsCheck {
   class A {
     // Compliant - there is other constructors
@@ -175,4 +177,14 @@ class EmptyMethodsCheck {
     // fix@qf2 {{Insert placeholder comment}}
     // edit@qf2 [[sl=+0;el=+2;sc=34;ec=5]] {{\n      // TODO document why this method is empty\n    }}
   }
+}
+
+class ExceptionalCompliantCases {
+  @org.aspectj.lang.annotation.Pointcut()
+  void foo() {
+
+  }
+
+  @Pointcut()
+  void bar() {}
 }
