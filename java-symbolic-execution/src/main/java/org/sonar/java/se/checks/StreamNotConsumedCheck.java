@@ -54,7 +54,8 @@ public class StreamNotConsumedCheck extends SECheck {
         Collections.singletonList(StreamConsumedCheck.StreamPipelineConstraint.class),
         Collections.emptySet(), FlowComputation.FIRST_FLOW);
       Flow flow = flows.iterator().next();
-      JavaFileScannerContext.Location location = flow.elements().get(0);
+      var elements = flow.elements();
+      JavaFileScannerContext.Location location = elements.get(elements.size() - 1);
       reportIssue(location.syntaxNode, "Refactor the code so this stream pipeline is used.");
     });
   }
