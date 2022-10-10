@@ -1,5 +1,6 @@
 package symbolicexecution.checks;
 
+import java.util.function.DoubleBinaryOperator;
 import java.util.stream.*;
 import java.util.List;
 
@@ -152,6 +153,18 @@ abstract class S3958_StreamNotConsumedCheck {
 
   class StreamParamInConstructor {
     public StreamParamInConstructor(IntStream stream) {
+    }
+  }
+}
+
+class S3958_A {
+  void foo(java.util.stream.Stream<Number> stream, Object identity, DoubleBinaryOperator op) {
+    try {
+      stream // Noncompliant
+        .mapToDouble(Number::doubleValue)
+        .reduce(((Number) identity).doubleValue(), op);
+    } catch (ClassCastException x) { // Compliant - we should raise the issue on line 163, not here (SONARJAVA-3529)
+      System.out.println("foo");
     }
   }
 }
