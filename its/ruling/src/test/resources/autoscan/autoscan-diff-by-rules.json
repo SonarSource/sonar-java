@@ -2557,7 +2557,7 @@
   },
   {
     "ruleKey": "S5996",
-    "truePositives": 86,
+    "truePositives": 88,
     "falseNegatives": 1,
     "falsePositives": 0
   },
