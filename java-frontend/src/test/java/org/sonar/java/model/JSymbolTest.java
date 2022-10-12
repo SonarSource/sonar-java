@@ -97,6 +97,9 @@ class JSymbolTest {
       .hasOwner(Symbols.rootPackage)
       .hasSameHashCodeAs(p.type().symbolType().symbol().hashCode());
 
+    assertThat(cu.sema.packageSymbol(null))
+      .isEqualTo(Symbols.rootPackage);
+
     JType uType = cu.sema.type(u.variableBinding.getType());
     Symbol.TypeSymbol uTypeSymbol = uType.symbol();
     assertThat(uType.isUnknown()).isTrue();
