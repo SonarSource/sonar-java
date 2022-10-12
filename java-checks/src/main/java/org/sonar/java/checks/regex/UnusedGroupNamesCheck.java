@@ -20,6 +20,7 @@
 package org.sonar.java.checks.regex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,11 +52,12 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheckTrackingMatchers {
   private static final Pattern GROUP_NUMBER_REPLACEMENT_REGEX = Pattern.compile("(?<!\\\\)\\$(?<number>\\d++)");
   private static final Pattern GROUP_NAME_REPLACEMENT_REGEX = Pattern.compile("(?<!\\\\)\\$\\{(?<name>[A-Za-z][0-9A-Za-z]*+)\\}");
 
+  private static final String[] NAMES_OF_METHODS_WITH_GROUP_ARGUMENT = {"group", "start", "end"};
+
   private static final MethodMatchers MATCHER_GROUP = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(JAVA_UTIL_REGEX_MATCHER)
-      .names("group")
-      // covers both 'group(String)' and 'group(int)'
+      .names(NAMES_OF_METHODS_WITH_GROUP_ARGUMENT)
       .addParametersMatcher(JAVA_LANG_STRING)
       .addParametersMatcher("int")
       .build(),
@@ -92,7 +94,7 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheckTrackingMatchers {
 
   private void checkGroupUsage(MethodInvocationTree mit, KnownGroupsCollector knownGroups) {
     String methodName = ExpressionUtils.methodName(mit).name();
-    if ("group".equals(methodName)) {
+    if (Arrays.asList(NAMES_OF_METHODS_WITH_GROUP_ARGUMENT).contains(methodName)) {
       ExpressionTree arg0 = mit.arguments().get(0);
       if (arg0.symbolType().is("int")) {
         arg0.asConstant(Integer.class).ifPresent(index -> checkUsingNumberInsteadOfName(knownGroups, arg0, index, false));
