@@ -23,15 +23,15 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class PublicStaticMutableMembersCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/PublicStaticMutableMembersCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PublicStaticMutableMembersCheck.java"))
       .withCheck(new PublicStaticMutableMembersCheck())
       .verifyIssues();
   }
@@ -41,13 +41,13 @@ class PublicStaticMutableMembersCheckTest {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/PublicStaticMutableMembersCheck.java"))
       .withCheck(new PublicStaticMutableMembersCheck())
-      .verifyIssues();
+      .verifyNoIssues();
   }
 
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/PublicStaticMutableMembersCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PublicStaticMutableMembersCheck.java"))
       .withCheck(new PublicStaticMutableMembersCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();
@@ -59,7 +59,7 @@ class PublicStaticMutableMembersCheckTest {
       .onFile(nonCompilingTestSourcesPath("checks/PublicStaticMutableMembersCheck.java"))
       .withCheck(new PublicStaticMutableMembersCheck())
       .withClassPath(Collections.emptyList())
-      .verifyIssues();
+      .verifyNoIssues();
   }
 
 }
