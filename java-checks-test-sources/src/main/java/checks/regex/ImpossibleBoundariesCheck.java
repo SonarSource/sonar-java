@@ -29,7 +29,7 @@ public class ImpossibleBoundariesCheck {
     str.matches("abc(?<!abc$)def"); // Noncompliant [[sc=28;ec=29]]
     str.matches("(?:abc(X|^))*Y?"); // Noncompliant [[sc=27;ec=28]]
   }
-  
+
   void probablyNonCompliant(String str) {
     str.matches("$.*"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears before mandatory input.}}
     str.matches("$.?"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears before mandatory input.}}
@@ -85,7 +85,7 @@ public class ImpossibleBoundariesCheck {
     Pattern.compile("^((?<major>[0-9]{1,9})?(\\.(?<minor>[0-9]{1,9})(\\.$|[.-](?<micro>[0-9]{1,9}))?)?)([.-]?(?<qualifier>.+?))??([.-]redhat-(?<suffixversion>[0-9]{1,9}))?$");
   }
 
-  void withMultilineFlag() {
+  void consideringNewLines() {
     Pattern.compile("a\\n^b$", Pattern.MULTILINE); // Compliant, matches "a\nb"
     Pattern.compile("(?m)a\\n^b$"); // Compliant
     Pattern.compile("a\\n^b$"); // Noncompliant
@@ -95,6 +95,11 @@ public class ImpossibleBoundariesCheck {
     Pattern.compile("(?m)a$\nb"); // Compliant
     Pattern.compile("(?m)^1$\n2"); // Compliant
     Pattern.compile("a$\nb"); // Noncompliant
+
+    Pattern.compile("^a$\r?\n?");
+    Pattern.compile("^a$\r?\n?b"); // Noncompliant
+    Pattern.compile("^a$.*", Pattern.DOTALL);
+    Pattern.compile("^a$.*"); // Noncompliant
   }
 
 }
