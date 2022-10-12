@@ -1,5 +1,9 @@
 package checks;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -173,4 +177,31 @@ class PublicStaticMutableMembersCheckB<T> {
 }
 
 class PublicStaticMutableMembersCheckC {
+}
+
+class Java9 {
+
+  public static final Map<String, String> IMMUTABLE_MAP = Map.of("a", "A");
+  public static final Map<String, String> IMMUTABLE_MAP_COPY = Map.copyOf(new HashMap<>());
+  public static final Map<String, String> IMMUTABLE_MAP_OF_ENTRIES = Map.ofEntries(Map.entry("1", "2"));
+  public static final List<String> IMMUTABLE_LIST = List.of("hello");
+  public static final List<String> IMMUTABLE_LIST_COPY = List.copyOf(new ArrayList<>());
+  public static final Set<String> IMMUTABLE_SET = Set.of("hello");
+  public static final Set<String> IMMUTABLE_SET_COPY = Set.copyOf(new HashSet<>());
+
+}
+
+class Guava {
+  public static final List<String> immutableList = ImmutableList.of("a");
+  public static final Set<String> immutableSet = ImmutableSet.of("a");
+  public static final Map<String, String> immutableMap = ImmutableMap.of("a", "a");
+
+  public static final Set<String> otherImmutableSet = immutableSet;
+  public static final Map<String, String> otherImmutableMap = immutableMap;
+
+
+  public static final List<String> immutableList3 = ImmutableList.of("a");
+  public static final Set<String> immutableSet2 = ImmutableSet.of("a");
+  public static final Map<String, String> immutableMap2 = ImmutableMap.of("a", "a");
+  public static final Set otherImmutableSet2 = immutableSet2;
 }
