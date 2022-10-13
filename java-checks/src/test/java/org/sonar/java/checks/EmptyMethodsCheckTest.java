@@ -22,16 +22,26 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class EmptyMethodsCheckTest {
 
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/EmptyMethodsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/EmptyMethodsCheck.java"))
       .withCheck(new EmptyMethodsCheck())
       .withQuickFixes()
+      .verifyIssues();
+  }
+
+  @Test
+  void test_no_semantics() {
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/EmptyMethodsCheckNoSemantics.java"))
+      .withCheck(new EmptyMethodsCheck())
+      .withQuickFixes()
+      .withoutSemantic()
       .verifyIssues();
   }
 }

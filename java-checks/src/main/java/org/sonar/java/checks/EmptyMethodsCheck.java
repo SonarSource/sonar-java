@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ModifiersUtils;
@@ -26,6 +29,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -34,12 +38,12 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Rule(key = "S1186")
 public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
+
+  // Some methods may legitimately be left empty, e.g. methods annotated with org.aspectj.lang.annotation.Pointcut. We ignore them here.
+  private static final String IGNORED_METHODS_ANNOTATION = "org.aspectj.lang.annotation.Pointcut";
+  private static final String IGNORED_METHODS_ANNOTATION_UNQUALIFIED = "Pointcut";
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -60,7 +64,19 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
     members.stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
+      .filter(methodTree -> {
+        var annotations = methodTree.modifiers().annotations();
+        return annotations.isEmpty() || annotations.stream().noneMatch(EmptyMethodsCheck::isExceptedAnnotation);
+      })
       .forEach(this::checkMethod);
+  }
+
+  /**
+   * Returns true if the annotation indicates that the method body can legitimately be empty.
+   */
+  private static boolean isExceptedAnnotation(AnnotationTree annotationTree) {
+    return annotationTree.symbolType().is(IGNORED_METHODS_ANNOTATION) ||
+      (annotationTree.symbolType().isUnknown() && annotationTree.symbolType().name().equals(IGNORED_METHODS_ANNOTATION_UNQUALIFIED));
   }
 
   private void checkSingleNoArgPublicConstructor(List<Tree> members) {
