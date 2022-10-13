@@ -151,9 +151,9 @@ public class AutoScanTest {
     Collection<IssueDiff> newDiffs = calculateDifferences(ruleKeys, mvnIssues, noBinariesIssues).values();
 
     IssueDiff newTotal = IssueDiff.total(newDiffs);
-    LOG.info("Comparing results for both runs:\n- Rules={}\n- TPs={}\n- FNs={}\n- FPs={}\n- Differences={}\n",
+    LOG.info("Comparing results for both runs:\n- Rules={}\n- hasTP={}\n- FNs={}\n- FPs={}\n- Differences={}\n",
       newDiffs.size(),
-      newTotal.truePositives,
+      newTotal.hasTruePositives,
       newTotal.falseNegatives,
       newTotal.falsePositives,
       newTotal.falsePositives + newTotal.falseNegatives);
@@ -264,11 +264,11 @@ public class AutoScanTest {
   }
 
   private static class IssueDiff {
-    private static final String COLUMN_TITLES = "Rule;TP;FN;FP\n";
+    private static final String COLUMN_TITLES = "Rule;hasTP;FN;FP\n";
     private static final String SEPARATORS = "-----;-----;-----;-----\n";
 
     private final String ruleKey;
-    private int truePositives;
+    private boolean hasTruePositives;
     private int falseNegatives;
     private int falsePositives;
 
@@ -281,16 +281,16 @@ public class AutoScanTest {
     }
 
     boolean notReporting() {
-      return (truePositives + falseNegatives + falsePositives) == 0;
+      return !hasTruePositives && (falseNegatives + falsePositives) == 0;
     }
 
     boolean onlyFNs() {
-      return (truePositives + falsePositives) == 0 && falseNegatives > 0;
+      return !hasTruePositives && falsePositives == 0 && falseNegatives > 0;
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(ruleKey, truePositives, falseNegatives, falsePositives);
+      return Objects.hash(ruleKey, hasTruePositives, falseNegatives, falsePositives);
     }
 
     @Override
@@ -306,7 +306,7 @@ public class AutoScanTest {
       }
       IssueDiff other = (IssueDiff) obj;
       return ruleKey.equals(other.ruleKey)
-        && truePositives == other.truePositives
+        && hasTruePositives == other.hasTruePositives
         && falseNegatives == other.falseNegatives
         && falsePositives == other.falsePositives;
     }
@@ -326,7 +326,7 @@ public class AutoScanTest {
     public static IssueDiff total(Collection<IssueDiff> issueDiffs) {
       IssueDiff total = new IssueDiff("Total");
       for (IssueDiff issueDiff : issueDiffs) {
-        total.truePositives += issueDiff.truePositives;
+        total.hasTruePositives |= issueDiff.hasTruePositives;
         total.falseNegatives += issueDiff.falseNegatives;
         total.falsePositives += issueDiff.falsePositives;
       }
@@ -367,7 +367,7 @@ public class AutoScanTest {
 
         List<Integer> truePositives = new ArrayList<>(expectedLines);
         truePositives.removeAll(falseNegatives);
-        issueDiff.truePositives += truePositives.size();
+        issueDiff.hasTruePositives |= !truePositives.isEmpty();
       }
 
       return issueDiff;
@@ -375,12 +375,12 @@ public class AutoScanTest {
 
     @Override
     public String toString() {
-      return String.format("[%s;TP=%s;FN=%d;FP=%d]", ruleKey, truePositives, falseNegatives, falsePositives);
+      return String.format("[%s;hasTP=%s;FN=%d;FP=%d]", ruleKey, hasTruePositives, falseNegatives, falsePositives);
     }
 
     private static String prettyPrint(Collection<IssueDiff> diffs) {
       return diffs.stream()
-        .map(diff -> String.format("%s;%d;%d;%d", diff.ruleKey, diff.truePositives, diff.falseNegatives, diff.falsePositives))
+        .map(diff -> String.format("%s;%b;%d;%d", diff.ruleKey, diff.hasTruePositives, diff.falseNegatives, diff.falsePositives))
         .collect(Collectors.joining("\n", "", "\n"));
     }
 
@@ -392,7 +392,7 @@ public class AutoScanTest {
         .append(SEPARATORS)
         .append(COLUMN_TITLES)
         .append(SEPARATORS)
-        .append(String.format("%d;%d;%d;%d\n", diffs.size(), total.truePositives, total.falseNegatives, total.falsePositives))
+        .append(String.format("%d;%b;%d;%d\n", diffs.size(), total.hasTruePositives, total.falseNegatives, total.falsePositives))
         .toString();
     }
   }
