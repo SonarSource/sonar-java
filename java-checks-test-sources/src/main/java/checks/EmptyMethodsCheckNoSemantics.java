@@ -9,6 +9,7 @@ class EmptyMethodsCheckNoSemantics {
     public A() {
     }
 
+    // Noncompliant@+1 - if the constructor takes an argument it should do something with it (or explain why it doesn't)
     public A(int c) {
     }
 

@@ -27,7 +27,8 @@ public void doSomethingElse() {
 <h2>Exceptions</h2>
 <p>This does not raise an issue in the following cases:</p>
 <ul>
-  <li> Default (no-argument) constructors when there are other constructors in the class </li>
+  <li> Non-public default (no-argument) constructors </li>
+  <li> Public default (no-argument) constructors when there are other constructors in the class </li>
   <li> Empty methods in abstract classes </li>
   <li> Methods annotated with <code>@org.aspectj.lang.annotation.Pointcut()</code> </li>
 </ul>
