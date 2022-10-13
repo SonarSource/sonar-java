@@ -28,6 +28,7 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -97,11 +98,44 @@ class JSymbolTest {
       .hasOwner(Symbols.rootPackage)
       .hasSameHashCodeAs(p.type().symbolType().symbol().hashCode());
 
+    assertThat(cu.sema.packageSymbol(null))
+      .isEqualTo(Symbols.rootPackage);
+
     JType uType = cu.sema.type(u.variableBinding.getType());
     Symbol.TypeSymbol uTypeSymbol = uType.symbol();
     assertThat(uType.isUnknown()).isTrue();
     assertThat(uTypeSymbol.isUnknown()).isTrue();
     assertThat(uTypeSymbol.owner().isUnknown()).isTrue();
+  }
+
+  @Test
+  void owner_of_types_without_package_default_to_root_package_instead_of_null() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C {\n" +
+      "  Object objectField;\n" + // 'Object' is a regular type from 'java.lang' package
+      "  int intField;\n" + // 'int' is a primitive type without package
+      "  Object[] objectArrayField;\n" + // 'Object[]' is an array type without package
+      "  java.util.List<?> listField;\n" + // '?' is a wildcard type without package
+      "}\n"
+    );
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+
+    Symbol objectFieldType = ((VariableTree) c.members().get(0)).type().symbolType().symbol();
+    assertThat(objectFieldType.owner().name()).isEqualTo("java.lang");
+
+    Symbol intFieldType = ((VariableTree) c.members().get(1)).type().symbolType().symbol();
+    assertThat(intFieldType.owner().name()).isEmpty();
+    assertThat(intFieldType.owner()).isEqualTo(Symbols.rootPackage);
+
+    Symbol objectArrayFieldType = ((VariableTree) c.members().get(2)).type().symbolType().symbol();
+    assertThat(objectArrayFieldType.owner()).isEqualTo(Symbols.rootPackage);
+
+    Type listFieldTypeTree = ((VariableTree) c.members().get(3)).type().symbolType();
+    Symbol.TypeSymbol listType = listFieldTypeTree.symbol();
+    assertThat(listType.owner().name()).isEqualTo("java.util");
+    assertThat(listFieldTypeTree.typeArguments()).hasSize(1);
+    Type wildcardType = listFieldTypeTree.typeArguments().get(0);
+    assertThat(wildcardType.name()).isEqualTo("?");
+    assertThat(wildcardType.symbol().owner()).isEqualTo(Symbols.rootPackage);
   }
 
   @Test
