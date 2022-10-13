@@ -73,6 +73,11 @@ class DefaultJavaResourceLocatorTest {
   }
 
   @Test
+  void binaryDirs() throws Exception {
+    assertThat(javaResourceLocator.binaryDirs()).hasSize(1);
+  }
+
+  @Test
   void classFilesToAnalyze() throws Exception {
     assertThat(javaResourceLocator.classFilesToAnalyze()).hasSize(5);
   }

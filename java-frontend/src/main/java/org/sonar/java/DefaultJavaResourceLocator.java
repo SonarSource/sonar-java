@@ -84,6 +84,11 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   }
 
   @Override
+  public Collection<File> binaryDirs() {
+    return javaClasspath.getBinaryDirs();
+  }
+
+  @Override
   public void scanFile(JavaFileScannerContext context) {
     InputFile inputFile = context.getInputFile();
     JavaFilesCache javaFilesCache = new JavaFilesCache();
