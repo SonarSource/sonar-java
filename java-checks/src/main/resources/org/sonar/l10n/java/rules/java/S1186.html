@@ -25,7 +25,12 @@ public void doSomethingElse() {
 }
 </pre>
 <h2>Exceptions</h2>
-<p>Default (no-argument) constructors are ignored when there are other constructors in the class, as are empty methods in abstract classes.</p>
+<p>This does not raise an issue in the following cases:</p>
+<ul>
+  <li> Default (no-argument) constructors when there are other constructors in the class </li>
+  <li> Empty methods in abstract classes </li>
+  <li> Methods annotated with <code>@org.aspectj.lang.annotation.Pointcut()</code> </li>
+</ul>
 <pre>
 public abstract class Animal {
   void speak() {  // default implementation ignored
