@@ -49,7 +49,7 @@ class JavaSonarWayProfileTest {
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
     assertThat(profile.language()).isEqualTo(Java.KEY);
     List<BuiltInQualityProfilesDefinition.BuiltInActiveRule> activeRules = profile.rules();
-    assertThat(activeRules.stream().filter(r -> r.repoKey().equals("common-java"))).hasSize(1);
+    assertThat(activeRules.stream().filter(r -> r.repoKey().equals("common-java"))).isEmpty();
     assertThat(activeRules).as("Expected number of rules in profile").hasSizeGreaterThanOrEqualTo(268);
     assertThat(profile.name()).isEqualTo("Sonar way");
     Set<String> keys = new HashSet<>();

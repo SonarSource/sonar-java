@@ -57,8 +57,6 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
 
     BuiltInQualityProfileJsonLoader.load(sonarWay, CheckList.REPOSITORY_KEY, SONAR_WAY_PATH);
 
-    sonarWay.activateRule("common-" + Java.KEY, "DuplicatedBlocks");
-
     getSecurityRuleKeys().forEach(key -> sonarWay.activateRule(key.repository(), key.rule()));
     getDataflowBugDetectionRuleKeys().forEach(key -> sonarWay.activateRule(key.repository(), key.rule()));
     sonarWay.done();
