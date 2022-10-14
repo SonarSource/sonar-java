@@ -56,7 +56,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
     if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
       List<Tree> members = classTree.members();
       checkMethods(members);
-      checkSingleNoArgPublicConstructor(members);
+      checkConstructors(members);
     }
   }
 
@@ -79,13 +79,21 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
       (annotationTree.symbolType().isUnknown() && annotationTree.symbolType().name().equals(IGNORED_METHODS_ANNOTATION_UNQUALIFIED));
   }
 
-  private void checkSingleNoArgPublicConstructor(List<Tree> members) {
+  private void checkConstructors(List<Tree> members) {
     List<MethodTree> constructors = members.stream()
       .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
       .map(MethodTree.class::cast)
       .collect(Collectors.toList());
     if (constructors.size() == 1 && isPublicNoArgConstructor(constructors.get(0))) {
+      // In case that there is only a single public default constructor with empty body, we raise an issue, as this is equivalent to not
+      // defining a constructor at all and hence redundant.
       checkMethod(constructors.get(0));
+    } else if(constructors.size() > 1) {
+      // If there are several constructors, it may be valid to have a no-args constructor with an empty body. However, constructors that
+      // take arguments should do something with those or say why they don't using a comment.
+      constructors.stream()
+        .filter(constructor -> !constructor.parameters().isEmpty())
+        .forEach(this::checkMethod);
     }
   }
 
