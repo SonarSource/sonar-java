@@ -80,12 +80,12 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   @Override
   public Collection<File> classpath() {
-    return javaClasspath.getElements();
+    return Collections.unmodifiableList(javaClasspath.getElements());
   }
 
   @Override
   public Collection<File> binaryDirs() {
-    return javaClasspath.getBinaryDirs();
+    return Collections.unmodifiableList(javaClasspath.getBinaryDirs());
   }
 
   @Override

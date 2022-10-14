@@ -30,6 +30,7 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.model.VisitorsBridge;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -71,12 +72,22 @@ class DefaultJavaResourceLocatorTest {
 
   @Test
   void classpath() throws Exception {
-    assertThat(javaResourceLocator.classpath()).hasSize(1);
+    var classpath = javaResourceLocator.classpath();
+    assertThat(classpath).hasSize(1);
+
+    var file = new File("");
+    assertThatThrownBy(() -> classpath.add(file))
+      .isInstanceOf(UnsupportedOperationException.class);
   }
 
   @Test
   void binaryDirs() {
-    assertThat(javaResourceLocator.binaryDirs()).containsExactly(new File(BINARY_DIRS));
+    var binaryDirs = javaResourceLocator.binaryDirs();
+    assertThat(binaryDirs).containsExactly(new File(BINARY_DIRS));
+
+    var file = new File("");
+    assertThatThrownBy(() -> binaryDirs.add(file))
+      .isInstanceOf(UnsupportedOperationException.class);
   }
 
   @Test
