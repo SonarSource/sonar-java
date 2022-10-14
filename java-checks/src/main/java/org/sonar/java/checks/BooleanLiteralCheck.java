@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -128,16 +129,15 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
       if (right != null) {
         edits = editsForConditionalBothLiterals(tree, left, right);
       } else {
-        String operator;
         if (left) {
           // cond() ? true : expr --> cond() || expr
-          operator = "||";
+          edits.add(JavaTextEdit.replaceBetweenTree(tree.questionToken(), tree.colonToken(), "||"));
         } else {
           // cond() ? false : expr --> !cond() && expr
-          operator = "&&";
-          edits.add(JavaTextEdit.insertBeforeTree(tree.condition(), "!"));
+          edits.add(JavaTextEdit.replaceBetweenTree(tree.questionToken(), tree.colonToken(), "&&"));
+          List<JavaTextEdit> collection = computeNegatingTextEdits(tree.condition(), true);
+          edits.addAll(collection);
         }
-        edits.add(JavaTextEdit.replaceBetweenTree(tree.questionToken(), tree.colonToken(), operator));
       }
     } else if (right != null) {
       // Defensive programming, if we reached this point, right must be a boolean literal
@@ -153,6 +153,41 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
       }
       edits.add(JavaTextEdit.replaceTree(tree.questionToken(), operator));
     }
+    return edits;
+  }
+
+  private static List<JavaTextEdit> computeNegatingTextEdits(ExpressionTree tree, boolean followedByConjunction) {
+    List<JavaTextEdit> edits = new ArrayList<>();
+
+    if (tree.is(Kind.PARENTHESIZED_EXPRESSION)) {
+      ParenthesizedTree expression = (ParenthesizedTree) tree;
+      edits.addAll(computeNegatingTextEdits(expression.expression(), false));
+    } else if (tree.is(Kind.EQUAL_TO)) {
+      BinaryExpressionTree condition = (BinaryExpressionTree) tree;
+      edits.add(JavaTextEdit.replaceTree(condition.operatorToken(), "!="));
+    } else if (tree.is(Kind.NOT_EQUAL_TO)) {
+      BinaryExpressionTree condition = (BinaryExpressionTree) tree;
+      edits.add(JavaTextEdit.replaceTree(condition.operatorToken(), "=="));
+    } else if (tree.is(Kind.CONDITIONAL_AND)) {
+      BinaryExpressionTree condition = (BinaryExpressionTree) tree;
+      if (followedByConjunction) {
+        edits.add(JavaTextEdit.insertAfterTree(tree, ")"));
+      }
+      edits.addAll(computeNegatingTextEdits(condition.rightOperand(), followedByConjunction));
+      edits.add(JavaTextEdit.replaceTree(condition.operatorToken(), "||"));
+      edits.addAll(computeNegatingTextEdits(condition.leftOperand(), false));
+      if (followedByConjunction) {
+        edits.add(JavaTextEdit.insertBeforeTree(tree, "("));
+      }
+    } else if (tree.is(Kind.CONDITIONAL_OR)) {
+      BinaryExpressionTree condition = (BinaryExpressionTree) tree;
+      edits.addAll(computeNegatingTextEdits(condition.rightOperand(), followedByConjunction));
+      edits.add(JavaTextEdit.replaceTree(condition.operatorToken(), "&&"));
+      edits.addAll(computeNegatingTextEdits(condition.leftOperand(), true));
+    } else {
+      edits.add(JavaTextEdit.insertBeforeTree(tree, "!"));
+    }
+
     return edits;
   }
 
