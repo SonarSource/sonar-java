@@ -40,7 +40,7 @@ class DefaultJavaResourceLocatorTest {
   private static DefaultJavaResourceLocator javaResourceLocator;
 
   private static final String BINARY_DIRS = "target/test-classes";
-  private static final String TEST_BINARY_DIRS = "target/test-classes";
+  private static final String TEST_BINARY_DIRS = "target/test/test-classes";
 
   @BeforeAll
   public static void setup() {
