@@ -41,8 +41,8 @@ class BooleanLiteralCheck {
     // edit@qf_cond3 [[sc=17;ec=25]] {{||}}
     var = foo() ? false : exp;  // Noncompliant [[sc=19;ec=24;quickfixes=qf_cond4]]
     // fix@qf_cond4 {{Simplify the expression}}
-    // edit@qf_cond4 [[sc=11;ec=11]] {{!}}
     // edit@qf_cond4 [[sc=17;ec=26]] {{&&}}
+    // edit@qf_cond4 [[sc=11;ec=11]] {{!}}
     var = foo() ? exp : true;   // Noncompliant [[sc=25;ec=29;quickfixes=qf_cond5]]
     // fix@qf_cond5 {{Simplify the expression}}
     // edit@qf_cond5 [[sc=22;ec=29]] {{}}
@@ -192,6 +192,70 @@ class BooleanLiteralCheck {
     // fix@qf_side_effect {{Simplify the expression}}
     // edit@qf_side_effect [[sc=9;ec=29]] {{}}
 
+  }
+
+  boolean isNotNull(Object s, boolean exp) {
+    boolean result;
+    result = s == null ? false : exp; // Noncompliant [[sc=26;ec=31;quickfixes=qf_proper_fix]]
+ // result = s != null && exp;
+    // fix@qf_proper_fix {{Simplify the expression}}
+    // edit@qf_proper_fix [[sc=24;ec=33]]{{&&}}
+    // edit@qf_proper_fix [[sc=16;ec=18]]{{!=}}
+    return result;
+  }
+
+  boolean externalConditionisFalse(boolean externalCondition, boolean exp) {
+    boolean result;
+    result = externalCondition ? false : exp; // Noncompliant [[sc=34;ec=39;quickfixes=regular_fix]]
+ // result = !externalCondition && exp;
+    // fix@regular_fix {{Simplify the expression}}
+    // edit@regular_fix [[sc=32;ec=41]]{{&&}}
+    // edit@regular_fix [[sc=14;ec=14]]{{!}}
+    return result;
+  }
+
+  boolean doesNotStartWithA(String s, boolean exp) {
+    return (s != null) && s.startsWith("a") ? false : exp; // Noncompliant[[sc=47;ec=52;quickfixes=complex_fix]]
+ // return ((s == null) || !s.startsWith("a")) && exp;
+    // fix@complex_fix {{Simplify the expression}}
+    // edit@complex_fix [[sc=45;ec=54]]{{&&}}
+    // edit@complex_fix [[sc=44;ec=44]]{{)}}
+    // edit@complex_fix [[sc=27;ec=27]]{{!}}
+    // edit@complex_fix [[sc=24;ec=26]]{{||}}
+    // edit@complex_fix [[sc=15;ec=17]]{{==}}
+    // edit@complex_fix [[sc=12;ec=12]]{{(}}
+  }
+
+  boolean isNotADuck(String s, boolean exp) {
+    return s != null && s.startsWith("d") && s.endsWith("uck") ? false : exp; // Noncompliant[[sc=66;ec=71;quickfixes=duck_fix]]
+ // return (s == null || !s.startsWith("d") || !s.endsWith("uck")) && exp;
+    // fix@duck_fix {{Simplify the expression}}
+    // edit@duck_fix [[sc=64;ec=73]]{{&&}}
+    // edit@duck_fix [[sc=63;ec=63]]{{)}}
+    // edit@duck_fix [[sc=46;ec=46]]{{!}}
+    // edit@duck_fix [[sc=43;ec=45]]{{||}}
+    // edit@duck_fix [[sc=25;ec=25]]{{!}}
+    // edit@duck_fix [[sc=22;ec=24]]{{||}}
+    // edit@duck_fix [[sc=14;ec=16]]{{==}}
+    // edit@duck_fix [[sc=12;ec=12]]{{(}}
+  }
+
+  boolean isADuck(String s, boolean exp) {
+    return !isNotADuck(s, exp);
+  }
+
+  boolean doesNotHaveWings(String s, boolean isMammal, boolean exp) {
+    return isADuck(s, exp) || (isMammal && s != null && s.equals("bat")) ? false : exp; // Noncompliant [[sc=76;ec=81;quickfixes=wings_qf]]
+ // return !isADuck(s, exp) && (!isMammal || s == null || !s.equals("bat")) && exp;
+    // fix@wings_qf {{Simplify the expression}}
+    // edit@wings_qf [[sc=74;ec=83]]{{&&}}
+    // edit@wings_qf [[sc=57;ec=57]]{{!}}
+    // edit@wings_qf [[sc=54;ec=56]]{{||}}
+    // edit@wings_qf [[sc=46;ec=48]]{{==}}
+    // edit@wings_qf [[sc=41;ec=43]]{{||}}
+    // edit@wings_qf [[sc=32;ec=32]]{{!}}
+    // edit@wings_qf [[sc=28;ec=30]]{{&&}}
+    // edit@wings_qf [[sc=12;ec=12]]{{!}}
   }
 
   boolean foo()          { return true; }
