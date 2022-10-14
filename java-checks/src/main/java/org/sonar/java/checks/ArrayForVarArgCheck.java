@@ -76,11 +76,10 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
       if (lastParamType.isUnknown() || lastArgType.isUnknown()) {
         return;
       }
-      if (lastArgType.equals(lastParamType)) {
-        reportIssueForSameType(methodSymbol, (NewArrayTree) lastArg);
+      if ("java.lang.Object[]".equals(lastParamType.fullyQualifiedName())) {
+        reportIssue(lastArg, "Disambiguate this call by either casting as \"Object\" or \"Object[]\".");
       } else {
-        String type = ((Type.ArrayType) lastParamType).elementType().name();
-        reportIssue(lastArg, "Disambiguate this call by either casting as \"" + type + "\" or \"" + type + "[]\".");
+        reportIssueForSameType(methodSymbol, (NewArrayTree) lastArg);
       }
     }
   }
