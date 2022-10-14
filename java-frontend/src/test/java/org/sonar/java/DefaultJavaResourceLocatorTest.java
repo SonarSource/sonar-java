@@ -37,11 +37,13 @@ class DefaultJavaResourceLocatorTest {
 
   private static DefaultJavaResourceLocator javaResourceLocator;
 
+  private static final String BINARY_DIRS = "target/test-classes";
+
   @BeforeAll
   public static void setup() {
     ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
-    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(new File("target/test-classes")));
-    when(javaClasspath.getElements()).thenReturn(Collections.singletonList(new File("target/test-classes")));
+    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(new File(BINARY_DIRS)));
+    when(javaClasspath.getElements()).thenReturn(Collections.singletonList(new File(BINARY_DIRS)));
     InputFile inputFile = TestUtils.inputFile("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java");
     DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(javaClasspath);
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(jrl));
@@ -73,8 +75,8 @@ class DefaultJavaResourceLocatorTest {
   }
 
   @Test
-  void binaryDirs() throws Exception {
-    assertThat(javaResourceLocator.binaryDirs()).hasSize(1);
+  void binaryDirs() {
+    assertThat(javaResourceLocator.binaryDirs()).containsExactly(new File(BINARY_DIRS));
   }
 
   @Test
