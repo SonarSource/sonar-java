@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.VisitorsBridge;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,14 +40,20 @@ class DefaultJavaResourceLocatorTest {
   private static DefaultJavaResourceLocator javaResourceLocator;
 
   private static final String BINARY_DIRS = "target/test-classes";
+  private static final String TEST_BINARY_DIRS = "target/test-classes";
 
   @BeforeAll
   public static void setup() {
     ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
     when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(new File(BINARY_DIRS)));
     when(javaClasspath.getElements()).thenReturn(Collections.singletonList(new File(BINARY_DIRS)));
+    
+    ClasspathForTest javaTestClasspath = mock(ClasspathForTest.class);
+    when(javaTestClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(new File(TEST_BINARY_DIRS)));
+    when(javaTestClasspath.getElements()).thenReturn(Collections.singletonList(new File(TEST_BINARY_DIRS)));
+    
     InputFile inputFile = TestUtils.inputFile("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java");
-    DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(javaClasspath);
+    DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(javaClasspath, javaTestClasspath);
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(jrl));
     javaResourceLocator = jrl;
   }
@@ -81,9 +88,29 @@ class DefaultJavaResourceLocatorTest {
   }
 
   @Test
+  void testClasspath() throws Exception {
+    var classpath = javaResourceLocator.testClasspath();
+    assertThat(classpath).containsExactly(new File(TEST_BINARY_DIRS));
+
+    var file = new File("");
+    assertThatThrownBy(() -> classpath.add(file))
+      .isInstanceOf(UnsupportedOperationException.class);
+  }
+
+  @Test
   void binaryDirs() {
     var binaryDirs = javaResourceLocator.binaryDirs();
     assertThat(binaryDirs).containsExactly(new File(BINARY_DIRS));
+
+    var file = new File("");
+    assertThatThrownBy(() -> binaryDirs.add(file))
+      .isInstanceOf(UnsupportedOperationException.class);
+  }
+
+  @Test
+  void testBinaryDirs() {
+    var binaryDirs = javaResourceLocator.testBinaryDirs();
+    assertThat(binaryDirs).containsExactly(new File(TEST_BINARY_DIRS));
 
     var file = new File("");
     assertThatThrownBy(() -> binaryDirs.add(file))

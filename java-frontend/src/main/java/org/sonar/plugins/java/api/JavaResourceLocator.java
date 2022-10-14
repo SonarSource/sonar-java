@@ -53,8 +53,16 @@ public interface JavaResourceLocator extends JavaFileScanner {
   /**
    * The folders containing the binary .class files.
    * @return a list of folders.
+   * @since 9.7
    */
   Collection<File> binaryDirs();
+
+  /**
+   * The folders containing the binary .class files corresponding to the tests.
+   * @return a list of folders.
+   * @since 9.7
+   */
+  Collection<File> testBinaryDirs();
 
   /**
    * Classpath configured for the project.
@@ -63,4 +71,11 @@ public interface JavaResourceLocator extends JavaFileScanner {
    */
   Collection<File> classpath();
 
+  /**
+   * Classpath configured for the project tests.
+   * This classpath method is used by the findbugs plugin to configure the analysis.
+   * @return the list of jar and class files constituting the classpath of the analyzed project.
+   * @since 9.7
+   */
+  Collection<File> testClasspath();
 }
