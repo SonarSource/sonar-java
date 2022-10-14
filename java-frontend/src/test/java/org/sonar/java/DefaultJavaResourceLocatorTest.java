@@ -30,6 +30,7 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.model.VisitorsBridge;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,11 +38,13 @@ class DefaultJavaResourceLocatorTest {
 
   private static DefaultJavaResourceLocator javaResourceLocator;
 
+  private static final String BINARY_DIRS = "target/test-classes";
+
   @BeforeAll
   public static void setup() {
     ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
-    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(new File("target/test-classes")));
-    when(javaClasspath.getElements()).thenReturn(Collections.singletonList(new File("target/test-classes")));
+    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(new File(BINARY_DIRS)));
+    when(javaClasspath.getElements()).thenReturn(Collections.singletonList(new File(BINARY_DIRS)));
     InputFile inputFile = TestUtils.inputFile("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java");
     DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(javaClasspath);
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(jrl));
@@ -69,7 +72,22 @@ class DefaultJavaResourceLocatorTest {
 
   @Test
   void classpath() throws Exception {
-    assertThat(javaResourceLocator.classpath()).hasSize(1);
+    var classpath = javaResourceLocator.classpath();
+    assertThat(classpath).hasSize(1);
+
+    var file = new File("");
+    assertThatThrownBy(() -> classpath.add(file))
+      .isInstanceOf(UnsupportedOperationException.class);
+  }
+
+  @Test
+  void binaryDirs() {
+    var binaryDirs = javaResourceLocator.binaryDirs();
+    assertThat(binaryDirs).containsExactly(new File(BINARY_DIRS));
+
+    var file = new File("");
+    assertThatThrownBy(() -> binaryDirs.add(file))
+      .isInstanceOf(UnsupportedOperationException.class);
   }
 
   @Test
