@@ -72,8 +72,11 @@ public final class JSema implements Sema {
     return Arrays.asList(result);
   }
 
-  public JPackageSymbol packageSymbol(IPackageBinding packageBinding) {
-    return (JPackageSymbol) symbols.computeIfAbsent(packageBinding, k -> new JPackageSymbol(this, (IPackageBinding) k));
+  public Symbol packageSymbol(@Nullable IPackageBinding packageBinding) {
+    if (packageBinding == null) {
+      return Symbols.rootPackage;
+    }
+    return symbols.computeIfAbsent(packageBinding, k -> new JPackageSymbol(this, (IPackageBinding) k));
   }
 
   public JTypeSymbol typeSymbol(ITypeBinding typeBinding) {
