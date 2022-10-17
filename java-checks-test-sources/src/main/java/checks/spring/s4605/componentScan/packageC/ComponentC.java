@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
 @Component
-class ComponentC {} // Noncompliant [[sc=7;ec=17]] {{'ComponentC' is not reachable by @ComponentsScan or @SpringBootApplication. Either move it to a package configured in @ComponentsScan or update your @ComponentsScan configuration.}}
+class ComponentC {} // Noncompliant [[sc=7;ec=17]] {{'ComponentC' is not reachable by @ComponentScan or @SpringBootApplication. Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.}}
 
 @Service
 class ComponentD {} // Noncompliant

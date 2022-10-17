@@ -56,8 +56,8 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
 
   private static final Logger LOG = Loggers.get(SpringBeansShouldBeAccessibleCheck.class);
 
-  private static final String MESSAGE_FORMAT = "'%s' is not reachable by @ComponentsScan or @SpringBootApplication. "
-    + "Either move it to a package configured in @ComponentsScan or update your @ComponentsScan configuration.";
+  private static final String MESSAGE_FORMAT = "'%s' is not reachable by @ComponentScan or @SpringBootApplication. "
+    + "Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.";
 
   private static final String[] SPRING_BEAN_ANNOTATIONS = {
     "org.springframework.stereotype.Component",
