@@ -11,7 +11,9 @@ abstract class UnusedGroupNamesCheck {
 
     Matcher m0 = p0.matcher(input);
     if (m0.matches()) {
-      m0.group(1); // Noncompliant [[secondary=8]] {{Directly use 'g1' instead of its group number.}}
+      m0.group(1); // Noncompliant [[secondary=-6]] {{Directly use 'g1' instead of its group number.}}
+      m0.start(1); // Noncompliant [[secondary=-7]] {{Directly use 'g1' instead of its group number.}}
+      m0.end(1); // Noncompliant [[secondary=-8]] {{Directly use 'g1' instead of its group number.}}
     }
 
     Pattern p1 = Pattern
@@ -21,7 +23,9 @@ abstract class UnusedGroupNamesCheck {
         + "(?<g2>[0-9]+)");
     Matcher m1 = p1.matcher(input);
     if (m1.matches()) {
-      m1.group("g3"); // Noncompliant [[secondary=19,21]] {{There is no group named 'g3' in the regular expression.}}
+      m1.group("g3"); // Noncompliant [[secondary=-3,-5]] {{There is no group named 'g3' in the regular expression.}}
+      m1.start("g3"); // Noncompliant [[secondary=-4,-6]] {{There is no group named 'g3' in the regular expression.}}
+      m1.end("g3"); // Noncompliant [[secondary=-5,-7]] {{There is no group named 'g3' in the regular expression.}}
     }
 
     Matcher m2 = Pattern.compile(
@@ -34,10 +38,10 @@ abstract class UnusedGroupNamesCheck {
     new Bar(m2); // Same. Bar takes Object as its argument type
     if (m2.matches()) {
         m2.group(
-          1 // Noncompliant [[secondary=28]] {{Directly use 'month' instead of its group number.}}
+          1 // Noncompliant [[secondary=-9]] {{Directly use 'month' instead of its group number.}}
         );
         m2.group(
-          2 // Noncompliant [[secondary=30]] {{Directly use 'year' instead of its group number.}}
+          2 // Noncompliant [[secondary=-10]] {{Directly use 'year' instead of its group number.}}
         );
     }
 
@@ -164,9 +168,24 @@ abstract class UnusedGroupNamesCheck {
     someMethod(p13);
 
     someOtherMethod().group(1); // This should be ignored since we don't know which regex we're calling group for
+    someOtherMethod().start("group"); // This should be ignored since we don't know which regex we're calling group for
+    someOtherMethod().end(3); // This should be ignored since we don't know which regex we're calling group for
 
     Pattern p14 = Pattern.compile("(?<name>test)"); // Compliant because passed to constructor
     new Foo(p14);
+
+    Pattern p15 = Pattern.compile("(?<month>[0-9]{2})/(?<year>[0-9]{2})");
+    Matcher m15 = p15.matcher(input);
+    if (m15.matches()) {
+      m15.start("month");
+      m15.start("year");
+    }
+
+    Pattern p16 = Pattern.compile("(?<price>\\d+(?:\\.\\d{2})?)CHF");
+    Matcher m16 = p16.matcher(input);
+    if (m16.matches()) {
+      System.out.println(m16.end("price"));
+    }
 
     // When patterns or matchers are directly passed to methods or constructors, they're considered as escaping the scope
     // even if the parameter type isn't Pattern/Matcher
