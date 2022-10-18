@@ -1,12 +1,16 @@
 package checks;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 
 import static checks.MutableMembersUsageCheck.CustomImmutableList.staticallyImportedMethod;
 
 class MutableMembersUsageCheck {
+
   private String[] strings;
   public String[] properties;
   private List<String> list = new LinkedList<>();
@@ -45,6 +49,51 @@ class MutableMembersUsageCheck {
     return immutableMap2; // Compliant
   }
 
+  private static final Set<String> unmodifiableFromStream = // FP
+    Stream.of(
+        "first",
+        "second")
+      .collect(Collectors.toUnmodifiableSet());
+
+
+  private static final List<String> unmodifiableFromStream2 =  // FP
+    Arrays.asList(
+        "first",
+        "second")
+      .stream()
+      .collect(Collectors.toUnmodifiableList());
+
+  private static final Map<Integer, Set<String>> unmodifiableFromStream4 =
+    Stream.of("first", "second", "second", "thirteen", "thirteen", "thirteen")
+      .collect(
+        Collectors.collectingAndThen(
+          Collectors.groupingBy(
+            String::length, Collectors.<String>toUnmodifiableSet()
+          ),
+          Collections::unmodifiableMap
+        )
+      );
+
+  private static final Map<Integer, String> unmodifiableFromStream3 =
+    Stream.of("first", "second", "thirteen")
+      .collect(Collectors.toUnmodifiableMap(String::length, e -> e));
+
+  public Set<String> getUnmodifiableFromStream() {
+    return unmodifiableFromStream;
+  }
+
+  public List<String> getUnmodifiableFromStream2() {
+    return unmodifiableFromStream2;
+  }
+
+  public Map<Integer, String> getUnmodifiableFromStream3() {
+    return unmodifiableFromStream3;
+  }
+
+  // A known false-positive as it's hard to identify that the result of the stream.collect() is actually unmodifiable
+  public Map<Integer, Set<String>> getUnmodifiableFromStream4() {
+    return unmodifiableFromStream4; // Noncompliant
+  }
   public MutableMembersUsageCheck () {
     strings = new String[]{"first", "second"};
     properties = new String[]{"a"};

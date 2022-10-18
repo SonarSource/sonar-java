@@ -68,6 +68,18 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     MethodMatchers.create().ofTypes("java.util.Set", "java.util.List").names("of", "copyOf").withAnyParameters().build()
   );
 
+  private static final MethodMatchers STREAM_COLLECT_CALL = MethodMatchers.create().
+    ofTypes("java.util.stream.Stream")
+    .names("collect")
+    .addParametersMatcher("java.util.stream.Collector")
+    .build();
+
+  private static final MethodMatchers UNMODIFIABLE_COLLECTOR_CALL = MethodMatchers.create().
+    ofTypes("java.util.stream.Collectors")
+    .names("toUnmodifiableSet", "toUnmodifiableList", "toUnmodifiableMap")
+    .withAnyParameters()
+    .build();
+
   private JavaFileScannerContext context;
   private Deque<Set<Symbol>> parametersStack = new LinkedList<>();
 
@@ -207,10 +219,21 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
       // In case of incomplete semantic, working with "nulltype" returns strange results, we can return early as the null will never be mutable anyway.
       return false;
     }
-    if (expressionTree.is(Tree.Kind.METHOD_INVOCATION) && UNMODIFIABLE_COLLECTION_CALL.matches((MethodInvocationTree) expressionTree)) {
-      return false;
+    if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) expressionTree;
+      if (UNMODIFIABLE_COLLECTION_CALL.matches(methodInvocationTree) || (isUnmodifiableCollector(methodInvocationTree))) {
+        return false;
+      }
     }
     return isMutableType(expressionTree.symbolType());
+  }
+
+  private static boolean isUnmodifiableCollector(MethodInvocationTree methodInvocationTree) {
+    if (STREAM_COLLECT_CALL.matches(methodInvocationTree) && methodInvocationTree.arguments().get(0).is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree collector = (MethodInvocationTree) methodInvocationTree.arguments().get(0);
+      return UNMODIFIABLE_COLLECTOR_CALL.matches(collector);
+    }
+    return false;
   }
 
   private static boolean isMutableType(Type type) {
