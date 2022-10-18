@@ -2,6 +2,7 @@ package checks;
 
 import java.util.*;
 import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableMap;
 
 import static checks.MutableMembersUsageCheck.CustomImmutableList.staticallyImportedMethod;
 
@@ -25,6 +26,24 @@ class MutableMembersUsageCheck {
   private List<String> customImmutableList3 = staticallyImportedMethod(mutableList);
   private List<String> customUnmodifiableList1 = customUnmodifiableList(mutableList);
   private List<String> customUnmodifiableList2 = CustomUnmodifiableList.create(mutableList);
+
+  private Map<String, String> hashMap = new HashMap<>();
+
+  public Map<String, String> getHashMap() {
+    return hashMap; // Noncompliant
+  }
+
+  private ImmutableMap<String, String> immutableMap;
+
+  public Map<String, String> getImmutableMap() {
+    return immutableMap; // Compliant
+  }
+
+  private Map<String, String> immutableMap2 = ImmutableMap.of("abc", "abc");
+
+  public Map<String, String> getImmutableMap2() {
+    return immutableMap2; // Compliant
+  }
 
   public MutableMembersUsageCheck () {
     strings = new String[]{"first", "second"};

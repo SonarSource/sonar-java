@@ -52,11 +52,12 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
   private static final List<String> MUTABLE_TYPES = Arrays.asList(
     "java.util.Collection",
     "java.util.Date",
-    "java.util.Hashtable");
+    "java.util.Map");
   private static final List<String> IMMUTABLE_TYPES = Arrays.asList(
     "java.util.Collections.UnmodifiableCollection",
     "java.util.Collections.UnmodifiableMap",
-    "com.google.common.collect.ImmutableCollection");
+    "com.google.common.collect.ImmutableCollection",
+    "com.google.common.collect.ImmutableMap");
 
   private static final MethodMatchers UNMODIFIABLE_COLLECTION_CALL = MethodMatchers.or(
     MethodMatchers.create().ofType(type -> MutableMembersUsageCheck.containsImmutableLikeTerm(type.name())).anyName().withAnyParameters().build(),
