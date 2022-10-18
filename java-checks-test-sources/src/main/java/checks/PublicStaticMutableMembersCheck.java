@@ -4,6 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +20,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PublicStaticMutableMembersCheck {
   public static String [] strings1 = {"first","second"};  // Noncompliant [[sc=27;ec=35]] {{Make this member "protected".}}
@@ -136,6 +141,37 @@ public class PublicStaticMutableMembersCheck {
   private static List<String> customUnmodifiableList() {
     return Collections.emptyList();
   }
+
+
+  public static final Set<String> unmodifiableFromStream =
+    Stream.of(
+        "first",
+        "second")
+      .collect(Collectors.toUnmodifiableSet());
+
+
+  public static final List<String> unmodifiableFromStream2 =
+    Arrays.asList(
+        "first",
+        "second")
+      .stream()
+      .collect(Collectors.toUnmodifiableList());
+
+  // A known false-positive, hard to detect
+  public static final Map<Integer, Set<String>> unmodifiableFromStream4 = // Noncompliant
+    Stream.of("first", "second", "second", "thirteen", "thirteen", "thirteen")
+      .collect(
+        Collectors.collectingAndThen(
+          Collectors.groupingBy(
+            String::length, Collectors.<String>toUnmodifiableSet()
+          ),
+          Collections::unmodifiableMap
+        )
+      );
+
+  public static final Map<Integer, String> unmodifiableFromStream3 =
+    Stream.of("first", "second", "thirteen")
+      .collect(Collectors.toUnmodifiableMap(String::length, e -> e));
 }
 
 interface PublicStaticMutableMembersCheck_I {
