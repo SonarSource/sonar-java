@@ -86,6 +86,18 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
       .build()
   );
 
+  private static final MethodMatchers STREAM_COLLECT_CALL = MethodMatchers.create().
+    ofTypes("java.util.stream.Stream")
+    .names("collect")
+    .addParametersMatcher("java.util.stream.Collector")
+    .build();
+
+  private static final MethodMatchers UNMODIFIABLE_COLLECTOR_CALL = MethodMatchers.create().
+    ofTypes("java.util.stream.Collectors")
+    .names("toUnmodifiableSet", "toUnmodifiableList", "toUnmodifiableMap")
+    .withAnyParameters()
+    .build();
+
   private static final MethodMatchers ARRAYS_AS_LIST = MethodMatchers.create()
     .ofTypes("java.util.Arrays").names("asList").withAnyParameters().build();
 
@@ -216,7 +228,15 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   private static boolean isAcceptedTypeOrUnmodifiableMethodCall(MethodInvocationTree mit) {
     Type type = mit.symbolType();
-    return isUnknownOrAcceptedType(type, ACCEPTED_TYPES) || UNMODIFIABLE_METHOD_CALLS.matches(mit);
+    return isUnknownOrAcceptedType(type, ACCEPTED_TYPES) || UNMODIFIABLE_METHOD_CALLS.matches(mit) || isUnmodifiableCollector(mit);
+  }
+
+  private static boolean isUnmodifiableCollector(MethodInvocationTree methodInvocationTree) {
+    if (STREAM_COLLECT_CALL.matches(methodInvocationTree) && methodInvocationTree.arguments().get(0).is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree collector = (MethodInvocationTree) methodInvocationTree.arguments().get(0);
+      return UNMODIFIABLE_COLLECTOR_CALL.matches(collector);
+    }
+    return false;
   }
 
   private static boolean isUnknownOrAcceptedType(Type type, List<String> accepted) {
