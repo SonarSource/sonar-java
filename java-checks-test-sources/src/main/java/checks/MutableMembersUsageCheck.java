@@ -51,14 +51,14 @@ class MutableMembersUsageCheck {
     return immutableMap2; // Compliant
   }
 
-  private static final Set<String> unmodifiableFromStream = // FP
+  private static final Set<String> unmodifiableFromStream =
     Stream.of(
         "first",
         "second")
       .collect(Collectors.toUnmodifiableSet());
 
 
-  private static final List<String> unmodifiableFromStream2 =  // FP
+  private static final List<String> unmodifiableFromStream2 =
     Arrays.asList(
         "first",
         "second")

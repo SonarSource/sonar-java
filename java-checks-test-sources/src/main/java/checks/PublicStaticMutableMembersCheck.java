@@ -172,6 +172,12 @@ public class PublicStaticMutableMembersCheck {
   public static final Map<Integer, String> unmodifiableFromStream3 =
     Stream.of("first", "second", "thirteen")
       .collect(Collectors.toUnmodifiableMap(String::length, e -> e));
+
+  public static final Set<String> UNION = Sets.union(Collections.emptySet(), Set.of("Java"));
+  public static final Set<String> DIFF = Sets.difference(Collections.emptySet(), Set.of("Java"));
+  public static final Set<String> INTER = Sets.intersection(Collections.emptySet(), Set.of("Java"));
+  public static final Set<String> SYM_DIFF = Sets.symmetricDifference(Collections.emptySet(), Set.of("Java"));
+  public static final List<String> AS_LIST = Lists.asList("ABC", new String[] {"", ""});
 }
 
 interface PublicStaticMutableMembersCheck_I {
