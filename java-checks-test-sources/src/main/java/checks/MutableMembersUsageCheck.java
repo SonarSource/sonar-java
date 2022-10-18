@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import static checks.MutableMembersUsageCheck.CustomImmutableList.staticallyImportedMethod;
 
@@ -94,6 +96,30 @@ class MutableMembersUsageCheck {
   public Map<Integer, Set<String>> getUnmodifiableFromStream4() {
     return unmodifiableFromStream4; // Noncompliant
   }
+
+  // The following collections are immutable and therefore compliant.
+  private static final Set<String> UNION = Sets.union(Collections.emptySet(), Set.of("Java"));
+  private static final Set<String> DIFF = Sets.difference(Collections.emptySet(), Set.of("Java"));
+  private static final Set<String> INTER = Sets.intersection(Collections.emptySet(), Set.of("Java"));
+  private static final Set<String> SYM_DIFF = Sets.symmetricDifference(Collections.emptySet(), Set.of("Java"));
+  private static final List<String> AS_LIST = Lists.asList("ABC", new String[] {"", ""});
+
+  public Set<String> getUnion() {
+    return UNION;
+  }
+  public Set<String> getDiff() {
+    return DIFF;
+  }
+  public Set<String> getInter() {
+    return INTER;
+  }
+  public Set<String> getSymDiff() {
+    return SYM_DIFF;
+  }
+  public List<String> getAsList() {
+    return AS_LIST;
+  }
+
   public MutableMembersUsageCheck () {
     strings = new String[]{"first", "second"};
     properties = new String[]{"a"};
