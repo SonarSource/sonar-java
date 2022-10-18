@@ -83,7 +83,9 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
         "org.apache.commons.collections4.list.UnmodifiableList")
       .names(DECORATE)
       .withAnyParameters()
-      .build()
+      .build(),
+    MethodMatchers.create().ofTypes("com.google.common.collect.Sets").names("union", "intersection", "difference", "symmetricDifference").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes("com.google.common.collect.Lists").names("asList").withAnyParameters().build()
   );
 
   private static final MethodMatchers STREAM_COLLECT_CALL = MethodMatchers.create().
