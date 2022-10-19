@@ -63,6 +63,14 @@ To build the plugin and run its unit tests, execute this command from the projec
 
     mvn clean install
 
+### Note that
+Running unit tests within the IDE might incur in some issues because of the way the project is built with maven.
+If you see something like this:
+	
+	java.lang.SecurityException: class ... signer information does not match signer information of other classes in the same package
+	
+try removing the Maven nature of the 'jdt' module. 
+
 ### Integration Tests
 
 To run integration tests, you will need to create a properties file like the one shown below, and set the url pointing to its location in an environment variable named `ORCHESTRATOR_CONFIG_URL`.
