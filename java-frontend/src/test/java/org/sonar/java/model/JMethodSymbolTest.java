@@ -34,6 +34,8 @@ import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.expression.NewClassTreeImpl;
+import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -362,6 +364,25 @@ class JMethodSymbolTest {
     JMethodSymbol methodSymbol = new JMethodSymbol(cu.sema, brokenMethodBinding);
     assertThat(methodSymbol.returnType().isUnknown()).isTrue();
     assertThat(methodSymbol.metadata()).isSameAs(Symbols.EMPTY_METADATA);
+  }
+
+  @Test
+  void testParameterDeclarationsOfCompactConstructor() {
+    JavaTree.CompilationUnitTreeImpl cu = test(""
+      + "record TestSonar(String arg1, String arg2, String arg3, String arg4, long arg5, String arg6) {\n"
+      + "  public TestSonar {}\n"
+      + "  public static void f() {\n"
+      + "    new TestSonar(null, null, null, null, 0L, null);\n"
+      + "  }\n"
+      + "}");
+
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(1);
+    ExpressionStatementTree statementTree = ((ExpressionStatementTreeImpl) m.block().body().get(0));
+    NewClassTreeImpl newClassExpression = ((NewClassTreeImpl) statementTree.expression());
+    JMethodSymbol symbol = ((JMethodSymbol) newClassExpression.constructorSymbol());
+
+    assertThat(symbol.declarationParameters()).hasSize(6);
   }
 
   private static CompilationUnitTreeImpl test(String source) {
