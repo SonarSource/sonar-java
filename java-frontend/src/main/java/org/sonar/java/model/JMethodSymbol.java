@@ -86,7 +86,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   public List<Symbol> declarationParameters() {
     if (parameters == null) {
       MethodTree declaration = declaration();
-      if (declaration != null) {
+      if (declaration != null && !isCompactConstructor(declaration)) {
         parameters = declaration.parameters().stream().map(VariableTree::symbol).collect(Collectors.toList());
       } else {
         parameters = new ArrayList<>();
@@ -98,6 +98,10 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
       }
     }
     return parameters;
+  }
+
+  private static boolean isCompactConstructor(MethodTree methodTree) {
+    return methodTree.closeParenToken() == null;
   }
 
   /**

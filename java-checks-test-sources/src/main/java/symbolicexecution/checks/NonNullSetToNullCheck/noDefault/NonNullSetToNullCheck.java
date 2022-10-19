@@ -531,3 +531,9 @@ class HandleAnnotatedViaMetaAnnotation {
   }
 }
 
+record TestSonar(@Nonnull String arg1, String arg2, String arg3, String arg4, long arg5, String arg6) {
+  public TestSonar {}
+  public static void f() {
+    new TestSonar(null, null, null, null, 0L, null); // Noncompliant
+  }
+}
