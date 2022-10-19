@@ -16,9 +16,9 @@ class ArrayForVarArgCheck {
     doTheThing(new String[] {});  // Noncompliant {{Remove this array creation.}}
     doTheThing("s1", "s2");
     doTheThing("s1");
-    doTheThing2(new ArrayForVarArgCheckFoo[] {foo, foo});  // Noncompliant {{Disambiguate this call by either casting as "ArrayForVarArgCheckBar" or "ArrayForVarArgCheckBar[]".}}
-    doTheThing2(new ArrayForVarArgCheckFoo[12]);  // Noncompliant {{Disambiguate this call by either casting as "ArrayForVarArgCheckBar" or "ArrayForVarArgCheckBar[]".}}
-    doTheThing2(new ArrayForVarArgCheckFoo[0]);  // Noncompliant {{Disambiguate this call by either casting as "ArrayForVarArgCheckBar" or "ArrayForVarArgCheckBar[]".}}
+    doTheThing2(new ArrayForVarArgCheckFoo[] {foo, foo});  // Noncompliant {{Remove this array creation and simply pass the elements.}}
+    doTheThing2(new ArrayForVarArgCheckFoo[12]);
+    doTheThing2(new ArrayForVarArgCheckFoo[0]);  // Noncompliant {{Remove this array creation.}}
     doTheThing2(new ArrayForVarArgCheckFoo(), new ArrayForVarArgCheckBar());
     callTheThing("");
     new ArrayForVarArgCheck();
@@ -40,6 +40,12 @@ class ArrayForVarArgCheck {
 
     java.nio.file.Files.write(java.nio.file.Paths.get("myPath"), new byte[0]); // Compliant, byte array is not a varargs
     java.nio.file.Files.write(java.nio.file.Paths.get("myPath"), new byte[] {' ', 'A', 'B', 'C'}); // Compliant, byte array is not a varargs
+
+
+    ambiguous(new String[] {}); // Noncompliant {{Disambiguate this call by either casting as "Object" or "Object[]".}}
+    ambiguous(new String[0]); // Noncompliant {{Disambiguate this call by either casting as "Object" or "Object[]".}}
+    ambiguous(new String[12]); // Noncompliant {{Disambiguate this call by either casting as "Object" or "Object[]".}}
+    ambiguous(new String[] {"A", "B"}); // Noncompliant {{Disambiguate this call by either casting as "Object" or "Object[]".}}
   }
 
   public void doTheThing (String ... args) {
@@ -50,6 +56,10 @@ class ArrayForVarArgCheck {
   }
 
   public static <T> void foo(T... ts) {
+    return;
+  }
+
+  public void ambiguous(Object...obj) {
     return;
   }
 }
