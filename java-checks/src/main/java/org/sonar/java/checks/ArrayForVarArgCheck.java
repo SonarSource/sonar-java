@@ -78,7 +78,7 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
       }
       if ("java.lang.Object[]".equals(lastParamType.fullyQualifiedName())) {
         reportIssue(lastArg, "Disambiguate this call by either casting as \"Object\" or \"Object[]\".");
-      } else {
+      } else if (lastArgType.isSubtypeOf(lastParamType)) {
         reportIssueForSameType(methodSymbol, (NewArrayTree) lastArg);
       }
     }
