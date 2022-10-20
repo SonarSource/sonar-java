@@ -1,5 +1,5 @@
 aws_credentials:
-  role_arn: arn:aws:iam::275878209202:role/CirrusCI-prod
+  role_arn: arn:aws:iam::275878209202:role/CirrusCI
   role_session_name: cirrus
   region: eu-central-1
 
@@ -24,7 +24,7 @@ env:
 
 container_definition: &CONTAINER_DEFINITION
   image: 275878209202.dkr.ecr.eu-central-1.amazonaws.com/base:j11-latest
-  cluster_name: CirrusCI-prod
+  cluster_name: CirrusCI
   region: eu-central-1
   namespace: default
 
