@@ -10,6 +10,12 @@ class ArrayForVarArgCheck {
   ArrayForVarArgCheck(String ... params) { }
   <X> ArrayForVarArgCheck(int i, X ... xs) { }
   public void callTheThing(String s) throws IOException {
+    doTrickyThing(new String[][]{new String[]{"hello", "world"}});  // Noncompliant {{Remove this array creation and simply pass the elements.}}
+    doTrickyThing(new String[]{"hello", "world"});  // Compliant
+
+    doTrickyThing(new ArrayForVarArgCheckFoo[][]{new ArrayForVarArgCheckFoo[]{foo, foo}});  // Noncompliant {{Remove this array creation and simply pass the elements.}}
+    doTrickyThing(new ArrayForVarArgCheckFoo[]{foo, foo});  // Compliant
+
     doTheThing(new String[] { "s1", "s2"});  // Noncompliant {{Remove this array creation and simply pass the elements.}} [[sc=16;ec=42]]
     doTheThing(new String[12]);
     doTheThing(new String[0]);  // Noncompliant {{Remove this array creation.}}
@@ -48,6 +54,10 @@ class ArrayForVarArgCheck {
     ambiguous(new String[] {"A", "B"}); // Noncompliant {{Disambiguate this call by either casting as "Object" or "Object[]".}}
   }
 
+  public void doTrickyThing(String[]... args) {
+  }
+  public void doTrickyThing(ArrayForVarArgCheckBar[]... args) {
+  }
   public void doTheThing (String ... args) {
   }
   public void doTheThing2 (ArrayForVarArgCheckBar... args) {
