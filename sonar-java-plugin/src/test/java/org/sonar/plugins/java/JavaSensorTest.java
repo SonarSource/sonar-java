@@ -128,7 +128,7 @@ class JavaSensorTest {
     DefaultFileSystem fs = context.fileSystem();
     fs.setWorkDir(tmp.newFolder().toPath());
     SonarComponents sonarComponents = createSonarComponentsMock(context);
-    DefaultJavaResourceLocator javaResourceLocator = createDefaultJavaResourceLocator(settings, fs);
+    DefaultJavaResourceLocator javaResourceLocator = createDefaultJavaResourceLocator(settings.asConfig(), fs);
     JavaSensor jss = new JavaSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
 
     jss.execute(context);
@@ -174,9 +174,9 @@ class JavaSensorTest {
     return sonarComponents;
   }
 
-  private static DefaultJavaResourceLocator createDefaultJavaResourceLocator(MapSettings settings, DefaultFileSystem fs) {
-    ClasspathForMain classpathForMain = new ClasspathForMain(settings.asConfig(), fs);
-    ClasspathForTest classpathForTest = new ClasspathForTest(settings.asConfig(), fs);
+  private static DefaultJavaResourceLocator createDefaultJavaResourceLocator(Configuration settings, DefaultFileSystem fs) {
+    ClasspathForMain classpathForMain = new ClasspathForMain(settings, fs);
+    ClasspathForTest classpathForTest = new ClasspathForTest(settings, fs);
 
     return new DefaultJavaResourceLocator(classpathForMain, classpathForTest);
   }
@@ -413,7 +413,7 @@ class JavaSensorTest {
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(mock(FileLinesContext.class));
     ClasspathForTest javaTestClasspath = new ClasspathForTest(context.config(), fs);
     ClasspathForMain javaClasspath = new ClasspathForMain(context.config(), fs);
-    DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(settings, fs);
+    DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(context.config(), fs);
 
     CheckRegistrar[] checkRegistrars = new CheckRegistrar[] {new CustomRegistrar()};
 
@@ -446,7 +446,7 @@ class JavaSensorTest {
     DefaultFileSystem fs = context.fileSystem();
     fs.setWorkDir(workDir);
     SonarComponents components = createSonarComponentsMock(context);
-    DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(settings, fs);
+    DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(context.config(), fs);
     JavaSensor jss = new JavaSensor(components, fs, resourceLocator, configuration, mock(NoSonarFilter.class), null);
     jss.execute(context);
   }
