@@ -22,12 +22,23 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class ForLoopFalseConditionCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ForLoopFalseConditionCheck.java")
+      .onFile(mainCodeSourcesPath("checks/ForLoopFalseConditionCheck.java"))
+      .withCheck(new ForLoopFalseConditionCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/ForLoopFalseConditionCheck.java"))
       .withCheck(new ForLoopFalseConditionCheck())
       .verifyIssues();
   }

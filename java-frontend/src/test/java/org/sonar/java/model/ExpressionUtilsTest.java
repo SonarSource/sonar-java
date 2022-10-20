@@ -337,7 +337,18 @@ class ExpressionUtilsTest {
   @Test
   void resolve_as_constant_not_yet_supported() {
     assertResolveAsConstant("true || true", null);
-    assertResolveAsConstant("2 * 2", null);
+  }
+
+  @Test
+  void resolve_as_constant_arithmetic_operations() {
+    assertResolveAsConstant("1 + 1 - 1", 1);
+    assertResolveAsConstant("8 - 3 + 2 * 2", 9);
+    assertResolveAsConstant("8 - (3 + 2) * 2", -2);
+    assertResolveAsConstant("8 - (3 + 2) / 5 * 2", 6);
+    assertResolveAsConstant("8 - (3 + 2) % 5 * 2", 8);
+    assertResolveAsConstant("8 - (x + 2) % 5 * 2", null);
+    assertResolveAsConstant("8 - (3 + x) % 5 * 2", null);
+    assertResolveAsConstant("8 - (x + x) % 5 * 2", null);
   }
 
   @Test
