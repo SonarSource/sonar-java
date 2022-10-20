@@ -167,7 +167,7 @@ class CipherBlockChainingCheck {
   }
 
   static void decryptImpl3(SecretKeySpec ks) throws Exception {
-    new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used...
+    new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks);
@@ -182,14 +182,14 @@ class CipherBlockChainingCheck {
   }
 
   static void decryptImpl5(SecretKeySpec ks, IvParameterSpec iv) throws Exception {
-    new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used...
+    new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks, iv);
   }
 
   static void decryptImpl6(SecretKeySpec ks, IvParameterSpec iv) throws Exception {
-    IvParameterSpec iv2 = new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used...
+    IvParameterSpec iv2 = new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks, iv);

@@ -139,17 +139,21 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
           secureRandomFound = true;
         }
       }
-      if (BYTEBUFFER_GET.matches(methodInvocation)) {
-        Symbol initVector = symbol(ivParameterSpecInstantiation.arguments().get(0));
-        boolean byteBufferGetArgumentMatchIv = methodInvocation.arguments().stream()
-          .map(MethodInvocationVisitor::symbol)
-          .filter(argument -> argument.type().is("byte[]"))
-          .anyMatch(initVector::equals);
-        if (byteBufferGetArgumentMatchIv) {
-          secureRandomFound = true;
-        }
+      if (isInitVectorCopiedFromByteBuffer(methodInvocation)) {
+        secureRandomFound = true;
       }
       super.visitMethodInvocation(methodInvocation);
+    }
+
+    private boolean isInitVectorCopiedFromByteBuffer(MethodInvocationTree methodInvocation) {
+      if (!BYTEBUFFER_GET.matches(methodInvocation)) {
+        return false;
+      }
+      Symbol initVector = symbol(ivParameterSpecInstantiation.arguments().get(0));
+      return methodInvocation.arguments().stream()
+        .map(MethodInvocationVisitor::symbol)
+        .filter(argument -> argument.type().is("byte[]"))
+        .anyMatch(initVector::equals);
     }
 
     private boolean isPartOfArguments(MethodInvocationTree methodInvocation) {
