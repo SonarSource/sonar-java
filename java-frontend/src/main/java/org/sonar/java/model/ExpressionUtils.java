@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -238,6 +239,18 @@ public final class ExpressionUtils {
     if (expression.is(Tree.Kind.OR)) {
       return resolveOr((BinaryExpressionTree) expression);
     }
+    if (expression.is(Tree.Kind.MINUS)) {
+      return resolveArithmeticOperation((BinaryExpressionTree) expression, (a, b) -> a - b, (a, b) -> a - b);
+    }
+    if (expression.is(Tree.Kind.MULTIPLY)) {
+      return resolveArithmeticOperation((BinaryExpressionTree) expression, (a, b) -> a * b, (a, b) -> a * b);
+    }
+    if (expression.is(Tree.Kind.DIVIDE)) {
+      return resolveArithmeticOperation((BinaryExpressionTree) expression, (a, b) -> a / b, (a, b) -> a / b);
+    }
+    if (expression.is(Tree.Kind.REMAINDER)) {
+      return resolveArithmeticOperation((BinaryExpressionTree) expression, (a, b) -> a % b, (a, b) -> a % b);
+    }
     return null;
   }
 
@@ -291,14 +304,28 @@ public final class ExpressionUtils {
       return ((String) left) + right;
     } else if (right instanceof String) {
       return left + ((String) right);
-    } else if (left instanceof Long && right instanceof Long) {
-      return ((Long) left) + ((Long) right);
-    } else if (left instanceof Long && right instanceof Integer) {
-      return ((Long) left) + ((Integer) right);
-    } else if (left instanceof Integer && right instanceof Long) {
-      return ((Integer) left) + ((Long) right);
-    } else if (left instanceof Integer && right instanceof Integer) {
-      return ((Integer) left) + ((Integer) right);
+    }
+    return resolveArithmeticOperation(left, right, Long::sum, Integer::sum);
+  }
+
+  @CheckForNull
+  private static Object resolveArithmeticOperation(BinaryExpressionTree binaryExpression,
+                                                   BiFunction<Long, Long, Object> longOperation,
+                                                   BiFunction<Integer, Integer, Object> intOperation) {
+    Object left = resolveAsConstant(binaryExpression.leftOperand());
+    Object right = resolveAsConstant(binaryExpression.rightOperand());
+    if (left == null || right == null) {
+      return null;
+    }
+    return resolveArithmeticOperation(left, right, longOperation, intOperation);
+  }
+
+  @CheckForNull
+  private static Object resolveArithmeticOperation(Object left, Object right, BiFunction<Long, Long, Object> longOperation, BiFunction<Integer, Integer, Object> intOperation) {
+    if (left instanceof Integer && right instanceof Integer) {
+      return intOperation.apply(((Number) left).intValue(), ((Number) right).intValue());
+    } else if ((left instanceof Long || right instanceof Long) && (left instanceof Integer || right instanceof Integer)) {
+      return longOperation.apply(((Number) left).longValue(), ((Number) right).longValue());
     }
     return null;
   }

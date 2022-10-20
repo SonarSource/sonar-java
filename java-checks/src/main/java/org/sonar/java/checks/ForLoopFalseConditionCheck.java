@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -98,7 +99,8 @@ public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
   }
 
   private static Integer eval(ExpressionTree expression, Iterable<ForLoopInitializer> initializers) {
-    Integer intLiteralValue = LiteralUtils.intLiteralValue(expression);
+    Object resolvedConstant = ExpressionUtils.resolveAsConstant(expression);
+    Integer intLiteralValue = resolvedConstant instanceof Integer? ((Integer) resolvedConstant) : null;
     if (intLiteralValue == null) {
       for (ForLoopInitializer initializer : initializers) {
         if (initializer.hasSameIdentifier(expression)) {
