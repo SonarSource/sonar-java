@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class LeastSpecificTypeCheckTest {
@@ -29,7 +30,7 @@ class LeastSpecificTypeCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/LeastSpecificTypeCheck.java")
+      .onFile(mainCodeSourcesPath("checks/LeastSpecificTypeCheck.java"))
       .withCheck(new LeastSpecificTypeCheck())
       .verifyIssues();
   }
@@ -39,7 +40,7 @@ class LeastSpecificTypeCheckTest {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/LeastSpecificTypeCheck.java"))
       .withCheck(new LeastSpecificTypeCheck())
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
 }
