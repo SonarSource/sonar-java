@@ -77,11 +77,16 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleParameter(Symbol parameter, boolean springInjectionAnnotated) {
+    Type parameterType = parameter.type();
+    if (parameterType.symbol().metadata().isAnnotatedWith("java.lang.FunctionalInterface")) {
+      // Exclude functional interface, it's wrong to have issues on UnaryOperator<T> and ask the user to use Function<T,T> instead
+      return;
+    }
     Type leastSpecificType = findLeastSpecificType(parameter);
-    if (parameter.type() != leastSpecificType
+    if (parameterType != leastSpecificType
       && !leastSpecificType.is("java.lang.Object")) {
       String suggestedType = getSuggestedType(springInjectionAnnotated, leastSpecificType);
-      reportIssue(parameter.declaration(), String.format("Use '%s' here; it is a more general type than '%s'.", suggestedType, parameter.type().erasure().name()));
+      reportIssue(parameter.declaration(), String.format("Use '%s' here; it is a more general type than '%s'.", suggestedType, parameterType.erasure().name()));
     }
   }
 
