@@ -48,6 +48,9 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
+    if (isExcluded(method)) {
+      return;
+    }
     CognitiveComplexityVisitor.Result result = CognitiveComplexityVisitor.methodComplexity(method);
     int total = result.complexity;
     if (total > max) {
@@ -60,4 +63,13 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     this.max = max;
   }
 
+  private static boolean isExcluded(MethodTree methodTree) {
+    String name = methodTree.simpleName().name();
+    if ("equals".equals(name)) {
+      return methodTree.parameters().size() == 1;
+    } else if ("hashCode".equals(name)) {
+      return methodTree.parameters().isEmpty();
+    }
+    return false;
+  }
 }
