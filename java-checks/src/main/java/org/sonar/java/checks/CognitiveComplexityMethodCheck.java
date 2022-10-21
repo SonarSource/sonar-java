@@ -35,19 +35,6 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
 
   private static final int DEFAULT_MAX = 15;
 
-  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
-    .ofAnyType()
-    .names("equals")
-    .addParametersMatcher("java.lang.Object")
-    .build();
-
-  private static final MethodMatchers HASHCODE_MATCHER = MethodMatchers.create()
-    .ofAnyType()
-    .names("hashCode")
-    .addWithoutParametersMatcher()
-    .build();
-
-
   @RuleProperty(
           key = "Threshold",
           description = "The maximum authorized complexity.",
@@ -78,6 +65,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
   }
 
   private static boolean isExcluded(MethodTree methodTree) {
-    return MethodMatchers.or(EQUALS_MATCHER, HASHCODE_MATCHER).matches(methodTree);
+    return MethodMatchers.or(MethodComplexityCheck.EQUALS_MATCHER,
+                             MethodComplexityCheck.HASHCODE_MATCHER).matches(methodTree);
   }
 }

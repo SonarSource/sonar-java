@@ -38,13 +38,13 @@ public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAX = 10;
 
-  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
+  public static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
     .ofAnyType()
     .names("equals")
     .addParametersMatcher("java.lang.Object")
     .build();
 
-  private static final MethodMatchers HASHCODE_MATCHER = MethodMatchers.create()
+  public static final MethodMatchers HASHCODE_MATCHER = MethodMatchers.create()
     .ofAnyType()
     .names("hashCode")
     .addWithoutParametersMatcher()
