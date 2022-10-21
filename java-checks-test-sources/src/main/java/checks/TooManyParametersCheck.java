@@ -123,17 +123,23 @@ class MethodsUsingAnnotations {
 @Component
 class SpringComponent{
   public SpringComponent(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+  
+  public void foo5(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Noncompliant
 }
 
 @Component
 class SpringComponentMoreThanOneConstructor{
   public SpringComponentMoreThanOneConstructor(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Noncompliant
   public SpringComponentMoreThanOneConstructor(String p1, String p2, String p3) {} // Compliant
+  
+  public void foo5(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Noncompliant
 }
 
 @Configuration
 class SpringConfiguration{
   public SpringConfiguration(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+  
+  public void foo5(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Noncompliant
 }
 
 @Configuration
@@ -144,28 +150,38 @@ class SpringConfigurationMoreThanOneConstructor{
   @Bean
   public void testBean(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
   
+  public void foo5(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Noncompliant
+  
 }
 
 @Repository
 class SpringRepository{
   public SpringRepository(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+  
+  public void foo5(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Noncompliant
 }
 
 @Repository
 class SpringRepositoryMoreThanOneConstructor{
   public SpringRepositoryMoreThanOneConstructor(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Noncompliant
   public SpringRepositoryMoreThanOneConstructor(String p1, String p2, String p3) {}; // Compliant
+  
+  public void foo5(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Noncompliant
 }
 
 @Service
 class SpringService{
   public SpringService(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+  
+  public void foo5(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Noncompliant
 }
 
 @Service
 class SpringServiceMoreThanOneConstructor{
   public SpringServiceMoreThanOneConstructor(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Noncompliant
   public SpringServiceMoreThanOneConstructor(String p1, String p2, String p3) {}; // Compliant
+  
+  public void foo5(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Noncompliant
 }
 
 class MicronautHttpAnnotations{

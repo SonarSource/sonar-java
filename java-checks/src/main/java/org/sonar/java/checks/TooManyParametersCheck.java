@@ -20,15 +20,11 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -90,18 +86,25 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.RECORD);
   }
   
 
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if(classUsesAuthorizedAnnotation(classTree)) {
-      return;
-    }
+
+    //this is true only if the class has unknown annotations, or if it has a single constructor and 
+    //it is annotated with one of CLASS_CONSTRUCTOR_WHITELIST
+    //if TRUE, we can skip the analysis of constructors in the forEach below
+    Boolean classUsesAuthAnnotations = classUsesAuthorizedAnnotation(classTree);
+    
+    Tree.Kind[] membersToVisit = Boolean.TRUE.equals(classUsesAuthAnnotations) ? 
+      new Tree.Kind[]{Tree.Kind.METHOD} : 
+      new Tree.Kind[]{Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR };
+    
     classTree.members().stream()
-    .filter(member -> member.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD))
+    .filter(member -> member.is(membersToVisit))
     .forEach( member -> visitMethod((MethodTree) member) );
   }
   
@@ -137,11 +140,10 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
   //As of Spring 4.3, classes (@Component, @Service, etc..) with a single constructor can omit the @Autowired annotation.
   private static boolean classUsesAuthorizedAnnotation(ClassTree methodParentClass) {
     SymbolMetadata parentClassMetadata = methodParentClass.symbol().metadata();
-    
-    //if the parent class is a Spring component
-    if(CLASS_CONSTRUCTOR_WHITELIST.stream().anyMatch(parentClassMetadata::isAnnotatedWith)) {
-      long numberOfConstructors = methodParentClass.members().stream().filter(member -> member.is(Tree.Kind.CONSTRUCTOR)).count();
-      //if it only has 1 constructor, @Autowired is implicit, and it's an exception to the rule
+    //if the parent class is a Spring component or has unknown annotations
+    if(hasUnknownAnnotation(parentClassMetadata) || CLASS_CONSTRUCTOR_WHITELIST.stream().anyMatch(parentClassMetadata::isAnnotatedWith)) {  
+      long numberOfConstructors = methodParentClass.members().stream().filter(member -> member.is(Tree.Kind.CONSTRUCTOR)).count();    
+      //if it only has 1 constructor, @Autowired could be implicit, and it's an exception to the rule
       if(numberOfConstructors == 1) return true;
     }
     return false;
