@@ -1,6 +1,7 @@
 package checks.security;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.Cipher;
@@ -53,7 +54,7 @@ class CipherBlockChainingCheck {
   }
 
   void foo7(byte[] bytes) {
-    IvParameterSpec iv = new IvParameterSpec(bytes); // Noncompliant
+    IvParameterSpec iv = new IvParameterSpec(bytes); // Compliant, we can't tell what "bytes" contains
   }
 
   void foo8() throws UnsupportedEncodingException {
@@ -165,8 +166,8 @@ class CipherBlockChainingCheck {
       .init(Cipher.DECRYPT_MODE, ks, new IvParameterSpec(biv)); // compliant
   }
 
-  static void decryptImpl3(byte[] biv, SecretKeySpec ks) throws Exception {
-    new IvParameterSpec(biv); // Noncompliant - not used...
+  static void decryptImpl3(SecretKeySpec ks) throws Exception {
+    new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks);
@@ -180,23 +181,23 @@ class CipherBlockChainingCheck {
       .init(Cipher.ENCRYPT_MODE, ks, iv);
   }
 
-  static void decryptImpl5(byte[] biv, SecretKeySpec ks, IvParameterSpec iv) throws Exception {
-    new IvParameterSpec(biv); // Noncompliant - not used...
+  static void decryptImpl5(SecretKeySpec ks, IvParameterSpec iv) throws Exception {
+    new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks, iv);
   }
 
-  static void decryptImpl6(byte[] biv, SecretKeySpec ks, IvParameterSpec iv) throws Exception {
-    IvParameterSpec iv2 = new IvParameterSpec(biv); // Noncompliant - not used...
+  static void decryptImpl6(SecretKeySpec ks, IvParameterSpec iv) throws Exception {
+    IvParameterSpec iv2 = new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks, iv);
   }
 
-  static void decryptImpl17(byte[] biv, SecretKeySpec ks) throws Exception {
+  static void decryptImpl17(SecretKeySpec ks) throws Exception {
     AlgorithmParameterSpec spec;
-    spec = new IvParameterSpec(biv); // Compliant
+    spec = new IvParameterSpec("111".getBytes("UTF-8")); // Compliant, not random but used by Cipher#init with Cipher.DECRYPT_MODE
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks, spec);
@@ -213,6 +214,35 @@ class CipherBlockChainingCheck {
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks, spec);
   }
+
+  static void byteBufferUsedAsIv(ByteBuffer ivBuffer) {
+    final byte[] biv1 = new byte[16];
+    ivBuffer.get(biv1);
+    IvParameterSpec iv1 = new IvParameterSpec(biv1); // Compliant
+
+    final byte[] biv2 = new byte[16];
+    IvParameterSpec iv2 = new IvParameterSpec(biv2); // Noncompliant
+
+    final byte[] biv3 = new byte[16];
+    ivBuffer.get(biv3, 0, 16);
+    IvParameterSpec iv3 = new IvParameterSpec(biv3); // Compliant
+
+    final byte[] biv4 = new byte[16];
+    ivBuffer.get(256, biv4);
+    IvParameterSpec iv4 = new IvParameterSpec(biv4); // Compliant
+
+    final byte[] biv5 = new byte[16];
+    ivBuffer.get(256, biv5, 0, 16);
+    IvParameterSpec iv5 = new IvParameterSpec(biv5); // Compliant
+  }
+
+  static void byteBufferNotUsedAsIv(ByteBuffer ivBuffer) {
+    final byte[] biv = new byte[16];
+    final byte[] other = new byte[16];
+    ivBuffer.get(other);
+    IvParameterSpec iv = new IvParameterSpec(biv); // Noncompliant
+  }
+
 }
 
 interface CipherBlockChainingCheckI {

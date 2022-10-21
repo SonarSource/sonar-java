@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -49,7 +50,9 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.create().ofTypes("javax.crypto.spec.IvParameterSpec").constructor().withAnyParameters().build();
+    return MethodMatchers.create().ofTypes("javax.crypto.spec.IvParameterSpec").constructor()
+      .addParametersMatcher(types -> !types.isEmpty())
+      .build();
   }
 
   @Override
@@ -71,10 +74,10 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   private static boolean isDynamicallyGenerated(ExpressionTree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) tree).symbol();
-      if (!symbol.isVariableSymbol()) {
-        return false;
+      if (JUtils.isParameter(symbol)) {
+        return true;
       }
-      VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
+      VariableTree declaration = symbol.isVariableSymbol() ? ((Symbol.VariableSymbol) symbol).declaration() : null;
       return declaration != null &&
         (isSecureRandomGenerateSeed(declaration.initializer()) ||
           getReassignments(declaration, symbol.usages()).stream()
@@ -106,6 +109,13 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
       .names("init")
       .withAnyParameters()
       .build();
+
+    private static final MethodMatchers BYTEBUFFER_GET = MethodMatchers.create()
+      .ofTypes("java.nio.ByteBuffer")
+      .names("get")
+      .withAnyParameters()
+      .build();
+
     // value of javax.crypto.Cipher.DECRYPT_MODE
     private static final int CIPHER_INIT_DECRYPT_MODE = 2;
 
@@ -129,7 +139,21 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
           secureRandomFound = true;
         }
       }
+      if (isInitVectorCopiedFromByteBuffer(methodInvocation)) {
+        secureRandomFound = true;
+      }
       super.visitMethodInvocation(methodInvocation);
+    }
+
+    private boolean isInitVectorCopiedFromByteBuffer(MethodInvocationTree methodInvocation) {
+      if (!BYTEBUFFER_GET.matches(methodInvocation)) {
+        return false;
+      }
+      Symbol initVector = symbol(ivParameterSpecInstantiation.arguments().get(0));
+      return methodInvocation.arguments().stream()
+        .map(MethodInvocationVisitor::symbol)
+        .filter(argument -> argument.type().is("byte[]"))
+        .anyMatch(initVector::equals);
     }
 
     private boolean isPartOfArguments(MethodInvocationTree methodInvocation) {
