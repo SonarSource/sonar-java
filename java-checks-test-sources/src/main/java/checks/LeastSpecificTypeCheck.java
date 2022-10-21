@@ -1,10 +1,13 @@
 package checks;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.UnaryOperator;
+import java.util.function.Function;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -216,4 +219,14 @@ class LeastSpecificTypeCheck {
   }
 
   public static void primitiveTypesAreIgnored(int i, long l, double d, float f, byte b, short s, char c, boolean boo) { }
+
+  public BigDecimal getUnaryOperator(UnaryOperator<BigDecimal> func) { // Compliant
+    // issue exception because UnaryOperator<BigDecimal> is a better functional interface usage than Function<BigDecimal, BigDecimal>
+    return func.apply(BigDecimal.ONE);
+  }
+
+  public BigDecimal getFunction(Function<BigDecimal, BigDecimal> func) { // S4276 issue to promote UnaryOperator<BigDecimal>
+    return func.apply(BigDecimal.ONE);
+  }
+
 }
