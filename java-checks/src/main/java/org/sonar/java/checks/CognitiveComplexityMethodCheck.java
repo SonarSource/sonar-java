@@ -23,6 +23,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -33,6 +34,19 @@ import java.util.List;
 public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAX = 15;
+
+  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
+    .ofAnyType()
+    .names("equals")
+    .addParametersMatcher("java.lang.Object")
+    .build();
+
+  private static final MethodMatchers HASHCODE_MATCHER = MethodMatchers.create()
+    .ofAnyType()
+    .names("hashCode")
+    .addWithoutParametersMatcher()
+    .build();
+
 
   @RuleProperty(
           key = "Threshold",
@@ -64,12 +78,6 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
   }
 
   private static boolean isExcluded(MethodTree methodTree) {
-    String name = methodTree.simpleName().name();
-    if ("equals".equals(name)) {
-      return methodTree.parameters().size() == 1;
-    } else if ("hashCode".equals(name)) {
-      return methodTree.parameters().isEmpty();
-    }
-    return false;
+    return MethodMatchers.or(EQUALS_MATCHER, HASHCODE_MATCHER).matches(methodTree);
   }
 }
