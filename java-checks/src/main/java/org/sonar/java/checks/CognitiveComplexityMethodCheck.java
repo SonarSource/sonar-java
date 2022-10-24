@@ -22,8 +22,8 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -65,7 +65,6 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
   }
 
   private static boolean isExcluded(MethodTree methodTree) {
-    return MethodMatchers.or(MethodComplexityCheck.EQUALS_MATCHER,
-                             MethodComplexityCheck.HASHCODE_MATCHER).matches(methodTree);
+    return MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
   }
 }

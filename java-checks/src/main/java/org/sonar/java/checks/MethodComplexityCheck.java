@@ -21,9 +21,9 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -37,18 +37,6 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAX = 10;
-
-  public static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
-    .ofAnyType()
-    .names("equals")
-    .addParametersMatcher("java.lang.Object")
-    .build();
-
-  public static final MethodMatchers HASHCODE_MATCHER = MethodMatchers.create()
-    .ofAnyType()
-    .names("hashCode")
-    .addWithoutParametersMatcher()
-    .build();
 
   @RuleProperty(
     key = "Threshold",
@@ -83,7 +71,7 @@ public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isExcluded(MethodTree methodTree) {
-    return MethodMatchers.or(EQUALS_MATCHER, HASHCODE_MATCHER).matches(methodTree);
+     return MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
   }
 
   public void setMax(int max) {
