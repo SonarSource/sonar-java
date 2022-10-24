@@ -71,7 +71,7 @@ public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isExcluded(MethodTree methodTree) {
-     return MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
+    return MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
   }
 
   public void setMax(int max) {
