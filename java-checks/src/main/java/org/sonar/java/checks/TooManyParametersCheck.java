@@ -92,7 +92,7 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
     ClassTree classTree = (ClassTree) tree;
 
     // this is true only if the class has unknown annotations, or if it has a single constructor and
-    // it is annotated with one of CLASS_CONSTRUCTOR_WHITELIST
+    // it is annotated with one of CLASS_ANNOTATION_CONSTRUCTOR_EXCEPTIONS
     // if TRUE, we can skip the analysis of constructors in the forEach below
     Tree.Kind[] membersToVisit = classUsesAuthorizedAnnotation(classTree) ? new Tree.Kind[] {Tree.Kind.METHOD} : new Tree.Kind[] {Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR};
 
