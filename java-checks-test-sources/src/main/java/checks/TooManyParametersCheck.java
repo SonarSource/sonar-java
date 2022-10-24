@@ -206,9 +206,8 @@ class MicronautHttpAnnotations{
 }
 
 /* 
- * We can maybe have a discussion on records' constructors, if they should be checked against the rule,
- * but since they are used to store articulate data, it might not be a good idea
- * The one note to keep in mind is that it seems like a record could be used as a Spring @Component
+ * Exceptions to the rule : RECORD, ANNOTATION_TYPE (annotations cannot have method params nor constructors)
  */
 record Record1(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant 
+
  
