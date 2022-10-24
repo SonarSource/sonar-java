@@ -111,10 +111,14 @@ To run the test, first make sure the submodules are checked out:
 
     git submodule update --init --recursive
 
-Launch ruling test:
+Then, ensure that the `JAVA_HOME` environment variable is set for the ruling tests execution and that it points to your local JDK 17 installation.
+Failing to do so will produce inconsistencies with the expected results.
 
-    cd its/ruling
+From the `its/ruling` folder, launch the ruling tests:
+
     mvn clean install -DskipTests=false
+    # Alternatively
+    JAVA_HOME=/my/local/java17/jdk/ mvn clean install -DskipTests=false
 
 This test gives you the opportunity to examine the issues created by each rule and make sure they're what you expect. Any implemented rule is highly likely to raise issues on the multiple projects we use as ruling code base.
 
