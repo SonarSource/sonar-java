@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class TooManyParametersCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/TooManyParametersCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TooManyParametersCheck.java"))
       .withCheck(new TooManyParametersCheck())
       .verifyIssues();
   }
@@ -49,7 +49,7 @@ class TooManyParametersCheckTest {
     check.maximum = 8;
     check.constructorMax = 5;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/TooManyParametersCustom.java"))
+      .onFile(mainCodeSourcesPath("checks/TooManyParametersCustom.java"))
       .withCheck(check)
       .verifyIssues();
   }

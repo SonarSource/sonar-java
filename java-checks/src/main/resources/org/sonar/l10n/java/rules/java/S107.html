@@ -21,6 +21,9 @@ public void doSomething(int param1, int param2, int param3, String param4) {
   <li> Bean constructor injection with <code>@org.springframework.beans.factory.annotation.Autowired</code> </li>
   <li> CDI constructor injection with <code>@javax.inject.Inject</code> </li>
   <li> <code>@com.fasterxml.jackson.annotation.JsonCreator</code> </li>
+  <li> Micronaut’s annotations (like <code>@io.micronaut.http.annotation.Get</code>) </li>
 </ul>
 <p>may have a lot of parameters, encapsulation being possible. Such methods are therefore ignored.</p>
+<p>Also, if a class annotated as a Spring component (like <code>@org.springframework.stereotype.Component</code>) has a single constructor, that
+constructor will be considered <code>@Autowired</code> and ignored by the rule.</p>
 

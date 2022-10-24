@@ -23,10 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
@@ -35,7 +34,7 @@ import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotati
 
 @DeprecatedRuleKey(ruleKey = "S00107", repositoryKey = "squid")
 @Rule(key = "S107")
-public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAXIMUM = 7;
 
@@ -51,9 +50,7 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
     defaultValue = "" + DEFAULT_MAXIMUM)
   public int constructorMax = DEFAULT_MAXIMUM;
 
-  private JavaFileScannerContext context;
-
-  private static final List<String> WHITE_LIST = Arrays.asList(
+  private static final List<String> METHOD_ANNOTATION_EXCEPTIONS = Arrays.asList(
     "org.springframework.web.bind.annotation.RequestMapping",
     "org.springframework.web.bind.annotation.GetMapping",
     "org.springframework.web.bind.annotation.PostMapping",
@@ -66,33 +63,60 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
     "javax.ws.rs.PUT",
     "javax.ws.rs.PATCH",
     "org.springframework.beans.factory.annotation.Autowired",
-    "javax.inject.Inject"
-  );
+    "javax.inject.Inject",
+    "org.springframework.context.annotation.Bean",
+    "io.micronaut.http.annotation.Get",
+    "io.micronaut.http.annotation.Post",
+    "io.micronaut.http.annotation.Put",
+    "io.micronaut.http.annotation.Delete",
+    "io.micronaut.http.annotation.Options",
+    "io.micronaut.http.annotation.Patch",
+    "io.micronaut.http.annotation.Head",
+    "io.micronaut.http.annotation.Trace");
+
+  // if a class is annotated as one of these types, its constructor should be ignored if it's the only constructor
+  private static final List<String> CLASS_ANNOTATION_CONSTRUCTOR_EXCEPTIONS = Arrays.asList(
+    "org.springframework.stereotype.Component",
+    "org.springframework.context.annotation.Configuration",
+    "org.springframework.stereotype.Service",
+    "org.springframework.stereotype.Repository");
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    // This rule has the following exceptions: RECORD, ANNOTATION_TYPE
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM);
   }
 
   @Override
-  public void visitMethod(MethodTree tree) {
-    super.visitMethod(tree);
-    if (isOverriding(tree) || usesAuthorizedAnnotation(tree)) {
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+
+    // this is true only if the class has unknown annotations, or if it has a single constructor and
+    // it is annotated with one of CLASS_ANNOTATION_CONSTRUCTOR_EXCEPTIONS
+    // if TRUE, we can skip the analysis of constructors in the forEach below
+    Tree.Kind[] membersToVisit = classUsesAuthorizedAnnotation(classTree) ? new Tree.Kind[] {Tree.Kind.METHOD} : new Tree.Kind[] {Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR};
+
+    classTree.members().stream()
+      .filter(member -> member.is(membersToVisit))
+      .forEach(member -> visitMethod((MethodTree) member));
+  }
+
+  private void visitMethod(MethodTree method) {
+    if (isOverriding(method) || usesAuthorizedAnnotation(method)) {
       return;
     }
     int max;
     String partialMessage;
-    if (tree.is(Tree.Kind.CONSTRUCTOR)) {
+    if (method.is(Tree.Kind.CONSTRUCTOR)) {
       max = constructorMax;
       partialMessage = "Constructor";
     } else {
       max = maximum;
       partialMessage = "Method";
     }
-    int size = tree.parameters().size();
+    int size = method.parameters().size();
     if (size > max) {
-      context.reportIssue(this, tree.simpleName(), partialMessage + " has " + size + " parameters, which is greater than " + max + " authorized.");
+      reportIssue(method.simpleName(), partialMessage + " has " + size + " parameters, which is greater than " + max + " authorized.");
     }
   }
 
@@ -103,7 +127,21 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
 
   private static boolean usesAuthorizedAnnotation(MethodTree method) {
     SymbolMetadata metadata = method.symbol().metadata();
-    return hasUnknownAnnotation(metadata) || WHITE_LIST.stream().anyMatch(metadata::isAnnotatedWith);
+    return hasUnknownAnnotation(metadata) || METHOD_ANNOTATION_EXCEPTIONS.stream().anyMatch(metadata::isAnnotatedWith);
+  }
+
+  // As of Spring 4.3, classes (@Component, @Service, etc..) with a single constructor can omit the @Autowired annotation.
+  private static boolean classUsesAuthorizedAnnotation(ClassTree methodParentClass) {
+    SymbolMetadata parentClassMetadata = methodParentClass.symbol().metadata();
+    // if the parent class is a Spring component or has unknown annotations
+    if (hasUnknownAnnotation(parentClassMetadata) || CLASS_ANNOTATION_CONSTRUCTOR_EXCEPTIONS.stream().anyMatch(parentClassMetadata::isAnnotatedWith)) {
+      long numberOfConstructors = methodParentClass.members().stream().filter(member -> member.is(Tree.Kind.CONSTRUCTOR)).count();
+      // if it only has 1 constructor, @Autowired could be implicit, and it's an exception to the rule
+      if (numberOfConstructors == 1) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }
