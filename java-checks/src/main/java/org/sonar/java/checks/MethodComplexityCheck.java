@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -70,13 +71,7 @@ public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isExcluded(MethodTree methodTree) {
-    String name = methodTree.simpleName().name();
-    if ("equals".equals(name)) {
-      return methodTree.parameters().size() == 1;
-    } else if ("hashCode".equals(name)) {
-      return methodTree.parameters().isEmpty();
-    }
-    return false;
+    return MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
   }
 
   public void setMax(int max) {

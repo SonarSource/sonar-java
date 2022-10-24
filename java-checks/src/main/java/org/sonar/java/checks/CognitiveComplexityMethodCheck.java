@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -48,6 +49,9 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
+    if (isExcluded(method)) {
+      return;
+    }
     CognitiveComplexityVisitor.Result result = CognitiveComplexityVisitor.methodComplexity(method);
     int total = result.complexity;
     if (total > max) {
@@ -60,4 +64,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     this.max = max;
   }
 
+  private static boolean isExcluded(MethodTree methodTree) {
+    return MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
+  }
 }

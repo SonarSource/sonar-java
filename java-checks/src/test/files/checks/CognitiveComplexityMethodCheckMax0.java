@@ -310,6 +310,25 @@ class CognitiveComplexityCheck {
     }
   }
 
+  public boolean equals(Object o) {
+    while (false) {
+    }
+    return
+      a
+        || b
+        && c;
+  }
 
+  public int hashCode() {
+    while (false) {
+    }
+    if (
+      a
+        || b
+        && c) {
+      return 100;
+    }
+    return 42;
+  }
 }
 
