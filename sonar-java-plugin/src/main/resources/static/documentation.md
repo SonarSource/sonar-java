@@ -125,6 +125,10 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.15**
+* New method: `JavaResourceLocator#testBinaryDirs()`. Use this method to get the directories containing the .class files corresponding to the tests.
+* New method: `JavaResourceLocator#testClasspath()`. Use this method to retrieve the classpath configured for the project's tests.
+
 #### **7.12**
 
 * New method: `JavaFileScanner#scanWithoutParsing(InputFileScannerContext)`. Use this method to inspect an unchanged file before it is parsed.

@@ -31,6 +31,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -40,11 +41,13 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   private static final Logger LOG = Loggers.get(DefaultJavaResourceLocator.class);
 
   private final ClasspathForMain javaClasspath;
+  private final ClasspathForTest javaTestClasspath;
   @VisibleForTesting
   Map<String, InputFile> resourcesByClass;
 
-  public DefaultJavaResourceLocator(ClasspathForMain javaClasspath) {
+  public DefaultJavaResourceLocator(ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath) {
     this.javaClasspath = javaClasspath;
+    this.javaTestClasspath = javaTestClasspath;
     resourcesByClass = new HashMap<>();
   }
 
@@ -84,8 +87,18 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   }
 
   @Override
+  public Collection<File> testClasspath() {
+    return Collections.unmodifiableList(javaTestClasspath.getElements());
+  }
+
+  @Override
   public Collection<File> binaryDirs() {
     return Collections.unmodifiableList(javaClasspath.getBinaryDirs());
+  }
+
+  @Override
+  public Collection<File> testBinaryDirs() {
+    return Collections.unmodifiableList(javaTestClasspath.getBinaryDirs());
   }
 
   @Override
