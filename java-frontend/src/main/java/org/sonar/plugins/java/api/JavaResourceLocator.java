@@ -53,14 +53,13 @@ public interface JavaResourceLocator extends JavaFileScanner {
   /**
    * The folders containing the binary .class files.
    * @return a list of folders.
-   * @since SonarQube 9.8
    */
   Collection<File> binaryDirs();
 
   /**
    * The folders containing the binary .class files corresponding to the tests.
    * @return a list of folders.
-   * @since SonarQube 9.8
+   * @since SonarJava 7.15
    */
   Collection<File> testBinaryDirs();
 
@@ -73,7 +72,7 @@ public interface JavaResourceLocator extends JavaFileScanner {
   /**
    * Classpath configured for the project tests.
    * @return the list of jar and class files constituting the classpath of the analyzed project.
-   * @since SonarQube 9.8
+   * @since SonarJava 7.15
    */
   Collection<File> testClasspath();
 }
