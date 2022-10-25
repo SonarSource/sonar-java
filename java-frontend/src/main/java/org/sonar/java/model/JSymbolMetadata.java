@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.model.JSymbolMetadataNullabilityHelper.getNullabilityDataAtLevel;
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 
 final class JSymbolMetadata implements SymbolMetadata {
 
@@ -159,12 +160,33 @@ final class JSymbolMetadata implements SymbolMetadata {
       return nullabilityDataAtLevel;
     }
 
-    // Not annotated or meta annotated, check upper level...
+    // Check nullability from the inheritance hierarchy
+    if (symbol.isMethodSymbol()) {
+      NullabilityData nullabilityDataFromInheritance = getNullabilityDataFromInheritance((Symbol.MethodSymbol) symbol, target);
+      if (nullabilityDataFromInheritance.type() != NullabilityType.NO_ANNOTATION) {
+        return nullabilityDataFromInheritance;
+      }
+    }
+
+    // Not annotated or meta annotated, check upper level in the ownership hierarchy...
     if (symbol.isPackageSymbol()) {
       return NO_ANNOTATION_NULLABILITY[currentLevel.ordinal()];
     }
     Symbol owner = getEffectiveOwner(symbol, currentLevel);
     return owner == null ? unknownNullabilityAt(currentLevel) : owner.metadata().nullabilityData(target);
+  }
+
+  private NullabilityData getNullabilityDataFromInheritance(Symbol.MethodSymbol methodSymbol, NullabilityTarget target) {
+    List<Symbol.MethodSymbol> overridenSymbols = ((Symbol.MethodSymbol) methodSymbol).overriddenSymbols();
+    NullabilityLevel level = NullabilityLevel.METHOD;
+    for (Symbol.MethodSymbol overridenSymbol: overridenSymbols) {
+      SymbolMetadata metadata = overridenSymbol.metadata();
+      NullabilityData result = getNullabilityDataAtLevel(metadata, target, level);
+      if (!result.equals(unknownNullabilityAt(level))) {
+        return result;
+      }
+    }
+    return unknownNullabilityAt(level);
   }
 
   @CheckForNull
