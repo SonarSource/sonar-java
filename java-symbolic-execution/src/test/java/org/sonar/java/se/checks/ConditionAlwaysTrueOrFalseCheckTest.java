@@ -26,6 +26,7 @@ import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -161,4 +162,14 @@ class ConditionAlwaysTrueOrFalseCheckTest {
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
+
+  @Test
+  void test_nullable_inheritance() {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullableInheritance.java"))
+      .withChecks(new ConditionalUnreachableCodeCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
 }
