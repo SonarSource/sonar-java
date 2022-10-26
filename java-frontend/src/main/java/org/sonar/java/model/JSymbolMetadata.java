@@ -186,7 +186,7 @@ final class JSymbolMetadata implements SymbolMetadata {
         return result;
       }
     }
-    return unknownNullabilityAt(level);
+    return NO_ANNOTATION_NULLABILITY[level.ordinal()];
   }
 
   @CheckForNull
