@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.model.JSymbolMetadataNullabilityHelper.getNullabilityDataAtLevel;
 
+
 final class JSymbolMetadata implements SymbolMetadata {
 
   private static final NullabilityData[] NO_ANNOTATION_NULLABILITY =
