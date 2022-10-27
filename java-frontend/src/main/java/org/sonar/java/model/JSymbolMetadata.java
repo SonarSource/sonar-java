@@ -39,7 +39,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.model.JSymbolMetadataNullabilityHelper.getNullabilityDataAtLevel;
-import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 
 final class JSymbolMetadata implements SymbolMetadata {
 
@@ -176,8 +175,8 @@ final class JSymbolMetadata implements SymbolMetadata {
     return owner == null ? unknownNullabilityAt(currentLevel) : owner.metadata().nullabilityData(target);
   }
 
-  private NullabilityData getNullabilityDataFromInheritance(Symbol.MethodSymbol methodSymbol, NullabilityTarget target) {
-    List<Symbol.MethodSymbol> overridenSymbols = ((Symbol.MethodSymbol) methodSymbol).overriddenSymbols();
+  private static NullabilityData getNullabilityDataFromInheritance(Symbol.MethodSymbol methodSymbol, NullabilityTarget target) {
+    List<Symbol.MethodSymbol> overridenSymbols = methodSymbol.overriddenSymbols();
     NullabilityLevel level = NullabilityLevel.METHOD;
     for (Symbol.MethodSymbol overridenSymbol: overridenSymbols) {
       SymbolMetadata metadata = overridenSymbol.metadata();
