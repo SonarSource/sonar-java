@@ -41,7 +41,7 @@ public class NullableInheritance {
     }
   }
 
-  private class OneUpInInheritanceAndUpOwnership {
+  private class NoDataFromOwnership {
     interface ILevel1 {
       @NonNull
       Object m();
