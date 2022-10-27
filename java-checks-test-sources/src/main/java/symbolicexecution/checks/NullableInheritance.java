@@ -66,4 +66,29 @@ public class NullableInheritance {
       }
     }
   }
+
+  private class NoAnnotationAtAll {
+    interface ILevel1 {
+      Object m();
+    }
+
+    interface ILevel2 extends ILevel1 {
+      Object m();
+    }
+
+    class C implements ILevel2 {
+      @Override
+      public Object m() {
+        return null;
+      }
+    }
+
+    class Foo {
+      int foo() {
+        C c = new C();
+        Object o = c.m();
+        return o == null ? -1 : 42; // Compliant
+      }
+    }
+  }
 }
