@@ -187,7 +187,7 @@ public class AutoScanTest {
      * No differences would mean that we find the same issues with and without the bytecode and libraries
      */
     String differences = Files.readString(pathFor(TARGET_ACTUAL + PROJECT_KEY + "-no-binaries_differences"));
-    assertThat(differences).isEqualTo("Issues differences: 3187");
+    assertThat(differences).isEqualTo("Issues differences: 3190");
   }
 
   private static Path pathFor(String path) {
