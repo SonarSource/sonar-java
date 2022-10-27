@@ -169,7 +169,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
       .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullableInheritance.java"))
       .withChecks(new ConditionalUnreachableCodeCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
 }
