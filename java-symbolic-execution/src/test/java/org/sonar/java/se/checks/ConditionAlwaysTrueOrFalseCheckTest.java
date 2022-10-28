@@ -163,13 +163,13 @@ class ConditionAlwaysTrueOrFalseCheckTest {
       .verifyIssues();
   }
 
-  @Test
-  void test_nullable_inheritance() {
-    SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullableInheritance.java"))
-      .withChecks(new ConditionalUnreachableCodeCheck())
-      .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyIssues();
-  }
+  // @Test
+  // void test_nullable_inheritance() {
+  //   SECheckVerifier.newVerifier()
+  //     .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullableInheritance.java"))
+  //     .withChecks(new ConditionalUnreachableCodeCheck())
+  //     .withClassPath(SETestUtils.CLASS_PATH)
+  //     .verifyIssues();
+  // }
 
 }
