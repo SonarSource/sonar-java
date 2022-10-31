@@ -14,14 +14,11 @@ public class PossessiveQuantifierContinuationCheck {
     f(compile("(\\d)*+([02468])")); // Noncompliant [[sc=23;ec=32]]
     f(compile("\\d++(?:[eE][+-]?\\d++)?[fFdD]?"));
     f(compile("a*+\\s"));
-    // Noncompliant@+3 TODO why? to be investigated....
-    // Noncompliant@+2
-    // Noncompliant@+1
     f(compile("[+-]?(?:NaN|Infinity|(?:\\d++(?:\\.\\d*+)?|\\.\\d++)(?:[eE][+-]?\\d++)?[fFdD]?|0[xX](?:\\p{XDigit}++(?:\\.\\p{XDigit}*+)?|\\.\\p{XDigit}++)[pP][+-]?\\d++[fFdD]?)"));
     f(compile("aa++bc"));
     f(compile("\\d*+(?<=[02468])"));
     f(compile("(xx++)+x")); // Noncompliant [[sc=23;ec=24]]
-    f(compile("(bx++)+x")); // Noncompliant
+    f(compile("(bx++)+x")); // false-negative, limitation of the algorithm when there's infinite loop
     f(compile("(?:xx++)+x")); // Noncompliant [[sc=25;ec=26]]
     f(compile("(xx++)x")); // Noncompliant [[sc=22;ec=23]]
     f(compile(".*+\\w")); // Noncompliant [[sc=19;ec=22]]
