@@ -86,3 +86,17 @@ abstract class NullabilityAtMethodLevelParent {
     };
   }
 }
+
+abstract class NullabilityFromInheritance {
+  @Nonnull
+  abstract Object id2023_type_NON_NULL_level_METHOD();
+
+  Object id2024_type_NO_ANNOTATION_level_PACKAGE() {
+    return new NullabilityFromInheritance() {
+      @Override
+      Object id2023_type_NON_NULL_level_METHOD() {
+        return "";
+      }
+    };
+  }
+}
