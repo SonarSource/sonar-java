@@ -19,18 +19,16 @@
  */
 package org.sonar.java.checks;
 
-import org.apache.commons.lang.BooleanUtils;
+import javax.annotation.CheckForNull;
+import org.apache.commons.lang3.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
-
-import javax.annotation.CheckForNull;
 
 @Rule(key = "S2252")
 public class ForLoopFalseConditionCheck extends AbstractForLoopRule {

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.utils.WildcardPattern;
 
 public final class PatternUtils {
