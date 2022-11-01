@@ -41,7 +41,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -121,8 +120,7 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
     }
     ExpressionTree expression = methodInvocation.methodSelect();
     if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      expression = ((MemberSelectExpressionTree) expression).expression();
-      return expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).name().equals("this");
+      return ExpressionUtils.isThis(((MemberSelectExpressionTree) expression).expression());
     }
     return expression.is(Tree.Kind.IDENTIFIER);
   }

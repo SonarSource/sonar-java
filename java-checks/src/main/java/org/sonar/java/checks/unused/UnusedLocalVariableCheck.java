@@ -162,7 +162,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
         return Optional.of(AnalyzerMessage.textSpanFor(variable));
       }
       // If the variable is not the last one in the list we can include the following comma
-      if (lastToken.text().equals(",")) {
+      if (",".equals(lastToken.text())) {
         return Optional.of(AnalyzerMessage.textSpanBetween(variable.simpleName(), lastToken));
       }
       // If the variable is last in the list, we need to retrieve the preceding comma

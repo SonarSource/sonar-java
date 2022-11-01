@@ -93,7 +93,7 @@ public class JavaSdkUtil {
 
   private static boolean isNotAlternativeImplementation(Path jarPath) {
     String jarFileName = jarPath.getFileName().toString();
-    return !jarFileName.equals("alt-rt.jar") && !jarFileName.equals("alt-string.jar");
+    return !"alt-rt.jar".equals(jarFileName) && !"alt-string.jar".equals(jarFileName);
   }
 
   private static Path[] collectJarDirs(Path home, boolean isMac) {

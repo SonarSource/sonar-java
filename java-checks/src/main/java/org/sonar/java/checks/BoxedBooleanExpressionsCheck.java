@@ -253,7 +253,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
       .stream()
       .map(SymbolMetadata.AnnotationInstance::symbol)
       .map(Symbol::name)
-      .anyMatch(name -> name.equalsIgnoreCase("nonNull") || name.equalsIgnoreCase("notNull"));
+      .anyMatch(name -> "nonNull".equalsIgnoreCase(name) || "notNull".equalsIgnoreCase(name));
   }
 
   private static List<JavaQuickFix> getQuickFix(ExpressionTree tree, ExpressionTree boxedBoolean) {

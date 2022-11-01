@@ -87,7 +87,7 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
   private static boolean usageIsRemove(IdentifierTree usage) {
     return MethodTreeUtils.consecutiveMethodInvocation(usage)
       // At this point, we know that "usage" is of type ThreadLocal, we don't have to check the full type, the name is enough.
-      .filter(mit -> ExpressionUtils.methodName(mit).name().equals("remove"))
+      .filter(mit -> "remove".equals(ExpressionUtils.methodName(mit).name()))
       .isPresent();
   }
 }

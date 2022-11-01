@@ -38,7 +38,7 @@ public class IgnoredOperationStatusCheck extends AbstractMethodDetection {
     return MethodMatchers.or(
       MethodMatchers.create().ofSubTypes("java.util.concurrent.locks.Lock").names("tryLock").addWithoutParametersMatcher().build(),
       MethodMatchers.create().ofTypes(FILE)
-        .name(name -> name.equals("delete") || name.equals("exists") || name.equals("createNewFile") ||
+        .name(name -> "delete".equals(name) || "exists".equals(name) || "createNewFile".equals(name) ||
           name.startsWith("can") || name.startsWith("is"))
         .addWithoutParametersMatcher()
         .build(),

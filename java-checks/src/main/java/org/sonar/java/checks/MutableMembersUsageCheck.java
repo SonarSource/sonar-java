@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -148,7 +149,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
   private void checkReturnedExpression(ExpressionTree expression) {
     if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expression;
-      if (isThis(mse.expression())) {
+      if (ExpressionUtils.isThis(mse.expression())) {
         checkReturnedExpression(mse.identifier());
       }
     }
@@ -158,10 +159,6 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
         context.reportIssue(this, identifierTree, "Return a copy of \"" + identifierTree.name() + "\".");
       }
     }
-  }
-
-  private static boolean isThis(ExpressionTree expression) {
-    return expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).name().equals("this");
   }
 
   private static boolean isOnlyAssignedImmutableVariable(Symbol.VariableSymbol symbol) {

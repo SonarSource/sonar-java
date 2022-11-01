@@ -57,7 +57,7 @@ public final class ExternalIssueUtils {
       .message(message)
       .on(inputFile);
 
-    if (!line.isEmpty() && !line.equals("0")) {
+    if (!line.isEmpty() && !"0".equals(line)) {
       primaryLocation.at(inputFile.selectLine(Integer.parseInt(line)));
     }
 

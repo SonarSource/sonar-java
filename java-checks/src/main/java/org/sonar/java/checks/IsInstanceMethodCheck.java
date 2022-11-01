@@ -64,7 +64,7 @@ public class IsInstanceMethodCheck extends IssuableSubscriptionVisitor {
     ExpressionTree originalExpression = ExpressionUtils.skipParentheses(expression);
     if (originalExpression.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) originalExpression;
-      if (memberSelect.identifier().name().equals("class")) {
+      if ("class".equals(memberSelect.identifier().name())) {
         ExpressionTree selectedExpression = ExpressionUtils.skipParentheses(memberSelect.expression());
         return getName(selectedExpression);
       }

@@ -101,7 +101,7 @@ public class LoggerClassCheck extends IssuableSubscriptionVisitor {
   private static Symbol classLiteral(ExpressionTree expression) {
     if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) expression;
-      if (mset.identifier().name().equals("class")) {
+      if ("class".equals(mset.identifier().name())) {
         return mset.expression().symbolType().symbol();
       }
     }

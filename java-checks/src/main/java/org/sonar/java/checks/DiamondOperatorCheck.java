@@ -63,9 +63,9 @@ public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVer
     Tree.Kind.VARIABLE,
     Tree.Kind.TYPE_CAST,
     Tree.Kind.RETURN_STATEMENT,
-    Tree.Kind.ASSIGNMENT};
-  private static final Tree.Kind[] JAVA_8_KINDS = (Tree.Kind[]) ArrayUtils.addAll(JAVA_7_KINDS, new Tree.Kind[] {
-    Tree.Kind.CONDITIONAL_EXPRESSION});
+    Tree.Kind.ASSIGNMENT
+  };
+  private static final Tree.Kind[] JAVA_8_KINDS = ArrayUtils.add(JAVA_7_KINDS, Tree.Kind.CONDITIONAL_EXPRESSION);
   private Tree.Kind[] expressionKindsToCheck = JAVA_7_KINDS;
 
   @Override

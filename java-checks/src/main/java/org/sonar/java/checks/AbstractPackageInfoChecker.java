@@ -63,7 +63,7 @@ public abstract class AbstractPackageInfoChecker implements JavaFileScanner, End
       writePackageNameToCache(context, packageName == null ? "" : packageName);
     }
 
-    if (packageName == null || packageName.equals("")) {
+    if (packageName == null || packageName.isEmpty()) {
       // default package
       return;
     }

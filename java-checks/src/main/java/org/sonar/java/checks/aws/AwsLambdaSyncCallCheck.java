@@ -175,12 +175,10 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
       if (INVOCATIONTYPE_MATCHERS.matches(methodCall)) {
         // From the matcher we know there is an argument and it is a string.
         String stringVal = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
-        if (stringVal != null) {
-          return stringVal.equals("Event") || stringVal.equals("DryRun");
-        } else {
+        return "Event".equals(stringVal)
+          || "DryRun".equals(stringVal)
           // Could not get the string real value, therefore sync calls are out of the picture.
-          return true;
-        }
+          || stringVal == null;
       }
       return false;
     }

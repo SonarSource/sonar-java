@@ -239,7 +239,7 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isNotEqualsInTestRelatedToEquals(MethodInvocationTree mit) {
     String methodName = ExpressionUtils.methodName(mit).name();
-    return (methodName.equals(ASSERT_NOT_EQUALS) || methodName.equals("isNotEqualTo")) &&
+    return (ASSERT_NOT_EQUALS.equals(methodName) || "isNotEqualTo".equals(methodName)) &&
       UnitTestUtils.isInUnitTestRelatedToObjectMethods(mit);
   }
 

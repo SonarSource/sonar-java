@@ -83,7 +83,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
     for (ExpressionTree tree : annotationTree.arguments()) {
       if (tree.is(Tree.Kind.ASSIGNMENT)) {
         AssignmentExpressionTree assignment = (AssignmentExpressionTree) tree;
-        if (((IdentifierTree) assignment.variable()).name().equals("use")
+        if ("use".equals(((IdentifierTree) assignment.variable()).name())
             && isJsonTypeIdEnumValue(assignment.expression())) {
           return Optional.of(assignment.expression());
         }
@@ -102,7 +102,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
     } else {
       valueName = ((IdentifierTree) tree).name();
     }
-    return valueName.equals("CLASS") || valueName.equals("MINIMAL_CLASS");
+    return "CLASS".equals(valueName) || "MINIMAL_CLASS".equals(valueName);
   }
 
   private static boolean isJsonTypeId(ExpressionTree tree) {
