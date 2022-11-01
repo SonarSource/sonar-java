@@ -71,8 +71,8 @@ public class DisclosingTechnologyFingerprintsCheck extends IssuableSubscriptionV
     if (SET_RESPONSE_HEADERS.matches(methodInvocationTree)) {
       methodInvocationTree.arguments().get(0).asConstant(String.class)
         .ifPresent(header -> {
-          if (header.equalsIgnoreCase("server") ||
-            header.equalsIgnoreCase("x-powered-by")) {
+          if ("server".equalsIgnoreCase(header) ||
+            "x-powered-by".equalsIgnoreCase(header)) {
             reportIssue(methodInvocationTree, MESSAGE);
           }
         });

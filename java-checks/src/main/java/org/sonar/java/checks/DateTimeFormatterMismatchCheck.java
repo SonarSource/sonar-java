@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -160,8 +159,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
       if (!select.symbolType().is("java.time.temporal.ChronoField")) {
         return false;
       }
-      IdentifierTree identifier = select.identifier();
-      return identifier.name().equals("ALIGNED_WEEK_OF_YEAR");
+      return "ALIGNED_WEEK_OF_YEAR".equals(select.identifier().name());
     }
 
     private static boolean refersToYear(ExpressionTree argument) {
@@ -179,9 +177,8 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     private static boolean isChronoFieldYear(ExpressionTree argument) {
       if (argument.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree select = (MemberSelectExpressionTree) argument;
-        IdentifierTree identifier = select.identifier();
-        return select.symbolType().is("java.time.temporal.ChronoField") &&
-          (identifier.name().equals("YEAR") || identifier.name().equals("YEAR_OF_ERA"));
+        String name = select.identifier().name();
+        return select.symbolType().is("java.time.temporal.ChronoField") && ("YEAR".equals(name) || "YEAR_OF_ERA".equals(name));
       }
       return false;
     }

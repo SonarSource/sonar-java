@@ -147,7 +147,7 @@ public class VarCanBeUsedCheck extends IssuableSubscriptionVisitor implements Ja
     }
     typeAssignmentLine = line;
     SyntaxToken token = variableTree.endToken();
-    return token != null && token.text().equals(",");
+    return token != null && ",".equals(token.text());
   }
 
   private static boolean isArrayInitializerWithoutType(ExpressionTree initializer) {

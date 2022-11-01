@@ -59,7 +59,7 @@ public class SerialVersionUidInRecordCheck extends IssuableSubscriptionVisitor {
     Symbol symbol = variable.symbol();
     return symbol.isFinal() &&
       symbol.type().is("long") &&
-      symbol.name().equals("serialVersionUID");
+      "serialVersionUID".equals(symbol.name());
   }
 
   private static boolean setsTheValueToZero(VariableTree variable) {

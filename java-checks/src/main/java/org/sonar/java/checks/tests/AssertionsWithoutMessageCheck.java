@@ -86,7 +86,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
       MethodMatchers.create()
         .ofTypes("org.junit.jupiter.api.Assertions", "org.junit.Assert", "junit.framework.Assert", "org.fest.assertions.Fail",
           "org.assertj.core.api.Fail")
-        .name(name -> name.startsWith(ASSERT) || name.equals("fail")).withAnyParameters().build(),
+        .name(name -> name.startsWith(ASSERT) || "fail".equals(name)).withAnyParameters().build(),
       FEST_LIKE_ABSTRACT_ASSERT
       );
   }
@@ -149,7 +149,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
 
     if (mit.arguments().isEmpty()) {
       reportIssue(reportLocation, MESSAGE);
-    } else if (methodName.equals("fail")) {
+    } else if ("fail".equals(methodName)) {
       if (mit.arguments().size() == 1 && mit.arguments().get(0).symbolType().isSubtypeOf("java.lang.Throwable")) {
         reportIssue(reportLocation, MESSAGE);
       }

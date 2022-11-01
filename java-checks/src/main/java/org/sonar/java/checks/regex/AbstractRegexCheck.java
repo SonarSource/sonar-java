@@ -319,7 +319,7 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
   protected static Optional<ExpressionTree> getFlagsTree(ExpressionTree methodInvocationOrAnnotation) {
     if (methodInvocationOrAnnotation.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) methodInvocationOrAnnotation;
-      if (mit.symbol().name().equals("compile") && mit.arguments().size() == 2) {
+      if ("compile".equals(mit.symbol().name()) && mit.arguments().size() == 2) {
         return Optional.of(mit.arguments().get(1));
       }
     } else {

@@ -190,7 +190,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isConstructor(ExpressionTree tree) {
     if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
-      return ((MethodReferenceTree) tree).method().name().equals("new");
+      return "new".equals(((MethodReferenceTree) tree).method().name());
     }
     return (tree.is(Tree.Kind.LAMBDA_EXPRESSION))
       && ((LambdaExpressionTree) tree).body().is(Tree.Kind.NEW_CLASS, Tree.Kind.NEW_ARRAY);

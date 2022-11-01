@@ -162,7 +162,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   protected static boolean hasDefaultClause(SwitchTree switchStatement) {
     return switchStatement.cases().stream()
       .flatMap(caseGroupTree -> caseGroupTree.labels().stream())
-      .anyMatch(caseLabelTree -> caseLabelTree.caseOrDefaultKeyword().text().equals("default"));
+      .anyMatch(caseLabelTree -> "default".equals(caseLabelTree.caseOrDefaultKeyword().text()));
   }
 
   protected static boolean hasElseClause(IfStatementTree ifStatement) {

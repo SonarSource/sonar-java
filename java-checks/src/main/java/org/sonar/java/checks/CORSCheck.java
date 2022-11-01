@@ -131,8 +131,7 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
     if (expressionTree.is(Tree.Kind.NEW_ARRAY)) {
       return ((NewArrayTree) expressionTree).initializers().stream().anyMatch(CORSCheck::isStar);
     } else {
-      String value = ExpressionsHelper.getConstantValueAsString(expressionTree).value();
-      return value != null && value.equals("*");
+      return "*".equals(ExpressionsHelper.getConstantValueAsString(expressionTree).value());
     }
   }
 

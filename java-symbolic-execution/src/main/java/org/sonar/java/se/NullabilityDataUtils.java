@@ -45,7 +45,7 @@ public class NullabilityDataUtils {
 
   private static String getAnnotationName(SymbolMetadata.AnnotationInstance annotation) {
     String name = annotation.symbol().name();
-    if (name.equals("Nonnull")) {
+    if ("Nonnull".equals(name)) {
       return name + annotationArguments(annotation.values());
     }
     return name;

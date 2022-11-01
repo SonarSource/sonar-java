@@ -48,11 +48,7 @@ public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
     } else if (interestingMethodName != null) {
       ExpressionTree returnExpression = ExpressionUtils.skipParentheses(((ReturnStatementTree) tree).expression());
       if (returnExpression.is(Kind.NULL_LITERAL)) {
-        if (interestingMethodName.equals("toString")) {
-          reportIssue(returnExpression, "Return empty string instead.");
-        } else {
-          reportIssue(returnExpression, "Return a non null object.");
-        }
+        reportIssue(returnExpression, "toString".equals(interestingMethodName) ? "Return empty string instead." : "Return a non null object.");
       }
     }
   }

@@ -55,7 +55,7 @@ public class AwsConsumerBuilderUsageCheck extends AbstractMethodDetection {
     MethodSymbol methodSymbol = (MethodSymbol) mit.symbol();
     Symbol parentClass = Optional.ofNullable(methodSymbol.owner()).orElse(Symbols.unknownTypeSymbol);
     Symbol.TypeSymbol returnType = methodSymbol.returnType();
-    if (!returnType.isUnknown() && parentClass.name().equals("Builder")) {
+    if (!returnType.isUnknown() && "Builder".equals(parentClass.name())) {
       String returnTypeName = returnType.type().fullyQualifiedName();
       // only focus on method of "Builder" class returning itself
       if (!returnTypeName.equals(parentClass.type().fullyQualifiedName())) {

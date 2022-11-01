@@ -69,8 +69,7 @@ public class TestAnnotationWithExpectedExceptionCheck extends IssuableSubscripti
         for (ExpressionTree argument : annotation.arguments()) {
           if (argument.is(Tree.Kind.ASSIGNMENT)) {
             AssignmentExpressionTree assignment = (AssignmentExpressionTree) argument;
-            IdentifierTree identifier = (IdentifierTree) assignment.variable();
-            if (identifier.name().equals("expected")) {
+            if ("expected".equals(((IdentifierTree) assignment.variable()).name())) {
               return Optional.of(assignment);
             }
           }

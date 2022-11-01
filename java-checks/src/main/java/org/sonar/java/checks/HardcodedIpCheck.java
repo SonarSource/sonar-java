@@ -81,11 +81,11 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   private static boolean isNonRoutableAddress(String ip) {
-    return ip.equals("0.0.0.0") || IP_V6_NON_ROUTABLE.matcher(ip).matches();
+    return "0.0.0.0".equals(ip) || IP_V6_NON_ROUTABLE.matcher(ip).matches();
   }
 
   private static boolean isBroadcastAddress(String ip) {
-    return ip.equals("255.255.255.255");
+    return "255.255.255.255".equals(ip);
   }
 
   private static Optional<String> extractIPV4(String value) {

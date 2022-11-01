@@ -125,7 +125,7 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
     return clazzTree.symbol().memberSymbols().stream()
       .filter(Symbol::isMethodSymbol)
       .map(s -> (Symbol.MethodSymbol) s)
-      .filter(m -> m.name().equals("<init>"))
+      .filter(m -> "<init>".equals(m.name()))
       .filter(m -> m.declaration() != null)
       .collect(Collectors.toList());
   }

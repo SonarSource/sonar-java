@@ -50,8 +50,8 @@ public final class UnitTestUtils {
       "com.jayway.restassured.response.ValidatableResponseOptions", //restassured 2.x
       "io.restassured.response.ValidatableResponseOptions" //restassured 3.x and 4.x
     )
-      .name(name -> name.equals("body") ||
-        name.equals("time") ||
+      .name(name -> "body".equals(name) ||
+        "time".equals(name) ||
         name.startsWith("time") ||
         name.startsWith("content") ||
         name.startsWith("status") ||

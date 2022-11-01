@@ -126,7 +126,7 @@ public class UnclosedResourcesCheck extends SECheck {
       MethodMatchers.create()
         .ofTypes("org.apache.commons.io.IOUtils")
         .name(name -> name.startsWith("read") || name.startsWith("copy") || name.startsWith("contentEquals")
-          || name.startsWith("skip") || name.equals("consume"))
+          || name.startsWith("skip") || "consume".equals(name))
         .withAnyParameters()
         .build()
     );

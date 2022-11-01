@@ -80,7 +80,7 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends SubscriptionVisitor 
 
   public static boolean usesColons(SwitchTree tree) {
     return !tree.cases().isEmpty() &&
-      tree.cases().get(0).labels().get(0).colonOrArrowToken().text().equals(":");
+      ":".equals(tree.cases().get(0).labels().get(0).colonOrArrowToken().text());
   }
 
   @Override

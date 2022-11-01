@@ -128,7 +128,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
       Tree qualifiedIdentifier = ((ImportTree) tree).qualifiedIdentifier();
       // Defensive programming, the qualifiedIdentifier should always be a MemberSelectTree.
       if (qualifiedIdentifier.is(Tree.Kind.MEMBER_SELECT) &&
-        ((MemberSelectExpressionTree) qualifiedIdentifier).identifier().name().equals("*")) {
+        "*".equals(((MemberSelectExpressionTree) qualifiedIdentifier).identifier().name())) {
         return importName.equals(currentPackage);
       }
     }

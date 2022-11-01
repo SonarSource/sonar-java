@@ -102,7 +102,7 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
 
   private void checkBooleanExpressionInAssertMethod(IdentifierTree problematicAssertionCallIdentifier, ExpressionTree argumentExpression) {
     Optional<Assertion> replacementAssertionOpt = getReplacementAssertion(argumentExpression);
-    if (problematicAssertionCallIdentifier.name().equals("assertFalse")) {
+    if ("assertFalse".equals(problematicAssertionCallIdentifier.name())) {
       replacementAssertionOpt = replacementAssertionOpt.map(COMPLEMENTS::get);
     }
 

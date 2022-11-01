@@ -71,7 +71,7 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isVisibleForTestingAnnotation(AnnotationInstance annotationInstance) {
-    return annotationInstance.symbol().name().equals("VisibleForTesting");
+    return "VisibleForTesting".equals(annotationInstance.symbol().name());
   }
 
   private static boolean inTheSameFile(Symbol symbol) {

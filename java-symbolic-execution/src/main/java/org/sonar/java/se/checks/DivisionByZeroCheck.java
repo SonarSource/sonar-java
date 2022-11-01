@@ -441,7 +441,7 @@ public class DivisionByZeroCheck extends SECheck {
      **/
     private static boolean isZeroLiteral(LiteralTree literalTree, String value) {
       if (value.length() == 1) {
-        return value.equals("0");
+        return "0".equals(value);
       }
       int startIndex = 0;
       int endIndex = value.length() - 1;
