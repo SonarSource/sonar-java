@@ -270,12 +270,7 @@
         <version>2.8.9</version>
         <scope>compile</scope>
       </dependency>
-
-      <dependency>
-        <groupId>com.fasterxml.woodstox</groupId>
-        <artifactId>woodstox-core</artifactId>
-        <version>6.2.6</version>
-      </dependency>
+      <!-- staxmate is used by java-surefire -->
       <dependency>
         <groupId>com.fasterxml.staxmate</groupId>
         <artifactId>staxmate</artifactId>
