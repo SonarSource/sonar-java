@@ -22,6 +22,12 @@ container_definition: &CONTAINER_DEFINITION
   cluster_name: ${CIRRUS_CLUSTER_NAME}
   region: eu-central-1
   namespace: default
+  nodeSelectorTerms:
+      - matchExpressions:
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            - m4.4xlarge
 
 win_vm_definition: &WINDOWS_VM_DEFINITION
   ec2_instance:
@@ -30,7 +36,7 @@ win_vm_definition: &WINDOWS_VM_DEFINITION
     platform: windows
     region: eu-central-1
     disk: 128
-    type: m4.4xlarge
+    type: c5.4xlarge
     subnet_id: ${CIRRUS_AWS_SUBNET}
 
 only_sonarsource_qa: &ONLY_SONARSOURCE_QA
@@ -41,7 +47,7 @@ build_task:
     <<: *CONTAINER_DEFINITION
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 4
-    memory: 8G
+    memory: 4G
   env:
     SIGN_KEY: ENCRYPTED[!cc216dfe592f79db8006f2a591f8f98b40aa2b078e92025623594976fd32f6864c1e6b6ba74b50647f608e2418e6c336!]
     PGP_PASSPHRASE: ENCRYPTED[!314a8fc344f45e462dd5e8dccd741d7562283a825e78ebca27d4ae9db8e65ce618e7f6aece386b2782a5abe5171467bd!]
@@ -65,7 +71,7 @@ ws_scan_task:
   eks_container:
     <<: *CONTAINER_DEFINITION
     cpu: 4
-    memory: 8G
+    memory: 4G
   # run only on master and long-term branches
   only_if: $CIRRUS_USER_COLLABORATOR == 'true' && ($CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*")
   env:
@@ -99,8 +105,8 @@ plugin_qa_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
-    cpu: 8
-    memory: 16G
+    cpu: 14
+    memory: 6G
   env:
     matrix:
       - SQ_VERSION: LATEST_RELEASE[8.9]
@@ -127,7 +133,7 @@ sanity_task:
     <<: *CONTAINER_DEFINITION
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 4
-    memory: 8G
+    memory: 2G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   sanity_script:
@@ -144,8 +150,8 @@ ruling_task:
   eks_container:
     <<: *CONTAINER_DEFINITION
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
-    cpu: 8
-    memory: 16G
+    cpu: 14
+    memory: 6G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
@@ -184,7 +190,7 @@ promote_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
-    cpu: 1
+    cpu: 2
     memory: 1G
   env:
     #promotion cloud function
