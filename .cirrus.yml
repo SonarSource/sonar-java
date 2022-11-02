@@ -1,8 +1,3 @@
-aws_credentials:
-  role_arn: arn:aws:iam::275878209202:role/CirrusCI
-  role_session_name: cirrus
-  region: eu-central-1
-
 env:
   ARTIFACTORY_URL: ENCRYPTED[!2f8fa307d3289faa0aa6791f18b961627ae44f1ef46b136e1a1e63b0b4c86454dbb25520d49b339e2d50a1e1e5f95c88!]
   ARTIFACTORY_PRIVATE_USERNAME: repox-private-reader-lt-1a7e1f
@@ -23,8 +18,8 @@ env:
   CIRRUS_CLONE_DEPTH: 50
 
 container_definition: &CONTAINER_DEFINITION
-  image: 275878209202.dkr.ecr.eu-central-1.amazonaws.com/base:j11-latest
-  cluster_name: CirrusCI
+  image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j11-latest
+  cluster_name: ${CIRRUS_CLUSTER_NAME}
   region: eu-central-1
   namespace: default
 
@@ -36,7 +31,7 @@ win_vm_definition: &WINDOWS_VM_DEFINITION
     region: eu-central-1
     disk: 128
     type: m4.4xlarge
-    subnet_id: subnet-063c427f490da35b9
+    subnet_id: ${CIRRUS_AWS_SUBNET}
 
 only_sonarsource_qa: &ONLY_SONARSOURCE_QA
   only_if: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_TAG == "" && ($CIRRUS_PR != "" || $CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*" || $CIRRUS_BRANCH =~ "dogfood-on-.*")
@@ -44,7 +39,7 @@ only_sonarsource_qa: &ONLY_SONARSOURCE_QA
 build_task:
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: 275878209202.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 4
     memory: 8G
   env:
@@ -130,7 +125,7 @@ sanity_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: 275878209202.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 4
     memory: 8G
   maven_cache:
@@ -148,7 +143,7 @@ ruling_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: 275878209202.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 8
     memory: 16G
   maven_cache:
