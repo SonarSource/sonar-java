@@ -1,17 +1,21 @@
 env:
-  ARTIFACTORY_URL: ENCRYPTED[!2f8fa307d3289faa0aa6791f18b961627ae44f1ef46b136e1a1e63b0b4c86454dbb25520d49b339e2d50a1e1e5f95c88!]
-  ARTIFACTORY_PRIVATE_USERNAME: repox-private-reader-lt-1a7e1f
-  ARTIFACTORY_PRIVATE_PASSWORD: ENCRYPTED[!4890acae4038fb09d3921b1126aad6af4c0bc3984e603cf1639766e44cc987c3f2b7d529b5420b2e3eca0f354b938bf8!]
-  ARTIFACTORY_DEPLOY_USERNAME: repox-qa-deployer-lt-1a7e1f
-  ARTIFACTORY_DEPLOY_PASSWORD: ENCRYPTED[!91fd8560ac00c4661c3161af1bd6e74ed8de8799e9d6ddc2f07bbcf154703adfb54d197ec2286c25f481fca7aba18c76!]
+  CIRRUS_VAULT_URL: https://vault.sonar.build:8200
+  CIRRUS_VAULT_AUTH_PATH: jwt-cirrusci
+  CIRRUS_VAULT_ROLE: cirrusci-${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}
+
+  ARTIFACTORY_URL: VAULT[development/kv/data/repox data.url]
+  ARTIFACTORY_PRIVATE_USERNAME: vault-${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-private-reader
+  ARTIFACTORY_PRIVATE_PASSWORD: VAULT[development/artifactory/token/${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-private-reader access_token]
+  ARTIFACTORY_DEPLOY_USERNAME: vault-${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-qa-deployer
+  ARTIFACTORY_DEPLOY_PASSWORD: VAULT[development/artifactory/token/${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-qa-deployer access_token]
   #Possible values for ARTIFACTORY_DEPLOY_REPO: sonarsource-private-qa, sonarsource-public-qa
   ARTIFACTORY_DEPLOY_REPO: sonarsource-public-qa
-  ARTIFACTORY_API_KEY: ENCRYPTED[!4890acae4038fb09d3921b1126aad6af4c0bc3984e603cf1639766e44cc987c3f2b7d529b5420b2e3eca0f354b938bf8!]
+  ARTIFACTORY_ACCESS_TOKEN: VAULT[development/artifactory/token/${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-private-reader access_token]
+  GITHUB_TOKEN: VAULT[development/github/token/licenses-ro token]
   # burgr notification
-  BURGR_URL: ENCRYPTED[!c7e294da94762d7bac144abef6310c5db300c95979daed4454ca977776bfd5edeb557e1237e3aa8ed722336243af2d78!]
-  BURGR_USERNAME: ENCRYPTED[!b29ddc7610116de511e74bec9a93ad9b8a20ac217a0852e94a96d0066e6e822b95e7bc1fe152afb707f16b70605fddd3!]
-  BURGR_PASSWORD: ENCRYPTED[!83e130718e92b8c9de7c5226355f730e55fb46e45869149a9223e724bb99656878ef9684c5f8cfef434aa716e87f4cf2!]
-  GITHUB_TOKEN: ENCRYPTED[!f458126aa9ed2ac526f220c5acb51dd9cc255726b34761a56fc78d4294c11089502a882888cef0ca7dd4085e72e611a5!]
+  BURGR_URL: VAULT[development/kv/data/burgr data.url]
+  BURGR_USERNAME: VAULT[development/kv/data/burgr data.cirrus_username]
+  BURGR_PASSWORD: VAULT[development/kv/data/burgr data.cirrus_password]
   # Use bash (instead of sh on linux or cmd.exe on windows)
   CIRRUS_SHELL: bash
   # Allows to run builds for the 50 last commits in a branch:
@@ -49,10 +53,10 @@ build_task:
     cpu: 4
     memory: 4G
   env:
-    SIGN_KEY: ENCRYPTED[!cc216dfe592f79db8006f2a591f8f98b40aa2b078e92025623594976fd32f6864c1e6b6ba74b50647f608e2418e6c336!]
-    PGP_PASSPHRASE: ENCRYPTED[!314a8fc344f45e462dd5e8dccd741d7562283a825e78ebca27d4ae9db8e65ce618e7f6aece386b2782a5abe5171467bd!]
+    SIGN_KEY: VAULT[development/kv/data/sign data.key]
+    PGP_PASSPHRASE: VAULT[development/kv/data/sign data.passphrase]
     # analysis on next
-    SONAR_TOKEN: ENCRYPTED[!b6fd814826c51e64ee61b0b6f3ae621551f6413383f7170f73580e2e141ac78c4b134b506f6288c74faa0dd564c05a29!]
+    SONAR_TOKEN: VAULT[development/kv/data/next data.token]
     SONAR_HOST_URL: https://next.sonarqube.com/sonarqube
     #allow deployment of pull request artifacts to repox
     DEPLOY_PULL_REQUEST: true
@@ -75,7 +79,7 @@ ws_scan_task:
   # run only on master and long-term branches
   only_if: $CIRRUS_USER_COLLABORATOR == 'true' && ($CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*")
   env:
-    WS_APIKEY: ENCRYPTED[cda363e6bcac3edd4c259dc05b3570e00152ad50f9ad3ec3cab72d57cda318a0d5472e37c656c3566c2cb8c752d2f5a0]
+    WS_APIKEY: VAULT[development/kv/data/mend data.apikey]
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   whitesource_script:
@@ -194,8 +198,9 @@ promote_task:
     memory: 1G
   env:
     #promotion cloud function
-    GCF_ACCESS_TOKEN: ENCRYPTED[!1fb91961a5c01e06e38834e55755231d649dc62eca354593105af9f9d643d701ae4539ab6a8021278b8d9348ae2ce8be!]
-    PROMOTE_URL: ENCRYPTED[!e22ed2e34a8f7a1aea5cff653585429bbd3d5151e7201022140218f9c5d620069ec2388f14f83971e3fd726215bc0f5e!]
+    GCF_ACCESS_TOKEN: VAULT[development/kv/data/promote data.token]
+    PROMOTE_URL: VAULT[development/kv/data/promote data.url]
+    GITHUB_TOKEN: VAULT[development/github/token/${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-promotion token]
     #artifacts that will have downloadable links in burgr
     ARTIFACTS: org.sonarsource.java:sonar-java-plugin:jar
   maven_cache:
