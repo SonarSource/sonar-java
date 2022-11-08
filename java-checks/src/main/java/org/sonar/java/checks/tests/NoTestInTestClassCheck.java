@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.tests;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +48,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   public static final String ARCH_UNIT_ANALYZE_CLASSES = "com.tngtech.archunit.junit.AnalyzeClasses";
   public static final String ARCH_UNIT_TEST = "com.tngtech.archunit.junit.ArchTest";
 
-  private static final List<String> PACT_UNIT_TEST = Arrays.asList("au.com.dius.pact.provider.junit.State", "au.com.dius.pact.provider.junitsupport.State");
+  private static final List<String> PACT_UNIT_TEST = List.of("au.com.dius.pact.provider.junit.State", "au.com.dius.pact.provider.junitsupport.State");
 
   private final Set<String> testMethodAnnotations = new HashSet<>();
   private final Set<String> testFieldAnnotations = new HashSet<>();
@@ -78,8 +77,8 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void resetAnnotationCache() {
-    Arrays.asList(testFieldAnnotations, testMethodAnnotations, seenAnnotations).forEach(Set::clear);
-    testMethodAnnotations.addAll(Arrays.asList("org.junit.Test", "org.testng.annotations.Test", "org.junit.jupiter.api.Test"));
+    List.of(testFieldAnnotations, testMethodAnnotations, seenAnnotations).forEach(Set::clear);
+    testMethodAnnotations.addAll(List.of("org.junit.Test", "org.testng.annotations.Test", "org.junit.jupiter.api.Test"));
   }
 
   private void checkClass(ClassTree classTree) {

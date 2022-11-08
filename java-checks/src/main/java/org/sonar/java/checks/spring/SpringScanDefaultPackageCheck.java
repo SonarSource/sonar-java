@@ -19,10 +19,7 @@
  */
 package org.sonar.java.checks.spring;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,22 +43,10 @@ public class SpringScanDefaultPackageCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_ATTRIBUTE = "value";
 
-  private static final Map<String, Set<String>> SCAN_PACKAGE_ATTRIBUTES = buildScanPackageAttributes();
-
-  private static Map<String, Set<String>> buildScanPackageAttributes() {
-    Map<String, Set<String>> map = new HashMap<>();
-
-    map.put("org.springframework.context.annotation.ComponentScan",
-      new HashSet<>(Arrays.asList(DEFAULT_ATTRIBUTE, "basePackages", "basePackageClasses")));
-
-    map.put("org.springframework.boot.autoconfigure.SpringBootApplication",
-      new HashSet<>(Arrays.asList("scanBasePackages", "scanBasePackageClasses")));
-
-    map.put("org.springframework.boot.web.servlet.ServletComponentScan",
-      new HashSet<>(Arrays.asList(DEFAULT_ATTRIBUTE, "basePackages", "basePackageClasses")));
-
-    return map;
-  }
+  private static final Map<String, Set<String>> SCAN_PACKAGE_ATTRIBUTES = Map.of(
+    "org.springframework.context.annotation.ComponentScan", Set.of(DEFAULT_ATTRIBUTE, "basePackages", "basePackageClasses"),
+    "org.springframework.boot.autoconfigure.SpringBootApplication", Set.of("scanBasePackages", "scanBasePackageClasses"),
+    "org.springframework.boot.web.servlet.ServletComponentScan", Set.of(DEFAULT_ATTRIBUTE, "basePackages", "basePackageClasses"));
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,7 +50,7 @@ public class ModulusEqualityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.EQUAL_TO, Tree.Kind.METHOD);
+    return List.of(Tree.Kind.EQUAL_TO, Tree.Kind.METHOD);
   }
 
   @Override

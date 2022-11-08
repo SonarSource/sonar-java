@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -44,7 +43,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
   private static final String JAVA_UTIL_FUNCTION_SUPPLIER = "java.util.function.Supplier";
   private static final String JAVA_UTIL_STREAM_STREAM = "java.util.stream.Stream";
   private static final String COLLECT = "collect";
-  private static final List<String> CHECKED_TYPES = Arrays.asList(
+  private static final List<String> CHECKED_TYPES = List.of(
     JAVA_LANG_STRING,
     "java.lang.Boolean",
     "java.lang.Integer",
@@ -73,7 +72,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
     "java.util.Optional",
     "com.google.common.base.Optional");
 
-  private static final List<String> EXCLUDED_PREFIX = Arrays.asList("parse", "format", "decode", "valueOf");
+  private static final List<String> EXCLUDED_PREFIX = List.of("parse", "format", "decode", "valueOf");
 
   private static final MethodMatchers EXCLUDED = MethodMatchers.or(
     MethodMatchers.create().ofTypes("java.lang.Character").names("toChars").addParametersMatcher("int", "char[]", "int").build(),

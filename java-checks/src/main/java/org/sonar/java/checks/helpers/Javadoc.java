@@ -36,7 +36,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.PublicApiChecker;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -45,6 +44,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 public final class Javadoc {
   private enum BlockTag {
@@ -134,7 +134,7 @@ public final class Javadoc {
 
     List<String> javadocLines = cleanLines(PublicApiChecker.getApiJavadoc(tree).orElse(""));
     mainDescription = getDescription(javadocLines, -1, "");
-    blockTagDescriptions = extractBlockTags(javadocLines, Arrays.asList(BlockTag.values()));
+    blockTagDescriptions = extractBlockTags(javadocLines, List.of(BlockTag.values()));
     undocumentedNamedTags = new EnumMap<>(BlockTag.class);
   }
 

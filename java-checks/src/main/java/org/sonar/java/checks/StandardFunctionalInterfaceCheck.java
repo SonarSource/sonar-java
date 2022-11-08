@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -201,13 +200,13 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
       int genericStart = name.indexOf('<');
       if (genericStart != -1) {
         this.name = name.substring(0, genericStart);
-        this.genericTypes = Arrays.asList(name.substring(genericStart + 1, name.length() - 1).split(","));
+        this.genericTypes = List.of(name.substring(genericStart + 1, name.length() - 1).split(","));
       } else {
         this.name = name;
         this.genericTypes = Collections.emptyList();
       }
       this.returnType = returnType;
-      this.parameters = Arrays.asList(parameters);
+      this.parameters = List.of(parameters);
     }
 
     private String getName() {

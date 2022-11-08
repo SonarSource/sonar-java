@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
@@ -30,8 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -44,6 +41,8 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @DeprecatedRuleKey(ruleKey = "HiddenFieldCheck", repositoryKey = "squid")
 @Rule(key = "S1117")
@@ -55,7 +54,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
         Tree.Kind.CLASS,
         Tree.Kind.ENUM,
         Tree.Kind.INTERFACE,

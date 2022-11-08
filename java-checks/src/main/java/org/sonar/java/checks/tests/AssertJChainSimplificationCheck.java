@@ -71,7 +71,7 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
     }
 
     boolean wasIssueRaised = checkPredicatesForSimplification(
-      predicates, CONTEXT_FREE_SIMPLIFIERS, SimplifierWithoutContext::simplify,
+      predicates, CONTEXT_FREE_SIMPLIFIERS, AssertJChainSimplificationIndex.SimplifierWithoutContext::simplify,
       (predicate, simplification) -> createIssueBuilder(predicate, simplification).report()
     );
 
@@ -128,13 +128,5 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
       }
     });
     return issueRaised.value();
-  }
-
-  interface SimplifierWithoutContext {
-    Optional<AssertJChainSimplificationIndex.Simplification> simplify(MethodInvocationTree predicate);
-  }
-
-  interface SimplifierWithContext {
-    Optional<AssertJChainSimplificationIndex.Simplification> simplify(MethodInvocationTree subject, MethodInvocationTree predicate);
   }
 }

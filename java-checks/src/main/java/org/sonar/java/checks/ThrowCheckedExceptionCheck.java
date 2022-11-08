@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +37,7 @@ public class ThrowCheckedExceptionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.THROW_STATEMENT);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.THROW_STATEMENT);
   }
 
   @Override

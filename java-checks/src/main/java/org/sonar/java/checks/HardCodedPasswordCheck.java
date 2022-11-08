@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,7 +58,7 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.STRING_LITERAL, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.STRING_LITERAL, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

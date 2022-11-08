@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +38,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_LEGAL_COMMENT_PATTERN = "^\\s*+[^\\s]++$";
-  private static final List<String> EXCLUDED_PATTERNS = Arrays.asList("NOSONAR", "NOPMD", "CHECKSTYLE:", "$NON-NLS");
+  private static final List<String> EXCLUDED_PATTERNS = List.of("NOSONAR", "NOPMD", "CHECKSTYLE:", "$NON-NLS");
 
   @RuleProperty(
     key = "legalTrailingCommentPattern",
@@ -54,7 +53,7 @@ public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
       Tree.Kind.TOKEN,
       Tree.Kind.VARIABLE);
   }

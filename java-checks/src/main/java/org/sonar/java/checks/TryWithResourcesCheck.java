@@ -19,6 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.cfg.CFG;
@@ -28,13 +33,6 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
 
 @Rule(key = "S2093")
 public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -50,7 +48,7 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.TRY_STATEMENT, Tree.Kind.NEW_CLASS);
+    return List.of(Tree.Kind.TRY_STATEMENT, Tree.Kind.NEW_CLASS);
   }
 
   @Override

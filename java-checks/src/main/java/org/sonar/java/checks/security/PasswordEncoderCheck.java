@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -66,7 +65,7 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.NEW_CLASS);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.NEW_CLASS);
   }
 
   @Override

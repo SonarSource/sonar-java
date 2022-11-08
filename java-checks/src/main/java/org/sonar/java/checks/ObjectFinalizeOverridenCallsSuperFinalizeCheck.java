@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -38,6 +36,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 @DeprecatedRuleKey(ruleKey = "ObjectFinalizeOverridenCallsSuperFinalizeCheck", repositoryKey = "squid")
 @Rule(key = "S1114")
@@ -51,7 +50,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
@@ -86,7 +85,8 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
   private static boolean isLastStatement(MethodTree methodTree, MethodInvocationTree lastStatementTree) {
     BlockTree blockTree = methodTree.block();
     if (blockTree != null
-      && blockTree.body().stream().anyMatch(statement -> 
+      && blockTree.body().stream()
+        .anyMatch(statement ->
         statement.is(Tree.Kind.TRY_STATEMENT)&& isLastStatement(((TryStatementTree) statement).finallyBlock(), lastStatementTree))) {
       return true;
     }

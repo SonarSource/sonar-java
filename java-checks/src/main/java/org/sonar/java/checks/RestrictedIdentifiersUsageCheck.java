@@ -19,17 +19,15 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S6213")
 public class RestrictedIdentifiersUsageCheck extends IssuableSubscriptionVisitor {
@@ -39,7 +37,7 @@ public class RestrictedIdentifiersUsageCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.VARIABLE, Tree.Kind.METHOD);
+    return List.of(Tree.Kind.VARIABLE, Tree.Kind.METHOD);
   }
 
   @Override

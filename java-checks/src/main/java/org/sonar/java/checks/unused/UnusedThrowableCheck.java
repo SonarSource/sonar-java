@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.unused;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -48,7 +47,7 @@ public class UnusedThrowableCheck extends IssuableSubscriptionVisitor {
           .forRule(this)
           .onTree(newClassTree)
           .withMessage("Throw this exception or remove this useless statement.")
-          .withQuickFixes(() -> Arrays.asList(
+          .withQuickFixes(() -> List.of(
             JavaQuickFix.newQuickFix("Add \"throw\"")
               .addTextEdit(JavaTextEdit.insertBeforeTree(newClassTree, "throw "))
               .build(),

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
@@ -26,9 +27,6 @@ import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S3776")
 public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor {
@@ -43,7 +41,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override

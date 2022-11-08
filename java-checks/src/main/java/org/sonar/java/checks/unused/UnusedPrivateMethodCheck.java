@@ -20,7 +20,6 @@
 package org.sonar.java.checks.unused;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +56,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
       // declarations
       Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR,
       // usages

@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -27,23 +29,19 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
 @Rule(key = "S3553")
 public class OptionalAsParameterCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
   private static final String GUAVA_OPTIONAL = "com.google.common.base.Optional";
-  private static final List<String> PRIMITIVE_OPTIONALS = Arrays.asList(
+  private static final List<String> PRIMITIVE_OPTIONALS = List.of(
     "java.util.OptionalDouble",
     "java.util.OptionalInt",
     "java.util.OptionalLong");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override

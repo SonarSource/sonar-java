@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,7 +40,7 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends SubscriptionVisitor 
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
       Tree.Kind.SWITCH_EXPRESSION,
       Tree.Kind.SWITCH_STATEMENT
     );

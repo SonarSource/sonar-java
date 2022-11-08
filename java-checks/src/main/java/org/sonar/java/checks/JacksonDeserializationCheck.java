@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
@@ -49,7 +48,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.ANNOTATION);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.ANNOTATION);
   }
 
   @Override

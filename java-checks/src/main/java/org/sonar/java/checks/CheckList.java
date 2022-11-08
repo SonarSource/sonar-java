@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -91,7 +90,6 @@ import org.sonar.java.checks.security.AuthorizationsStrongDecisionsCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.ClearTextProtocolCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
-import org.sonar.java.checks.security.HardCodedCredentialsShouldNotBeUsedCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
@@ -101,6 +99,7 @@ import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.EncryptionAlgorithmCheck;
 import org.sonar.java.checks.security.ExcessiveContentRequestCheck;
 import org.sonar.java.checks.security.FilePermissionsCheck;
+import org.sonar.java.checks.security.HardCodedCredentialsShouldNotBeUsedCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.JWTWithStrongCipherCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
@@ -232,7 +231,7 @@ public final class CheckList {
 
   public static final String REPOSITORY_KEY = "java";
 
-  private static final List<Class<? extends JavaCheck>> JAVA_MAIN_CHECKS = Arrays.asList(
+  private static final List<Class<? extends JavaCheck>> JAVA_MAIN_CHECKS = List.of(
     // fast JavaFileScanner (not IssuableSubscriptionVisitor) ordered from the fastest to the slowest
     LeftCurlyBraceEndLineCheck.class,
     IndentationCheck.class,
@@ -821,7 +820,7 @@ public final class CheckList {
     ObjectOutputStreamCheck.class,
     MinMaxRangeCheck.class);
 
-  private static final List<Class<? extends JavaCheck>> JAVA_TEST_CHECKS = Arrays.asList(
+  private static final List<Class<? extends JavaCheck>> JAVA_TEST_CHECKS = List.of(
     // Rule classes are listed alphabetically
     AssertionArgumentOrderCheck.class,
     AssertionCompareToSelfCheck.class,

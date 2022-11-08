@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -26,9 +27,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.Arrays;
-import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "RightCurlyBraceStartLineCheck", repositoryKey = "squid")
@@ -37,7 +35,7 @@ public class RightCurlyBraceStartLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
       Tree.Kind.BLOCK,
       Tree.Kind.STATIC_INITIALIZER,
       Tree.Kind.INITIALIZER,

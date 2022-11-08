@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +42,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S112")
 public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final List<String> RAW_EXCEPTIONS = Arrays.asList(
+  private static final List<String> RAW_EXCEPTIONS = List.of(
     "java.lang.Throwable",
     "java.lang.Error",
     "java.lang.Exception",

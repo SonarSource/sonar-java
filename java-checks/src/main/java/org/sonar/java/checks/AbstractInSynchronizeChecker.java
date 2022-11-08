@@ -19,17 +19,15 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
 
 public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetection {
   private Deque<Boolean> withinSynchronizedBlock = new LinkedList<>();
@@ -47,7 +45,7 @@ public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetecti
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
       Tree.Kind.METHOD_INVOCATION,
       Tree.Kind.SYNCHRONIZED_STATEMENT,
       Tree.Kind.METHOD,

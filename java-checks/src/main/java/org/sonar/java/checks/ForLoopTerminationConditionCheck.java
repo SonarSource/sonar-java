@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -112,21 +112,21 @@ public class ForLoopTerminationConditionCheck extends AbstractForLoopRule {
     }
     return value;
   }
-  
+
   private static class IntInequality {
-    
+
     private final IdentifierTree identifier;
     private final int literalValue;
-    
+
     private IntInequality(IdentifierTree identifier, int value) {
       this.identifier = identifier;
       this.literalValue = value;
     }
-    
+
     public static IntInequality of(BinaryExpressionTree binaryExp) {
       Integer value = null;
       IdentifierTree identifier = null;
-      for (ExpressionTree expressionTree : Arrays.asList(binaryExp.leftOperand(), binaryExp.rightOperand())) {
+      for (ExpressionTree expressionTree : List.of(binaryExp.leftOperand(), binaryExp.rightOperand())) {
         if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
           identifier = (IdentifierTree) expressionTree;
         } else {

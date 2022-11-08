@@ -38,7 +38,7 @@ public class NullCheckWithInstanceofCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR);
+    return List.of(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR);
   }
 
   @Override

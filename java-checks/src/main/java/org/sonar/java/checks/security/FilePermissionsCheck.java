@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -40,7 +38,7 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String ISSUE_MESSAGE = "Make sure this permission is safe.";
-  private static final Set<String> POSIX_OTHER_PERMISSIONS = new HashSet<>(Arrays.asList("OTHERS_READ", "OTHERS_WRITE", "OTHERS_EXECUTE"));
+  private static final Set<String> POSIX_OTHER_PERMISSIONS = Set.of("OTHERS_READ", "OTHERS_WRITE", "OTHERS_EXECUTE");
   private static final MethodMatchers POSIX_FILE_PERMISSIONS_FROM_STRING = MethodMatchers.create()
     .ofTypes("java.nio.file.attribute.PosixFilePermissions")
     .names("fromString")
@@ -65,7 +63,7 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.IDENTIFIER, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.IDENTIFIER, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

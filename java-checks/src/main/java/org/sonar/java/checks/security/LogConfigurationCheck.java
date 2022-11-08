@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -42,7 +41,7 @@ public class LogConfigurationCheck extends AbstractMethodDetection {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_REFERENCE, Tree.Kind.CLASS);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_REFERENCE, Tree.Kind.CLASS);
   }
 
   @Override

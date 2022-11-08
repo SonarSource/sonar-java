@@ -20,8 +20,10 @@
 package org.sonar.java.checks.tests;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
@@ -34,10 +36,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Rule(key = "S2701")
 public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetection {
@@ -119,7 +117,7 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
     Optional<LiteralTree> actualLiteral = findActualLiteralForFest(mit);
     IdentifierTree methodName = ExpressionUtils.methodName(mit);
     if (expectedLiteral.isPresent() && actualLiteral.isPresent()) {
-      reportDefaultMessage(methodName, Arrays.asList(expectedLiteral.get(), actualLiteral.get()));
+      reportDefaultMessage(methodName, List.of(expectedLiteral.get(), actualLiteral.get()));
     } else {
       expectedLiteral.ifPresent(literal -> checkEqualityAssertWithOneLiteral(methodName, literal, flipped, IS));
       actualLiteral.ifPresent(literal -> checkEqualityAssertWithOneLiteral(methodName, literal, flipped, IS));

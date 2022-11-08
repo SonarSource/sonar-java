@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.text.MessageFormat;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -29,16 +31,13 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S2438")
 public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

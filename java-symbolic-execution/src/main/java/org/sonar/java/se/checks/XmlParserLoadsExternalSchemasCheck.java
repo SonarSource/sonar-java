@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -35,7 +34,7 @@ import static org.sonar.java.se.checks.XxeProcessingCheck.PARSING_METHODS;
 @Rule(key = "S6374")
 public class XmlParserLoadsExternalSchemasCheck extends AbstractXMLProcessing {
 
-  private static final List<Class<? extends Constraint>> DOMAINS = Arrays.asList(
+  private static final List<Class<? extends Constraint>> DOMAINS = List.of(
     FeatureLoadExternalDtd.class,
     XmlSetValidating.class
   );

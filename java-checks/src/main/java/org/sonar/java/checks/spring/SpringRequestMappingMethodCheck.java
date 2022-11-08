@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks.spring;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -119,8 +117,8 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
   }
 
   private static class HttpMethodVisitor extends BaseTreeVisitor {
-    private static final Set<String> SAFE_METHODS = new HashSet<>(Arrays.asList("GET", "HEAD", "OPTIONS", "TRACE"));
-    private static final Set<String> UNSAFE_METHODS = new HashSet<>(Arrays.asList("DELETE", "PATCH", "POST", "PUT"));
+    private static final Set<String> SAFE_METHODS = Set.of("GET", "HEAD", "OPTIONS", "TRACE");
+    private static final Set<String> UNSAFE_METHODS = Set.of("DELETE", "PATCH", "POST", "PUT");
 
     private boolean hasSafeMethods = false;
     private boolean hasUnsafeMethods = false;

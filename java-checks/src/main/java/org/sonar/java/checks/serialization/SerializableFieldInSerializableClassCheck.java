@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.serialization;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -74,7 +73,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
         .forEach(this::checkVariableMember);
     }
   }
-  
+
   private static Set<String> getConstructorOrMethodInjectedFields(ClassTree classTree) {
     AssignmentsVisitor assignmentsVisitor = new AssignmentsVisitor();
     classTree.members().stream()
@@ -82,7 +81,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
       .map(MethodTree.class::cast)
       .filter(methodTree -> isAnnotatedWith(methodTree.symbol().metadata(), JAVAX_INJECT))
       .forEach(methodTree -> methodTree.accept(assignmentsVisitor));
-    
+
     return assignmentsVisitor.getAssignedVariables();
   }
 
@@ -161,7 +160,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
   }
 
   private static boolean isAnnotatedWith(SymbolMetadata metadata, String... fullyQualifiedNames) {
-    Set<String> fullyQualifiedNamesSet = new HashSet<>(Arrays.asList(fullyQualifiedNames));
+    Set<String> fullyQualifiedNamesSet = Set.of(fullyQualifiedNames);
     return metadata.annotations().stream()
       .map(a -> a.symbol().type())
       .anyMatch(t -> t.isUnknown() || fullyQualifiedNamesSet.contains(t.fullyQualifiedName()));

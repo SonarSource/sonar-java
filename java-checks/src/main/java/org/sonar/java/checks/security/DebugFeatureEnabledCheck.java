@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,7 +54,7 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.ANNOTATION, Tree.Kind.CLASS, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.ANNOTATION, Tree.Kind.CLASS, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

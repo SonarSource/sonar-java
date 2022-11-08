@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.methods;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -34,7 +33,7 @@ public abstract class AbstractMethodDetection extends IssuableSubscriptionVisito
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_REFERENCE);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_REFERENCE);
   }
 
   @Override

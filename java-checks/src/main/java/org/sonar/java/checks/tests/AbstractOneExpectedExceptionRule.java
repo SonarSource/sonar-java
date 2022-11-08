@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.tests;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -92,7 +91,7 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.TRY_STATEMENT, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.TRY_STATEMENT, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

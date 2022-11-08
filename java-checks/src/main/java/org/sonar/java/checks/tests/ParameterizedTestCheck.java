@@ -40,17 +40,15 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static java.util.Arrays.asList;
-
 @Rule(key = "S5976")
 public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Replace these %d tests with a single Parameterized one.";
 
-  private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList(
+  private static final Set<String> TEST_ANNOTATIONS = Set.of(
     "org.junit.Test",
     "org.junit.jupiter.api.Test",
-    "org.testng.annotations.Test"));
+    "org.testng.annotations.Test");
 
   private static final int MIN_SIMILAR_METHODS = 3;
   private static final int MIN_NUMBER_STATEMENTS = 2;

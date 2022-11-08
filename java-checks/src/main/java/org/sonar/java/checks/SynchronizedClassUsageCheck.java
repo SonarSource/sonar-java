@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -47,12 +45,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S1149")
 public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<String, String> REPLACEMENTS = MapBuilder.<String, String>newMap()
-    .put("java.util.Vector", "\"ArrayList\" or \"LinkedList\"")
-    .put("java.util.Hashtable", "\"HashMap\"")
-    .put("java.lang.StringBuffer", "\"StringBuilder\"")
-    .put("java.util.Stack", "\"Deque\"")
-    .build();
+  private static final Map<String, String> REPLACEMENTS = Map.of(
+    "java.util.Vector", "\"ArrayList\" or \"LinkedList\"",
+    "java.util.Hashtable", "\"HashMap\"",
+    "java.lang.StringBuffer", "\"StringBuilder\"",
+    "java.util.Stack", "\"Deque\"");
 
   private final Deque<Set<String>> exclusions = new ArrayDeque<>();
 
@@ -61,7 +58,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
     // We register on compilation units to clear the visited set when scanning a new file
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.COMPILATION_UNIT, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.COMPILATION_UNIT, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
   }
 
   @Override

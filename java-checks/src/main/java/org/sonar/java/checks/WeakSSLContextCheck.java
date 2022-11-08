@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -40,9 +38,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4423")
 public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> STRONG_PROTOCOLS = new HashSet<>(Arrays.asList("TLSv1.2", "DTLSv1.2", "TLSv1.3", "DTLSv1.3"));
-  private static final Set<String> STRONG_AFTER_JAVA_8 = new HashSet<>(Arrays.asList("TLS", "DTLS"));
-  private static final Set<String> WEAK_FOR_OK_HTTP = new HashSet<>(Arrays.asList("TLSv1", "TLSv1.1", "TLS_1_0", "TLS_1_1"));
+  private static final Set<String> STRONG_PROTOCOLS = Set.of("TLSv1.2", "DTLSv1.2", "TLSv1.3", "DTLSv1.3");
+  private static final Set<String> STRONG_AFTER_JAVA_8 = Set.of("TLS", "DTLS");
+  private static final Set<String> WEAK_FOR_OK_HTTP = Set.of("TLSv1", "TLSv1.1", "TLS_1_0", "TLS_1_1");
 
   private static final MethodMatchers SSLCONTEXT_GETINSTANCE_MATCHER = MethodMatchers.create()
     .ofTypes("javax.net.ssl.SSLContext")
@@ -113,7 +111,7 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
     } else if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
       argumentValue = ((MemberSelectExpressionTree) expressionTree).identifier().name();
     }
-    return WEAK_FOR_OK_HTTP.contains(argumentValue);
+    return argumentValue != null && WEAK_FOR_OK_HTTP.contains(argumentValue);
   }
 
 }

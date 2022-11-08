@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.unused;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import org.sonar.check.Rule;
@@ -39,7 +38,7 @@ public class UnusedTypeParameterCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD, Tree.Kind.METHOD);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD, Tree.Kind.METHOD);
   }
 
   @Override

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
@@ -43,7 +42,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.TYPE_CAST);
+    return List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.TYPE_CAST);
   }
 
   @Override

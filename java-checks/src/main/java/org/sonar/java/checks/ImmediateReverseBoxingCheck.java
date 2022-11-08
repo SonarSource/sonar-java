@@ -20,14 +20,12 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -43,6 +41,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 @Rule(key = "S2153")
 public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
@@ -63,7 +62,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.NEW_CLASS);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.NEW_CLASS);
   }
 
   @Override
@@ -188,7 +187,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
   }
 
   private static List<JavaTextEdit> removeTreeExcept(Tree tree, Tree except) {
-    return Arrays.asList(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(tree, true, except, false)),
+    return List.of(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(tree, true, except, false)),
       JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(except, false, tree, true)));
   }
 

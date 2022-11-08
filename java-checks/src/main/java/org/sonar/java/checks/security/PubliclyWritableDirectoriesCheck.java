@@ -19,12 +19,10 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -34,6 +32,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 import static org.sonar.java.checks.helpers.ExpressionsHelper.getInvokedSymbol;
 
@@ -47,8 +46,8 @@ public class PubliclyWritableDirectoriesCheck extends IssuableSubscriptionVisito
   private static final String JAVA_IO_FILE = "java.io.File";
 
   private static final String MESSAGE = "Make sure publicly writable directories are used safely here.";
-  
-  private static final List<String> PUBLIC_WRITABLE_DIRS = Arrays.asList(
+
+  private static final List<String> PUBLIC_WRITABLE_DIRS = List.of(
     "/tmp",
     "/var/tmp",
     "/usr/tmp",
@@ -118,7 +117,7 @@ public class PubliclyWritableDirectoriesCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override

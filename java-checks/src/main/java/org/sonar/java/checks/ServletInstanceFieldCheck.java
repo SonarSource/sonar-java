@@ -19,7 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -37,22 +38,19 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Rule(key = "S2226")
 public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
   private final List<VariableTree> issuableVariables = new ArrayList<>();
   private final List<VariableTree> excludedVariables = new ArrayList<>();
-  
+
   private static final MethodMatchers INIT_METHOD_WITH_PARAM_MATCHER =  MethodMatchers.create()
     .ofSubTypes("javax.servlet.Servlet").names("init").addParametersMatcher("javax.servlet.ServletConfig").build();
 
   private static final MethodMatchers INIT_METHOD_NO_PARAMS_MATCHER =  MethodMatchers.create()
     .ofSubTypes("javax.servlet.GenericServlet").names("init").addWithoutParametersMatcher().build();
 
-  private static final List<String> ANNOTATIONS_EXCLUDING_FIELDS = Arrays.asList(
+  private static final List<String> ANNOTATIONS_EXCLUDING_FIELDS = List.of(
     "javax.inject.Inject",
     "javax.ejb.EJB",
     "org.springframework.beans.factory.annotation.Autowired",
@@ -60,7 +58,7 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.VARIABLE, Kind.METHOD);
+    return List.of(Tree.Kind.VARIABLE, Kind.METHOD);
   }
 
   @Override

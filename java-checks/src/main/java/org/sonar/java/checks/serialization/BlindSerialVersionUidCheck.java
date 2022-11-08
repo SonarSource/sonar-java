@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.serialization;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
@@ -34,7 +33,7 @@ public class BlindSerialVersionUidCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.ENUM);
   }
 
   @Override

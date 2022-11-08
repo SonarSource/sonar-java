@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +53,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO, Kind.CONDITIONAL_AND, Kind.CONDITIONAL_OR,
+    return List.of(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO, Kind.CONDITIONAL_AND, Kind.CONDITIONAL_OR,
       Kind.LOGICAL_COMPLEMENT, Kind.CONDITIONAL_EXPRESSION);
   }
 
@@ -101,8 +100,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
       edits = editsForConditionalExpression((ConditionalExpressionTree) tree);
     } else if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
       String booleanValue = ((LiteralTree) ((UnaryExpressionTree) tree).expression()).value();
-      edits = new ArrayList<>();
-      edits.add(JavaTextEdit.replaceTree(tree, TRUE_LITERAL.equals(booleanValue) ? FALSE_LITERAL : TRUE_LITERAL));
+      edits = List.of(JavaTextEdit.replaceTree(tree, TRUE_LITERAL.equals(booleanValue) ? FALSE_LITERAL : TRUE_LITERAL));
     } else if (tree.is(Kind.EQUAL_TO)) {
       edits = editsForEquality((BinaryExpressionTree) tree, true);
     } else if (tree.is(Kind.NOT_EQUAL_TO)) {

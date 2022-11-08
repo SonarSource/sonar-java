@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,7 +43,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.IF_STATEMENT);
+    return List.of(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.IF_STATEMENT);
   }
 
   @Override
@@ -71,11 +70,11 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   protected static boolean allBranchesSame(Map<? extends Tree, ? extends Set<? extends Tree>> identicalBranches, int size) {
     return identicalBranches.keySet().size() == 1 && identicalBranchesSize(identicalBranches) == size - 1;
   }
-  
+
   private static long identicalBranchesSize(Map<? extends Tree, ? extends Set<? extends Tree>> identicalBranches) {
     return identicalBranches.values().stream().flatMap(Collection::stream).count();
   }
-  
+
   private static boolean isTrivialCase(List<StatementTree> body) {
     return body.size() == 1 || (body.size() == 2 && body.get(1).is(Tree.Kind.BREAK_STATEMENT));
   }

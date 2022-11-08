@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -46,9 +47,6 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-
-import java.util.Arrays;
-import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "S00122", repositoryKey = "squid")
@@ -57,7 +55,7 @@ public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.STATIC_INITIALIZER, Kind.INITIALIZER);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.STATIC_INITIALIZER, Kind.INITIALIZER);
   }
 
   @Override

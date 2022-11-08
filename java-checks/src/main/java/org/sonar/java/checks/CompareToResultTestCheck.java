@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -58,7 +57,7 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO);
+    return List.of(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO);
   }
 
   @Override

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,7 +51,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private static final String JAX_RS_NEW_COOKIE = "javax.ws.rs.core.NewCookie";
   private static final String SPRING_SAVED_COOKIE = "org.springframework.security.web.savedrequest.SavedCookie";
   private static final String PLAY_COOKIE = "play.mvc.Http$Cookie";
-  private static final List<String> COOKIES = Arrays.asList(
+  private static final List<String> COOKIES = List.of(
     "javax.servlet.http.Cookie",
     "java.net.HttpCookie",
     JAX_RS_COOKIE,
@@ -62,7 +61,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     PLAY_COOKIE,
     "play.mvc.Http$CookieBuilder");
 
-  private static final List<String> SETTER_NAMES = Arrays.asList("setSecure", "withSecure");
+  private static final List<String> SETTER_NAMES = List.of("setSecure", "withSecure");
 
   /**
    * Some constructors have the 'secure' parameter and do not need a 'setSecure' call afterwards.
@@ -109,7 +108,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
       Tree.Kind.VARIABLE,
       Tree.Kind.ASSIGNMENT,
       Tree.Kind.METHOD_INVOCATION,

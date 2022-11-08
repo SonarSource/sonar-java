@@ -20,19 +20,18 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S2973")
 public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
@@ -45,7 +44,7 @@ public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.STRING_LITERAL, Kind.TEXT_BLOCK);
+    return List.of(Kind.STRING_LITERAL, Kind.TEXT_BLOCK);
   }
 
   @Override

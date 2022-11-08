@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -93,7 +92,7 @@ public class SwitchRedundantKeywordCheck extends IssuableSubscriptionVisitor imp
   }
 
   private static List<JavaFileScannerContext.Location> blockBraceLocations(BlockTree blockTree) {
-    return Arrays.asList(new JavaFileScannerContext.Location("Redundant opening brace", blockTree.openBraceToken()),
+    return List.of(new JavaFileScannerContext.Location("Redundant opening brace", blockTree.openBraceToken()),
       new JavaFileScannerContext.Location("Redundant closing brace", blockTree.closeBraceToken()));
   }
 

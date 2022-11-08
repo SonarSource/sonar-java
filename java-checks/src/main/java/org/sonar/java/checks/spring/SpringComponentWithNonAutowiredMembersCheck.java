@@ -47,14 +47,14 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
     defaultValue = "")
   public String customInjectionAnnotations = "";
 
-  private static final List<String> SPRING_INJECTION_ANNOTATION = Arrays.asList(
+  private static final List<String> SPRING_INJECTION_ANNOTATION = List.of(
     "org.springframework.beans.factory.annotation.Autowired",
     "javax.inject.Inject",
     "javax.annotation.Resource",
     "javax.persistence.PersistenceContext",
     "org.springframework.beans.factory.annotation.Value");
 
-  private static final List<String> SPRING_SINGLETON_ANNOTATION = Arrays.asList(
+  private static final List<String> SPRING_SINGLETON_ANNOTATION = List.of(
     "org.springframework.stereotype.Controller",
     "org.springframework.stereotype.Service",
     "org.springframework.stereotype.Component",

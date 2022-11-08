@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -37,7 +36,7 @@ public class CallSuperMethodFromInnerClassCheck extends IssuableSubscriptionVisi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE);
   }
 
   @Override

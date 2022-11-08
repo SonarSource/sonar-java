@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks.unused;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
@@ -58,7 +56,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.VARIABLE);
+    return List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.VARIABLE);
   }
 
   @Override

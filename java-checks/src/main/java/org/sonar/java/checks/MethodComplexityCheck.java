@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
@@ -26,10 +28,6 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "MethodCyclomaticComplexity", repositoryKey = "squid")
@@ -46,7 +44,7 @@ public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override
@@ -58,10 +56,9 @@ public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
     List<Tree> complexity = context.getComplexityNodes(methodTree);
     int size = complexity.size();
     if (size > max) {
-      List<JavaFileScannerContext.Location> flow = new ArrayList<>();
-      for (Tree element : complexity) {
-        flow.add(new JavaFileScannerContext.Location("+1", element));
-      }
+      List<JavaFileScannerContext.Location> flow = complexity.stream()
+        .map(element -> new JavaFileScannerContext.Location("+1", element))
+        .collect(Collectors.toList());
       reportIssue(
         methodTree.simpleName(),
         "The Cyclomatic Complexity of this method \"" + methodTree.simpleName().name() + "\" is " + size + " which is greater than " + max + " authorized.",

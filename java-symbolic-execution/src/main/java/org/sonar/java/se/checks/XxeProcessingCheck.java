@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -244,7 +243,7 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatchers.create().ofSubTypes(SAX_READER).names("read").withAnyParameters().build()
   );
 
-  private static final List<XxeProperty> PROPERTIES_TO_CHECK = Arrays.asList(
+  private static final List<XxeProperty> PROPERTIES_TO_CHECK = Stream.of(
     FeatureSupportDtd.values(),
     FeatureIsSupportingExternalEntities.values(),
     FeatureDisallowDoctypeDecl.values(),
@@ -255,11 +254,10 @@ public class XxeProcessingCheck extends SECheck {
     AttributeDTD.values(),
     AttributeSchema.values(),
     AttributeStyleSheet.values())
-    .stream()
     .flatMap(Stream::of)
     .collect(Collectors.toList());
 
-  private static final List<Class<? extends Constraint>> FLOW_CONSTRAINT_DOMAIN = Arrays.asList(
+  private static final List<Class<? extends Constraint>> FLOW_CONSTRAINT_DOMAIN = List.of(
     AttributeDTD.class,
     AttributeSchema.class,
     AttributeStyleSheet.class);

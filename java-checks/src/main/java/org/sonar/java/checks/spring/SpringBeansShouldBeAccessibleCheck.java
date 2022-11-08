@@ -32,18 +32,19 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultModuleScannerContext;
-import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.DefaultModuleScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -168,7 +169,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     var bytes = context.getCacheContext().getReadCache().readBytes(cacheKey);
     if (bytes != null) {
       context.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
-      return Optional.of(Arrays.asList(new String(bytes, StandardCharsets.UTF_8).split(";")));
+      return Optional.of(List.of(new String(bytes, StandardCharsets.UTF_8).split(";")));
     } else {
       return Optional.empty();
     }
@@ -190,8 +191,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   }
 
   private static List<String> asStringList(Object[] array) {
-    return Arrays.asList(array)
-      .stream()
+    return Stream.of(array)
       .filter(String.class::isInstance)
       .map(String.class::cast)
       .collect(Collectors.toList());

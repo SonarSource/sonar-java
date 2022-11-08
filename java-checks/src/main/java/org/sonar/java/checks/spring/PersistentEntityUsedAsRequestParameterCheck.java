@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.spring;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -37,7 +36,7 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
     return Collections.singletonList(Tree.Kind.METHOD);
   }
 
-  private static final List<String> REQUEST_ANNOTATIONS = Arrays.asList(
+  private static final List<String> REQUEST_ANNOTATIONS = List.of(
     "org.springframework.web.bind.annotation.RequestMapping",
     "org.springframework.web.bind.annotation.GetMapping",
     "org.springframework.web.bind.annotation.PostMapping",
@@ -45,7 +44,7 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
     "org.springframework.web.bind.annotation.DeleteMapping",
     "org.springframework.web.bind.annotation.PatchMapping");
 
-  private static final List<String> ENTITY_ANNOTATIONS = Arrays.asList(
+  private static final List<String> ENTITY_ANNOTATIONS = List.of(
     "javax.persistence.Entity",
     "org.springframework.data.mongodb.core.mapping.Document",
     "org.springframework.data.elasticsearch.annotations.Document");

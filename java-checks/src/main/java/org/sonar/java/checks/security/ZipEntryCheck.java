@@ -20,7 +20,6 @@
 package org.sonar.java.checks.security;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -66,7 +65,7 @@ public class ZipEntryCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD);
   }
 
   @Override

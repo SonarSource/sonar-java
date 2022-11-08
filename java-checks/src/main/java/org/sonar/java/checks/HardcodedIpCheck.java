@@ -48,7 +48,7 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
   private static final String IP_V6_BRACKET = "\\[" + IP_V6_ALONE + "\\]";
   private static final String IP_V6_URL = PROTOCOL_URL + IP_V6_BRACKET + END_URL;
 
-  private static final List<Pattern> IP_V6_REGEX_LIST = Arrays.asList(
+  private static final List<Pattern> IP_V6_REGEX_LIST = List.of(
     Pattern.compile(IP_V6_ALONE),
     Pattern.compile(IP_V6_BRACKET),
     Pattern.compile(IP_V6_URL));

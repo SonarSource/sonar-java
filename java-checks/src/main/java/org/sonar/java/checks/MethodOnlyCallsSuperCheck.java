@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -46,7 +45,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S1185")
 public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<String> TRANSACTIONAL_ANNOTATIONS = Arrays.asList("javax.transaction.Transactional",
+  private static final List<String> TRANSACTIONAL_ANNOTATIONS = List.of("javax.transaction.Transactional",
     "org.springframework.transaction.annotation.Transactional");
 
   private static final MethodMatchers ALLOWED_METHODS = MethodMatchers.or(

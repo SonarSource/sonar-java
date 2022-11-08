@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.PublicApiChecker;
@@ -27,15 +26,15 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.deprecatedAnnotation;
-import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.reportTreeForDeprecatedTree;
 import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.hasJavadocDeprecatedTag;
+import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.reportTreeForDeprecatedTree;
 
 @Rule(key = "S1133")
 public class DeprecatedTagPresenceCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(PublicApiChecker.apiKinds());
+    return List.of(PublicApiChecker.apiKinds());
   }
 
   @Override

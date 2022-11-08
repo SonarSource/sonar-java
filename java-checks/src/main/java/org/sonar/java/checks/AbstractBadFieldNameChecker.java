@@ -19,16 +19,14 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
+import java.util.regex.Pattern;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public abstract class AbstractBadFieldNameChecker extends IssuableSubscriptionVisitor {
 
@@ -42,7 +40,7 @@ public abstract class AbstractBadFieldNameChecker extends IssuableSubscriptionVi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.ENUM);
   }
 
   @Override

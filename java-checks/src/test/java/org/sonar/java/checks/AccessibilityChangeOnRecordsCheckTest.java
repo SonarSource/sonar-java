@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class AccessibilityChangeOnRecordsCheckTest {

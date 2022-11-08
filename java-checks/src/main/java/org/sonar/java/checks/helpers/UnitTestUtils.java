@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.helpers;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -33,8 +32,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import static java.util.Arrays.asList;
 
 public final class UnitTestUtils {
 
@@ -116,13 +113,13 @@ MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActi
     FAIL_METHOD_MATCHER, ASSERTIONS_METHOD_MATCHER
   );
 
-  private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList(ORG_JUNIT_TEST, "org.testng.annotations.Test"));
-  private static final Set<String> JUNIT5_TEST_ANNOTATIONS = new HashSet<>(asList(
+  private static final Set<String> TEST_ANNOTATIONS = Set.of(ORG_JUNIT_TEST, "org.testng.annotations.Test");
+  private static final Set<String> JUNIT5_TEST_ANNOTATIONS = Set.of(
     "org.junit.jupiter.api.Test",
     "org.junit.jupiter.api.RepeatedTest",
     "org.junit.jupiter.api.TestFactory",
     "org.junit.jupiter.api.TestTemplate",
-    "org.junit.jupiter.params.ParameterizedTest"));
+    "org.junit.jupiter.params.ParameterizedTest");
   private static final String NESTED_ANNOTATION = "org.junit.jupiter.api.Nested";
 
   private static final Pattern UNIT_TEST_NAME_RELATED_TO_OBJECT_METHODS_REGEX =

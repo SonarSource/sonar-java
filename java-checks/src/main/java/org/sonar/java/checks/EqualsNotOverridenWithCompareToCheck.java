@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -28,15 +29,12 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Rule(key = "S1210")
 public class EqualsNotOverridenWithCompareToCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.ENUM);
   }
 
   @Override

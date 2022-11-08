@@ -19,7 +19,6 @@
  */
 package org.sonar.java.filters;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +43,6 @@ import org.sonar.java.checks.naming.BadFieldNameCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.tests.AssertionTypesCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.se.checks.XxeProcessingCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -56,6 +54,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
@@ -88,7 +87,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   private static final String LOMBOK_FIELD_DEFAULTS = "lombok.experimental.FieldDefaults";
   private static final String LOMBOK_DATA = "lombok.Data";
 
-  private static final List<String> GENERATE_UNUSED_FIELD_RELATED_METHODS = Arrays.asList(
+  private static final List<String> GENERATE_UNUSED_FIELD_RELATED_METHODS = List.of(
     "lombok.Getter",
     "lombok.Setter",
     LOMBOK_BUILDER,
@@ -98,13 +97,13 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     "lombok.NoArgsConstructor",
     "lombok.RequiredArgsConstructor");
 
-  private static final List<String> GENERATE_CONSTRUCTOR = Arrays.asList(
+  private static final List<String> GENERATE_CONSTRUCTOR = List.of(
     "lombok.AllArgsConstructor",
     "lombok.NoArgsConstructor",
     "lombok.RequiredArgsConstructor",
     LOMBOK_DATA);
 
-  private static final List<String> GENERATE_EQUALS = Arrays.asList(
+  private static final List<String> GENERATE_EQUALS = List.of(
     "lombok.EqualsAndHashCode",
     LOMBOK_DATA,
     LOMBOK_VALUE);
@@ -161,7 +160,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     }
 
     // Exclude final fields annotated with @Builder.Default in a @Builder class
-    if (usesAnnotation(tree, Arrays.asList(LOMBOK_BUILDER, LOMBOK_SUPER_BUILDER))) {
+    if (usesAnnotation(tree, List.of(LOMBOK_BUILDER, LOMBOK_SUPER_BUILDER))) {
       tree.members().stream()
         .filter(t -> t.is(Tree.Kind.VARIABLE))
         .map(VariableTree.class::cast)
@@ -275,7 +274,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     if (symbol.isVariableSymbol() && symbol.type().is(LOMBOK_VAL)) {
       parentMethodInvocation(tree)
         .ifPresent(mit -> excludeLines(mit,
-          Arrays.asList(SillyEqualsCheck.class, CollectionInappropriateCallsCheck.class, AssertionTypesCheck.class)));
+          List.of(SillyEqualsCheck.class, CollectionInappropriateCallsCheck.class, AssertionTypesCheck.class)));
     }
     super.visitIdentifier(tree);
   }

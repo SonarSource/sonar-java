@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
@@ -48,7 +47,7 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

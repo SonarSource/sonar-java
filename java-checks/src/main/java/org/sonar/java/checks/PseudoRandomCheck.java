@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -31,6 +29,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S2245")
 public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
@@ -63,7 +62,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

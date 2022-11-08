@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
@@ -38,7 +37,7 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
   private static final String REF_MESSAGE = "Use a thread-safe type; adding \"volatile\" is not enough to make this field thread-safe.";
   private static final String ARRAY_MESSAGE = "Use an \"Atomic%sArray\" instead.";
 
-  private static final List<String> STANDARD_IMMUTABLE_TYPES = Arrays.asList(
+  private static final List<String> STANDARD_IMMUTABLE_TYPES = List.of(
     "java.awt.Color",
     "java.awt.Cursor",
     "java.awt.Font",
@@ -77,7 +76,7 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.ENUM);
   }
 
   @Override

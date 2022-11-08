@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -50,7 +49,7 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
     defaultValue = "" + DEFAULT_MAXIMUM)
   public int constructorMax = DEFAULT_MAXIMUM;
 
-  private static final List<String> METHOD_ANNOTATION_EXCEPTIONS = Arrays.asList(
+  private static final List<String> METHOD_ANNOTATION_EXCEPTIONS = List.of(
     "org.springframework.web.bind.annotation.RequestMapping",
     "org.springframework.web.bind.annotation.GetMapping",
     "org.springframework.web.bind.annotation.PostMapping",
@@ -75,7 +74,7 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
     "io.micronaut.http.annotation.Trace");
 
   // if a class is annotated as one of these types, its constructor should be ignored if it's the only constructor
-  private static final List<String> CLASS_ANNOTATION_CONSTRUCTOR_EXCEPTIONS = Arrays.asList(
+  private static final List<String> CLASS_ANNOTATION_CONSTRUCTOR_EXCEPTIONS = List.of(
     "org.springframework.stereotype.Component",
     "org.springframework.context.annotation.Configuration",
     "org.springframework.stereotype.Service",
@@ -84,7 +83,7 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
     // This rule has the following exceptions: RECORD, ANNOTATION_TYPE
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM);
   }
 
   @Override

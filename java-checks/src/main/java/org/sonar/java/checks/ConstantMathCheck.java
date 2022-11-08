@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
@@ -72,7 +71,7 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.REMAINDER, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.REMAINDER, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

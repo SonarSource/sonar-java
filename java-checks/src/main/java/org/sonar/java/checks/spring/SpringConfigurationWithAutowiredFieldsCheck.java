@@ -20,7 +20,6 @@
 package org.sonar.java.checks.spring;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +43,7 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
 
   private static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
   private static final String BEAN_ANNOTATION = "org.springframework.context.annotation.Bean";
-  private static final List<String> AUTOWIRED_ANNOTATIONS = Arrays.asList(
+  private static final List<String> AUTOWIRED_ANNOTATIONS = List.of(
     "org.springframework.beans.factory.annotation.Autowired",
     "javax.inject.Inject");
 

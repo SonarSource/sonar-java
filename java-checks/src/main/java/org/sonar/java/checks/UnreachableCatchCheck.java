@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,7 +48,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.TRY_STATEMENT);
+    return List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.TRY_STATEMENT);
   }
 
   @Override

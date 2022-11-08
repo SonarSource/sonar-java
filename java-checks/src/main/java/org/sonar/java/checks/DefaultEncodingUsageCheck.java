@@ -135,12 +135,12 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection implement
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    ArrayList<MethodMatchers> matchers = new ArrayList<>(Arrays.asList(
+    List<MethodMatchers> matchers = new ArrayList<>(List.of(
       MethodMatchers.create().ofTypes(JAVA_LANG_STRING).names("getBytes")
         .addWithoutParametersMatcher()
         .addParametersMatcher(INT, INT, BYTE_ARRAY, INT)

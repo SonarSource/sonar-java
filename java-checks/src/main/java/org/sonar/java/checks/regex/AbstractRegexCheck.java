@@ -121,7 +121,7 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
   @Override
   public List<Tree.Kind> nodesToVisit() {
     // ignore constructors and method references, add annotations
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.ANNOTATION);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.ANNOTATION);
   }
 
   protected MethodMatchers getMethodInvocationMatchers() {

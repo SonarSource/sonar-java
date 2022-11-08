@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -50,7 +49,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 public class InstanceOfPatternMatchingCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.IF_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.WHILE_STATEMENT,
+    return List.of(Tree.Kind.IF_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.WHILE_STATEMENT,
       Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR, Tree.Kind.CONDITIONAL_EXPRESSION);
   }
 

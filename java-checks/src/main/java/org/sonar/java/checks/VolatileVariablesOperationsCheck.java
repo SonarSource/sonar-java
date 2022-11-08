@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -43,7 +42,7 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
       Tree.Kind.PREFIX_INCREMENT,
       Tree.Kind.POSTFIX_INCREMENT,
       Tree.Kind.PREFIX_DECREMENT,

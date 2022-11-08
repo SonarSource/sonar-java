@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,8 +28,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -41,6 +38,8 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 @Rule(key = "S4719")
 public class StandardCharsetsConstantsCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
@@ -84,7 +83,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   private static final String COMMONS_IO_LOCKABLEFILEWRITER = COMMONS_IO + ".output.LockableFileWriter";
   private static final String COMMONS_IO_WRITEROUTPUTSTREAM = COMMONS_IO + ".output.WriterOutputStream";
 
-  private static final List<Charset> STANDARD_CHARSETS = Arrays.asList(
+  private static final List<Charset> STANDARD_CHARSETS = List.of(
           StandardCharsets.ISO_8859_1,
           StandardCharsets.US_ASCII,
           StandardCharsets.UTF_16,
@@ -216,7 +215,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.IDENTIFIER);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.IDENTIFIER);
   }
 
   @Override

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.unused;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.CheckForNull;
@@ -37,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2677")
 public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<MethodMatchers> CHECKED_METHODS = Arrays.asList(
+  private static final List<MethodMatchers> CHECKED_METHODS = List.of(
     MethodMatchers.create()
       .ofSubTypes("java.io.BufferedReader")
       .names("readLine")
@@ -51,7 +50,7 @@ public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO);
+    return List.of(Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO);
   }
 
   @Override

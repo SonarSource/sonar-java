@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
@@ -78,7 +77,7 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.STRING_LITERAL, Kind.VARIABLE, Kind.ASSIGNMENT, Kind.METHOD_INVOCATION);
+    return List.of(Kind.STRING_LITERAL, Kind.VARIABLE, Kind.ASSIGNMENT, Kind.METHOD_INVOCATION);
   }
 
   @Override

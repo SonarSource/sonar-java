@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.tests;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +46,7 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override

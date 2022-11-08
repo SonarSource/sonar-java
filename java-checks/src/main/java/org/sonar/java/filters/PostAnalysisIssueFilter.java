@@ -19,8 +19,6 @@
  */
 package org.sonar.java.filters;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
@@ -35,12 +33,12 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueF
   @VisibleForTesting
   List<JavaIssueFilter> issueFilters() {
     if (issueFilters == null) {
-      issueFilters = Collections.unmodifiableList(Arrays.asList(
+      issueFilters = List.of(
         new EclipseI18NFilter(),
         new LombokFilter(),
         new GoogleAutoFilter(),
         new SuppressWarningFilter(),
-        new GeneratedCodeFilter()));
+        new GeneratedCodeFilter());
     }
     return issueFilters;
   }

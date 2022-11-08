@@ -20,7 +20,6 @@
 package org.sonar.java.checks.tests;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -42,11 +42,9 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
-
 @Rule(key = "S5979")
 public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSubscriptionVisitor {
-  private static final List<String> TARGET_ANNOTATIONS = Arrays.asList(
+  private static final List<String> TARGET_ANNOTATIONS = List.of(
     "org.mockito.Captor",
     "org.mockito.InjectMocks",
     "org.mockito.Mock",
@@ -56,7 +54,7 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   private static final String EXTEND_WITH_ANNOTATION = "org.junit.jupiter.api.extension.ExtendWith";
   private static final String RUN_WITH_ANNOTATION = "org.junit.runner.RunWith";
 
-  private static final List<String> BEFORE_ANNOTATIONS = Arrays.asList(
+  private static final List<String> BEFORE_ANNOTATIONS = List.of(
     "org.junit.Before",
     "org.junit.jupiter.api.BeforeEach"
   );

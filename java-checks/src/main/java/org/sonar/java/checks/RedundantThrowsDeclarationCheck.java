@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -67,7 +66,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override

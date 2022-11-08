@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -33,9 +34,6 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Rule(key = "S2130")
 public class StringToPrimitiveConversionCheck extends IssuableSubscriptionVisitor {
 
@@ -43,7 +41,7 @@ public class StringToPrimitiveConversionCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
@@ -77,7 +75,7 @@ public class StringToPrimitiveConversionCheck extends IssuableSubscriptionVisito
   }
 
   private List<PrimitiveCheck> buildPrimitiveChecks() {
-    return Arrays.asList(
+    return List.of(
       new PrimitiveCheck("int", "Integer", Type.Primitives.INT),
       new PrimitiveCheck("boolean", "Boolean", Type.Primitives.BOOLEAN),
       new PrimitiveCheck("byte", "Byte", Type.Primitives.BYTE),

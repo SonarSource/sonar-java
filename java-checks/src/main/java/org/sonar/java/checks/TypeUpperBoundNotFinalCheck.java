@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -39,7 +37,7 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.TYPE_PARAMETER, Tree.Kind.EXTENDS_WILDCARD);
+    return List.of(Tree.Kind.TYPE_PARAMETER, Tree.Kind.EXTENDS_WILDCARD);
   }
 
   @Override

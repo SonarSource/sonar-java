@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -48,7 +47,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.VARIABLE);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.VARIABLE);
   }
 
   @Override
@@ -142,7 +141,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
       }
       return functionalInterfaceName("UnaryOperator<%s>", firstArgument.paramType);
     }
-    if (usesMethods(usages, Arrays.asList("compose", AND_THEN))) {
+    if (usesMethods(usages, List.of("compose", AND_THEN))) {
       return Optional.empty();
     }
     if (isBoolean(secondArgument) && !usedAsMethodReference) {

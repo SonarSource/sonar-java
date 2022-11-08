@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,12 +58,12 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
     .build();
 
   private static final String APACHE_EMAIL = "org.apache.commons.mail.Email";
-  private static final Set<String> ENABLING_SSL_METHOD_NAMES = new HashSet<>(Arrays.asList(
+  private static final Set<String> ENABLING_SSL_METHOD_NAMES = Set.of(
     "setSSL",
     "setSSLOnConnect",
     "setTLS",
     "setStartTLSEnabled",
-    "setStartTLSRequired"));
+    "setStartTLSRequired");
   private static final MethodMatchers ENABLING_SSL_METHODS = MethodMatchers.create()
     .ofSubTypes(APACHE_EMAIL)
     .name(ENABLING_SSL_METHOD_NAMES::contains)
@@ -80,7 +78,7 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override

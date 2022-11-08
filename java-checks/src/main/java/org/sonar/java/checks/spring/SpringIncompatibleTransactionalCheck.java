@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks.spring;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,20 +60,15 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
   // Made name to represent no annotation
   private static final String NOT_TRANSACTIONAL = "SONAR_NOT_TRANSACTIONAL";
 
-  private static final Map<String, Set<String>> INCOMPATIBLE_PROPAGATION_MAP = buildIncompatiblePropagationMap();
-
-  private static Map<String, Set<String>> buildIncompatiblePropagationMap() {
-    Map<String, Set<String>> map = new HashMap<>();
-    map.put(NOT_TRANSACTIONAL, new HashSet<>(Arrays.asList(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW)));
-    map.put(MANDATORY, new HashSet<>(Arrays.asList(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW)));
-    map.put(NESTED, new HashSet<>(Arrays.asList(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW)));
-    map.put(NEVER, new HashSet<>(Arrays.asList(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW)));
-    map.put(NOT_SUPPORTED, new HashSet<>(Arrays.asList(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW)));
-    map.put(REQUIRED, new HashSet<>(Arrays.asList(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW)));
-    map.put(REQUIRES_NEW, new HashSet<>(Arrays.asList(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW)));
-    map.put(SUPPORTS, new HashSet<>(Arrays.asList(MANDATORY, NESTED, NEVER, NOT_SUPPORTED, REQUIRED, REQUIRES_NEW)));
-    return map;
-  }
+  private static final Map<String, Set<String>> INCOMPATIBLE_PROPAGATION_MAP = Map.of(
+      NOT_TRANSACTIONAL, Set.of(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW),
+      MANDATORY, Set.of(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW),
+      NESTED, Set.of(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW),
+      NEVER, Set.of(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW),
+      NOT_SUPPORTED, Set.of(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW),
+      REQUIRED, Set.of(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW),
+      REQUIRES_NEW, Set.of(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW),
+      SUPPORTS, Set.of(MANDATORY, NESTED, NEVER, NOT_SUPPORTED, REQUIRED, REQUIRES_NEW));
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

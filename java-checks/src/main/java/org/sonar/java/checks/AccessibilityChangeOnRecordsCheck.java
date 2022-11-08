@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +45,7 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

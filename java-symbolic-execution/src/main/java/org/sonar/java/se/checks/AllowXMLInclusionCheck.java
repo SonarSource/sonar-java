@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -40,7 +39,7 @@ import static org.sonar.java.se.checks.XxeProcessingCheck.PARSING_METHODS;
 @Rule(key = "S6373")
 public class AllowXMLInclusionCheck extends AbstractXMLProcessing {
 
-  private static final List<Class<? extends Constraint>> DOMAINS = Arrays.asList(FeatureXInclude.class, XmlSetXIncludeAware.class);
+  private static final List<Class<? extends Constraint>> DOMAINS = List.of(FeatureXInclude.class, XmlSetXIncludeAware.class);
 
   @Override
   protected MethodMatchers getParsingMethods() {

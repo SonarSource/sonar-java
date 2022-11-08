@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.unused;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
@@ -36,7 +35,7 @@ public class UnusedPrivateClassCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.ENUM);
+    return List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.ENUM);
   }
 
   @Override

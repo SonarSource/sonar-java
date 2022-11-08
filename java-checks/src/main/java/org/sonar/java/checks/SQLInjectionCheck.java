@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -89,12 +88,12 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       .names("setFilter", "setGrouping")
       .withAnyParameters()
       .build());
-  
+
   private static final String MAIN_MESSAGE = "Make sure using a dynamically formatted SQL query is safe here.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override
@@ -137,7 +136,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     }
     return secondaryLocations;
   }
-  
+
   private static String getVariableName(AssignmentExpressionTree assignment) {
     ExpressionTree variable = assignment.variable();
     return ((IdentifierTree) variable).name();

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
@@ -47,7 +46,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.RECORD);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.RECORD);
   }
 
   @Override

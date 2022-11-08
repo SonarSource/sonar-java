@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks.spring;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
@@ -37,11 +35,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4604")
 public class SpringAutoConfigurationCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<String> ANNOTATIONS = Arrays.asList(
+  private static final List<String> ANNOTATIONS = List.of(
     "org.springframework.boot.autoconfigure.SpringBootApplication",
     "org.springframework.boot.autoconfigure.EnableAutoConfiguration");
 
-  private static final Set<String> EXCLUDE_ELEMENTS = new HashSet<>(Arrays.asList("exclude", "excludeName"));
+  private static final Set<String> EXCLUDE_ELEMENTS = Set.of("exclude", "excludeName");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

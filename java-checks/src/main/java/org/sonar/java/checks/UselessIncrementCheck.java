@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
@@ -30,15 +31,12 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Rule(key = "S2123")
 public class UselessIncrementCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.RETURN_STATEMENT, Tree.Kind.ASSIGNMENT);
+    return List.of(Tree.Kind.RETURN_STATEMENT, Tree.Kind.ASSIGNMENT);
   }
 
   @Override

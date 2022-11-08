@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,12 +50,12 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2386")
 public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<String> ALWAYS_MUTABLE_TYPES = Arrays.asList(
+  private static final List<String> ALWAYS_MUTABLE_TYPES = List.of(
     "java.awt.Point",
     "java.util.Date"
   );
 
-  private static final List<String> MUTABLE_TYPES = Arrays.asList(
+  private static final List<String> MUTABLE_TYPES = List.of(
     "java.awt.Point",
     "java.util.Date",
     "java.util.Collection",
@@ -103,7 +102,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
   private static final MethodMatchers ARRAYS_AS_LIST = MethodMatchers.create()
     .ofTypes("java.util.Arrays").names("asList").withAnyParameters().build();
 
-  private static final List<String> ACCEPTED_TYPES = Arrays.asList(
+  private static final List<String> ACCEPTED_TYPES = List.of(
     "com.google.common.collect.ImmutableMap",
     "com.google.common.collect.ImmutableCollection"
   );
@@ -117,7 +116,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.INTERFACE, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.ASSIGNMENT);
+    return List.of(Tree.Kind.INTERFACE, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.ASSIGNMENT);
   }
 
   @Override

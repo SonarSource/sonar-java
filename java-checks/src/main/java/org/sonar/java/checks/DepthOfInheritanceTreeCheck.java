@@ -19,8 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Rule;
@@ -40,7 +39,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final int DEFAULT_MAX_DEPTH = 5;
-  private static final List<String> FRAMEWORK_EXCLUSION_PATTERNS = Arrays.asList(
+  private static final List<String> FRAMEWORK_EXCLUSION_PATTERNS = List.of(
     "android.**",
     "com.intellij.**",
     "com.persistit.**",
@@ -92,7 +91,7 @@ public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements Java
           reportTree = ((NewClassTree) tree.parent()).newKeyword();
         }
         context.reportIssue(this, reportTree, "This class has " + dit + " parents which is greater than " + max + " authorized.",
-          new ArrayList<>(), dit - max);
+          Collections.emptyList(), dit - max);
       }
     }
     super.visitClass(tree);
@@ -114,7 +113,7 @@ public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements Java
         String.join(",", FRAMEWORK_EXCLUSION_PATTERNS),
         filteredClasses
       );
-      filteredPatterns = Arrays.asList(PatternUtils.createPatterns(permittedPatterns));
+      filteredPatterns = List.of(PatternUtils.createPatterns(permittedPatterns));
     }
     return filteredPatterns;
   }

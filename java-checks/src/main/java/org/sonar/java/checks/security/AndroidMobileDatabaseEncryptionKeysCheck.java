@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
@@ -73,7 +72,7 @@ public class AndroidMobileDatabaseEncryptionKeysCheck extends IssuableSubscripti
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override

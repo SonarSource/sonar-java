@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -88,7 +87,7 @@ public class OSCommandsPathCheck extends AbstractMethodDetection {
       .build()
   );
 
-  private static final List<String> STARTS = Arrays.asList(
+  private static final List<String> STARTS = List.of(
     "/",
     "./",
     "../",
@@ -165,7 +164,7 @@ public class OSCommandsPathCheck extends AbstractMethodDetection {
     Optional<String> command = expression.asConstant(String.class);
     return !command.isPresent() || isCompliant(command.get());
   }
-  
+
   private static boolean isIdentifierCommandValid(IdentifierTree identifier) {
     Symbol symbol = identifier.symbol();
     if (!isNotReassigned(symbol)) {

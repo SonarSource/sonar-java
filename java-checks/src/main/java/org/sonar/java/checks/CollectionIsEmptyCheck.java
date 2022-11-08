@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,7 +76,7 @@ public class CollectionIsEmptyCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ListUtils.concat(Arrays.asList(CLASS_TREES), Arrays.asList(TARGETED_BINARY_OPERATOR_TREES));
+    return ListUtils.concat(List.of(CLASS_TREES), List.of(TARGETED_BINARY_OPERATOR_TREES));
   }
 
   @Override

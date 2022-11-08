@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
@@ -60,7 +59,7 @@ public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
       Tree.Kind.BREAK_STATEMENT,
       Tree.Kind.RETURN_STATEMENT,
       Tree.Kind.THROW_STATEMENT);

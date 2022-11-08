@@ -21,7 +21,6 @@ package org.sonar.java.checks.regex;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -97,7 +96,7 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
   private boolean isJava9OrHigher() {
     return context.getJavaVersion().isNotSet() || context.getJavaVersion().asInt() >= 9;
   }
-  
+
   private Optional<String> message() {
     boolean canBeOptimized = !regexContainsBackReference;
     boolean optimized = isJava9OrHigher() && canBeOptimized;
@@ -320,7 +319,7 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
     public void visitRepetition(RepetitionTree tree) {
       if (tree.isPossessive()) {
         new RedosFinder(tree, tree.continuation(), false, false).visit(tree);
-      } else if (containsIntersections(Arrays.asList(tree.getElement(), tree.continuation()))) {
+      } else if (containsIntersections(List.of(tree.getElement(), tree.continuation()))) {
         BacktrackingType greedyComplexity = tree.getQuantifier().isOpenEnded() ? BacktrackingType.QUADRATIC_WHEN_OPTIMIZED : BacktrackingType.LINEAR_WHEN_OPTIMIZED;
         addBacktracking(isReluctant ? BacktrackingType.ALWAYS_EXPONENTIAL : greedyComplexity);
         super.visitRepetition(tree);

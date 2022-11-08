@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -26,10 +28,6 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Rule(key = "S3937")
 public class UnderscoreMisplacedOnNumberCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -41,7 +39,7 @@ public class UnderscoreMisplacedOnNumberCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.INT_LITERAL, Kind.LONG_LITERAL);
+    return List.of(Kind.INT_LITERAL, Kind.LONG_LITERAL);
   }
 
   @Override
@@ -54,7 +52,7 @@ public class UnderscoreMisplacedOnNumberCheck extends IssuableSubscriptionVisito
   }
 
   private static boolean hasIrregularPattern(String literalValue) {
-    List<String> groups = Arrays.asList(cleanup(literalValue).split("_"));
+    List<String> groups = List.of(cleanup(literalValue).split("_"));
     // groups empty or of size one does not contain "_"
     if (groups.size() <= 1) {
       return false;

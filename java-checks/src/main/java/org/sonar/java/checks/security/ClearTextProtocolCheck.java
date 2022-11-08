@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
@@ -40,17 +38,14 @@ import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 @Rule(key = "S5332")
 public class ClearTextProtocolCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<String, Protocol> PROTOCOLS = new HashMap<>();
+  private static final Map<String, Protocol> PROTOCOLS = Map.of(
+    "org.apache.commons.net.ftp.FTPClient", new Protocol("FTP", "SFTP, SCP or FTPS"),
+    "org.apache.commons.net.smtp.SMTPClient", new Protocol("clear-text SMTP", "SMTP over SSL/TLS or SMTP with STARTTLS"),
+    "org.apache.commons.net.telnet.TelnetClient", new Protocol("Telnet", "SSH"));
 
   private static final String MESSAGE = "Using %s protocol is insecure. Use %s instead.";
   private static final String MESSAGE_HTTP = "Using HTTP protocol is insecure. Use HTTPS instead.";
   private static final String MESSAGE_ANDROID_MIXED_CONTENT = "Using a relaxed mixed content policy is security-sensitive.";
-
-  static {
-    PROTOCOLS.put("org.apache.commons.net.ftp.FTPClient", new Protocol("FTP", "SFTP, SCP or FTPS"));
-    PROTOCOLS.put("org.apache.commons.net.smtp.SMTPClient", new Protocol("clear-text SMTP", "SMTP over SSL/TLS or SMTP with STARTTLS"));
-    PROTOCOLS.put("org.apache.commons.net.telnet.TelnetClient", new Protocol("Telnet", "SSH"));
-  }
 
   private static final MethodMatchers UNSECURE_CLIENTS = MethodMatchers.create()
     .ofTypes(PROTOCOLS.keySet().toArray(new String[0]))
@@ -80,7 +75,7 @@ public class ClearTextProtocolCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override

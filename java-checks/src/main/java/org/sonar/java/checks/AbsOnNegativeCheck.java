@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
@@ -66,7 +65,7 @@ public class AbsOnNegativeCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.UNARY_MINUS);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.UNARY_MINUS);
   }
 
   @Override

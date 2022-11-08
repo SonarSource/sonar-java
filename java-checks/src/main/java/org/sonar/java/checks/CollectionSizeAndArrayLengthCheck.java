@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -47,7 +46,7 @@ public class CollectionSizeAndArrayLengthCheck extends IssuableSubscriptionVisit
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
       Tree.Kind.GREATER_THAN_OR_EQUAL_TO,
       Tree.Kind.GREATER_THAN,
       Tree.Kind.LESS_THAN,

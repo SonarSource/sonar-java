@@ -20,7 +20,6 @@
 package org.sonar.java.checks.security;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,7 +31,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -50,6 +48,7 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S3330")
 public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
@@ -58,7 +57,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   private final List<MethodInvocationTree> settersToReport = new ArrayList<>();
   private final List<TypeTree> newClassToReport = new ArrayList<>();
 
-  private static final List<String> IGNORED_COOKIE_NAMES = Arrays.asList("csrf", "xsrf");
+  private static final List<String> IGNORED_COOKIE_NAMES = List.of("csrf", "xsrf");
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_DATE = "java.util.Date";
@@ -151,7 +150,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
       Tree.Kind.VARIABLE,
       Tree.Kind.ASSIGNMENT,
       Tree.Kind.METHOD_INVOCATION,

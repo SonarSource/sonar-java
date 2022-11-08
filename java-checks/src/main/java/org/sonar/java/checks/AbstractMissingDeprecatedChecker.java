@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import javax.annotation.CheckForNull;
@@ -43,7 +42,7 @@ public abstract class AbstractMissingDeprecatedChecker extends IssuableSubscript
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(PublicApiChecker.apiKinds());
+    return List.of(PublicApiChecker.apiKinds());
   }
 
   @Override

@@ -19,6 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
@@ -27,12 +31,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
 
 @Rule(key = "S1067")
 public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
@@ -59,7 +57,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
+    return List.of(
       Tree.Kind.CLASS,
       Tree.Kind.RECORD,
       Tree.Kind.POSTFIX_INCREMENT,

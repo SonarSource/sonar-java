@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ValueBasedUtils;
 import org.sonar.java.checks.serialization.SerializableContract;
@@ -32,9 +33,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Rule(key = "S3437")
 public class ValueBasedObjectsShouldNotBeSerializedCheck extends IssuableSubscriptionVisitor {
 
@@ -42,7 +40,7 @@ public class ValueBasedObjectsShouldNotBeSerializedCheck extends IssuableSubscri
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE);
   }
 
   @Override

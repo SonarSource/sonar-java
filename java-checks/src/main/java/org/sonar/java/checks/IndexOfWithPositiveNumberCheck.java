@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -52,7 +51,7 @@ public class IndexOfWithPositiveNumberCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN);
+    return List.of(Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN);
   }
 
   @Override

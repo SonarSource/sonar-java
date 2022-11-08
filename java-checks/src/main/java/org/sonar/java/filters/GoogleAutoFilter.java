@@ -19,7 +19,6 @@
  */
 package org.sonar.java.filters;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.sonar.java.checks.AbstractClassNoFieldShouldBeInterfaceCheck;
@@ -39,7 +38,7 @@ public class GoogleAutoFilter extends BaseTreeVisitorIssueFilter {
 
   private static final String AUTO_VALUE_ANNOTATION = "com.google.auto.value.AutoValue";
 
-  private static final List<String> AUTO_ANNOTATIONS = Arrays.asList(
+  private static final List<String> AUTO_ANNOTATIONS = List.of(
     "com.google.auto.value.AutoValue$Builder",
     "com.google.auto.value.AutoOneOf");
 

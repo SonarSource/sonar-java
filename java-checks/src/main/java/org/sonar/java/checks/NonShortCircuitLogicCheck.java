@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -31,6 +29,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 @Rule(key = "S2178")
 public class NonShortCircuitLogicCheck extends IssuableSubscriptionVisitor {
@@ -42,7 +41,7 @@ public class NonShortCircuitLogicCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.AND, Tree.Kind.OR);
+    return List.of(Tree.Kind.AND, Tree.Kind.OR);
   }
 
   @Override

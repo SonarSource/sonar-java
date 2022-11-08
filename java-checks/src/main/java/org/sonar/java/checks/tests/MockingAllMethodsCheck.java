@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.tests;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +44,7 @@ public class MockingAllMethodsCheck extends AbstractMethodDetection {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD);
   }
 
   @Override

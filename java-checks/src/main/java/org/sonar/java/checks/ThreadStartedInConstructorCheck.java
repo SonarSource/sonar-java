@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,7 +44,7 @@ public class ThreadStartedInConstructorCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.RECORD, Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION, Tree.Kind.STATIC_INITIALIZER);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.RECORD, Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION, Tree.Kind.STATIC_INITIALIZER);
   }
 
   @Override

@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,8 +66,8 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
   public List<Kind> nodesToVisit() {
     ArrayList<Kind> nodesToVisit = new ArrayList<>(super.nodesToVisit());
     nodesToVisit.add(Kind.STATIC_INITIALIZER);
-    nodesToVisit.addAll(Arrays.asList(ASSIGNMENT_EXPRESSIONS));
-    nodesToVisit.addAll(Arrays.asList(UNARY_EXPRESSIONS));
+    nodesToVisit.addAll(List.of(ASSIGNMENT_EXPRESSIONS));
+    nodesToVisit.addAll(List.of(UNARY_EXPRESSIONS));
     return nodesToVisit;
   }
 

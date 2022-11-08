@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -35,7 +34,7 @@ public class ImplementsEnumerationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE);
   }
 
   @Override

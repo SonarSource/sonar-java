@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
@@ -40,7 +39,7 @@ import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotati
 @Rule(key = "S1258")
 public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<String> EXCLUDED_ANNOTATIONS = Arrays.asList(
+  private static final List<String> EXCLUDED_ANNOTATIONS = List.of(
     "javax.annotation.ManagedBean",
     "javax.ejb.MessageDriven",
     "javax.ejb.Singleton",
@@ -52,7 +51,7 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
     "org.apache.maven.plugins.annotations.Mojo",
     "org.codehaus.plexus.component.annotations.Component");
 
-  private static final List<String> AUTOWIRED_ANNOTATIONS = Arrays.asList(
+  private static final List<String> AUTOWIRED_ANNOTATIONS = List.of(
     "javax.annotation.Resource",
     "javax.ejb.EJB",
     "javax.inject.Inject",
@@ -65,7 +64,7 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.CLASS, Kind.ENUM);
+    return List.of(Kind.CLASS, Kind.ENUM);
   }
 
   @Override

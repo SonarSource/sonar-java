@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.synchronization;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -35,7 +34,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S3436")
 public class ValueBasedObjectUsedForLockCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
-  private static final List<String> VALUE_BASED_TYPES = Arrays.asList(
+  private static final List<String> VALUE_BASED_TYPES = List.of(
     "java.time.chrono.HijrahDate",
     "java.time.chrono.JapaneseDate",
     "java.time.chrono.MinguoDate",

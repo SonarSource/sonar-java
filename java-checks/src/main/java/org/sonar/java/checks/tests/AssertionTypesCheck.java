@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.tests;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -152,7 +151,7 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     .withAnyParameters()
     .build();
 
-  private static final List<String> ASSERTJ_EXCEPTIONS = Arrays.asList(
+  private static final List<String> ASSERTJ_EXCEPTIONS = List.of(
     "org.assertj.core.api.AbstractTemporalAssert",
     "org.assertj.core.api.AbstractDateAssert",
     "org.assertj.core.api.AbstractBigIntegerAssert",
