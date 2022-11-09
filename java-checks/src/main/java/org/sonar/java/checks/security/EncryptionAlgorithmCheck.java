@@ -92,7 +92,7 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
         return Optional.of("Use a secure cipher mode.");
       }
 
-      if ("CBC".equalsIgnoreCase(mode) && !padding.equalsIgnoreCase("NoPadding")) {
+      if ("CBC".equalsIgnoreCase(mode) && !"NoPadding".equalsIgnoreCase(padding)) {
         return Optional.of("Use another cipher mode or disable padding.");
       }
 
