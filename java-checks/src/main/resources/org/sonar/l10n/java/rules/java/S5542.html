@@ -1,4 +1,4 @@
-<p>Encryption operations should use a secure mode and padding scheme so that confidentiality and integrity can be guaranteed.</p>
+<p>Encryption algorithms should use secure modes and padding schemes where appropriate to guarantee data confidentiality and integrity.</p>
 <ul>
   <li> For block cipher encryption algorithms (like AES):
     <ul>
@@ -16,25 +16,25 @@
 </ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
-Cipher c1 = Cipher.getInstance("AES"); // Noncompliant: by default ECB mode is chosen
-Cipher c2 = Cipher.getInstance("AES/ECB/NoPadding"); // Noncompliant: ECB doesn't provide serious message confidentiality
+Cipher.getInstance("AES"); // Noncompliant: by default ECB mode is chosen
+Cipher.getInstance("AES/ECB/NoPadding"); // Noncompliant: ECB doesn't provide serious message confidentiality
 
-Cipher c3 = Cipher.getInstance("RSA/None/NoPadding"); // Noncompliant: RSA without OAEP padding scheme is not recommanded
+Cipher.getInstance("AES/CBC/PKCS5Padding"); // Noncompliant: Vulnerable to Padding Oracle attacks
+
+Cipher.getInstance("RSA/None/NoPadding"); // Noncompliant: RSA without OAEP padding scheme is not recommended
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-// Recommended for block ciphers
-Cipher c1 = Cipher.getInstance("AES/GCM/NoPadding"); // Compliant
+Cipher.getInstance("AES/GCM/NoPadding");
 
-// Recommended for RSA
-Cipher c3 = Cipher.getInstance("RSA/None/OAEPWITHSHA-256ANDMGF1PADDING"); // Compliant
+Cipher.getInstance("RSA/None/OAEPWITHSHA-256ANDMGF1PADDING");
 // or the ECB mode can be used for RSA when "None" is not available with the security provider used - in that case, ECB will be treated as "None" for RSA.
-Cipher c3 = Cipher.getInstance("RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING"); // Compliant
+Cipher.getInstance("RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING");
 </pre>
 <h2>See</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
-  <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
   Misconfiguration </li>
   <li> <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x08-v3-cryptography_verification_requirements">Mobile AppSec
   Verification Standard</a> - Cryptography Requirements </li>
