@@ -22,6 +22,7 @@ package org.sonar.java.checks.security;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
@@ -43,10 +44,10 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return MethodMatchers.create()
-        .ofTypes("javax.crypto.Cipher")
-        .names("getInstance")
-        .withAnyParameters()
-        .build();
+      .ofTypes("javax.crypto.Cipher")
+      .names("getInstance")
+      .withAnyParameters()
+      .build();
   }
 
   @Override
@@ -73,12 +74,12 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
       }
     }
     String algorithmName = ExpressionsHelper.getConstantValueAsString(algorithmTree).value();
-    if (algorithmName != null && isInsecureAlgorithm(algorithmName)) {
-      reportIssue(firstArgument, "Use secure mode and padding scheme.", transformationDefinition, null);
+    if (algorithmName != null) {
+      getInsecureAlgorithmMessage(algorithmName).ifPresent(msg -> reportIssue(firstArgument, msg, transformationDefinition, null));
     }
   }
 
-  private static boolean isInsecureAlgorithm(String algorithmName) {
+  private static Optional<String> getInsecureAlgorithmMessage(String algorithmName) {
     Matcher matcher = ALGORITHM_PATTERN.matcher(algorithmName);
     if (matcher.matches()) {
       String algorithm = matcher.group(1);
@@ -88,15 +89,20 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
       boolean isRSA = "RSA".equalsIgnoreCase(algorithm);
 
       if ("ECB".equalsIgnoreCase(mode) && !isRSA) {
-        return true;
-      }
-      if ("CBC".equalsIgnoreCase(mode)) {
-        return false;
+        return Optional.of("Use a secure cipher mode.");
       }
 
-      return isRSA && !(padding.toUpperCase(Locale.ROOT).startsWith("OAEP"));
+      if ("CBC".equalsIgnoreCase(mode) && !padding.equalsIgnoreCase("NoPadding")) {
+        return Optional.of("Use another cipher mode or disable padding.");
+      }
+
+      if (isRSA && !(padding.toUpperCase(Locale.ROOT).startsWith("OAEP"))) {
+        return Optional.of("Use a secure padding scheme.");
+      }
+
+      return Optional.empty();
     }
     // By default, ECB is used.
-    return true;
+    return Optional.of("Use a secure padding scheme.");
   }
 }
