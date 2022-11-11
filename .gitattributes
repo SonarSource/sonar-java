@@ -1,3 +1,4 @@
 java-frontend/src/test/files/highlighter/SonarSymTable.java eol=lf
 java-checks/src/test/files/checks/NonEmptyFile.java eol=cr
 java-frontend/src/test/java/org/sonar/java/model/TreeTokenCompletenessTest.java eol=lf
+java-checks/src/main/java/org/sonar/java/checks/helpers/ExpressionEvaluator.java eol=lf
