@@ -56,8 +56,8 @@ public class CounterModeIVShouldNotBeReusedCheck {
       
       byte[] src = "7cVgr5cbdCZV".getBytes(utf8);
       GCMParameterSpec params = new GCMParameterSpec(128, src);
-      cipher.init(1, skeySpec, params); // Noncompliant [[secondary=+0,-2,-3]] {{Use a dynamically-generated initialization vector (IV) to avoid IV-key pair reuse.}}
-      cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new GCMParameterSpec(128, src)); // Noncompliant [[secondary=+0,-2]]
+      cipher.init(1, skeySpec, params); // Noncompliant [[secondary=+0,-1,-2]] {{Use a dynamically-generated initialization vector (IV) to avoid IV-key pair reuse.}}
+      cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new GCMParameterSpec(128, src)); // Noncompliant [[secondary=+0,-3]]
       
       String staticPiece1 = "imjustthefirsthalf";
       String staticPiece2 = "secondhalf";
