@@ -34,7 +34,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.CredentialMethod;
 import org.sonar.java.checks.helpers.CredentialMethodsLoader;
-import org.sonar.java.checks.helpers.ExpressionEvaluator;
+import org.sonar.java.checks.helpers.HardcodedStringExpressionChecker;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
@@ -63,14 +63,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   public static final String CREDENTIALS_METHODS_FILE = "/org/sonar/java/checks/security/S6437-methods.json";
 
   private static final Logger LOG = Loggers.get(HardCodedCredentialsShouldNotBeUsedCheck.class);
-
-  private static final MethodMatchers SUPPORTED_CONSTRUCTORS = MethodMatchers.create()
-    .ofTypes(ExpressionEvaluator.JAVA_LANG_STRING)
-    .constructor()
-    .addParametersMatcher(parameters -> !parameters.isEmpty())
-    .build();
-
-  private ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(Map.of(SUPPORTED_CONSTRUCTORS, 0));
 
   private static final String ISSUE_MESSAGE = "Revoke and change this password, as it is compromised.";
 
@@ -134,7 +126,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     for (int targetArgumentIndex : method.indices) {
       ExpressionTree argument = arguments.get(targetArgumentIndex);
       var secondaryLocations = new ArrayList<JavaFileScannerContext.Location>();
-      if (expressionEvaluator.isExpressionDerivedFromPlainText(argument, secondaryLocations, new HashSet<>())) {
+      if (HardcodedStringExpressionChecker.isExpressionDerivedFromPlainText(argument, secondaryLocations, new HashSet<>())) {
         reportIssue(argument, ISSUE_MESSAGE, secondaryLocations, null);
       }
     }

@@ -1,10 +1,25 @@
+/*
+ * SonarQube Java
+ * Copyright (C) 2012-2022 SonarSource SA
+ * mailto:info AT sonarsource DOT com
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package org.sonar.java.checks.helpers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
@@ -12,7 +27,6 @@ import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -26,17 +40,24 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-public class ExpressionEvaluator {
+/**
+ * This class is used to determine if an expression evaluates to a static string.
+ * It recursively checks for the origin of the expression that it is currently evaluating.
+ * When creating an instance of the class, we can specify constructors that we want to visit during the recursive steps.
+ */
+public class HardcodedStringExpressionChecker {
 
-  private Map<MethodMatchers, Integer> supportedConstructors = new HashMap<>();
-
-  public ExpressionEvaluator(Map<MethodMatchers, Integer> constructors) {
-    if (constructors != null) {
-      supportedConstructors = constructors;
-    }
+  private HardcodedStringExpressionChecker() {
   }
 
-  public static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final String JAVA_LANG_STRING = "java.lang.String";
+
+  private static final MethodMatchers SUPPORTED_CONSTRUCTORS = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING)
+    .constructor()
+    .addParametersMatcher(parameters -> !parameters.isEmpty())
+    .build();
+
   private static final MethodMatchers STRING_TO_ARRAY_METHODS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
@@ -66,13 +87,7 @@ public class ExpressionEvaluator {
     .withAnyParameters()
     .build();
 
-  private static final MethodMatchers STRING_CONSTRUCTOR = MethodMatchers.create()
-    .ofTypes(JAVA_LANG_STRING)
-    .constructor()
-    .addParametersMatcher(parameters -> !parameters.isEmpty())
-    .build();
-
-  public boolean isExpressionDerivedFromPlainText(ExpressionTree expression, List<JavaFileScannerContext.Location> secondaryLocations,
+  public static boolean isExpressionDerivedFromPlainText(ExpressionTree expression, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
     ExpressionTree arg = ExpressionUtils.skipParentheses(expression);
     switch (arg.kind()) {
@@ -115,13 +130,13 @@ public class ExpressionEvaluator {
     }
   }
 
-  private boolean isDerivedFromPlainText(BinaryExpressionTree binaryExpression, List<JavaFileScannerContext.Location> secondaryLocations,
+  private static boolean isDerivedFromPlainText(BinaryExpressionTree binaryExpression, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
     return isExpressionDerivedFromPlainText(binaryExpression.rightOperand(), secondaryLocations, visited) &&
       isExpressionDerivedFromPlainText(binaryExpression.leftOperand(), secondaryLocations, visited);
   }
 
-  private boolean isDerivedFromPlainText(IdentifierTree identifier, List<JavaFileScannerContext.Location> secondaryLocations,
+  private static boolean isDerivedFromPlainText(IdentifierTree identifier, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
     Symbol symbol = identifier.symbol();
     boolean firstVisit = visited.add(symbol);
@@ -133,12 +148,7 @@ public class ExpressionEvaluator {
       return JUtils.constantValue((Symbol.VariableSymbol) symbol).isPresent();
     }
 
-    ExpressionTree initializer = variable.initializer();
-    List<ExpressionTree> assignments = new ArrayList<>();
-    Optional.ofNullable(initializer).ifPresent(assignments::add);
-    ReassignmentFinder.getReassignments(variable, symbol.usages()).stream()
-      .map(AssignmentExpressionTree::expression)
-      .forEach(assignments::add);
+    List<ExpressionTree> assignments = ExpressionsHelper.getIdentifierAssignments(identifier);
 
     boolean identifierIsDerivedFromPlainText = !assignments.isEmpty() &&
       assignments.stream()
@@ -151,29 +161,29 @@ public class ExpressionEvaluator {
     return false;
   }
 
-  private boolean isNonFinalField(Symbol symbol) {
+  private static boolean isNonFinalField(Symbol symbol) {
     return symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !symbol.isFinal();
   }
 
-  private boolean isDerivedFromPlainText(NewArrayTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
+  private static boolean isDerivedFromPlainText(NewArrayTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
     ListTree<ExpressionTree> initializers = invocation.initializers();
     return !initializers.isEmpty() && initializers.stream()
       .allMatch(expression -> isExpressionDerivedFromPlainText(expression, secondaryLocations, visited));
   }
 
-  private boolean isDerivedFromPlainText(NewClassTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
+  /**
+   * When a constructor is found during the evaluation, we check if it matches with one of the specified constructors
+   * we passed to the Evaluator. If it does match, we will recursively evaluate the parameter targeted by the associated
+   * index in the supportedConstructors map.
+   */
+  private static boolean isDerivedFromPlainText(NewClassTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
-    for (Map.Entry<MethodMatchers, Integer> entry : supportedConstructors.entrySet()) {
-      if (entry.getKey().matches(invocation)) {
-        return isExpressionDerivedFromPlainText(
-          invocation.arguments().get(entry.getValue()), secondaryLocations, visited);
-      }
-    }
-    return false;
+    return SUPPORTED_CONSTRUCTORS.matches(invocation) &&
+      isExpressionDerivedFromPlainText(invocation.arguments().get(0), secondaryLocations, visited);
   }
 
-  private boolean isDerivedFromPlainText(MethodInvocationTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
+  private static boolean isDerivedFromPlainText(MethodInvocationTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
 
     if (STRING_VALUE_OF.matches(invocation)) {
@@ -188,7 +198,7 @@ public class ExpressionEvaluator {
       isExpressionDerivedFromPlainText(((MemberSelectExpressionTree) methodSelect).expression(), secondaryLocations, visited);
   }
 
-  private boolean isDerivedFromPlainText(ConditionalExpressionTree conditionalTree, List<JavaFileScannerContext.Location> secondaryLocations,
+  private static boolean isDerivedFromPlainText(ConditionalExpressionTree conditionalTree, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
     return isExpressionDerivedFromPlainText(conditionalTree.trueExpression(), secondaryLocations, visited) &&
       isExpressionDerivedFromPlainText(conditionalTree.falseExpression(), secondaryLocations, visited);

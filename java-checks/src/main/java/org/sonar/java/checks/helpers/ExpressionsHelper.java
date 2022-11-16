@@ -47,6 +47,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.checks.helpers.ReassignmentFinder.getInitializerOrExpression;
 import static org.sonar.java.checks.helpers.ReassignmentFinder.getReassignments;
@@ -257,5 +258,19 @@ public class ExpressionsHelper {
   public static boolean isNotReassigned(Symbol symbol) {
     return symbol.isFinal() || (symbol.isVariableSymbol() && JUtils.isEffectivelyFinal(((Symbol.VariableSymbol) symbol)));
   }
+  
+
+  public static List<ExpressionTree> getIdentifierAssignments(IdentifierTree identifier){
+    List<ExpressionTree> assignments = new ArrayList<>();
+    Symbol symbol = identifier.symbol();
+    VariableTree variable = (VariableTree) symbol.declaration();
+    ExpressionTree initializer = variable.initializer();
+    Optional.ofNullable(initializer).ifPresent(assignments::add);
+    ReassignmentFinder.getReassignments(variable, symbol.usages()).stream()
+    .map(AssignmentExpressionTree::expression)
+    .forEach(assignments::add);
+    return assignments;
+  }
+  
 
 }
