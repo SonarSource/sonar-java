@@ -61,13 +61,11 @@ public class CounterModeIVShouldNotBeReusedCheck extends IssuableSubscriptionVis
   private static final MethodMatchers GCM_CONSTRUCTOR = MethodMatchers.create()
     .ofTypes("javax.crypto.spec.GCMParameterSpec")
     .constructor()
-    .addParametersMatcher(parameters -> !parameters.isEmpty())
     .build();
 
   private static final MethodMatchers AEAD_CONSTRUCTOR = MethodMatchers.create()
     .ofTypes("org.bouncycastle.crypto.params.AEADParameters")
     .constructor()
-    .addParametersMatcher(parameters -> !parameters.isEmpty())
     .build();
 
   @Override

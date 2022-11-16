@@ -48,7 +48,7 @@ public class CounterModeIVShouldNotBeReusedCheck {
       byte[] bytes = String.valueOf(chars).getBytes(utf8);
       GCMParameterSpec params5 = new GCMParameterSpec(128, bytes);
       cipher.init(1, skeySpec, params5); // Noncompliant [[sc=14;ec=18;secondary=+0,-1,-2,-3]]
-      
+      cipher.init(Cipher.DECRYPT_MODE, skeySpec, params5); // Compliant decrypt mode
       
       byte[] KEY_BYTES = {0x41, 0x70, 0x61, 0x63, 0x68, 0x65, 0x43, 0x6F, 0x6D, 0x6D, 0x6F, 0x6E, 0x73, 0x56, 0x46, 0x53};
       GCMParameterSpec params4 = new GCMParameterSpec(128, KEY_BYTES);
