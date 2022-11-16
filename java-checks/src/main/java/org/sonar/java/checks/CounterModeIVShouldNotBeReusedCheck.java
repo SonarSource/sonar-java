@@ -95,7 +95,7 @@ public class CounterModeIVShouldNotBeReusedCheck extends IssuableSubscriptionVis
     }
   }
 
-  private boolean isJCAOperationModeEncrypt(MethodInvocationTree method) {
+  private static boolean isJCAOperationModeEncrypt(MethodInvocationTree method) {
     if (JCA_CHIPER_INIT_METHODS.matches(method)) {
       Optional<Object> value = method.arguments().get(0).asConstant();
       return value.isPresent() && (Integer) value.get() == Cipher.ENCRYPT_MODE;
@@ -103,7 +103,7 @@ public class CounterModeIVShouldNotBeReusedCheck extends IssuableSubscriptionVis
     return false;
   }
 
-  private boolean isBCCipherForEncryption(MethodInvocationTree method) {
+  private static boolean isBCCipherForEncryption(MethodInvocationTree method) {
     if (BC_CHIPER_INIT_METHODS.matches(method)) {
       Optional<Object> value = method.arguments().get(0).asConstant();
       return value.isPresent() && (Boolean) value.get();
