@@ -44,6 +44,7 @@ public class JspTest {
 
   static {
     OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
+      .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .setEdition(Edition.ENTERPRISE)
       .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION)
