@@ -22,8 +22,8 @@ public class CounterModeIVShouldNotBeReusedCheck {
       Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
       SecretKeySpec skeySpec = new SecretKeySpec(new byte[] {}, "AES");
 
-      char[] chars;
-      chars = "testme".toCharArray();
+      
+      char[] chars = "testme".toCharArray();
       byte[] bytes = String.valueOf(chars).getBytes(utf8);
       GCMParameterSpec params5 = new GCMParameterSpec(128, bytes);
       cipher.init(1, skeySpec, params5); // Noncompliant [[sc=14;ec=18;secondary=+0,-1,-2,-3]]
@@ -47,6 +47,9 @@ public class CounterModeIVShouldNotBeReusedCheck {
       
       GCMParameterSpec gcm3 = new GCMParameterSpec(128, unkownBytes);
       cipher.init(1, skeySpec, gcm3);
+      
+      GCMParameterSpec gcm4 = new GCMParameterSpec(128, unknownString.getBytes());
+      cipher.init(1, skeySpec, gcm4);
       
       
       
