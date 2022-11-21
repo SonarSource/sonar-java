@@ -96,10 +96,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     new Pbkdf2PasswordEncoder(longString.substring(0, 2)); // Noncompliant
     new Pbkdf2PasswordEncoder(longString.trim()); // Noncompliant
     new Pbkdf2PasswordEncoder(longString.strip()); // Noncompliant
-    //new Pbkdf2PasswordEncoder(longString.stripIndent()); 
+    new Pbkdf2PasswordEncoder(longString.stripIndent()); // Noncompliant
     new Pbkdf2PasswordEncoder(longString.stripLeading()); // Noncompliant
     new Pbkdf2PasswordEncoder(longString.stripTrailing()); // Noncompliant
-    //new Pbkdf2PasswordEncoder(longString.translateEscapes()); 
+    new Pbkdf2PasswordEncoder(longString.translateEscapes()); // Noncompliant
     new Pbkdf2PasswordEncoder(longString.intern()); // Noncompliant
     new Pbkdf2PasswordEncoder(longString.toLowerCase()); // Noncompliant
     new Pbkdf2PasswordEncoder(longString.toLowerCase(Locale.ROOT)); // Noncompliant

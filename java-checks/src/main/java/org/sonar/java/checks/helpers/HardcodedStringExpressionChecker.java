@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.sonar.java.model.ExpressionUtils;
@@ -40,19 +41,22 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.ExpressionsHelper.*;
+
 /**
  * This class is used to determine if an expression evaluates to a static string.
  * It recursively checks for the origin of the expression that it is currently evaluating.
- * When creating an instance of the class, we can specify constructors that we want to visit during the recursive steps.
  */
 public class HardcodedStringExpressionChecker {
 
   private HardcodedStringExpressionChecker() {
   }
 
+  private static final String SECONDARY_LOCATION_ISSUE_MESSAGE = "The static value is defined here.";
+  
   private static final String JAVA_LANG_STRING = "java.lang.String";
 
-  private static final MethodMatchers SUPPORTED_CONSTRUCTORS = MethodMatchers.create()
+  private static final MethodMatchers STRING_CONSTRUCTOR = MethodMatchers.create()
     .ofTypes(JAVA_LANG_STRING)
     .constructor()
     .addParametersMatcher(parameters -> !parameters.isEmpty())
@@ -103,10 +107,10 @@ public class HardcodedStringExpressionChecker {
       case METHOD_INVOCATION:
         MethodInvocationTree methodInvocationTree = (MethodInvocationTree) arg;
         return isDerivedFromPlainText(methodInvocationTree, secondaryLocations, visited);
-      case CONDITIONAL_EXPRESSION: // needed?
+      case CONDITIONAL_EXPRESSION: 
         ConditionalExpressionTree conditionalTree = (ConditionalExpressionTree) arg;
         return isDerivedFromPlainText(conditionalTree, secondaryLocations, visited);
-      case MEMBER_SELECT: // needed?
+      case MEMBER_SELECT: 
         MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) arg;
         return isDerivedFromPlainText(memberSelect.identifier(), secondaryLocations, visited);
       case STRING_LITERAL:
@@ -148,14 +152,20 @@ public class HardcodedStringExpressionChecker {
       return JUtils.constantValue((Symbol.VariableSymbol) symbol).isPresent();
     }
 
-    List<ExpressionTree> assignments = ExpressionsHelper.getIdentifierAssignments(identifier);
+    List<ExpressionTree> assignments = getIdentifierAssignments(identifier);
 
+    List<JavaFileScannerContext.Location> tempSecondaryLocations = new ArrayList<>();
     boolean identifierIsDerivedFromPlainText = !assignments.isEmpty() &&
       assignments.stream()
-        .allMatch(expression -> isExpressionDerivedFromPlainText(expression, secondaryLocations, visited));
+        .allMatch(expression -> isExpressionDerivedFromPlainText(expression, tempSecondaryLocations, visited));
 
     if (identifierIsDerivedFromPlainText) {
-      secondaryLocations.add(new JavaFileScannerContext.Location("", variable));
+      if(variable.initializer() == null) {
+        secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, variable));        
+      }else {
+        secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, variable.initializer()));
+      }
+      secondaryLocations.addAll(tempSecondaryLocations);
       return true;
     }
     return false;
@@ -172,14 +182,9 @@ public class HardcodedStringExpressionChecker {
       .allMatch(expression -> isExpressionDerivedFromPlainText(expression, secondaryLocations, visited));
   }
 
-  /**
-   * When a constructor is found during the evaluation, we check if it matches with one of the specified constructors
-   * we passed to the Evaluator. If it does match, we will recursively evaluate the parameter targeted by the associated
-   * index in the supportedConstructors map.
-   */
   private static boolean isDerivedFromPlainText(NewClassTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
-    return SUPPORTED_CONSTRUCTORS.matches(invocation) &&
+    return STRING_CONSTRUCTOR.matches(invocation) &&
       isExpressionDerivedFromPlainText(invocation.arguments().get(0), secondaryLocations, visited);
   }
 

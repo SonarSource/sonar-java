@@ -45,6 +45,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 public class CounterModeIVShouldNotBeReusedCheck extends IssuableSubscriptionVisitor {
 
   private static final String PRIMARY_LOCATION_ISSUE_MESSAGE = "Use a dynamically-generated initialization vector (IV) to avoid IV-key pair reuse.";
+  private static final String SECONDARY_LOCATION_ISSUE_MESSAGE = "The static value is defined here.";
 
   private static final MethodMatchers JCA_CHIPER_INIT_METHODS = MethodMatchers.create()
     .ofTypes("javax.crypto.Cipher")
@@ -97,16 +98,16 @@ public class CounterModeIVShouldNotBeReusedCheck extends IssuableSubscriptionVis
 
   private static boolean isJCAOperationModeEncrypt(MethodInvocationTree method) {
     if (JCA_CHIPER_INIT_METHODS.matches(method)) {
-      Optional<Object> value = method.arguments().get(0).asConstant();
-      return value.isPresent() && (Integer) value.get() == Cipher.ENCRYPT_MODE;
+      Optional<Integer> value = method.arguments().get(0).asConstant(Integer.class);
+      return value.isPresent() && value.get() == Cipher.ENCRYPT_MODE;
     }
     return false;
   }
 
   private static boolean isBCCipherForEncryption(MethodInvocationTree method) {
     if (BC_CHIPER_INIT_METHODS.matches(method)) {
-      Optional<Object> value = method.arguments().get(0).asConstant();
-      return value.isPresent() && (Boolean) value.get();
+      Optional<Boolean> value = method.arguments().get(0).asConstant(Boolean.class);
+      return value.isPresent() && value.get();
     }
     return false;
   }
@@ -117,17 +118,19 @@ public class CounterModeIVShouldNotBeReusedCheck extends IssuableSubscriptionVis
     switch (argument.kind()) {
       case IDENTIFIER:
         List<ExpressionTree> assignments = ExpressionsHelper.getIdentifierAssignments((IdentifierTree) argument);
-        secondaryLocations.add(new JavaFileScannerContext.Location("", argument));
+        secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, argument));
         return assignments.stream()
           .allMatch(assignment -> checkForJCAHardcodedIVInitialization(assignment, secondaryLocations));
       case NEW_CLASS:
         NewClassTree constructor = (NewClassTree) argument;
         if (GCM_CONSTRUCTOR.matches(constructor)) {
-          secondaryLocations.add(new JavaFileScannerContext.Location("", constructor.arguments().get(1)));
-          return HardcodedStringExpressionChecker.isExpressionDerivedFromPlainText(constructor.arguments().get(1), secondaryLocations, new HashSet<>());
+          ExpressionTree arg = constructor.arguments().get(1);
+          secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, arg));
+          return HardcodedStringExpressionChecker.isExpressionDerivedFromPlainText(arg, secondaryLocations, new HashSet<>());
         } else if (AEAD_CONSTRUCTOR.matches(constructor)) {
-          secondaryLocations.add(new JavaFileScannerContext.Location("", constructor.arguments().get(2)));
-          return HardcodedStringExpressionChecker.isExpressionDerivedFromPlainText(constructor.arguments().get(2), secondaryLocations, new HashSet<>());
+          ExpressionTree arg = constructor.arguments().get(2);
+          secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, arg));
+          return HardcodedStringExpressionChecker.isExpressionDerivedFromPlainText(arg, secondaryLocations, new HashSet<>());
         }
         return false;
       default:

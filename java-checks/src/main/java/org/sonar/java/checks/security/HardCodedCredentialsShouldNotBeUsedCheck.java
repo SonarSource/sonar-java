@@ -31,7 +31,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.CredentialMethod;
 import org.sonar.java.checks.helpers.CredentialMethodsLoader;
-import org.sonar.java.checks.helpers.HardcodedStringExpressionChecker;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -40,6 +39,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.checks.helpers.HardcodedStringExpressionChecker.*;
 
 @Rule(key = "S6437")
 public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor {
@@ -109,7 +110,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     for (int targetArgumentIndex : method.indices) {
       ExpressionTree argument = arguments.get(targetArgumentIndex);
       var secondaryLocations = new ArrayList<JavaFileScannerContext.Location>();
-      if (HardcodedStringExpressionChecker.isExpressionDerivedFromPlainText(argument, secondaryLocations, new HashSet<>())) {
+      if (isExpressionDerivedFromPlainText(argument, secondaryLocations, new HashSet<>())) {
         reportIssue(argument, ISSUE_MESSAGE, secondaryLocations, null);
       }
     }

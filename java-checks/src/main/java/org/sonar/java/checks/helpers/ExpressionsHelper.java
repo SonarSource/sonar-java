@@ -58,7 +58,7 @@ public class ExpressionsHelper {
   }
 
   public static String concatenate(@Nullable ExpressionTree tree) {
-    if(tree == null) {
+    if (tree == null) {
       return "";
     }
     Deque<String> pieces = new LinkedList<>();
@@ -75,7 +75,7 @@ public class ExpressionsHelper {
     }
 
     StringBuilder sb = new StringBuilder();
-    for (String piece: pieces) {
+    for (String piece : pieces) {
       sb.append(piece);
     }
     return sb.toString();
@@ -88,7 +88,7 @@ public class ExpressionsHelper {
    */
   public static TypeTree reportOnClassTree(ClassTree classTree) {
     TypeTree reportTree = classTree.simpleName();
-    if(reportTree == null) {
+    if (reportTree == null) {
       return ((NewClassTree) classTree.parent()).identifier();
     }
     return reportTree;
@@ -196,7 +196,7 @@ public class ExpressionsHelper {
     }
     // note: this is assuming that custom implementors of Collection
     // have the good sense to make it serializable just like all implementations in the JDK
-    if(type.isSubtypeOf("java.lang.Iterable") ||
+    if (type.isSubtypeOf("java.lang.Iterable") ||
       type.isSubtypeOf("java.util.Map") ||
       type.isSubtypeOf("java.util.Enumeration")) {
       return false;
@@ -207,11 +207,10 @@ public class ExpressionsHelper {
 
   private static boolean isAssignedToNonSerializable(ExpressionTree expression) {
     return ExpressionUtils.extractIdentifierSymbol(expression)
-      .filter(symbol ->
-        initializedAndAssignedExpressionStream(symbol)
-          .map(ExpressionTree::symbolType)
-          .filter(Predicate.not(Type::isUnknown))
-          .anyMatch(ExpressionsHelper::isNonSerializable))
+      .filter(symbol -> initializedAndAssignedExpressionStream(symbol)
+        .map(ExpressionTree::symbolType)
+        .filter(Predicate.not(Type::isUnknown))
+        .anyMatch(ExpressionsHelper::isNonSerializable))
       .isPresent();
   }
 
@@ -228,7 +227,7 @@ public class ExpressionsHelper {
     } else {
       return Stream.concat(Stream.of(initializer), assignedExpressionStream);
     }
-  }  
+  }
 
   public static boolean alwaysReturnSameValue(ExpressionTree expression) {
     if (expression.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
@@ -258,19 +257,18 @@ public class ExpressionsHelper {
   public static boolean isNotReassigned(Symbol symbol) {
     return symbol.isFinal() || (symbol.isVariableSymbol() && JUtils.isEffectivelyFinal(((Symbol.VariableSymbol) symbol)));
   }
-  
 
-  public static List<ExpressionTree> getIdentifierAssignments(IdentifierTree identifier){
+  public static List<ExpressionTree> getIdentifierAssignments(IdentifierTree identifier) {
     List<ExpressionTree> assignments = new ArrayList<>();
     Symbol symbol = identifier.symbol();
     VariableTree variable = (VariableTree) symbol.declaration();
-    ExpressionTree initializer = variable.initializer();
-    Optional.ofNullable(initializer).ifPresent(assignments::add);
-    ReassignmentFinder.getReassignments(variable, symbol.usages()).stream()
-    .map(AssignmentExpressionTree::expression)
-    .forEach(assignments::add);
+    if(variable.initializer() != null) {
+      assignments.add(variable.initializer());
+    }
+    getReassignments(variable, symbol.usages()).stream()
+      .map(AssignmentExpressionTree::expression)
+      .forEach(assignments::add);
     return assignments;
   }
-  
 
 }
