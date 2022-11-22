@@ -1,3 +1,7 @@
 java-frontend/src/test/files/highlighter/SonarSymTable.java eol=lf
 java-checks/src/test/files/checks/NonEmptyFile.java eol=cr
 java-frontend/src/test/java/org/sonar/java/model/TreeTokenCompletenessTest.java eol=lf
+java-checks/src/main/java/org/sonar/java/checks/helpers/ExpressionEvaluator.java eol=lf
+java-checks-test-sources/src/main/java/checks/CounterModeIVShouldNotBeReusedCheck.java eol=lf
+java-checks/src/main/java/org/sonar/java/checks/helpers/HardcodedStringExpressionChecker.java eol=lf
+its/ruling/src/test/resources/autoscan/autoscan-diff-by-rules.json eol=lf

@@ -229,4 +229,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
   private static String getAString() {
     return "secret";
   }
+  
+  void fun() {
+    char[] chars = "testme".toCharArray();
+    byte[] bytes = String.valueOf(chars).getBytes(StandardCharsets.UTF_8);
+    SHA256.getHMAC(bytes, bytes); // Noncompliant
+  }
 }

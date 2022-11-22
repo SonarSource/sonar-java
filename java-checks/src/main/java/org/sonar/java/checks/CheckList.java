@@ -304,6 +304,7 @@ public final class CheckList {
     CatchOfThrowableOrErrorCheck.class,
     CatchRethrowingCheck.class,
     ChangeMethodContractCheck.class,
+    CounterModeIVShouldNotBeReusedCheck.class,
     ChildClassShadowFieldCheck.class,
     CipherBlockChainingCheck.class,
     ClassComparedByNameCheck.class,
