@@ -40,7 +40,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.HardcodedStringExpressionChecker.*;
+import static org.sonar.java.checks.helpers.HardcodedStringExpressionChecker.isExpressionDerivedFromPlainText;
 
 @Rule(key = "S6437")
 public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor {

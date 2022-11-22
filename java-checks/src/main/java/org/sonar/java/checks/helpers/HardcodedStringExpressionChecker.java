@@ -41,7 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.checks.helpers.ExpressionsHelper.*;
+import static org.sonar.java.checks.helpers.ExpressionsHelper.getIdentifierAssignments;
 
 /**
  * This class is used to determine if an expression evaluates to a static string.
@@ -53,7 +53,7 @@ public class HardcodedStringExpressionChecker {
   }
 
   private static final String SECONDARY_LOCATION_ISSUE_MESSAGE = "The static value is defined here.";
-  
+
   private static final String JAVA_LANG_STRING = "java.lang.String";
 
   private static final MethodMatchers STRING_CONSTRUCTOR = MethodMatchers.create()
@@ -107,10 +107,10 @@ public class HardcodedStringExpressionChecker {
       case METHOD_INVOCATION:
         MethodInvocationTree methodInvocationTree = (MethodInvocationTree) arg;
         return isDerivedFromPlainText(methodInvocationTree, secondaryLocations, visited);
-      case CONDITIONAL_EXPRESSION: 
+      case CONDITIONAL_EXPRESSION:
         ConditionalExpressionTree conditionalTree = (ConditionalExpressionTree) arg;
         return isDerivedFromPlainText(conditionalTree, secondaryLocations, visited);
-      case MEMBER_SELECT: 
+      case MEMBER_SELECT:
         MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) arg;
         return isDerivedFromPlainText(memberSelect.identifier(), secondaryLocations, visited);
       case STRING_LITERAL:
@@ -160,9 +160,9 @@ public class HardcodedStringExpressionChecker {
         .allMatch(expression -> isExpressionDerivedFromPlainText(expression, tempSecondaryLocations, visited));
 
     if (identifierIsDerivedFromPlainText) {
-      if(variable.initializer() == null) {
-        secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, variable));        
-      }else {
+      if (variable.initializer() == null) {
+        secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, variable));
+      } else {
         secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, variable.initializer()));
       }
       secondaryLocations.addAll(tempSecondaryLocations);
