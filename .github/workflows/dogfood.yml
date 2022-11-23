@@ -11,15 +11,24 @@ on:
 #      - 'dogfood/*'
 
 env:
-  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-  SLACK_USERNAME: Dogfood build action      
-      
+  SLACK_CHANNEL: team-lang-java-notifs
+  SLACK_USERNAME: Dogfood build action
+
 jobs:
   dogfood_merge:
     runs-on: ubuntu-latest
     name: Update dogfood branch
+    permissions:
+      id-token: write # required for SonarSource/vault-action-wrapper
+      contents: write # required to grant GITHUB_TOKEN writing permission
     steps:
-    - name: git octopus step     
+    - name: get secrets
+      id: secrets
+      uses: SonarSource/vault-action-wrapper@d1c1ab4ca5ad07fd9cdfe1eff038a39673dfca64  # tag=2.4.2-1
+      with:
+        secrets: |
+          development/kv/data/slack webhook | SLACK_WEBHOOK;
+    - name: git octopus step
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       id: dogfood
@@ -33,6 +42,7 @@ jobs:
     - name: Notify success on Slack
       uses: Ilshidur/action-slack@1.6.2
       env:
+        SLACK_WEBHOOK: ${{ fromJSON(steps.secrets.outputs.vault).SLACK_WEBHOOK }}
         SLACK_OVERRIDE_MESSAGE: 'Dogfood build for `${{ steps.dogfood.outputs.sha1 }}`: *successful*'
       with:
         args: 'Succeed to build dogfood branch'
@@ -40,9 +50,7 @@ jobs:
       uses: Ilshidur/action-slack@1.6.2
       if: failure()
       env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_USERNAME: Dogfood build action      
+        SLACK_WEBHOOK: ${{ fromJSON(steps.secrets.outputs.vault).SLACK_WEBHOOK }}
         SLACK_OVERRIDE_MESSAGE: 'Dogfood build for `${{ steps.dogfood.outputs.sha1 }}`: *failed*, see the logs at https://github.com/SonarSource/sonar-java/actions'
       with:
         args: 'Fail to build dogfood branch'
-
