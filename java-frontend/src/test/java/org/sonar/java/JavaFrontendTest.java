@@ -599,7 +599,7 @@ class JavaFrontendTest {
     // When the actual version match the maximum supported version (currently 18), the preview features flag is
     // enabled in the parser config and we made sure to be able to parse preview features, no need to log anything.
     logTester.setLevel(LoggerLevel.DEBUG);
-    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "18"),
+    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "19"),
       SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());

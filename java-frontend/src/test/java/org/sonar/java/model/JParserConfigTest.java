@@ -32,8 +32,9 @@ class JParserConfigTest {
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(11))).isFalse();
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(16))).isFalse();
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(17))).isFalse();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(18))).isTrue();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(18))).isFalse();
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(19))).isTrue();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(20))).isTrue();
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(42))).isTrue();
 
     assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromString("1.8"))).isFalse();
