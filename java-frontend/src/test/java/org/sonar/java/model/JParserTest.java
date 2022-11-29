@@ -509,6 +509,10 @@ class JParserTest {
     Path fakeJrtFs = tempFolder.resolve("lib/jrt-fs.jar");
     Files.createDirectories(fakeJrtFs.getParent());
 
+    // Starting from 3.31.0, ECJ requires the presence of a release file to parse
+    Path fakeRelease = tempFolder.resolve("release");
+    Files.createFile(fakeRelease);
+
     Manifest manifest = new Manifest();
     manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
     try (JarOutputStream target = new JarOutputStream(Files.newOutputStream(fakeJrtFs), manifest)) {
