@@ -49,7 +49,7 @@ public class SwitchWithPatterns {
     return switch (shape) {
       case null -> "null case";
       case Triangle t -> String.format("triangle (%d,%d,%d)", t.a(), t.b(), t.c());
-      case Rectangle r when r.volume() > 42 -> String.format("big rectangle of volume %d!", r.volume());
+      case Rectangle r && r.volume() > 42 -> String.format("big rectangle of volume %d!", r.volume());
       case Square s -> "Square!";
       case Rectangle r -> String.format("Rectangle (%d,%d)", r.base, r.height);
       default -> "default case";
