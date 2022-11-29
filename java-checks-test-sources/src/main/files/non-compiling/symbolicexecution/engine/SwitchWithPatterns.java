@@ -4,6 +4,7 @@ package org.foo;
  * Requires Java 17 (JEP-406) preview feature 
  */
 public class SwitchWithPatterns {
+  static class A {}
 
   public static void main(String[] args) {
     System.out.println(String.format("%d,%d,%d",
@@ -19,22 +20,22 @@ public class SwitchWithPatterns {
 
   static Object foo(Object o) {
     return switch (o) {
-      case default -> o;
+      default -> o;
     };
   }
 
   static int switch_array_null_pattern(Object o) {
     return switch (o) {
       case Object[] arr -> arr.length;
-      default -> -1;
       case null -> 42;
+      default -> -1;
     };
   }
 
   static int switch_array_default_null_pattern(Object o) {
     return switch (o) {
       case Object[] arr -> arr.length;
-      case default, null -> 42;
+      case null, default -> 42;
     };
   }
 
@@ -49,7 +50,7 @@ public class SwitchWithPatterns {
     return switch (shape) {
       case null -> "null case";
       case Triangle t -> String.format("triangle (%d,%d,%d)", t.a(), t.b(), t.c());
-      case Rectangle r && r.volume() > 42 -> String.format("big rectangle of volume %d!", r.volume());
+      case Rectangle r when r.volume() > 42 -> String.format("big rectangle of volume %d!", r.volume());
       case Square s -> "Square!";
       case Rectangle r -> String.format("Rectangle (%d,%d)", r.base, r.height);
       default -> "default case";

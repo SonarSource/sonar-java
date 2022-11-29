@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import org.sonar.java.annotations.Beta;
+
 /**
  * Common interface shared between all possible pattern as introduced with Java 17 and JEP-406.
  * Currently.
@@ -27,11 +29,13 @@ package org.sonar.plugins.java.api.tree;
  *   <ul>{@link GuardedPatternTree}</ul>
  *   <ul>{@link NullPatternTree}</ul>
  *   <ul>{@link DefaultPatternTree}</ul>
+ *   <ul>{@link RecordPatternTree}</ul>
  * </li>
  *
  * @since Java 17
  * @deprecated Preview Feature
  */
+@Beta
 @Deprecated(since = "7.7", forRemoval = false)
 public interface PatternTree extends ExpressionTree {
 

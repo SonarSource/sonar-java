@@ -139,6 +139,20 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.19**
+
+All the API changes are related to the support of the preview feature of Java 19/20. These new types and methods are introduced as "deprecated" and will be marked out of deprecation with the introduction of the final features in the JDK.
+
+* New type: `RecordPatternTree`. Use this type to explore record patterns.
+* New method: `RecordPatternTree#type()`. Use this method to get the reference type in the record pattern.
+* New method: `RecordPatternTree#patterns()`. Use this method to get the patterns nested in the record pattern.
+* New method: `RecordPatternTree#name()`. Use this method get the optional record pattern identifier.
+* Dropped method: `GuardedPatternTree#andOperator()`. Use `GuardedPatternTree#whenOperator()` instead. The `&&` operator from Java 18 got replaced by a new restricted keyword `when` in Java 19.
+* New method: `GuardedPatternTree#whenOperator()`. Use this method to get the `when` operator prefixing the guard.
+* Deprecated method: `PatternInstanceOfTree#variable()`. Use `PatternInstanceOfTree#pattern()` instead. Java 19 introduced record patterns and their support in the new `instanceof`.
+* New method: `PatternInstanceOfTree#pattern()`. Use this method to get the pattern in an `instanceof` expression. When the pattern is a `TypePatternTree`, the variable can then be extracted using `TypePatternTree#patternVariable()`.
+* New method: `TreeVisitor#visitRecordPattern()`. Use this method to traverse a `RecordPatternTree`.
+
 #### **7.17**
 
 * New method: `ClassTree#recordOpenParenToken()`. Use this method to get the opening parenthesis from the component list of a `record` declaration.

@@ -27,7 +27,7 @@ class TreeTest {
 
   @Test
   void test() {
-    assertThat(Tree.Kind.values()).hasSize(127);
+    assertThat(Tree.Kind.values()).hasSize(128);
   }
 
 }

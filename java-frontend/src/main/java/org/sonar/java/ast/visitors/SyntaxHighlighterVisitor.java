@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -91,6 +92,8 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
     list.add(Tree.Kind.INTERFACE);
     // sealed classes comes with restricted modifiers 'sealed' and 'non-sealed', applying on classes and interfaces
     list.add(Tree.Kind.MODIFIERS);
+    // Guarded pattern should consider "when" as a keyword
+    list.add(Tree.Kind.GUARDED_PATTERN);
     return Collections.unmodifiableList(list);
   }
 
@@ -131,6 +134,9 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
         ModifiersTree modifiers = (ModifiersTree) tree;
         ModifiersUtils.findModifier(modifiers, Modifier.SEALED).ifPresent(modifier -> highlight(modifier, TypeOfText.KEYWORD));
         ModifiersUtils.findModifier(modifiers, Modifier.NON_SEALED).ifPresent(modifier -> highlight(modifier, TypeOfText.KEYWORD));
+        return;
+      case GUARDED_PATTERN:
+        highlight(((GuardedPatternTree) tree).whenOperator(), TypeOfText.KEYWORD);
         return;
       default:
         highlight(tree, typesByKind.get(tree.kind()));
