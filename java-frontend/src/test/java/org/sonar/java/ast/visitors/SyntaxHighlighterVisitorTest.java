@@ -41,7 +41,8 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
-import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.JParserConfig;
+import org.sonar.plugins.java.api.JavaVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -208,6 +209,25 @@ class SyntaxHighlighterVisitorTest {
   }
 
   /**
+   * Java 19 (third preview of pattern matching)
+   */
+  @Test
+  void switch_pattern_expression_with_when_keyword() throws Exception {
+    this.eol = "\n";
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/SwitchPatternExpression.java");
+    scan(inputFile);
+
+    String componentKey = inputFile.key();
+    assertThatHasBeenHighlighted(componentKey, 7, 7, 7, 11, TypeOfText.KEYWORD); // case
+    assertThatHasNotBeenHighlighted(componentKey, 7, 12, 7, 17); // Point
+    assertThatHasNotBeenHighlighted(componentKey, 7, 18, 7, 19); // p
+    assertThatHasBeenHighlighted(componentKey, 7, 20, 7, 24, TypeOfText.KEYWORD); // "when" as keyword
+    assertThatHasNotBeenHighlighted(componentKey, 7, 27, 7, 31); // "when" as method name
+
+    assertThatHasBeenHighlighted(componentKey, 8, 18, 8, 21, TypeOfText.KEYWORD); // "int" as type inside record pattern
+  }
+
+  /**
    * Java 16
    */
   @Test
@@ -245,7 +265,8 @@ class SyntaxHighlighterVisitorTest {
   }
 
   private void scan(InputFile inputFile) {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, null, null, null, syntaxHighlighterVisitor);
+    JavaVersion javaVersion = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    JavaFrontend frontend = new JavaFrontend(javaVersion, null, null, null, null, syntaxHighlighterVisitor);
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 

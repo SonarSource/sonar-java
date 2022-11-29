@@ -19,23 +19,26 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import org.sonar.java.annotations.Beta;
+
 /**
  * Guarded pattern tree, introduced with Java 17 and JEP-406.
  *
  * <pre>
- *   case {@link #pattern()} {@link #andOperator()} {@link #expression()} : ...
- *   case {@link #pattern()} {@link #andOperator()} {@link #expression()} -> ...
+ *   case {@link #pattern()} {@link #whenOperator()} {@link #expression()} : ...
+ *   case {@link #pattern()} {@link #whenOperator()} {@link #expression()} -> ...
  * </pre>
  *
  * @since Java 17
  * @deprecated Preview Feature
  */
+@Beta
 @Deprecated(since = "7.7", forRemoval = false)
 public interface GuardedPatternTree extends PatternTree {
 
   PatternTree pattern();
 
-  SyntaxToken andOperator();
+  SyntaxToken whenOperator();
 
   ExpressionTree expression();
 

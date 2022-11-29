@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
@@ -168,7 +167,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       // If the variable is last in the list, we need to retrieve the preceding comma
       SyntaxToken precedingComma = variables.get(variables.indexOf(variable) - 1).lastToken();
       return Optional.of(AnalyzerMessage.textSpanBetween(precedingComma, lastToken));
-    } else if (parent.is(Tree.Kind.PATTERN_INSTANCE_OF)) {
+    } else if (parent.is(Tree.Kind.TYPE_PATTERN)) {
       return Optional.of(AnalyzerMessage.textSpanFor(lastToken));
     }
     return Optional.empty();

@@ -52,9 +52,10 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.JParserConfig;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaVersion;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -131,7 +132,7 @@ class SanityTest {
       .filter(SanityTest::isTypeResolutionError)
       .collect(Collectors.toList());
 
-    assertThat(errorLogs).hasSize(24);
+    assertThat(errorLogs).hasSize(28);
 
     List<LogAndArguments> remainingErrors = new ArrayList<>(errorLogs);
     remainingErrors.removeAll(parsingErrors);
@@ -162,7 +163,7 @@ class SanityTest {
         "play.mvc.Http$CookieBuilder");
 
     assertThat(parsingErrors)
-      .hasSize(8)
+      .hasSize(12)
       .map(LogAndArguments::getFormattedMsg)
       .allMatch(log ->
       // ECJ error message
@@ -170,8 +171,13 @@ class SanityTest {
         // analyzer error message mentioning the file
         || log.contains("KeywordAsIdentifierCheck")
         || log.contains("EmptyStatementsInImportsBug")
-        || log.contains("RestrictedIdentifiersUsageCheck"));
-
+        || log.contains("RestrictedIdentifiersUsageCheck")
+        // Activating java 19 preview features helps to parse files containing the new switch pattern expression.
+        // But now we are not able to parse the two following files that contains method body starting with a
+        // "when(...)" method call having one argument.
+        || log.contains("MockingAllMethodsCheck")
+        || log.contains("MockitoArgumentMatchersUsedOnAllParameters")
+      );
   }
 
   private static boolean isParseError(LogAndArguments log) {
@@ -246,11 +252,12 @@ class SanityTest {
   }
 
   private static List<SanityCheckException> scanFiles(File moduleBaseDir, List<InputFile> inputFiles, List<JavaCheck> checks, List<File> classpath) {
-    List<SanityCheckException> exceptions = new ArrayList<>();
     SonarComponents sonarComponents = sonarComponents(moduleBaseDir, inputFiles);
+    JavaVersion javaVersion = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(checks, classpath, sonarComponents, javaVersion);
+    List<SanityCheckException> exceptions = new ArrayList<>();
     for (InputFile inputFile : inputFiles) {
       try {
-        VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(checks, classpath, sonarComponents, new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED));
         JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge, null);
       } catch (Throwable e) {
         exceptions.add(new SanityCheckException(inputFile, e));

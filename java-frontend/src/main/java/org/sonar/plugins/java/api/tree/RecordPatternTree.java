@@ -19,39 +19,30 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.java.annotations.Beta;
 
 /**
- * 'instanceof' expression with pattern-matching.
- *
- * JLS 15.20.2
+ * Record pattern tree, introduced with Java 19 and JEP-405.
  *
  * <pre>
- *   {@link #expression()} instanceof {@link #pattern()}
+ *   case {@link #type()} ( {@link #patterns()} ) {@link #name()} : ...
+ *   case {@link #type()} ( {@link #patterns()} ) {@link #name()} -> ...
+ *   case {@link #type()} ( {@link #patterns()} ) : ...
+ *   case {@link #type()} ( {@link #patterns()} ) -> ...
  * </pre>
  *
- * @since Java 16
+ * @since Java 19
+ * @deprecated Preview Feature
  */
 @Beta
-public interface PatternInstanceOfTree extends ExpressionTree {
+@Deprecated(since = "7.19", forRemoval = false)
+public interface RecordPatternTree extends PatternTree {
+  TypeTree type();
 
-  ExpressionTree expression();
+  List<PatternTree> patterns();
 
-  SyntaxToken instanceofKeyword();
-
-  /**
-   * @since Java 16
-   * @deprecated Use {@link PatternInstanceOfTree#pattern()}
-   * @return null for all patterns that are not {@link TypePatternTree}.
-   */
-  @Deprecated(since = "7.19", forRemoval = true)
   @CheckForNull
-  VariableTree variable();
-
-  /**
-   * @since Java 19
-   */
-  PatternTree pattern();
-
+  IdentifierTree name();
 }
