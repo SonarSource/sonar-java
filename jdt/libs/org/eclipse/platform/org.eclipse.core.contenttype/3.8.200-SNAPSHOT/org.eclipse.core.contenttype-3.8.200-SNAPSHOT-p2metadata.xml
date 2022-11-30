@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<units size='2'>
+  <unit id='org.eclipse.core.contenttype' version='3.8.200.v20220817-1539' generation='2'>
+    <update id='org.eclipse.core.contenttype' range='[0.0.0,3.8.200.v20220817-1539)' severity='0'/>
+    <properties size='9'>
+      <property name='df_LT.pluginName' value='Eclipse Content Mechanism'/>
+      <property name='df_LT.providerName' value='Eclipse.org'/>
+      <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+      <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+      <property name='org.eclipse.equinox.p2.bundle.localization' value='plugin'/>
+      <property name='maven-groupId' value='eclipse.platform'/>
+      <property name='maven-artifactId' value='org.eclipse.core.contenttype'/>
+      <property name='maven-version' value='3.8.200-SNAPSHOT'/>
+      <property name='maven-type' value='eclipse-plugin'/>
+    </properties>
+    <provides size='7'>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.contenttype' version='3.8.200.v20220817-1539'/>
+      <provided namespace='osgi.bundle' name='org.eclipse.core.contenttype' version='3.8.200.v20220817-1539'/>
+      <provided namespace='java.package' name='org.eclipse.core.internal.content' version='0.0.0'/>
+      <provided namespace='java.package' name='org.eclipse.core.runtime.content' version='0.0.0'/>
+      <provided namespace='osgi.identity' name='org.eclipse.core.contenttype' version='3.8.200.v20220817-1539'>
+        <properties size='1'>
+          <property name='type' value='osgi.bundle'/>
+        </properties>
+      </provided>
+      <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+    </provides>
+    <requires size='12'>
+      <required namespace='osgi.bundle' name='org.eclipse.equinox.preferences' range='[3.2.0,4.0.0)'/>
+      <required namespace='osgi.bundle' name='org.eclipse.equinox.registry' range='[3.2.0,4.0.0)'/>
+      <required namespace='osgi.bundle' name='org.eclipse.equinox.common' range='[3.13.0,4.0.0)'/>
+      <required namespace='java.package' name='javax.xml.parsers' range='0.0.0'/>
+      <required namespace='java.package' name='org.eclipse.osgi.service.debug' range='0.0.0'/>
+      <required namespace='java.package' name='org.eclipse.osgi.util' range='1.0.0'/>
+      <required namespace='java.package' name='org.osgi.framework' range='0.0.0'/>
+      <required namespace='java.package' name='org.osgi.util.tracker' range='0.0.0'/>
+      <required namespace='java.package' name='org.xml.sax' range='0.0.0'/>
+      <required namespace='java.package' name='org.xml.sax.ext' range='0.0.0'/>
+      <required namespace='java.package' name='org.xml.sax.helpers' range='0.0.0'/>
+      <requiredProperties namespace='osgi.ee' match='(&amp;(osgi.ee=JavaSE)(version=11))'>
+        <description>
+          org.eclipse.core.contenttype
+        </description>
+      </requiredProperties>
+    </requires>
+    <artifacts size='1'>
+      <artifact classifier='osgi.bundle' id='org.eclipse.core.contenttype' version='3.8.200.v20220817-1539'/>
+    </artifacts>
+    <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+    <touchpointData size='1'>
+      <instructions size='1'>
+        <instruction key='manifest'>
+          Bundle-SymbolicName: org.eclipse.core.contenttype; singleton:=true&#xA;Bundle-Version: 3.8.200.v20220817-1539
+        </instruction>
+      </instructions>
+    </touchpointData>
+  </unit>
+  <unit id='org.eclipse.core.contenttype.source' version='3.8.200.v20220817-1539' singleton='false'>
+    <update id='org.eclipse.core.contenttype.source' range='[0.0.0,3.8.200.v20220817-1539)' severity='0'/>
+    <properties size='10'>
+      <property name='df_LT.bundleVendor' value='Eclipse.org'/>
+      <property name='df_LT.bundleName' value='Eclipse Content Mechanism Source'/>
+      <property name='org.eclipse.equinox.p2.name' value='%bundleName'/>
+      <property name='org.eclipse.equinox.p2.provider' value='%bundleVendor'/>
+      <property name='org.eclipse.equinox.p2.bundle.localization' value='OSGI-INF/l10n/bundle-src'/>
+      <property name='maven-groupId' value='org.eclipse.platform'/>
+      <property name='maven-artifactId' value='org.eclipse.core.contenttype'/>
+      <property name='maven-version' value='3.8.200-SNAPSHOT'/>
+      <property name='maven-classifier' value='sources'/>
+      <property name='maven-type' value='java-source'/>
+    </properties>
+    <provides size='5'>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.contenttype.source' version='3.8.200.v20220817-1539'/>
+      <provided namespace='osgi.bundle' name='org.eclipse.core.contenttype.source' version='3.8.200.v20220817-1539'/>
+      <provided namespace='osgi.identity' name='org.eclipse.core.contenttype.source' version='3.8.200.v20220817-1539'>
+        <properties size='1'>
+          <property name='type' value='osgi.bundle'/>
+        </properties>
+      </provided>
+      <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='source' version='1.0.0'/>
+      <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+    </provides>
+    <artifacts size='1'>
+      <artifact classifier='osgi.bundle' id='org.eclipse.core.contenttype.source' version='3.8.200.v20220817-1539'/>
+    </artifacts>
+    <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+    <touchpointData size='1'>
+      <instructions size='1'>
+        <instruction key='manifest'>
+          Bundle-SymbolicName: org.eclipse.core.contenttype.source&#xA;Bundle-Version: 3.8.200.v20220817-1539&#xA;
+        </instruction>
+      </instructions>
+    </touchpointData>
+  </unit>
+</units>

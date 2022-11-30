@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<units size='2'>
+  <unit id='org.eclipse.core.jobs' version='3.13.200.v20221102-1024' generation='2'>
+    <update id='org.eclipse.core.jobs' range='[0.0.0,3.13.200.v20221102-1024)' severity='0'/>
+    <properties size='9'>
+      <property name='df_LT.pluginName' value='Eclipse Jobs Mechanism'/>
+      <property name='df_LT.providerName' value='Eclipse.org'/>
+      <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+      <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+      <property name='org.eclipse.equinox.p2.bundle.localization' value='plugin'/>
+      <property name='maven-groupId' value='org.eclipse.platform'/>
+      <property name='maven-artifactId' value='org.eclipse.core.jobs'/>
+      <property name='maven-version' value='3.13.200-SNAPSHOT'/>
+      <property name='maven-type' value='eclipse-plugin'/>
+    </properties>
+    <provides size='8'>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.jobs' version='3.13.200.v20221102-1024'/>
+      <provided namespace='osgi.bundle' name='org.eclipse.core.jobs' version='3.13.200.v20221102-1024'/>
+      <provided namespace='java.package' name='org.eclipse.core.internal.jobs' version='0.0.0'/>
+      <provided namespace='java.package' name='org.eclipse.core.internal.jobs' version='0.0.0'/>
+      <provided namespace='java.package' name='org.eclipse.core.runtime.jobs' version='0.0.0'/>
+      <provided namespace='osgi.identity' name='org.eclipse.core.jobs' version='3.13.200.v20221102-1024'>
+        <properties size='1'>
+          <property name='type' value='osgi.bundle'/>
+        </properties>
+      </provided>
+      <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+    </provides>
+    <requires size='7'>
+      <required namespace='osgi.bundle' name='org.eclipse.equinox.common' range='[3.8.0,4.0.0)'/>
+      <required namespace='java.package' name='org.eclipse.osgi.service.debug' range='0.0.0'/>
+      <required namespace='java.package' name='org.eclipse.osgi.util' range='0.0.0'/>
+      <required namespace='java.package' name='org.osgi.framework' range='1.3.0'/>
+      <required namespace='java.package' name='org.osgi.service.packageadmin' range='0.0.0'/>
+      <required namespace='java.package' name='org.osgi.util.tracker' range='0.0.0'/>
+      <requiredProperties namespace='osgi.ee' match='(&amp;(osgi.ee=JavaSE)(version=11))'>
+        <description>
+          org.eclipse.core.jobs
+        </description>
+      </requiredProperties>
+    </requires>
+    <artifacts size='1'>
+      <artifact classifier='osgi.bundle' id='org.eclipse.core.jobs' version='3.13.200.v20221102-1024'/>
+    </artifacts>
+    <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+    <touchpointData size='1'>
+      <instructions size='1'>
+        <instruction key='manifest'>
+          Bundle-SymbolicName: org.eclipse.core.jobs; singleton:=true&#xA;Bundle-Version: 3.13.200.v20221102-1024
+        </instruction>
+      </instructions>
+    </touchpointData>
+  </unit>
+  <unit id='org.eclipse.core.jobs.source' version='3.13.200.v20221102-1024' singleton='false'>
+    <update id='org.eclipse.core.jobs.source' range='[0.0.0,3.13.200.v20221102-1024)' severity='0'/>
+    <properties size='10'>
+      <property name='df_LT.bundleVendor' value='Eclipse.org'/>
+      <property name='df_LT.bundleName' value='Eclipse Jobs Mechanism Source'/>
+      <property name='org.eclipse.equinox.p2.name' value='%bundleName'/>
+      <property name='org.eclipse.equinox.p2.provider' value='%bundleVendor'/>
+      <property name='org.eclipse.equinox.p2.bundle.localization' value='OSGI-INF/l10n/bundle-src'/>
+      <property name='maven-groupId' value='org.eclipse.platform'/>
+      <property name='maven-artifactId' value='org.eclipse.core.jobs'/>
+      <property name='maven-version' value='3.13.200-SNAPSHOT'/>
+      <property name='maven-classifier' value='sources'/>
+      <property name='maven-type' value='java-source'/>
+    </properties>
+    <provides size='5'>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.jobs.source' version='3.13.200.v20221102-1024'/>
+      <provided namespace='osgi.bundle' name='org.eclipse.core.jobs.source' version='3.13.200.v20221102-1024'/>
+      <provided namespace='osgi.identity' name='org.eclipse.core.jobs.source' version='3.13.200.v20221102-1024'>
+        <properties size='1'>
+          <property name='type' value='osgi.bundle'/>
+        </properties>
+      </provided>
+      <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='source' version='1.0.0'/>
+      <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+    </provides>
+    <artifacts size='1'>
+      <artifact classifier='osgi.bundle' id='org.eclipse.core.jobs.source' version='3.13.200.v20221102-1024'/>
+    </artifacts>
+    <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+    <touchpointData size='1'>
+      <instructions size='1'>
+        <instruction key='manifest'>
+          Bundle-SymbolicName: org.eclipse.core.jobs.source&#xA;Bundle-Version: 3.13.200.v20221102-1024&#xA;
+        </instruction>
+      </instructions>
+    </touchpointData>
+  </unit>
+</units>

@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2012, 2021 Eclipse Foundation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Distribution License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/org/documents/edl-v10.php
+
+  Contributors:
+     Igor Fedorenko - initial implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>eclipse.jdt.core</artifactId>
+    <groupId>org.eclipse.jdt</groupId>
+    <version>4.26.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>org.eclipse.jdt.core</artifactId>
+  <version>3.32.0-SNAPSHOT</version>
+  <packaging>eclipse-plugin</packaging>
+
+  <properties>
+    <defaultSigning-excludeInnerJars>true</defaultSigning-excludeInnerJars>
+    <code.ignoredWarnings>-warn:+fieldHiding,-unavoidableGenericProblems</code.ignoredWarnings>
+  </properties>
+
+  <build>
+    <plugins>
+    <plugin>
+		<artifactId>maven-antrun-plugin</artifactId>
+		<executions>
+			<execution>
+				<phase>prepare-package</phase>
+				<configuration>
+					<target>
+						<replace token="bundle_qualifier," value="${buildQualifier}," dir="${project.build.directory}/classes">
+							<include name="org/eclipse/jdt/internal/compiler/batch/messages.properties"/>
+						</replace>
+						<replace token="bundle_version" value="${unqualifiedVersion}" dir="${project.build.directory}/classes">
+							<include name="org/eclipse/jdt/internal/compiler/batch/messages.properties"/>
+						</replace>
+					</target>
+				</configuration>
+				<goals>
+					<goal>run</goal>
+				</goals>
+			</execution>
+		</executions>
+	  </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-batch-compiler-source</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/scripts/source</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/scripts/source</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-custom-bundle-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <executions>
+          <execution>
+            <id>antadapter</id>
+            <phase>package</phase>
+            <goals>
+              <goal>custom-bundle</goal>
+            </goals>
+			<configuration>
+				<archive>
+					<addMavenDescriptor>false</addMavenDescriptor>
+				</archive>
+              <bundleLocation>${project.basedir}/scripts/antadapter</bundleLocation>
+              <classifier>antadapter</classifier>
+              <fileSets>
+                <fileSet>
+                  <directory>${project.build.directory}/jdtCompilerAdapter.jar-classes</directory>
+                  <excludes>
+                    <exclude>org/eclipse/jdt/core/CheckDebugAttributes*.*</exclude>
+                    <exclude>org/eclipse/jdt/core/BuildJarIndex*.*</exclude>
+                  </excludes>
+                </fileSet>
+              </fileSets>
+            </configuration>
+          </execution>
+          <execution>
+            <id>batch-compiler-src</id>
+            <phase>package</phase>
+            <goals>
+              <goal>custom-bundle</goal>
+            </goals>
+            <configuration>
+				<archive>
+					<addMavenDescriptor>false</addMavenDescriptor>
+				</archive>
+              <bundleLocation>${project.build.directory}/scripts/source</bundleLocation>
+              <classifier>batch-compiler-src</classifier>
+              <fileSets>
+                <fileSet>
+                  <directory>${project.basedir}/batch</directory>
+                  <excludes>
+                    <exclude>org/eclipse/jdt/internal/compiler/batch/messages.properties</exclude>
+                  </excludes>
+                </fileSet>
+                <fileSet>
+                  <directory>${project.build.directory}/classes</directory>
+                  <includes>
+                    <include>org/eclipse/jdt/internal/compiler/batch/messages.properties</include>
+                  </includes>
+                </fileSet>
+                <fileSet>
+                  <directory>${project.basedir}/compiler</directory>
+                </fileSet>
+                <fileSet>
+                  <directory>${project.basedir}/antadapter</directory>
+                  <excludes>
+				    <exclude>org/eclipse/jdt/core/CheckDebugAttributes.java</exclude>
+					<exclude>org/eclipse/jdt/core/BuildJarIndex.java</exclude>
+                  </excludes>
+                </fileSet>
+				<fileSet>
+                  <directory>${project.basedir}/../org.eclipse.jdt.compiler.tool/src</directory>
+                </fileSet>
+				<fileSet>
+                  <directory>${project.basedir}/../org.eclipse.jdt.compiler.apt/src</directory>
+                </fileSet>
+				<fileSet>
+                  <directory>${project.basedir}/scripts</directory>
+                  <includes>
+				    <include>about.html</include>
+					<include>build.xml</include>
+					<include>ecj.1</include>
+                  </includes>
+                </fileSet>
+                <fileSet>
+                  <directory>${project.basedir}</directory>
+                  <includes>
+                    <include>scripts/binary/**</include>
+                  </includes>
+                </fileSet>
+                <!-- Include API stubs required for building ECJ on Java 11 -->
+                <fileSet>
+                  <directory>${project.basedir}/../org.eclipse.jdt.compiler.tool/lib</directory>
+                  <includes>
+                    <include>*.jar</include>
+                  </includes>
+                </fileSet>
+              </fileSets>
+            </configuration>
+          </execution>
+          <execution>
+            <id>batch-compiler</id>
+            <phase>package</phase>
+            <goals>
+              <goal>custom-bundle</goal>
+            </goals>
+            <configuration>
+				<archive>
+					<addMavenDescriptor>false</addMavenDescriptor>
+				</archive>
+              <bundleLocation>${project.basedir}/scripts/binary</bundleLocation>
+              <classifier>batch-compiler</classifier>
+              <fileSets>
+                <fileSet>
+                  <directory>${project.build.directory}/jdtCompilerAdapter.jar-classes</directory>
+                  <includes>
+				    <include>META-INF/eclipse.inf</include>
+                  </includes>
+                </fileSet>
+				<fileSet>
+                  <directory>${project.basedir}/scripts</directory>
+                  <includes>
+				    <include>about.html</include>
+				    <include>ecj.1</include>
+                  </includes>
+                </fileSet>
+                <fileSet>
+                  <directory>${project.build.directory}/classes</directory>
+                  <includes>
+                    <include>org/eclipse/jdt/internal/compiler/**</include>
+                    <include>org/eclipse/jdt/core/compiler/**</include>
+                  </includes>
+                  <excludes>
+                    <exclude>**/package.htm*</exclude>
+                    <exclude>org/eclipse/jdt/core/compiler/CompilationParticipant*.class</exclude>
+                    <exclude>org/eclipse/jdt/core/compiler/BuildContext.class</exclude>
+                    <exclude>org/eclipse/jdt/core/compiler/IScanner.class</exclude>
+                    <exclude>org/eclipse/jdt/core/compiler/ITerminalSymbols*.class</exclude>
+                    <exclude>org/eclipse/jdt/core/compiler/ReconcileContext*.class</exclude>
+                    <exclude>org/eclipse/jdt/internal/compiler/DocumentElementParser*.class</exclude>
+                    <exclude>org/eclipse/jdt/internal/compiler/IDocumentElementRequestor.class</exclude>
+                    <exclude>org/eclipse/jdt/internal/compiler/ISourceElementRequestor*.class</exclude>
+                    <exclude>org/eclipse/jdt/internal/compiler/SourceElementParser*.class</exclude>
+                    <exclude>org/eclipse/jdt/internal/compiler/SourceElementRequestorAdapter*.class</exclude>
+                    <exclude>org/eclipse/jdt/internal/compiler/SourceJavadocParser*.class</exclude>
+                    <exclude>org/eclipse/jdt/internal/compiler/parser/SourceTypeConverter*.class</exclude>
+                  </excludes>
+                </fileSet>
+              </fileSets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-p2-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <baselineMode>warn</baselineMode>
+          <baselineReplace>common</baselineReplace>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attached-p2-metadata</id>
+            <phase>package</phase>
+            <goals>
+              <goal>p2-metadata</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <!--
+            Replace '\' Windows file separators by '/' in order to expand the new property 'compiler-message-properties'
+            into a string literal in Maven Enforcer rule 'evaluateBeanshell' further below
+          --> 
+          <execution>
+            <id>compiler-message-properties</id>
+            <goals>
+              <goal>regex-property</goal>
+            </goals>
+            <configuration>
+              <name>compiler-message-properties</name>
+              <value>${project.basedir}/batch/org/eclipse/jdt/internal/compiler/batch/messages.properties</value>
+              <regex>\\</regex>
+              <replacement>/</replacement>
+              <failIfNoMatch>false</failIfNoMatch>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>no-tabs-in-compiler-messages</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <evaluateBeanshell>
+                  <message>
+                    Compiler message resource file ${compiler-message-properties} must not contain tab characters, please use spaces instead!
+                  </message>
+                  <condition><![CDATA[
+                    FileReader fileReader = new FileReader("${compiler-message-properties}");
+                    BufferedReader bufferReader = new BufferedReader(fileReader);
+                    boolean containsTab = false;
+                    String line;
+                    while((line = bufferReader.readLine()) != null) {
+                      if (line.contains("\t")) {
+                        if (!containsTab) {
+                          System.out.println("Lines containing tab characters detected in resource file:");
+                          containsTab = true;
+                        }
+                        System.out.println(line);
+                      }
+                    }
+                    fileReader.close();
+                    bufferReader.close();
+                    !containsTab
+                  ]]></condition>
+                </evaluateBeanshell>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

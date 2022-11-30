@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?artifactRepository version='1.1.0'?>
+<artifacts size='2'>
+  <artifact classifier='osgi.bundle' id='org.eclipse.text' version='3.12.300.v20220921-1010'>
+    <properties size='7'>
+      <property name='artifact.size' value='276820'/>
+      <property name='download.size' value='276820'/>
+      <property name='maven-groupId' value='org.eclipse.platform'/>
+      <property name='maven-artifactId' value='org.eclipse.text'/>
+      <property name='maven-version' value='3.12.300-SNAPSHOT'/>
+      <property name='maven-type' value='eclipse-plugin'/>
+      <property name='download.stats' value='org.eclipse.text/3.12.300.v20220921-1010'/>
+    </properties>
+  </artifact>
+  <artifact classifier='osgi.bundle' id='org.eclipse.text.source' version='3.12.300.v20220921-1010'>
+    <properties size='8'>
+      <property name='artifact.size' value='265752'/>
+      <property name='download.size' value='265752'/>
+      <property name='maven-groupId' value='org.eclipse.platform'/>
+      <property name='maven-artifactId' value='org.eclipse.text'/>
+      <property name='maven-version' value='3.12.300-SNAPSHOT'/>
+      <property name='maven-classifier' value='sources'/>
+      <property name='maven-type' value='java-source'/>
+      <property name='download.stats' value='org.eclipse.text.source/3.12.300.v20220921-1010'/>
+    </properties>
+  </artifact>
+</artifacts>
