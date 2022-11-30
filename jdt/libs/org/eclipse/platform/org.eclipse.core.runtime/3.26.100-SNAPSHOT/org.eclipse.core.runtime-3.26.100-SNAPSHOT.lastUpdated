@@ -1,0 +1,6 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Wed Nov 30 14:48:42 CET 2022
+@default-my-local-repo-file\://${project.basedir}/libs/.lastUpdated=1669816122543
+file\://${project.basedir}/libs/.error=Could not transfer artifact org.eclipse.platform\:org.eclipse.core.runtime\:\:3.26.100-SNAPSHOT from/to my-local-repo (file\://${project.basedir}/libs)\: Repository path /libs does not exist, and cannot be created.
+https\://repo.maven.apache.org/maven2/.error=
+https\://repo.maven.apache.org/maven2/.lastUpdated=1669814639537

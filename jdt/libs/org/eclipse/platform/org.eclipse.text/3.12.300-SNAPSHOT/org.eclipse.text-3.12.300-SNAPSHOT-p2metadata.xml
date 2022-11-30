@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<units size='2'>
+  <unit id='org.eclipse.text' version='3.12.300.v20220921-1010' singleton='false' generation='2'>
+    <update id='org.eclipse.text' range='[0.0.0,3.12.300.v20220921-1010)' severity='0'/>
+    <properties size='9'>
+      <property name='df_LT.pluginName' value='Text'/>
+      <property name='df_LT.providerName' value='Eclipse.org'/>
+      <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+      <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+      <property name='org.eclipse.equinox.p2.bundle.localization' value='plugin'/>
+      <property name='maven-groupId' value='org.eclipse.platform'/>
+      <property name='maven-artifactId' value='org.eclipse.text'/>
+      <property name='maven-version' value='3.12.300-SNAPSHOT'/>
+      <property name='maven-type' value='eclipse-plugin'/>
+    </properties>
+    <provides size='13'>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.text' version='3.12.300.v20220921-1010'/>
+      <provided namespace='osgi.bundle' name='org.eclipse.text' version='3.12.300.v20220921-1010'/>
+      <provided namespace='java.package' name='org.eclipse.jface.text' version='0.0.0'/>
+      <provided namespace='java.package' name='org.eclipse.jface.text.link' version='0.0.0'/>
+      <provided namespace='java.package' name='org.eclipse.jface.text.projection' version='0.0.0'/>
+      <provided namespace='java.package' name='org.eclipse.jface.text.source' version='0.0.0'/>
+      <provided namespace='java.package' name='org.eclipse.jface.text.templates' version='0.0.0'/>
+      <provided namespace='java.package' name='org.eclipse.text.edits' version='0.0.0'/>
+      <provided namespace='java.package' name='org.eclipse.text.templates' version='0.0.0'/>
+      <provided namespace='java.package' name='org.eclipse.text.undo' version='0.0.0'/>
+      <provided namespace='osgi.identity' name='org.eclipse.text' version='3.12.300.v20220921-1010'>
+        <properties size='1'>
+          <property name='type' value='osgi.bundle'/>
+        </properties>
+      </provided>
+      <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+    </provides>
+    <requires size='5'>
+      <required namespace='osgi.bundle' name='org.eclipse.core.commands' range='[3.5.0,4.0.0)'/>
+      <required namespace='osgi.bundle' name='org.eclipse.equinox.common' range='[3.5.0,4.0.0)'/>
+      <required namespace='osgi.bundle' name='org.eclipse.equinox.preferences' range='[3.7.0,4.0.0)'/>
+      <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='[3.14.0,4.0.0)'/>
+      <requiredProperties namespace='osgi.ee' match='(&amp;(osgi.ee=JavaSE)(version=11))'>
+        <description>
+          org.eclipse.text
+        </description>
+      </requiredProperties>
+    </requires>
+    <artifacts size='1'>
+      <artifact classifier='osgi.bundle' id='org.eclipse.text' version='3.12.300.v20220921-1010'/>
+    </artifacts>
+    <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+    <touchpointData size='1'>
+      <instructions size='1'>
+        <instruction key='manifest'>
+          Bundle-SymbolicName: org.eclipse.text&#xA;Bundle-Version: 3.12.300.v20220921-1010
+        </instruction>
+      </instructions>
+    </touchpointData>
+  </unit>
+  <unit id='org.eclipse.text.source' version='3.12.300.v20220921-1010' singleton='false'>
+    <update id='org.eclipse.text.source' range='[0.0.0,3.12.300.v20220921-1010)' severity='0'/>
+    <properties size='10'>
+      <property name='df_LT.bundleVendor' value='Eclipse.org'/>
+      <property name='df_LT.bundleName' value='Text Source'/>
+      <property name='org.eclipse.equinox.p2.name' value='%bundleName'/>
+      <property name='org.eclipse.equinox.p2.provider' value='%bundleVendor'/>
+      <property name='org.eclipse.equinox.p2.bundle.localization' value='OSGI-INF/l10n/bundle-src'/>
+      <property name='maven-groupId' value='org.eclipse.platform'/>
+      <property name='maven-artifactId' value='org.eclipse.text'/>
+      <property name='maven-version' value='3.12.300-SNAPSHOT'/>
+      <property name='maven-classifier' value='sources'/>
+      <property name='maven-type' value='java-source'/>
+    </properties>
+    <provides size='5'>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.text.source' version='3.12.300.v20220921-1010'/>
+      <provided namespace='osgi.bundle' name='org.eclipse.text.source' version='3.12.300.v20220921-1010'/>
+      <provided namespace='osgi.identity' name='org.eclipse.text.source' version='3.12.300.v20220921-1010'>
+        <properties size='1'>
+          <property name='type' value='osgi.bundle'/>
+        </properties>
+      </provided>
+      <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='source' version='1.0.0'/>
+      <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+    </provides>
+    <artifacts size='1'>
+      <artifact classifier='osgi.bundle' id='org.eclipse.text.source' version='3.12.300.v20220921-1010'/>
+    </artifacts>
+    <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+    <touchpointData size='1'>
+      <instructions size='1'>
+        <instruction key='manifest'>
+          Bundle-SymbolicName: org.eclipse.text.source&#xA;Bundle-Version: 3.12.300.v20220921-1010&#xA;
+        </instruction>
+      </instructions>
+    </touchpointData>
+  </unit>
+</units>
