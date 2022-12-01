@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2012-2023 SonarSource SA
+ * Copyright (C) 2012-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,33 +19,11 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.sonar.java.annotations.Beta;
+import java.util.List;
 
-/**
- * 'instanceof' expression with pattern-matching.
- *
- * JLS 15.20.2
- *
- * <pre>
- *   {@link #expression()} instanceof {@link #variable()}
- * </pre>
- *
- * @since Java 16
- */
-@Beta
-public interface PatternInstanceOfTree extends ExpressionTree {
-
-  ExpressionTree expression();
-
-  SyntaxToken instanceofKeyword();
-
-  @Deprecated
-  /**
-   * @deprecated Use {@link PatternInstanceOfTree#pattern()}
-   * @since 7.16
-   */
-  VariableTree variable();
-
-  PatternTree pattern();
-
+public interface RecordPatternTree extends PatternTree {
+  TypeTree type();
+  SyntaxToken openingParenthesis();
+  List<PatternTree> patterns();
+  SyntaxToken closingParenthesis();
 }

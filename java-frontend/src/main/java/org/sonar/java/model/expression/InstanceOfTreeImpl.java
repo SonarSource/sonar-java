@@ -26,6 +26,7 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
+import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -42,21 +43,28 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
   private final TypeTree type;
   @Nullable
   private final VariableTree variable;
+  @Nullable
+  private final PatternTree pattern;
 
-  private InstanceOfTreeImpl(Tree.Kind kind, ExpressionTree expression, InternalSyntaxToken instanceofToken, @Nullable TypeTree type, @Nullable VariableTree variable) {
+  private InstanceOfTreeImpl(Tree.Kind kind, ExpressionTree expression, InternalSyntaxToken instanceofToken, @Nullable TypeTree type, @Nullable VariableTree variable, @Nullable org.sonar.plugins.java.api.tree.PatternTree pattern) {
     this.kind = kind;
     this.expression = expression;
     this.instanceofToken = instanceofToken;
     this.type = type;
     this.variable = variable;
+    this.pattern = pattern;
   }
 
   public InstanceOfTreeImpl(ExpressionTree expression, InternalSyntaxToken instanceofToken, TypeTree type) {
-    this(Tree.Kind.INSTANCE_OF, expression, instanceofToken, type, null);
+    this(Tree.Kind.INSTANCE_OF, expression, instanceofToken, type, null, null);
   }
 
   public InstanceOfTreeImpl(ExpressionTree expression, InternalSyntaxToken instanceofToken, VariableTree variable) {
-    this(Tree.Kind.PATTERN_INSTANCE_OF, expression, instanceofToken, null, variable);
+    this(Tree.Kind.PATTERN_INSTANCE_OF, expression, instanceofToken, null, variable, null);
+  }
+
+  public InstanceOfTreeImpl(ExpressionTree expression, InternalSyntaxToken instanceofToken, PatternTree pattern) {
+    this(Kind.PATTERN_INSTANCE_OF, expression, instanceofToken, null, null, pattern);
   }
 
   @Override
@@ -88,6 +96,11 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
   @Override
   public VariableTree variable() {
     return variable;
+  }
+
+  @Override
+  public PatternTree pattern() {
+    return pattern;
   }
 
   @Override
