@@ -27,6 +27,7 @@ package org.sonar.plugins.java.api.tree;
  *   <ul>{@link GuardedPatternTree}</ul>
  *   <ul>{@link NullPatternTree}</ul>
  *   <ul>{@link DefaultPatternTree}</ul>
+ *   <ul>{@link RecordPatternTree}</ul>
  * </li>
  *
  * @since Java 17
