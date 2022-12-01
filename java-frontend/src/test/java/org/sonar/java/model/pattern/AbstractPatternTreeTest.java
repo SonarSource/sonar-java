@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NullPatternTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -301,9 +302,11 @@ class AbstractPatternTreeTest {
 
   @Test
   void test_record_pattern() {
-    String code = "shape instanceof Triangle(int a, int b, int c) && a == b";
+    String code = "(shape instanceof Triangle(int a, int b, int c)) ? new Object() : new Object()";
     ConditionalExpressionTree conditionalExpressionTree = conditionalExpressionTree("Shape shape", code);
-    assertThat(conditionalExpressionTree.is(Tree.Kind.CONDITIONAL_AND)).isTrue();
+    assertThat(conditionalExpressionTree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
+    ExpressionTree instanceOfexpression = ((ParenthesizedTree) conditionalExpressionTree.condition()).expression();
+    assertThat(instanceOfexpression).is(Tree.Kind.PATTERN_INSTANCE_OF);
   }
 
   private static SwitchExpressionTree switchExpressionTree(String methodParametersDeclaration, String switchExpressionCode) {
