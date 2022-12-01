@@ -61,7 +61,7 @@ class InstanceOfTreeImplTest {
 
   @Test
   void test_GuardedPatternInstanceOfTree() {
-    ExpressionTree condition = ifCondition("o instanceof (String s && s.length() > 10)");
+    ExpressionTree condition = ifCondition("o instanceof String s && s.length() > 10");
     // ECJ drop the parenthesis and consider it as the two operands of a &&, while this compiles
     assertThat(condition.is(Tree.Kind.CONDITIONAL_AND)).isTrue();
     BinaryExpressionTree binaryExpression = (BinaryExpressionTree) condition;
@@ -76,23 +76,6 @@ class InstanceOfTreeImplTest {
     assertThat(variable.simpleName().name()).isEqualTo("s");
     assertThat(variable.type().symbolType().is("java.lang.String")).isTrue();
 
-  }
-
-  @Test
-  void test_PatternInstanceOfAsBinary() {
-    ExpressionTree condition = ifCondition("o instanceof String s && s.length() > 10");
-    assertThat(condition.is(Tree.Kind.CONDITIONAL_AND)).isTrue();
-    BinaryExpressionTree binaryExpression = (BinaryExpressionTree) condition;
-    assertThat(binaryExpression.rightOperand().is(Tree.Kind.GREATER_THAN)).isTrue();
-    ExpressionTree leftOp = binaryExpression.leftOperand();
-    assertThat(leftOp.is(Tree.Kind.PATTERN_INSTANCE_OF)).isTrue();
-    PatternInstanceOfTree piot = (PatternInstanceOfTree) leftOp;
-    assertThat(piot.expression()).isNotNull();
-    assertThat(piot.instanceofKeyword()).isNotNull();
-    VariableTree variable = piot.variable();
-    assertThat(variable).isNotNull();
-    assertThat(variable.simpleName().name()).isEqualTo("s");
-    assertThat(variable.type().symbolType().is("java.lang.String")).isTrue();
   }
 
   @Test

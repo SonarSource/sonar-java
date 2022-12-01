@@ -1442,7 +1442,7 @@ public class JParser {
         GuardedPattern g = (GuardedPattern) p;
         return new GuardedPatternTreeImpl(
           convertPattern(g.getPattern()),
-          firstTokenBefore(g.getExpression(), TerminalTokens.TokenNameAND_AND),
+          firstTokenBefore(g.getExpression(), TerminalTokens.TokenNameIdentifier),
           convertExpression(g.getExpression()));
       case ASTNode.NULL_PATTERN:
         // It is not clear how to reach this one, it seems to be possible only with badly constructed AST

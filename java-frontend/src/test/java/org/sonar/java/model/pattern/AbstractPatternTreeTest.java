@@ -164,7 +164,7 @@ class AbstractPatternTreeTest {
   @Test
   void test_guarded_pattern() {
     String code = "switch (shape) {\n"
-      + "    case Rectangle r && r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
+      + "    case Rectangle r when r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
       + "    default -> \"default case\";\n"
       + "  }";
     SwitchExpressionTree s = switchExpressionTree("Shape shape", code);
@@ -176,7 +176,7 @@ class AbstractPatternTreeTest {
     assertThat(expression).is(Tree.Kind.GUARDED_PATTERN);
     GuardedPatternTree guardedPattern = (GuardedPatternTree) expression;
     assertThat(guardedPattern.pattern()).is(Tree.Kind.TYPE_PATTERN);
-    assertThat(guardedPattern.andOperator()).is("&&");
+    assertThat(guardedPattern.whenOperator()).is("when");
     assertThat(guardedPattern.expression()).is(Tree.Kind.GREATER_THAN);
     assertThat(guardedPattern.symbolType()).isUnknown();
     assertThat(guardedPattern.asConstant()).isEmpty();
@@ -186,7 +186,7 @@ class AbstractPatternTreeTest {
   @Test
   void test_guarded_pattern_parenthesized() {
     String code = "switch (shape) {\n"
-      + "    case (Rectangle r) && (r.volume() > 42) -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
+      + "    case (Rectangle r) when (r.volume() > 42) -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
       + "    default -> \"default case\";\n"
       + "  }";
     SwitchExpressionTree s = switchExpressionTree("Shape shape", code);
@@ -206,7 +206,7 @@ class AbstractPatternTreeTest {
   @Test
   void test_guarded_pattern_parenthesized_nested() {
     String code = "switch (shape) {\n"
-      + "    case (Rectangle r && r.volume() > 42) && false -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
+      + "    case Rectangle r when r.volume() > 42 && false -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
       + "    default -> \"default case\";\n"
       + "  }";
     SwitchExpressionTree s = switchExpressionTree("Shape shape", code);
@@ -230,7 +230,7 @@ class AbstractPatternTreeTest {
     String code = "switch (shape) {\n"
       + "      case null -> \"null case\";\n"
       + "      case Triangle t -> String.format(\"triangle (%d,%d,%d)\", t.a(), t.b(), t.c());\n"
-      + "      case Rectangle r && r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
+      + "      case Rectangle r when r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
       + "      case Square s -> \"Square!\";\n"
       + "      case Rectangle r -> String.format(\"Rectangle (%d,%d)\", r.base, r.height);\n"
       + "      case default -> \"default case\";\n"
@@ -258,7 +258,7 @@ class AbstractPatternTreeTest {
     String code = "switch (shape) {\n"
       + "      case null -> \"null case\";\n"
       + "      case Triangle t -> String.format(\"triangle (%d,%d,%d)\", t.a(), t.b(), t.c());\n"
-      + "      case Rectangle r && r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
+      + "      case Rectangle r when r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
       + "      case default -> \"default case\";\n"
       + "    }";
     SwitchExpressionTree s = switchExpressionTree("Shape shape", code);

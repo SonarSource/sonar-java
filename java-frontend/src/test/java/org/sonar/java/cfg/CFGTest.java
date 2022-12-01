@@ -950,7 +950,7 @@ class CFGTest {
       // array type pattern
       + "      case Object[] arr -> arr.length;\n"
       // guarded pattern
-      + "      case Rectangle r && r.volume() > 42 -> -1;\n"
+      + "      case Rectangle r when r.volume() > 42 -> -1;\n"
       // default and null pattern
       + "      case default, null -> 42;\n"
       + "    };\n"
