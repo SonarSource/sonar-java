@@ -57,7 +57,7 @@ public class GuardedPatternTreeImpl extends AbstractPatternTree implements Guard
   }
 
   @Override
-  public SyntaxToken andOperator() {
+  public SyntaxToken whenOperator() {
     return andOperator;
   }
 
