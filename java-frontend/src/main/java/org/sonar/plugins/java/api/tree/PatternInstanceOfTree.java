@@ -39,6 +39,13 @@ public interface PatternInstanceOfTree extends ExpressionTree {
 
   SyntaxToken instanceofKeyword();
 
+  @Deprecated
+  /**
+   * @deprecated Use {@link PatternInstanceOfTree#pattern()}
+   * @since 7.16
+   */
   VariableTree variable();
+
+  PatternTree pattern();
 
 }

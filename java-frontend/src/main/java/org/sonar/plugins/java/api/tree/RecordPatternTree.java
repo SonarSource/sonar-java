@@ -19,15 +19,11 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.jupiter.api.Test;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-class TreeTest {
-
-  @Test
-  void test() {
-    assertThat(Tree.Kind.values()).hasSize(128);
-  }
-
+public interface RecordPatternTree extends PatternTree {
+  TypeTree type();
+  SyntaxToken openingParenthesis();
+  List<PatternTree> patterns();
+  SyntaxToken closingParenthesis();
 }

@@ -742,6 +742,14 @@ public interface Tree {
     DEFAULT_PATTERN(DefaultPatternTree.class),
 
     /**
+     * {@link RecordPatternTree}
+     *
+     * @since Java 19
+     * @deprecated Preview feature
+     */
+    @Deprecated(since = "7.16", forRemoval = false)
+    RECORD_PATTERN(RecordPatternTree.class),
+    /**
      *An implementation-reserved node.
      *
      */
