@@ -1,5 +1,6 @@
 package checks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SuspiciousListRemove {
@@ -64,6 +65,34 @@ public class SuspiciousListRemove {
         continue;
       }
     }
+  }
+
+  void controlFlowReturn(List<String> list) {
+    for (int i = 0; i < list.size(); i++) {
+      if (list.get(i).isEmpty()) {
+        list.remove(i);  // Compliant because control flow with "return"
+        return;
+      }
+    }
+  }
+
+  String controlFlowReturn2(List<String> list) {
+    for (int i = 0; i < list.size(); i++) {
+      if (list.get(i).isEmpty()) {
+        return list.remove(i);  // Compliant because control flow with "return"
+      }
+    }
+    return null;
+  }
+
+  List<String> controlFlowReturn3(List<String> list) {
+    List<String> deleted = new ArrayList<>();
+    for (int i = 0; i < list.size(); i++) {
+      if (list.get(i).isEmpty()) {
+        deleted.add(list.remove(i));  // Noncompliant
+      }
+    }
+    return deleted;  // "return" is outside the loop
   }
 
   void coverage1(List<String> list, int from) {
