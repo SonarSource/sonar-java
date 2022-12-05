@@ -21,6 +21,7 @@ package org.sonar.java.model.pattern;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
@@ -34,7 +35,7 @@ public class RecordPatternTreeImpl extends AbstractPatternTree implements Record
 
   private final TypeTree type;
   private final List<PatternTree> patterns;
-
+  @Nullable
   private final IdentifierTree name;
 
   public RecordPatternTreeImpl(TypeTree type, List<PatternTree> patterns, @Nullable IdentifierTree name) {
@@ -46,7 +47,7 @@ public class RecordPatternTreeImpl extends AbstractPatternTree implements Record
 
   @Override
   public void accept(TreeVisitor visitor) {
-
+    visitor.visitRecordPattern(this);
   }
 
   @Override
@@ -64,8 +65,8 @@ public class RecordPatternTreeImpl extends AbstractPatternTree implements Record
     return patterns;
   }
 
-  @Nullable
   @Override
+  @CheckForNull
   public IdentifierTree name() {
     return name;
   }
