@@ -27,6 +27,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
@@ -66,11 +67,16 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean missingCasesOfEnum(SwitchStatementTree switchStatementTree) {
-    return numberConstants(switchStatementTree) > allLabels(switchStatementTree).count();
+    return numberConstants(switchStatementTree) > allExpressions(switchStatementTree).count();
   }
 
   private static Stream<CaseLabelTree> allLabels(SwitchStatementTree switchStatementTree) {
     return switchStatementTree.cases().stream().flatMap(caseGroup -> caseGroup.labels().stream());
+  }
+  
+  private static Stream<ExpressionTree> allExpressions(SwitchStatementTree switchStatementTree){
+    return switchStatementTree.cases().stream().flatMap(caseGroup -> caseGroup.labels().stream())
+      .flatMap(caseLabel -> caseLabel.expressions().stream());
   }
 
   private static long numberConstants(SwitchStatementTree switchStatementTree) {
