@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypePatternTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -42,29 +43,22 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
   @Nullable
   private final TypeTree type;
   @Nullable
-  private final VariableTree variable;
-  @Nullable
   private final PatternTree pattern;
 
-  private InstanceOfTreeImpl(Tree.Kind kind, ExpressionTree expression, InternalSyntaxToken instanceofToken, @Nullable TypeTree type, @Nullable VariableTree variable, @Nullable org.sonar.plugins.java.api.tree.PatternTree pattern) {
+  private InstanceOfTreeImpl(Tree.Kind kind, ExpressionTree expression, InternalSyntaxToken instanceofToken, @Nullable TypeTree type, @Nullable PatternTree pattern) {
     this.kind = kind;
     this.expression = expression;
     this.instanceofToken = instanceofToken;
     this.type = type;
-    this.variable = variable;
     this.pattern = pattern;
   }
 
   public InstanceOfTreeImpl(ExpressionTree expression, InternalSyntaxToken instanceofToken, TypeTree type) {
-    this(Tree.Kind.INSTANCE_OF, expression, instanceofToken, type, null, null);
-  }
-
-  public InstanceOfTreeImpl(ExpressionTree expression, InternalSyntaxToken instanceofToken, VariableTree variable) {
-    this(Tree.Kind.PATTERN_INSTANCE_OF, expression, instanceofToken, null, variable, null);
+    this(Tree.Kind.INSTANCE_OF, expression, instanceofToken, type, null);
   }
 
   public InstanceOfTreeImpl(ExpressionTree expression, InternalSyntaxToken instanceofToken, PatternTree pattern) {
-    this(Kind.PATTERN_INSTANCE_OF, expression, instanceofToken, null, null, pattern);
+    this(Kind.PATTERN_INSTANCE_OF, expression, instanceofToken, null, pattern);
   }
 
   @Override
@@ -90,14 +84,18 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
     return type;
   }
 
+
+  @Override
+  public VariableTree variable() {
+    if (pattern != null && pattern.is(Tree.Kind.TYPE_PATTERN)) {
+      return ((TypePatternTree) pattern).patternVariable();
+    }
+    return null;
+  }
+
   /**
    * Only works for PATTERN_INSTANCE_OF, mutually exclusive with {@link #type()}
    */
-  @Override
-  public VariableTree variable() {
-    return variable;
-  }
-
   @Override
   public PatternTree pattern() {
     return pattern;
@@ -114,7 +112,7 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
 
   @Override
   public List<Tree> children() {
-    return Arrays.asList(expression, instanceofToken, (kind == Tree.Kind.INSTANCE_OF ? type : variable));
+    return Arrays.asList(expression, instanceofToken, (kind == Tree.Kind.INSTANCE_OF ? type : pattern));
   }
 
 }
