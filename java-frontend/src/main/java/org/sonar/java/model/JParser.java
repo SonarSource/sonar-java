@@ -1445,11 +1445,10 @@ public class JParser {
           .map(this::convertPattern)
           .collect(Collectors.toList());
 
-        SimpleName patternName = recordPattern.getPatternName();
         return new RecordPatternTreeImpl(
           convertType(recordPattern.getPatternType()),
           nestedPatterns,
-          convertSimpleName(patternName)
+          convertSimpleName(recordPattern.getPatternName())
         );
       case ASTNode.GUARDED_PATTERN:
         GuardedPattern g = (GuardedPattern) p;
@@ -2152,6 +2151,7 @@ public class JParser {
   private InstanceOfTreeImpl convertInstanceOf(PatternInstanceofExpression e) {
     Expression leftOperand = e.getLeftOperand();
     InternalSyntaxToken instanceofToken = firstTokenAfter(leftOperand, TerminalTokens.TokenNameinstanceof);
+    //FIXME future versions of ECJ are likely to return a Pattern rather than a SingleVariableDeclaration
     return new InstanceOfTreeImpl(convertExpression(leftOperand), instanceofToken, new TypePatternTreeImpl(convertVariable(e.getRightOperand())));
   }
 

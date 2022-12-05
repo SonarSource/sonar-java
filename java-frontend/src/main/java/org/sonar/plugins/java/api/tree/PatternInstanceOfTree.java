@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import org.sonar.java.annotations.Beta;
 
 /**
@@ -45,8 +45,8 @@ public interface PatternInstanceOfTree extends ExpressionTree {
    * @deprecated Use {@link PatternInstanceOfTree#pattern()}
    * @return null for all patterns that are not {@link TypePatternTree}.
    */
-  @Deprecated
-  @Nullable
+  @Deprecated(since = "7.16", forRemoval = true)
+  @CheckForNull
   VariableTree variable();
 
   PatternTree pattern();

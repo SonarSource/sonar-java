@@ -470,5 +470,6 @@ public class BaseTreeVisitor implements TreeVisitor {
   public void visitRecordPattern(RecordPatternTree tree) {
     scan(tree.type());
     scan(tree.patterns());
+    scan(tree.name());
   }
 }
