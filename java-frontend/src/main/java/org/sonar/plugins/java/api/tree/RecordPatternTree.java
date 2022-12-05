@@ -20,10 +20,13 @@
 package org.sonar.plugins.java.api.tree;
 
 import java.util.List;
+import javax.annotation.Nullable;
 
 public interface RecordPatternTree extends PatternTree {
   TypeTree type();
-  SyntaxToken openingParenthesis();
+
   List<PatternTree> patterns();
-  SyntaxToken closingParenthesis();
+
+  @Nullable
+  IdentifierTree name();
 }

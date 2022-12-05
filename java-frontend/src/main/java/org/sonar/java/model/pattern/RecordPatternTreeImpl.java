@@ -19,27 +19,29 @@
  */
 package org.sonar.java.model.pattern;
 
+import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class RecordPatternTreeImpl extends AbstractPatternTree implements RecordPatternTree {
 
   private final TypeTree type;
-  private final SyntaxToken openingParenthesis;
   private final List<PatternTree> patterns;
-  private final SyntaxToken closingParenthesis;
 
-  RecordPatternTreeImpl(TypeTree type, SyntaxToken openingParenthesis, List<PatternTree> patterns, SyntaxToken closingParenthesis) {
+  private final IdentifierTree name;
+
+  public RecordPatternTreeImpl(TypeTree type, List<PatternTree> patterns, @Nullable IdentifierTree name) {
     super(Kind.RECORD_PATTERN);
     this.type = type;
-    this.openingParenthesis = openingParenthesis;
     this.patterns = patterns;
-    this.closingParenthesis = closingParenthesis;
+    this.name = name;
   }
 
   @Override
@@ -58,22 +60,22 @@ public class RecordPatternTreeImpl extends AbstractPatternTree implements Record
   }
 
   @Override
-  public SyntaxToken openingParenthesis() {
-    return null;
-  }
-
-  @Override
   public List<PatternTree> patterns() {
-    return null;
+    return patterns;
   }
 
+  @Nullable
   @Override
-  public SyntaxToken closingParenthesis() {
-    return null;
+  public IdentifierTree name() {
+    return name;
   }
 
   @Override
   protected List<Tree> children() {
-    return null;
+    return ListUtils.concat(
+      Collections.singleton(type),
+      patterns,
+      Collections.singleton(name)
+    );
   }
 }

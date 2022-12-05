@@ -36,13 +36,13 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 public class GuardedPatternTreeImpl extends AbstractPatternTree implements GuardedPatternTree {
 
   private final PatternTree pattern;
-  private final SyntaxToken andOperator;
+  private final SyntaxToken whenOperator;
   private final ExpressionTree expression;
 
-  public GuardedPatternTreeImpl(PatternTree pattern, SyntaxToken andOperator, ExpressionTree expression) {
+  public GuardedPatternTreeImpl(PatternTree pattern, SyntaxToken whenOperator, ExpressionTree expression) {
     super(Tree.Kind.GUARDED_PATTERN);
     this.pattern = pattern;
-    this.andOperator = andOperator;
+    this.whenOperator = whenOperator;
     this.expression = expression;
   }
 
@@ -58,7 +58,7 @@ public class GuardedPatternTreeImpl extends AbstractPatternTree implements Guard
 
   @Override
   public SyntaxToken whenOperator() {
-    return andOperator;
+    return whenOperator;
   }
 
   @Override
@@ -68,7 +68,7 @@ public class GuardedPatternTreeImpl extends AbstractPatternTree implements Guard
 
   @Override
   protected List<Tree> children() {
-    return Arrays.asList(pattern, andOperator, expression);
+    return Arrays.asList(pattern, whenOperator, expression);
   }
 
 }

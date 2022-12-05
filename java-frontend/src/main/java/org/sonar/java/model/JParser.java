@@ -90,6 +90,7 @@ import org.sonar.java.model.expression.VarTypeTreeImpl;
 import org.sonar.java.model.pattern.DefaultPatternTreeImpl;
 import org.sonar.java.model.pattern.GuardedPatternTreeImpl;
 import org.sonar.java.model.pattern.NullPatternTreeImpl;
+import org.sonar.java.model.pattern.RecordPatternTreeImpl;
 import org.sonar.java.model.pattern.TypePatternTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
@@ -1438,10 +1439,23 @@ public class JParser {
     switch (p.getNodeType()) {
       case ASTNode.TYPE_PATTERN:
         return new TypePatternTreeImpl(convertVariable(((TypePattern) p).getPatternVariable()));
+      case ASTNode.RECORD_PATTERN:
+        RecordPattern recordPattern = (RecordPattern) p;
+        List<PatternTree> nestedPatterns = recordPattern.patterns().stream()
+          .map(this::convertPattern)
+          .collect(Collectors.toList());
+
+        SimpleName patternName = recordPattern.getPatternName();
+        return new RecordPatternTreeImpl(
+          convertType(recordPattern.getPatternType()),
+          nestedPatterns,
+          convertSimpleName(patternName)
+        );
       case ASTNode.GUARDED_PATTERN:
         GuardedPattern g = (GuardedPattern) p;
         return new GuardedPatternTreeImpl(
           convertPattern(g.getPattern()),
+          // FIXME java 19 support: should be "TerminalTokens.TokenNameRestrictedIdentifierWhen" instead of "TerminalTokens.TokenNameIdentifier"
           firstTokenBefore(g.getExpression(), TerminalTokens.TokenNameIdentifier),
           convertExpression(g.getExpression()));
       case ASTNode.NULL_PATTERN:
@@ -2138,7 +2152,7 @@ public class JParser {
   private InstanceOfTreeImpl convertInstanceOf(PatternInstanceofExpression e) {
     Expression leftOperand = e.getLeftOperand();
     InternalSyntaxToken instanceofToken = firstTokenAfter(leftOperand, TerminalTokens.TokenNameinstanceof);
-    return new InstanceOfTreeImpl(convertExpression(leftOperand), instanceofToken, convertVariable(e.getRightOperand()));
+    return new InstanceOfTreeImpl(convertExpression(leftOperand), instanceofToken, new TypePatternTreeImpl(convertVariable(e.getRightOperand())));
   }
 
   private LambdaExpressionTreeImpl convertLambdaExpression(LambdaExpression e) {

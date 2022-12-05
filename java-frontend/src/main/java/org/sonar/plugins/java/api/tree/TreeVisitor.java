@@ -184,4 +184,11 @@ public interface TreeVisitor {
    */
   @Deprecated(since = "7.7", forRemoval = false)
   void visitGuardedPattern(GuardedPatternTree tree);
+
+  /**
+   * @since Java 19
+   * @deprecated Preview feature
+   */
+  @Deprecated(since = "7.16", forRemoval = false)
+  void visitRecordPattern(RecordPatternTree tree);
 }

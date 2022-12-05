@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import javax.annotation.Nullable;
 import org.sonar.java.annotations.Beta;
 
 /**
@@ -39,11 +40,13 @@ public interface PatternInstanceOfTree extends ExpressionTree {
 
   SyntaxToken instanceofKeyword();
 
-  @Deprecated
   /**
-   * @deprecated Use {@link PatternInstanceOfTree#pattern()}
    * @since 7.16
+   * @deprecated Use {@link PatternInstanceOfTree#pattern()}
+   * @return null for all patterns that are not {@link TypePatternTree}.
    */
+  @Deprecated
+  @Nullable
   VariableTree variable();
 
   PatternTree pattern();

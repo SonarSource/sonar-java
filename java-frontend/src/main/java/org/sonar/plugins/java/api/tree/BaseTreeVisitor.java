@@ -280,7 +280,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   @Override
   public void visitPatternInstanceOf(PatternInstanceOfTree tree) {
     scan(tree.expression());
-    scan(tree.variable());
+    scan(tree.pattern());
   }
 
   @Override
@@ -464,5 +464,11 @@ public class BaseTreeVisitor implements TreeVisitor {
   public void visitGuardedPattern(GuardedPatternTree tree) {
     scan(tree.pattern());
     scan(tree.expression());
+  }
+
+  @Override
+  public void visitRecordPattern(RecordPatternTree tree) {
+    scan(tree.type());
+    scan(tree.patterns());
   }
 }
