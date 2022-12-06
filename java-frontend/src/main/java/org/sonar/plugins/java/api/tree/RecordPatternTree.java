@@ -21,7 +21,23 @@ package org.sonar.plugins.java.api.tree;
 
 import java.util.List;
 import javax.annotation.CheckForNull;
+import org.sonar.java.annotations.Beta;
 
+/**
+ * Record pattern tree, introduced with Java 19 and JEP-405.
+ *
+ * <pre>
+ *   case {@link #type()} ( {@link #patterns()} ) {@link #name()} : ...
+ *   case {@link #type()} ( {@link #patterns()} ) {@link #name()} -> ...
+ *   case {@link #type()} ( {@link #patterns()} ) : ...
+ *   case {@link #type()} ( {@link #patterns()} ) -> ...
+ * </pre>
+ *
+ * @since Java 19
+ * @deprecated Preview Feature
+ */
+@Beta
+@Deprecated(since = "7.16", forRemoval = false)
 public interface RecordPatternTree extends PatternTree {
   TypeTree type();
 
