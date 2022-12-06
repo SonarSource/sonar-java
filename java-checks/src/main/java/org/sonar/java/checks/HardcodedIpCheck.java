@@ -76,7 +76,7 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
     }
   }
 
-  private boolean isDocumentationRange(String ip) {
+  private static boolean isDocumentationRange(String ip) {
     return ip.startsWith("192.0.2.") || ip.startsWith("198.51.100.") || ip.startsWith("203.0.113.") || ip.startsWith("2001:db8:");
   }
 
