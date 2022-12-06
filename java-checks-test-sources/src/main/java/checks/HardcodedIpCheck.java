@@ -75,4 +75,10 @@ class HardcodedIpCheck {
 
   String fileName = "v0.0.1.200__do_something.sql"; // Compliant - suffixed and prefixed
   String version = "1.0.0.0-1"; // Compliant - suffixed
+
+  // Range reserved for documentation
+  String docRange_1 = "192.0.2.10";
+  String docRange_2 = "198.51.100.10";
+  String docRange_3 = "203.0.113.10";
+  String docRange_4 = "2001:db8:1231:2312:734f:FAB2:3000:4123";
 }
