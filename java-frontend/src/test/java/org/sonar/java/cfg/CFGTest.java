@@ -1820,6 +1820,7 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(IDENTIFIER, "a"),
+        element(TYPE_PATTERN),
         element(VARIABLE, "str"),
         element(PATTERN_INSTANCE_OF)
         ).terminator(IF_STATEMENT).successors(0, 1),

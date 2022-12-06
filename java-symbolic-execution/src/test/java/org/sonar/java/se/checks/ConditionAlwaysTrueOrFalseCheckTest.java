@@ -172,4 +172,13 @@ class ConditionAlwaysTrueOrFalseCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_pattern_matching() {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheckWithPattern.java"))
+      .withChecks(new ConditionalUnreachableCodeCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+
+  }
 }

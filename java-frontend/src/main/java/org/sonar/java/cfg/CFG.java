@@ -19,7 +19,6 @@
  */
 package org.sonar.java.cfg;
 
-import org.sonar.java.Preconditions;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -34,7 +33,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonar.java.Preconditions;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
@@ -71,6 +70,8 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.NullPatternTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
+import org.sonar.plugins.java.api.tree.PatternTree;
+import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
@@ -86,6 +87,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.plugins.java.api.tree.YieldStatementTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class CFG implements ControlFlowGraph {
 
@@ -614,23 +616,11 @@ public class CFG implements ControlFlowGraph {
         currentBlock.elements.add(tree);
         break;
       case NULL_PATTERN:
-        currentBlock.elements.add(((NullPatternTree) tree).nullLiteral());
-        currentBlock.elements.add(tree);
-        break;
       case TYPE_PATTERN:
-        buildVariable(((TypePatternTree) tree).patternVariable());
-        currentBlock.elements.add(tree);
-        break;
       case GUARDED_PATTERN:
-        GuardedPatternTree guardedPatternTree = (GuardedPatternTree) tree;
-        // reverted order
-        build(guardedPatternTree.expression());
-        build(guardedPatternTree.pattern());
-        currentBlock.elements.add(tree);
-        break;
+      case RECORD_PATTERN:
       case DEFAULT_PATTERN:
-        // do nothing - handled when building the switch
-        currentBlock.elements.add(tree);
+        buildPattern((PatternTree) tree);
         break;
       default:
         throw new UnsupportedOperationException(tree.kind().name() + " " + ((JavaTree) tree).getLine());
@@ -1130,7 +1120,7 @@ public class CFG implements ControlFlowGraph {
 
   private void buildInstanceOf(PatternInstanceOfTree instanceOfTree) {
     currentBlock.elements.add(instanceOfTree);
-    build(instanceOfTree.variable());
+    build(instanceOfTree.pattern());
     build(instanceOfTree.expression());
   }
 
@@ -1206,6 +1196,56 @@ public class CFG implements ControlFlowGraph {
 
   public void setMethodSymbol(Symbol.MethodSymbol methodSymbol) {
     this.methodSymbol = methodSymbol;
+  }
+
+  private void buildPattern(PatternTree tree) {
+    switch (tree.kind()) {
+      case NULL_PATTERN:
+        buildNullPattern((NullPatternTree) tree);
+        break;
+      case TYPE_PATTERN:
+        buildTypePattern((TypePatternTree) tree);
+        break;
+      case GUARDED_PATTERN:
+        buildGuardedPattern((GuardedPatternTree) tree);
+        break;
+      case RECORD_PATTERN:
+        buildRecordPattern((RecordPatternTree) tree);
+        break;
+      case DEFAULT_PATTERN:
+        // do nothing - handled when building the switch
+        currentBlock.elements.add(tree);
+        break;
+      default:
+        throw new UnsupportedOperationException(tree.kind().name() + " " + ((JavaTree) tree).getLine());
+    }
+  }
+
+  private void buildNullPattern(NullPatternTree tree) {
+    currentBlock.elements.add(tree.nullLiteral());
+    currentBlock.elements.add(tree);
+  }
+
+  private void buildTypePattern(TypePatternTree tree) {
+    buildVariable(tree.patternVariable());
+    currentBlock.elements.add(tree);
+  }
+
+  private void buildGuardedPattern(GuardedPatternTree tree) {
+    // reverted order
+    build(tree.expression());
+    build(tree.pattern());
+    currentBlock.elements.add(tree);
+  }
+
+  private void buildRecordPattern(RecordPatternTree tree) {
+    IdentifierTree name = tree.name();
+    if (name != null) {
+      build(name);
+    }
+    build(tree.patterns());
+    build(tree.type());
+    currentBlock.elements.add(tree);
   }
 
 }

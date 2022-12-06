@@ -529,7 +529,7 @@ public class ExplodedGraphWalker {
 
     Map<CaseGroupTree, List<ProgramState.SymbolicValueSymbol>> caseValues = new HashMap<>();
     for (CaseGroupTree caseGroup : ListUtils.reverse(caseGroups)) {
-      // FIXME this logic do not work with patterns from JDK17, as we need to consume the pattern adequately.
+      // FIXME this logic do not work with patterns from JDK17+, as we need to consume the pattern adequately.
       // The NULL_PATTERN can lead to NPE in the block, as it is equivalent to if (o == null) { ... }
       // also, there is a good chance that the stack would be corrupted when patterns are used.
       int numberOfCaseValues = caseGroup.labels()
@@ -746,8 +746,7 @@ public class ExplodedGraphWalker {
         programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
         break;
       case NULL_PATTERN:
-        // FIXME we could add a null constraint to the argument of the switch, since it should be 
-        // considered being null in this branch
+        // FIXME we could add a null constraint to the argument of the switch, since it should be considered being null in this branch
         programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
         break;
       case GUARDED_PATTERN:
@@ -960,10 +959,14 @@ public class ExplodedGraphWalker {
       programState = programState.clearStack();
       // exception variable is not null by definition
       programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
-    } else if (parent.is(Tree.Kind.PATTERN_INSTANCE_OF)) {
-      // The new variable created from a pattern instance of share the same symbolic value as the current object.
+    } else if (parent.is(Tree.Kind.TYPE_PATTERN) && parent.parent().is(Tree.Kind.PATTERN_INSTANCE_OF)) {
+      // FIXME only works with the TYPE_PATTERN inside an pattern instanceof
+      // handling of all patterns as introduced in JDK17+ should also be supported
+      // skip the unused SV corresponding to the type pattern
+      programState = programState.unstackValue(1).state;
       SymbolicValue peekValue = programState.peekValue();
       if (peekValue != null) {
+        // The new variable created from a pattern instance of share the same symbolic value as the current object.
         programState = programState.put(variableSymbol, peekValue);
       }
     }
