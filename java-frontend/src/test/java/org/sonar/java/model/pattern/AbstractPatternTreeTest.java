@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.DefaultPatternTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.GuardedPatternTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NullPatternTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
@@ -336,8 +337,9 @@ class AbstractPatternTreeTest {
       });
     TypeTree type = recordPattern.type();
     assertThat(type.annotations()).isEmpty();
-    assertThat(type.toString()).isEqualTo("Triangle");
-    assertThat(recordPattern.name().name()).isEqualTo("t");
+    assertThat(type).is(Tree.Kind.IDENTIFIER);
+    assertThat((IdentifierTree) type).hasName("Triangle");
+    assertThat(recordPattern.name()).hasName("t");
   }
 
   private static SwitchExpressionTree switchExpressionTree(String methodParametersDeclaration, String switchExpressionCode) {
