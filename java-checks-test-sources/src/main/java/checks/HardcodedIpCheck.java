@@ -13,6 +13,14 @@ class HardcodedIpCheck {
   String loopbackAddress2 = "127.2.3.4";
   String nonRoutableAddress = "0.0.0.0";
 
+  // local IPv4-mapped IPv6 address
+  String nonLoopbackAddress = "::ffff:128.127.2.3"; // Noncompliant
+  String nonLopbackAddress2 = "0:0:0:0:0:ffff:0:128.13.0.1"; // Noncompliant
+  String loopbackAddress3 = "0:0:0:0:0:ffff:0:127.13.0.1";
+  String loopbackAddress4 = "0:0:0:0:0:0:ffff:127.13.0.1";
+  String loopbackAddress5 = "::ffff:0:127.13.0.1";
+  String loopbackAddress6 = "::ffff:127.127.2.3.";
+
   String notAnIp1 = "0.0.0.1234";
   String notAnIp2 = "1234.0.0.0";
   String notAnIp3 = "1234.0.0.0.0.1234";
