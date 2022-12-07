@@ -347,6 +347,7 @@ class CFGTest {
         case TYPE_PATTERN:
         case GUARDED_PATTERN:
         case DEFAULT_PATTERN:
+        case RECORD_PATTERN:
           break;
         default:
           throw new IllegalArgumentException("Unsupported element kind: " + kind);
@@ -945,16 +946,19 @@ class CFGTest {
   // FIXME add tests for jdk 17
   @Test
   void switch_with_pattern() {
-    final CFG cfg = buildCFG("static int switch_array_default_null_pattern(Object o) {\n"
+    final CFG cfg = buildCFG("  static int switch_array_default_null_pattern(Object o) {\n"
       + "    return switch (o) {\n"
       // array type pattern
       + "      case Object[] arr -> arr.length;\n"
       // guarded pattern
       + "      case Rectangle r when r.volume() > 42 -> -1;\n"
+      // record pattern
+      + "      case Triangle(int a, var b, int c) t -> 0;\n"
       // default and null pattern
       + "      case default, null -> 42;\n"
       + "    };\n"
-      + "  }");
+      + "  }\n"
+      + " record Triangle(int a, int b, int c) {}\n");
     final CFGChecker cfgChecker = checker(
       block(
         element(CASE_GROUP),
@@ -964,6 +968,9 @@ class CFGTest {
         element(CASE_GROUP),
         element(INT_LITERAL, 1),
         element(UNARY_MINUS)).hasCaseGroup().terminator(YIELD_STATEMENT).successors(1),
+      block(
+        element(CASE_GROUP),
+        element(INT_LITERAL, 0)).hasCaseGroup().terminator(YIELD_STATEMENT).successors(1),
       block(
         element(CASE_GROUP),
         element(INT_LITERAL, 42)).hasCaseGroup().terminator(YIELD_STATEMENT).successors(1),
@@ -978,9 +985,18 @@ class CFGTest {
         element(METHOD_INVOCATION),
         element(INT_LITERAL, 42),
         element(GREATER_THAN),
+        element(RECORD_PATTERN),
+        element(IDENTIFIER, "Triangle"),
+        element(TYPE_PATTERN),
+        element(VARIABLE, "a"),
+        element(TYPE_PATTERN),
+        element(VARIABLE, "b"),
+        element(TYPE_PATTERN),
+        element(VARIABLE, "c"),
+        element(IDENTIFIER, "t"),
         element(DEFAULT_PATTERN),
         element(NULL_PATTERN),
-        element(NULL_LITERAL)).terminator(SWITCH_EXPRESSION).successors(3, 4, 5),
+        element(NULL_LITERAL)).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6),
       terminator(RETURN_STATEMENT).successors(0));
     cfgChecker.check(cfg);
   }

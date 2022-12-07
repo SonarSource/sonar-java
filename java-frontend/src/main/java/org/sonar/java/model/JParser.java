@@ -1440,11 +1440,9 @@ public class JParser {
           .map(this::convertPattern)
           .collect(Collectors.toList());
 
-        return new RecordPatternTreeImpl(
-          convertType(recordPattern.getPatternType()),
-          nestedPatterns,
-          convertSimpleName(recordPattern.getPatternName())
-        );
+        TypeTree patternType = convertType(recordPattern.getPatternType());
+        IdentifierTreeImpl recordName = recordPattern.getPatternName() != null ? convertSimpleName(recordPattern.getPatternName()) : null;
+        return new RecordPatternTreeImpl(patternType, nestedPatterns, recordName);
       case ASTNode.GUARDED_PATTERN:
         GuardedPattern g = (GuardedPattern) p;
         return new GuardedPatternTreeImpl(
