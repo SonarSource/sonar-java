@@ -40,7 +40,7 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
   private static final String PATH_URL = "((?![\\d.]))(/.*)?";
   private static final String END_URL = PORT_URL + PATH_URL;
 
-  public static final String IP_V4_ALONE = "(?<ipv4>(?:\\d{1,3}\\.){3}\\d{1,3})";
+  private static final String IP_V4_ALONE = "(?<ipv4>(?:\\d{1,3}\\.){3}\\d{1,3})";
   private static final String IP_V4_MAPPED_IP_V6 = "(::ffff:0:|::ffff:|0:0:0:0:0:ffff:0:|0:0:0:0:0:0:ffff:)" + IP_V4_ALONE;
   private static final String IP_V4_URL = (PROTOCOL_URL + "?") + IP_V4_ALONE + END_URL;
 
