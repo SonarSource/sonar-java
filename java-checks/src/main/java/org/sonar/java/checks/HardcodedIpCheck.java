@@ -71,9 +71,13 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
     if (tree.is(Tree.Kind.STRING_LITERAL)) {
       String value = LiteralUtils.trimQuotes(tree.value());
       extractIPV4(value).map(Optional::of).orElseGet(() -> extractIPV6(value))
-        .filter(ip -> !isLoopbackAddress(ip) && !isNonRoutableAddress(ip) && !isBroadcastAddress(ip))
+        .filter(ip -> !isLoopbackAddress(ip) && !isNonRoutableAddress(ip) && !isBroadcastAddress(ip) && !isDocumentationRange(ip))
         .ifPresent(ip -> context.reportIssue(this, tree, MESSAGE));
     }
+  }
+
+  private static boolean isDocumentationRange(String ip) {
+    return ip.startsWith("192.0.2.") || ip.startsWith("198.51.100.") || ip.startsWith("203.0.113.") || ip.startsWith("2001:db8:");
   }
 
   private static boolean isLoopbackAddress(String ip) {
