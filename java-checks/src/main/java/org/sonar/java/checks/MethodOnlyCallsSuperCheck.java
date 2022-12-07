@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -37,6 +36,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -67,14 +67,16 @@ public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
     if (isSingleStatementMethod(methodTree)
       && isUselessSuperCall(methodTree)
       && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations())
-      && !isFinal(methodTree)
+      && !isFinalOrSynchronizedOrStrictFP(methodTree)
       && !isClassAnnotatedWithTransactional(methodTree)) {
       reportIssue(methodTree.simpleName(), "Remove this method to simply inherit it.");
     }
   }
 
-  private static boolean isFinal(MethodTree methodTree) {
-    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.FINAL);
+  private static boolean isFinalOrSynchronizedOrStrictFP(MethodTree methodTree) {
+    return methodTree.modifiers().modifiers().stream()
+      .map(ModifierKeywordTree::modifier)
+      .anyMatch(m -> m == Modifier.FINAL || m == Modifier.SYNCHRONIZED || m == Modifier.STRICTFP);
   }
 
   private static boolean isSingleStatementMethod(MethodTree methodTree) {
