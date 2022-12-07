@@ -40,7 +40,16 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
   private static final String PATH_URL = "((?![\\d.]))(/.*)?";
   private static final String END_URL = PORT_URL + PATH_URL;
 
-  private static final Pattern IP_V4_REGEX = Pattern.compile((PROTOCOL_URL + "?") + "(?<ip>(?:\\d{1,3}\\.){3}\\d{1,3})" + END_URL);
+  public static final String IP_V4_ALONE = "(?<ipv4>(?:\\d{1,3}\\.){3}\\d{1,3})";
+  private static final String IP_V4_MAPPED_IP_V6 = "(::ffff:0:|::ffff:|0:0:0:0:0:ffff:0:|0:0:0:0:0:0:ffff:)" + IP_V4_ALONE;
+  private static final String IP_V4_URL = (PROTOCOL_URL + "?") + IP_V4_ALONE + END_URL;
+
+  private static final List<Pattern> IP_V4_REGEX_LIST = Arrays.asList(
+    Pattern.compile(IP_V4_ALONE),
+    Pattern.compile(IP_V4_URL),
+    Pattern.compile(IP_V4_MAPPED_IP_V6));
+
+
 
   private static final String IP_V6_WITH_FIRST_PART = "(\\p{XDigit}{1,4}::?){1,7}\\p{XDigit}{0,4}";
   private static final String IP_V6_WITHOUT_FIRST_PART = "::((\\p{XDigit}{1,4}:){0,6}\\p{XDigit}{1,4})?";
@@ -93,11 +102,13 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   private static Optional<String> extractIPV4(String value) {
-    return Optional.of(IP_V4_REGEX.matcher(value))
+    return IP_V4_REGEX_LIST.stream()
+      .map(pattern -> pattern.matcher(value))
       .filter(Matcher::matches)
-      .map(match -> match.group("ip"))
+      .map(match -> match.group("ipv4"))
       .filter(HardcodedIpCheck::isValidIPV4Parts)
-      .filter(ip -> !looksLikeAsn1ObjectIdentifier(ip));
+      .filter(ip -> !looksLikeAsn1ObjectIdentifier(ip))
+      .findFirst();
   }
 
   private static boolean looksLikeAsn1ObjectIdentifier(String ip) {
