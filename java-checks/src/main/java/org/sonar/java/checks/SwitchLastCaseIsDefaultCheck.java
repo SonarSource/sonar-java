@@ -58,7 +58,10 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDefault(CaseLabelTree caseLabelTree) {
-    return JavaKeyword.DEFAULT.getValue().equals(caseLabelTree.caseOrDefaultKeyword().text());
+    if (JavaKeyword.DEFAULT.getValue().equals(caseLabelTree.caseOrDefaultKeyword().text())) {
+      return true;
+    }
+    return caseLabelTree.expressions().stream().anyMatch(expr -> expr.is(Tree.Kind.DEFAULT_PATTERN));
   }
 
   private static boolean isSwitchOnEnum(SwitchStatementTree switchStatementTree) {
@@ -73,10 +76,9 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
   private static Stream<CaseLabelTree> allLabels(SwitchStatementTree switchStatementTree) {
     return switchStatementTree.cases().stream().flatMap(caseGroup -> caseGroup.labels().stream());
   }
-  
-  private static Stream<ExpressionTree> allExpressions(SwitchStatementTree switchStatementTree){
-    return switchStatementTree.cases().stream().flatMap(caseGroup -> caseGroup.labels().stream())
-      .flatMap(caseLabel -> caseLabel.expressions().stream());
+
+  private static Stream<ExpressionTree> allExpressions(SwitchStatementTree switchStatementTree) {
+    return allLabels(switchStatementTree).flatMap(caseLabel -> caseLabel.expressions().stream());
   }
 
   private static long numberConstants(SwitchStatementTree switchStatementTree) {
