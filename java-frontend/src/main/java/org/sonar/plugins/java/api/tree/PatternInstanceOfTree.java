@@ -28,7 +28,7 @@ import org.sonar.java.annotations.Beta;
  * JLS 15.20.2
  *
  * <pre>
- *   {@link #expression()} instanceof {@link #variable()}
+ *   {@link #expression()} instanceof {@link #pattern()}
  * </pre>
  *
  * @since Java 16

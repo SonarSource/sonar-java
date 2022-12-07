@@ -31,9 +31,11 @@ import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypePatternTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
 class InstanceOfTreeImplTest {
 
@@ -41,17 +43,21 @@ class InstanceOfTreeImplTest {
     + "  void foo(Object o) {\n"
     + "    if(%s) { }\n"
     + "  }\n"
+    + "  record Rectangle(int a, int b) {}"
     + "}\n";
 
   @Test
   void test_PatternInstanceOfTree() {
     InstanceOfTreeImpl ioti = instanceOf("o instanceof String s");
-    assertThat(ioti.is(Tree.Kind.PATTERN_INSTANCE_OF)).isTrue();
+    assertThat(ioti).is(Tree.Kind.PATTERN_INSTANCE_OF);
 
     PatternInstanceOfTree piot = ioti;
     assertThat(piot.expression()).isNotNull();
     assertThat(piot.instanceofKeyword()).isNotNull();
-    assertThat(piot.variable()).isNotNull();
+    assertThat(piot.pattern()).isNotNull();
+    assertThat(piot.variable())
+      .isNotNull()
+      .isSameAs(((TypePatternTree) piot.pattern()).patternVariable());
 
     InstanceOfVisitor visitor = new InstanceOfVisitor();
 
@@ -60,14 +66,30 @@ class InstanceOfTreeImplTest {
   }
 
   @Test
+  void test_PatternInstanceOfTree_not_TypePattern() {
+    InstanceOfTreeImpl ioti = instanceOf("o instanceof Rectangle(int a, var b) r");
+    assertThat(ioti).is(Tree.Kind.PATTERN_INSTANCE_OF);
+
+    PatternInstanceOfTree piot = ioti;
+    assertThat(piot.expression()).isNotNull();
+    assertThat(piot.instanceofKeyword()).isNotNull();
+    assertThat(piot.pattern())
+      // FIXME bug in ecj (java 19 support): only supports TypePatterns. should be RecordPattern
+      .is(Tree.Kind.TYPE_PATTERN)
+      .isNotNull();
+    // should be null
+    assertThat(piot.variable()).isNotNull();
+  }
+
+  @Test
   void test_GuardedPatternInstanceOfTree() {
     ExpressionTree condition = ifCondition("o instanceof String s && s.length() > 10");
     // ECJ drop the parenthesis and consider it as the two operands of a &&, while this compiles
-    assertThat(condition.is(Tree.Kind.CONDITIONAL_AND)).isTrue();
+    assertThat(condition).is(Tree.Kind.CONDITIONAL_AND);
     BinaryExpressionTree binaryExpression = (BinaryExpressionTree) condition;
-    assertThat(binaryExpression.rightOperand().is(Tree.Kind.GREATER_THAN)).isTrue();
+    assertThat(binaryExpression.rightOperand()).is(Tree.Kind.GREATER_THAN);
     ExpressionTree leftOp = binaryExpression.leftOperand();
-    assertThat(leftOp.is(Tree.Kind.PATTERN_INSTANCE_OF)).isTrue();
+    assertThat(leftOp).is(Tree.Kind.PATTERN_INSTANCE_OF);
     PatternInstanceOfTree piot = (PatternInstanceOfTree) leftOp;
     assertThat(piot.expression()).isNotNull();
     assertThat(piot.instanceofKeyword()).isNotNull();
@@ -75,13 +97,14 @@ class InstanceOfTreeImplTest {
     assertThat(variable).isNotNull();
     assertThat(variable.simpleName().name()).isEqualTo("s");
     assertThat(variable.type().symbolType().is("java.lang.String")).isTrue();
-
   }
+
 
   @Test
   void test_InstanceOfTree() {
     InstanceOfTreeImpl ioti = instanceOf("o instanceof String");
-    assertThat(ioti.is(Tree.Kind.INSTANCE_OF)).isTrue();
+    assertThat(ioti).is(Tree.Kind.INSTANCE_OF);
+    assertThat(ioti.variable()).isNull();
 
     InstanceOfTree iot = ioti;
     assertThat(iot.expression()).isNotNull();
