@@ -58,10 +58,14 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDefault(CaseLabelTree caseLabelTree) {
-    if (JavaKeyword.DEFAULT.getValue().equals(caseLabelTree.caseOrDefaultKeyword().text())) {
+    if (equalsDefaultKeyword(caseLabelTree.caseOrDefaultKeyword().text())) {
       return true;
     }
-    return caseLabelTree.expressions().stream().anyMatch(expr -> expr.is(Tree.Kind.DEFAULT_PATTERN));
+    return caseLabelTree.expressions().stream().anyMatch(expr -> equalsDefaultKeyword(expr.firstToken().text()));
+  }
+
+  private static boolean equalsDefaultKeyword(String text) {
+    return JavaKeyword.DEFAULT.getValue().equals(text);
   }
 
   private static boolean isSwitchOnEnum(SwitchStatementTree switchStatementTree) {
