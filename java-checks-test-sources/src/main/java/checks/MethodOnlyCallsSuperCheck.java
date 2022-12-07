@@ -255,17 +255,41 @@ class MethodOnlyCallsSuperCheckE extends MethodOnlyCallsSuperCheckD {
   }
 }
 
-class MethodOnlyCallsSuperCheckFinalMethodsExclusion {
+class MethodOnlyCallsSuperWithDifferentModifiers {
   static class BaseClass {
-    public void methodA() { }
-    public void methodB() { }
+    protected void method() { }
   }
-  static class OverrideClass extends BaseClass {
-    public final void methodA() { // compliant : override to make the method final.
-      super.methodA();
+  static class StandardNoncompliantCase extends BaseClass {
+    @Override
+    protected void method() { // Noncompliant
+      super.method();
     }
-    public void methodB() { // Noncompliant
-      super.methodB();
+  }
+  static class OverrideMethodWithFinal extends BaseClass {
+    @Override
+    protected final void method() { // Compliant, override to make the method final.
+      super.method();
+    }
+  }
+
+  static class OverrideMethodWithPublic extends BaseClass {
+    @Override
+    public void method() { // Compliant, override to make the method public.
+      super.method();
+    }
+  }
+
+  static class OverrideMethodWitSynchronized extends BaseClass {
+    @Override
+    protected synchronized void method() { // Compliant, override to make the method synchronized.
+      super.method();
+    }
+  }
+
+  static class OverrideMethodWithStrictfp extends BaseClass {
+    @Override
+    protected strictfp void method() { // Compliant, override to make the method strictfp.
+      super.method();
     }
   }
 }
