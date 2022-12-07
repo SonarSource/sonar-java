@@ -31,7 +31,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
@@ -47,6 +46,7 @@ import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 
 /**
@@ -172,7 +172,7 @@ public class QuickFixHelper {
       case CATCH:
       case LAMBDA_EXPRESSION:
       case FOR_EACH_STATEMENT:
-      case PATTERN_INSTANCE_OF:
+      case TYPE_PATTERN:
         return Collections.emptyList();
       case CLASS:
       case ENUM:
