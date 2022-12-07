@@ -50,7 +50,6 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
     Pattern.compile(IP_V4_MAPPED_IP_V6));
 
 
-
   private static final String IP_V6_WITH_FIRST_PART = "(\\p{XDigit}{1,4}::?){1,7}\\p{XDigit}{0,4}";
   private static final String IP_V6_WITHOUT_FIRST_PART = "::((\\p{XDigit}{1,4}:){0,6}\\p{XDigit}{1,4})?";
   public static final String IP_V6_ALONE = ("(?<ip>" + IP_V6_WITH_FIRST_PART + "|" + IP_V6_WITHOUT_FIRST_PART + ")");
