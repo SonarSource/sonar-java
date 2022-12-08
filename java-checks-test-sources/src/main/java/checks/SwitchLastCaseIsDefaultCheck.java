@@ -4,6 +4,14 @@ import java.time.DayOfWeek;
 
 class SwitchLastCaseIsDefaultCheck {
   void foo(MyEnum myEnum, DayOfWeek dow) {
+    
+    switch (myEnum) { // Compliant
+      case A, B:
+        break;
+      case C:
+        break;
+    }
+    
     switch (0) { // Noncompliant [[sc=5;ec=11]] {{Add a default case to this switch.}}
     }
 

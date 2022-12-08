@@ -27,6 +27,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
@@ -35,6 +36,8 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S131")
 public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
 
+  private static final String DEFAULT_LABEL_STRING = JavaKeyword.DEFAULT.getValue();
+  
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.SWITCH_STATEMENT);
@@ -57,7 +60,14 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDefault(CaseLabelTree caseLabelTree) {
-    return JavaKeyword.DEFAULT.getValue().equals(caseLabelTree.caseOrDefaultKeyword().text());
+    if (equalsDefaultKeyword(caseLabelTree.caseOrDefaultKeyword().text())) {
+      return true;
+    }
+    return caseLabelTree.expressions().stream().anyMatch(expr -> expr.is(Tree.Kind.DEFAULT_PATTERN));
+  }
+
+  private static boolean equalsDefaultKeyword(String text) {
+    return DEFAULT_LABEL_STRING.equals(text);
   }
 
   private static boolean isSwitchOnEnum(SwitchStatementTree switchStatementTree) {
@@ -66,11 +76,15 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean missingCasesOfEnum(SwitchStatementTree switchStatementTree) {
-    return numberConstants(switchStatementTree) > allLabels(switchStatementTree).count();
+    return numberConstants(switchStatementTree) > allExpressions(switchStatementTree).count();
   }
 
   private static Stream<CaseLabelTree> allLabels(SwitchStatementTree switchStatementTree) {
     return switchStatementTree.cases().stream().flatMap(caseGroup -> caseGroup.labels().stream());
+  }
+
+  private static Stream<ExpressionTree> allExpressions(SwitchStatementTree switchStatementTree) {
+    return allLabels(switchStatementTree).flatMap(caseLabel -> caseLabel.expressions().stream());
   }
 
   private static long numberConstants(SwitchStatementTree switchStatementTree) {
