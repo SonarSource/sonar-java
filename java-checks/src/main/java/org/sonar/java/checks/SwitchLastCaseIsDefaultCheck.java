@@ -36,7 +36,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S131")
 public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
 
-  private static final String defaultLabelString = JavaKeyword.DEFAULT.getValue();
+  private static final String DEFAULT_LABEL_STRING = JavaKeyword.DEFAULT.getValue();
   
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -67,7 +67,7 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean equalsDefaultKeyword(String text) {
-    return defaultLabelString.equals(text);
+    return DEFAULT_LABEL_STRING.equals(text);
   }
 
   private static boolean isSwitchOnEnum(SwitchStatementTree switchStatementTree) {
