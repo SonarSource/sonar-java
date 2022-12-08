@@ -77,7 +77,7 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
   }
 
   /**
-   * Only works for INSTANCE_OF, mutually exclusive with {@link #variable()}
+   * Only works for INSTANCE_OF, mutually exclusive with {@link #pattern()}
    */
   @Override
   public TypeTree type() {
@@ -85,9 +85,15 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
   }
 
 
+  /**
+   * Deprecated, will be dropped
+   */
   @Override
   public VariableTree variable() {
     if (pattern != null && pattern.is(Tree.Kind.TYPE_PATTERN)) {
+      // in practice, we can not have another type than a TYPE_PATTERN for a PATTERN_INSTANCE_OF tree.
+      // ECJ does not yet support yet the other patterns in this case, and so the variable will always be there.
+      // it's a bug, supposed to be fix by this PR: https://github.com/eclipse-jdt/eclipse.jdt.core/pull/437
       return ((TypePatternTree) pattern).patternVariable();
     }
     return null;
