@@ -110,7 +110,6 @@
 1025,
 ],
 'org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorClientTest.java':[
-32,
 55,
 93,
 135,
@@ -886,7 +885,6 @@
 677,
 ],
 'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java':[
-59,
 110,
 117,
 124,
@@ -982,7 +980,6 @@
 99,
 ],
 'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/LocalAsyncContextTest.java':[
-45,
 86,
 98,
 110,
@@ -1378,7 +1375,6 @@
 758,
 ],
 'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/DebugHandlerTest.java':[
-56,
 140,
 154,
 ],
@@ -1568,7 +1564,6 @@
 192,
 ],
 'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslContextFactoryReloadTest.java':[
-60,
 97,
 155,
 ],
@@ -1809,7 +1804,6 @@
 153,
 ],
 'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java':[
-43,
 51,
 63,
 79,
@@ -1982,7 +1976,6 @@
 126,
 ],
 'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/PathWatcherTest.java':[
-57,
 306,
 432,
 495,

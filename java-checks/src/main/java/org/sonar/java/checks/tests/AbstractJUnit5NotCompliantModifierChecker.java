@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public abstract class AbstractJUnit5NotCompliantModifierChecker extends IssuableSubscriptionVisitor {
 
@@ -71,10 +72,18 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
     }
 
     methods.removeAll(testMethods);
-    if (methods.stream()
+    boolean hasPublicStaticMethods = methods.stream()
       .map(MethodTree::modifiers)
-      .anyMatch(AbstractJUnit5NotCompliantModifierChecker::isPublicStaticMethod)) {
-      // if there is public static methods, we can not ask for a change of visibility of the class
+      .anyMatch(AbstractJUnit5NotCompliantModifierChecker::isPublicStatic);
+
+    boolean hasPublicStaticFields = classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.VARIABLE))
+      .map(VariableTree.class::cast)
+      .map(VariableTree::modifiers)
+      .anyMatch(AbstractJUnit5NotCompliantModifierChecker::isPublicStatic);
+
+    if (hasPublicStaticMethods || hasPublicStaticFields) {
+      // we can not ask for a change of visibility of the class
       return;
     }
 
@@ -83,7 +92,7 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
     }
   }
 
-  private static boolean isPublicStaticMethod(ModifiersTree modifiers) {
+  private static boolean isPublicStatic(ModifiersTree modifiers) {
     return ModifiersUtils.hasAll(modifiers, Modifier.PUBLIC, Modifier.STATIC);
   }
 

@@ -110,7 +110,6 @@
 1025,
 ],
 'org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorClientTest.java':[
-32,
 55,
 93,
 135,
@@ -886,7 +885,6 @@
 677,
 ],
 'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java':[
-59,
 110,
 117,
 124,
@@ -982,7 +980,6 @@
 99,
 ],
 'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/LocalAsyncContextTest.java':[
-45,
 86,
 98,
 110,
