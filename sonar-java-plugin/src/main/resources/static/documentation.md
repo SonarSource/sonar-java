@@ -147,7 +147,7 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 * Dropped method: `GuardedPatternTree#andOperator()`. Use `GuardedPatternTree#whenOperator()` instead.
 * New method: `GuardedPatternTree#whenOperator()`. Use this method to get the `when` operator prefixing the guard (Preview feature in Java 19).
 * Deprecated method: `PatternInstanceOfTree#variable()`. Use `PatternInstanceOfTree#pattern` instead.
-* New method: `PatternInstanceOfTree#variable()`. Use this method to get the pattern in an `instanceof` expression. When the pattern is a `TypePatternTree`, the variable can then be extracted using `TypePatternTree#patternVariable`.
+* New method: `PatternInstanceOfTree#pattern()`. Use this method to get the pattern in an `instanceof` expression. When the pattern is a `TypePatternTree`, the variable can then be extracted using `TypePatternTree#patternVariable`.
 * New method: `TreeVisitor#visitRecordPattern()`. Use this method to traverse a `RecordPatternTree`.
 
 #### **7.15**
