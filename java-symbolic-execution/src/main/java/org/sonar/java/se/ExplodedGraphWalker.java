@@ -967,7 +967,7 @@ public class ExplodedGraphWalker {
       programState = programState.unstackValue(1).state;
       SymbolicValue peekValue = programState.peekValue();
       if (peekValue != null) {
-        // The new variable created from a pattern instance of share the same symbolic value as the current object.
+        // The new variable created from a PATTERN_INSTANCE_OF shares the same symbolic value as the current object.
         programState = programState.put(variableSymbol, peekValue);
       }
     }
