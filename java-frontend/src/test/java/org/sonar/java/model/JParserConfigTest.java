@@ -28,6 +28,7 @@ class JParserConfigTest {
 
   @Test
   void should_enable_preview() {
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl())).isFalse();
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(8))).isFalse();
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(11))).isFalse();
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(16))).isFalse();
