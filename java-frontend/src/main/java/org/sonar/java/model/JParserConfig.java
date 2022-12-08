@@ -277,6 +277,10 @@ public abstract class JParserConfig {
 
   @VisibleForTesting
   static boolean shouldEnablePreviewFlag(JavaVersion currentVersion) {
+    if (currentVersion.isNotSet()) {
+      // only enable preview features if java version is explicitly set
+      return false;
+    }
     // We enable the preview feature flag even if the version is not officially supported, in order to have the best chances to parse the code.
     return currentVersion.asInt() >= MAXIMUM_SUPPORTED_JAVA_VERSION.asInt();
   }
