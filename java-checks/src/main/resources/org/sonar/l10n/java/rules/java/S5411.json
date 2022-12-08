@@ -1,5 +1,5 @@
 {
-  "title": "Boxed \"Boolean\" should be avoided in boolean expressions",
+  "title": "Avoid using boxed \"Boolean\" types directly in boolean expressions",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

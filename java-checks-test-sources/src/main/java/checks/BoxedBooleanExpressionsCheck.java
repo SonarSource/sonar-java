@@ -14,7 +14,7 @@ class BoxedBooleanExpressionsCheck {
   }
 
   void boxedFor1(Boolean B) {
-    for (;B;) { // Noncompliant {{Use the primitive boolean expression here.}}
+    for (;B;) { // Noncompliant {{Use a primitive boolean expression here.}}
       foo();
     }
   }
