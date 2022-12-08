@@ -100,7 +100,7 @@ public class PmdXmlReportReader {
       && "violation".equals(event.asEndElement().getName().getLocalPart())
       && inputFile != null
       && issue != null) {
-      issueLocation.message(issueMessage.toString().trim());
+      issueLocation.message(issueMessage.toString());
       issue.at(issueLocation).save();
     }
   }

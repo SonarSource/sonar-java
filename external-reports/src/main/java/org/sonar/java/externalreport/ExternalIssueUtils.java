@@ -54,7 +54,7 @@ public final class ExternalIssueUtils {
       .remediationEffortMinutes(ruleLoader.ruleConstantDebtMinutes(ruleId));
 
     NewIssueLocation primaryLocation = newExternalIssue.newLocation()
-      .message(message.trim())
+      .message(message)
       .on(inputFile);
 
     if (!line.isEmpty() && !"0".equals(line)) {
