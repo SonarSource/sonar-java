@@ -22,16 +22,15 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.ArrayDesignatorOnVariableCheck.MisplacedArray;
-import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.ArrayDesignatorOnVariableCheck.createQuickFix;
 
 @Rule(key = "S1195")
-public class ArrayDesignatorAfterTypeCheck extends IssuableSubscriptionVisitor {
+public class ArrayDesignatorAfterTypeCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -42,8 +41,7 @@ public class ArrayDesignatorAfterTypeCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     MisplacedArray.find(methodTree.returnType(), methodTree.simpleName().identifierToken())
-      .ifPresent(misplaced -> QuickFixHelper.newIssue(context)
-        .forRule(this)
+      .ifPresent(misplaced -> newIssue()
         .onRange(misplaced.firstArray.openBracketToken(), misplaced.lastArray.closeBracketToken())
         .withMessage("Move the array designators " + misplaced.replacement + " to the end of the return type.")
         .withQuickFix(() -> createQuickFix(misplaced, "return type"))

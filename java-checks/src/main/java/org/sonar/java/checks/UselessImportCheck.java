@@ -31,15 +31,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
@@ -51,7 +50,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "UselessImportCheck", repositoryKey = "squid")
 @Rule(key = "S1128")
-public class UselessImportCheck extends IssuableSubscriptionVisitor {
+public class UselessImportCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final Pattern COMPILER_WARNING = Pattern.compile("The import ([$\\w]+(\\.[$\\w]+)*+) is never used");
   private static final Pattern NON_WORDS_CHARACTERS = Pattern.compile("\\W+");
@@ -110,8 +109,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
             message = "Remove this unused import '" + importName + "'.";
           }
           ImportTree reportTree = (ImportTree) warning.syntaxTree();
-          QuickFixHelper.newIssue(context)
-            .forRule(this)
+          newIssue()
             .onTree(reportTree.qualifiedIdentifier())
             .withMessage(message)
             .withQuickFix(() -> quickFix(reportTree, imports))
@@ -144,8 +142,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
       importsNames.put(importName, extractLastClassName(importName));
     }
     if (isJavaLangImport(importName)) {
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
+      newIssue()
         .onTree(importTree.qualifiedIdentifier())
         .withMessage("Remove this unnecessary import: java.lang classes are always implicitly imported.")
         .withQuickFix(() -> quickFix(importTree, imports))

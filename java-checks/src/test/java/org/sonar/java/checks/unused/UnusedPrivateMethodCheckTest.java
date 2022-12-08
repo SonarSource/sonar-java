@@ -29,7 +29,7 @@ class UnusedPrivateMethodCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(TestUtils.testSourcesPath("checks/UnusedPrivateMethod.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/UnusedPrivateMethod.java"))
       .withCheck(new UnusedPrivateMethodCheck())
       .withQuickFixes()
       .verifyIssues();

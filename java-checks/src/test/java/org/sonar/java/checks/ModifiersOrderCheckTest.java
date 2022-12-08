@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ModifiersOrderCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ModifiersOrderCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ModifiersOrderCheck.java"))
       .withCheck(new ModifiersOrderCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class ModifiersOrderCheckTest {
   @Test
   void quickFixes() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/ModifiersOrderCheckWithQuickFixes.java"))
+      .onFile(mainCodeSourcesPath("checks/ModifiersOrderCheckWithQuickFixes.java"))
       .withCheck(new ModifiersOrderCheck())
       .withQuickFixes()
       .verifyIssues();

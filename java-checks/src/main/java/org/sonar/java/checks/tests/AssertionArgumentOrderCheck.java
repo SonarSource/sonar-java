@@ -24,7 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.ExtendedJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -149,14 +149,14 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
     }
   }
 
-  private InternalJavaIssueBuilder newIssue(ExpressionTree actualArgument, String message, Object... args) {
+  private ExtendedJavaIssueBuilder newIssue(ExpressionTree actualArgument, String message, Object... args) {
     return QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(actualArgument)
       .withMessage(message, args);
   }
 
-  private InternalJavaIssueBuilder newIssue(ExpressionTree expectedArgument, ExpressionTree actualArgument, String message, Object... args) {
+  private ExtendedJavaIssueBuilder newIssue(ExpressionTree expectedArgument, ExpressionTree actualArgument, String message, Object... args) {
     return newIssue(actualArgument, message, args)
       .withSecondaries(new JavaFileScannerContext.Location("Other argument to swap.", expectedArgument));
   }

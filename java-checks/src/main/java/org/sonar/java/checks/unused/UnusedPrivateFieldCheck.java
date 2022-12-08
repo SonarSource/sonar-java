@@ -29,13 +29,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -55,7 +55,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1068")
-public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
+public class UnusedPrivateFieldCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final Tree.Kind[] ASSIGNMENT_KINDS = {
     Tree.Kind.ASSIGNMENT,
@@ -153,8 +153,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
         && onlyUsedInVariableAssignment(symbol)
         && !"serialVersionUID".equals(name)
         && !unknownIdentifiers.contains(name)) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
+        newIssue()
           .onTree(tree.simpleName())
           .withMessage("Remove this unused \"" + name + "\" private field.")
           .withQuickFix(() -> computeQuickFix(tree))

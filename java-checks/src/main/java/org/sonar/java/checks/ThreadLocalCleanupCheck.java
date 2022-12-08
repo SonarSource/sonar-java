@@ -22,12 +22,11 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
-import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -40,7 +39,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S5164")
-public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
+public class ThreadLocalCleanupCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final String THREAD_LOCAL = "java.lang.ThreadLocal";
   private static final MethodMatchers THREADLOCAL_SET = MethodMatchers.create()
@@ -66,8 +65,7 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       if (THREADLOCAL_SET.matches(mit) && mit.arguments().get(0).is(Tree.Kind.NULL_LITERAL)) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
+        newIssue()
           .onTree(mit)
           .withMessage("Use \"remove()\" instead of \"set(null)\".")
           .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with \"remove()\"")
@@ -80,7 +78,10 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
 
   private void checkThreadLocalField(Symbol field) {
     if (field.usages().stream().noneMatch(ThreadLocalCleanupCheck::usageIsRemove)) {
-      reportIssue(((VariableTree) field.declaration()).simpleName(), "Call \"remove()\" on \"" + field.name() + "\".");
+      newIssue()
+        .onTree(((VariableTree) field.declaration()).simpleName())
+        .withMessage("Call \"remove()\" on \"%s\".", field.name())
+        .report();
     }
   }
 

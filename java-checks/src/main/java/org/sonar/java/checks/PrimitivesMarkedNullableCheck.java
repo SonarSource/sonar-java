@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -36,7 +36,7 @@ import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.METHOD;
 
 @Rule(key = "S4682")
-public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVisitor {
+public final class PrimitivesMarkedNullableCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -55,8 +55,7 @@ public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVis
         // Both "annotation" and "declaration" should never be null, as we only target directly annotated methods. We keep the check for defensive programming.
         if (annotation != null && annotationTree != null) {
           String annotationName = annotation.symbol().name();
-          QuickFixHelper.newIssue(context)
-            .forRule(this)
+          newIssue()
             .onTree(returnType)
             .withMessage("\"@%s\" annotation should not be used on primitive types", annotationName)
             .withSecondaries(new JavaFileScannerContext.Location("Child annotation", annotationTree))

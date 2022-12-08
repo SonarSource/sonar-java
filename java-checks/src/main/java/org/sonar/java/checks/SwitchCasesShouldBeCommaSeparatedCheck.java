@@ -26,8 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.ast.visitors.IssueBuilderSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -36,7 +35,7 @@ import org.sonar.plugins.java.api.tree.SwitchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6208")
-public class SwitchCasesShouldBeCommaSeparatedCheck extends SubscriptionVisitor implements JavaVersionAwareVisitor {
+public class SwitchCasesShouldBeCommaSeparatedCheck extends IssueBuilderSubscriptionVisitor implements JavaVersionAwareVisitor {
   private static final String MESSAGE = "Merge the previous cases into this one using comma-separated label.";
 
   @Override
@@ -66,8 +65,7 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends SubscriptionVisitor 
 
       if (caseLabels.size() > 1) {
         CaseLabelTree lastLabel = caseLabels.removeLast();
-        ((DefaultJavaFileScannerContext) context).newIssue()
-          .forRule(this)
+        newIssue()
           .onTree(lastLabel)
           .withMessage(MESSAGE)
           .withSecondaries(caseLabels.stream().map(label -> new JavaFileScannerContext.Location("", label)).collect(Collectors.toList()))

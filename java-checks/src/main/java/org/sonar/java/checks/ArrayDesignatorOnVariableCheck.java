@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1197")
-public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor {
+public class ArrayDesignatorOnVariableCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -48,8 +48,7 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
     VariableTree variableTree = (VariableTree) tree;
     IdentifierTree identifierTree = variableTree.simpleName();
     MisplacedArray.find(variableTree.type(), identifierTree.identifierToken())
-      .ifPresent(misplaced -> QuickFixHelper.newIssue(context)
-        .forRule(this)
+      .ifPresent(misplaced -> newIssue()
         .onRange(identifierTree, misplaced.lastArray.closeBracketToken())
         .withMessage("Move the array designators " + misplaced.replacement + " to the type.")
         .withQuickFixes(() -> isDeclarationTypeUsedBySeveralVariable(variableTree)

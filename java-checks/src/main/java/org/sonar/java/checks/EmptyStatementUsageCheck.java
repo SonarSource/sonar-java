@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -36,7 +36,7 @@ import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @DeprecatedRuleKey(ruleKey = "EmptyStatementUsageCheck", repositoryKey = "squid")
 @Rule(key = "S1116")
-public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {
+public class EmptyStatementUsageCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -48,8 +48,7 @@ public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {
     if (usedForEmptyEnum(tree) || uniqueStatementOfLoop(tree)) {
       return;
     }
-    QuickFixHelper.newIssue(context)
-      .forRule(this)
+    newIssue()
       .onTree(tree)
       .withMessage("Remove this empty statement.")
       .withQuickFix(() -> getQuickFix((EmptyStatementTree) tree))

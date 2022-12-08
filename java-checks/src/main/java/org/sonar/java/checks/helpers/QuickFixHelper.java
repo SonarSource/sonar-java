@@ -31,10 +31,9 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.ExtendedJavaIssueBuilder;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Range;
@@ -47,6 +46,7 @@ import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 
 /**
@@ -59,11 +59,11 @@ public class QuickFixHelper {
     // Utility class
   }
 
-  public static InternalJavaIssueBuilder newIssue(JavaFileScannerContext context) {
-    return (InternalJavaIssueBuilder) internalContext(context).newIssue();
+  public static ExtendedJavaIssueBuilder newIssue(JavaFileScannerContext context) {
+    return (ExtendedJavaIssueBuilder) internalContext(context).newIssue();
   }
 
-  public static DefaultJavaFileScannerContext internalContext(JavaFileScannerContext context) {
+  private static DefaultJavaFileScannerContext internalContext(JavaFileScannerContext context) {
     return (DefaultJavaFileScannerContext) context;
   }
 

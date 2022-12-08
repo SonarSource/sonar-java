@@ -24,10 +24,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -38,7 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @Rule(key = "S1158")
-public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
+public class ToStringUsingBoxingCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final String[] PRIMITIVE_WRAPPERS = new String[]{
     "java.lang.Byte",
@@ -118,8 +117,7 @@ public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    QuickFixHelper.newIssue(context)
-      .forRule(this)
+    newIssue()
       .onTree(mit)
       .withMessage(String.format("Call the static method %s.%s(...) instead of instantiating a temporary object.", boxedType, replacementMethod))
       .withQuickFix(quickFix)

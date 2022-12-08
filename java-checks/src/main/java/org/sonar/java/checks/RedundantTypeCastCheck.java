@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
@@ -30,14 +30,13 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 @Rule(key = "S1905")
-public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
+public class RedundantTypeCastCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private List<JWarning> warnings;
 
@@ -57,8 +56,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     Type cast = typeCastTree.type().symbolType();
     if (isUnnecessaryCast(typeCastTree)) {
       String newType = cast.erasure().name();
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
+      newIssue()
         .onRange(typeCastTree.openParenToken(), typeCastTree.closeParenToken())
         .withMessage("Remove this unnecessary cast to \"%s\".", newType)
         .withQuickFix(() ->

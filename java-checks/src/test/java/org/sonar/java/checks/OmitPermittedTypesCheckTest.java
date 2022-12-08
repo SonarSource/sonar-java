@@ -21,17 +21,16 @@ package org.sonar.java.checks;
 
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class OmitPermittedTypesCheckTest {
 
   @Test
   void test() {
-    ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(testSourcesPath("checks/OmitPermittedTypesCheck/OmitPermittedTypesCheck.java"))
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/OmitPermittedTypesCheck/OmitPermittedTypesCheck.java"))
       .withCheck(new OmitPermittedTypesCheck())
       .withQuickFixes()
       .verifyIssues();

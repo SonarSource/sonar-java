@@ -22,19 +22,19 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1161")
-public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
+public class OverrideAnnotationCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -56,8 +56,7 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
     if (!overriddenSymbol.isAbstract()
       && !isObjectMethod(overriddenSymbol)
       && !isAnnotatedOverride(methodSymbol)) {
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
+      newIssue()
         .onTree(methodTree.simpleName())
         .withMessage("Add the \"@Override\" annotation above this method signature")
         .withQuickFix(() -> quickFix(methodTree))

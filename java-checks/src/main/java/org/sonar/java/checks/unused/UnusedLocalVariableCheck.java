@@ -23,14 +23,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -43,7 +42,7 @@ import static org.sonar.java.model.JUtils.isLocalVariable;
 import static org.sonar.java.model.JUtils.isParameter;
 
 @Rule(key = "S1481")
-public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
+public class UnusedLocalVariableCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final Tree.Kind[] INCREMENT_KINDS = {
     Tree.Kind.POSTFIX_DECREMENT,
@@ -75,8 +74,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       String name = variable.simpleName().name();
       boolean unresolved = UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(name);
       if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol())) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
+        newIssue()
           .onTree(variable.simpleName())
           .withMessage(String.format(MESSAGE, name))
           .withQuickFixes(() -> computeQuickFix(variable))

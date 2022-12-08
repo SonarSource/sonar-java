@@ -23,12 +23,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -39,7 +38,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S1186")
-public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
+public class EmptyMethodsCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   // Some methods may legitimately be left empty, e.g. methods annotated with org.aspectj.lang.annotation.Pointcut. We ignore them here.
   private static final String IGNORED_METHODS_ANNOTATION = "org.aspectj.lang.annotation.Pointcut";
@@ -104,8 +103,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
   private void checkMethod(MethodTree methodTree) {
     BlockTree block = methodTree.block();
     if (block != null && isEmpty(block) && !containsComment(block)) {
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
+      newIssue()
         .onTree(methodTree.simpleName())
         .withMessage("Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.")
         .withQuickFix(() -> computeQuickFix(methodTree))

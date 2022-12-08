@@ -27,11 +27,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -47,7 +46,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @Rule(key = "S1125")
-public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
+public class BooleanLiteralCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final String FALSE_LITERAL = "false";
   private static final String TRUE_LITERAL = "true";
@@ -73,8 +72,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
 
     int nLiterals = literalList.size();
     if (nLiterals > 0) {
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
+      newIssue()
         .onTree(literalList.get(0))
         .withMessage("Remove the unnecessary boolean literal%s.", nLiterals > 1 ? "s" : "")
         .withSecondaries(literalList.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit)).collect(Collectors.toList()))

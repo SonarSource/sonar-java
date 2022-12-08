@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.ExtendedIssueBuilderSubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -41,7 +41,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @Rule(key = "S6217")
-public class OmitPermittedTypesCheck extends IssuableSubscriptionVisitor {
+public class OmitPermittedTypesCheck extends ExtendedIssueBuilderSubscriptionVisitor {
 
   private static final String MESSAGE = "Remove this redundant permitted list.";
 
@@ -68,8 +68,7 @@ public class OmitPermittedTypesCheck extends IssuableSubscriptionVisitor {
       ListTree<TypeTree> permittedTypes = sealedClass.permittedTypes();
       if (permittedTypes.stream().map(TypeTree::symbolType).allMatch(typesDeclaredInFile::contains)) {
         SyntaxToken permitsKeyword = sealedClass.permitsKeyword();
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
+        newIssue()
           .onTree(permitsKeyword)
           .withMessage(MESSAGE)
           .withSecondaries(permittedTypes.stream().map(t ->

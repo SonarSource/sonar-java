@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class ReplaceLambdaByMethodRefCheckTest {
 
@@ -34,13 +34,13 @@ class ReplaceLambdaByMethodRefCheckTest {
   @Test
   void java8() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath(FILENAME))
+      .onFile(mainCodeSourcesPath(FILENAME))
       .withCheck(new ReplaceLambdaByMethodRefCheck())
       .withJavaVersion(8)
       .withQuickFixes()
       .verifyIssues();
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath(FILENAME))
+      .onFile(mainCodeSourcesPath(FILENAME))
       .withCheck(new ReplaceLambdaByMethodRefCheck())
       .withJavaVersion(8)
       .withoutSemantic()
@@ -66,7 +66,7 @@ class ReplaceLambdaByMethodRefCheckTest {
   @Test
   void no_version() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath(NO_VERSION_FILENAME))
+      .onFile(mainCodeSourcesPath(NO_VERSION_FILENAME))
       .withCheck(new ReplaceLambdaByMethodRefCheck())
       .verifyIssues();
   }
