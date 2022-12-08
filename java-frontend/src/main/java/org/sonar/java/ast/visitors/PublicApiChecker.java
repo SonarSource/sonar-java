@@ -129,9 +129,7 @@ public class PublicApiChecker {
   }
 
   private static boolean isStaticFinal(VariableTree variableTree) {
-    ModifiersTree modifiersTree = variableTree.modifiers();
-    return ModifiersUtils.hasModifier(modifiersTree, Modifier.STATIC)
-      && ModifiersUtils.hasModifier(modifiersTree, Modifier.FINAL);
+    return ModifiersUtils.hasAll(variableTree.modifiers(), Modifier.STATIC, Modifier.FINAL);
   }
 
   public static Optional<String> getApiJavadoc(Tree tree) {

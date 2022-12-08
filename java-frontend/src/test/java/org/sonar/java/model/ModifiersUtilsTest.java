@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
@@ -61,6 +62,29 @@ class ModifiersUtilsTest {
     ClassTree classTree = (ClassTree) tree.types().get(0);
     assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.PUBLIC)).isPresent();
     assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.ABSTRACT)).isNotPresent();
+  }
+
+  @Test
+  void test_has_modifier() {
+    File file = new File("src/test/files/model/ModifiersUtilsTest.java");
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
+    ClassTree classTree = (ClassTree) tree.types().get(0);
+    assertThat(ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.PUBLIC)).isTrue();
+    assertThat(ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.PRIVATE)).isFalse();
+
+    VariableTree answerField = (VariableTree) classTree.members().get(0);
+    assertThat(ModifiersUtils.hasModifier(answerField.modifiers(), Modifier.PRIVATE)).isTrue();
+    assertThat(ModifiersUtils.hasModifier(answerField.modifiers(), Modifier.PUBLIC)).isFalse();
+    assertThat(ModifiersUtils.hasModifier(answerField.modifiers(), Modifier.STATIC)).isTrue();
+    assertThat(ModifiersUtils.hasAll(answerField.modifiers(), Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)).isTrue();
+    assertThat(ModifiersUtils.hasAll(answerField.modifiers(), Modifier.PRIVATE, Modifier.STATIC, Modifier.VOLATILE)).isFalse();
+    assertThat(ModifiersUtils.hasAll(answerField.modifiers(), Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)).isFalse();
+    assertThat(ModifiersUtils.hasAnyOf(answerField.modifiers(), Modifier.PRIVATE, Modifier.PUBLIC)).isTrue();
+    assertThat(ModifiersUtils.hasAnyOf(answerField.modifiers(), Modifier.PUBLIC, Modifier.PRIVATE)).isTrue();
+    assertThat(ModifiersUtils.hasAnyOf(answerField.modifiers(), Modifier.PUBLIC, Modifier.PROTECTED)).isFalse();
+    assertThat(ModifiersUtils.hasNoneOf(answerField.modifiers(), Modifier.PRIVATE, Modifier.PUBLIC)).isFalse();
+    assertThat(ModifiersUtils.hasNoneOf(answerField.modifiers(), Modifier.PUBLIC, Modifier.PRIVATE)).isFalse();
+    assertThat(ModifiersUtils.hasNoneOf(answerField.modifiers(), Modifier.PUBLIC, Modifier.PROTECTED)).isTrue();
   }
 
   @Test

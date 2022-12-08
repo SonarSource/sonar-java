@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.LiteralUtils;
@@ -102,8 +103,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   public void visitVariable(VariableTree tree) {
     ExpressionTree initializer = tree.initializer();
     if (initializer != null && initializer.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)
-      && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.STATIC)
-      && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.FINAL)) {
+      && ModifiersUtils.hasAll(tree.modifiers(), Modifier.STATIC, Modifier.FINAL)) {
       String stringValue = LiteralUtils.getAsStringValue((LiteralTree) initializer).replace("\\n", "\n");
       constants.putIfAbsent(stringValue, tree);
       return;

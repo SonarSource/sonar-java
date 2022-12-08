@@ -39,8 +39,35 @@ public final class ModifiersUtils {
     // This class only contains static methods
   }
 
-  public static boolean hasModifier(ModifiersTree modifiers, Modifier expectedModifier) {
-    return findModifier(modifiers, expectedModifier).isPresent();
+  public static boolean hasModifier(ModifiersTree modifiersTree, Modifier expectedModifier) {
+    for (ModifierKeywordTree modifierKeywordTree : modifiersTree.modifiers()) {
+      if (modifierKeywordTree.modifier() == expectedModifier) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public static boolean hasAll(ModifiersTree modifiersTree, Modifier... expectedModifiers) {
+    for (Modifier expectedModifier : expectedModifiers) {
+      if (!hasModifier(modifiersTree, expectedModifier)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public static boolean hasAnyOf(ModifiersTree modifiersTree, Modifier... expectedModifiers) {
+    for (Modifier expectedModifier : expectedModifiers) {
+      if (hasModifier(modifiersTree, expectedModifier)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public static boolean hasNoneOf(ModifiersTree modifiersTree, Modifier... unexpectedModifiers) {
+    return !hasAnyOf(modifiersTree, unexpectedModifiers);
   }
 
   @CheckForNull
