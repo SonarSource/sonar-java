@@ -19,18 +19,16 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S2039")
 public class FieldModifierCheck extends IssuableSubscriptionVisitor {
@@ -58,10 +56,7 @@ public class FieldModifierCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean hasNoVisibilityModifier(VariableTree variableTree) {
-    ModifiersTree modifiers = variableTree.modifiers();
-    return !(ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC)
-      || ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE)
-      || ModifiersUtils.hasModifier(modifiers, Modifier.PROTECTED));
+    return ModifiersUtils.hasNoneOf(variableTree.modifiers(), Modifier.PUBLIC, Modifier.PRIVATE, Modifier.PROTECTED);
   }
 
   private static boolean isVisibleForTesting(VariableTree variableTree) {

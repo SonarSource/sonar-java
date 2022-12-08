@@ -19,7 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -32,13 +34,9 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Rule(key = "S2226")
 public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
@@ -119,8 +117,7 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isStaticOrFinal(VariableTree variable) {
-    ModifiersTree modifiers = variable.modifiers();
-    return ModifiersUtils.hasModifier(modifiers, Modifier.STATIC) || ModifiersUtils.hasModifier(modifiers, Modifier.FINAL);
+    return ModifiersUtils.hasAnyOf(variable.modifiers(), Modifier.STATIC, Modifier.FINAL);
   }
 
 }

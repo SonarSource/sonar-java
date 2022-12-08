@@ -84,7 +84,7 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
   }
 
   private static boolean isPublicStaticMethod(ModifiersTree modifiers) {
-    return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC) && ModifiersUtils.hasModifier(modifiers, Modifier.STATIC);
+    return ModifiersUtils.hasAll(modifiers, Modifier.PUBLIC, Modifier.STATIC);
   }
 
   private void raiseIssueOnNotCompliantModifiers(ModifiersTree modifierTree, boolean isMethod) {

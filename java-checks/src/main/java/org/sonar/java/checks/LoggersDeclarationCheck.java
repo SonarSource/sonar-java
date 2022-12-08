@@ -61,9 +61,7 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private static boolean isPrivateStaticFinal(ModifiersTree tree) {
-    return ModifiersUtils.hasModifier(tree, Modifier.PRIVATE) &&
-      ModifiersUtils.hasModifier(tree, Modifier.STATIC) &&
-      ModifiersUtils.hasModifier(tree, Modifier.FINAL);
+    return ModifiersUtils.hasAll(tree, Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL);
   }
 
   private boolean isValidLoggerName(String name) {

@@ -199,8 +199,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
   }
 
   private static boolean isConstant(VariableTree variableTree) {
-    return ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC)
-      &&  ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.FINAL)
+    return ModifiersUtils.hasAll(variableTree.modifiers(), Modifier.STATIC, Modifier.FINAL)
       && variableTree.initializer().is(BOOLEAN_LITERAL,
       STRING_LITERAL, LONG_LITERAL,
       CHAR_LITERAL, INT_LITERAL, FLOAT_LITERAL, DOUBLE_LITERAL, NULL_LITERAL);
