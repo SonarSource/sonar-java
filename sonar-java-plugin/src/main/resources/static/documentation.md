@@ -140,12 +140,15 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 ### API changes
 
 #### **7.16**
-* New type: `RecordPatternTree`. Use this type to explore record patterns (Preview feature in Java 19).
-* New method: `RecordPatternTree#type()`. Use this method to get the reference type in the record pattern (Preview feature in Java 19).
-* New method: `RecordPatternTree#patterns()`. Use this method to get the patterns nested in the record pattern (Preview feature in Java 19).
-* New method: `RecordPatternTree#name()`. Use this method get the optional record pattern identifier (Preview feature in Java 19).
+
+All the API changes are related to the support of the preview feature of Java 19.
+
+* New type: `RecordPatternTree`. Use this type to explore record patterns.
+* New method: `RecordPatternTree#type()`. Use this method to get the reference type in the record pattern.
+* New method: `RecordPatternTree#patterns()`. Use this method to get the patterns nested in the record pattern.
+* New method: `RecordPatternTree#name()`. Use this method get the optional record pattern identifier.
 * Dropped method: `GuardedPatternTree#andOperator()`. Use `GuardedPatternTree#whenOperator()` instead.
-* New method: `GuardedPatternTree#whenOperator()`. Use this method to get the `when` operator prefixing the guard (Preview feature in Java 19).
+* New method: `GuardedPatternTree#whenOperator()`. Use this method to get the `when` operator prefixing the guard.
 * Deprecated method: `PatternInstanceOfTree#variable()`. Use `PatternInstanceOfTree#pattern` instead.
 * New method: `PatternInstanceOfTree#pattern()`. Use this method to get the pattern in an `instanceof` expression. When the pattern is a `TypePatternTree`, the variable can then be extracted using `TypePatternTree#patternVariable`.
 * New method: `TreeVisitor#visitRecordPattern()`. Use this method to traverse a `RecordPatternTree`.
