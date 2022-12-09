@@ -602,7 +602,7 @@
   {
     "ruleKey": "S1612",
     "hasTruePositives": true,
-    "falseNegatives": 1,
+    "falseNegatives": 0,
     "falsePositives": 0
   },
   {

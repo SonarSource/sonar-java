@@ -1,8 +1,8 @@
-<p>Method/constructor references are commonly agreed to be, most of the time, more compact and readable than using lambdas, and are therefore
-preferred.</p>
-<p>In some rare cases, when it is not clear from the context what kind of function is being described and reference would not increase the clarity, it
-might be fine to keep the lambda.</p>
-<p>Similarly, <code>null</code> checks can be replaced with references to the <code>Objects::isNull</code> and <code>Objects::nonNull</code> methods,
+<p>Method/constructor references are commonly agreed to be more readable than lambdas in most situations, and are therefore preferred.</p>
+<p>However, method references are sometimes less concise than lambdas. In such cases, it might be fine to keep the lambda if it is better for
+readability. This choice is ultimately up to the programmer. Therefore, this rule only raises issues on lambda functions that could be replaced by
+shorter method references.</p>
+<p><code>null</code> checks can be replaced with references to the <code>Objects::isNull</code> and <code>Objects::nonNull</code> methods,
 <code>casts</code> can be replaced with <code>SomeClass.class::cast</code> and <code>instanceof</code> can be replaced with
 <code>SomeClass.class::isInstance</code>.</p>
 <p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
@@ -30,7 +30,7 @@ class A {
   void process(List&lt;A&gt; list) {
     list.stream()
       .filter(B.class::isInstance)
-      .map(B.class::cast)
+      .map(B.class::cast)            // Note: keeping the lambda would also be compliant here, since it is shorter
       .map(B::&lt;String&gt;getObject)
       .forEach(System.out::println);
   }
