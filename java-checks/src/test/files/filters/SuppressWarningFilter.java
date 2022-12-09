@@ -107,19 +107,19 @@ class Test {
     @SuppressWarning("S115") // WithIssue
     private static final int bad_constant_name3 = 42; // WithIssue
 
-    @SuppressWarnings({"squid:ObjectFinalizeCheck", "java:S1874"}) // WithIssue
+    @SuppressWarnings({"squid:ObjectFinalizeCheck", "java:S1874", "java:S5738"}) // WithIssue
     void a() {
       Object object = new Object();
       object.finalize(); // NoIssue
     }
 
-    @SuppressWarnings({"squid:S1111", "java:S1874"}) // WithIssue
+    @SuppressWarnings({"squid:S1111", "java:S1874", "java:S5738"}) // WithIssue
     void b() {
       Object object = new Object();
       object.finalize(); // NoIssue
     }
 
-    @SuppressWarnings({"java:S1111", "java:S1874"}) // WithIssue
+    @SuppressWarnings({"java:S1111", "java:S1874", "java:S5738"}) // WithIssue
     void c() {
       Object object = new Object();
       object.finalize(); // NoIssue
