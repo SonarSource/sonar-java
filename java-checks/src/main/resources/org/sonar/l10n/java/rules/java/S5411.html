@@ -2,6 +2,7 @@
 <code>null</code> as defined in <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html#jls-5.1.8">Java Language Specification §5.1.8
 Unboxing Conversion</a>.</p>
 <p>It is safer to avoid such conversion altogether and handle the <code>null</code> value explicitly.</p>
+<p>Note, however, that no issues will be raised for Booleans that have already been null-checked.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 Boolean b = getBoolean();
@@ -18,6 +19,12 @@ if (Boolean.TRUE.equals(b)) {
   foo();
 } else {
   bar();  // will be invoked for both b == false and b == null
+}
+</pre>
+<pre>
+Boolean b = getBoolean();
+if(b != null){
+  String test = b ? "test" : "";
 }
 </pre>
 <h2>See</h2>
