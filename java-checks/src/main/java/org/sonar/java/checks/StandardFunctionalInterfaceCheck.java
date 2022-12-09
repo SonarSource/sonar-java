@@ -142,7 +142,7 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
       .filter(StandardFunctionalInterfaceCheck::hasNoExtension)
       .flatMap(StandardFunctionalInterfaceCheck::lookupFunctionalMethod)
       .flatMap(StandardFunctionalInterfaceCheck::lookupMatchingStandardInterface)
-      .ifPresent(standardInterface -> reportIssue(issueLocation, buildIssueMessage(classTree, standardInterface)));
+      .ifPresent(standardInterface -> reportIssue(issueLocation, buildIssueMessage(classTree, standardInterface.replace('$', '.'))));
   }
 
   private static boolean isFunctionalInterface(ClassTree tree) {
