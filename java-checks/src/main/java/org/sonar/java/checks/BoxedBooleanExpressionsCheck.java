@@ -57,6 +57,9 @@ import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 @Rule(key = "S5411")
 public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String MESSAGE = "Use a primitive boolean expression here.";
+  private static final String MESSAGE_QUICKFIX = "Use a primitive boolean expression";
+
   private static final MethodMatchers OPTIONAL_ORELSE = MethodMatchers.create()
     .ofTypes("java.util.Optional").names("orElse").addParametersMatcher(ANY).build();
 
@@ -136,7 +139,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(boxedBoolean)
-        .withMessage("Use the primitive boolean expression here.")
+        .withMessage(MESSAGE)
         .withQuickFixes(() -> getQuickFix(tree, boxedBoolean))
         .report();
       return false;
@@ -269,7 +272,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
     }
     edits.add(JavaTextEdit.insertAfterTree(boxedBoolean, ")"));
 
-    return Collections.singletonList(JavaQuickFix.newQuickFix("Use the primitive boolean expression")
+    return Collections.singletonList(JavaQuickFix.newQuickFix(MESSAGE_QUICKFIX)
       .addTextEdits(edits)
       .build());
   }
