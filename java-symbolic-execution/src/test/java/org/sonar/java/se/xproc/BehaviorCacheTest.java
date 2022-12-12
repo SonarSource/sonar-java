@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.LogTesterJUnit5;
@@ -127,7 +129,8 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
+  @EnabledForJreRange(max = JRE.JAVA_17, disabledReason = "change of API")
+  void clear_stack_when_taking_exceptional_path_from_method_invocation_until_jdk17_and_before() throws Exception {
     Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic =
       createSymbolicExecutionVisitorAndSemantic("src/test/files/se/CleanStackWhenRaisingException.java", new NullDereferenceCheck());
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
@@ -140,6 +143,24 @@ class BehaviorCacheTest {
 
     List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());
     assertThat(exceptionalYields).hasSize(3);
+    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).isUnknown())).hasSize(1);
+  }
+
+  @Test
+  @EnabledForJreRange(min = JRE.JAVA_18, disabledReason = "change of API of java.lang.reflect.Method.invoke()")
+  void clear_stack_when_taking_exceptional_path_from_method_invocation_until_jdk18_and_later() throws Exception {
+    Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/CleanStackWhenRaisingException.java",
+      new NullDereferenceCheck());
+    SymbolicExecutionVisitor sev = sevAndSemantic.a;
+    Sema semanticModel = sevAndSemantic.b;
+    MethodBehavior behavior = getMethodBehavior(sev, "foo");
+    assertThat(behavior.yields()).hasSize(3);
+
+    behavior.happyPathYields().forEach(y -> assertThat(y.resultConstraint()).isNull());
+    assertThat(behavior.happyPathYields().count()).isEqualTo(1);
+
+    List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());
+    assertThat(exceptionalYields).hasSize(2);
     assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).isUnknown())).hasSize(1);
   }
 

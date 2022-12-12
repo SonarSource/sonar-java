@@ -1,4 +1,4 @@
-load("github.com/SonarSource/cirrus-modules@v1", "cirrus_auth")
+load("github.com/SonarSource/cirrus-modules@v2", "load_features")
 
 def main(ctx):
-  return cirrus_auth()
+  return load_features(ctx)
