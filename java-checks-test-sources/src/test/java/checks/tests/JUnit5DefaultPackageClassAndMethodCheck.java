@@ -66,13 +66,21 @@ class JUnit5DefaultPackageClassAndMethodCheck {
     void test() {}
   }
 
-  public static class TestClassWiuthStaticMethod { // Compliant
+  public static class TestClassWithPublicStaticMethod { // Compliant
     @Test
     void test() {}
 
     public static Object foo() { // in order to have this method visible from outside, class must be public
       return null;
     }
+  }
+
+  public static class TestClassWithPublicStaticField { // Compliant
+
+    public static String MY_CONSTANT = "yolo"; // in order to have this field visible from outside, class must be public
+
+    @Test
+    void test() {}
   }
 
   public abstract class AbstractTest {
