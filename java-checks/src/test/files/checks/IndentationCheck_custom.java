@@ -1,12 +1,12 @@
 import java.util.stream.IntStream;
 
 class Foo {
-  int a;                          // Noncompliant {{Make this line start after 4 spaces to indent the code consistently.}}
+  int a;                          // Noncompliant {{Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)}}
    int b;                         // Compliant - already reported
  int c;                           // Compliant - already reported
 
   public void foo1() {            // Compliant
-    System.out.println();         // Noncompliant {{Make this line start after 8 spaces to indent the code consistently.}}
+    System.out.println();         // Noncompliant {{Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)}}
     }                             // Compliant
 
  public void foo2() {             // Compliant
@@ -20,9 +20,9 @@ System.out.println();             // Compliant - already reported
 System.out.println();             // Compliant
 
 if (true) {                       // Compliant
-  System.out.println();           // Noncompliant {{Make this line start after 12 spaces to indent the code consistently.}}
+  System.out.println();           // Noncompliant {{Make this line start after 12 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)}}
   if (true) {                     // Compliant
-        System.out.println();     // Noncompliant {{Make this line start after 16 spaces to indent the code consistently.}}
+        System.out.println();     // Noncompliant {{Make this line start after 16 spaces instead of 8 in order to indent the code consistently. (Indentation level is at 4.)}}
     System.out.println();         // Compliant
   }
 
@@ -30,11 +30,11 @@ if (true) {                       // Compliant
 }
 }
 
-  class Foo {                     // Noncompliant {{Make this line start after 4 spaces to indent the code consistently.}}
+  class Foo {                     // Noncompliant {{Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)}}
 
         int a;                    // Compliant
 
-  int b;                          // Noncompliant {{Make this line start after 8 spaces to indent the code consistently.}}
+  int b;                          // Noncompliant {{Make this line start after 8 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)}}
 
   }
 }
@@ -44,7 +44,7 @@ enum Bar {
  B,
    C;
 
-  public void foo1() {            // Noncompliant {{Make this line start after 4 spaces to indent the code consistently.}}
+  public void foo1() {            // Noncompliant {{Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)}}
   }
 
  public void foo2() {             // Compliant
@@ -61,8 +61,8 @@ interface Qix {
 
 class Baz {
 
-  void foo() {                    // Noncompliant {{Make this line start after 4 spaces to indent the code consistently.}}
-    new MyInterface() {           // Noncompliant {{Make this line start after 8 spaces to indent the code consistently.}}
+  void foo() {                    // Noncompliant {{Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)}}
+    new MyInterface() {           // Noncompliant {{Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)}}
         public void foo() {       // Compliant
         }
           public void bar() {     // Noncompliant
@@ -106,9 +106,9 @@ class Baz {
     }
   };
   static {
-    try{ // Noncompliant {{Make this line start after 8 spaces to indent the code consistently.}}
-       while (keys.hasMoreElements()) { // Noncompliant {{Make this line start after 12 spaces to indent the code consistently.}}
-        s = keys.nextElement();         // Noncompliant {{Make this line start after 16 spaces to indent the code consistently.}}
+    try{ // Noncompliant {{Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)}}
+       while (keys.hasMoreElements()) { // Noncompliant {{Make this line start after 12 spaces instead of 7 in order to indent the code consistently. (Indentation level is at 4.)}}
+        s = keys.nextElement();         // Noncompliant {{Make this line start after 16 spaces instead of 8 in order to indent the code consistently. (Indentation level is at 4.)}}
         rId = (String) s;
         cName = (String) exceptionClassNames.get(rId);
         exceptionRepositoryIds.put (cName, rId);
@@ -117,8 +117,8 @@ class Baz {
   }
 }
 @interface Example {
-  public static class Inner {                    // Noncompliant {{Make this line start after 4 spaces to indent the code consistently.}}
-    public static final String FOO = "foo";      // Noncompliant {{Make this line start after 8 spaces to indent the code consistently.}}
+  public static class Inner {                    // Noncompliant {{Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)}}
+    public static final String FOO = "foo";      // Noncompliant {{Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)}}
   }
 }
 
@@ -132,7 +132,7 @@ class Lambda {
         IntStream
             .range(1, 5)
             .map((a -> {
-              return a + 1; // Noncompliant {{Make this line start after 16 spaces to indent the code consistently.}}
+              return a + 1; // Noncompliant {{Make this line start after 16 spaces instead of 14 in order to indent the code consistently. (Indentation level is at 4.)}}
             }));
 
         IntStream
