@@ -181,3 +181,64 @@ class IteratorNextExceptionCheckN implements Iterator<Double> {
     return a.hasNext();
   }
 }
+
+class IteratorNextExceptionCheckO implements Iterator<String> {
+  private int count = 10;
+
+  public String next() { // Compliant
+    return getNext();
+  }
+
+  private String getNext() {
+    if (!hasNext()) {
+      throw new NoSuchElementException();
+    }
+    return "hello";
+  }
+
+  public static void justThrow() {
+    throw new NoSuchElementException();
+  }
+
+  @Override
+  public boolean hasNext() {
+    count--;
+    return count > 0;
+  }
+
+}
+
+class IteratorNextExceptionCheckP implements Iterator<T> {
+  private T elem;
+
+  public T next() { // Compliant
+    if (!hasNext()) {
+      IteratorNextExceptionCheckO.justThrow();
+    }
+    return elem;
+  }
+
+  @Override
+  public boolean hasNext() {
+    return false;
+  }
+
+}
+
+class IteratorNextExceptionCheckQ implements Iterator<T> {
+  private T elem;
+
+  public T next() { // Compliant
+    if (!hasNext()) {
+      class Foo extends NoSuchElementException {}
+      throw new Foo();
+    }
+    return elem;
+  }
+
+  @Override
+  public boolean hasNext() {
+    return false;
+  }
+
+}
