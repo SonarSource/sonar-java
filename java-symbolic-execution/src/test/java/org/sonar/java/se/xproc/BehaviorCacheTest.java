@@ -44,7 +44,10 @@ import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.CheckerDispatcher;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
+import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
@@ -71,7 +74,7 @@ import static org.sonar.java.se.utils.SETestUtils.getMethodBehavior;
 class BehaviorCacheTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester  = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   @Test
   void method_behavior_cache_should_be_filled_and_cleanup() {
@@ -107,16 +110,14 @@ class BehaviorCacheTest {
 
   @Test
   void explore_method_with_recursive_call() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java",
-      new NullDereferenceCheck());
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors).hasSize(1);
     assertThat(sev.behaviorCache.behaviors.keySet().iterator().next()).contains("#foo");
   }
 
   @Test
   void interrupted_exploration_does_not_create_method_yields() throws Exception {
-    SymbolicExecutionVisitor sev =
-      createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java", new NullDereferenceCheck());
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
 
     MethodBehavior plopMethod = getMethodBehavior(sev, "foo");
@@ -194,8 +195,8 @@ class BehaviorCacheTest {
     }
 
     assertThat(behaviorCache.behaviors).isEmpty();
-    assertThat(behaviorCache.hardcodedBehaviors()).hasSize(216);
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnly("[SE] Loaded 216 hardcoded method behaviors.");
+    assertThat(behaviorCache.hardcodedBehaviors()).hasSize(227);
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnly("[SE] Loaded 227 hardcoded method behaviors.");
   }
 
   @Test
@@ -217,7 +218,6 @@ class BehaviorCacheTest {
   void commons_lang2_string_utils_method_should_be_handled() throws Exception {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang2StringUtilsMethods.java"));
   }
-
 
   @Test
   void commons_lang2_array_utils_method_should_be_handled() throws Exception {
@@ -360,6 +360,14 @@ class BehaviorCacheTest {
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     nullDereferenceCheck.scanFile(context);
     verify(context, never()).reportIssueWithFlow(eq(nullDereferenceCheck), any(Tree.class), anyString(), anySet(), nullable(Integer.class));
+  }
+
+  @Test
+  void spring_5_assert() throws Exception {
+    SECheckVerifier.newVerifier()
+      .onFile("src/test/files/se/Spring5Assert.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .verifyIssues();
   }
 
 }
