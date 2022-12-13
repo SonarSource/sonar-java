@@ -1,6 +1,7 @@
 package checks;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -171,6 +172,36 @@ class IteratorNextExceptionCheckM implements Iterator<String> {
   }
 }
 
+class IteratorNextExceptionCheckM2 implements PrimitiveIterator.OfInt {
+  Iterator<Character> iterator;
+  @Override
+  public int nextInt() {
+    return iterator.next().hashCode(); // Compliant
+  }
+
+  @Override
+  public boolean hasNext() {
+    return iterator.hasNext();
+  }
+}
+
+/**
+ * FALSE POSITIVE below. We currently are not able to tell which methods outside of this file (like `removeFirst`)
+ * can throw `NoSuchElementException`. The case below is actually compliant.
+ */
+class IteratorNextExceptionCheckM3 implements Iterator<String> {
+  LinkedList<String> list;
+  @Override
+  public String next() { // Noncompliant
+    return list.removeFirst();
+  }
+
+  @Override
+  public boolean hasNext() {
+    return list.isEmpty();
+  }
+}
+
 class IteratorNextExceptionCheckN implements Iterator<Double> {
   PrimitiveIterator.OfDouble a;
   public Double next() {
@@ -234,6 +265,82 @@ class IteratorNextExceptionCheckQ implements Iterator<T> {
       throw new Foo();
     }
     return elem;
+  }
+
+  @Override
+  public boolean hasNext() {
+    return false;
+  }
+
+}
+
+class IteratorNextExceptionCheckR implements Iterator<T> {
+  public T next() { // Noncompliant
+    return recurseA();
+  }
+
+  public T recurseA() {
+    return recurseB();
+  }
+
+  public T recurseB() {
+    return recurseA();
+  }
+
+  @Override
+  public boolean hasNext() {
+    return false;
+  }
+
+}
+
+class IteratorNextExceptionCheckS implements Iterator<T> {
+  private T elem;
+
+  public T next() { // Compliant
+    return a();
+  }
+
+  private T a() {
+    return b();
+  }
+
+  private T b() {
+    return false ? c() : d();
+  }
+
+  private T c() {
+    return elem;
+  }
+
+  private T d() {
+    throw new NoSuchElementException();
+  }
+
+  @Override
+  public boolean hasNext() {
+    return false;
+  }
+
+}
+
+/**
+ * FALSE NEGATIVE below. We currently do not handle try-catch statements. In the example below, the expected exception
+ * is caught when it should not be. The example is actually non-compliant
+ */
+class IteratorNextExceptionCheckT implements Iterator<T> {
+  private T elem;
+
+  public T next() { // Compliant, FN
+    try {
+      return getNext();
+    } catch (NoSuchElementException e) {
+      return elem;
+    }
+  }
+
+  private T getNext() {
+    throw new NoSuchElementException();
   }
 
   @Override
