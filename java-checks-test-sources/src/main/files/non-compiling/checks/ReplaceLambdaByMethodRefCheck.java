@@ -52,7 +52,7 @@ class A {
   int square(int x) {
     return x * x;
   }
-  
+
   boolean coolerThan(int i, A a) {
     return true;
   }
@@ -94,7 +94,7 @@ class A {
     default void process(String s1, String s2, int i){}
     default void fun2(){
       IntStream.range(1, 5).forEach(i -> { process("foo", "bar", i); });
-      biConsumer((x, y) -> myMethod(x , y)); // Noncompliant
+      biConsumer((xParam, y) -> myMethod(xParam , y)); // Noncompliant
       biConsumer((x, y) -> myMethod(y , x));
       biConsumer((x, y) -> myMethod(y));
       biConsumer((x,y) -> new ClassTree(x, y)); // Noncompliant
@@ -102,19 +102,22 @@ class A {
       biConsumer((x,y) -> new ClassTree(x, y) {
         //can get some capture
       });
-      runnable(() -> myMethod()); // Noncompliant
+      runnable(() -> myMethod()); // Compliant, shorter
     }
   }
 
   void nullChecks(List<String> strings, String s2) {
-    strings.stream().filter(s -> s != null); // Noncompliant {{Replace this lambda with method reference 'Objects::nonNull'.}}
+    strings.stream().filter(string -> string != null); // Noncompliant {{Replace this lambda with method reference 'Objects::nonNull'.}}
     strings.stream().filter(s -> { return s != null; }); // Noncompliant {{Replace this lambda with method reference 'Objects::nonNull'.}}
     strings.stream().filter(s -> (s) == null); // Noncompliant {{Replace this lambda with method reference 'Objects::isNull'.}}
-    strings.stream().filter(s -> null == s); // Noncompliant {{Replace this lambda with method reference 'Objects::isNull'.}}
+    strings.stream().filter(string -> null == string); // Noncompliant {{Replace this lambda with method reference 'Objects::isNull'.}}
     strings.stream().filter(s -> (((s == null)))); // Noncompliant {{Replace this lambda with method reference 'Objects::isNull'.}}
 
     strings.stream().filter(Objects::nonNull); // Compliant
     strings.stream().filter(Objects::isNull); // Compliant
+
+    strings.stream().filter(s -> s != null); // Compliant, shorter
+    strings.stream().filter(s -> s == null); // Compliant, shorter
 
     strings.stream().filter(s -> (((s == s2)))); // Compliant
     strings.stream().filter(s -> (((s2 == s)))); // Compliant
@@ -177,7 +180,7 @@ class AmbiguousMethods {
   public static void main(String[] args) {
     Function<Ambiguous, String> f = a -> a.f();  // Compliant, A::f is ambiguous
 
-    Function<NotAmbiguous1, String> f2 = a -> a.f();  // Noncompliant
+    Function<NotAmbiguous1, String> f2 = ambig -> ambig.f();  // Noncompliant
     Function<NotAmbiguous2, String> f3 = a -> a.f(a);  // FN, could be replaced by NotAmbiguous2::f
 
     Function<Ambiguous, String> f4 = a -> a.unknown();  // Compliant, A::f is ambiguous
@@ -223,19 +226,20 @@ class CastCheck {
   void bar5(java.util.function.Function<Object, TestA[]> function) { /* ... */ }
 
   void test(Object param) {
-    bar((o) -> (String)o); // Noncompliant {{Replace this lambda with method reference 'String.class::cast'.}}
+    bar((o) -> (String)o); // Compliant, shorter
+    bar((object) -> (String)object); // Noncompliant {{Replace this lambda with method reference 'String.class::cast'.}}
     bar(String.class::cast); // Compliant
 
-    bar4((o) -> (TestXXXXXX) o); // Noncompliant {{Replace this lambda with method reference 'TestXXXXXX.class::cast'.}}
+    bar4((object) -> (TestXXXXXX) object); // Noncompliant {{Replace this lambda with method reference 'TestXXXXXX.class::cast'.}}
     bar4(TestXXXXXX.class::cast); //Compliant
-    
+
     bar4((o) -> (TestXXXXXX<ABC>) o); // Compliant, there is no 'TestXXXXXX<ABC>.class::cast'
-    
+
     bar3(List.class::cast); //Compliant
     bar3((o) -> (List<String>) o); // Compliant, there is no 'List<String>.class::cast'
 
     bar5(TestA[].class::cast); //Compliant
-    bar5((o) -> (TestA[]) o); // Noncompliant {{Replace this lambda with method reference 'TestA[].class::cast'.}}
+    bar5((object) -> (TestA[]) object); // Noncompliant {{Replace this lambda with method reference 'TestA[].class::cast'.}}
   }
 
   void test2(Object param) {

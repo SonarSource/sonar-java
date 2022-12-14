@@ -49,6 +49,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -68,16 +69,29 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   }
 
   private void visitLambdaExpression(LambdaExpressionTree tree) {
-    getPossibleReplacement(tree).ifPresent(replacement ->
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
-        .onTree(tree.arrowToken())
-        .withMessage("Replace this lambda with method reference '%s'.%s", replacement, context.getJavaVersion().java8CompatibilityMessage())
-        .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with \"%s\"", replacement)
-          .addTextEdit(JavaTextEdit.replaceTree(tree, replacement))
-          .build())
-        .report()
-    );
+    getPossibleReplacement(tree)
+      .filter(replacement -> isReplacementMoreConcise(tree, replacement))
+      .ifPresent(replacement ->
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(tree.arrowToken())
+          .withMessage("Replace this lambda with method reference '%s'.%s", replacement, context.getJavaVersion().java8CompatibilityMessage())
+          .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with \"%s\"", replacement)
+            .addTextEdit(JavaTextEdit.replaceTree(tree, replacement))
+            .build())
+          .report()
+      );
+  }
+
+  private static boolean isReplacementMoreConcise(LambdaExpressionTree tree, String replacement) {
+    SyntaxToken first = tree.firstToken();
+    SyntaxToken last = tree.lastToken();
+    if (first == null || last == null) {
+      return true;
+    }
+    boolean multiline = first.range().start().line() != last.range().end().line();
+    boolean shorter = replacement.length() <= last.range().end().column() - first.range().start().column();
+    return multiline || shorter;
   }
 
   private static Optional<String> getPossibleReplacement(LambdaExpressionTree tree) {
