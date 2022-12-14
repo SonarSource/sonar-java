@@ -2,7 +2,7 @@ import java.util.stream.IntStream;
 
 class Foo {
   int a;                          // Compliant
-   int b;                         // Noncompliant {{Make this line start after 2 spaces to indent the code consistently.}}
+   int b;                         // Noncompliant {{Make this line start after 2 spaces instead of 3 in order to indent the code consistently. (Indentation level is at 2.)}}
  int c;                           // Compliant - already reported
 
   public void foo1() {            // Compliant
@@ -23,7 +23,7 @@ if (true) {                       // Compliant - already reported
   System.out.println();           // Noncompliant
   if (true) {                     // Compliant - already reported
         System.out.println();     // Compliant
-    System.out.println();         // Noncompliant {{Make this line start after 8 spaces to indent the code consistently.}}
+    System.out.println();         // Noncompliant {{Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 2.)}}
   }
 
       ; System.out.println();     // Compliant
@@ -115,7 +115,7 @@ if (true) {                       // Compliant - already reported
         if (a == 5) {
           a--;
         }
-         a += 1; // Noncompliant {{Make this line start after 8 spaces to indent the code consistently.}}
+         a += 1; // Noncompliant {{Make this line start after 8 spaces instead of 9 in order to indent the code consistently. (Indentation level is at 2.)}}
         return a + 1;
       });
     IntStream.range(1, 5).map(a -> {
@@ -200,7 +200,7 @@ class Baz {
       case 1:
       case 2: {
         new Object().toString();
-         new Object().toString(); // Noncompliant {{Make this line start after 8 spaces to indent the code consistently.}}
+         new Object().toString(); // Noncompliant {{Make this line start after 8 spaces instead of 9 in order to indent the code consistently. (Indentation level is at 2.)}}
         break;
       }
       case 3: {
@@ -209,7 +209,7 @@ class Baz {
       new Object().toString();
       break;
       case 4:
-      { // Noncompliant {{Make this line start after 14 spaces to indent the code consistently.}}
+      { // Noncompliant {{Make this line start after 14 spaces instead of 6 in order to indent the code consistently. (Indentation level is at 2.)}}
         new Object().toString();
         break;
       }
@@ -229,7 +229,7 @@ class Baz {
   };
   static {
     try{
-       while (keys.hasMoreElements()) { // Noncompliant {{Make this line start after 6 spaces to indent the code consistently.}}
+       while (keys.hasMoreElements()) { // Noncompliant {{Make this line start after 6 spaces instead of 7 in order to indent the code consistently. (Indentation level is at 2.)}}
         s = keys.nextElement();
         rId = (String) s;
         cName = (String) exceptionClassNames.get(rId);

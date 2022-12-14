@@ -186,7 +186,9 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
       }
     }
     if (level != expectedLevel && !isExcluded(tree, treeStart.line())) {
-      context.addIssue(((JavaTree) tree).getLine(), this, "Make this line start after "+expectedLevel+" spaces to indent the code consistently.");
+      var message = new StringBuilder("Make this line start after ").append(expectedLevel).append(" spaces instead of ")
+        .append(level).append(" in order to indent the code consistently. (Indentation level is at ").append(indentationLevel).append(".)");
+      context.addIssue(((JavaTree) tree).getLine(), this, message.toString());
       isBlockAlreadyReported = true;
     }
     excludeIssueAtLine = tree.lastToken().range().start().line();
