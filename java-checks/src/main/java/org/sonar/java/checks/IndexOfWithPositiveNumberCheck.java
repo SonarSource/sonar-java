@@ -23,11 +23,13 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -35,18 +37,18 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class IndexOfWithPositiveNumberCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
-  private static final String INDEXOF = "indexOf";
+  private static final String INDEX_OF = "indexOf";
 
   private static final MethodMatchers CHECKED_METHODS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
-      .names(INDEXOF)
+      .names(INDEX_OF)
       .addParametersMatcher("int")
       .addParametersMatcher(JAVA_LANG_STRING)
       .build(),
     MethodMatchers.create()
       .ofSubTypes("java.util.List")
-      .names(INDEXOF)
+      .names(INDEX_OF)
       .addParametersMatcher("java.lang.Object")
       .build());
 
@@ -59,10 +61,22 @@ public class IndexOfWithPositiveNumberCheck extends IssuableSubscriptionVisitor 
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryTree = (BinaryExpressionTree) tree;
     if (tree.is(Tree.Kind.GREATER_THAN)) {
-      checkForIssue(tree, binaryTree.leftOperand(), LiteralUtils.longLiteralValue(binaryTree.rightOperand()));
+      checkForIssue(tree, binaryTree.leftOperand(), LiteralUtils.longLiteralValue(retrievedPropertyValue(binaryTree.rightOperand())));
     } else {
-      checkForIssue(tree, binaryTree.rightOperand(), LiteralUtils.longLiteralValue(binaryTree.leftOperand()));
+      checkForIssue(tree, binaryTree.rightOperand(), LiteralUtils.longLiteralValue(retrievedPropertyValue(binaryTree.leftOperand())));
     }
+  }
+
+  private ExpressionTree retrievedPropertyValue(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) expression;
+      ExpressionTree reassignmentOrDeclaration = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(expression,
+        identifier.symbol());
+      if (reassignmentOrDeclaration != null) {
+        return reassignmentOrDeclaration;
+      }
+    }
+    return expression;
   }
 
   private void checkForIssue(Tree tree, ExpressionTree operand, @Nullable Long constant) {

@@ -3,8 +3,26 @@ package checks;
 import java.util.List;
 
 class IndexOfWithPositiveNumber {
-  void method(int length, List<String> strings) {
 
+  public static final int literal1 = 0;
+
+  void method(int length, List<String> strings, int literal3) {
+    if ("".indexOf(" ") > literal3) { // Compliant
+    }
+    int literal4 = 2;
+    literal4 = 0;
+    if ("".indexOf(" ") > literal4) { // Noncompliant
+    }
+
+    if ("".indexOf(' ') > literal1) { // Noncompliant
+    }
+    final int literal2 = 0;
+    if ("".indexOf(" ") > literal2) { // Noncompliant
+    }
+    if ("".indexOf(" ") > getLiteral0()) { // Compliant - do not check
+    }
+    if ("".indexOf(" ") > getLiteral()) { // Compliant - do not check
+    }
     if (length > 0) { // Compliant
     }
     if (length < length) { // Compliant
@@ -43,4 +61,13 @@ class IndexOfWithPositiveNumber {
     if (2 <= "".indexOf("")) { // Compliant
     }
   }
+
+  private int getLiteral() {
+    return 2;
+  }
+
+  private int getLiteral0() {
+    return 0;
+  }
+
 }
