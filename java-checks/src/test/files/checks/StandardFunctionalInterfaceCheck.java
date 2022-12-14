@@ -297,4 +297,13 @@ public class StandardFunctionalInterfaceCheck {
   public interface InterfaceWithPrivateMethod {
     private void notify(String param) {};
   }
+
+  @FunctionalInterface
+  interface FunctionLikeInterface { // Noncompliant {{Drop this interface in favor of "java.util.function.Function<StandardFunctionalInterfaceCheck.InnerType,Integer>".}}
+    Integer method(InnerType inner);
+  }
+
+  static class InnerType {
+    int field = 42;
+  }
 }
