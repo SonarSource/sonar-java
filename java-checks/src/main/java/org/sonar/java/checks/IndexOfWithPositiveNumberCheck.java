@@ -61,13 +61,15 @@ public class IndexOfWithPositiveNumberCheck extends IssuableSubscriptionVisitor 
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryTree = (BinaryExpressionTree) tree;
     if (tree.is(Tree.Kind.GREATER_THAN)) {
-      checkForIssue(tree, binaryTree.leftOperand(), LiteralUtils.longLiteralValue(retrievedPropertyValue(binaryTree.rightOperand())));
+      checkForIssue(tree, binaryTree.leftOperand(),
+        LiteralUtils.longLiteralValue(retrieveClosestAssignmentIfAny(binaryTree.rightOperand())));
     } else {
-      checkForIssue(tree, binaryTree.rightOperand(), LiteralUtils.longLiteralValue(retrievedPropertyValue(binaryTree.leftOperand())));
+      checkForIssue(tree, binaryTree.rightOperand(),
+        LiteralUtils.longLiteralValue(retrieveClosestAssignmentIfAny(binaryTree.leftOperand())));
     }
   }
 
-  private ExpressionTree retrievedPropertyValue(ExpressionTree expression) {
+  private static ExpressionTree retrieveClosestAssignmentIfAny(ExpressionTree expression) {
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) expression;
       ExpressionTree reassignmentOrDeclaration = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(expression,
