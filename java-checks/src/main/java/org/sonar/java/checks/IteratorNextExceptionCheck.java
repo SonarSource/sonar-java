@@ -95,8 +95,8 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
       if (NEXT_INVOCATION_MATCHER.matches(methodInvocation) || throwsNoSuchElementException(methodInvocation)) {
         expectedExceptionIsThrown = true;
-      } else if (methodInvocation.symbol().isMethodSymbol()) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) methodInvocation.symbol();
+      } else {
+        Symbol.MethodSymbol methodSymbol = methodInvocation.symbol();
         MethodTree methodTree = methodSymbol.declaration();
         if (methodTree != null && canVisit(methodTree)) {
           methodsVisited.add(methodTree);
@@ -111,15 +111,12 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
     }
 
     private static boolean throwsNoSuchElementException(MethodInvocationTree methodInvocationTree) {
-      Symbol symbol = methodInvocationTree.symbol();
+      Symbol.MethodSymbol symbol = methodInvocationTree.symbol();
       if (symbol.isUnknown()) {
         // Consider that it could throw an Exception to avoid FP.
         return true;
       }
-      if (!symbol.isMethodSymbol()) {
-        return false;
-      }
-      return throwsNoSuchElementException(((Symbol.MethodSymbol) symbol).thrownTypes());
+      return throwsNoSuchElementException(symbol.thrownTypes());
     }
 
     private static boolean throwsNoSuchElementException(List<? extends Type> thrownTypes) {
