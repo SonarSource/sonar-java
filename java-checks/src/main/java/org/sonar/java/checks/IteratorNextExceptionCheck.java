@@ -39,7 +39,6 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S2272")
 public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
-  private static final int MAX_METHOD_VISITS = 50;
 
   private static final MethodMatchers NEXT_INVOCATION_MATCHER = MethodMatchers.create()
       .ofSubTypes("java.util.Iterator")
@@ -98,16 +97,12 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
       } else if (methodInvocation.symbol().isMethodSymbol()) {
         Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) methodInvocation.symbol();
         MethodTree methodTree = methodSymbol.declaration();
-        if (methodTree != null && canVisit(methodTree)) {
-          methodsVisited.add(methodTree);
+        boolean canVisit = methodTree != null && methodsVisited.add(methodTree);
+        if (canVisit) {
           scan(methodTree);
         }
       }
       super.visitMethodInvocation(methodInvocation);
-    }
-
-    private boolean canVisit(MethodTree methodTree) {
-      return !methodsVisited.contains(methodTree) && methodsVisited.size() < MAX_METHOD_VISITS;
     }
 
     private static boolean throwsNoSuchElementException(MethodInvocationTree methodInvocationTree) {

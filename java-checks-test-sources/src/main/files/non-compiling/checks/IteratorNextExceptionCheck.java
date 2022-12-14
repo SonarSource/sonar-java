@@ -87,3 +87,19 @@ class IteratorNextExceptionCheckE implements Iterator<String> {
     return false;
   }
 }
+
+class IteratorNextExceptionCheckF implements Iterator<String> {
+
+  public String next() { // Compliant
+    foo();
+  }
+
+  private String foo() throws UnknownException {
+
+  }
+
+  @Override
+  public boolean hasNext() {
+    return false;
+  }
+}
