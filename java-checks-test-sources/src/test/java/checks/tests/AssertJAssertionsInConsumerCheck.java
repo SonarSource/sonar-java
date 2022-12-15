@@ -3,6 +3,7 @@ package checks.tests;
 import java.util.List;
 import java.util.function.Consumer;
 import org.assertj.core.api.Condition;
+import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,9 +32,9 @@ public abstract class AssertJAssertionsInConsumerCheck {
 
   @Test
   public void testSatisfies(Consumer<String> unknownRequirements) {
-    Consumer<String> myPredicateAsConsumer = s -> s.equals("b");
     assertThat(getSomeObject()).satisfies("b"::equals); // Noncompliant
     assertThat("a").satisfies(s -> s.equals("b")); // Noncompliant
+    ThrowingConsumer<String> myPredicateAsConsumer = s -> s.equals("b");
     assertThat("a").satisfies(myPredicateAsConsumer); // Noncompliant
 
     Consumer<String> myRequirements = s -> assertThat(s).isEqualTo("b");
