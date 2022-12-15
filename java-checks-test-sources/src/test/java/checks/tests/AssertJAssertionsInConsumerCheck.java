@@ -16,7 +16,6 @@ public abstract class AssertJAssertionsInConsumerCheck {
   @Test
   public void testIsInstanceOfSatisfying(Consumer<String> unknownRequirements) {
     Object myObj = getSomeObject();
-
     Consumer<String> myPredicateAsConsumer = s -> s.equals("b");
     assertThat(myObj).isInstanceOfSatisfying(String.class, "b"::equals); // Noncompliant [[sc=23;ec=45;secondary=20]] {{Rework this assertion to assert something inside the Consumer argument.}}
     assertThat(myObj).isInstanceOfSatisfying(String.class, s -> s.equals("b")); // Noncompliant [[sc=23;ec=45;secondary=21]]

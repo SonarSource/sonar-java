@@ -45,19 +45,16 @@ public class AssertJAssertionsInConsumerCheck extends IssuableSubscriptionVisito
 
   private static final String ORG_ASSERTJ_CORE_API_ABSTRACT_ASSERT = "org.assertj.core.api.AbstractAssert";
   public static final String JAVA_UTIL_FUNCTION_CONSUMER = "java.util.function.Consumer";
-  public static final String ORG_ASSERTJ_CORE_API_THROWING_CONSUMER = "org.assertj.core.api.ThrowingConsumer[]";
+  public static final String ORG_ASSERTJ_CORE_API_THROWING_CONSUMER = "org.assertj.core.api.ThrowingConsumer";
+  public static final String ORG_ASSERTJ_CORE_API_THROWING_CONSUMER_ARRAY = "org.assertj.core.api.ThrowingConsumer[]";
 
   private static final MethodMatchers METHODS_WITH_CONSUMER_AT_INDEX_0_MATCHER = MethodMatchers.create()
     .ofSubTypes(ORG_ASSERTJ_CORE_API_ABSTRACT_ASSERT)
-    .names("allSatisfy", "anySatisfy", "hasOnlyOneElementSatisfying", "noneSatisfy")
+    .names("allSatisfy", "anySatisfy", "hasOnlyOneElementSatisfying", "noneSatisfy", "satisfies")
     .addParametersMatcher(JAVA_UTIL_FUNCTION_CONSUMER)
-    .addParametersMatcher(JAVA_UTIL_FUNCTION_CONSUMER, "org.assertj.core.data.Index")
-    .build();
-
-  private static final MethodMatchers METHODS_WITH_THROWING_CONSUMER_AT_INDEX_0_MATCHER = MethodMatchers.create()
-    .ofSubTypes(ORG_ASSERTJ_CORE_API_ABSTRACT_ASSERT)
-    .names("satisfies")
     .addParametersMatcher(ORG_ASSERTJ_CORE_API_THROWING_CONSUMER)
+    .addParametersMatcher(ORG_ASSERTJ_CORE_API_THROWING_CONSUMER_ARRAY)
+    .addParametersMatcher(JAVA_UTIL_FUNCTION_CONSUMER, "org.assertj.core.data.Index")
     .build();
 
   private static final MethodMatchers METHODS_WITH_CONSUMER_AT_INDEX_1_MATCHER = MethodMatchers.create()
@@ -83,8 +80,6 @@ public class AssertJAssertionsInConsumerCheck extends IssuableSubscriptionVisito
   public void visitNode(Tree tree) {
     MethodInvocationTree invocation = (MethodInvocationTree) tree;
     if (METHODS_WITH_CONSUMER_AT_INDEX_0_MATCHER.matches(invocation)) {
-      checkAssertions(invocation, singletonList(invocation.arguments().get(0)));
-    } else if (METHODS_WITH_THROWING_CONSUMER_AT_INDEX_0_MATCHER.matches(invocation)) {
       checkAssertions(invocation, singletonList(invocation.arguments().get(0)));
     } else if (METHODS_WITH_CONSUMER_AT_INDEX_1_MATCHER.matches(invocation)) {
       checkAssertions(invocation, singletonList(invocation.arguments().get(1)));
