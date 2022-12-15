@@ -36,7 +36,7 @@ class SunPackagesUsedCheckTest {
   @Test
   void check_with_exclusion() {
     SunPackagesUsedCheck check = new SunPackagesUsedCheck();
-    check.exclude = "com.sun.imageio,com.sun.jersey,com.sun.org.apache.xml";
+    check.exclude = "sun.excluded";
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/SunPackagesUsedCheckCustom.java"))
       .withCheck(check)
