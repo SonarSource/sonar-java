@@ -111,7 +111,7 @@ class BehaviorCacheTest {
 
   @Test
   void explore_method_with_recursive_call() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java", 
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java",
       new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors).hasSize(1);
     assertThat(sev.behaviorCache.behaviors.keySet().iterator().next()).contains("#foo");
@@ -119,7 +119,7 @@ class BehaviorCacheTest {
 
   @Test
   void interrupted_exploration_does_not_create_method_yields() throws Exception {
-    SymbolicExecutionVisitor sev = 
+    SymbolicExecutionVisitor sev =
       createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
 
