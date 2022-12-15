@@ -370,7 +370,6 @@ class BehaviorCacheTest {
     SECheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("symbolicexecution/behaviorcache/Spring5Assert.java"))
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
-      // [REMOVE-ME] This line let the verifier know that he should use a special set of binaries
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
