@@ -42,6 +42,28 @@
     ]
   },
   {
+    "signature": "org.springframework.util.Assert#hasLength(Ljava/lang/String;Ljava/util/function/Supplier;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException"
+      },
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
     "signature": "org.springframework.util.StringUtils#hasLength(Ljava/lang/String;)Z",
     "varArgs": false,
     "declaredExceptions": [],
@@ -123,6 +145,35 @@
   },
   {
     "signature": "org.springframework.util.Assert#hasText(Ljava/lang/String;Ljava/lang/String;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException"
+      },
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException"
+      },
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#hasText(Ljava/lang/String;Ljava/util/function/Supplier;)V",
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
@@ -245,7 +296,53 @@
     ]
   },
   {
+    "signature": "org.springframework.util.Assert#isAssignable(Ljava/lang/Class;Ljava/lang/Class;Ljava/util/function/Supplier;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["NULL"],
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException"
+      },
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"],
+          [],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
     "signature": "org.springframework.util.Assert#notNull(Ljava/lang/Object;Ljava/lang/String;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["NULL"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException"
+      },
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#notNull(Ljava/lang/Object;Ljava/util/function/Supplier;)V",
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
@@ -313,6 +410,30 @@
     ]
   },
   {
+    "signature": "org.springframework.util.Assert#isInstanceOf(Ljava/lang/Class;Ljava/lang/Object;Ljava/util/function/Supplier;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["NULL"],
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException"
+      },
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"],
+          [],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
     "signature": "org.springframework.util.Assert#isNull(Ljava/lang/Object;)V",
     "varArgs": false,
     "declaredExceptions": [],
@@ -334,6 +455,28 @@
   },
   {
     "signature": "org.springframework.util.Assert#isNull(Ljava/lang/Object;Ljava/lang/String;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException"
+      },
+      {
+        "parametersConstraints": [
+          ["NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#isNull(Ljava/lang/Object;Ljava/util/function/Supplier;)V",
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
@@ -397,6 +540,28 @@
     ]
   },
   {
+    "signature": "org.springframework.util.Assert#isTrue(ZLjava/util/function/Supplier;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["FALSE"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException"
+      },
+      {
+        "parametersConstraints": [
+          ["TRUE"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
     "signature": "org.springframework.util.Assert#notEmpty(Ljava/util/Collection;)V",
     "varArgs": false,
     "declaredExceptions": [],
@@ -418,6 +583,28 @@
   },
   {
     "signature": "org.springframework.util.Assert#notEmpty(Ljava/util/Collection;Ljava/lang/String;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException"
+      },
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#notEmpty(Ljava/util/Collection;Ljava/util/function/Supplier;)V",
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
@@ -508,6 +695,28 @@
     ]
   },
   {
+    "signature": "org.springframework.util.Assert#notEmpty([Ljava/lang/Object;Ljava/util/function/Supplier;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException"
+      },
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
     "signature": "org.springframework.util.ObjectUtils#isEmpty([Ljava/lang/Object;)Z",
     "varArgs": false,
     "declaredExceptions": [],
@@ -556,6 +765,28 @@
   },
   {
     "signature": "org.springframework.util.Assert#notEmpty(Ljava/util/Map;Ljava/lang/String;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException"
+      },
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#notEmpty(Ljava/util/Map;Ljava/util/function/Supplier;)V",
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
@@ -645,6 +876,28 @@
   },
   {
     "signature": "org.springframework.util.Assert#state(ZLjava/lang/String;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["FALSE"],
+          []
+        ],
+        "exception": "java.lang.IllegalStateException"
+      },
+      {
+        "parametersConstraints": [
+          ["TRUE"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#state(ZLjava/util/function/Supplier;)V",
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [

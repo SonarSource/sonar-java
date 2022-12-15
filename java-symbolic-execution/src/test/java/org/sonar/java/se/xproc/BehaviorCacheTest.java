@@ -44,7 +44,10 @@ import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.CheckerDispatcher;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
+import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
@@ -67,6 +70,7 @@ import static org.mockito.Mockito.verify;
 import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
 import static org.sonar.java.se.utils.SETestUtils.getMethodBehavior;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BehaviorCacheTest {
 
@@ -194,8 +198,8 @@ class BehaviorCacheTest {
     }
 
     assertThat(behaviorCache.behaviors).isEmpty();
-    assertThat(behaviorCache.hardcodedBehaviors()).hasSize(216);
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnly("[SE] Loaded 216 hardcoded method behaviors.");
+    assertThat(behaviorCache.hardcodedBehaviors()).hasSize(227);
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnly("[SE] Loaded 227 hardcoded method behaviors.");
   }
 
   @Test
@@ -217,7 +221,6 @@ class BehaviorCacheTest {
   void commons_lang2_string_utils_method_should_be_handled() throws Exception {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang2StringUtilsMethods.java"));
   }
-
 
   @Test
   void commons_lang2_array_utils_method_should_be_handled() throws Exception {
@@ -360,6 +363,15 @@ class BehaviorCacheTest {
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     nullDereferenceCheck.scanFile(context);
     verify(context, never()).reportIssueWithFlow(eq(nullDereferenceCheck), any(Tree.class), anyString(), anySet(), nullable(Integer.class));
+  }
+
+  @Test
+  void spring_5_assert() throws Exception {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/behaviorcache/Spring5Assert.java"))
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
 }
