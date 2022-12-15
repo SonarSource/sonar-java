@@ -32,6 +32,7 @@ import org.sonar.java.cfg.CFGLoop;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -58,6 +59,12 @@ public class NoWayOutLoopCheck extends SECheck {
   }
 
   private final Deque<MethodContext> contexts = new LinkedList<>();
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
+    contexts.clear();
+  }
 
   @Override
   public void init(MethodTree tree, CFG cfg) {

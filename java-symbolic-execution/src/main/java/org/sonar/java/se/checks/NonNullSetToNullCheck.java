@@ -35,6 +35,7 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
@@ -69,6 +70,12 @@ public class NonNullSetToNullCheck extends SECheck {
   };
 
   private Deque<MethodTree> methodTrees = new ArrayDeque<>();
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
+    methodTrees.clear();
+  }
 
   @Override
   public void init(MethodTree tree, CFG cfg) {
