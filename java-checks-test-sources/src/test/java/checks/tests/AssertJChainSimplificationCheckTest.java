@@ -171,6 +171,23 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(obj.equals(null)).isFalse(); // Compliant
   }
 
+  void relatedToComparable(int x, int y) {
+    assertThat(x >= y).isTrue(); // Noncompliant {{Use assertThat(actual).isLessThanOrEqualTo(expected) instead.}}
+    assertThat(x > y).isTrue(); // Noncompliant {{Use assertThat(actual).isGreaterThan(expected) instead.}}
+    assertThat(x <= y).isTrue(); // Noncompliant {{Use assertThat(actual).isLessThanOrEqualTo(expected) instead.}}
+    assertThat(x < y).isTrue(); // Noncompliant {{Use assertThat(actual).isLessThan(expected) instead.}}
+
+    assertThat(x >= y).isFalse(); // Noncompliant {{Use assertThat(actual).isLessThanOrEqualTo(expected) instead.}}
+    assertThat(x > y).isFalse(); // Noncompliant {{Use assertThat(actual).isGreaterThan(expected) instead.}}
+    assertThat(x <= y).isFalse(); // Noncompliant {{Use assertThat(actual).isLessThanOrEqualTo(expected) instead.}}
+    assertThat(x < y).isFalse(); // Noncompliant {{Use assertThat(actual).isLessThan(expected) instead.}}
+
+    assertThat(x).isGreaterThanOrEqualTo(y); // Compliant
+    assertThat(x).isGreaterThan(y); // Compliant
+    assertThat(x).isLessThanOrEqualTo(y); // Compliant
+    assertThat(x).isLessThan(y); // Compliant
+  }
+
   void stringRelatedAssertionChains() {
     String x = "x";
 
