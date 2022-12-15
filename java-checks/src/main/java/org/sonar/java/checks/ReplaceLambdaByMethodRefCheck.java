@@ -240,7 +240,9 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         return getNewClass(((NewClassTree) tree), parameters);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
-        if (hasMethodInvocationInMethodSelect(mit) || hasNonFinalFieldInMethodSelect(mit)) {
+        if (mit.symbol().isUnknown()
+          || hasMethodInvocationInMethodSelect(mit)
+          || hasNonFinalFieldInMethodSelect(mit)) {
           return Optional.empty();
         }
         Arguments arguments = mit.arguments();
