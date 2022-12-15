@@ -97,6 +97,7 @@ public class InvariantReturnCheck extends SECheck {
       context.reportIssueWithFlow(this, seIssue.getTree(), seIssue.getMessage(), seIssue.getFlows(), seIssue.getFlows().iterator().next().size());
     }
     issues.clear();
+    methodInvariantContexts.clear();
   }
 
   @Override

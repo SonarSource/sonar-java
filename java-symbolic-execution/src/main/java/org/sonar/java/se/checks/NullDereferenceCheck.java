@@ -79,6 +79,12 @@ public class NullDereferenceCheck extends SECheck {
   private Deque<Set<NullDereferenceIssue>> detectedIssues = new ArrayDeque<>();
 
   @Override
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
+    detectedIssues.clear();
+  }
+
+  @Override
   public void init(MethodTree methodTree, CFG cfg) {
     detectedIssues.push(new HashSet<>());
   }
