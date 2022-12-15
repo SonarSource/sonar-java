@@ -64,6 +64,7 @@ class Baz {
   void foo() {                    // Noncompliant {{Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)}}
     new MyInterface() {           // Noncompliant {{Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)}}
         public void foo() {       // Compliant
+System.out.println();             // Noncompliant {{Make this line start after 12 spaces instead of 0 in order to indent the code consistently. (Indentation level is at 4.)}}
         }
           public void bar() {     // Noncompliant
           }
