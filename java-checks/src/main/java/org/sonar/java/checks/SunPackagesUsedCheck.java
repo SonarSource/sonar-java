@@ -37,14 +37,15 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
 
   private List<Tree> reportedTrees = new ArrayList<>();
 
-  private static final String DEFAULT_EXCLUDE = "com.sun.jersey,com.sun.faces,com.sun.xml.ws";
+  private static final String DEFAULT_EXCLUDE = "";
 
   @RuleProperty(
       key = "Exclude",
-      description = "Comma separated list of Sun packages to be ignored by this rule. Example: com.sun.jna,sun.misc",
+      description = "Comma separated list of Sun packages to be ignored by this rule. Example: sun.misc,sun.security.validator",
       defaultValue = "" + DEFAULT_EXCLUDE)
   public String exclude = DEFAULT_EXCLUDE;
   private String[] excludePackages = null;
+  
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -76,7 +77,7 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private static boolean isSunClass(String reference) {
-    return reference.startsWith("com.sun.") || reference.startsWith("sun.");
+    return reference.startsWith("sun.");
   }
 
   private boolean isExcluded(String reference) {
