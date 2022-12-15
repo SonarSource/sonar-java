@@ -535,7 +535,7 @@
           []
         ],
         "resultIndex": -1,
-        "resultConstraint": ["TRUE"]
+        "resultConstraint": null
       }
     ]
   },

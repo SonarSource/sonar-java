@@ -37,7 +37,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_LABEL_STRING = JavaKeyword.DEFAULT.getValue();
-
+  
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.SWITCH_STATEMENT);

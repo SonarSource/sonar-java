@@ -70,11 +70,12 @@ import static org.mockito.Mockito.verify;
 import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
 import static org.sonar.java.se.utils.SETestUtils.getMethodBehavior;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BehaviorCacheTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester  = new LogTesterJUnit5();
 
   @Test
   void method_behavior_cache_should_be_filled_and_cleanup() {
@@ -110,14 +111,16 @@ class BehaviorCacheTest {
 
   @Test
   void explore_method_with_recursive_call() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java", new NullDereferenceCheck());
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java", 
+      new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors).hasSize(1);
     assertThat(sev.behaviorCache.behaviors.keySet().iterator().next()).contains("#foo");
   }
 
   @Test
   void interrupted_exploration_does_not_create_method_yields() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java", new NullDereferenceCheck());
+    SymbolicExecutionVisitor sev = 
+      createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
 
     MethodBehavior plopMethod = getMethodBehavior(sev, "foo");
@@ -365,8 +368,10 @@ class BehaviorCacheTest {
   @Test
   void spring_5_assert() throws Exception {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/Spring5Assert.java")
+      .onFile(mainCodeSourcesPath("symbolicexecution/behaviorcache/Spring5Assert.java"))
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      // [REMOVE-ME] This line let the verifier know that he should use a special set of binaries
+      .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
 
