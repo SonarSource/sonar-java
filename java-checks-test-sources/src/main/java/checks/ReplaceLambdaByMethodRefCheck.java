@@ -430,11 +430,11 @@ class LambdaB {
     Collection<Integer> idList = List.of(1, 2);
     System.out.println(idList
       .stream()
-      .map(integer -> integer.toString()) // Compliant (in reality, non-compliant, but Integer::toString is ambiguous for 1 argument
+      .map(integer -> integer.toString()) // Noncompliant, can use 'Object::toString'
       .distinct());
     System.out.println(idList
       .stream()
-      .map(integer -> Integer.toString(integer)) // Compliant (in reality, non-compliant, but Integer::toString is ambiguous for 1 argument
+      .map(integer -> Integer.toString(integer)) // Compliant (the static ambiguous method can't be referenced using a superclass, like for its non-static counterpart)
       .distinct());
     apply((i, r) -> Integer.toString(i, r)); // Noncompliant, equivalent method reference is not ambiguous
   }
@@ -470,15 +470,24 @@ class TestNumber extends TestObject {
   static String foo(TestNumber tn) {
     return null;
   }
-}
-class TestInteger extends TestNumber {
   String foo() {
     return "Number here";
   }
 
   void test() {
+    Optional.of(new TestNumber()).map(testNumber -> testNumber.foo()); // Noncompliant, method reference 'TestObject::foo' works
+  }
+}
+class TestInteger extends TestNumber {
+  String foo() {
+    return "Integer here";
+  }
+
+  void test() {
     Optional.of(new TestInteger()).map(testInteger -> testInteger.foo()); // Noncompliant, method reference 'TestObject::foo' works
+    Optional.of(new TestInteger()).map(testInteger -> TestNumber.foo(testInteger)); // Compliant, method reference is ambiguous
     Optional.of(new TestInteger()).map(testInteger -> testInteger.spam()); // Compliant, method reference is ambiguous
+    Optional.of(new TestInteger()).map(testInteger -> (foo().length() % 23 == 0 ? testInteger : null).spam(testInteger)); // Compliant, method reference is ambiguous
   }
 }
 

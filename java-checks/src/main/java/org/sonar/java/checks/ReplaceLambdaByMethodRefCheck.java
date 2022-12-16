@@ -241,7 +241,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         return getNewClass(((NewClassTree) tree), parameters);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
-        if (hasMethodInvocationInMethodSelect(mit) || hasNonFinalFieldInMethodSelect(mit) || hasAmbiguousReference(mit)) {
+        if (hasMethodInvocationInMethodSelect(mit) || hasNonFinalFieldInMethodSelect(mit)) {
           return Optional.empty();
         }
         Arguments arguments = mit.arguments();
@@ -251,17 +251,26 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         }
         if (arguments.isEmpty() && isNoArgMethodInvocationFromLambdaParam(mit, parameters)) {
           // x -> x.foo() becomes Owner::foo
-          return Optional.of(getMethodReferenceFromSymbol(mit.symbol()));
+          return getUnambiguousReference(mit);
         }
       }
     }
     return Optional.empty();
   }
 
-  private static boolean hasAmbiguousReference(MethodInvocationTree mit) {
-    Symbol.MethodSymbol ms = (Symbol.MethodSymbol) mit.symbol();
-    String methodName = mit.symbol().name();
-    boolean methodWithSameRefExists = ((Symbol.TypeSymbol) mit.symbol().owner()).lookupSymbols(methodName).stream()
+  private static Optional<String> getUnambiguousReference(MethodInvocationTree mit) {
+    Symbol.MethodSymbol ms = ((Symbol.MethodSymbol) mit.symbol());
+    if (!hasAmbiguousReference(ms)) {
+      return Optional.of(getMethodReferenceFromSymbol(ms));
+    }
+    return ms.overriddenSymbols().stream()
+      .filter(m -> !hasAmbiguousReference(m))
+      .findFirst()
+      .map(ReplaceLambdaByMethodRefCheck::getMethodReferenceFromSymbol);
+  }
+
+  private static boolean hasAmbiguousReference(Symbol.MethodSymbol ms) {
+    boolean methodWithSameRefExists = ((Symbol.TypeSymbol) ms.owner()).lookupSymbols(ms.name()).stream()
       .filter(Symbol::isMethodSymbol)
       .map(Symbol.MethodSymbol.class::cast)
       .filter(m -> m.isStatic() != ms.isStatic())
@@ -295,7 +304,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
     if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = mit.symbol();
       if (symbol.isStatic()) {
-        return Optional.of(getMethodReferenceFromSymbol(symbol));
+        return getUnambiguousReference(mit);
       }
       MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(mit);
       Symbol symbolOwner = symbol.owner();
@@ -306,6 +315,8 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         }
       }
       return Optional.of(symbolOwner.name() + ".this::" + symbol.name());
+    } else if (methodSelect.is(Tree.Kind.MEMBER_SELECT) && mit.symbol().isStatic()) {
+      return getUnambiguousReference(mit);
     }
     MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
     return Optional.of(ExpressionsHelper.concatenate(memberSelect.expression()) + "::" + memberSelect.identifier().name());
