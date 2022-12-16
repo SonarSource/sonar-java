@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -423,4 +424,62 @@ class CastCheck {
     }
   }
 }
+
+class LambdaB {
+  void intToString() {
+    Collection<Integer> idList = List.of(1, 2);
+    System.out.println(idList
+      .stream()
+      .map(integer -> integer.toString()) // Compliant (in reality, non-compliant, but Integer::toString is ambiguous for 1 argument
+      .distinct());
+    System.out.println(idList
+      .stream()
+      .map(integer -> Integer.toString(integer)) // Compliant (in reality, non-compliant, but Integer::toString is ambiguous for 1 argument
+      .distinct());
+    apply((i, r) -> Integer.toString(i, r)); // Noncompliant, equivalent method reference is not ambiguous
+  }
+
+  String apply(BiFunction<Integer, Integer, String> f) {
+    return f.apply(10, 16);
+  }
+}
+
+class MultiArityTest {
+  void test() {
+    BiFunction<MultiArityTest, Integer, String> test = (mat, i) -> foo(mat, i); // Compliant, both methods have the same reference and cannot be disambiguated
+  }
+  String foo(int x) { return Integer.toString(x); }
+  static String foo(MultiArityTest mat, int x) { return Integer.toString(x); }
+}
+
+class TestObject {
+  String foo() {
+    return null;
+  }
+
+  int spam() {
+    return 0;
+  }
+
+  static int spam(TestObject to) {
+    return to.hashCode();
+  }
+}
+
+class TestNumber extends TestObject {
+  static String foo(TestNumber tn) {
+    return null;
+  }
+}
+class TestInteger extends TestNumber {
+  String foo() {
+    return "Number here";
+  }
+
+  void test() {
+    Optional.of(new TestInteger()).map(testInteger -> testInteger.foo()); // Noncompliant, method reference 'TestObject::foo' works
+    Optional.of(new TestInteger()).map(testInteger -> testInteger.spam()); // Compliant, method reference is ambiguous
+  }
+}
+
 
