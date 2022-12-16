@@ -258,24 +258,22 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
     return Optional.empty();
   }
 
-  /**
-   * This is a crude way to shutdown the FPs when method reference is ambiguous in case of lambda like x -> x.foo()
-   * Full resolution algorithm is described in JLS 15.13.1
-   */
   private static boolean hasAmbiguousReference(MethodInvocationTree mit) {
-    if (((Symbol.MethodSymbol) mit.symbol()).parameterTypes().size() > 1) {
-      return false;
-    }
+    Symbol.MethodSymbol ms = (Symbol.MethodSymbol) mit.symbol();
     String methodName = mit.symbol().name();
-    Type ownerType = mit.symbol().owner().type();
-    long methodsWithSameRefCount = ((Symbol.TypeSymbol) mit.symbol().owner()).lookupSymbols(methodName).stream()
+    boolean methodWithSameRefExists = ((Symbol.TypeSymbol) mit.symbol().owner()).lookupSymbols(methodName).stream()
       .filter(Symbol::isMethodSymbol)
       .map(Symbol.MethodSymbol.class::cast)
-      .filter(m ->
-        !m.isStatic() && m.parameterTypes().isEmpty() ||
-        m.isStatic()  && m.parameterTypes().size() == 1 && isArgumentCompatible(ownerType, m.parameterTypes().get(0)))
-      .count();
-    return methodsWithSameRefCount > 1;
+      .filter(m -> m.isStatic() != ms.isStatic())
+      .anyMatch(m -> m.isStatic() ? methodsHaveSameReference(m, ms) : methodsHaveSameReference(ms, m));
+    return methodWithSameRefExists;
+  }
+
+  private static boolean methodsHaveSameReference(Symbol.MethodSymbol mStatic, Symbol.MethodSymbol mNotStatic) {
+    Type ownerType = mStatic.owner().type();
+    return
+      mStatic.parameterTypes().size() == mNotStatic.parameterTypes().size() + 1 &&
+      isArgumentCompatible(ownerType, mStatic.parameterTypes().get(0));
   }
 
   private static Optional<String> getNewClass(NewClassTree newClassTree, List<VariableTree> parameters) {
