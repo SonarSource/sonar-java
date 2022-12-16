@@ -28,6 +28,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
@@ -44,6 +45,8 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
 public class MethodBehavior {
+  private static final Pattern ANONYMOUS_CLASS_PATTERN = Pattern.compile(".+\\$\\d+");
+
   private boolean varArgs;
   private final int arity;
 
@@ -86,6 +89,11 @@ public class MethodBehavior {
     if (resultSV != null) {
       Type type = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType();
       String typeName = null;
+
+      if (type != null && ANONYMOUS_CLASS_PATTERN.matcher(type.fullyQualifiedName()).matches()) {
+        // anonymous class extending an exception - assume it's the superclass
+        type = type.symbol().superClass();
+      }
 
       while (type != null && type.symbol().owner().isMethodSymbol()) {
         // skip anonymous or classes nested in methods to the closest exception type
