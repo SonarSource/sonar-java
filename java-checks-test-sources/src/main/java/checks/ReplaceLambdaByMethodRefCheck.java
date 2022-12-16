@@ -390,10 +390,12 @@ class CastCheck {
     // fix@qf_method_override {{Replace with "Nested::doSomething"}}
     // edit@qf_method_override [[sc=43;ec=63]] {{Nested::doSomething}}
 
-    Stream.of(new NestedExtendOverrideTakeInt()).forEach(x -> x.doSomething()); // Compliant, shorter
+    Stream.of(new NestedExtendOverrideTakeInt()).forEach(x -> x.doSomething()); // Noncompliant [[sc=60;ec=62;quickfixes=qf_method_override3]]
+    // fix@qf_method_override3 {{Replace with "Nested::doSomething"}}
+    // edit@qf_method_override3 [[sc=58;ec=78]] {{Nested::doSomething}}
     Stream.of(new NestedExtendOverrideTakeInt()).forEach(parameterWithLongName -> parameterWithLongName.doSomething()); // Noncompliant [[sc=80;ec=82;quickfixes=qf_method_override2]]
-    // fix@qf_method_override2 {{Replace with "NestedExtendOverrideTakeInt::doSomething"}}
-    // edit@qf_method_override2 [[sc=58;ec=118]] {{NestedExtendOverrideTakeInt::doSomething}}
+    // fix@qf_method_override2 {{Replace with "Nested::doSomething"}}
+    // edit@qf_method_override2 [[sc=58;ec=118]] {{Nested::doSomething}}
   }
 
   class NestedExtend extends Nested {
@@ -430,13 +432,17 @@ class LambdaB {
     Collection<Integer> idList = List.of(1, 2);
     System.out.println(idList
       .stream()
-      .map(integer -> integer.toString()) // Noncompliant, can use 'Object::toString'
+      .map(integer -> integer.toString()) // Noncompliant [[sc=20;ec=22;quickfixes=qf_int_to_str1]]
+      // fix@qf_int_to_str1 {{Replace with "Object::toString"}}
+      // edit@qf_int_to_str1 [[sc=12;ec=41]] {{Object::toString}}
       .distinct());
     System.out.println(idList
       .stream()
       .map(integer -> Integer.toString(integer)) // Compliant (the static ambiguous method can't be referenced using a superclass, like for its non-static counterpart)
       .distinct());
-    apply((i, r) -> Integer.toString(i, r)); // Noncompliant, equivalent method reference is not ambiguous
+    apply((i, r) -> Integer.toString(i, r)); // Noncompliant [[sc=18;ec=20;quickfixes=qf_int_to_str2]]
+    // fix@qf_int_to_str2 {{Replace with "Integer::toString"}}
+    // edit@qf_int_to_str2 [[sc=11;ec=43]] {{Integer::toString}}
   }
 
   String apply(BiFunction<Integer, Integer, String> f) {
@@ -464,6 +470,10 @@ class TestObject {
   static int spam(TestObject to) {
     return to.hashCode();
   }
+
+  int eggs() throws Exception {
+    throw new UnsupportedOperationException();
+  }
 }
 
 class TestNumber extends TestObject {
@@ -475,7 +485,9 @@ class TestNumber extends TestObject {
   }
 
   void test() {
-    Optional.of(new TestNumber()).map(testNumber -> testNumber.foo()); // Noncompliant, method reference 'TestObject::foo' works
+    Optional.of(new TestNumber()).map(testNumber -> testNumber.foo()); // Noncompliant [[sc=50;ec=52;quickfixes=qf_supertype]]
+    // fix@qf_supertype {{Replace with "TestObject::foo"}}
+    // edit@qf_supertype [[sc=39;ec=69]] {{TestObject::foo}}
   }
 }
 class TestInteger extends TestNumber {
@@ -483,11 +495,22 @@ class TestInteger extends TestNumber {
     return "Integer here";
   }
 
+  int eggs() {
+    return 42;
+  }
+
+  static int eggs(TestInteger ti) {
+    return ti.hashCode();
+  }
+
   void test() {
-    Optional.of(new TestInteger()).map(testInteger -> testInteger.foo()); // Noncompliant, method reference 'TestObject::foo' works
+    Optional.of(new TestInteger()).map(testInteger -> testInteger.foo()); // Noncompliant [[sc=52;ec=54;quickfixes=qf_supertype2]]
+    // fix@qf_supertype2 {{Replace with "TestObject::foo"}}
+    // edit@qf_supertype2 [[sc=40;ec=72]] {{TestObject::foo}}
     Optional.of(new TestInteger()).map(testInteger -> TestNumber.foo(testInteger)); // Compliant, method reference is ambiguous
     Optional.of(new TestInteger()).map(testInteger -> testInteger.spam()); // Compliant, method reference is ambiguous
     Optional.of(new TestInteger()).map(testInteger -> (foo().length() % 23 == 0 ? testInteger : null).spam(testInteger)); // Compliant, method reference is ambiguous
+    Optional.of(new TestInteger()).map(testInteger -> testInteger.eggs()); // Compliant, method reference is ambiguous
   }
 }
 

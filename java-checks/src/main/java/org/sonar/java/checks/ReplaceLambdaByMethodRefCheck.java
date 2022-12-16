@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -260,29 +261,28 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
 
   private static Optional<String> getUnambiguousReference(MethodInvocationTree mit) {
     Symbol.MethodSymbol ms = ((Symbol.MethodSymbol) mit.symbol());
-    if (!hasAmbiguousReference(ms)) {
-      return Optional.of(getMethodReferenceFromSymbol(ms));
-    }
-    return ms.overriddenSymbols().stream()
+    ArrayList<Symbol.MethodSymbol> methodSymbols = new ArrayList<>(ms.overriddenSymbols());
+    Collections.reverse(methodSymbols);
+    methodSymbols.add(ms);
+    return methodSymbols.stream()
+      .filter(m -> m.thrownTypes().equals(ms.thrownTypes()))
       .filter(m -> !hasAmbiguousReference(m))
       .findFirst()
       .map(ReplaceLambdaByMethodRefCheck::getMethodReferenceFromSymbol);
   }
 
   private static boolean hasAmbiguousReference(Symbol.MethodSymbol ms) {
-    boolean methodWithSameRefExists = ((Symbol.TypeSymbol) ms.owner()).lookupSymbols(ms.name()).stream()
+    return ((Symbol.TypeSymbol) ms.owner()).lookupSymbols(ms.name()).stream()
       .filter(Symbol::isMethodSymbol)
       .map(Symbol.MethodSymbol.class::cast)
       .filter(m -> m.isStatic() != ms.isStatic())
       .anyMatch(m -> m.isStatic() ? methodsHaveSameReference(m, ms) : methodsHaveSameReference(ms, m));
-    return methodWithSameRefExists;
   }
 
   private static boolean methodsHaveSameReference(Symbol.MethodSymbol mStatic, Symbol.MethodSymbol mNotStatic) {
     Type ownerType = mStatic.owner().type();
-    return
-      mStatic.parameterTypes().size() == mNotStatic.parameterTypes().size() + 1 &&
-      isArgumentCompatible(ownerType, mStatic.parameterTypes().get(0));
+    return mStatic.parameterTypes().size() == mNotStatic.parameterTypes().size() + 1 &&
+           isArgumentCompatible(ownerType, mStatic.parameterTypes().get(0));
   }
 
   private static Optional<String> getNewClass(NewClassTree newClassTree, List<VariableTree> parameters) {
