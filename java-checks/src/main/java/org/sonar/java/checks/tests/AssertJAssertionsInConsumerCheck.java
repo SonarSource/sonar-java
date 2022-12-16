@@ -44,9 +44,9 @@ import static java.util.Collections.singletonList;
 public class AssertJAssertionsInConsumerCheck extends IssuableSubscriptionVisitor {
 
   private static final String ORG_ASSERTJ_CORE_API_ABSTRACT_ASSERT = "org.assertj.core.api.AbstractAssert";
-  public static final String JAVA_UTIL_FUNCTION_CONSUMER = "java.util.function.Consumer";
-  public static final String ORG_ASSERTJ_CORE_API_THROWING_CONSUMER = "org.assertj.core.api.ThrowingConsumer";
-  public static final String ORG_ASSERTJ_CORE_API_THROWING_CONSUMER_ARRAY = "org.assertj.core.api.ThrowingConsumer[]";
+  private static final String JAVA_UTIL_FUNCTION_CONSUMER = "java.util.function.Consumer";
+  private static final String ORG_ASSERTJ_CORE_API_THROWING_CONSUMER = "org.assertj.core.api.ThrowingConsumer";
+  private static final String ORG_ASSERTJ_CORE_API_THROWING_CONSUMER_ARRAY = "org.assertj.core.api.ThrowingConsumer[]";
 
   private static final MethodMatchers METHODS_WITH_CONSUMER_AT_INDEX_0_MATCHER = MethodMatchers.create()
     .ofSubTypes(ORG_ASSERTJ_CORE_API_ABSTRACT_ASSERT)
