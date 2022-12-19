@@ -116,6 +116,30 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
       .addParametersMatcher(ANY)
       .build());
 
+  private static final MethodMatchers ASSERTJ_BDD_EXCEPTION_ASSERTIONS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(
+        "org.assertj.core.api.BDDAssertions")
+      .names(
+        "thenNullPointerException",
+        "thenIllegalArgumentException",
+        "thenIOException",
+        "thenIllegalStateException",
+        "thenException",
+        "thenIndexOutOfBoundsException",
+        "thenReflectiveOperationException",
+        "thenRuntimeException")
+      .withAnyParameters()
+      .build(),
+
+    MethodMatchers.create()
+      .ofTypes(
+        "org.assertj.core.api.ThrowableTypeAssert")
+      .names(
+        "describedAs")
+      .withAnyParameters()
+      .build());
+
   private static final Pattern FEST_LIKE_EXCLUSION_NAMES = Pattern.compile("as.*+|using.*+|with.*+|describedAs|overridingErrorMessage|extracting");
 
   private static final MethodMatchers FEST_LIKE_EXCLUSIONS = MethodMatchers.or(
@@ -221,7 +245,8 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
       return false;
     }
 
-    if ((FEST_LIKE_ASSERT_THAT.matches(mit) || MOCKITO_VERIFY.matches(mit)) && !Boolean.TRUE.equals(chainedToAnyMethodButFestExclusions)) {
+    if ((FEST_LIKE_ASSERT_THAT.matches(mit) || MOCKITO_VERIFY.matches(mit) || ASSERTJ_BDD_EXCEPTION_ASSERTIONS.matches(mit)) &&
+      !Boolean.TRUE.equals(chainedToAnyMethodButFestExclusions)) {
       context.reportIssue(this, mit.methodSelect(), "Complete the assertion.");
       return true;
     }

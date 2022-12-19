@@ -115,6 +115,13 @@ public class AssertionsCompletenessCheck {
     org.assertj.core.api.Assertions.assertThatIllegalStateException(); // Noncompliant
     org.assertj.core.api.Assertions.assertThatIllegalStateException().isThrownBy(() -> {});
 
+    // BDD
+    org.assertj.core.api.BDDAssertions.thenRuntimeException(); // Noncompliant
+    org.assertj.core.api.BDDAssertions.thenRuntimeException().isThrownBy(() -> System.out.println("b"));
+    org.assertj.core.api.BDDAssertions.thenRuntimeException().describedAs(null); // Noncompliant
+    org.assertj.core.api.BDDAssertions.thenRuntimeException().describedAs(null).isThrownBy(() -> System.out.println("b"));
+
+
     Comparator customComparator = null;
     org.assertj.core.api.Assertions.assertThat(1).usingComparator(customComparator).isGreaterThanOrEqualTo(0);
     org.assertj.core.api.Assertions.assertThat(1).usingComparator(customComparator); // Noncompliant
