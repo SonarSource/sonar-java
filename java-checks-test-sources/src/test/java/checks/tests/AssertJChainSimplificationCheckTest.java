@@ -172,12 +172,12 @@ public class AssertJChainSimplificationCheckTest {
   }
 
   void relatedToComparable(int x, int y) {
-    assertThat(x >= y).isTrue(); // Noncompliant {{Use assertThat(actual).isLessThanOrEqualTo(expected) instead.}}
+    assertThat(x >= y).isTrue(); // Noncompliant {{Use assertThat(actual).isGreaterThanOrEqualTo(expected) instead.}}
     assertThat(x > y).isTrue(); // Noncompliant {{Use assertThat(actual).isGreaterThan(expected) instead.}}
     assertThat(x <= y).isTrue(); // Noncompliant {{Use assertThat(actual).isLessThanOrEqualTo(expected) instead.}}
     assertThat(x < y).isTrue(); // Noncompliant {{Use assertThat(actual).isLessThan(expected) instead.}}
 
-    assertThat(x >= y).isFalse(); // Noncompliant {{Use assertThat(actual).isLessThanOrEqualTo(expected) instead.}}
+    assertThat(x >= y).isFalse(); // Noncompliant {{Use assertThat(actual).isGreaterThanOrEqualTo(expected) instead.}}
     assertThat(x > y).isFalse(); // Noncompliant {{Use assertThat(actual).isGreaterThan(expected) instead.}}
     assertThat(x <= y).isFalse(); // Noncompliant {{Use assertThat(actual).isLessThanOrEqualTo(expected) instead.}}
     assertThat(x < y).isFalse(); // Noncompliant {{Use assertThat(actual).isLessThan(expected) instead.}}
