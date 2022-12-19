@@ -258,7 +258,7 @@ public class AssertionsCompletenessCheck {
 
   @Test
   public void assertj_junit_soft_assertions_cross_methods_6() throws Exception {
-    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=277,282]] {{Add one or more 'assertThat' before 'assertAll'.}}
+    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=284,289]] {{Add one or more 'assertThat' before 'assertAll'.}}
   }
 
   private void doSomething(org.assertj.core.api.SoftAssertions softly) {
