@@ -55,6 +55,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
 
   private static final String FEST_ASSERT_SUPERTYPE = "org.fest.assertions.Assert";
   private static final String ASSERTJ_SUPERTYPE = "org.assertj.core.api.AbstractAssert";
+  private static final String ASSERTJ_THROWABLE_SUPERTYPE = "org.assertj.core.api.ThrowableTypeAssert";
   private static final String TRUTH_SUPERTYPE = "com.google.common.truth.TestVerb";
   private static final String JAVA6_ABSTRACT_SOFT_ASSERT = "org.assertj.core.api.Java6AbstractStandardSoftAssertions";
   private static final MethodMatchers MOCKITO_VERIFY = MethodMatchers.create()
@@ -130,21 +131,13 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
         "thenReflectiveOperationException",
         "thenRuntimeException")
       .withAnyParameters()
-      .build(),
-
-    MethodMatchers.create()
-      .ofTypes(
-        "org.assertj.core.api.ThrowableTypeAssert")
-      .names(
-        "describedAs")
-      .withAnyParameters()
       .build());
 
   private static final Pattern FEST_LIKE_EXCLUSION_NAMES = Pattern.compile("as.*+|using.*+|with.*+|describedAs|overridingErrorMessage|extracting");
 
   private static final MethodMatchers FEST_LIKE_EXCLUSIONS = MethodMatchers.or(
     MethodMatchers.create()
-      .ofSubTypes(FEST_ASSERT_SUPERTYPE, ASSERTJ_SUPERTYPE)
+      .ofSubTypes(FEST_ASSERT_SUPERTYPE, ASSERTJ_SUPERTYPE, ASSERTJ_THROWABLE_SUPERTYPE)
       .name(name -> FEST_LIKE_EXCLUSION_NAMES.matcher(name).matches())
       .withAnyParameters()
       .build(),
