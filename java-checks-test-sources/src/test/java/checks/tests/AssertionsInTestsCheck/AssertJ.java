@@ -30,7 +30,6 @@ public abstract class AssertJ {
   @Test
   public void thenException_isThrownBy() {
     org.assertj.core.api.BDDAssertions.thenException().isThrownBy(() -> System.out.println("b"));
-    org.assertj.core.api.BDDAssertions.thenRuntimeException().describedAs(null); // FN
   }
 
   @Test
