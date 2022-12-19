@@ -211,11 +211,11 @@ public class NonNullSetToNullCheck extends SECheck {
 
     @Override
     public void visitNewClass(NewClassTree syntaxTree) {
-      Symbol symbol = syntaxTree.constructorSymbol();
-      if (symbol.isMethodSymbol()) {
+      Symbol.MethodSymbol symbol = syntaxTree.constructorSymbol();
+      if (!symbol.isUnknown()) {
         int peekSize = syntaxTree.arguments().size();
         List<SymbolicValue> argumentValues = ListUtils.reverse(programState.peekValues(peekSize));
-        checkNullArguments(syntaxTree, (Symbol.MethodSymbol) symbol, argumentValues);
+        checkNullArguments(syntaxTree, symbol, argumentValues);
       }
     }
 

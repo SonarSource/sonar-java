@@ -260,12 +260,12 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       super.visitNewClass(tree);
     }
 
-    private void addThrownTypes(Symbol methodSymbol) {
+    private void addThrownTypes(Symbol.MethodSymbol methodSymbol) {
       if (!visitedUnknown) {
-        if (methodSymbol.isUnknown() || !methodSymbol.isMethodSymbol()) {
+        if (methodSymbol.isUnknown()) {
           visitedUnknown = true;
         } else {
-          thrownExceptions.addAll(((Symbol.MethodSymbol) methodSymbol).thrownTypes());
+          thrownExceptions.addAll(methodSymbol.thrownTypes());
         }
       }
     }
