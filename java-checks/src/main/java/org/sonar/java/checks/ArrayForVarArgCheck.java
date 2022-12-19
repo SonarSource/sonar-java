@@ -60,11 +60,9 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
       args = mit.arguments();
     }
 
-    if (sym.isMethodSymbol()) {
-      if (isLastArgumentVarargs(sym, args)) {
-        ExpressionTree lastArg = args.get(args.size() - 1);
-        checkInvokedMethod(sym, lastArg);
-      }
+    if (!sym.isUnknown() && isLastArgumentVarargs(sym, args)) {
+      ExpressionTree lastArg = args.get(args.size() - 1);
+      checkInvokedMethod(sym, lastArg);
     }
   }
 
