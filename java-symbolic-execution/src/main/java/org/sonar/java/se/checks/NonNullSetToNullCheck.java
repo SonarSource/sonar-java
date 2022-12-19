@@ -221,8 +221,8 @@ public class NonNullSetToNullCheck extends SECheck {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree syntaxTree) {
-      Symbol symbol = syntaxTree.symbol();
-      if (symbol.isMethodSymbol()) {
+      Symbol.MethodSymbol symbol = syntaxTree.symbol();
+      if (!symbol.isUnknown()) {
         Arguments arguments = syntaxTree.arguments();
         int peekSize = arguments.size() + 1;
         List<SymbolicValue> argumentValues = ListUtils.reverse(programState.peekValues(peekSize).subList(0, peekSize - 1));
@@ -230,7 +230,7 @@ public class NonNullSetToNullCheck extends SECheck {
         if (reportTree.is(Tree.Kind.MEMBER_SELECT)) {
           reportTree = ((MemberSelectExpressionTree) reportTree).identifier();
         }
-        checkNullArguments(reportTree, (Symbol.MethodSymbol) symbol, argumentValues);
+        checkNullArguments(reportTree, symbol, argumentValues);
       }
     }
 

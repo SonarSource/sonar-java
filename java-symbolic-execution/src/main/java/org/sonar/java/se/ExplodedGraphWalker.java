@@ -784,9 +784,9 @@ public class ExplodedGraphWalker {
 
     // get method behavior for method with known declaration (ie: within the same file)
     MethodBehavior methodInvokedBehavior = null;
-    Symbol methodSymbol = mit.symbol();
-    if(methodSymbol.isMethodSymbol()) {
-      methodInvokedBehavior = behaviorCache.get((Symbol.MethodSymbol) methodSymbol);
+    Symbol.MethodSymbol methodSymbol = mit.symbol();
+    if(!methodSymbol.isUnknown()) {
+      methodInvokedBehavior = behaviorCache.get(methodSymbol);
     }
 
     // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError

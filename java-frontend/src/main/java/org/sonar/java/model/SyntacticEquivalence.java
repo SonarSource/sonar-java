@@ -159,16 +159,16 @@ public final class SyntacticEquivalence {
       return false;
     }
 
-    Symbol leftSymbol = ((MethodInvocationTree) leftNode).symbol();
-    Symbol rightSymbol = ((MethodInvocationTree) rightNode).symbol();
+    Symbol.MethodSymbol leftSymbol = ((MethodInvocationTree) leftNode).symbol();
+    Symbol.MethodSymbol rightSymbol = ((MethodInvocationTree) rightNode).symbol();
 
-    if (!leftSymbol.isMethodSymbol() || !rightSymbol.isMethodSymbol()) {
+    if (leftSymbol.isUnknown() || rightSymbol.isUnknown()) {
       // This can happen when the symbol is unknown. If it is the case, we consider them as not the same to avoid FP.
       return true;
     }
 
-    List<Type> leftArguments = ((Symbol.MethodSymbol) leftSymbol).parameterTypes();
-    List<Type> rightArguments = ((Symbol.MethodSymbol) rightSymbol).parameterTypes();
+    List<Type> leftArguments = leftSymbol.parameterTypes();
+    List<Type> rightArguments = rightSymbol.parameterTypes();
 
     int leftArgumentsSize = leftArguments.size();
     if (leftArgumentsSize == rightArguments.size()) {

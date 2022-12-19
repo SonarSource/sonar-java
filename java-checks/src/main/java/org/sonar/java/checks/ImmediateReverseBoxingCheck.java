@@ -109,9 +109,9 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
         checkForBoxing(((MemberSelectExpressionTree) methodSelect).expression(), mit);
       }
     } else {
-      Symbol symbol = mit.symbol();
-      if (symbol.isMethodSymbol()) {
-        checkMethodInvocationArguments(mit, ((Symbol.MethodSymbol) symbol).parameterTypes());
+      Symbol.MethodSymbol symbol = mit.symbol();
+      if (!symbol.isUnknown()) {
+        checkMethodInvocationArguments(mit, symbol.parameterTypes());
       }
     }
   }
