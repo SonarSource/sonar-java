@@ -67,7 +67,7 @@ public class ConfusingVarargCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    Symbol.MethodSymbol symbol;
+    Symbol symbol;
     Arguments arguments;
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
@@ -78,8 +78,8 @@ public class ConfusingVarargCheck extends IssuableSubscriptionVisitor {
       symbol = nct.constructorSymbol();
       arguments = nct.arguments();
     }
-    if (!symbol.isUnknown() && !ALLOWED_VARARG_METHODS.matches(symbol)) {
-      checkConfusingVararg(symbol, arguments);
+    if (symbol.isMethodSymbol() && !ALLOWED_VARARG_METHODS.matches(symbol)) {
+      checkConfusingVararg((Symbol.MethodSymbol) symbol, arguments);
     }
   }
 

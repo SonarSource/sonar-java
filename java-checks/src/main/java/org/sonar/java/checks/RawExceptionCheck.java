@@ -109,9 +109,9 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
     super.visitNewClass(nct);
   }
 
-  private void collectThrownTypes(Symbol.MethodSymbol symbol) {
-    if (!symbol.isUnknown()) {
-      exceptionsThrownByMethodInvocations.addAll(symbol.thrownTypes());
+  private void collectThrownTypes(Symbol symbol) {
+    if (symbol.isMethodSymbol()) {
+      exceptionsThrownByMethodInvocations.addAll(((Symbol.MethodSymbol) symbol).thrownTypes());
     }
   }
 

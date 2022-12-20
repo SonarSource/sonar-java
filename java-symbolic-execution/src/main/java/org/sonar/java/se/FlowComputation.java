@@ -783,7 +783,7 @@ public class FlowComputation {
 
   public static Flow flowsForArgumentsChangingName(List<Integer> argumentIndices, MethodInvocationTree mit) {
 
-    Symbol.MethodSymbol methodSymbol = mit.symbol();
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) mit.symbol();
     MethodTree declaration = methodSymbol.declaration();
     if (declaration == null) {
       return Flow.empty();

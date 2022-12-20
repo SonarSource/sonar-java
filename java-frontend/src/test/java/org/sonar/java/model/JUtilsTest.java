@@ -244,7 +244,7 @@ class JUtilsTest {
     MethodTreeImpl m = firstMethod(a);
     ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(0);
     MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
-    Symbol.MethodSymbol methodSymbol = mit.symbol();
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) mit.symbol();
     Symbol symbol = methodSymbol.declarationParameters().get(0);
     assertThat(symbol.isVariableSymbol()).isTrue();
     assertThat(JUtils.isEffectivelyFinal((Symbol.VariableSymbol) symbol)).isFalse();
@@ -333,7 +333,7 @@ class JUtilsTest {
     void placeholder_symbols_are_parameters() {
       ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(2);
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
-      Symbol.MethodSymbol symbol = mit.symbol();
+      Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) mit.symbol();
       assertThat(JUtils.isParameter(symbol.declarationParameters().get(0))).isTrue();
     }
   }
@@ -364,7 +364,7 @@ class JUtilsTest {
     void placeholders_can_not_be_evaluated() {
       ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(1);
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
-      Symbol.MethodSymbol methodSymbol = mit.symbol();
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) mit.symbol();
       Symbol symbol = methodSymbol.declarationParameters().get(0);
       assertThat(symbol.isVariableSymbol()).isTrue();
       assertThat(JUtils.constantValue((Symbol.VariableSymbol) symbol)).isEmpty();
@@ -707,7 +707,7 @@ class JUtilsTest {
         .isEqualTo(m.methodBinding.isGenericMethod())
         .isTrue();
       assertThat(JUtils.isParametrizedMethod(cu.sema.methodSymbol(methodInvocation.methodBinding)))
-        .isEqualTo(JUtils.isParametrizedMethod(methodInvocation.symbol()))
+        .isEqualTo(JUtils.isParametrizedMethod((Symbol.MethodSymbol) methodInvocation.symbol()))
         .isEqualTo(methodInvocation.methodBinding.isParameterizedMethod())
         .isTrue();
     }

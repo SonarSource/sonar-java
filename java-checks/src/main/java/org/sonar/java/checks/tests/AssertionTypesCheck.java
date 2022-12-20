@@ -357,10 +357,10 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     }
 
     static Type expectedArgumentType(MethodInvocationTree mit, int argumentIndex) {
-      if (mit.symbol().isUnknown()) {
+      if (!mit.symbol().isMethodSymbol()) {
         return Symbols.unknownType;
       }
-      List<Type> parameterTypes = mit.symbol().parameterTypes();
+      List<Type> parameterTypes = ((Symbol.MethodSymbol) mit.symbol()).parameterTypes();
       if (argumentIndex >= parameterTypes.size()) {
         return Symbols.unknownType;
       }

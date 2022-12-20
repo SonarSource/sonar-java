@@ -89,7 +89,7 @@ public class MethodInvocationTreeImpl extends AssessableExpressionTree implement
   }
 
   @Override
-  public Symbol.MethodSymbol symbol() {
+  public Symbol symbol() {
     return methodBinding != null
       ? root.sema.methodSymbol(methodBinding)
       : Symbols.unknownMethodSymbol;

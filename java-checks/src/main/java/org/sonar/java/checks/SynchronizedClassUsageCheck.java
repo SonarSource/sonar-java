@@ -98,7 +98,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
       if (tree.symbol().isMethodSymbol() && tree.symbol().declaration() == null) {
         String fqn = tree.symbol().owner().type().fullyQualifiedName();
         if (isMethodFromJavaPackage(fqn)) {
-          Symbol.MethodSymbol methodSymbol = tree.symbol();
+          Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) tree.symbol();
           List<Type> types = new ArrayList<>(methodSymbol.parameterTypes());
           Symbol.TypeSymbol returnType = methodSymbol.returnType();
           if (returnType != null) {

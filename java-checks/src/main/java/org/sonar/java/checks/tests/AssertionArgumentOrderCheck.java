@@ -199,7 +199,7 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
     int arity = mit.arguments().size();
     ExpressionTree arg = mit.arguments().get(arity - 1);
     // Check for assert equals method with delta
-    if (arity > 2 && (arity == 4 || mit.symbol().parameterTypes().stream().allMatch(AssertionArgumentOrderCheck::isDoubleOrFloat))) {
+    if (arity > 2 && (arity == 4 || ((Symbol.MethodSymbol) mit.symbol()).parameterTypes().stream().allMatch(AssertionArgumentOrderCheck::isDoubleOrFloat))) {
       // last arg is actually delta, take the previous last to get the actual arg.
       arg = mit.arguments().get(arity - 2);
     }
