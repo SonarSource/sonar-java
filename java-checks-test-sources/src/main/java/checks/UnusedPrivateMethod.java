@@ -13,8 +13,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.Collections.emptySet;
+@interface Observes {}
 
 class UnusedPrivateMethodCheck {
+  
+  private void init(@Observes Object object, String test) {} // Noncompliant
+  private void init(@javax.enterprise.event.Observes Object object) {} //Compliant, javax.enterprise.event.Observes is an exception to the rule
+  private void initNc(@AnotherAnnotation Object object) {} // Noncompliant
 
   private UnusedPrivateMethodCheck() {}
   private UnusedPrivateMethodCheck(int a) {} // Noncompliant [[sc=11;ec=35;quickfixes=qf_constructor]]

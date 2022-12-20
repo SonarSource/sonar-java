@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
@@ -34,6 +35,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -43,7 +45,9 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
@@ -54,6 +58,8 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   private final List<MethodTree> unusedPrivateMethods = new ArrayList<>();
   private final Set<String> unresolvedMethodNames = new HashSet<>();
+  
+  private static final String PARAM_ANNOTATION_EXCEPTION = "javax.enterprise.event.Observes";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -105,7 +111,6 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
         checkIfUnknown((MethodReferenceTree) tree);
         break;
       default:
-        throw new IllegalStateException("Unexpected subscribed tree.");
     }
   }
 
@@ -165,7 +170,29 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean hasNoAnnotation(MethodTree methodTree) {
-    return methodTree.modifiers().annotations().isEmpty();
+    return methodTree.modifiers().annotations().isEmpty() && methodTree.parameters().stream().noneMatch(UnusedPrivateMethodCheck::hasAllowedAnnotation);
+  }
+  
+  private static boolean hasAllowedAnnotation(VariableTree variableTree) {
+    List<AnnotationTree> annotations = variableTree.modifiers().annotations();
+    return !annotations.isEmpty() && annotations.stream().anyMatch(UnusedPrivateMethodCheck::isAllowedAnnotation);
+  }
+  
+  private static boolean isAllowedAnnotation(AnnotationTree annotation) {
+    Type annotationSymbolType = annotation.symbolType();
+    if (annotationSymbolType.is(PARAM_ANNOTATION_EXCEPTION)) {
+      return true;
+    }
+    if (annotationSymbolType.isUnknown()) {
+      TypeTree annotationType = annotation.annotationType();
+      if (annotationType.is(Tree.Kind.IDENTIFIER)) {
+        return "Observes".equals(((IdentifierTree) annotationType).name());
+      }
+      if (annotationType.is(Tree.Kind.MEMBER_SELECT)) {
+        return PARAM_ANNOTATION_EXCEPTION.equals(ExpressionsHelper.concatenate((MemberSelectExpressionTree) annotationType));
+      }
+    }
+    return false;
   }
 
   private static boolean isConstructorWithParameters(MethodTree methodTree) {
