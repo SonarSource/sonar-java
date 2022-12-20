@@ -784,9 +784,9 @@ public class ExplodedGraphWalker {
 
     // get method behavior for method with known declaration (ie: within the same file)
     MethodBehavior methodInvokedBehavior = null;
-    Symbol.MethodSymbol methodSymbol = mit.symbol();
-    if(!methodSymbol.isUnknown()) {
-      methodInvokedBehavior = behaviorCache.get(methodSymbol);
+    Symbol methodSymbol = mit.symbol();
+    if(methodSymbol.isMethodSymbol()) {
+      methodInvokedBehavior = behaviorCache.get((Symbol.MethodSymbol) methodSymbol);
     }
 
     // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
@@ -844,13 +844,13 @@ public class ExplodedGraphWalker {
     return ps;
   }
 
-  private void enqueueThrownExceptionalPaths(Symbol.MethodSymbol symbol) {
-    if (symbol.isUnknown()) {
+  private void enqueueThrownExceptionalPaths(Symbol symbol) {
+    if (!symbol.isMethodSymbol()) {
       // do nothing for unknown methods
       return;
     }
     ProgramState ps = programState.clearStack();
-    symbol.thrownTypes().stream()
+    ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
       .map(constraintManager::createExceptionalSymbolicValue)
       .map(ps::stackValue)
       .forEach(ps1 -> enqueueExceptionalPaths(ps1, symbol));
@@ -1057,7 +1057,7 @@ public class ExplodedGraphWalker {
   private void executeNewClass(NewClassTree newClassTree) {
     programState = programState.unstackValue(newClassTree.arguments().size()).state;
     // Enqueue exceptional paths
-    Symbol.MethodSymbol symbol = newClassTree.constructorSymbol();
+    Symbol symbol = newClassTree.constructorSymbol();
     if (((CFG.Block) node.programPoint.block).exceptions().stream().anyMatch(CFG.Block.IS_CATCH_BLOCK)) {
       // To avoid noise, we only add unchecked exceptional paths (includingUnknownException) when we are in a try-catch block.
       enqueueUncheckedExceptionalPaths(symbol);

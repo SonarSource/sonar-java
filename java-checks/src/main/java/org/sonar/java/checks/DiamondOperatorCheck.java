@@ -111,7 +111,7 @@ public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVer
     }
 
     Tree invocation = parent.parent();
-    Symbol.MethodSymbol symbol = null;
+    Symbol symbol = null;
     // arguments are only used in METHOD_INVOCATION, NEW_CLASS_TREE and ANNOTATION
     // however annotations values can not store parameterized types
     if (invocation.is(Tree.Kind.METHOD_INVOCATION)) {
@@ -120,12 +120,12 @@ public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVer
       symbol = ((NewClassTree) invocation).constructorSymbol();
     }
 
-    if (symbol.isUnknown()) {
+    if (!symbol.isMethodSymbol()) {
       // unresolved invocation
       return false;
     }
 
-    Symbol.MethodSymbol methodSymbol = symbol;
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
     int index = getArgIndex(newClassTree, (Arguments) parent);
     if (index >= methodSymbol.parameterTypes().size()) {
       // killing the noise - varargs

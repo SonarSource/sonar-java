@@ -83,7 +83,7 @@ class JMethodSymbolTest {
       .containsExactly(declarationParameterSymbol);
 
     MethodInvocationTree invocationWithString = (MethodInvocationTree) ((ExpressionStatementTree) m.block().body().get(0)).expression();
-    Symbol.MethodSymbol invocationSymbol = invocationWithString.symbol();
+    Symbol.MethodSymbol invocationSymbol = (Symbol.MethodSymbol) invocationWithString.symbol();
     // Parameter types are not always the same as the one from the declaration: it can be the actual type and not the generic (Integer instead of T).
     Type invocationArgument = invocationSymbol.parameterTypes().get(0);
     assertThat(invocationArgument)
@@ -109,8 +109,8 @@ class JMethodSymbolTest {
     MethodInvocationTree startWith1 = (MethodInvocationTree) ((ExpressionStatementTree) body.get(0)).expression();
     MethodInvocationTree startWith2 = (MethodInvocationTree) ((ExpressionStatementTree) body.get(1)).expression();
 
-    Symbol.MethodSymbol symbol1 = startWith1.symbol();
-    Symbol.MethodSymbol symbol2 = startWith2.symbol();
+    Symbol.MethodSymbol symbol1 = (Symbol.MethodSymbol) startWith1.symbol();
+    Symbol.MethodSymbol symbol2 = (Symbol.MethodSymbol) startWith2.symbol();
 
     assertThat(symbol1.parameterTypes().get(0).name()).isEqualTo("String");
     assertThat(symbol2.parameterTypes().get(0).name()).isEqualTo("String");
@@ -166,12 +166,12 @@ class JMethodSymbolTest {
             // Dependency#m(@Nullable Object param)
             // GenericDependency#m(@Nullable T param)
             MethodInvocationTree dependencyInvocation = (MethodInvocationTree) ((ExpressionStatementTree) body.get(0)).expression();
-            Symbol dependencyParamDeclaration = dependencyInvocation.symbol().declarationParameters().get(0);
+            Symbol dependencyParamDeclaration = ((Symbol.MethodSymbol) dependencyInvocation.symbol()).declarationParameters().get(0);
             assertThat(dependencyParamDeclaration.owner().owner().name()).isEqualTo("Dependency");
             assertThat(dependencyParamDeclaration.metadata().isAnnotatedWith("semantic.Nullable")).isTrue();
 
             MethodInvocationTree genericDependencyInvocation = (MethodInvocationTree) ((ExpressionStatementTree) body.get(1)).expression();
-            Symbol genericDependencyParamDeclaration = genericDependencyInvocation.symbol().declarationParameters().get(0);
+            Symbol genericDependencyParamDeclaration = ((Symbol.MethodSymbol) genericDependencyInvocation.symbol()).declarationParameters().get(0);
             assertThat(genericDependencyParamDeclaration.owner().owner().name()).isEqualTo("GenericDependency");
             assertThat(genericDependencyParamDeclaration.metadata().isAnnotatedWith("semantic.Nullable")).isTrue();
           } catch (Exception e) {

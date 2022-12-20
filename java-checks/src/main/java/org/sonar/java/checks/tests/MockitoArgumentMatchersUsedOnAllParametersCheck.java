@@ -124,7 +124,7 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
    */
   private static boolean returnsAnArgumentMatcher(MethodInvocationTree invocation) {
     ExpressionTree methodSelect = invocation.methodSelect();
-    IdentifierTree identifier;
+    IdentifierTree identifier = null;
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       identifier = ((MemberSelectExpressionTree) methodSelect).identifier();
     } else {

@@ -117,8 +117,8 @@ public class CatchExceptionCheck extends IssuableSubscriptionVisitor {
       super.visitNewClass(tree);
     }
 
-    private boolean isThrowingJavaLangException(Symbol.MethodSymbol symbol) {
-      containsExplicitThrowsException |= symbol.isUnknown() || symbol.thrownTypes().stream().anyMatch(CatchExceptionCheck::isJavaLangException);
+    private boolean isThrowingJavaLangException(Symbol symbol) {
+      containsExplicitThrowsException |= symbol.isUnknown() || ((Symbol.MethodSymbol) symbol).thrownTypes().stream().anyMatch(CatchExceptionCheck::isJavaLangException);
       return containsExplicitThrowsException;
     }
   }

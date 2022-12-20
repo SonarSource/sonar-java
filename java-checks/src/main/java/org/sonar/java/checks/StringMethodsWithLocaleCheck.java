@@ -58,7 +58,7 @@ public class StringMethodsWithLocaleCheck extends AbstractMethodDetection {
   }
 
   private static boolean isLocaleVariant(MethodInvocationTree mit) {
-    return mit.symbol().parameterTypes().get(0).is("java.util.Locale");
+    return ((Symbol.MethodSymbol) mit.symbol()).parameterTypes().get(0).is("java.util.Locale");
   }
 
   private static boolean usesLocaleDependentFormatteer(ExpressionTree firstArg) {

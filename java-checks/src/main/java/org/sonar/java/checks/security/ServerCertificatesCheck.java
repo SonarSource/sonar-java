@@ -100,9 +100,9 @@ public class ServerCertificatesCheck extends IssuableSubscriptionVisitor {
       visitMethodSymbol(tree.symbol());
     }
 
-    private void visitMethodSymbol(Symbol.MethodSymbol symbol) {
-      if (!symbol.isUnknown()) {
-        throwsException |= !symbol.thrownTypes().isEmpty();
+    private void visitMethodSymbol(Symbol symbol) {
+      if (symbol.isMethodSymbol()) {
+        throwsException |= !((Symbol.MethodSymbol) symbol).thrownTypes().isEmpty();
       } else {
         // JavaSymbolNotFound, to avoid FP, assumes it throws exceptions
         throwsException = true;

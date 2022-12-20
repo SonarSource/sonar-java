@@ -257,7 +257,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     checkCall(newClassTree, newClassTree.constructorSymbol(), newClassTree.arguments());
   }
 
-  private void checkCall(ExpressionTree callExpression, Symbol.MethodSymbol symbol, Arguments arguments) {
+  private void checkCall(ExpressionTree callExpression, Symbol symbol, Arguments arguments) {
     getCharsetNameArgument(symbol, arguments)
       .ifPresent(charsetNameArgument -> getConstantName(charsetNameArgument)
         .ifPresent(constantName -> {
