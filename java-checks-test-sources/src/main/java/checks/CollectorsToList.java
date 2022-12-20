@@ -2,6 +2,7 @@ package checks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -76,6 +77,10 @@ public class CollectorsToList {
       .collect(Collectors.toList()); // Compliant, list5 needs to be mutable
 
     list5.removeIf(s -> true);
+
+    var myMutableList = Stream.of("A", "B", "C")
+      .collect(Collectors.toList());
+    Collections.shuffle(myMutableList);
   }
 
   void addX() {
