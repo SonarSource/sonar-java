@@ -51,10 +51,9 @@ public class OneExpectedCheckedExceptionCheck extends AbstractOneExpectedExcepti
     }
   }
 
-  private static boolean throwExpectedException(Symbol symbol, List<Type> checkedTypes) {
-    return symbol.isMethodSymbol()
-      && ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
-      .anyMatch(t -> checkedTypes.stream().anyMatch(t::isSubtypeOf));
+  private static boolean throwExpectedException(Symbol.MethodSymbol symbol, List<Type> checkedTypes) {
+    return !symbol.isUnknown()
+      && symbol.thrownTypes().stream().anyMatch(t -> checkedTypes.stream().anyMatch(t::isSubtypeOf));
   }
 
 }

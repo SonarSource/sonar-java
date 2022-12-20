@@ -298,7 +298,7 @@ class BehaviorCacheTest {
       @Override
       public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
         if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-          Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) ((MethodInvocationTree) syntaxNode).symbol();
+          Symbol.MethodSymbol symbol = ((MethodInvocationTree) syntaxNode).symbol();
           MethodBehavior peekMethodBehavior = ((CheckerDispatcher) context).peekMethodBehavior(symbol);
           if ("isBlank".equals(symbol.name())) {
             assertThat(peekMethodBehavior).isNotNull();
@@ -313,7 +313,7 @@ class BehaviorCacheTest {
       @Override
       public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
         if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-          Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) ((MethodInvocationTree) syntaxNode).symbol();
+          Symbol.MethodSymbol symbol = ((MethodInvocationTree) syntaxNode).symbol();
           String methodName = symbol.name();
           MethodBehavior peekMethodBehavior = ((CheckerDispatcher) context).peekMethodBehavior(symbol);
           if ("foo".equals(methodName) || "isBlank".equals(methodName)) {

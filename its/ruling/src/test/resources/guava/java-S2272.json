@@ -6,11 +6,6 @@
 'com.google.guava:guava:src/com/google/common/collect/Iterators.java':[
 1123,
 ],
-'com.google.guava:guava:src/com/google/common/collect/LinkedListMultimap.java':[
-352,
-428,
-498,
-],
 'com.google.guava:guava:src/com/google/common/collect/TreeTraverser.java':[
 209,
 ],

@@ -69,6 +69,6 @@ public interface NewClassTree extends ExpressionTree {
   @Nullable
   ClassTree classBody();
 
-  Symbol constructorSymbol();
+  Symbol.MethodSymbol constructorSymbol();
 
 }

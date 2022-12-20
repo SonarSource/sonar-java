@@ -163,11 +163,11 @@ public class StreamConsumedCheck extends SECheck {
     if (BASE_STREAM_INTERMEDIATE_OPERATIONS.matches(mit)) {
       return true;
     }
-    Symbol method = mit.symbol();
-    return method.isMethodSymbol()
+    Symbol.MethodSymbol method = mit.symbol();
+    return !method.isUnknown()
       && !method.isStatic()
       && STREAM_TYPES.contains(method.owner().type().fullyQualifiedName())
-      && STREAM_TYPES.contains(((Symbol.MethodSymbol) method).returnType().type().fullyQualifiedName());
+      && STREAM_TYPES.contains(method.returnType().type().fullyQualifiedName());
   }
 
   private static boolean isPipelineConsumed(ProgramState programState, SymbolicValue symbolicValue) {

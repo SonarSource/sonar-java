@@ -140,7 +140,7 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
       super.visitNewClass(tree);
     }
 
-    private void checkIfThrowThrowable(Symbol symbol) {
+    private void checkIfThrowThrowable(Symbol.MethodSymbol symbol) {
       if (containsExplicitThrowable || containsUnresolvableCall) {
         return;
       }
@@ -148,12 +148,10 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
         containsUnresolvableCall = true;
         return;
       }
-      if (symbol.isMethodSymbol()) {
-        for (Type type : ((Symbol.MethodSymbol) symbol).thrownTypes()) {
-          if (type.is(JAVA_LANG_THROWABLE)) {
-            containsExplicitThrowable = true;
-            return;
-          }
+      for (Type type : symbol.thrownTypes()) {
+        if (type.is(JAVA_LANG_THROWABLE)) {
+          containsExplicitThrowable = true;
+          return;
         }
       }
     }

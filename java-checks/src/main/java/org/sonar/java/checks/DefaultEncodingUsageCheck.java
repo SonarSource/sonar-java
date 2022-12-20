@@ -226,10 +226,9 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection implement
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    Symbol symbol = newClassTree.constructorSymbol();
-    if (symbol.isMethodSymbol()) {
-      Symbol.MethodSymbol constructor = (Symbol.MethodSymbol) symbol;
-      String signature = constructor.owner().name() + "(" + constructor.parameterTypes().stream().map(Type::toString).collect(Collectors.joining(",")) + ")";
+    Symbol.MethodSymbol symbol = newClassTree.constructorSymbol();
+    if (!symbol.isUnknown()) {
+      String signature = symbol.owner().name() + "(" + symbol.parameterTypes().stream().map(Type::toString).collect(Collectors.joining(",")) + ")";
       reportIssue(newClassTree.identifier(), "Remove this use of constructor \"" + signature + "\".");
     }
   }

@@ -141,10 +141,9 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     return blockVisitor.threadInterrupted;
   }
 
-  private static boolean throwInterruptedException(Symbol symbol) {
-    return symbol.isMethodSymbol()
-      && ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
-      .anyMatch(t -> t.is("java.lang.InterruptedException"));
+  private static boolean throwInterruptedException(Symbol.MethodSymbol symbol) {
+    return !symbol.isUnknown()
+      && symbol.thrownTypes().stream().anyMatch(t -> t.is("java.lang.InterruptedException"));
   }
 
   private static class BlockVisitor extends BaseTreeVisitor {

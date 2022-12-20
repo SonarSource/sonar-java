@@ -49,6 +49,6 @@ public interface MethodInvocationTree extends ExpressionTree {
 
   Arguments arguments();
 
-  Symbol symbol();
+  Symbol.MethodSymbol symbol();
 
 }

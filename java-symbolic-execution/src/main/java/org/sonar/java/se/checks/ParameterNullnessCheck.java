@@ -67,22 +67,21 @@ public class ParameterNullnessCheck extends SECheck {
     return state;
   }
 
-  private void checkParameters(Tree syntaxNode, Symbol symbol, Arguments arguments, ProgramState state) {
+  private void checkParameters(Tree syntaxNode, Symbol.MethodSymbol symbol, Arguments arguments, ProgramState state) {
     if (!symbol.isMethodSymbol() || arguments.isEmpty()) {
       return;
     }
     if (AUTHORIZED_METHODS.matches(symbol)) {
       return;
     }
-    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
     int nbArguments = arguments.size();
     List<SymbolicValue> argumentSVs = getArgumentSVs(state, syntaxNode, nbArguments);
-    int nbArgumentToCheck = Math.min(nbArguments, methodSymbol.parameterTypes().size() - (JUtils.isVarArgsMethod(methodSymbol) ? 1 : 0));
-    List<Symbol> parameterSymbols = methodSymbol.declarationParameters();
+    int nbArgumentToCheck = Math.min(nbArguments, symbol.parameterTypes().size() - (JUtils.isVarArgsMethod(symbol) ? 1 : 0));
+    List<Symbol> parameterSymbols = symbol.declarationParameters();
     for (int i = 0; i < nbArgumentToCheck; i++) {
       ObjectConstraint constraint = state.getConstraint(argumentSVs.get(i), ObjectConstraint.class);
       if (constraint != null && constraint.isNull() && parameterIsNonNullIndirectly(parameterSymbols.get(i))) {
-        reportIssue(syntaxNode, arguments.get(i), methodSymbol);
+        reportIssue(syntaxNode, arguments.get(i), symbol);
       }
     }
   }

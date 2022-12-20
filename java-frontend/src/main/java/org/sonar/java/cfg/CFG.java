@@ -1075,7 +1075,7 @@ public class CFG implements ControlFlowGraph {
     }
   }
 
-  private void handleExceptionalPaths(Symbol symbol) {
+  private void handleExceptionalPaths(Symbol.MethodSymbol symbol) {
     TryStatement pop = enclosingTry.pop();
     TryStatement tryStatement;
     Block exceptionPredecessor = currentBlock;
@@ -1092,8 +1092,8 @@ public class CFG implements ControlFlowGraph {
         exceptionPredecessor = currentBlock;
       }
     }
-    if (symbol.isMethodSymbol()) {
-      List<Type> thrownTypes = ((Symbol.MethodSymbol) symbol).thrownTypes();
+    if (!symbol.isUnknown()) {
+      List<Type> thrownTypes = symbol.thrownTypes();
       thrownTypes.forEach(thrownType -> {
         for (Type caughtType : tryStatement.catches.keySet()) {
           if (thrownType.isSubtypeOf(caughtType) ||

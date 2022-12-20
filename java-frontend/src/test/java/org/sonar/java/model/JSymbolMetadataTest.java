@@ -107,7 +107,7 @@ class JSymbolMetadataTest {
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(0);
     MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
-    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) mit.symbol();
+    Symbol.MethodSymbol methodSymbol = mit.symbol();
     Symbol symbol = methodSymbol.declarationParameters().get(0);
 
     SymbolMetadata.NullabilityData nullabilityData = symbol.metadata().nullabilityData();
@@ -217,9 +217,9 @@ class JSymbolMetadataTest {
     MethodInvocationTree invocationWithString = (MethodInvocationTree) ((ExpressionStatementTree) callDeclaration.block().body().get(0)).expression();
     MethodInvocationTree invocationWithInteger = (MethodInvocationTree) ((ExpressionStatementTree) callDeclaration.block().body().get(1)).expression();
 
-    SymbolMetadata.NullabilityData invocation1ParamData = ((Symbol.MethodSymbol) invocationWithString.symbol())
+    SymbolMetadata.NullabilityData invocation1ParamData = invocationWithString.symbol()
       .declarationParameters().get(0).metadata().nullabilityData();
-    SymbolMetadata.NullabilityData invocation2ParamData = ((Symbol.MethodSymbol) invocationWithInteger.symbol())
+    SymbolMetadata.NullabilityData invocation2ParamData = invocationWithInteger.symbol()
       .declarationParameters().get(0).metadata().nullabilityData();
 
     assertThat(declarationData)
