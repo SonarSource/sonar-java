@@ -52,7 +52,7 @@ public class AwsConsumerBuilderUsageCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    MethodSymbol methodSymbol = (MethodSymbol) mit.methodSymbol();
+    MethodSymbol methodSymbol = mit.methodSymbol();
     Symbol parentClass = Optional.ofNullable(methodSymbol.owner()).orElse(Symbols.unknownTypeSymbol);
     Symbol.TypeSymbol returnType = methodSymbol.returnType();
     if (!returnType.isUnknown() && "Builder".equals(parentClass.name())) {
