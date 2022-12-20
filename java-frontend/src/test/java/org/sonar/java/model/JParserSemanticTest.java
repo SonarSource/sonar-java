@@ -591,14 +591,14 @@ class JParserSemanticTest {
     MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) s.expression();
     assertThat(methodInvocation.methodBinding)
       .isNotNull()
-      .isSameAs(Objects.requireNonNull((MethodTreeImpl) methodInvocation.symbol().declaration()).methodBinding)
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) methodInvocation.methodSymbol().declaration()).methodBinding)
       .isSameAs(method.methodBinding);
     IdentifierTreeImpl i = (IdentifierTreeImpl) methodInvocation.methodSelect();
     assertThat(i.binding)
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
       .isSameAs(methodInvocation.methodBinding);
     assertThat(cu.sema.usages.get(i.binding))
-      .containsExactlyElementsOf(methodInvocation.symbol().usages())
+      .containsExactlyElementsOf(methodInvocation.methodSymbol().usages())
       .containsOnly(i);
   }
 
@@ -636,7 +636,7 @@ class JParserSemanticTest {
     MethodInvocationTreeImpl superMethodInvocation = (MethodInvocationTreeImpl) Objects.requireNonNull(s.expression());
     assertThat(superMethodInvocation.methodBinding)
       .isNotNull()
-      .isSameAs(Objects.requireNonNull((MethodTreeImpl) superMethodInvocation.symbol().declaration()).methodBinding)
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) superMethodInvocation.methodSymbol().declaration()).methodBinding)
       .isSameAs(superClassMethod.methodBinding);
     MemberSelectExpressionTreeImpl e2 = (MemberSelectExpressionTreeImpl) superMethodInvocation.methodSelect();
 
@@ -651,7 +651,7 @@ class JParserSemanticTest {
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
       .isSameAs(superMethodInvocation.methodBinding);
     assertThat(cu.sema.usages.get(i.binding))
-      .containsExactlyElementsOf(superMethodInvocation.symbol().usages())
+      .containsExactlyElementsOf(superMethodInvocation.methodSymbol().usages())
       .containsOnly(i);
   }
 
@@ -694,7 +694,7 @@ class JParserSemanticTest {
     MethodInvocationTreeImpl superMethodInvocation = (MethodInvocationTreeImpl) Objects.requireNonNull(s.expression());
     assertThat(superMethodInvocation.methodBinding)
       .isNotNull()
-      .isSameAs(Objects.requireNonNull((MethodTreeImpl) superMethodInvocation.symbol().declaration()).methodBinding)
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) superMethodInvocation.methodSymbol().declaration()).methodBinding)
       .isSameAs(superClassMethod.methodBinding);
 
     MemberSelectExpressionTreeImpl qualifiedMethodName = (MemberSelectExpressionTreeImpl) superMethodInvocation.methodSelect();
@@ -720,7 +720,7 @@ class JParserSemanticTest {
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) identifier.symbol().declaration()).methodBinding)
       .isSameAs(superMethodInvocation.methodBinding);
     assertThat(cu.sema.usages.get(identifier.binding))
-      .containsExactlyElementsOf(superMethodInvocation.symbol().usages())
+      .containsExactlyElementsOf(superMethodInvocation.methodSymbol().usages())
       .containsOnly(identifier);
   }
 
@@ -845,7 +845,7 @@ class JParserSemanticTest {
     MethodInvocationTreeImpl constructorInvocation = (MethodInvocationTreeImpl) s.expression();
     assertThat(constructorInvocation.methodBinding)
       .isNotNull()
-      .isSameAs(Objects.requireNonNull((MethodTreeImpl) constructorInvocation.symbol().declaration()).methodBinding)
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) constructorInvocation.methodSymbol().declaration()).methodBinding)
       .isSameAs(constructor2.methodBinding);
     assertThat(constructorInvocation.typeBinding)
       .isNotNull()
@@ -856,7 +856,7 @@ class JParserSemanticTest {
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
       .isSameAs(constructorInvocation.methodBinding);
     assertThat(cu.sema.usages.get(i.binding))
-      .containsExactlyElementsOf(constructorInvocation.symbol().usages())
+      .containsExactlyElementsOf(constructorInvocation.methodSymbol().usages())
       .containsOnly(i);
   }
 
@@ -898,7 +898,7 @@ class JParserSemanticTest {
     MethodInvocationTreeImpl superConstructorInvocation = (MethodInvocationTreeImpl) s.expression();
     assertThat(superConstructorInvocation.methodBinding)
       .isNotNull()
-      .isSameAs(Objects.requireNonNull((MethodTreeImpl) superConstructorInvocation.symbol().declaration()).methodBinding)
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) superConstructorInvocation.methodSymbol().declaration()).methodBinding)
       .isSameAs(superClassConstructor.methodBinding);
     assertThat(superConstructorInvocation.typeBinding)
       .isNotNull()
@@ -1168,10 +1168,10 @@ class JParserSemanticTest {
     assertThat(methodInvocation.methodBinding)
       .isNotNull();
     assertThat(cu.sema.methodSymbol(methodInvocation.methodBinding).declaration())
-      .isSameAs(methodInvocation.symbol().declaration())
+      .isSameAs(methodInvocation.methodSymbol().declaration())
       .isSameAs(m);
     assertThat(cu.sema.methodSymbol(methodInvocation.methodBinding).usages())
-      .containsExactlyElementsOf(methodInvocation.symbol().usages())
+      .containsExactlyElementsOf(methodInvocation.methodSymbol().usages())
       .containsOnly(i);
   }
 
@@ -1246,7 +1246,7 @@ class JParserSemanticTest {
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(2);
     ExpressionStatementTree expression = (ExpressionStatementTree) m.block().body().get(0);
 
-    SymbolMetadata metadata = assertDoesNotThrow(() -> ((MethodInvocationTreeImpl) expression.expression()).symbol().metadata());
+    SymbolMetadata metadata = assertDoesNotThrow(() -> ((MethodInvocationTreeImpl) expression.expression()).methodSymbol().metadata());
     assertThat(metadata).isEqualTo(Symbols.EMPTY_METADATA);
   }
 

@@ -74,7 +74,7 @@ public class SillyStringOperationsCheck extends AbstractMethodDetection {
       boolean issue;
       ExpressionTree str = ((MemberSelectExpressionTree) tree.methodSelect()).expression();
       Arguments args = tree.arguments();
-      String method = tree.symbol().name();
+      String method = tree.methodSymbol().name();
       switch (method) {
         case "contains":
         case "compareTo":

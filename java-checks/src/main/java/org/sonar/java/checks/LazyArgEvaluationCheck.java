@@ -295,12 +295,12 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
     }
 
     private static boolean isGetter(MethodInvocationTree tree) {
-      String methodName = tree.symbol().name();
+      String methodName = tree.methodSymbol().name();
       return methodName != null && (methodName.startsWith("get") || methodName.startsWith("is"));
     }
 
     private static boolean isAnnotationMethod(MethodInvocationTree tree) {
-      Symbol owner = tree.symbol().owner();
+      Symbol owner = tree.methodSymbol().owner();
       return owner.isTypeSymbol() && JUtils.isAnnotation((Symbol.TypeSymbol) owner);
     }
 

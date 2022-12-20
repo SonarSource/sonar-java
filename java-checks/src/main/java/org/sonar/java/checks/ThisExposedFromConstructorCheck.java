@@ -58,7 +58,7 @@ public class ThisExposedFromConstructorCheck extends IssuableSubscriptionVisitor
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (this.owner == tree.symbol().owner()) {
+      if (this.owner == tree.methodSymbol().owner()) {
         return;
       }
       tree.arguments().stream().filter(ExpressionUtils::isThis).forEach(this::report);

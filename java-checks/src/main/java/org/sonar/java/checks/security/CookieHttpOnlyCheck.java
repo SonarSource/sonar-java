@@ -318,14 +318,14 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isExpectedSetter(MethodInvocationTree mit) {
     return mit.arguments().size() == 1
-      && mit.symbol().isMethodSymbol()
-      && CLASSES.stream().anyMatch(mit.symbol().owner().type()::isSubtypeOf)
+      && mit.methodSymbol().isMethodSymbol()
+      && CLASSES.stream().anyMatch(mit.methodSymbol().owner().type()::isSubtypeOf)
       && SETTER_NAMES.contains(getIdentifier(mit).name())
       && isIgnoredBuilder(mit);
   }
 
   private static boolean isIgnoredBuilder(MethodInvocationTree mit) {
-    if (!mit.symbol().owner().type().isSubtypeOf(ClassName.PLAY_COOKIE_BUILDER)) {
+    if (!mit.methodSymbol().owner().type().isSubtypeOf(ClassName.PLAY_COOKIE_BUILDER)) {
       return true;
     }
     return getMethodChain(mit)

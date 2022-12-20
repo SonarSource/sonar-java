@@ -102,7 +102,7 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
       @Override
       public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
         super.visitMethodInvocation(methodInvocation);
-        Symbol calleeMethodSymbol = methodInvocation.symbol();
+        Symbol calleeMethodSymbol = methodInvocation.methodSymbol();
         if (calleeMethodSymbol.isUnknown()) {
           return;
         }
@@ -115,7 +115,7 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
   }
 
   private static boolean methodInvocationOnThisInstance(MethodInvocationTree methodInvocation) {
-    if (methodInvocation.symbol().isStatic()) {
+    if (methodInvocation.methodSymbol().isStatic()) {
       return false;
     }
     ExpressionTree expression = methodInvocation.methodSelect();

@@ -74,7 +74,7 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    switch (mit.symbol().name()) {
+    switch (mit.methodSymbol().name()) {
       case "assertEquals":
       case "assertSame":
         checkEqualityAsserts(mit, false);

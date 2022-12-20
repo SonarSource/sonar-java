@@ -67,7 +67,7 @@ public class IgnoredOperationStatusCheck extends AbstractMethodDetection {
     Tree parent = mit.parent();
     if (parent.is(Tree.Kind.EXPRESSION_STATEMENT)
       || (parent.is(Tree.Kind.VARIABLE) && ((VariableTree) parent).symbol().usages().isEmpty())) {
-      reportIssue(parent, "Do something with the \"" + mit.symbolType().name() + "\" value returned by \"" + mit.symbol().name() + "\".");
+      reportIssue(parent, "Do something with the \"" + mit.symbolType().name() + "\" value returned by \"" + mit.methodSymbol().name() + "\".");
     }
   }
 

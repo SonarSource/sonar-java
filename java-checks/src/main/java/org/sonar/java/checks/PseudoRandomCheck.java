@@ -86,7 +86,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   private static boolean isStaticCallToInsecureRandomMethod(MethodInvocationTree mit) {
     return STATIC_RANDOM_METHODS.matches(mit)
       && !RANDOM_STRING_UTILS_RANDOM_WITH_RANDOM_SOURCE.matches(mit)
-      && mit.symbol().isStatic();
+      && mit.methodSymbol().isStatic();
   }
 
 }

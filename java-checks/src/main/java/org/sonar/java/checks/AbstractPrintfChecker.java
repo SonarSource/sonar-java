@@ -155,7 +155,7 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   }
 
   private static boolean isProbablyLog4jFormatterLogger(MethodInvocationTree mit, String formatString) {
-    return mit.symbol().owner().type().is(ORG_APACHE_LOGGING_LOG4J_LOGGER) &&
+    return mit.methodSymbol().owner().type().is(ORG_APACHE_LOGGING_LOG4J_LOGGER) &&
       !formatString.contains("{}") &&
       formatString.contains("%");
   }
@@ -177,7 +177,7 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   }
 
   protected static Set<Integer> getMessageFormatIndexes(String formatString, MethodInvocationTree mit) {
-    if (LEVELS.contains(mit.symbol().name()) || formatString.contains("{}")) {
+    if (LEVELS.contains(mit.methodSymbol().name()) || formatString.contains("{}")) {
       return IntStream.range(0, StringUtils.countMatches(formatString, "{}")).boxed().collect(Collectors.toSet());
     }
     Matcher matcher = MESSAGE_FORMAT_PATTERN.matcher(formatString);

@@ -78,10 +78,10 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
-    private final Map<Symbol.TypeSymbol, Map<Symbol, Integer>> usagesByInnerClass = new HashMap<>();
+    private final Map<Symbol.TypeSymbol, Map<Symbol.MethodSymbol, Integer>> usagesByInnerClass = new HashMap<>();
     private final Map<String, Set<MethodInvocationTree>> unknownInvocations = new HashMap<>();
     private Symbol.TypeSymbol classSymbol;
-    private Map<Symbol, Integer> usages;
+    private Map<Symbol.MethodSymbol, Integer> usages;
 
     public void setClassSymbol(Symbol.TypeSymbol classSymbol) {
       this.classSymbol = classSymbol;
@@ -91,14 +91,14 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      Symbol symbol = tree.symbol();
+      Symbol.MethodSymbol symbol = tree.methodSymbol();
       if (symbol.isUnknown()) {
         String name = ExpressionUtils.methodName(tree).name();
         unknownInvocations.computeIfAbsent(name, k -> new HashSet<>()).add(tree);
       } else if (isPrivateMethodOfOuterClass(symbol) && isInvocationOnCurrentInstance(tree)) {
-        if (JUtils.isParametrizedMethod((Symbol.MethodSymbol) symbol) && symbol.declaration() != null) {
+        if (JUtils.isParametrizedMethod(symbol) && symbol.declaration() != null) {
           // generic methods requires to use their declaration symbol rather than the parameterized one
-          symbol = ((Symbol.MethodSymbol) symbol).declaration().symbol();
+          symbol = symbol.declaration().symbol();
         }
         usages.compute(symbol, (k, v) -> v == null ? 1 : (v + 1));
       }
@@ -126,11 +126,11 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
       usagesByInnerClass.forEach((symbol, innerClassUsages) -> innerClassUsages.forEach((methodUsed, count) -> {
         boolean matchArity = unknownInvocations.getOrDefault(methodUsed.name(), new HashSet<>())
           .stream()
-          .anyMatch(mit -> hasSameArity((Symbol.MethodSymbol) methodUsed, mit));
+          .anyMatch(mit -> hasSameArity(methodUsed, mit));
 
         // if an unknown method has same name and same arity, do not report, likely a FP.
         if (!matchArity && methodUsed.usages().size() == count) {
-          reportIssueOnMethod((MethodTree) methodUsed.declaration(), symbol);
+          reportIssueOnMethod(methodUsed.declaration(), symbol);
         }
       }));
     }

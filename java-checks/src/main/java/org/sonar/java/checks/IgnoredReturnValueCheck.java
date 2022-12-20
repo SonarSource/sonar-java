@@ -150,7 +150,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean shouldUseReturnValue(MethodInvocationTree mit) {
-    Symbol symbol = mit.symbol();
+    Symbol symbol = mit.methodSymbol();
     return !isVoidOrUnknown(mit.symbolType())
       && !isConstructor(symbol)
       && symbol.isPublic()
@@ -158,8 +158,8 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isExcluded(MethodInvocationTree mit) {
-    String methodName = mit.symbol().name();
-    return mit.symbol().isUnknown() || EXCLUDED.matches(mit) || mayBeCollectingIntoVariable(mit) ||
+    String methodName = mit.methodSymbol().name();
+    return mit.methodSymbol().isUnknown() || EXCLUDED.matches(mit) || mayBeCollectingIntoVariable(mit) ||
       (isInTryCatch(mit) && (EXCLUDED_PREFIX.stream().anyMatch(methodName::startsWith) || STRING_GET_BYTES.matches(mit)));
   }
 

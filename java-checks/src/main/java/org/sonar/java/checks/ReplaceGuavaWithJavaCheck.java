@@ -98,12 +98,12 @@ public class ReplaceGuavaWithJavaCheck extends AbstractMethodDetection implement
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    switch(mit.symbol().owner().type().fullyQualifiedName()) {
+    switch(mit.methodSymbol().owner().type().fullyQualifiedName()) {
       case GUAVA_BASE_ENCODING:
         reportIssue(mit, replacementMessage("java.util.Base64"));
         break;
       case GUAVA_OPTIONAL:
-        reportIssue(mit, replacementMessage("java.util.Optional." + GUAVA_OPTIONAL_TO_JAVA_UTIL_METHODS.get(mit.symbol().name())));
+        reportIssue(mit, replacementMessage("java.util.Optional." + GUAVA_OPTIONAL_TO_JAVA_UTIL_METHODS.get(mit.methodSymbol().name())));
         break;
       case GUAVA_FILES:
         reportIssue(mit, replacementMessage("java.nio.file.Files.createTempDirectory"));

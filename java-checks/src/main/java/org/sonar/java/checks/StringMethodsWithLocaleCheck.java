@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -58,7 +57,7 @@ public class StringMethodsWithLocaleCheck extends AbstractMethodDetection {
   }
 
   private static boolean isLocaleVariant(MethodInvocationTree mit) {
-    return ((Symbol.MethodSymbol) mit.symbol()).parameterTypes().get(0).is("java.util.Locale");
+    return mit.methodSymbol().parameterTypes().get(0).is("java.util.Locale");
   }
 
   private static boolean usesLocaleDependentFormatteer(ExpressionTree firstArg) {

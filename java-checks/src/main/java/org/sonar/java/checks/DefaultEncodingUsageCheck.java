@@ -208,7 +208,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection implement
     } else if (FILEUTILS_WRITE_WITH_CHARSET_MATCHERS.matches(mit)) {
       testNullLiteralPassedForEncoding(mit.arguments().get(2));
     } else {
-      reportIssue(ExpressionUtils.methodName(mit), "Remove this use of \"" + mit.symbol().name() + "\".");
+      reportIssue(ExpressionUtils.methodName(mit), "Remove this use of \"" + mit.methodSymbol().name() + "\".");
     }
   }
 
@@ -226,10 +226,9 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection implement
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    Symbol symbol = newClassTree.constructorSymbol();
-    if (symbol.isMethodSymbol()) {
-      Symbol.MethodSymbol constructor = (Symbol.MethodSymbol) symbol;
-      String signature = constructor.owner().name() + "(" + constructor.parameterTypes().stream().map(Type::toString).collect(Collectors.joining(",")) + ")";
+    Symbol.MethodSymbol symbol = newClassTree.methodSymbol();
+    if (!symbol.isUnknown()) {
+      String signature = symbol.owner().name() + "(" + symbol.parameterTypes().stream().map(Type::toString).collect(Collectors.joining(",")) + ")";
       reportIssue(newClassTree.identifier(), "Remove this use of constructor \"" + signature + "\".");
     }
   }

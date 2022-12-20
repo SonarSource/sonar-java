@@ -135,7 +135,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     }
     MethodInvocationTree mit = (MethodInvocationTree) tree;
     if (mit.symbolType().isVoid()) {
-      return mit.symbol().owner().name();
+      return mit.methodSymbol().owner().name();
     }
     return mit.symbolType().name();
   }

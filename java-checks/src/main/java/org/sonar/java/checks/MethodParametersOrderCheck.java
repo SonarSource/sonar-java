@@ -62,18 +62,18 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree methodInvTree = (MethodInvocationTree) tree;
-    MethodTree methodDeclaration = (MethodTree) methodInvTree.symbol().declaration();
+    MethodTree methodDeclaration = (MethodTree) methodInvTree.methodSymbol().declaration();
     if (methodDeclaration == null) {
       return;
     }
-    ParametersList formalParameterList = parametersByMethod.computeIfAbsent(methodInvTree.symbol(), m -> new ParametersList(methodDeclaration));
+    ParametersList formalParameterList = parametersByMethod.computeIfAbsent(methodInvTree.methodSymbol(), m -> new ParametersList(methodDeclaration));
     List<IdentifierTree> argumentsList = methodInvTree.arguments().stream().map(this::argumentToIdentifier).collect(Collectors.toList());
     if (matchingNames(formalParameterList, argumentsList)) {
       List<VariableTree> matchingTypesWrongOrder = matchingTypesWrongOrder(formalParameterList, argumentsList);
       if (!matchingTypesWrongOrder.isEmpty()) {
         List<JavaFileScannerContext.Location> flow = matchingTypesWrongOrder.stream().map(param -> new JavaFileScannerContext.Location("Misplaced Parameter", param))
           .collect(Collectors.toList());
-        reportIssue(methodInvTree.arguments(), "Parameters to " + methodInvTree.symbol().name() + " have the same names but not the same order as the method arguments.", flow,
+        reportIssue(methodInvTree.arguments(), "Parameters to " + methodInvTree.methodSymbol().name() + " have the same names but not the same order as the method arguments.", flow,
           null);
       }
     }

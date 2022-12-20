@@ -60,9 +60,9 @@ public class StringOffsetMethodsCheck extends AbstractMethodDetection {
     // defensive programming : methodSelect can only be a MemberSelect (methods are instance method of java.lang.String).
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-      if (expression.is(Tree.Kind.METHOD_INVOCATION) && SUBSTRING.matches(((MethodInvocationTree) expression).symbol())) {
+      if (expression.is(Tree.Kind.METHOD_INVOCATION) && SUBSTRING.matches(((MethodInvocationTree) expression).methodSymbol())) {
         reportIssue(ExpressionUtils.methodName((MethodInvocationTree) expression), mit,
-          String.format("Replace \"%s\" with the overload that accepts an offset parameter.", mit.symbol().name()));
+          String.format("Replace \"%s\" with the overload that accepts an offset parameter.", mit.methodSymbol().name()));
       }
     }
   }

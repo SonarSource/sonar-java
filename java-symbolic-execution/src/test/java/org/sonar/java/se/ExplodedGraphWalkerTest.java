@@ -573,7 +573,7 @@ class ExplodedGraphWalkerTest {
     @Override
     public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
       if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-        if (((MethodInvocationTree) syntaxNode).symbol().name().equals("toString")) {
+        if (((MethodInvocationTree) syntaxNode).methodSymbol().name().equals("toString")) {
           toStringCall++;
         }
       }

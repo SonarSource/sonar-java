@@ -91,18 +91,18 @@ public class ServerCertificatesCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitNewClass(NewClassTree tree) {
       super.visitNewClass(tree);
-      visitMethodSymbol(tree.constructorSymbol());
+      visitMethodSymbol(tree.methodSymbol());
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       super.visitMethodInvocation(tree);
-      visitMethodSymbol(tree.symbol());
+      visitMethodSymbol(tree.methodSymbol());
     }
 
-    private void visitMethodSymbol(Symbol symbol) {
-      if (symbol.isMethodSymbol()) {
-        throwsException |= !((Symbol.MethodSymbol) symbol).thrownTypes().isEmpty();
+    private void visitMethodSymbol(Symbol.MethodSymbol symbol) {
+      if (!symbol.isUnknown()) {
+        throwsException |= !symbol.thrownTypes().isEmpty();
       } else {
         // JavaSymbolNotFound, to avoid FP, assumes it throws exceptions
         throwsException = true;

@@ -231,7 +231,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     }
 
     private void handleOptionalTestMethods(MethodInvocationTree tree) {
-      constraintManager.setValueFactory(() -> new OptionalTestMethodSymbolicValue(programState.peekValue(), tree.symbol()));
+      constraintManager.setValueFactory(() -> new OptionalTestMethodSymbolicValue(programState.peekValue(), tree.methodSymbol()));
     }
 
     private void handleOptionalGetMethod(MethodInvocationTree tree) {

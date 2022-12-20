@@ -40,7 +40,7 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    String methodName = mit.symbol().name();
+    String methodName = mit.methodSymbol().name();
     reportIssue(ExpressionUtils.methodName(mit), "Use \"Arrays." + methodName + "(array)\" instead.");
   }
 }

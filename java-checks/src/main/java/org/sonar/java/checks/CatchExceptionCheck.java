@@ -103,7 +103,7 @@ public class CatchExceptionCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (isThrowingJavaLangException(tree.symbol())) {
+      if (isThrowingJavaLangException(tree.methodSymbol())) {
         return;
       }
       super.visitMethodInvocation(tree);
@@ -111,14 +111,14 @@ public class CatchExceptionCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitNewClass(NewClassTree tree) {
-      if (isThrowingJavaLangException(tree.constructorSymbol())) {
+      if (isThrowingJavaLangException(tree.methodSymbol())) {
         return;
       }
       super.visitNewClass(tree);
     }
 
-    private boolean isThrowingJavaLangException(Symbol symbol) {
-      containsExplicitThrowsException |= symbol.isUnknown() || ((Symbol.MethodSymbol) symbol).thrownTypes().stream().anyMatch(CatchExceptionCheck::isJavaLangException);
+    private boolean isThrowingJavaLangException(Symbol.MethodSymbol symbol) {
+      containsExplicitThrowsException |= symbol.isUnknown() || symbol.thrownTypes().stream().anyMatch(CatchExceptionCheck::isJavaLangException);
       return containsExplicitThrowsException;
     }
   }

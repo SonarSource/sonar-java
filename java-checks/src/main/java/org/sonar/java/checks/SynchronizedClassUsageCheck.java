@@ -95,10 +95,10 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (tree.symbol().isMethodSymbol() && tree.symbol().declaration() == null) {
-        String fqn = tree.symbol().owner().type().fullyQualifiedName();
+      if (tree.methodSymbol().isMethodSymbol() && tree.methodSymbol().declaration() == null) {
+        String fqn = tree.methodSymbol().owner().type().fullyQualifiedName();
         if (isMethodFromJavaPackage(fqn)) {
-          Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) tree.symbol();
+          Symbol.MethodSymbol methodSymbol = tree.methodSymbol();
           List<Type> types = new ArrayList<>(methodSymbol.parameterTypes());
           Symbol.TypeSymbol returnType = methodSymbol.returnType();
           if (returnType != null) {

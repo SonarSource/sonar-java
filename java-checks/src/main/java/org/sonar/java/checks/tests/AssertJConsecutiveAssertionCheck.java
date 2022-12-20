@@ -169,8 +169,8 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
 
     boolean couldBeChained(AssertSubject other) {
       return MethodTreeUtils.consecutiveMethodInvocation(other.mit)
-        .map(chainedNextMethod -> chainedNextMethod.symbol().owner().type().erasure())
-        .map(mit.symbol().owner().type().erasure()::isSubtypeOf)
+        .map(chainedNextMethod -> chainedNextMethod.methodSymbol().owner().type().erasure())
+        .map(mit.methodSymbol().owner().type().erasure()::isSubtypeOf)
         .orElse(false);
     }
 

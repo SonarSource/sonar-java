@@ -74,7 +74,7 @@ public class PreferStreamAnyMatchCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    String methodName = mit.symbol().name();
+    String methodName = mit.methodSymbol().name();
     if ("isPresent".equals(methodName)) {
       handleIsPresent(mit);
     } else if ("anyMatch".equals(methodName)) {

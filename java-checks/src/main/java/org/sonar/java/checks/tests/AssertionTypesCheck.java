@@ -31,7 +31,6 @@ import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -357,10 +356,10 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     }
 
     static Type expectedArgumentType(MethodInvocationTree mit, int argumentIndex) {
-      if (!mit.symbol().isMethodSymbol()) {
+      if (mit.methodSymbol().isUnknown()) {
         return Symbols.unknownType;
       }
-      List<Type> parameterTypes = ((Symbol.MethodSymbol) mit.symbol()).parameterTypes();
+      List<Type> parameterTypes = mit.methodSymbol().parameterTypes();
       if (argumentIndex >= parameterTypes.size()) {
         return Symbols.unknownType;
       }

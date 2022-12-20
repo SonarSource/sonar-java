@@ -74,7 +74,7 @@ public class KeySetInsteadOfEntrySetCheck extends IssuableSubscriptionVisitor {
     ExpressionTree expressionTree = tree.methodSelect();
     // direct invocation: symbol is implicitly this
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
-      return tree.symbol().owner();
+      return tree.methodSymbol().owner();
     }
     expressionTree = ((MemberSelectExpressionTree) expressionTree).expression();
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {

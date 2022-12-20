@@ -459,7 +459,7 @@ class MethodMatchersTest {
       boolean match = false;
       if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         if (useSymbol) {
-          match = matcher.matches(((MethodInvocationTree) tree).symbol());
+          match = matcher.matches(((MethodInvocationTree) tree).methodSymbol());
         } else {
           match = matcher.matches((MethodInvocationTree) tree);
         }
@@ -471,7 +471,7 @@ class MethodMatchersTest {
         }
       } else if (tree.is(Tree.Kind.NEW_CLASS)) {
         if (useSymbol) {
-          match = matcher.matches(((NewClassTree) tree).constructorSymbol());
+          match = matcher.matches(((NewClassTree) tree).methodSymbol());
         } else {
           match = matcher.matches((NewClassTree) tree);
         }

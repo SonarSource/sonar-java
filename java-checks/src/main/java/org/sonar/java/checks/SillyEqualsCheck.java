@@ -108,7 +108,7 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
     if (methodSelectTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       return ((MemberSelectExpressionTree) methodSelectTree.methodSelect()).expression().symbolType();
     } else {
-      return methodSelectTree.symbol().owner().type();
+      return methodSelectTree.methodSymbol().owner().type();
     }
   }
 

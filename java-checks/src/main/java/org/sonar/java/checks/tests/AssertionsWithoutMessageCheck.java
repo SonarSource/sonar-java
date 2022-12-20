@@ -93,7 +93,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    Symbol symbol = mit.symbol();
+    Symbol symbol = mit.methodSymbol();
     Type type = symbol.owner().type();
 
     if (FEST_LIKE_MESSAGE_METHODS.matches(mit) || ASSERT_SETTING_CONTEXT.matches(mit)) {
@@ -142,7 +142,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   }
 
   private void checkJUnit5(MethodInvocationTree mit, IdentifierTree reportLocation) {
-    String methodName = mit.symbol().name();
+    String methodName = mit.methodSymbol().name();
     if (JUNIT5_ASSERT_METHODS_IGNORED.contains(methodName)) {
       return;
     }
@@ -159,7 +159,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   }
 
   private void checkJUnit5Assertions(MethodInvocationTree mit, IdentifierTree reportLocation) {
-    String methodName = mit.symbol().name();
+    String methodName = mit.methodSymbol().name();
     if (JUNIT5_ASSERT_METHODS_WITH_ONE_PARAM.contains(methodName)) {
       if (mit.arguments().size() == 1) {
         reportIssue(reportLocation, MESSAGE);
@@ -195,11 +195,11 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   }
 
   private static boolean isAssertWithOneParam(MethodInvocationTree mit) {
-    return ASSERT_METHODS_WITH_ONE_PARAM.contains(mit.symbol().name()) && mit.arguments().size() == 1;
+    return ASSERT_METHODS_WITH_ONE_PARAM.contains(mit.methodSymbol().name()) && mit.arguments().size() == 1;
   }
 
   private static boolean isAssertWithTwoParams(MethodInvocationTree mit) {
-    return ASSERT_METHODS_WITH_TWO_PARAMS.contains(mit.symbol().name()) && mit.arguments().size() == 2;
+    return ASSERT_METHODS_WITH_TWO_PARAMS.contains(mit.methodSymbol().name()) && mit.arguments().size() == 2;
   }
 
   private static boolean isString(ExpressionTree expressionTree) {

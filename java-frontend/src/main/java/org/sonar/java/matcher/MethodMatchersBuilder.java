@@ -182,7 +182,7 @@ public class MethodMatchersBuilder implements MethodMatchers.TypeBuilder, Method
 
   @Override
   public boolean matches(NewClassTree newClassTree) {
-    return matches(newClassTree.constructorSymbol(), null);
+    return matches(newClassTree.methodSymbol(), null);
   }
 
   @Override

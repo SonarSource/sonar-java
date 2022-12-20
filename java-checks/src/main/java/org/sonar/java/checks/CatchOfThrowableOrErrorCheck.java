@@ -109,7 +109,7 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
         MethodInvocationTree mit = (MethodInvocationTree) expression;
         // In case of broken semantics, the method matcher cannot identify the method invocation.
         // To avoid raising FPs in these cases, we accept it as is and move on.
-        if (mit.symbol().isUnknown() || isGuavaCloserRethrow(mit)) {
+        if (mit.methodSymbol().isUnknown() || isGuavaCloserRethrow(mit)) {
           foundRethrow = true;
         }
       }
@@ -130,17 +130,17 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      checkIfThrowThrowable(tree.symbol());
+      checkIfThrowThrowable(tree.methodSymbol());
       super.visitMethodInvocation(tree);
     }
 
     @Override
     public void visitNewClass(NewClassTree tree) {
-      checkIfThrowThrowable(tree.constructorSymbol());
+      checkIfThrowThrowable(tree.methodSymbol());
       super.visitNewClass(tree);
     }
 
-    private void checkIfThrowThrowable(Symbol symbol) {
+    private void checkIfThrowThrowable(Symbol.MethodSymbol symbol) {
       if (containsExplicitThrowable || containsUnresolvableCall) {
         return;
       }
@@ -148,12 +148,10 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
         containsUnresolvableCall = true;
         return;
       }
-      if (symbol.isMethodSymbol()) {
-        for (Type type : ((Symbol.MethodSymbol) symbol).thrownTypes()) {
-          if (type.is(JAVA_LANG_THROWABLE)) {
-            containsExplicitThrowable = true;
-            return;
-          }
+      for (Type type : symbol.thrownTypes()) {
+        if (type.is(JAVA_LANG_THROWABLE)) {
+          containsExplicitThrowable = true;
+          return;
         }
       }
     }

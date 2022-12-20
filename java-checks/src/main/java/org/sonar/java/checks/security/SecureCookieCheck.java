@@ -206,9 +206,9 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isSetSecureCall(MethodInvocationTree mit) {
     return mit.arguments().size() == 1
-      && !mit.symbol().isUnknown()
-      && !mit.symbol().owner().isUnknown()
-      && isCookieClass(mit.symbol().owner().type())
+      && !mit.methodSymbol().isUnknown()
+      && !mit.methodSymbol().owner().isUnknown()
+      && isCookieClass(mit.methodSymbol().owner().type())
       && SETTER_NAMES.stream().anyMatch(getIdentifier(mit).name()::equals);
   }
 

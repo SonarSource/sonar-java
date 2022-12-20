@@ -67,7 +67,7 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree invocation) {
     boolean issue;
-    String method = invocation.symbol().name();
+    String method = invocation.methodSymbol().name();
     switch (method) {
       case "charAt":
       case "codePointAt":
@@ -93,7 +93,7 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
         issue = false;
     }
     if (issue) {
-      reportIssue(invocation, String.format("Refactor this \"%s\" call; it will result in an \"StringIndexOutOfBounds\" exception at runtime.", invocation.symbol().name()));
+      reportIssue(invocation, String.format("Refactor this \"%s\" call; it will result in an \"StringIndexOutOfBounds\" exception at runtime.", invocation.methodSymbol().name()));
     }
   }
 

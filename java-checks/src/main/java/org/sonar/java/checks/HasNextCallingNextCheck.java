@@ -67,7 +67,7 @@ public class HasNextCallingNextCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      Symbol method = tree.symbol();
+      Symbol method = tree.methodSymbol();
       if ("next".equals(method.name())
         && tree.arguments().isEmpty()
         && isIteratorMethod(method)

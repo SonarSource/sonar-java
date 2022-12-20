@@ -240,7 +240,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         return getNewClass(((NewClassTree) tree), parameters);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
-        if (mit.symbol().isUnknown()
+        if (mit.methodSymbol().isUnknown()
           || hasMethodInvocationInMethodSelect(mit)
           || hasNonFinalFieldInMethodSelect(mit)) {
           return Optional.empty();
@@ -252,7 +252,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         }
         if (arguments.isEmpty() && isNoArgMethodInvocationFromLambdaParam(tree, parameters)) {
           // x -> x.foo() becomes Owner::foo
-          return Optional.of(getMethodReferenceFromSymbol(mit.symbol()));
+          return Optional.of(getMethodReferenceFromSymbol(mit.methodSymbol()));
         }
       }
     }
@@ -276,7 +276,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   private static Optional<String> getReplacementForMethodInvocation(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = mit.symbol();
+      Symbol symbol = mit.methodSymbol();
       if (symbol.isStatic()) {
         return Optional.of(getMethodReferenceFromSymbol(symbol));
       }
@@ -382,7 +382,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
    * Full resolution algorithm is described in JLS 15.13.1
    */
   private static boolean isAmbiguous(MethodInvocationTree tree, Symbol parameterSymbol) {
-    Symbol method = tree.symbol();
+    Symbol method = tree.methodSymbol();
     Symbol.TypeSymbol methodOwner = (Symbol.TypeSymbol) method.owner();
     if (methodOwner.isUnknown() || method.isUnknown()) {
       return true;
