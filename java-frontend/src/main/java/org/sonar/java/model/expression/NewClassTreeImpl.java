@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.Symbols;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -163,6 +164,14 @@ public class NewClassTreeImpl extends AssessableExpressionTree implements NewCla
   @Override
   public Symbol constructorSymbol() {
     return this.getConstructorIdentifier().symbol();
+  }
+
+  @Override
+  public Symbol.MethodSymbol methodSymbol() {
+    Symbol constructorSymbol = this.getConstructorIdentifier().symbol();
+    return constructorSymbol.isUnknown() ?
+      Symbols.unknownMethodSymbol :
+      (Symbol.MethodSymbol) constructorSymbol;
   }
 
   private static void addIfNotNull(List<Tree> list, Tree... trees) {
