@@ -48,7 +48,7 @@ public class TreeHelper {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       var declaration = tree.methodSymbol().declaration();
       if (declaration != null && declaration.is(Tree.Kind.METHOD) && !reachableMethods.containsKey(declaration)) {
-        reachableMethods.put((MethodTree) declaration, null);
+        reachableMethods.put(declaration, null);
         declaration.accept(this);
       }
     }
