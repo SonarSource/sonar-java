@@ -50,9 +50,9 @@ public interface MethodInvocationTree extends ExpressionTree {
   Arguments arguments();
 
   /**
-   * @deprecated in favor of `methodSymbol()`, which returns the narrower type `MethodSymbol` instead of `Symbol`.
+   * @deprecated in favor of {@link #methodSymbol()}, which returns the narrower type {@link Symbol.MethodSymbol} instead of {@link Symbol}.
    */
-  @Deprecated(forRemoval = true)
+  @Deprecated(since = "7.16", forRemoval = true)
   Symbol symbol();
 
   Symbol.MethodSymbol methodSymbol();
