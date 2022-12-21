@@ -139,6 +139,13 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.16**
+
+* New method: `MethodInvocationTree#methodSymbol()`. Use this method to get the symbol of a method invocation. Returns a `MethodSymbol`.
+* New method: `NewClassTree#methodSymbol()`. Use this method to get the symbol of a constructor call. Returns a `MethodSymbol`.
+* Deprecated method: `MethodInvocationTree#symbol()`. Deprecated in favor of `methodSymbol()`, which has a narrower return type.
+* Deprecated method: `NewClassTree#constructorSymbo()`. Deprecated in favor of `methodSymbol()`, which has a narrower return type.
+
 #### **7.15**
 * New method: `JavaResourceLocator#binaryDirs()`. Use this method to get the directories containing the .class files corresponding to the main code.
 * New method: `JavaResourceLocator#testBinaryDirs()`. Use this method to get the directories containing the .class files corresponding to the tests.
