@@ -107,7 +107,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
     return new AnalyzerMessage(this, context.getInputFile(), textSpan, message, 0);
   }
 
-  private String removeCommentSuffix(String line) {
+  private static String removeCommentSuffix(String line) {
     // We do not use a regex for this task, to avoid ReDoS.
     if (line.endsWith("*/")) {
       line = line.substring(0, line.length() - 2);
