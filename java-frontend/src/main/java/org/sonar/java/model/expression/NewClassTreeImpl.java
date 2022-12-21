@@ -163,7 +163,7 @@ public class NewClassTreeImpl extends AssessableExpressionTree implements NewCla
 
   @Override
   public Symbol constructorSymbol() {
-    return this.getConstructorIdentifier().symbol();
+    return methodSymbol();
   }
 
   @Override
