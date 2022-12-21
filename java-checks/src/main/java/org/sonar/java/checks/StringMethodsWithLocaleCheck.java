@@ -78,14 +78,14 @@ public class StringMethodsWithLocaleCheck extends AbstractMethodDetection {
     private static final String DATE_TIME_FLOATING_POINT_LOCAL_SPECIFIC_FORMAT = FLAGS + WIDTH + "[eEfgGaAtT]";
 
     private static final Pattern LOCALE_DEPENDENT_FORMATTERS = Pattern
-      .compile("(.*)%" + ARGUMENT_INDEX + "(" + INTEGER_LOCAL_SPECIFIC_FORMAT + "|" + DATE_TIME_FLOATING_POINT_LOCAL_SPECIFIC_FORMAT + ")(.*)");
+      .compile("%" + ARGUMENT_INDEX + "(" + INTEGER_LOCAL_SPECIFIC_FORMAT + "|" + DATE_TIME_FLOATING_POINT_LOCAL_SPECIFIC_FORMAT + ")");
 
     private boolean hasLocaleDependantFormatter = false;
 
     @Override
     public void visitLiteral(LiteralTree tree) {
       String value = tree.value().replace("%%", "");
-      if (tree.is(Tree.Kind.STRING_LITERAL) && LOCALE_DEPENDENT_FORMATTERS.matcher(value).matches()) {
+      if (tree.is(Tree.Kind.STRING_LITERAL) && LOCALE_DEPENDENT_FORMATTERS.matcher(value).find()) {
         hasLocaleDependantFormatter = true;
       }
       super.visitLiteral(tree);

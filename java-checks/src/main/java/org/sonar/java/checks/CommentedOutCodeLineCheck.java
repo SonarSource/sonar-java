@@ -96,7 +96,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   private AnalyzerMessage createAnalyzerMessage(int startLine, int startColumn, String line, String message) {
     String lineWithoutCommentPrefix = line.replaceFirst("^(//|/\\*\\*?|[ \t]*\\*)?[ \t]*+", "");
     int prefixSize = line.length() - lineWithoutCommentPrefix.length();
-    String lineWithoutCommentPrefixAndSuffix = lineWithoutCommentPrefix.replaceFirst("[ \t]++(\\*/)?$", "");
+    String lineWithoutCommentPrefixAndSuffix = removeCommentSuffix(lineWithoutCommentPrefix);
 
     AnalyzerMessage.TextSpan textSpan = new AnalyzerMessage.TextSpan(
       startLine,
@@ -105,6 +105,14 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
       startColumn + prefixSize + lineWithoutCommentPrefixAndSuffix.length());
 
     return new AnalyzerMessage(this, context.getInputFile(), textSpan, message, 0);
+  }
+
+  private String removeCommentSuffix(String line) {
+    // We do not use a regex for this task, to avoid ReDoS.
+    if (line.endsWith("*/")) {
+      line = line.substring(0, line.length() - 2);
+    }
+    return line.stripTrailing();
   }
 
   /**

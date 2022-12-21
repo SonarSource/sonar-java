@@ -28,8 +28,8 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 public class MethodMatcherFactory {
 
   private static final Pattern CLASS_PATTERN = Pattern.compile("^(\\w+[\\.\\w+]*(?:\\[\\])?)(\\()?");
-  private static final Pattern METHOD_PATTERN = Pattern.compile("^([a-zA-Z_0-9\\$]+[\\.[a-zA-Z_0-9\\$]+]*(?:\\[\\])?)#(\\w+)(\\()?");
-  private static final Pattern ARGUMENT_PATTERN = Pattern.compile("\\G(\\w+[\\.\\w+]*(?:\\[\\])?)([,\\)])");
+  private static final Pattern METHOD_PATTERN = Pattern.compile("^([a-zA-Z_0-9$]+(?:\\.[a-zA-Z_0-9$]+)*+(?:\\[])?)#(\\w+)(\\()?");
+  private static final Pattern ARGUMENT_PATTERN = Pattern.compile("\\G(\\w+(?:\\.\\w+)*+(?:\\[])?)([,)])");
 
   private MethodMatcherFactory() {
     // no instances, only static, factory methods
