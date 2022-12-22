@@ -115,6 +115,13 @@ public class AssertionsCompletenessCheck {
     org.assertj.core.api.Assertions.assertThatIllegalStateException(); // Noncompliant
     org.assertj.core.api.Assertions.assertThatIllegalStateException().isThrownBy(() -> {});
 
+    // BDD
+    org.assertj.core.api.BDDAssertions.thenRuntimeException(); // Noncompliant
+    org.assertj.core.api.BDDAssertions.thenRuntimeException().isThrownBy(() -> System.out.println("b"));
+    org.assertj.core.api.BDDAssertions.thenRuntimeException().describedAs(null); // Noncompliant
+    org.assertj.core.api.BDDAssertions.thenRuntimeException().describedAs(null).isThrownBy(() -> System.out.println("b"));
+
+
     Comparator customComparator = null;
     org.assertj.core.api.Assertions.assertThat(1).usingComparator(customComparator).isGreaterThanOrEqualTo(0);
     org.assertj.core.api.Assertions.assertThat(1).usingComparator(customComparator); // Noncompliant
@@ -251,7 +258,7 @@ public class AssertionsCompletenessCheck {
 
   @Test
   public void assertj_junit_soft_assertions_cross_methods_6() throws Exception {
-    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=277,282]] {{Add one or more 'assertThat' before 'assertAll'.}}
+    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=284,289]] {{Add one or more 'assertThat' before 'assertAll'.}}
   }
 
   private void doSomething(org.assertj.core.api.SoftAssertions softly) {

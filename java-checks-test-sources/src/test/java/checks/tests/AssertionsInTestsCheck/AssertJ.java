@@ -28,6 +28,11 @@ public abstract class AssertJ {
   public final JUnitSoftAssertions soft_assert_rule = new JUnitSoftAssertions();
 
   @Test
+  public void thenException_isThrownBy() {
+    org.assertj.core.api.BDDAssertions.thenException().isThrownBy(() -> System.out.println("b"));
+  }
+
+  @Test
   public void contains_no_assertions() { // Noncompliant
   }
 

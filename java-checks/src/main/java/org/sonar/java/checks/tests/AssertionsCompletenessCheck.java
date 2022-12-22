@@ -55,6 +55,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
 
   private static final String FEST_ASSERT_SUPERTYPE = "org.fest.assertions.Assert";
   private static final String ASSERTJ_SUPERTYPE = "org.assertj.core.api.AbstractAssert";
+  private static final String ASSERTJ_THROWABLE_SUPERTYPE = "org.assertj.core.api.ThrowableTypeAssert";
   private static final String TRUTH_SUPERTYPE = "com.google.common.truth.TestVerb";
   private static final String JAVA6_ABSTRACT_SOFT_ASSERT = "org.assertj.core.api.Java6AbstractStandardSoftAssertions";
   private static final MethodMatchers MOCKITO_VERIFY = MethodMatchers.create()
@@ -116,11 +117,27 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
       .addParametersMatcher(ANY)
       .build());
 
+  private static final MethodMatchers ASSERTJ_BDD_EXCEPTION_ASSERTIONS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(
+        "org.assertj.core.api.BDDAssertions")
+      .names(
+        "thenNullPointerException",
+        "thenIllegalArgumentException",
+        "thenIOException",
+        "thenIllegalStateException",
+        "thenException",
+        "thenIndexOutOfBoundsException",
+        "thenReflectiveOperationException",
+        "thenRuntimeException")
+      .withAnyParameters()
+      .build());
+
   private static final Pattern FEST_LIKE_EXCLUSION_NAMES = Pattern.compile("as.*+|using.*+|with.*+|describedAs|overridingErrorMessage|extracting");
 
   private static final MethodMatchers FEST_LIKE_EXCLUSIONS = MethodMatchers.or(
     MethodMatchers.create()
-      .ofSubTypes(FEST_ASSERT_SUPERTYPE, ASSERTJ_SUPERTYPE)
+      .ofSubTypes(FEST_ASSERT_SUPERTYPE, ASSERTJ_SUPERTYPE, ASSERTJ_THROWABLE_SUPERTYPE)
       .name(name -> FEST_LIKE_EXCLUSION_NAMES.matcher(name).matches())
       .withAnyParameters()
       .build(),
@@ -221,7 +238,8 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
       return false;
     }
 
-    if ((FEST_LIKE_ASSERT_THAT.matches(mit) || MOCKITO_VERIFY.matches(mit)) && !Boolean.TRUE.equals(chainedToAnyMethodButFestExclusions)) {
+    if ((FEST_LIKE_ASSERT_THAT.matches(mit) || MOCKITO_VERIFY.matches(mit) || ASSERTJ_BDD_EXCEPTION_ASSERTIONS.matches(mit)) &&
+      !Boolean.TRUE.equals(chainedToAnyMethodButFestExclusions)) {
       context.reportIssue(this, mit.methodSelect(), "Complete the assertion.");
       return true;
     }
