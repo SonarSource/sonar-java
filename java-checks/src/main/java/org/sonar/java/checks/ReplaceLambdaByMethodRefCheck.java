@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import javax.annotation.CheckForNull;
@@ -86,11 +87,8 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isReplacementMoreConcise(LambdaExpressionTree tree, String replacement) {
-    SyntaxToken first = tree.firstToken();
-    SyntaxToken last = tree.lastToken();
-    if (first == null || last == null) {
-      return true;
-    }
+    SyntaxToken first = Objects.requireNonNull(tree.firstToken());
+    SyntaxToken last = Objects.requireNonNull(tree.lastToken());
     boolean multiline = first.range().start().line() != last.range().end().line();
     boolean shorter = replacement.length() <= last.range().end().column() - first.range().start().column();
     return multiline || shorter;
