@@ -12,6 +12,9 @@ import java.util.stream.Stream;
 
 class LambdaA {
   void fun() {
+    String strings = "test";
+    Runnable run = () -> System.out.println(strings);
+    run.run();
     IntStream.range(1, 5)
         .map((x) -> x * x)
         .map(x -> square(x)) // Noncompliant [[sc=16;ec=18]] {{Replace this lambda with method reference 'this::square'.}}

@@ -382,7 +382,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
    * Example: (a, b, c) -> a.foo(b, c)
    */
   private static boolean isMethodCalledOnFirstParam(MethodInvocationTree mit, List<VariableTree> parameters) {
-    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+    if (!parameters.isEmpty() && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
       Symbol parameterSymbol = parameters.get(0).symbol();
       return expression.is(Tree.Kind.IDENTIFIER) &&
