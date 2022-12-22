@@ -110,10 +110,10 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
   private static boolean isListArgumentToCollectionsMutatorMethod(Tree list) {
     if (list.parent().is(Tree.Kind.ARGUMENTS)) {
       Tree potentialMethodInvocation = list.parent().parent();
-       if (potentialMethodInvocation.is(Tree.Kind.METHOD_INVOCATION)) {
-         MethodInvocationTree mit = (MethodInvocationTree) potentialMethodInvocation;
-         return COLLECTIONS_MUTATOR_METHODS.matches(mit);
-       }
+      if (potentialMethodInvocation.is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree mit = (MethodInvocationTree) potentialMethodInvocation;
+        return COLLECTIONS_MUTATOR_METHODS.matches(mit);
+      }
     }
     return false;
   }
