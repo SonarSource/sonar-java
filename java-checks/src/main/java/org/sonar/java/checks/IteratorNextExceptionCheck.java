@@ -94,8 +94,8 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
       if (NEXT_INVOCATION_MATCHER.matches(methodInvocation) || throwsNoSuchElementException(methodInvocation)) {
         expectedExceptionIsThrown = true;
-      } else if (methodInvocation.symbol().isMethodSymbol()) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) methodInvocation.symbol();
+      } else {
+        Symbol.MethodSymbol methodSymbol = methodInvocation.methodSymbol();
         MethodTree methodTree = methodSymbol.declaration();
         boolean canVisit = methodTree != null && methodsVisited.add(methodTree);
         if (canVisit) {
