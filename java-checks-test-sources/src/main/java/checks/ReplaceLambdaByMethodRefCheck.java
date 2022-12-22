@@ -503,6 +503,18 @@ class TestInteger extends TestNumber {
     return ti.hashCode();
   }
 
+  String bar(String s) {
+    return s;
+  }
+
+  static String bar(TestInteger i, String s, String t) {
+    return eggs(i) == 0 ? s : t;
+  }
+
+  static void consumeBoth(BiConsumer<TestInteger, String> bc) {
+    bc.accept(null, null);
+  }
+
   void test() {
     Optional.of(new TestInteger()).map(testInteger -> testInteger.foo()); // Noncompliant [[sc=52;ec=54;quickfixes=qf_supertype2]]
     // fix@qf_supertype2 {{Replace with "TestObject::foo"}}
@@ -511,7 +523,9 @@ class TestInteger extends TestNumber {
     Optional.of(new TestInteger()).map(testInteger -> testInteger.spam()); // Compliant, method reference is ambiguous
     Optional.of(new TestInteger()).map(testInteger -> (foo().length() % 23 == 0 ? testInteger : null).spam(testInteger)); // Compliant, method reference is ambiguous
     Optional.of(new TestInteger()).map(testInteger -> testInteger.eggs()); // Compliant, method reference is ambiguous
+    consumeBoth((testInteger, s) -> testInteger.bar(s)); // Noncompliant [[sc=34;ec=36;quickfixes=qf_2args]]
+    // fix@qf_2args {{Replace with "TestInteger::bar"}}
+    // edit@qf_2args [[sc=17;ec=55]] {{TestInteger::bar}}
+    consumeBoth((testInteger, s) -> testInteger.bar("test")); // Compliant
   }
 }
-
-

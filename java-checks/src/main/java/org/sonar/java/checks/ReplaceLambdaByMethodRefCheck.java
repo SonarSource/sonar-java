@@ -243,12 +243,11 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         if (mit.methodSymbol().isUnknown() || hasMethodInvocationInMethodSelect(mit) || hasNonFinalFieldInMethodSelect(mit)) {
           return Optional.empty();
         }
-        Arguments arguments = mit.arguments();
-        if (matchingParameters(parameters, arguments)) {
+        if (matchingParameters(mit.arguments(), parameters)) {
           // x -> foo(x) becomes x::foo or Owner::foo or this::foo or Owner.this::foo
           return getReplacementForMethodInvocation(mit);
         }
-        if (arguments.isEmpty() && isNoArgMethodInvocationFromLambdaParam(mit, parameters)) {
+        if (isMethodCalledOnFirstParam(mit, parameters)) {
           // x -> x.foo() becomes Owner::foo
           return getUnambiguousReference(mit);
         }
@@ -284,7 +283,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Optional<String> getNewClass(NewClassTree newClassTree, List<VariableTree> parameters) {
-    if (newClassTree.classBody() == null && matchingParameters(parameters, newClassTree.arguments())) {
+    if (newClassTree.classBody() == null && matchingParameters(newClassTree.arguments(), parameters)) {
       TypeTree identifier = newClassTree.identifier();
       String className;
       if (identifier.is(Tree.Kind.MEMBER_SELECT)) {
@@ -371,7 +370,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
     return "this".equals(name) || "super".equals(name);
   }
 
-  private static boolean matchingParameters(List<VariableTree> parameters, Arguments arguments) {
+  private static boolean matchingParameters(Arguments arguments, List<VariableTree> parameters) {
     return arguments.size() == parameters.size() &&
       IntStream.range(0, arguments.size()).allMatch(i -> {
         List<IdentifierTree> usages = parameters.get(i).symbol().usages();
@@ -379,13 +378,19 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
       });
   }
 
-  private static boolean isNoArgMethodInvocationFromLambdaParam(MethodInvocationTree tree, List<VariableTree> parameters) {
-    if (parameters.size() == 1 && tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree expression = ((MemberSelectExpressionTree) tree.methodSelect()).expression();
+  /**
+   * Checks if single expression lambda is a method call on its first parameter, and all
+   * other parameters are used in-order as arguments in said method call
+   * Example: (a, b, c) -> a.foo(b, c)
+   */
+  private static boolean isMethodCalledOnFirstParam(MethodInvocationTree mit, List<VariableTree> parameters) {
+    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree expression = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
       Symbol parameterSymbol = parameters.get(0).symbol();
       return expression.is(Tree.Kind.IDENTIFIER) &&
         !parameterSymbol.isUnknown() &&
-        parameterSymbol.equals(((IdentifierTree) expression).symbol());
+        parameterSymbol.equals(((IdentifierTree) expression).symbol()) &&
+        matchingParameters(mit.arguments(), parameters.subList(1, parameters.size()));
     }
     return false;
   }
