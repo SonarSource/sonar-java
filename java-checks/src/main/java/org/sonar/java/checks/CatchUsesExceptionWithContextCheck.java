@@ -186,7 +186,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
     super.visitMethodInvocation(mit);
-    if (LOGGING_METHODS.matches(mit) || mit.symbol().isUnknown()) {
+    if (LOGGING_METHODS.matches(mit) || mit.methodSymbol().isUnknown()) {
       usageStatusStack.forEach(usageStatus -> usageStatus.addLoggingMethodInvocation(mit));
     }
   }
@@ -313,7 +313,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       }
       ExpressionTree firstArg = arguments.get(0);
       ExpressionTree argumentToCheck;
-      if (mit.symbol().owner().type().is(SLF4J_LOGGER)) {
+      if (mit.methodSymbol().owner().type().is(SLF4J_LOGGER)) {
         if (argumentsCount == 1) {
           argumentToCheck = firstArg;
         } else if (argumentsCount == 2 && firstArg.symbolType().is("org.slf4j.Marker")) {

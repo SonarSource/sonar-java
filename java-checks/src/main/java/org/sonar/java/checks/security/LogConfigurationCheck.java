@@ -99,7 +99,7 @@ public class LogConfigurationCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if ("setProperty".equals(mit.symbol().name())) {
+    if ("setProperty".equals(mit.methodSymbol().name())) {
       String stringConstant = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
       if ("logback.configurationFile".equals(stringConstant)) {
         reportIssue(mit, MESSAGE);

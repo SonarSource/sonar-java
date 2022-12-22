@@ -41,7 +41,7 @@ public class RunFinalizersCheck extends AbstractMethodDetection implements JavaV
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(ExpressionUtils.methodName(mit), "Remove this call to \"" + mit.symbol().owner().name() + ".runFinalizersOnExit()\".");
+    reportIssue(ExpressionUtils.methodName(mit), "Remove this call to \"" + mit.methodSymbol().owner().name() + ".runFinalizersOnExit()\".");
   }
 
   @Override

@@ -140,9 +140,9 @@ public final class MethodTreeUtils {
 
   public static class MethodInvocationCollector extends BaseTreeVisitor {
     private final List<Tree> invocationTree = new ArrayList<>();
-    private final Predicate<Symbol> collectPredicate;
+    private final Predicate<Symbol.MethodSymbol> collectPredicate;
 
-    public MethodInvocationCollector(Predicate<Symbol> collectPredicate) {
+    public MethodInvocationCollector(Predicate<Symbol.MethodSymbol> collectPredicate) {
       this.collectPredicate = collectPredicate;
     }
 
@@ -152,7 +152,7 @@ public final class MethodTreeUtils {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (collectPredicate.test(mit.symbol())) {
+      if (collectPredicate.test(mit.methodSymbol())) {
         invocationTree.add(ExpressionUtils.methodName(mit));
       }
       super.visitMethodInvocation(mit);
@@ -160,7 +160,7 @@ public final class MethodTreeUtils {
 
     @Override
     public void visitNewClass(NewClassTree tree) {
-      if (collectPredicate.test(tree.constructorSymbol())) {
+      if (collectPredicate.test(tree.methodSymbol())) {
         invocationTree.add(tree.identifier());
       }
       super.visitNewClass(tree);

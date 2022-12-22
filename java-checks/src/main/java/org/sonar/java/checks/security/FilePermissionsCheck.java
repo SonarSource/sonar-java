@@ -94,7 +94,7 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
       // Whatever the owner of "add" (or "addAll") we assume the property is added to be included
       // ("add" and "addAll" are implemented by all classes extending "java.util.Collection")
       if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
-        String methodName = ((MethodInvocationTree) parent).symbol().name();
+        String methodName = ((MethodInvocationTree) parent).methodSymbol().name();
         if (methodName.contains("add")) {
           return true;
         }

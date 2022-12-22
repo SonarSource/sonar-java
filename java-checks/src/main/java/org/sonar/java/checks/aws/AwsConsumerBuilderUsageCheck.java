@@ -52,7 +52,7 @@ public class AwsConsumerBuilderUsageCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    MethodSymbol methodSymbol = (MethodSymbol) mit.symbol();
+    MethodSymbol methodSymbol = mit.methodSymbol();
     Symbol parentClass = Optional.ofNullable(methodSymbol.owner()).orElse(Symbols.unknownTypeSymbol);
     Symbol.TypeSymbol returnType = methodSymbol.returnType();
     if (!returnType.isUnknown() && "Builder".equals(parentClass.name())) {
@@ -124,7 +124,7 @@ public class AwsConsumerBuilderUsageCheck extends AbstractMethodDetection {
   }
 
   private static boolean isBuilder(ExpressionTree expression) {
-    return expression.is(Tree.Kind.METHOD_INVOCATION) && "build".equals(((MethodInvocationTree) expression).symbol().name());
+    return expression.is(Tree.Kind.METHOD_INVOCATION) && "build".equals(((MethodInvocationTree) expression).methodSymbol().name());
   }
 
 }

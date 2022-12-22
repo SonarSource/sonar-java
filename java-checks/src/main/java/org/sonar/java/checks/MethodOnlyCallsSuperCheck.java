@@ -93,7 +93,7 @@ public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
     if (callToSuper == null || !isCallToSuper(methodTree, callToSuper)) {
       return false;
     }
-    Symbol parentMethod = ((MethodInvocationTree) callToSuper).symbol();
+    Symbol parentMethod = ((MethodInvocationTree) callToSuper).methodSymbol();
     if (parentMethod.isUnknown()) {
       return false;
     }

@@ -93,9 +93,9 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
   }
 
   private void checkMethodInvocation(MethodInvocationTree node) {
-    Symbol symbol = node.symbol();
-    if (symbol.isMethodSymbol()) {
-      List<Type> types = ((Symbol.MethodSymbol) symbol).thrownTypes();
+    Symbol.MethodSymbol symbol = node.methodSymbol();
+    if (!symbol.isUnknown()) {
+      List<Type> types = symbol.thrownTypes();
       if (!types.isEmpty()) {
         addIssueIfNotCaught(types, ExpressionUtils.methodName(node), symbol.name());
       }

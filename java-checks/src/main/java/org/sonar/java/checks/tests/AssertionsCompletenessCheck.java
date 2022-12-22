@@ -277,10 +277,10 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
         }
       } else if (ASSERTJ_ASSERT_THAT.matches(mit) && !isJUnitSoftAssertions(mit)) {
         assertThatCalled = true;
-      } else if (mit.symbol().declaration() != null && intermediateMethodInvocations.stream().noneMatch(intermediate -> intermediate.symbol().equals(mit.symbol()))) {
+      } else if (mit.methodSymbol().declaration() != null && intermediateMethodInvocations.stream().noneMatch(invocation -> invocation.methodSymbol().equals(mit.methodSymbol()))) {
         List<MethodInvocationTree> allLocations = Stream.concat(intermediateMethodInvocations.stream(), Stream.of(mit)).collect(Collectors.toList());
         SoftAssertionsVisitor softAssertionsVisitor = new SoftAssertionsVisitor(assertThatCalled, allLocations);
-        mit.symbol().declaration().accept(softAssertionsVisitor);
+        mit.methodSymbol().declaration().accept(softAssertionsVisitor);
         assertThatCalled = softAssertionsVisitor.assertThatCalled;
       }
     }

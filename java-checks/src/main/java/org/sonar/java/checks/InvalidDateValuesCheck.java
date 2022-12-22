@@ -145,7 +145,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
       if (referenceName != null) {
         checkArgument(arg1, referenceName, "\"{0}\" is not a valid value for setting \"{1}\".");
       }
-    } else if ("<init>".equals(mit.symbol().name())) {
+    } else if ("<init>".equals(mit.methodSymbol().name())) {
       // call to this() or super()
       checkConstructorArguments(mit.arguments());
     } else {

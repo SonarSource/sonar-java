@@ -56,7 +56,7 @@ public class IgnoredStreamReturnValueCheck extends IssuableSubscriptionVisitor {
     if (statement.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) statement;
       if (MATCHERS.matches(mit)) {
-        reportIssue(ExpressionUtils.methodName(mit), "Check the return value of the \"" + mit.symbol().name() + "\" call to see how many bytes were read.");
+        reportIssue(ExpressionUtils.methodName(mit), "Check the return value of the \"" + mit.methodSymbol().name() + "\" call to see how many bytes were read.");
       }
     }
   }

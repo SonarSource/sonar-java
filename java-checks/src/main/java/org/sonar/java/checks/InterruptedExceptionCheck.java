@@ -141,10 +141,9 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     return blockVisitor.threadInterrupted;
   }
 
-  private static boolean throwInterruptedException(Symbol symbol) {
-    return symbol.isMethodSymbol()
-      && ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
-      .anyMatch(t -> t.is("java.lang.InterruptedException"));
+  private static boolean throwInterruptedException(Symbol.MethodSymbol symbol) {
+    return !symbol.isUnknown()
+      && symbol.thrownTypes().stream().anyMatch(t -> t.is("java.lang.InterruptedException"));
   }
 
   private static class BlockVisitor extends BaseTreeVisitor {
@@ -176,7 +175,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
         return;
       }
       depth++;
-      Tree declaration = tree.symbol().declaration();
+      Tree declaration = tree.methodSymbol().declaration();
       if (declaration != null && depth <= MAX_DEPTH) {
         //Declaration of MethodInvocationTree is MethodTree
         BlockTree block = ((MethodTree) declaration).block();

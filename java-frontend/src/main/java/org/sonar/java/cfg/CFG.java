@@ -646,7 +646,7 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildMethodInvocation(MethodInvocationTree mit) {
-    handleExceptionalPaths(mit.symbol());
+    handleExceptionalPaths(mit.methodSymbol());
     currentBlock.elements.add(mit);
     build(mit.arguments());
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
@@ -1066,7 +1066,7 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildNewClass(NewClassTree tree) {
-    handleExceptionalPaths(tree.constructorSymbol());
+    handleExceptionalPaths(tree.methodSymbol());
     currentBlock.elements.add(tree);
     build(tree.arguments());
     ExpressionTree enclosingExpression = tree.enclosingExpression();
@@ -1075,7 +1075,7 @@ public class CFG implements ControlFlowGraph {
     }
   }
 
-  private void handleExceptionalPaths(Symbol symbol) {
+  private void handleExceptionalPaths(Symbol.MethodSymbol symbol) {
     TryStatement pop = enclosingTry.pop();
     TryStatement tryStatement;
     Block exceptionPredecessor = currentBlock;
@@ -1092,8 +1092,8 @@ public class CFG implements ControlFlowGraph {
         exceptionPredecessor = currentBlock;
       }
     }
-    if (symbol.isMethodSymbol()) {
-      List<Type> thrownTypes = ((Symbol.MethodSymbol) symbol).thrownTypes();
+    if (!symbol.isUnknown()) {
+      List<Type> thrownTypes = symbol.thrownTypes();
       thrownTypes.forEach(thrownType -> {
         for (Type caughtType : tryStatement.catches.keySet()) {
           if (thrownType.isSubtypeOf(caughtType) ||

@@ -70,7 +70,7 @@ class LambdaExpressionTreeImplTest {
     assertThat(elements).hasSize(2);
 
     // semantically resolved
-    Symbol symbol = ((MethodInvocationTree) elements.get(1)).symbol();
+    Symbol symbol = ((MethodInvocationTree) elements.get(1)).methodSymbol();
     assertThat(symbol.isUnknown()).isFalse();
     assertThat(symbol.isMethodSymbol()).isTrue();
     assertThat(symbol).hasName("bar");
@@ -93,7 +93,7 @@ class LambdaExpressionTreeImplTest {
       .flatMap(List::stream)
       .filter(t -> t.is(Tree.Kind.METHOD_INVOCATION))
       .map(MethodInvocationTree.class::cast)
-      .map(MethodInvocationTree::symbol)
+      .map(MethodInvocationTree::methodSymbol)
       .collect(Collectors.toList());
 
     assertThat(methodInvocations)

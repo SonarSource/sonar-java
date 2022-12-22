@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 public class ThreadSleepInTestsCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    String name = Objects.requireNonNull(mit.symbol().owner()).type().name();
+    String name = Objects.requireNonNull(mit.methodSymbol().owner()).type().name();
     reportIssue(ExpressionUtils.methodName(mit), String.format("Remove this use of \"%s.sleep()\".", name));
   }
 

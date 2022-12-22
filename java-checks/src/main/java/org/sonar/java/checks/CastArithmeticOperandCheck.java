@@ -81,7 +81,7 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    checkMethodInvocationArgument(tree.arguments(), tree.symbol());
+    checkMethodInvocationArgument(tree.arguments(), tree.methodSymbol());
     super.visitMethodInvocation(tree);
   }
 
@@ -106,7 +106,7 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    checkMethodInvocationArgument(tree.arguments(), tree.constructorSymbol());
+    checkMethodInvocationArgument(tree.arguments(), tree.methodSymbol());
     super.visitNewClass(tree);
   }
 
@@ -118,9 +118,9 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
     }
   }
 
-  private void checkMethodInvocationArgument(Arguments arguments, Symbol symbol) {
-    if (symbol.isMethodSymbol()) {
-      List<Type> parametersTypes = ((Symbol.MethodSymbol) symbol).parameterTypes();
+  private void checkMethodInvocationArgument(Arguments arguments, Symbol.MethodSymbol symbol) {
+    if (!symbol.isUnknown()) {
+      List<Type> parametersTypes = symbol.parameterTypes();
       if (arguments.size() == parametersTypes.size()) {
         int i = 0;
         for (Type argType : parametersTypes) {

@@ -92,11 +92,11 @@ class MethodTreeUtilsTest {
     MethodInvocationTree getClassMethod = methodInvocationList.get(3);
     MethodInvocationTree getMethodsMethod = methodInvocationList.get(4);
 
-    assertThat(toStringMethod.symbol().name()).isEqualTo("toString");
-    assertThat(toUpperCaseMethod.symbol().name()).isEqualTo("toUpperCase");
-    assertThat(lengthMethod.symbol().name()).isEqualTo("length");
-    assertThat(getClassMethod.symbol().name()).isEqualTo("getClass");
-    assertThat(getMethodsMethod.symbol().name()).isEqualTo("getMethods");
+    assertThat(toStringMethod.methodSymbol().name()).isEqualTo("toString");
+    assertThat(toUpperCaseMethod.methodSymbol().name()).isEqualTo("toUpperCase");
+    assertThat(lengthMethod.methodSymbol().name()).isEqualTo("length");
+    assertThat(getClassMethod.methodSymbol().name()).isEqualTo("getClass");
+    assertThat(getMethodsMethod.methodSymbol().name()).isEqualTo("getMethods");
 
     MemberSelectExpressionTree thisA1A2 = (MemberSelectExpressionTree) ((MemberSelectExpressionTree) toStringMethod.methodSelect()).expression();
     MemberSelectExpressionTree thisA1 = (MemberSelectExpressionTree) thisA1A2.expression();

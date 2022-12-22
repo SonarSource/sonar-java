@@ -251,7 +251,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   }
 
   private static boolean isAnnotatedNonnull(MethodInvocationTree mit) {
-    return mit.symbol().metadata()
+    return mit.methodSymbol().metadata()
       .annotations()
       .stream()
       .map(SymbolMetadata.AnnotationInstance::symbol)

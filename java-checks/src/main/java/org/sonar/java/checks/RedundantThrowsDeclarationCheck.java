@@ -247,25 +247,25 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (CONSTRUCTOR_NAME.equals(tree.symbol().name())) {
+      if (CONSTRUCTOR_NAME.equals(tree.methodSymbol().name())) {
         visitedOtherConstructor = true;
       }
-      addThrownTypes(tree.symbol());
+      addThrownTypes(tree.methodSymbol());
       super.visitMethodInvocation(tree);
     }
 
     @Override
     public void visitNewClass(NewClassTree tree) {
-      addThrownTypes(tree.constructorSymbol());
+      addThrownTypes(tree.methodSymbol());
       super.visitNewClass(tree);
     }
 
-    private void addThrownTypes(Symbol methodSymbol) {
+    private void addThrownTypes(Symbol.MethodSymbol methodSymbol) {
       if (!visitedUnknown) {
-        if (methodSymbol.isUnknown() || !methodSymbol.isMethodSymbol()) {
+        if (methodSymbol.isUnknown()) {
           visitedUnknown = true;
         } else {
-          thrownExceptions.addAll(((Symbol.MethodSymbol) methodSymbol).thrownTypes());
+          thrownExceptions.addAll(methodSymbol.thrownTypes());
         }
       }
     }

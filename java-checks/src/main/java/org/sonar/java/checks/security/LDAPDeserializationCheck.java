@@ -47,7 +47,7 @@ public class LDAPDeserializationCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodTree) {
-    if (CONSTRUCTOR_NAME.equals(methodTree.symbol().name())) {
+    if (CONSTRUCTOR_NAME.equals(methodTree.methodSymbol().name())) {
       // when calling super() for classes extending SearchControls
       checkConstructorArguments(methodTree.arguments());
     } else {

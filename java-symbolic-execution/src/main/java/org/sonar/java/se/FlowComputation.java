@@ -666,7 +666,7 @@ public class FlowComputation {
       Flow.Builder flowBuilder = Flow.builder();
       SymbolicValue returnSV = edge.child.programState.peekValue();
       if (symbolicValues.contains(returnSV)) {
-        flowBuilder.add(methodInvocationReturnMessage(learnedConstraint, edge, mit.symbol().name()));
+        flowBuilder.add(methodInvocationReturnMessage(learnedConstraint, edge, mit.methodSymbol().name()));
       }
       SymbolicValue invocationTarget = parent.programState.peekValue(mit.arguments().size());
       if (symbolicValues.contains(invocationTarget)) {
@@ -771,7 +771,7 @@ public class FlowComputation {
   }
 
   public static Flow flowsForPassedArguments(List<Integer> argumentIndices, MethodInvocationTree mit) {
-    String methodName = mit.symbol().name();
+    String methodName = mit.methodSymbol().name();
     Flow.Builder flowBuilder = Flow.builder();
     argumentIndices.stream()
       .map(index -> getArgumentIdentifier(mit, index))
@@ -783,7 +783,7 @@ public class FlowComputation {
 
   public static Flow flowsForArgumentsChangingName(List<Integer> argumentIndices, MethodInvocationTree mit) {
 
-    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) mit.symbol();
+    Symbol.MethodSymbol methodSymbol = mit.methodSymbol();
     MethodTree declaration = methodSymbol.declaration();
     if (declaration == null) {
       return Flow.empty();

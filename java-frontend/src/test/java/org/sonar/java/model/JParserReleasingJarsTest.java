@@ -145,7 +145,7 @@ class JParserReleasingJarsTest {
     ClassTree b = (ClassTree) cu.types().get(0);
     MethodTree m = (MethodTree) b.members().get(0);
     ExpressionStatementTree s = (ExpressionStatementTree) m.block().body().get(1);
-    return ((MethodInvocationTree) s.expression()).symbol();
+    return ((MethodInvocationTree) s.expression()).methodSymbol();
   }
 
   private static JavaTree.CompilationUnitTreeImpl parse(List<File> classPath) {

@@ -84,7 +84,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       methodName = newClass.symbolType().name();
     } else {
       MethodInvocationTree invocation = (MethodInvocationTree) tree;
-      methodName = invocation.symbol().name();
+      methodName = invocation.methodSymbol().name();
     }
     List<CredentialMethod> candidates = methods.get(methodName);
     if (candidates == null) {

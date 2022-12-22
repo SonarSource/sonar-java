@@ -68,7 +68,7 @@ public class CallSuperMethodFromInnerClassCheck extends IssuableSubscriptionVisi
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      Symbol symbol = tree.symbol();
+      Symbol symbol = tree.methodSymbol();
       if (tree.methodSelect().is(Tree.Kind.IDENTIFIER) && isCallToSuperclassMethod(symbol)) {
         String methodName = ((IdentifierTree) tree.methodSelect()).name();
         reportIssue(ExpressionUtils.methodName(tree), "Prefix this call to \"" + methodName + "\" with \"super.\".");

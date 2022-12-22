@@ -65,7 +65,7 @@ public class ExceptionalYieldChecker {
   private void reportIssue(ExplodedGraph.Node node, ExceptionalCheckBasedYield exceptionalYield, SECheck check) {
     MethodInvocationTree mit = (MethodInvocationTree) node.programPoint.syntaxTree();
     ExpressionTree methodSelect = mit.methodSelect();
-    String methodName = mit.symbol().name();
+    String methodName = mit.methodSymbol().name();
 
     Tree reportTree = methodSelect;
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {

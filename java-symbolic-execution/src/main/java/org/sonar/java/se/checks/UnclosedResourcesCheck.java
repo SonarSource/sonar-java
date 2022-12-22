@@ -431,7 +431,7 @@ public class UnclosedResourcesCheck extends SECheck {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree syntaxNode) {
-      Symbol symbol = syntaxNode.symbol();
+      Symbol symbol = syntaxNode.methodSymbol();
       if (symbol.isMethodSymbol() && syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         String methodName = symbol.name();
         SymbolicValue value = getTargetValue(syntaxNode);
@@ -533,7 +533,7 @@ public class UnclosedResourcesCheck extends SECheck {
     }
 
     private boolean mitHeuristics(MethodInvocationTree mit) {
-      Symbol methodSymbol = mit.symbol();
+      Symbol methodSymbol = mit.methodSymbol();
       return !methodSymbol.isUnknown()
         && invocationOfMethodFromOtherClass(methodSymbol)
         && METHOD_NAMES_OPENING_RESOURCES.matcher(methodSymbol.name()).matches();

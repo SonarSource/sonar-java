@@ -116,14 +116,14 @@ public class RecordDuplicatedGetterCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     MethodInvocationTree mit = (MethodInvocationTree) expression;
-    Symbol methodSymbol = mit.symbol();
+    Symbol methodSymbol = mit.methodSymbol();
     return mit.arguments().isEmpty()
       && component.name().equals(methodSymbol.name())
       && component.owner().equals(methodSymbol.owner());
   }
 
   private static boolean isGetterInvocation(ExpressionTree expression, Symbol.MethodSymbol getter) {
-    return expression.is(Tree.Kind.METHOD_INVOCATION) && getter.equals(((MethodInvocationTree) expression).symbol());
+    return expression.is(Tree.Kind.METHOD_INVOCATION) && getter.equals(((MethodInvocationTree) expression).methodSymbol());
   }
 
   private static String issueMessage(MethodTree getter, Symbol.VariableSymbol component) {

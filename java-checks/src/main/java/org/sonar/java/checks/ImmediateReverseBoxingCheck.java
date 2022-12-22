@@ -109,9 +109,9 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
         checkForBoxing(((MemberSelectExpressionTree) methodSelect).expression(), mit);
       }
     } else {
-      Symbol symbol = mit.symbol();
-      if (symbol.isMethodSymbol()) {
-        checkMethodInvocationArguments(mit, ((Symbol.MethodSymbol) symbol).parameterTypes());
+      Symbol.MethodSymbol symbol = mit.methodSymbol();
+      if (!symbol.isUnknown()) {
+        checkMethodInvocationArguments(mit, symbol.parameterTypes());
       }
     }
   }
@@ -155,7 +155,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) expression;
       if (isValueOfInvocation(methodInvocationTree)) {
         ExpressionTree boxingArg = methodInvocationTree.arguments().get(0);
-        addBoxingIssue(expression, methodInvocationTree.symbol().owner(), boxingArg, originalTree);
+        addBoxingIssue(expression, methodInvocationTree.methodSymbol().owner(), boxingArg, originalTree);
       }
     }
   }

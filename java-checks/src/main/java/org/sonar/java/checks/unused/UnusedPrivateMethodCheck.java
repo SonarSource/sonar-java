@@ -112,13 +112,13 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
   private void checkIfUnknown(MethodInvocationTree mit) {
     String name = ExpressionUtils.methodName(mit).name();
     addIfArgumentsAreUnknown(mit.arguments(), name);
-    addIfUnknownOrAmbiguous(mit.symbol(), name);
+    addIfUnknownOrAmbiguous(mit.methodSymbol(), name);
   }
 
   private void checkIfUnknown(NewClassTree nct) {
     String name = constructorName(nct.identifier());
     addIfArgumentsAreUnknown(nct.arguments(), name);
-    addIfUnknownOrAmbiguous(nct.constructorSymbol(), name);
+    addIfUnknownOrAmbiguous(nct.methodSymbol(), name);
   }
 
   private void checkIfUnknown(MethodReferenceTree mref) {

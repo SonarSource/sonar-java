@@ -101,7 +101,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     boolean isMessageFormat = MESSAGE_FORMAT.matches(mit);
-    if (isMessageFormat && !mit.symbol().isStatic()) {
+    if (isMessageFormat && !mit.methodSymbol().isStatic()) {
       // only consider the static method
       return;
     }
@@ -229,7 +229,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private boolean checkUnbalancedQuotes(MethodInvocationTree mit, String formatString) {
-    if (LEVELS.contains(mit.symbol().name())) {
+    if (LEVELS.contains(mit.methodSymbol().name())) {
       return false;
     }
     String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
@@ -261,7 +261,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     if (!isLoggingMethod(mit)) {
       return false;
     }
-    if (mit.symbol().owner().type().is(JAVA_UTIL_LOGGING_LOGGER)) {
+    if (mit.methodSymbol().owner().type().is(JAVA_UTIL_LOGGING_LOGGER)) {
       // Remove the last argument from the count if it's a throwable, since log(Level level, String msg, Throwable thrown) will be called.
       // If the argument is an array, any exception in the array will be considered as Object, behaving as any others.
       return args.size() == 1 && isLastArgumentThrowable(args);
@@ -323,7 +323,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private static boolean isMethodOfThrowable(MethodInvocationTree argument) {
-    Symbol owner = argument.symbol().owner();
+    Symbol owner = argument.methodSymbol().owner();
     return owner != null && owner.type().isSubtypeOf(JAVA_LANG_THROWABLE);
   }
 
@@ -417,7 +417,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private static boolean isLoggingMethod(MethodInvocationTree mit) {
-    String methodName = mit.symbol().name();
+    String methodName = mit.methodSymbol().name();
     return "log".equals(methodName) || LEVELS.contains(methodName);
   }
 }

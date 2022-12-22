@@ -44,18 +44,18 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     List<ExpressionTree> arguments;
-    Symbol methodSymbol;
+    Symbol.MethodSymbol methodSymbol;
     if (tree.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree nct = (NewClassTree) tree;
-      methodSymbol = nct.constructorSymbol();
+      methodSymbol = nct.methodSymbol();
       arguments = nct.arguments();
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
-      methodSymbol = mit.symbol();
+      methodSymbol = mit.methodSymbol();
       arguments = mit.arguments();
     }
-    if (!arguments.isEmpty() && methodSymbol.isMethodSymbol()) {
-      checkArgumentsTypes(arguments, (Symbol.MethodSymbol) methodSymbol);
+    if (!arguments.isEmpty() && !methodSymbol.isUnknown()) {
+      checkArgumentsTypes(arguments, methodSymbol);
     }
   }
 

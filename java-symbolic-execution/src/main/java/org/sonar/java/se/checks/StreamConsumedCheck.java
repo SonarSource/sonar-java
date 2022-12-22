@@ -121,7 +121,7 @@ public class StreamConsumedCheck extends SECheck {
     if (isTerminalOperation(mit)) {
       return ListUtils.getOnlyElement(invocationTarget.setConstraint(programState, StreamPipelineConstraint.CONSUMED));
     }
-    if (mit.symbol().isUnknown()) {
+    if (mit.methodSymbol().isUnknown()) {
       // lambdas used in pipelines are sometimes not resolved properly, this is to shutdown the noise
       programState = programState.removeConstraintsOnDomain(invocationTarget, StreamPipelineConstraint.class);
     }
@@ -163,11 +163,11 @@ public class StreamConsumedCheck extends SECheck {
     if (BASE_STREAM_INTERMEDIATE_OPERATIONS.matches(mit)) {
       return true;
     }
-    Symbol method = mit.symbol();
-    return method.isMethodSymbol()
+    Symbol.MethodSymbol method = mit.methodSymbol();
+    return !method.isUnknown()
       && !method.isStatic()
       && STREAM_TYPES.contains(method.owner().type().fullyQualifiedName())
-      && STREAM_TYPES.contains(((Symbol.MethodSymbol) method).returnType().type().fullyQualifiedName());
+      && STREAM_TYPES.contains(method.returnType().type().fullyQualifiedName());
   }
 
   private static boolean isPipelineConsumed(ProgramState programState, SymbolicValue symbolicValue) {

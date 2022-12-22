@@ -69,6 +69,12 @@ public interface NewClassTree extends ExpressionTree {
   @Nullable
   ClassTree classBody();
 
+  /**
+   * @deprecated in favor of {@link #methodSymbol()}, which returns the narrower type {@link Symbol.MethodSymbol} instead of {@link Symbol}.
+   */
+  @Deprecated(since = "7.16", forRemoval = true)
   Symbol constructorSymbol();
+
+  Symbol.MethodSymbol methodSymbol();
 
 }

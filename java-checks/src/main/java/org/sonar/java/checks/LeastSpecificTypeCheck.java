@@ -112,7 +112,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       } else if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) parent;
         if (isMethodInvocationOnParameter(parameter, mit)) {
-          inheritanceGraph.update(mit.symbol());
+          inheritanceGraph.update(mit.methodSymbol());
         }
       }
     }

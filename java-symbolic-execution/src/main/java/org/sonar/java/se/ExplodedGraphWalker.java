@@ -784,9 +784,9 @@ public class ExplodedGraphWalker {
 
     // get method behavior for method with known declaration (ie: within the same file)
     MethodBehavior methodInvokedBehavior = null;
-    Symbol methodSymbol = mit.symbol();
-    if(methodSymbol.isMethodSymbol()) {
-      methodInvokedBehavior = behaviorCache.get((Symbol.MethodSymbol) methodSymbol);
+    Symbol.MethodSymbol methodSymbol = mit.methodSymbol();
+    if(!methodSymbol.isUnknown()) {
+      methodInvokedBehavior = behaviorCache.get(methodSymbol);
     }
 
     // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
@@ -836,7 +836,7 @@ public class ExplodedGraphWalker {
   }
 
   private ProgramState handleSpecialMethods(ProgramState ps, MethodInvocationTree mit) {
-    if (mit.symbol().metadata().nullabilityData().isNonNull(PACKAGE, false, false)) {
+    if (mit.methodSymbol().metadata().nullabilityData().isNonNull(PACKAGE, false, false)) {
       return ps.addConstraint(ps.peekValue(), ObjectConstraint.NOT_NULL);
     } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
       return ps.resetFieldValues(constraintManager, false);
@@ -844,13 +844,13 @@ public class ExplodedGraphWalker {
     return ps;
   }
 
-  private void enqueueThrownExceptionalPaths(Symbol symbol) {
-    if (!symbol.isMethodSymbol()) {
+  private void enqueueThrownExceptionalPaths(Symbol.MethodSymbol symbol) {
+    if (symbol.isUnknown()) {
       // do nothing for unknown methods
       return;
     }
     ProgramState ps = programState.clearStack();
-    ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
+    symbol.thrownTypes().stream()
       .map(constraintManager::createExceptionalSymbolicValue)
       .map(ps::stackValue)
       .forEach(ps1 -> enqueueExceptionalPaths(ps1, symbol));
@@ -1057,7 +1057,7 @@ public class ExplodedGraphWalker {
   private void executeNewClass(NewClassTree newClassTree) {
     programState = programState.unstackValue(newClassTree.arguments().size()).state;
     // Enqueue exceptional paths
-    Symbol symbol = newClassTree.constructorSymbol();
+    Symbol.MethodSymbol symbol = newClassTree.methodSymbol();
     if (((CFG.Block) node.programPoint.block).exceptions().stream().anyMatch(CFG.Block.IS_CATCH_BLOCK)) {
       // To avoid noise, we only add unchecked exceptional paths (includingUnknownException) when we are in a try-catch block.
       enqueueUncheckedExceptionalPaths(symbol);
@@ -1142,7 +1142,7 @@ public class ExplodedGraphWalker {
 
   private static boolean isNonNullMethodInvocation(ExpressionTree expr) {
     return expr.is(Tree.Kind.METHOD_INVOCATION)
-      && ((MethodInvocationTree) expr).symbol().metadata().nullabilityData().isNonNull(PACKAGE, false, false);
+      && ((MethodInvocationTree) expr).methodSymbol().metadata().nullabilityData().isNonNull(PACKAGE, false, false);
   }
 
   private void executeMemberSelect(MemberSelectExpressionTree mse) {
@@ -1170,7 +1170,7 @@ public class ExplodedGraphWalker {
     boolean threadSleepMatch = THREAD_SLEEP_MATCHER.matches(tree);
     boolean providingThisAsArgument = isProvidingThisAsArgument(tree);
     if (isLocalMethodInvocation(tree) || providingThisAsArgument || threadSleepMatch) {
-      boolean resetOnlyStaticFields = tree.symbol().isStatic() && !threadSleepMatch && !providingThisAsArgument;
+      boolean resetOnlyStaticFields = tree.methodSymbol().isStatic() && !threadSleepMatch && !providingThisAsArgument;
       resetFieldValues(resetOnlyStaticFields);
     }
   }

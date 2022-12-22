@@ -66,7 +66,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
       return;
     }
 
-    boolean isMethodFromJavaSqlResultSet = mit.symbol().owner().type().is(JAVA_SQL_RESULTSET);
+    boolean isMethodFromJavaSqlResultSet = mit.methodSymbol().owner().type().is(JAVA_SQL_RESULTSET);
     int methodFirstArgumentValue = firstArgumentAsConstant.get();
 
     if (isMethodFromJavaSqlResultSet && methodFirstArgumentValue == 0) {

@@ -96,7 +96,7 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    Type ownerType = mit.symbol().owner().type();
+    Type ownerType = mit.methodSymbol().owner().type();
     if (ownerType.is(ORG_JUNIT5_ASSERTIONS)) {
       checkArguments(mit.arguments().get(0), mit.arguments().get(1), EXPECTED_VALUE_ACTUAL_VALUE);
     } else if (ownerType.is(ORG_JUNIT_ASSERT)) {
@@ -199,7 +199,7 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
     int arity = mit.arguments().size();
     ExpressionTree arg = mit.arguments().get(arity - 1);
     // Check for assert equals method with delta
-    if (arity > 2 && (arity == 4 || ((Symbol.MethodSymbol) mit.symbol()).parameterTypes().stream().allMatch(AssertionArgumentOrderCheck::isDoubleOrFloat))) {
+    if (arity > 2 && (arity == 4 || mit.methodSymbol().parameterTypes().stream().allMatch(AssertionArgumentOrderCheck::isDoubleOrFloat))) {
       // last arg is actually delta, take the previous last to get the actual arg.
       arg = mit.arguments().get(arity - 2);
     }

@@ -63,7 +63,7 @@ public class EnumSetCheck extends IssuableSubscriptionVisitor {
       if (COLLECTIONS_UNMODIFIABLE.matches(mit)) {
         // check the collection used as parameter
         initializer = mit.arguments().get(0);
-      } else if (!SET_CREATION_METHODS.matches(mit) || "immutableEnumSet".equals(mit.symbol().name())) {
+      } else if (!SET_CREATION_METHODS.matches(mit) || "immutableEnumSet".equals(mit.methodSymbol().name())) {
         // Methods from Guava 'Sets' except 'immutableEnumSet' should be checked,
         // but discard any other method invocations (killing the noise)
         return;

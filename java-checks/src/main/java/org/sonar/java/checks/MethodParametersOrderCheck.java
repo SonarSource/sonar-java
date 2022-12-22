@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -62,19 +63,24 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree methodInvTree = (MethodInvocationTree) tree;
-    MethodTree methodDeclaration = (MethodTree) methodInvTree.symbol().declaration();
+    MethodTree methodDeclaration = methodInvTree.methodSymbol().declaration();
     if (methodDeclaration == null) {
       return;
     }
-    ParametersList formalParameterList = parametersByMethod.computeIfAbsent(methodInvTree.symbol(), m -> new ParametersList(methodDeclaration));
+    ParametersList formalParameterList = parametersByMethod.computeIfAbsent(methodInvTree.methodSymbol(), m -> new ParametersList(methodDeclaration));
     List<IdentifierTree> argumentsList = methodInvTree.arguments().stream().map(this::argumentToIdentifier).collect(Collectors.toList());
     if (matchingNames(formalParameterList, argumentsList)) {
       List<VariableTree> matchingTypesWrongOrder = matchingTypesWrongOrder(formalParameterList, argumentsList);
       if (!matchingTypesWrongOrder.isEmpty()) {
-        List<JavaFileScannerContext.Location> flow = matchingTypesWrongOrder.stream().map(param -> new JavaFileScannerContext.Location("Misplaced Parameter", param))
+        List<JavaFileScannerContext.Location> flow = matchingTypesWrongOrder.stream()
+          .map(param -> new JavaFileScannerContext.Location("Misplaced Parameter", param))
           .collect(Collectors.toList());
-        reportIssue(methodInvTree.arguments(), "Parameters to " + methodInvTree.symbol().name() + " have the same names but not the same order as the method arguments.", flow,
-          null);
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(methodInvTree.arguments())
+          .withMessage("Parameters to %s have the same names but not the same order as the method arguments.", methodInvTree.methodSymbol().name() )
+          .withSecondaries(flow)
+          .report();
       }
     }
   }

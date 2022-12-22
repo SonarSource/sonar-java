@@ -84,7 +84,7 @@ public class MinMaxRangeCheck extends SECheck {
 
     MinMaxRangeConstraint(MethodInvocationTree syntaxNode) {
       this.syntaxNode = syntaxNode;
-      this.op = "min".equals(syntaxNode.symbol().name()) ? Operation.MIN : Operation.MAX;
+      this.op = "min".equals(syntaxNode.methodSymbol().name()) ? Operation.MIN : Operation.MAX;
     }
 
     @Override
@@ -210,7 +210,7 @@ public class MinMaxRangeCheck extends SECheck {
         String issueMessage;
         String secondOpMessage;
         String firstOpMessage;
-        if ("min".equals(syntaxNode.symbol().name())) {
+        if ("min".equals(syntaxNode.methodSymbol().name())) {
           issueMessage = String.format(ISSUE_MESSAGE, "min/max", LOWER);
           firstOpMessage = String.format(FLOW_MESSAGE, UPPER);
           secondOpMessage = String.format(FLOW_MESSAGE, LOWER);

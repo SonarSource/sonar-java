@@ -39,7 +39,7 @@ public abstract class AbstractAssertionVisitor extends BaseTreeVisitor {
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
     super.visitMethodInvocation(mit);
-    if (!hasAssertion && isAssertion(methodName(mit), mit.symbol())) {
+    if (!hasAssertion && isAssertion(methodName(mit), mit.methodSymbol())) {
       hasAssertion = true;
     }
   }
@@ -55,7 +55,7 @@ public abstract class AbstractAssertionVisitor extends BaseTreeVisitor {
   @Override
   public void visitNewClass(NewClassTree tree) {
     super.visitNewClass(tree);
-    if (!hasAssertion && isAssertion(null, tree.constructorSymbol())) {
+    if (!hasAssertion && isAssertion(null, tree.methodSymbol())) {
       hasAssertion = true;
     }
   }

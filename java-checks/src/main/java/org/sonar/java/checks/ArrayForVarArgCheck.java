@@ -48,24 +48,21 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    Symbol sym;
+    Symbol.MethodSymbol sym;
     Arguments args;
     if (tree.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree nct = (NewClassTree) tree;
-      sym = nct.constructorSymbol();
+      sym = nct.methodSymbol();
       args = nct.arguments();
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
-      sym = mit.symbol();
+      sym = mit.methodSymbol();
       args = mit.arguments();
     }
 
-    if (sym.isMethodSymbol()) {
-      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) sym;
-      if (isLastArgumentVarargs(methodSymbol, args)) {
-        ExpressionTree lastArg = args.get(args.size() - 1);
-        checkInvokedMethod(methodSymbol, lastArg);
-      }
+    if (!sym.isUnknown() && isLastArgumentVarargs(sym, args)) {
+      ExpressionTree lastArg = args.get(args.size() - 1);
+      checkInvokedMethod(sym, lastArg);
     }
   }
 

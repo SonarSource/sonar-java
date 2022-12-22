@@ -30,7 +30,7 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     boolean isMessageFormat = MESSAGE_FORMAT.matches(mit);
-    if (isMessageFormat && !mit.symbol().isStatic()) {
+    if (isMessageFormat && !mit.methodSymbol().isStatic()) {
       // only consider the static method
       return;
     }

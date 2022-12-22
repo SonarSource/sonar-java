@@ -75,7 +75,7 @@ public class JavaPropertiesHelper {
   }
 
   private static boolean isGetPropertyWithDefaultValue(MethodInvocationTree mit) {
-    Symbol symbol = mit.symbol();
+    Symbol symbol = mit.methodSymbol();
     if (symbol.isMethodSymbol() && symbol.owner().type().is("java.util.Properties")) {
       return "getProperty".equals(symbol.name()) && mit.arguments().size() == 2;
     }

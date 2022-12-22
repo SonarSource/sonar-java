@@ -59,30 +59,29 @@ public class ParameterNullnessCheck extends SECheck {
     ProgramState state = context.getState();
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
-      checkParameters(mit, mit.symbol(), mit.arguments(), state);
+      checkParameters(mit, mit.methodSymbol(), mit.arguments(), state);
     } else if (syntaxNode.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree nct = (NewClassTree) syntaxNode;
-      checkParameters(nct, nct.constructorSymbol(), nct.arguments(), state);
+      checkParameters(nct, nct.methodSymbol(), nct.arguments(), state);
     }
     return state;
   }
 
-  private void checkParameters(Tree syntaxNode, Symbol symbol, Arguments arguments, ProgramState state) {
+  private void checkParameters(Tree syntaxNode, Symbol.MethodSymbol symbol, Arguments arguments, ProgramState state) {
     if (!symbol.isMethodSymbol() || arguments.isEmpty()) {
       return;
     }
     if (AUTHORIZED_METHODS.matches(symbol)) {
       return;
     }
-    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
     int nbArguments = arguments.size();
     List<SymbolicValue> argumentSVs = getArgumentSVs(state, syntaxNode, nbArguments);
-    int nbArgumentToCheck = Math.min(nbArguments, methodSymbol.parameterTypes().size() - (JUtils.isVarArgsMethod(methodSymbol) ? 1 : 0));
-    List<Symbol> parameterSymbols = methodSymbol.declarationParameters();
+    int nbArgumentToCheck = Math.min(nbArguments, symbol.parameterTypes().size() - (JUtils.isVarArgsMethod(symbol) ? 1 : 0));
+    List<Symbol> parameterSymbols = symbol.declarationParameters();
     for (int i = 0; i < nbArgumentToCheck; i++) {
       ObjectConstraint constraint = state.getConstraint(argumentSVs.get(i), ObjectConstraint.class);
       if (constraint != null && constraint.isNull() && parameterIsNonNullIndirectly(parameterSymbols.get(i))) {
-        reportIssue(syntaxNode, arguments.get(i), methodSymbol);
+        reportIssue(syntaxNode, arguments.get(i), symbol);
       }
     }
   }

@@ -102,6 +102,6 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
 
   private static boolean hasConstantOppositeArg(MethodInvocationTree mit) {
     Optional<Boolean> result = mit.arguments().get(0).asConstant(Boolean.class);
-    return result.isPresent() && !result.get().equals(mit.symbol().name().contains("True"));
+    return result.isPresent() && !result.get().equals(mit.methodSymbol().name().contains("True"));
   }
 }

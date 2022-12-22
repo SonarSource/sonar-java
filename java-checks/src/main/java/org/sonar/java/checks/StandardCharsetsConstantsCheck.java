@@ -249,15 +249,15 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    checkCall(mit, mit.symbol(), mit.arguments());
+    checkCall(mit, mit.methodSymbol(), mit.arguments());
   }
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    checkCall(newClassTree, newClassTree.constructorSymbol(), newClassTree.arguments());
+    checkCall(newClassTree, newClassTree.methodSymbol(), newClassTree.arguments());
   }
 
-  private void checkCall(ExpressionTree callExpression, Symbol symbol, Arguments arguments) {
+  private void checkCall(ExpressionTree callExpression, Symbol.MethodSymbol symbol, Arguments arguments) {
     getCharsetNameArgument(symbol, arguments)
       .ifPresent(charsetNameArgument -> getConstantName(charsetNameArgument)
         .ifPresent(constantName -> {

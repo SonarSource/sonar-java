@@ -96,15 +96,12 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
     }
 
     private static boolean throwsNoSuchElementException(MethodInvocationTree methodInvocationTree) {
-      Symbol symbol = methodInvocationTree.symbol();
+      Symbol.MethodSymbol symbol = methodInvocationTree.methodSymbol();
       if (symbol.isUnknown()) {
         // Consider that it could throw an Exception to avoid FP.
         return true;
       }
-      if (!symbol.isMethodSymbol()) {
-        return false;
-      }
-      return throwsNoSuchElementException(((Symbol.MethodSymbol) symbol).thrownTypes());
+      return throwsNoSuchElementException(symbol.thrownTypes());
     }
 
     private static boolean throwsNoSuchElementException(List<? extends Type> thrownTypes) {

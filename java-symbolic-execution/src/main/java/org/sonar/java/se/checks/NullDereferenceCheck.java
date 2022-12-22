@@ -245,7 +245,7 @@ public class NullDereferenceCheck extends SECheck {
   private static List<ProgramState> setNullConstraint(CheckerContext context, Tree syntaxNode) {
     SymbolicValue val = context.getState().peekValue();
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) &&
-      ((MethodInvocationTree) syntaxNode).symbol().metadata().nullabilityData().isStrongNullable(PACKAGE, false, false)) {
+      ((MethodInvocationTree) syntaxNode).methodSymbol().metadata().nullabilityData().isStrongNullable(PACKAGE, false, false)) {
       Objects.requireNonNull(val);
       List<ProgramState> states = new ArrayList<>();
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NULL));

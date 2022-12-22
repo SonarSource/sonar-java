@@ -177,7 +177,7 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
      * @return True if the method belongs to SDKBuilder or the SDKClient
      */
     private static boolean methodBelongsToSdk(MethodInvocationTree invocation) {
-      Symbol owner = invocation.symbol().owner();
+      Symbol owner = invocation.methodSymbol().owner();
       return owner.type().isSubtypeOf(SDK_CLIENT_BUILDER_TYPE) ||
         owner.type().isSubtypeOf(SDK_CLIENT_TYPE);
     }

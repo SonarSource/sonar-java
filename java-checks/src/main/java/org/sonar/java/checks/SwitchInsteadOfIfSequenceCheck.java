@@ -83,7 +83,7 @@ public class SwitchInsteadOfIfSequenceCheck extends IssuableSubscriptionVisitor 
     ExpressionTree expression = null;
     if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) expressionTree;
-      Symbol symbol = mit.symbol();
+      Symbol symbol = mit.methodSymbol();
       ExpressionTree methodSelect = mit.methodSelect();
       if (mit.arguments().size() == 1) {
         arg = mit.arguments().get(0);

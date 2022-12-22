@@ -128,7 +128,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
 
   private static boolean isCallToParametrizedOrUnknownMethod(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-      Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) ((MethodInvocationTree) expressionTree).symbol();
+      Symbol.MethodSymbol symbol = ((MethodInvocationTree) expressionTree).methodSymbol();
       return symbol.isUnknown() || JUtils.isParametrizedMethod(symbol);
     }
     return false;
@@ -138,7 +138,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     if (mit.methodSelect().is(Kind.MEMBER_SELECT)) {
       return ((MemberSelectExpressionTree) mit.methodSelect()).expression().symbolType();
     }
-    return mit.symbol().owner().type();
+    return mit.methodSymbol().owner().type();
   }
 
   private static Type getTypeArgumentAt(Type type, int index) {

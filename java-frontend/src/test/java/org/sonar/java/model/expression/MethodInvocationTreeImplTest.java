@@ -41,7 +41,7 @@ class MethodInvocationTreeImplTest {
     Symbol.MethodSymbol declaration = ((MethodTree) classTree.members().get(0)).symbol();
     StatementTree statementTree = ((MethodTree) classTree.members().get(1)).block().body().get(0);
     MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree)statementTree).expression();
-    assertThat(mit.symbol()).isSameAs(declaration);
+    assertThat(mit.methodSymbol()).isSameAs(declaration);
     assertThat(mit.arguments()).isNotNull();
     assertThat(mit.arguments().openParenToken()).isNotNull();
     assertThat(mit.arguments().closeParenToken()).isNotNull();
