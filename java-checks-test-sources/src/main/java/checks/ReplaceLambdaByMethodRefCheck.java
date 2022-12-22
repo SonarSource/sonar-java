@@ -32,6 +32,13 @@ class LambdaA {
     biConsumer((x, y) -> { ;; });
   }
 
+  void generics() {
+    Stream.of(Integer.valueOf(42)).forEach(x -> new java.util.ArrayList<String>(x)); // false-negative, generics are not supported
+    Stream.of(Integer.valueOf(42)).forEach(x -> new java.util.ArrayList<>(x)); // false-negative, generics are not supported
+    Stream.of(Integer.valueOf(42)).forEach(java.util.ArrayList<String>::new); // Compliant
+    Stream.of(Integer.valueOf(42)).forEach(java.util.ArrayList::new); // Compliant
+  }
+
   void biConsumer(BiConsumer consumer) {
   }
 
