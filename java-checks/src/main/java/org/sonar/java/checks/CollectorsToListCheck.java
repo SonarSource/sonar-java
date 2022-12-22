@@ -63,6 +63,12 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
     .withAnyParameters()
     .build();
 
+  private static final MethodMatchers COLLECTIONS_MUTATOR_METHODS = MethodMatchers.create()
+      .ofSubTypes("java.util.Collections")
+      .names("shuffle", "copy", "swap", "fill", "sort", "rotate")
+      .withAnyParameters()
+      .build();
+
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
     return version.isJava16Compatible();
@@ -98,6 +104,21 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
   }
 
   private static boolean isListBeingModified(Tree list) {
+    return isListTargetOfCallAndBeingModified(list) || isListArgumentToCollectionsMutatorMethod(list);
+  }
+
+  private static boolean isListArgumentToCollectionsMutatorMethod(Tree list) {
+    if (list.parent().is(Tree.Kind.ARGUMENTS)) {
+      Tree potentialMethodInvocation = list.parent().parent();
+       if (potentialMethodInvocation.is(Tree.Kind.METHOD_INVOCATION)) {
+         MethodInvocationTree mit = (MethodInvocationTree) potentialMethodInvocation;
+         return COLLECTIONS_MUTATOR_METHODS.matches(mit);
+       }
+    }
+    return false;
+  }
+
+  private static boolean isListTargetOfCallAndBeingModified(Tree list) {
     while (list.parent().is(Tree.Kind.ARRAY_ACCESS_EXPRESSION, Tree.Kind.MEMBER_SELECT)) {
       Tree possibleMethodInvocation = list.parent().parent();
       if (possibleMethodInvocation.is(Tree.Kind.METHOD_INVOCATION)) {
