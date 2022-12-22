@@ -19,8 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import javax.annotation.CheckForNull;
@@ -34,6 +36,7 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -84,11 +87,8 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isReplacementMoreConcise(LambdaExpressionTree tree, String replacement) {
-    SyntaxToken first = tree.firstToken();
-    SyntaxToken last = tree.lastToken();
-    if (first == null || last == null) {
-      return true;
-    }
+    SyntaxToken first = Objects.requireNonNull(tree.firstToken());
+    SyntaxToken last = Objects.requireNonNull(tree.lastToken());
     boolean multiline = first.range().start().line() != last.range().end().line();
     boolean shorter = replacement.length() <= last.range().end().column() - first.range().start().column();
     return multiline || shorter;
@@ -240,27 +240,50 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         return getNewClass(((NewClassTree) tree), parameters);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
-        if (mit.methodSymbol().isUnknown()
-          || hasMethodInvocationInMethodSelect(mit)
-          || hasNonFinalFieldInMethodSelect(mit)) {
+        if (mit.methodSymbol().isUnknown() || hasMethodInvocationInMethodSelect(mit) || hasNonFinalFieldInMethodSelect(mit)) {
           return Optional.empty();
         }
-        Arguments arguments = mit.arguments();
-        if (matchingParameters(parameters, arguments)) {
-          // x -> foo(x) becomes x::foo or Owner::foo or this::foo or Owner.this::foo
+        if (matchingParameters(mit.arguments(), parameters)) {
+          // x -> foo(x) becomes y::foo or Owner::foo or this::foo or Owner.this::foo
           return getReplacementForMethodInvocation(mit);
         }
-        if (arguments.isEmpty() && isNoArgMethodInvocationFromLambdaParam(tree, parameters)) {
+        if (isMethodCalledOnFirstParam(mit, parameters)) {
           // x -> x.foo() becomes Owner::foo
-          return Optional.of(getMethodReferenceFromSymbol(mit.methodSymbol()));
+          return getUnambiguousReference(mit);
         }
       }
     }
     return Optional.empty();
   }
 
+  private static Optional<String> getUnambiguousReference(MethodInvocationTree mit) {
+    Symbol.MethodSymbol ms = mit.methodSymbol();
+    ArrayList<Symbol.MethodSymbol> methodSymbols = new ArrayList<>(ms.overriddenSymbols());
+    Collections.reverse(methodSymbols);
+    methodSymbols.add(ms);
+    return methodSymbols.stream()
+      .filter(m -> m.thrownTypes().equals(ms.thrownTypes()))
+      .filter(m -> !hasAmbiguousReference(m))
+      .findFirst()
+      .map(ReplaceLambdaByMethodRefCheck::getMethodReferenceFromSymbol);
+  }
+
+  private static boolean hasAmbiguousReference(Symbol.MethodSymbol ms) {
+    return ((Symbol.TypeSymbol) ms.owner()).lookupSymbols(ms.name()).stream()
+      .filter(Symbol::isMethodSymbol)
+      .map(Symbol.MethodSymbol.class::cast)
+      .filter(m -> m.isStatic() != ms.isStatic())
+      .anyMatch(m -> m.isStatic() ? methodsHaveSameReference(m, ms) : methodsHaveSameReference(ms, m));
+  }
+
+  private static boolean methodsHaveSameReference(Symbol.MethodSymbol mStatic, Symbol.MethodSymbol mNotStatic) {
+    Type ownerType = mStatic.owner().type();
+    return mStatic.parameterTypes().size() == mNotStatic.parameterTypes().size() + 1 &&
+           isArgumentCompatible(ownerType, mStatic.parameterTypes().get(0));
+  }
+
   private static Optional<String> getNewClass(NewClassTree newClassTree, List<VariableTree> parameters) {
-    if (newClassTree.classBody() == null && matchingParameters(parameters, newClassTree.arguments())) {
+    if (newClassTree.classBody() == null && matchingParameters(newClassTree.arguments(), parameters)) {
       TypeTree identifier = newClassTree.identifier();
       if (identifier.is(Tree.Kind.MEMBER_SELECT, Tree.Kind.IDENTIFIER)) {
         String className = ExpressionsHelper.concatenate((ExpressionTree) identifier);
@@ -272,11 +295,11 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
 
   private static Optional<String> getReplacementForMethodInvocation(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
+    Symbol.MethodSymbol symbol = mit.methodSymbol();
+    if (symbol.isStatic()) {
+      return getUnambiguousReference(mit);
+    }
     if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = mit.methodSymbol();
-      if (symbol.isStatic()) {
-        return Optional.of(getMethodReferenceFromSymbol(symbol));
-      }
       MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(mit);
       Symbol symbolOwner = symbol.owner();
       if (enclosingMethod != null) {
@@ -342,7 +365,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
     return "this".equals(name) || "super".equals(name);
   }
 
-  private static boolean matchingParameters(List<VariableTree> parameters, Arguments arguments) {
+  private static boolean matchingParameters(Arguments arguments, List<VariableTree> parameters) {
     return arguments.size() == parameters.size() &&
       IntStream.range(0, arguments.size()).allMatch(i -> {
         List<IdentifierTree> usages = parameters.get(i).symbol().usages();
@@ -350,18 +373,19 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
       });
   }
 
-  private static boolean isNoArgMethodInvocationFromLambdaParam(Tree tree, List<VariableTree> parameters) {
-    if (!tree.is(Tree.Kind.METHOD_INVOCATION) || parameters.size() != 1) {
-      return false;
-    }
-    ExpressionTree methodSelect = ((MethodInvocationTree) tree).methodSelect();
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
+  /**
+   * Checks if single expression lambda is a method call on its first parameter, and all
+   * other parameters are used in-order as arguments in said method call
+   * Example: (a, b, c) -> a.foo(b, c)
+   */
+  private static boolean isMethodCalledOnFirstParam(MethodInvocationTree mit, List<VariableTree> parameters) {
+    if (!parameters.isEmpty() && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree expression = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
       Symbol parameterSymbol = parameters.get(0).symbol();
       return expression.is(Tree.Kind.IDENTIFIER) &&
         !parameterSymbol.isUnknown() &&
-        !isAmbiguous((MethodInvocationTree) tree, parameterSymbol) &&
-        parameterSymbol.equals(((IdentifierTree) expression).symbol());
+        parameterSymbol.equals(((IdentifierTree) expression).symbol()) &&
+        matchingParameters(mit.arguments(), parameters.subList(1, parameters.size()));
     }
     return false;
   }
@@ -374,23 +398,8 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
     return Optional.of(ExpressionUtils.skipParentheses(result));
   }
 
-  /**
-   * This is a crude way to shutdown the FPs when method reference is ambiguous in case of lambda like x -> x.foo()
-   * Full resolution algorithm is described in JLS 15.13.1
-   */
-  private static boolean isAmbiguous(MethodInvocationTree tree, Symbol parameterSymbol) {
-    Symbol method = tree.methodSymbol();
-    Symbol.TypeSymbol methodOwner = (Symbol.TypeSymbol) method.owner();
-    if (methodOwner.isUnknown() || method.isUnknown()) {
-      return true;
-    }
-    // suitable method is instance method with no parameters, or static method with single parameter of the same type as lambda argument
-    return methodOwner.lookupSymbols(method.name())
-      .stream()
-      .filter(Symbol::isMethodSymbol)
-      .map(s -> (Symbol.MethodSymbol) s)
-      .filter(m -> (!m.isStatic() && m.parameterTypes().isEmpty())
-        || (m.isStatic() && m.parameterTypes().size() == 1 && parameterSymbol.type().isSubtypeOf(m.parameterTypes().get(0))))
-      .count() > 1;
+  private static boolean isArgumentCompatible(Type argumentType, Type parameterType) {
+    return argumentType.isSubtypeOf(parameterType)
+      || JUtils.wrapTypeIfPrimitive(argumentType).equals(JUtils.wrapTypeIfPrimitive(parameterType));
   }
 }

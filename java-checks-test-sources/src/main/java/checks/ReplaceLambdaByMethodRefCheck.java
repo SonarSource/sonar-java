@@ -6,11 +6,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 class LambdaA {
   void fun() {
+    String strings = "test";
+    Runnable run = () -> System.out.println(strings);
+    run.run();
     IntStream.range(1, 5)
         .map((x) -> x * x)
         .map(x -> square(x)) // Noncompliant [[sc=16;ec=18]] {{Replace this lambda with method reference 'this::square'.}}
@@ -396,10 +400,12 @@ class CastCheck {
     // fix@qf_method_override {{Replace with "Nested::doSomething"}}
     // edit@qf_method_override [[sc=43;ec=63]] {{Nested::doSomething}}
 
-    Stream.of(new NestedExtendOverrideTakeInt()).forEach(x -> x.doSomething()); // Compliant, shorter
+    Stream.of(new NestedExtendOverrideTakeInt()).forEach(x -> x.doSomething()); // Noncompliant [[sc=60;ec=62;quickfixes=qf_method_override3]]
+    // fix@qf_method_override3 {{Replace with "Nested::doSomething"}}
+    // edit@qf_method_override3 [[sc=58;ec=78]] {{Nested::doSomething}}
     Stream.of(new NestedExtendOverrideTakeInt()).forEach(parameterWithLongName -> parameterWithLongName.doSomething()); // Noncompliant [[sc=80;ec=82;quickfixes=qf_method_override2]]
-    // fix@qf_method_override2 {{Replace with "NestedExtendOverrideTakeInt::doSomething"}}
-    // edit@qf_method_override2 [[sc=58;ec=118]] {{NestedExtendOverrideTakeInt::doSomething}}
+    // fix@qf_method_override2 {{Replace with "Nested::doSomething"}}
+    // edit@qf_method_override2 [[sc=58;ec=118]] {{Nested::doSomething}}
   }
 
   class NestedExtend extends Nested {
@@ -431,3 +437,108 @@ class CastCheck {
   }
 }
 
+class LambdaB {
+  void intToString() {
+    apply((i, r) -> Integer.toString(i, r)); // Noncompliant [[sc=18;ec=20;quickfixes=qf_int_to_str2]]
+    // fix@qf_int_to_str2 {{Replace with "Integer::toString"}}
+    // edit@qf_int_to_str2 [[sc=11;ec=43]] {{Integer::toString}}
+  }
+
+  String apply(BiFunction<Integer, Integer, String> f) {
+    return f.apply(10, 16);
+  }
+}
+
+class MultiArityTest {
+  void test() {
+    BiFunction<MultiArityTest, Integer, String> test = (mat, i) -> foo(mat, i); // Compliant, both methods have the same reference and cannot be disambiguated
+  }
+  String foo(int x) { return Integer.toString(x); }
+  static String foo(MultiArityTest mat, int x) { return Integer.toString(x); }
+}
+
+class TestObject {
+  String foo() {
+    return null;
+  }
+
+  int spam() {
+    return 0;
+  }
+
+  static int spam(TestObject to) {
+    return to.hashCode();
+  }
+
+  int eggs() throws Exception {
+    throw new UnsupportedOperationException();
+  }
+}
+
+class TestNumber extends TestObject {
+  static String foo(TestNumber tn) {
+    return null;
+  }
+  String foo() {
+    return "Number here";
+  }
+
+  void test() {
+    Optional.of(new TestNumber()).map(testNumber -> testNumber.foo()); // Noncompliant [[sc=50;ec=52;quickfixes=qf_supertype]]
+    // fix@qf_supertype {{Replace with "TestObject::foo"}}
+    // edit@qf_supertype [[sc=39;ec=69]] {{TestObject::foo}}
+  }
+}
+class TestInteger extends TestNumber {
+  String foo() {
+    return "Integer here";
+  }
+
+  int eggs() {
+    return 42;
+  }
+
+  static int eggs(TestInteger ti) {
+    return ti.hashCode();
+  }
+
+  String bar(String s) {
+    return s;
+  }
+
+  static String bar(TestInteger i, String s, String t) {
+    return eggs(i) == 0 ? s : t;
+  }
+
+  static void consumeBoth(BiConsumer<TestInteger, String> bc) {
+    bc.accept(null, null);
+  }
+
+  void test() {
+    Optional.of(new TestInteger()).map(testInteger -> testInteger.foo()); // Noncompliant [[sc=52;ec=54;quickfixes=qf_supertype2]]
+    // fix@qf_supertype2 {{Replace with "TestObject::foo"}}
+    // edit@qf_supertype2 [[sc=40;ec=72]] {{TestObject::foo}}
+    Optional.of(new TestInteger()).map(testInteger -> TestNumber.foo(testInteger)); // Compliant, method reference is ambiguous
+    Optional.of(new TestInteger()).map(testInteger -> testInteger.spam()); // Compliant, method reference is ambiguous
+    Optional.of(new TestInteger()).map(testInteger -> (foo().length() % 23 == 0 ? testInteger : null).spam(testInteger)); // Compliant, method reference is ambiguous
+    Optional.of(new TestInteger()).map(testInteger -> testInteger.eggs()); // Compliant, method reference is ambiguous
+    consumeBoth((testInteger, s) -> testInteger.bar(s)); // Noncompliant [[sc=34;ec=36;quickfixes=qf_2args]]
+    // fix@qf_2args {{Replace with "TestInteger::bar"}}
+    // edit@qf_2args [[sc=17;ec=55]] {{TestInteger::bar}}
+    consumeBoth((testInteger, s) -> testInteger.bar("test")); // Compliant
+  }
+}
+
+class UnambiguousDueToParameterType {
+  static int foo(String s) {
+    return 1;
+  }
+
+  int foo() {
+    return 2;
+  }
+
+  void test() {
+    Optional.of(this).map(x -> x.foo());
+  }
+}

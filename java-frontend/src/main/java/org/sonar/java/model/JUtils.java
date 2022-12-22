@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -66,6 +67,11 @@ public final class JUtils {
 
   public static boolean isPrimitiveWrapper(Type type) {
     return type.isClass() && WRAPPER_TO_PRIMITIVE.containsKey(type.fullyQualifiedName());
+  }
+
+  public static Type wrapTypeIfPrimitive(Type type) {
+    Type wrapped = primitiveWrapperType(type);
+    return Objects.requireNonNullElse(wrapped, type);
   }
 
   @Nullable

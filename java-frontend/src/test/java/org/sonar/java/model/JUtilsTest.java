@@ -105,6 +105,35 @@ class JUtilsTest {
   }
 
   @Nested
+  class WrapTypeIfPrimitiveTest {
+    @Test
+    void prim_to_wrapped() {
+      Type primitiveType = SEMA.type(SEMA.resolveType("byte"));
+      Type wrappedType = JUtils.wrapTypeIfPrimitive(primitiveType);
+      assertThat(wrappedType).isNotNull();
+      assertThat(wrappedType.isPrimitive()).isFalse();
+      assertThat(wrappedType.fullyQualifiedName()).isEqualTo("java.lang.Byte");
+    }
+
+    @Test
+    void already_wrapped() {
+      Type boxedType = SEMA.type(SEMA.resolveType("java.lang.Byte"));
+      Type wrappedType = JUtils.wrapTypeIfPrimitive(boxedType);
+      assertThat(wrappedType).isNotNull();
+      assertThat(wrappedType.isPrimitive()).isFalse();
+      assertThat(wrappedType.fullyQualifiedName()).isEqualTo("java.lang.Byte");
+    }
+
+    @Test
+    void unrelated() {
+      Type otherType = SEMA.type(SEMA.resolveType("java.lang.Object"));
+      Type wrappedType = JUtils.wrapTypeIfPrimitive(otherType);
+      assertThat(wrappedType).isNotNull();
+      assertThat(wrappedType.isPrimitive()).isFalse();
+      assertThat(wrappedType.fullyQualifiedName()).isEqualTo("java.lang.Object");
+    }
+  }
+  @Nested
   class IsNullType {
     private final JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m1() { return null; } Unknown m2() { return null; } }");
     private final ClassTreeImpl c = firstClass(cu);
