@@ -134,6 +134,7 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
       methodInvocationToRegex.clear();
       methodsCalledOnRegex.clear();
       escapingRegexes.clear();
+      regexCreations.clear();
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION) && matchers.matches((MethodInvocationTree) tree)) {
       onMethodInvocationFound((MethodInvocationTree) tree);
     } else if (tree.is(Tree.Kind.NEW_CLASS)) {
