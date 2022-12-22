@@ -244,7 +244,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
           return Optional.empty();
         }
         if (matchingParameters(mit.arguments(), parameters)) {
-          // x -> foo(x) becomes x::foo or Owner::foo or this::foo or Owner.this::foo
+          // x -> foo(x) becomes y::foo or Owner::foo or this::foo or Owner.this::foo
           return getReplacementForMethodInvocation(mit);
         }
         if (isMethodCalledOnFirstParam(mit, parameters)) {
@@ -299,10 +299,10 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   private static Optional<String> getReplacementForMethodInvocation(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     Symbol.MethodSymbol symbol = mit.methodSymbol();
+    if (symbol.isStatic()) {
+      return getUnambiguousReference(mit);
+    }
     if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-      if (symbol.isStatic()) {
-        return getUnambiguousReference(mit);
-      }
       MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(mit);
       Symbol symbolOwner = symbol.owner();
       if (enclosingMethod != null) {
@@ -312,8 +312,6 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         }
       }
       return Optional.of(symbolOwner.name() + ".this::" + symbol.name());
-    } else if (methodSelect.is(Tree.Kind.MEMBER_SELECT) && symbol.isStatic()) {
-      return getUnambiguousReference(mit);
     }
     MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
     return Optional.of(ExpressionsHelper.concatenate(memberSelect.expression()) + "::" + memberSelect.identifier().name());
