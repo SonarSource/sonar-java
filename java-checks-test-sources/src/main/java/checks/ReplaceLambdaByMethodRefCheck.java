@@ -429,17 +429,6 @@ class CastCheck {
 
 class LambdaB {
   void intToString() {
-    Collection<Integer> idList = List.of(1, 2);
-    System.out.println(idList
-      .stream()
-      .map(integer -> integer.toString()) // Noncompliant [[sc=20;ec=22;quickfixes=qf_int_to_str1]]
-      // fix@qf_int_to_str1 {{Replace with "Object::toString"}}
-      // edit@qf_int_to_str1 [[sc=12;ec=41]] {{Object::toString}}
-      .distinct());
-    System.out.println(idList
-      .stream()
-      .map(integer -> Integer.toString(integer)) // Compliant (the static ambiguous method can't be referenced using a superclass, like for its non-static counterpart)
-      .distinct());
     apply((i, r) -> Integer.toString(i, r)); // Noncompliant [[sc=18;ec=20;quickfixes=qf_int_to_str2]]
     // fix@qf_int_to_str2 {{Replace with "Integer::toString"}}
     // edit@qf_int_to_str2 [[sc=11;ec=43]] {{Integer::toString}}
@@ -527,5 +516,19 @@ class TestInteger extends TestNumber {
     // fix@qf_2args {{Replace with "TestInteger::bar"}}
     // edit@qf_2args [[sc=17;ec=55]] {{TestInteger::bar}}
     consumeBoth((testInteger, s) -> testInteger.bar("test")); // Compliant
+  }
+}
+
+class UnambiguousDueToParameterType {
+  static int foo(String s) {
+    return 1;
+  }
+
+  int foo() {
+    return 2;
+  }
+
+  void test() {
+    Optional.of(this).map(x -> x.foo());
   }
 }
