@@ -3,12 +3,15 @@ package checks;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 class A {
   void fun() {
-    Function<String, String> debug = x -> unknown(x);  // Compliant, do not propose to replace with "!unknown!::!unknownMethod!"
+    Function<String, String> method = x -> unknown(x);  // Compliant, do not propose to replace with "!unknown!::!unknownMethod!"
+    Supplier<Unknown> constructor1 = () -> new Unknown();  // Noncompliant {{Replace this lambda with method reference 'Unknown::new'.}}
+    Supplier<Unknown> constructor2 = () -> new AnyClass.Unknown();  // Noncompliant {{Replace this lambda with method reference 'AnyClass.Unknown::new'.}}
 
     Arrays.asList(new A()).stream().filter(a -> a.coolerThan(0, a)); // Compliant
 
@@ -40,7 +43,7 @@ class A {
       biConsumer((xParam, y) -> unknown(xParam , y)); // Compliant, do not propose to replace with "!unknown!::!unknownMethod!"
       biConsumer((x, y) -> unknown(y , x));
       biConsumer((x, y) -> unknown(y));
-      biConsumer((x,y) -> new ClassTree(x, y)); // Noncompliant
+      biConsumer((x,y) -> new ClassTree(x, y)); // Noncompliant {{Replace this lambda with method reference 'ClassTree::new'.}}
       biConsumer((x,y) -> new ClassTree(y, x));
       biConsumer((x,y) -> new ClassTree(x, y) {
         //can get some capture
