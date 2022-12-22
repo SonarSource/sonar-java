@@ -257,7 +257,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Optional<String> getUnambiguousReference(MethodInvocationTree mit) {
-    Symbol.MethodSymbol ms = ((Symbol.MethodSymbol) mit.symbol());
+    Symbol.MethodSymbol ms = mit.methodSymbol();
     ArrayList<Symbol.MethodSymbol> methodSymbols = new ArrayList<>(ms.overriddenSymbols());
     Collections.reverse(methodSymbols);
     methodSymbols.add(ms);
@@ -298,8 +298,8 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
 
   private static Optional<String> getReplacementForMethodInvocation(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
+    Symbol.MethodSymbol symbol = mit.methodSymbol();
     if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = mit.symbol();
       if (symbol.isStatic()) {
         return getUnambiguousReference(mit);
       }
@@ -312,7 +312,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         }
       }
       return Optional.of(symbolOwner.name() + ".this::" + symbol.name());
-    } else if (methodSelect.is(Tree.Kind.MEMBER_SELECT) && mit.symbol().isStatic()) {
+    } else if (methodSelect.is(Tree.Kind.MEMBER_SELECT) && symbol.isStatic()) {
       return getUnambiguousReference(mit);
     }
     MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
