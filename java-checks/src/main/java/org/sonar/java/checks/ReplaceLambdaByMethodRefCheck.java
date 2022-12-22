@@ -262,13 +262,10 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   private static Optional<String> getNewClass(NewClassTree newClassTree, List<VariableTree> parameters) {
     if (newClassTree.classBody() == null && matchingParameters(parameters, newClassTree.arguments())) {
       TypeTree identifier = newClassTree.identifier();
-      String className;
-      if (identifier.is(Tree.Kind.MEMBER_SELECT)) {
-        className = ExpressionsHelper.concatenate((MemberSelectExpressionTree) identifier);
-      } else {
-        className = identifier.symbolType().name();
+      if (identifier.is(Tree.Kind.MEMBER_SELECT, Tree.Kind.IDENTIFIER)) {
+        String className = ExpressionsHelper.concatenate((ExpressionTree) identifier);
+        return Optional.of(className + "::new");
       }
-      return Optional.of(className + "::new");
     }
     return Optional.empty();
   }
