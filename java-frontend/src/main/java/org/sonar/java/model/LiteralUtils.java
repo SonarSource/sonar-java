@@ -160,7 +160,7 @@ public class LiteralUtils {
 
     return Arrays.stream(lines)
       .skip(1)
-      .map(LiteralUtils::removeTrailingSpaces)
+      .map(String::stripTrailing)
       .map(s -> stripIndent(indent, s))
       .collect(Collectors.joining("\n"))
       .replaceAll("\"\"\"$", "");
@@ -168,10 +168,6 @@ public class LiteralUtils {
 
   private static String stripIndent(int indent, String s) {
     return s.isEmpty() ? s : s.substring(indent);
-  }
-
-  private static String removeTrailingSpaces(String s) {
-    return s.replaceAll("\\s++$", "");
   }
 
   public static int indentationOfTextBlock(String[] lines) {

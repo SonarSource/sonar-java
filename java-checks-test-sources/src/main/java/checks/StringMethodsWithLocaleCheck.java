@@ -29,6 +29,7 @@ class StringMethodsWithLocaleCheck {
     format("%0+(15d", 42); // Compliant
     format("%%0+,(15d", 42); // compliant - double %% is simply displaying the percent char
     format("%1$0+,(15d", 42); // Noncompliant
+    format("%1$+,(015d", 42); // Noncompliant
 
     // any floating point format
     format("this will display my value in dollar: %f$" + " (dollars)", 42.01234f); // Noncompliant
