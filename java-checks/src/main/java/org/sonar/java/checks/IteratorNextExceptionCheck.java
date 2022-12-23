@@ -20,7 +20,9 @@
 package org.sonar.java.checks;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -54,8 +56,9 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
     MethodTree methodTree = (MethodTree) tree;
     if (isIteratorNextMethod(methodTree.symbol()) && methodTree.block() != null) {
       NextMethodBodyVisitor visitor = new NextMethodBodyVisitor();
+      visitor.methodsVisited.add(methodTree);
       tree.accept(visitor);
-      if (!visitor.foundThrow) {
+      if (!visitor.expectedExceptionIsThrown) {
         reportIssue(methodTree.simpleName(), "Add a \"NoSuchElementException\" for iteration beyond the end of the collection.");
       }
     }
@@ -70,8 +73,8 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static class NextMethodBodyVisitor extends BaseTreeVisitor {
-
-    private boolean foundThrow = false;
+    private boolean expectedExceptionIsThrown = false;
+    private final Set<MethodTree> methodsVisited = new HashSet<>();
 
     @Override
     public void visitThrowStatement(ThrowStatementTree throwStatementTree) {
@@ -79,9 +82,9 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
       if (expression.is(Tree.Kind.NEW_CLASS)) {
         NewClassTree newClassTree = (NewClassTree) expression;
         Type symbolType = newClassTree.symbolType();
-        if (symbolType.is("java.util.NoSuchElementException") || symbolType.isUnknown()) {
+        if (symbolType.isSubtypeOf("java.util.NoSuchElementException") || symbolType.isUnknown()) {
           // Consider any unknown Exception as NoSuchElementException to avoid FP.
-          foundThrow = true;
+          expectedExceptionIsThrown = true;
         }
       }
       super.visitThrowStatement(throwStatementTree);
@@ -90,7 +93,14 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
       if (NEXT_INVOCATION_MATCHER.matches(methodInvocation) || throwsNoSuchElementException(methodInvocation)) {
-        foundThrow = true;
+        expectedExceptionIsThrown = true;
+      } else {
+        Symbol.MethodSymbol methodSymbol = methodInvocation.methodSymbol();
+        MethodTree methodTree = methodSymbol.declaration();
+        boolean canVisit = methodTree != null && methodsVisited.add(methodTree);
+        if (canVisit) {
+          scan(methodTree);
+        }
       }
       super.visitMethodInvocation(methodInvocation);
     }
@@ -105,7 +115,7 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
     }
 
     private static boolean throwsNoSuchElementException(List<? extends Type> thrownTypes) {
-      return thrownTypes.stream().anyMatch(t -> t.is("java.util.NoSuchElementException"));
+      return thrownTypes.stream().anyMatch(t -> t.isSubtypeOf("java.util.NoSuchElementException") || t.isUnknown());
     }
 
   }
