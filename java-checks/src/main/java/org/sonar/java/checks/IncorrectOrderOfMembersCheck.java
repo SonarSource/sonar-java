@@ -24,7 +24,6 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -44,36 +43,65 @@ public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements Jav
 
   @Override
   public void visitClass(ClassTree tree) {
-    int prev = 0;
+    int startLine = tree.firstToken().range().start().line();
+    int endLine = tree.lastToken().range().start().line();
+
+    PrioritizedMember[] priorities = new PrioritizedMember[endLine - startLine];
     for (int i = 0; i < tree.members().size(); i++) {
       final Tree member = tree.members().get(i);
-      final int priority;
-      IdentifierTree identifier;
+      int memberLine = member.firstToken().range().start().line() - startLine;
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree variable = ((VariableTree) member);
         if (variable.symbol().isStatic()) {
-          priority = 0;
+          priorities[memberLine] = new PrioritizedMember(0, variable.simpleName());
         } else {
-          priority = 1;
+          priorities[memberLine] = new PrioritizedMember(1, variable.simpleName());
         }
-        identifier = variable.simpleName();
       } else if (member.is(Tree.Kind.CONSTRUCTOR)) {
-        priority = 2;
-        identifier = ((MethodTree) member).simpleName();
+        priorities[memberLine] = new PrioritizedMember(2, ((MethodTree) member).simpleName());
       } else if (member.is(Tree.Kind.METHOD)) {
-        priority = 3;
-        identifier = ((MethodTree) member).simpleName();
+        priorities[memberLine] = new PrioritizedMember(3, ((MethodTree) member).simpleName());
       } else {
         continue;
       }
-      if (priority < prev) {
-        context.reportIssue(this, identifier, "Move this " + NAMES[priority] + " to comply with Java Code Conventions.");
+    }
+    checkPriorityArray(priorities);
+    super.visitClass(tree);
+  }
+
+  void checkPriorityArray(PrioritizedMember[] priorities) {
+    int highestPriority = 0;
+    for (int line = 0; line < priorities.length; line++) {
+      PrioritizedMember pm = priorities[line];
+      if (pm == null) {
+        continue;
+      }
+      if (pm.priority() < highestPriority) {
+        context.reportIssue(this, pm.member(), "Move this " + NAMES[pm.priority()] + " to comply with Java Code Conventions.");
       } else {
-        prev = priority;
+        highestPriority = pm.priority();
       }
     }
+  }
 
-    super.visitClass(tree);
+  private static class PrioritizedMember {
+
+    private int priority = 0;
+    private Tree member;
+
+    public PrioritizedMember(int p, Tree m) {
+      priority = p;
+      member = m;
+    }
+
+    public int priority() {
+      return priority;
+    }
+
+    public Tree member() {
+      return member;
+    }
+
   }
 
 }

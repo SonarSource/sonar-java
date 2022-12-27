@@ -1,5 +1,17 @@
 package checks;
 
+record Output(String title, String summary, String text) {
+  public static final String TRUNCATE_MESSAGE = "abc"; // compliant
+  static final int GREAT_VALUE = 42; // compliant
+  private static final String DEFAULT = "xyz"; // compliant
+  
+  public boolean isTooLong() {
+    return title.length() + summary.length() + text.length() > 1000;
+  }
+
+  public static final int DEFAULT_NUMBER = 0; // Noncompliant  
+}
+
 class IncorrectOrderOfMembersCheck {
   class FieldAfterConstructor {
     FieldAfterConstructor() {
