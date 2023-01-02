@@ -1,5 +1,7 @@
 package checks;
 
+class OneLiner { void foo() {System.out.println("");} } 
+
 record Output(String title, String summary, String text) {
   public static final String TRUNCATE_MESSAGE = "abc"; // compliant
   static final int GREAT_VALUE = 42; // compliant

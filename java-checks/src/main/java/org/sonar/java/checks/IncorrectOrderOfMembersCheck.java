@@ -46,7 +46,7 @@ public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements Jav
     int startLine = tree.firstToken().range().start().line();
     int endLine = tree.lastToken().range().start().line();
 
-    PrioritizedMember[] priorities = new PrioritizedMember[endLine - startLine];
+    PrioritizedMember[] priorities = new PrioritizedMember[endLine - startLine + 1];
     for (int i = 0; i < tree.members().size(); i++) {
       final Tree member = tree.members().get(i);
       int memberLine = member.firstToken().range().start().line() - startLine;
