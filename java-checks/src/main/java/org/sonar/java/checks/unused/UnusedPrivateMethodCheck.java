@@ -45,7 +45,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
@@ -110,7 +109,8 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       case METHOD_REFERENCE:
         checkIfUnknown((MethodReferenceTree) tree);
         break;
-      default:
+      default: 
+        // not registered - can not happen
     }
   }
 
