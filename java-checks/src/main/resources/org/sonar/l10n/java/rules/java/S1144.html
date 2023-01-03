@@ -32,5 +32,9 @@ public class Foo implements Serializable
 }
 </pre>
 <h2>Exceptions</h2>
-<p>This rule doesn’t raise any issue on annotated methods.</p>
+<p>This rule doesn’t raise issues for:</p>
+<ul>
+  <li> annotated methods </li>
+  <li> methods with parameters that are annotated with <code>@javax.enterprise.event.Observes</code> </li>
+</ul>
 

@@ -29,7 +29,7 @@ class UnusedPrivateMethodCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(TestUtils.testSourcesPath("checks/UnusedPrivateMethod.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/UnusedPrivateMethod.java"))
       .withCheck(new UnusedPrivateMethodCheck())
       .withQuickFixes()
       .verifyIssues();
@@ -40,7 +40,15 @@ class UnusedPrivateMethodCheckTest {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/UnusedPrivateMethod.java"))
       .withCheck(new UnusedPrivateMethodCheck())
-      .verifyNoIssues();
+      .verifyIssues();
+  }
+  
+  @Test
+  void test_non_compiling_unknown() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/unused/UnusedPrivateMethodWithUknownResolution.java"))
+      .withCheck(new UnusedPrivateMethodCheck())
+      .verifyIssues();
   }
 
 }
