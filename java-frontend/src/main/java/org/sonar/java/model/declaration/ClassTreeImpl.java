@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Symbols;
@@ -71,7 +72,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
     this.kind = kind;
     this.openBraceToken = openBraceToken;
-    this.members = members;
+    this.members = orderMembers(kind, members);
     this.closeBraceToken = closeBraceToken;
     this.modifiers = ModifiersTreeImpl.emptyModifiers();
     this.typeParameters = new TypeParameterListTreeImpl();
@@ -121,6 +122,14 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   public ClassTreeImpl completeRecordComponents(List<VariableTree> recordComponents) {
     this.recordComponents = recordComponents;
     return this;
+  }
+
+  private static List<Tree> orderMembers(Tree.Kind kind, List<Tree> members) {
+    if (kind == Tree.Kind.RECORD && members.size() > 1) {
+      // eclipse's records members are not properly ordered
+      members.sort(ExpressionUtils.TREE_START_POSITION_COMPARATOR);
+    }
+    return members;
   }
 
   @Override

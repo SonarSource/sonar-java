@@ -19,10 +19,12 @@
  */
 package org.sonar.java.model;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -33,6 +35,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -40,6 +43,24 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public final class ExpressionUtils {
 
   private ExpressionUtils() {
+  }
+
+  public static final Comparator<Tree> TREE_START_POSITION_COMPARATOR = (t1, t2) -> startPosition(t1).compareTo(startPosition(t2));
+
+  public static Position startPosition(Tree tree) {
+    return startPosition(tree.firstToken());
+  }
+
+  public static Position endPosition(Tree tree) {
+    return endPosition(tree.lastToken());
+  }
+
+  public static Position startPosition(SyntaxToken token) {
+    return token.range().start();
+  }
+
+  public static Position endPosition(SyntaxToken token) {
+    return token.range().end();
   }
 
   /**

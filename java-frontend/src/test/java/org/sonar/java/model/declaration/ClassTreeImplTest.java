@@ -21,6 +21,7 @@ package org.sonar.java.model.declaration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
@@ -80,5 +81,31 @@ class ClassTreeImplTest {
     classTree.accept(baseTreeVisitor);
 
     assertThat(componentsVariableNames).containsExactly("o", "s");
+  }
+
+  @Test
+  void records_members_order() {
+    ClassTree classTree = (ClassTree) JParserTestUtils.parse(
+      "record Output(String title, String summary, String text) {\n"
+        + "  public static final String CONST_1 = \"abc\";\n"
+        + "  boolean isTooLong() { return true; }\n"
+        + "  public static final int CONST_2 = 42;\n"
+        + "  Output(String s) { this(s, s, s); }\n"
+        + "  public static final boolean CONST_3 = false;\n"
+        + "  class Inner {}\n"
+        + "  public static final Object CONST_4 = null;\n"
+        + "}")
+      .types().get(0);
+
+    assertThat(classTree).is(Tree.Kind.RECORD);
+    List<String> membersKinds = classTree.members().stream().map(Tree::kind).map(Tree.Kind::name).collect(Collectors.toList());
+    assertThat(membersKinds).containsExactly(
+      "VARIABLE",
+      "METHOD",
+      "VARIABLE",
+      "CONSTRUCTOR",
+      "VARIABLE",
+      "CLASS",
+      "VARIABLE");
   }
 }
