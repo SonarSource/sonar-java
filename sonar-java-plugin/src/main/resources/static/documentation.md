@@ -141,6 +141,12 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 #### **7.16**
 
+* New method: `Position#startOf(Tree)`. Use this static method to get the start position of a given `Tree`. Shortcuts the usually cumbersome operation of accessing a tree start position through the normal API, with `tree.firstToken().range().start()`.
+* New method: `Position#startOf(SyntaxToken)`. Use this static method to get the start position of a given `SyntaxToken`.
+* New method: `Position#startOf(SyntaxTrivia)`. Use this static method to get the start position of a given `SyntaxTrivia`.
+* New method: `Position#endOf(Tree)`. Use this static method to get the end position of a given `Tree`.  Shortcuts the usually cumbersome operation of accessing a tree end position through the normal API, with `tree.lastToken().range().end()`.
+* New method: `Position#endOf(SyntaxToken)`. Use this static method to get the end position of a given `SyntaxToken`.
+* New method: `Position#endOf(SyntaxTrivia)`. Use this static method to get the end position of a given `SyntaxTrivia`.
 * New method: `MethodInvocationTree#methodSymbol()`. Use this method to get the symbol of a method invocation. Returns a `MethodSymbol`.
 * New method: `NewClassTree#methodSymbol()`. Use this method to get the symbol of a constructor call. Returns a `MethodSymbol`.
 * Deprecated method: `MethodInvocationTree#symbol()`. Deprecated in favor of `methodSymbol()`, which has a narrower return type.
