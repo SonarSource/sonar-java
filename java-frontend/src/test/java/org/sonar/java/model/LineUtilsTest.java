@@ -19,12 +19,32 @@
  */
 package org.sonar.java.model;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.LineUtils.endLine;
 import static org.sonar.java.model.LineUtils.splitLines;
+import static org.sonar.java.model.LineUtils.startLine;
 
 class LineUtilsTest {
+
+  private static CompilationUnitTree tree;
+
+  @BeforeAll
+  static void before() {
+    tree = JParserTestUtils.parse("package org.foo;\n"
+      + "\n"
+      + "class A {\n"
+      + " /*\n"
+      + "  * trivia\n"
+      + "  */\n"
+      + "}");
+  }
 
   @Test
   void split_lines() {
@@ -59,5 +79,28 @@ class LineUtilsTest {
       .containsExactly("a", "", "b", "", "c", "", "d", "", "");
   }
 
+  @Test
+  void start_Line() {
+    assertThat(startLine(tree)).isEqualTo(1);
+
+    ClassTree classTree = (ClassTree) tree.types().get(0);
+    SyntaxToken token = classTree.firstToken();
+    assertThat(startLine(token)).isEqualTo(3);
+
+    SyntaxTrivia trivia = classTree.lastToken().trivias().get(0);
+    assertThat(startLine(trivia)).isEqualTo(4);
+  }
+
+  @Test
+  void end_Line() {
+    assertThat(endLine(tree)).isEqualTo(7);
+
+    ClassTree classTree = (ClassTree) tree.types().get(0);
+    SyntaxToken token = classTree.firstToken();
+    assertThat(endLine(token)).isEqualTo(3);
+
+    SyntaxTrivia trivia = classTree.lastToken().trivias().get(0);
+    assertThat(endLine(trivia)).isEqualTo(6);
+  }
 
 }

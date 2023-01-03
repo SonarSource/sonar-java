@@ -19,10 +19,15 @@
  */
 package org.sonar.plugins.java.api.location;
 
+import java.util.Comparator;
 import org.sonar.java.model.location.InternalPosition;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
 
 public interface Position extends Comparable<Position> {
 
+  Comparator<Tree> TREE_START_POSITION_COMPARATOR = (t1, t2) -> startOf(t1).compareTo(startOf(t2));
   int FIRST_LINE = 1;
   int FIRST_COLUMN = 1;
 
@@ -53,5 +58,29 @@ public interface Position extends Comparable<Position> {
   boolean isBefore(Position other);
 
   boolean isAfter(Position other);
+
+  static Position startOf(Tree tree) {
+    return startOf(tree.firstToken());
+  }
+
+  static Position endOf(Tree tree) {
+    return endOf(tree.lastToken());
+  }
+
+  static Position startOf(SyntaxTrivia trivia) {
+    return trivia.range().start();
+  }
+
+  static Position endOf(SyntaxTrivia trivia) {
+    return trivia.range().end();
+  }
+
+  static Position startOf(SyntaxToken token) {
+    return token.range().start();
+  }
+
+  static Position endOf(SyntaxToken token) {
+    return token.range().end();
+  }
 
 }
