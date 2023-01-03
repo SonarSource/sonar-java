@@ -46,6 +46,7 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
@@ -144,9 +145,9 @@ public class FilterVerifier {
       String[] lines = comment.split("\\r\\n|\\r|\\n");
       for (int i = 0; i < lines.length; i++) {
         if (lines[i].endsWith("NoIssue")) {
-          rejectedIssuesLines.add(syntaxTrivia.range().start().line() + i);
+          rejectedIssuesLines.add(LineUtils.startLine(syntaxTrivia) + i);
         } else if (lines[i].endsWith("WithIssue")) {
-          acceptedIssuesLines.add(syntaxTrivia.range().start().line() + i);
+          acceptedIssuesLines.add(LineUtils.startLine(syntaxTrivia) + i);
         }
       }
     }

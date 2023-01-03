@@ -33,6 +33,7 @@ import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -45,7 +46,7 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
   private final List<JWarning> warnings = new ArrayList<>();
-  private static final Comparator<Location> LOCATION_COMPARATOR = Comparator.comparing(loc -> loc.syntaxNode.firstToken().range().start());
+  private static final Comparator<Location> LOCATION_COMPARATOR = Comparator.comparing(loc -> Position.startOf(loc.syntaxNode));
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

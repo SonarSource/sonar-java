@@ -20,6 +20,7 @@
 package org.sonar.java.ast.visitors;
 
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -46,7 +47,7 @@ public class LinesOfCodeVisitor extends SubscriptionVisitor{
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
     if (!((InternalSyntaxToken) syntaxToken).isEOF()) {
-      lines.add(syntaxToken.range().start().line());
+      lines.add(Position.startOf(syntaxToken).line());
     }
   }
 }

@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.apache.commons.lang3.StringUtils;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 
@@ -51,7 +52,7 @@ public class CommentContainsPatternChecker {
       String[] lines = comment.split("\r\n?|\n");
       for (int i = 0; i < lines.length; i++) {
         if (StringUtils.containsIgnoreCase(lines[i], pattern) && !isLetterAround(lines[i], pattern)) {
-          newCheck.addIssue(syntaxTrivia.range().start().line() + i, message);
+          newCheck.addIssue(LineUtils.startLine(syntaxTrivia) + i, message);
         }
       }
     }

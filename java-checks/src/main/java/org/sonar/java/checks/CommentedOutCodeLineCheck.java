@@ -26,8 +26,10 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -60,7 +62,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
     AnalyzerMessage previousRelatedIssue = null;
     int previousCommentLine = -1;
     for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
-      int currentCommentLine = syntaxTrivia.range().start().line();
+      int currentCommentLine = LineUtils.startLine(syntaxTrivia);
       if (currentCommentLine != previousCommentLine + 1 &&
         currentCommentLine != previousCommentLine) {
         previousRelatedIssue = null;
@@ -80,8 +82,8 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
     for (int lineOffset = 0; lineOffset < lines.length; lineOffset++) {
       String line = lines[lineOffset];
       if (!isJavadocLink(line) && codeRecognizer.isLineOfCode(line)) {
-        int startLine = syntaxTrivia.range().start().line() + lineOffset;
-        int startColumnOffset = (lineOffset == 0 ? syntaxTrivia.range().start().columnOffset() : 0);
+        int startLine = LineUtils.startLine(syntaxTrivia) + lineOffset;
+        int startColumnOffset = (lineOffset == 0 ? Position.startOf(syntaxTrivia).columnOffset() : 0);
         if (issue != null) {
           issue.flows.add(Collections.singletonList(createAnalyzerMessage(startLine, startColumnOffset, line, "Code")));
         } else {
@@ -121,7 +123,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
    * But we assume that probability of this is really low.
    */
   private static boolean isHeader(SyntaxTrivia syntaxTrivia) {
-    return syntaxTrivia.range().start().line() == 1;
+    return LineUtils.startLine(syntaxTrivia) == 1;
   }
 
   private static boolean isJavadocLink(String line) {

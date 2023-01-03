@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -74,7 +75,7 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
     for (Tree tree : trees) {
       if (tree.is(Tree.Kind.VARIABLE)) {
         VariableTree varTree = (VariableTree) tree;
-        int line = varTree.simpleName().identifierToken().range().start().line();
+        int line = LineUtils.startLine(varTree.simpleName().identifierToken());
         if (varSameDeclaration || lastVarLine == line) {
           nodesToReport.add(varTree);
         } else {
@@ -137,9 +138,8 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
   }
 
   private String indentationOfLine(Tree tree) {
-    SyntaxToken firstToken = tree.firstToken();
     Matcher matcher = INDENTATION_PATTERN.matcher(context.getFileLines()
-      .get(firstToken.range().start().line() - 1));
+      .get(LineUtils.startLine(tree) - 1));
     if (matcher.find()) {
       return matcher.group();
     }

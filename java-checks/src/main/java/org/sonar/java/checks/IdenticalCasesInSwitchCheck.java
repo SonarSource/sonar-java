@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -71,11 +72,11 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   protected static boolean allBranchesSame(Map<? extends Tree, ? extends Set<? extends Tree>> identicalBranches, int size) {
     return identicalBranches.keySet().size() == 1 && identicalBranchesSize(identicalBranches) == size - 1;
   }
-  
+
   private static long identicalBranchesSize(Map<? extends Tree, ? extends Set<? extends Tree>> identicalBranches) {
     return identicalBranches.values().stream().flatMap(Collection::stream).count();
   }
-  
+
   private static boolean isTrivialCase(List<StatementTree> body) {
     return body.size() == 1 || (body.size() == 2 && body.get(1).is(Tree.Kind.BREAK_STATEMENT));
   }
@@ -178,8 +179,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   }
 
   private static String issueMessage(String type, Tree node) {
-    return "This " + type + "'s code block is the same as the block for the " + type +
-      " on line " + node.firstToken().range().start().line() + ".";
+    return String.format("This %s's code block is the same as the block for the %s on line %d.", type, type, LineUtils.startLine(node));
   }
 
 }

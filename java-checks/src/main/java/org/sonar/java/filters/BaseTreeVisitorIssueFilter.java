@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -109,8 +110,9 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     SyntaxToken firstSyntaxToken = tree.firstToken();
     SyntaxToken lastSyntaxToken = tree.lastToken();
     if (firstSyntaxToken != null && lastSyntaxToken != null) {
-      Set<Integer> filteredLines = IntStream.rangeClosed(firstSyntaxToken.range().start().line(),
-        lastSyntaxToken.range().start().line()).boxed().collect(Collectors.toSet());
+      Set<Integer> filteredLines = IntStream.rangeClosed(LineUtils.startLine(firstSyntaxToken), LineUtils.startLine(lastSyntaxToken))
+        .boxed()
+        .collect(Collectors.toSet());
       computeFilteredLinesForRule(filteredLines, rulesKeysByRulesClass.get(filteredRule), excludeLine);
     }
   }

@@ -28,6 +28,7 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -103,7 +104,7 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
 
     private static boolean isInvalidPosition(ArrayTypeTree arrayTypeTree, SyntaxToken identifierToken) {
       SyntaxToken openBracketToken = arrayTypeTree.openBracketToken();
-      return openBracketToken != null && identifierToken.range().start().isBefore(openBracketToken.range().start());
+      return openBracketToken != null && Position.startOf(identifierToken).isBefore(Position.startOf(openBracketToken));
     }
 
   }

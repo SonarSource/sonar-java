@@ -24,11 +24,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -124,7 +126,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
 
   private static JavaQuickFix computeQuickFix(MethodTree method) {
     String commentFormat;
-    if (method.block().openBraceToken().range().start().line() == method.block().closeBraceToken().range().start().line()) {
+    if (LineUtils.startLine(method.block().openBraceToken()) == LineUtils.startLine(method.block().closeBraceToken())) {
       commentFormat = " /* TODO document why this %s is empty */ ";
     } else {
       String methodPadding = computePadding(method);
@@ -144,7 +146,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static String computePadding(MethodTree method) {
-    int spaces = method.firstToken().range().start().columnOffset();
+    int spaces = Position.startOf(method).columnOffset();
     // This loop and return call can be replaced with a call to " ".repeat(spaces) in Java 11
     StringBuilder padding = new StringBuilder("");
     for (int i = 0; i < spaces; i++) {

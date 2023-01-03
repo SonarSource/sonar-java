@@ -21,6 +21,7 @@ package org.sonar.java.se;
 
 import org.sonar.java.Preconditions;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -72,7 +73,7 @@ public class ProgramPoint {
     if (block instanceof CFG.Block) {
       List<Tree> elements = ((CFG.Block) block).elements();
       if (i < elements.size()) {
-        tree = "" + elements.get(i).kind() + elements.get(i).firstToken().range().start().line();
+        tree = "" + elements.get(i).kind() + LineUtils.startLine(elements.get(i));
       }
     }
     return "B" + block.id() + "." + i + "  " + tree;

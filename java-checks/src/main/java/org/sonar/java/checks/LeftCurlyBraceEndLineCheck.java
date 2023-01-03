@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
@@ -29,7 +30,7 @@ public class LeftCurlyBraceEndLineCheck extends LeftCurlyBraceBaseTreeVisitor {
 
   @Override
   protected void checkTokens(SyntaxToken lastToken, SyntaxToken openBraceToken) {
-    if (lastToken.range().start().line() != openBraceToken.range().start().line()) {
+    if (LineUtils.startLine(lastToken) != LineUtils.startLine(openBraceToken)) {
       addIssue(openBraceToken, this, "Move this left curly brace to the end of previous line of code.");
     }
   }

@@ -36,11 +36,11 @@ import org.sonar.java.ast.api.JavaRestrictedKeyword;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -150,11 +150,12 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
   }
 
   private void highlight(Tree from, Tree to, TypeOfText typeOfText) {
-    Range first = from.firstToken().range();
-    Range last = to.lastToken().range();
+    Position first = Position.startOf(from);
+    Position last = Position.endOf(to);
     highlighting.highlight(
-      first.start().line(), first.start().columnOffset(),
-      last.end().line(), last.end().columnOffset(), typeOfText);
+      first.line(), first.columnOffset(),
+      last.line(), last.columnOffset(),
+      typeOfText);
   }
 
   @Override
@@ -184,11 +185,13 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    Range range = syntaxTrivia.range();
     boolean isJavadoc = syntaxTrivia.comment().startsWith("/**");
     TypeOfText typeOfText = isJavadoc ? TypeOfText.STRUCTURED_COMMENT : TypeOfText.COMMENT;
+    Position start = Position.startOf(syntaxTrivia);
+    Position end = Position.endOf(syntaxTrivia);
     highlighting.highlight(
-      range.start().line(), range.start().columnOffset(),
-      range.end().line(), range.end().columnOffset(), typeOfText);
+      start.line(), start.columnOffset(),
+      end.line(), end.columnOffset(),
+      typeOfText);
   }
 }

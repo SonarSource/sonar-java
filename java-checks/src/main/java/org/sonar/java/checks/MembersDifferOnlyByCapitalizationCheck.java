@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -205,9 +206,9 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
       return -1;
     }
     if (symbol.isVariableSymbol()) {
-      return ((Symbol.VariableSymbol) symbol).declaration().simpleName().identifierToken().range().start().line();
+      return LineUtils.startLine(((Symbol.VariableSymbol) symbol).declaration().simpleName().identifierToken());
     }
-    return ((Symbol.MethodSymbol) symbol).declaration().simpleName().identifierToken().range().start().line();
+    return LineUtils.startLine(((Symbol.MethodSymbol) symbol).declaration().simpleName().identifierToken());
   }
 
   private static String getSymbolKindName(Symbol symbol) {

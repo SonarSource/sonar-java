@@ -104,7 +104,7 @@ public abstract class JavaTree implements Tree {
     if (firstSyntaxToken == null) {
       return -1;
     }
-    return firstSyntaxToken.range().start().line();
+    return LineUtils.startLine(firstSyntaxToken);
   }
 
   @Override

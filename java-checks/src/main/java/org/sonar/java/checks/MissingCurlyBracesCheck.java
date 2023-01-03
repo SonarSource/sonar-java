@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
@@ -74,7 +75,7 @@ public class MissingCurlyBracesCheck extends IssuableSubscriptionVisitor {
     StatementTree thenStatement = ifStmt.thenStatement();
     StatementTree elseStmt = ifStmt.elseStatement();
     boolean haveElse = elseStmt != null;
-    if (!isException(thenStatement, ifStmt.ifKeyword().range().start().line(), haveElse)) {
+    if (!isException(thenStatement, LineUtils.startLine(ifStmt.ifKeyword()), haveElse)) {
       checkStatement(ifStmt.ifKeyword(), thenStatement);
     }
     if (haveElse && !elseStmt.is(Tree.Kind.IF_STATEMENT)) {
@@ -86,7 +87,7 @@ public class MissingCurlyBracesCheck extends IssuableSubscriptionVisitor {
     if (haveElse || !statementTree.is(Tree.Kind.RETURN_STATEMENT, Tree.Kind.CONTINUE_STATEMENT, Tree.Kind.BREAK_STATEMENT)) {
       return false;
     }
-    return statementTree.firstToken().range().start().line() == ifLine;
+    return LineUtils.startLine(statementTree) == ifLine;
   }
 
   private void checkStatement(SyntaxToken reportToken, StatementTree statement) {

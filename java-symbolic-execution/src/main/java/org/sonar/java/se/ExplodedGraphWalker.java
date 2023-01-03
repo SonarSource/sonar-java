@@ -41,6 +41,7 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -314,7 +315,7 @@ public class ExplodedGraphWalker {
 
   private void throwMaxSteps(MethodTree tree) {
     String message = String.format("reached limit of %d steps for method %s#%d in class %s",
-      maxSteps(), tree.simpleName().name(), tree.simpleName().firstToken().range().start().line(), tree.symbol().owner().name());
+      maxSteps(), tree.simpleName().name(), LineUtils.startLine(tree.simpleName()), tree.symbol().owner().name());
     MaximumStepsReachedException cause = new MaximumStepsReachedException(message);
     interrupted(cause);
     throw cause;
@@ -746,7 +747,7 @@ public class ExplodedGraphWalker {
         programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
         break;
       case NULL_PATTERN:
-        // FIXME we could add a null constraint to the argument of the switch, since it should be 
+        // FIXME we could add a null constraint to the argument of the switch, since it should be
         // considered being null in this branch
         programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
         break;

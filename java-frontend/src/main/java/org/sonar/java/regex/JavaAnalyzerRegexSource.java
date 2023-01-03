@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
@@ -104,7 +105,7 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
     if (literal == null || !literal.is(Tree.Kind.TEXT_BLOCK)) {
       return false;
     }
-    int lastLine = literal.token().range().start().line()
+    int lastLine = LineUtils.startLine(literal.token())
       + literal.value().split("\n").length
       - 1;
     // last line will benefit from the closing """
@@ -144,7 +145,7 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
       String[] stringLines = getString(literal).split("(?<=\r?\n)");
 
       int indent = LiteralUtils.indentationOfTextBlock(literalTreeLines);
-      int textBlockLine = literal.token().range().start().line();
+      int textBlockLine = LineUtils.startLine(literal.token());
       for (int i = 0; i < stringLines.length; i++) {
         int line = textBlockLine + i + 1;
         String stringLine = stringLines[i];

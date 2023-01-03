@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -72,10 +73,11 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    commentedLines.add(syntaxTrivia.range().start().line());
+    int startLine = LineUtils.startLine(syntaxTrivia);
+    commentedLines.add(startLine);
     int numLines = StringUtils.countMatches(syntaxTrivia.comment(), "\n");
     if (numLines > 0) {
-      commentedLines.add(syntaxTrivia.range().start().line() + numLines);
+      commentedLines.add(startLine + numLines);
     }
   }
 
@@ -157,7 +159,7 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
     }
 
     private boolean isCommented(LiteralTree regexPart) {
-      int line = regexPart.token().range().start().line();
+      int line = LineUtils.startLine(regexPart);
       return regexContainsComments
         || commentedLines.contains(line)
         || commentedLines.contains(line - 1);

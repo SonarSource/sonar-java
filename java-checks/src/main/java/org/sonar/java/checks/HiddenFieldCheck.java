@@ -33,6 +33,7 @@ import org.sonar.check.Rule;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -112,7 +113,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
       String identifier = variableTree.simpleName().name();
       VariableTree hiddenVariable = variables.get(identifier);
       if (!flattenExcludedVariables.contains(variableTree) && hiddenVariable != null && !isInStaticInnerClass(hiddenVariable, variableTree)) {
-        int line = hiddenVariable.firstToken().range().start().line();
+        int line = LineUtils.startLine(hiddenVariable);
         reportIssue(variableTree.simpleName(), "Rename \"" + identifier + "\" which hides the field declared at line " + line + ".");
         return;
       }

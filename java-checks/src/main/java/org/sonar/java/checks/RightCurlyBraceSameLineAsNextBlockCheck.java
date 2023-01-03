@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -35,7 +36,7 @@ public class RightCurlyBraceSameLineAsNextBlockCheck extends RightCurlyBraceToNe
 
   @Override
   protected void checkTokenPosition(SyntaxToken syntaxToken, BlockTree previousBlock) {
-    if (syntaxToken.range().start().line() != previousBlock.closeBraceToken().range().start().line()) {
+    if (LineUtils.startLine(syntaxToken) != LineUtils.startLine(previousBlock.closeBraceToken())) {
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(syntaxToken)

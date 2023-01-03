@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.model.LineUtils.startLine;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.BLOCK;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.BOOLEAN_LITERAL;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CATCH;
@@ -127,7 +128,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
       case FOR_EACH_STATEMENT:
       case WHILE_STATEMENT:
       case DO_STATEMENT:
-        executableLines.add(tree.lastToken().range().start().line());
+        executableLines.add(startLine(tree.lastToken()));
         break;
       default:
         // Do nothing particular
@@ -161,7 +162,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
       // get the last
       TypeTree returnType = tree.returnType();
       if(returnType == null || "void".equals(returnType.firstToken().text())) {
-        executableLines.add(methodBody.closeBraceToken().range().start().line());
+        executableLines.add(startLine(methodBody.closeBraceToken()));
       }
       return methodBody.body();
     }
@@ -182,12 +183,12 @@ public class FileLinesVisitor extends SubscriptionVisitor {
           if (t.is(NEW_CLASS)) {
             NewClassTree newClassTree = (NewClassTree) t;
             new ExecutableLinesTokenVisitor().scanTree(newClassTree.identifier());
-            executableLines.add(newClassTree.newKeyword().range().start().line());
+            executableLines.add(startLine(newClassTree.newKeyword()));
           } else if (t.is(TRY_STATEMENT)) {
             // add last token of try statements
-            executableLines.add(t.lastToken().range().start().line());
+            executableLines.add(startLine(t.lastToken()));
           } else {
-            executableLines.add(t.firstToken().range().start().line());
+            executableLines.add(startLine(t));
           }
         }
       );
@@ -195,7 +196,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
-    linesOfCode.add(syntaxToken.range().start().line());
+    linesOfCode.add(startLine(syntaxToken));
   }
 
   private static boolean isConstant(VariableTree variableTree) {
@@ -217,7 +218,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
 
     @Override
     public void visitToken(SyntaxToken syntaxToken) {
-      executableLines.add(syntaxToken.range().start().line());
+      executableLines.add(startLine(syntaxToken));
     }
   }
 }

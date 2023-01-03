@@ -37,7 +37,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.location.Range;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -198,14 +198,14 @@ public class QuickFixHelper {
   public static String contentForRange(SyntaxToken firstToken, SyntaxToken lastToken,
     JavaFileScannerContext context) {
 
-    Range firstRange = firstToken.range();
-    Range lastRange = lastToken.range();
+    Position firstPosition = Position.startOf(firstToken);
+    Position lastPosition = Position.endOf(lastToken);
 
-    int startLine = firstRange.start().line();
-    int endLine = lastRange.end().line();
+    int startLine = firstPosition.line();
+    int endLine = lastPosition.line();
 
-    int beginIndex = firstRange.start().columnOffset();
-    int endIndex = lastRange.end().columnOffset();
+    int beginIndex = firstPosition.columnOffset();
+    int endIndex = lastPosition.columnOffset();
 
     if (startLine == endLine) {
       // one-liners

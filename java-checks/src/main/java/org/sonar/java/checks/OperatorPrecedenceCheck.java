@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.apache.commons.lang3.BooleanUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -138,7 +139,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     Tree.Kind peek = stack.peek();
     Tree.Kind kind = tree.kind();
     if (requiresParenthesis(peek, kind)) {
-      raiseIssue(tree.operatorToken().range().start().line(), tree);
+      raiseIssue(LineUtils.startLine(tree.operatorToken()), tree);
     }
     stack.push(kind);
     super.visitBinaryExpression(tree);
@@ -154,7 +155,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     super.visitIfStatement(tree);
     ExpressionTree condition = tree.condition();
     if (condition.is(Tree.Kind.ASSIGNMENT) && EQUALITY_RELATIONAL_OPERATORS.contains(((AssignmentExpressionTree) condition).expression().kind())) {
-      raiseIssue(((AssignmentExpressionTree) condition).operatorToken().range().start().line(), tree);
+      raiseIssue(LineUtils.startLine(((AssignmentExpressionTree) condition).operatorToken()), tree);
     }
   }
 
@@ -204,7 +205,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
       || isSimpleLambda(tree)) {
       return;
     }
-    raiseIssue(tree.firstToken().range().start().line(), tree);
+    raiseIssue(LineUtils.startLine(tree), tree);
   }
 
   private static boolean isSimpleLambda(ExpressionTree tree) {

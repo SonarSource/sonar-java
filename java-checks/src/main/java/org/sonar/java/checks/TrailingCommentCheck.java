@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -89,10 +90,10 @@ public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
     if (ignoreMultipleOccurences && !visitedTokens.add(syntaxToken)) {
       return;
     }
-    int tokenLine = syntaxToken.range().start().line();
+    int tokenLine = LineUtils.startLine(syntaxToken);
     if (tokenLine != previousTokenLine) {
       syntaxToken.trivias().stream()
-        .filter(trivia -> trivia.range().start().line() == previousTokenLine)
+        .filter(trivia -> LineUtils.startLine(trivia) == previousTokenLine)
         .map(SyntaxTrivia::comment)
         .map(comment -> comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2))
         .map(String::trim)

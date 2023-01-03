@@ -21,8 +21,10 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
@@ -82,7 +84,7 @@ public class IndentationAfterConditionalCheck extends BaseTreeVisitor implements
     SyntaxToken elseKeyword = ifStatement.elseKeyword();
     if (thenStatement.is(Tree.Kind.BLOCK)) {
       SyntaxToken closeBrace = ((BlockTree) thenStatement).closeBraceToken();
-      if (closeBrace.range().start().line() == elseKeyword.range().start().line()) {
+      if (LineUtils.startLine(closeBrace) == LineUtils.startLine(elseKeyword)) {
         return closeBrace;
       }
     }
@@ -91,7 +93,7 @@ public class IndentationAfterConditionalCheck extends BaseTreeVisitor implements
 
   private void checkForReport(StatementTree statement, Tree startTree, Tree endTree, String name) {
     if (!(statement.is(Tree.Kind.BLOCK) ||
-      statement.firstToken().range().start().column() > startTree.firstToken().range().start().column())) {
+      Position.startOf(statement).column() > Position.startOf(startTree).column())) {
       context.reportIssue(this, startTree, endTree,
         "Use indentation to denote the code conditionally executed by this \"" + name + "\".",
         Collections.singletonList(new JavaFileScannerContext.Location("", statement)), null);

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.AccessorsUtils;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -85,7 +86,7 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
           MethodTree otherMethod = otherMethodWithVariables.method;
           reportIssue(
             otherMethod.simpleName(),
-            String.format(ISSUE_MSG, methodIdentifier.text(), methodIdentifier.range().start().line()),
+            String.format(ISSUE_MSG, methodIdentifier.text(), LineUtils.startLine(methodIdentifier)),
             Collections.singletonList(new JavaFileScannerContext.Location("original implementation", methodIdentifier)),
             null);
           reported.add(otherMethod);
