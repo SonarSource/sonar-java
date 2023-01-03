@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -102,11 +103,11 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean somethingBeforeOnSameLine(Tree tree) {
-    return QuickFixHelper.previousToken(tree).range().start().line() == tree.firstToken().range().start().line();
+    return LineUtils.startLine(QuickFixHelper.previousToken(tree)) == LineUtils.startLine(tree);
   }
 
   private String padding(Tree tree) {
-    Position start = tree.firstToken().range().start();
+    Position start = Position.startOf(tree);
     return context.getFileLines()
       .get(start.lineOffset())
       .substring(0, start.columnOffset());

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
@@ -113,8 +114,8 @@ public final class ReassignmentFinder {
   @CheckForNull
   private static Tree getClosestReassignment(SyntaxToken startToken, List<AssignmentExpressionTree> reassignments) {
     return reassignments.stream()
-      .filter(a -> a.firstToken().range().start().isBefore(startToken.range().start()))
-      .max(Comparator.comparing(a -> a.firstToken().range().start()))
+      .filter(a -> Position.startOf(a).isBefore(Position.startOf(startToken)))
+      .max(Comparator.comparing(Position::startOf))
       .orElse(null);
   }
 

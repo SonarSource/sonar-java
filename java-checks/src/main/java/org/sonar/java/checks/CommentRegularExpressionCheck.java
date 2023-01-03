@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.IllegalRuleParameterException;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -66,7 +67,7 @@ public class CommentRegularExpressionCheck extends IssuableSubscriptionVisitor {
       }
     }
     if (pattern != null && pattern.matcher(syntaxTrivia.comment()).matches()) {
-      addIssue(syntaxTrivia.range().start().line(), message);
+      addIssue(LineUtils.startLine(syntaxTrivia), message);
     }
   }
 

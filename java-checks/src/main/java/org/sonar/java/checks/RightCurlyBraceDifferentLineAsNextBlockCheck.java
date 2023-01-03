@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
@@ -30,7 +31,7 @@ public class RightCurlyBraceDifferentLineAsNextBlockCheck extends RightCurlyBrac
 
   @Override
   protected void checkTokenPosition(SyntaxToken syntaxToken, BlockTree previousBlock) {
-    if (syntaxToken.range().start().line() == previousBlock.closeBraceToken().range().start().line()) {
+    if (LineUtils.startLine(syntaxToken) == LineUtils.startLine(previousBlock.closeBraceToken())) {
       reportIssue(syntaxToken, "Move this \"" + syntaxToken.text() + "\" keyword to a new dedicated line.");
     }
   }

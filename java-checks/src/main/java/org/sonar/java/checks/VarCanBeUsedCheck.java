@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -141,7 +142,7 @@ public class VarCanBeUsedCheck extends IssuableSubscriptionVisitor implements Ja
     if (firstToken == null) {
       return false;
     }
-    int line = firstToken.range().start().line();
+    int line = LineUtils.startLine(firstToken);
     if (typeAssignmentLine == line) {
       return true;
     }

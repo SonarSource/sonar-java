@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -77,8 +78,8 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     }
     int previousLevel = expectedLevel;
     if (isAnonymous) {
-      excludeIssueAtLine = tree.openBraceToken().range().start().line();
-      expectedLevel = tree.closeBraceToken().range().start().columnOffset();
+      excludeIssueAtLine = LineUtils.startLine(tree.openBraceToken());
+      expectedLevel = Position.startOf(tree.closeBraceToken()).columnOffset();
     }
     newBlock();
     checkIndentation(tree.members());
@@ -116,9 +117,9 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     Tree body = lambdaExpressionTree.body();
     if (body.is(Kind.BLOCK)) {
       BlockTree block = (BlockTree) body;
-      excludeIssueAtLine = block.openBraceToken().range().start().line();
+      excludeIssueAtLine = LineUtils.startLine(block.openBraceToken());
       int previousLevel = expectedLevel;
-      expectedLevel = block.closeBraceToken().range().start().columnOffset();
+      expectedLevel = Position.startOf(block.closeBraceToken()).columnOffset();
       scan(block);
       expectedLevel = previousLevel;
     } else {
@@ -134,21 +135,21 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
   private void leaveNode(Tree tree) {
     expectedLevel -= indentationLevel;
     isBlockAlreadyReported = false;
-    excludeIssueAtLine = tree.lastToken().range().start().line();
+    excludeIssueAtLine = LineUtils.startLine(tree.lastToken());
   }
 
   private void checkCaseGroup(CaseGroupTree tree) {
     List<CaseLabelTree> labels = tree.labels();
     if (labels.size() >= 2) {
       CaseLabelTree previousCaseLabelTree = labels.get(labels.size() - 2);
-      excludeIssueAtLine = previousCaseLabelTree.lastToken().range().start().line();
+      excludeIssueAtLine = LineUtils.startLine(previousCaseLabelTree.lastToken());
     }
     List<StatementTree> body = tree.body();
     List<StatementTree> newBody = body;
     int bodySize = body.size();
     if (bodySize > 0 && body.get(0).is(Kind.BLOCK)) {
       expectedLevel -= indentationLevel;
-      checkIndentation(body.get(0), ListUtils.getLast(labels).colonOrArrowToken().range().start().columnOffset() + 2);
+      checkIndentation(body.get(0), Position.startOf(ListUtils.getLast(labels).colonOrArrowToken()).columnOffset() + 2);
       newBody = body.subList(1, bodySize);
     }
     checkIndentation(newBody);
@@ -176,7 +177,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   private void checkIndentation(Tree tree, int expectedLevel) {
-    Position treeStart = tree.firstToken().range().start();
+    Position treeStart = Position.startOf(tree);
     String line = fileLines.get(treeStart.lineOffset());
     int level = treeStart.columnOffset();
     int indentLength = Math.min(treeStart.columnOffset(), /* defensive programming */ line.length());
@@ -191,7 +192,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
       context.addIssue(((JavaTree) tree).getLine(), this, message.toString());
       isBlockAlreadyReported = true;
     }
-    excludeIssueAtLine = tree.lastToken().range().start().line();
+    excludeIssueAtLine = LineUtils.startLine(tree.lastToken());
   }
 
   private boolean isExcluded(Tree node, int nodeLine) {

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -77,12 +78,12 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor {
   private static int getLine(ImportClauseTree importClauseTree, boolean fromStart) {
     if (importClauseTree.is(Tree.Kind.IMPORT)) {
       if (fromStart) {
-        return ((ImportTree) importClauseTree).importKeyword().range().start().line();
+        return LineUtils.startLine(((ImportTree) importClauseTree).importKeyword());
       } else {
-        return ((ImportTree) importClauseTree).semicolonToken().range().start().line();
+        return LineUtils.startLine(((ImportTree) importClauseTree).semicolonToken());
       }
     }
-    return ((EmptyStatementTree) importClauseTree).semicolonToken().range().start().line();
+    return LineUtils.startLine(((EmptyStatementTree) importClauseTree).semicolonToken());
   }
 
   private void visitFile() {

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -42,7 +43,7 @@ public class UnnecessaryEscapeSequencesInTextBlockCheck extends IssuableSubscrip
   @Override
   public void visitNode(Tree tree) {
     LiteralTree textBlock = (LiteralTree) tree;
-    int startLine = textBlock.token().range().start().line();
+    int startLine = LineUtils.startLine(textBlock.token());
     String value = textBlock.value();
     String[] lines = value.split("\r?\n|\r");
     

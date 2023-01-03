@@ -25,6 +25,7 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -64,7 +65,7 @@ public class WrongAssignmentOperatorCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean noSpacingBetween(SyntaxToken firstToken, SyntaxToken secondToken) {
-    return firstToken.range().end().equals(secondToken.range().start());
+    return Position.endOf(firstToken).equals(Position.startOf(secondToken));
   }
 
   private static boolean isSuspiciousToken(SyntaxToken firstToken) {

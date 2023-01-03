@@ -40,6 +40,9 @@ import org.sonar.java.model.location.InternalPosition;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.plugins.java.api.location.Position.endOf;
+import static org.sonar.plugins.java.api.location.Position.startOf;
+
 public final class JWarning extends JProblem {
   private final Position start;
   private final Position end;
@@ -164,21 +167,21 @@ public final class JWarning extends JProblem {
         // wrong kind
         return false;
       }
-      return warning.start().compareTo(tree.firstToken().range().start()) >= 0
-        && warning.end().compareTo(tree.lastToken().range().end()) <= 0;
+      return warning.start().compareTo(startOf(tree)) >= 0
+        && warning.end().compareTo(endOf(tree)) <= 0;
     }
 
     @VisibleForTesting
     static boolean isMorePreciseTree(Tree currentTree, Tree newTree) {
-      return newTree.firstToken().range().start().compareTo(currentTree.firstToken().range().start()) >= 0
-        && newTree.lastToken().range().end().compareTo(currentTree.lastToken().range().end()) <= 0;
+      return startOf(newTree).compareTo(startOf(currentTree)) >= 0
+        && endOf(newTree).compareTo(endOf(currentTree)) <= 0;
     }
 
     @VisibleForTesting
     static boolean matchesTreeExactly(JWarning warning) {
       Tree syntaxTree = warning.syntaxTree();
-      return warning.start().compareTo(syntaxTree.firstToken().range().start()) == 0
-        && warning.end().compareTo(syntaxTree.lastToken().range().end()) == 0;
+      return warning.start().compareTo(startOf(syntaxTree)) == 0
+        && warning.end().compareTo(endOf(syntaxTree)) == 0;
     }
   }
 

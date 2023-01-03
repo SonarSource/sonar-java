@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.java.Preconditions;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.location.Range;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -166,21 +166,22 @@ public class AnalyzerMessage {
   }
 
   private static AnalyzerMessage.TextSpan textSpanBetween(SyntaxToken firstSyntaxToken, SyntaxToken lastSyntaxToken) {
-    Range first = firstSyntaxToken.range();
-    Range last = lastSyntaxToken.range();
+    Position first = Position.startOf(firstSyntaxToken);
+    Position last = Position.endOf(lastSyntaxToken);
     AnalyzerMessage.TextSpan location = new AnalyzerMessage.TextSpan(
-      first.start().line(),
-      first.start().columnOffset(),
-      last.end().line(),
-      last.end().columnOffset());
+      first.line(),
+      first.columnOffset(),
+      last.line(),
+      last.columnOffset());
     checkLocation(firstSyntaxToken, location);
     return location;
   }
 
   private static void checkLocation(SyntaxToken firstSyntaxToken, TextSpan location) {
+    Position start = Position.startOf(firstSyntaxToken);
     Preconditions.checkState(!location.isEmpty(),
       "Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
-      firstSyntaxToken.range().start().line(), firstSyntaxToken.range().start().column());
+      start.line(), start.column());
   }
 
   /**

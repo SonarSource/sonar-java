@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
@@ -76,17 +75,14 @@ public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements 
       condition = true;
     }
     if (block != null && !block.is(Tree.Kind.BLOCK)) {
-      SyntaxToken previousToken = block.firstToken();
-      Position previousTokenStart = previousToken.range().start();
+      Position previousTokenStart = Position.startOf(block);
       int previousColumn = previousTokenStart.column();
       int previousLine = previousTokenStart.line();
-      SyntaxToken currentToken = current.firstToken();
-      Position currentTokenStart = currentToken.range().start();
+      Position currentTokenStart = Position.startOf(current);
       int currentColumn = currentTokenStart.column();
       int currentLine = currentTokenStart.line();
-      if ((previousColumn == currentColumn && previousLine + 1 == currentLine) ||
-        (previousLine == previous.firstToken().range().start().line()
-          && previous.firstToken().range().start().column() < currentColumn)) {
+      if ((previousColumn == currentColumn && previousLine + 1 == currentLine)
+        || (previousLine == Position.startOf(previous).line() && Position.startOf(previous).column() < currentColumn)) {
         int lines = 1 + currentLine - previousLine;
         context.reportIssue(this, current, getMessage(condition, lines));
       }

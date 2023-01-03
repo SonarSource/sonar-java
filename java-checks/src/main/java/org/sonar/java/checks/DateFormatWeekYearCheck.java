@@ -115,7 +115,7 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
   private static JavaQuickFix computeQuickFix(ExpressionTree argument,
     int literalContentStartIndex, int literalContentEndIndex, String replacement) {
 
-    Position stringLiteralStart = argument.firstToken().range().start();
+    Position stringLiteralStart = Position.startOf(argument);
     int quoteDelimiterLength = 1;
     return JavaQuickFix.newQuickFix("Replace year format")
       .addTextEdit(JavaTextEdit.replaceTextSpan(new AnalyzerMessage.TextSpan(

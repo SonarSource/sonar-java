@@ -40,6 +40,7 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -79,7 +80,7 @@ public class InvariantReturnCheck extends SECheck {
       ReturnExtractor visitor = new ReturnExtractor();
       methodTree.accept(visitor);
       visitor.returns.sort(Comparator.comparing(
-        (ReturnStatementTree returnStatement) -> returnStatement.returnKeyword().range().start()).reversed());
+        (ReturnStatementTree returnStatement) -> Position.startOf(returnStatement.returnKeyword())).reversed());
       return visitor.returns;
     }
   }
@@ -116,7 +117,7 @@ public class InvariantReturnCheck extends SECheck {
       methodInvariantContext.symbolicValues.add(exitValue);
       ConstraintsByDomain constraints = context.getState().getConstraints(exitValue);
       if (constraints != null) {
-        constraints.forEach((clazz, constraint) -> 
+        constraints.forEach((clazz, constraint) ->
           methodInvariantContext.methodConstraints.computeIfAbsent(clazz, k -> new ArrayList<>()).add(constraint));
       } else {
         // Relational SV or NOT SV : we can't say anything.

@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -63,13 +64,13 @@ public abstract class AnyRuleIssueFilter extends BaseTreeVisitor implements Java
     SyntaxToken firstSyntaxToken = tree.firstToken();
     SyntaxToken lastSyntaxToken = tree.lastToken();
     if (firstSyntaxToken != null && lastSyntaxToken != null) {
-      int startLine = firstSyntaxToken.range().start().line();
-      int endLine = lastSyntaxToken.range().start().line();
+      int startLine = LineUtils.startLine(firstSyntaxToken);
+      int endLine = LineUtils.startLine(lastSyntaxToken);
 
       // includes trivia on top of first syntax token.
       List<SyntaxTrivia> trivias = firstSyntaxToken.trivias();
       if (!trivias.isEmpty()) {
-        startLine = trivias.get(0).range().start().line();
+        startLine = LineUtils.startLine(trivias.get(0));
       }
 
       return IntStream.rangeClosed(startLine, endLine).boxed().collect(Collectors.toSet());

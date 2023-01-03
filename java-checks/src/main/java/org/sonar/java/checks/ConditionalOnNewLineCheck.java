@@ -67,8 +67,8 @@ public class ConditionalOnNewLineCheck extends IssuableSubscriptionVisitor {
 
   private boolean isOnSameLineAsPreviousIf(IfStatementTree ifStatementTree) {
     // check column for nested if on one line case.
-    Position previousTokenStart = previousToken.range().start();
-    Position ifStatementStart = ifStatementTree.ifKeyword().range().start();
+    Position previousTokenStart = Position.startOf(previousToken);
+    Position ifStatementStart = Position.startOf(ifStatementTree.ifKeyword());
     return previousTokenStart.line() == ifStatementStart.line() &&
       previousTokenStart.column() < ifStatementStart.column();
   }

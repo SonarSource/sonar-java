@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.HashMap;
 import java.util.Map;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -139,8 +140,8 @@ public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
     private void addLineOfCloseBrace(SyntaxToken startToken, StatementTree tree) {
       if (tree.is(Tree.Kind.BLOCK)) {
         SyntaxToken closeBraceToken = ((BlockTree) tree).closeBraceToken();
-        if (startToken.range().start().line() != closeBraceToken.range().start().line() &&
-          !statementsPerLine.containsKey(closeBraceToken.range().start().line())) {
+        if (LineUtils.startLine(startToken) != LineUtils.startLine(closeBraceToken) &&
+          !statementsPerLine.containsKey(LineUtils.startLine(closeBraceToken))) {
           addLine(closeBraceToken);
         }
       }
@@ -180,7 +181,7 @@ public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
     public void visitDoWhileStatement(DoWhileStatementTree tree) {
       // do not scan the condition
       addLine(tree.doKeyword());
-      if (tree.doKeyword().range().start().line() != tree.whileKeyword().range().start().line()) {
+      if (LineUtils.startLine(tree.doKeyword()) != LineUtils.startLine(tree.whileKeyword())) {
         addLines(tree.whileKeyword(), tree.semicolonToken());
       }
       scan(tree.statement());
@@ -219,12 +220,12 @@ public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
     }
 
     private void addLine(SyntaxToken token) {
-      statementsPerLine.compute(token.range().start().line(), (k, v) -> (v == null) ? 1 : (v + 1));
+      statementsPerLine.compute(LineUtils.startLine(token), (k, v) -> (v == null) ? 1 : (v + 1));
     }
 
     private void addLines(SyntaxToken startToken, SyntaxToken endToken) {
       addLine(startToken);
-      if (startToken.range().start().line() != endToken.range().start().line()) {
+      if (LineUtils.startLine(startToken) != LineUtils.startLine(endToken)) {
         addLine(endToken);
       }
     }

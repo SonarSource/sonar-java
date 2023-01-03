@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -59,9 +60,9 @@ public class RightCurlyBraceStartLineCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkBlockBody(SyntaxToken openBraceToken, SyntaxToken closeBraceToken, List<? extends Tree> trees) {
-    if (openBraceToken.range().start().line() != closeBraceToken.range().start().line() && !trees.isEmpty()) {
+    if (LineUtils.startLine(openBraceToken) != LineUtils.startLine(closeBraceToken) && !trees.isEmpty()) {
       Tree lastTree = trees.get(trees.size() - 1);
-      if (lastTree.lastToken().range().start().line() == closeBraceToken.range().start().line()) {
+      if (LineUtils.startLine(lastTree.lastToken()) == LineUtils.startLine(closeBraceToken)) {
         reportIssue(closeBraceToken, "Move this closing curly brace to the next line.");
       }
     }

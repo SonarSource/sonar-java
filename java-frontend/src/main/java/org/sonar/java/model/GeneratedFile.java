@@ -96,7 +96,7 @@ public class GeneratedFile implements InputFile {
 
     @Override
     public Optional<Location> sourceMapLocationFor(Tree tree) {
-      return getLocation(tree.firstToken().range().start().line(), tree.lastToken().range().start().line());
+      return getLocation(LineUtils.startLine(tree.firstToken()), LineUtils.startLine(tree.lastToken()));
     }
 
     @VisibleForTesting

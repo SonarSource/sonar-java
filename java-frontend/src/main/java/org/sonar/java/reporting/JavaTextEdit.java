@@ -20,7 +20,7 @@
 package org.sonar.java.reporting;
 
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
-import org.sonar.plugins.java.api.location.Range;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -73,8 +73,8 @@ public class JavaTextEdit {
     if (lastToken == null) {
       throw new IllegalStateException("Trying to insert a quick fix after a Tree without token.");
     }
-    Range lastRange = lastToken.range();
-    return insertAtPosition(lastRange.end().line(), lastRange.end().columnOffset(), addition);
+    Position lastPosition = Position.endOf(lastToken);
+    return insertAtPosition(lastPosition.line(), lastPosition.columnOffset(), addition);
   }
 
   public static JavaTextEdit insertBeforeTree(Tree tree, String addition) {
@@ -82,8 +82,8 @@ public class JavaTextEdit {
     if (firstToken == null) {
       throw new IllegalStateException("Trying to insert a quick fix before a Tree without token.");
     }
-    Range firstRange = firstToken.range();
-    return insertAtPosition(firstRange.start().line(), firstRange.start().columnOffset(), addition);
+    Position firstPosition = Position.startOf(firstToken);
+    return insertAtPosition(firstPosition.line(), firstPosition.columnOffset(), addition);
   }
 
   public static JavaTextEdit insertAtPosition(int line, int column, String addition) {

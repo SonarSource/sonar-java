@@ -218,8 +218,8 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
       SyntaxTrivia lastTrivia = trivias.get(trivias.size() - 1);
       if (lastTrivia.comment().startsWith("/**")) {
         SyntaxToken lastToken = tree.lastToken();
-        Position start = lastTrivia.range().start();
-        Position end = lastToken.range().end();
+        Position start = Position.startOf(lastTrivia);
+        Position end = Position.endOf(lastToken);
         return JavaTextEdit.textSpan(start.line(), start.columnOffset(), end.line(), end.columnOffset());
       }
     }

@@ -20,9 +20,11 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -116,9 +118,9 @@ public class ShiftOnIntOrLongCheck extends IssuableSubscriptionVisitor {
   private static boolean isAlignedWith(SyntaxToken operatorToken, Tree other) {
     SyntaxToken otherOperator = operatorToken(other);
     return otherOperator.text().equals(operatorToken.text())
-      && operatorToken.range().start().column() == otherOperator.range().start().column()
+      && Position.startOf(operatorToken).column() == Position.startOf(otherOperator).column()
       // less than 2 lines distance
-      && Math.abs(operatorToken.range().start().line() - otherOperator.range().start().line()) < 2;
+      && Math.abs(LineUtils.startLine(operatorToken) - LineUtils.startLine(otherOperator)) < 2;
   }
 
   private static SyntaxToken operatorToken(Tree tree) {

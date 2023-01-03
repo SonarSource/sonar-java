@@ -32,9 +32,11 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -89,8 +91,8 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   private static boolean isReplacementMoreConcise(LambdaExpressionTree tree, String replacement) {
     SyntaxToken first = Objects.requireNonNull(tree.firstToken());
     SyntaxToken last = Objects.requireNonNull(tree.lastToken());
-    boolean multiline = first.range().start().line() != last.range().end().line();
-    boolean shorter = replacement.length() <= last.range().end().column() - first.range().start().column();
+    boolean multiline = LineUtils.startLine(first) != LineUtils.endLine(last);
+    boolean shorter = replacement.length() <= Position.endOf(last).column() - Position.startOf(first).column();
     return multiline || shorter;
   }
 

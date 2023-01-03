@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -76,7 +77,7 @@ public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean sameLine(SyntaxToken token, EmptyStatementTree emptyStatement) {
-    return token.range().start().line() == emptyStatement.semicolonToken().range().start().line();
+    return LineUtils.startLine(token) == LineUtils.startLine(emptyStatement.semicolonToken());
   }
 
   private static boolean usedForEmptyEnum(Tree tree) {

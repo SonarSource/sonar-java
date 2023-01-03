@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -60,7 +61,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
 
   private void handleCommentsForTrivia(SyntaxTrivia trivia) {
     String[] commentLines = getContents(trivia.comment()).split("(\r)?\n|\r", -1);
-    int line = trivia.range().start().line();
+    int line = LineUtils.startLine(trivia);
     for (String commentLine : commentLines) {
       if(commentLine.contains("NOSONAR")) {
         noSonarLines.add(line);
