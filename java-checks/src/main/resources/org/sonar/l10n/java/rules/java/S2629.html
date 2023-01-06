@@ -30,7 +30,7 @@ logger.log(Level.SEVERE, () -&gt; "Something went wrong: " + message); // since 
 
 LOG.error("Unable to open file {0}", csvPath, e);
 
-if (LOG.isDebugEnabled() {
+if (LOG.isDebugEnabled()) {
   LOG.debug("Unable to open file " + csvPath, e);  // this is compliant, because it will not evaluate if log level is above debug.
 }
 

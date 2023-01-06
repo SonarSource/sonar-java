@@ -2,8 +2,8 @@
 should not assume it will only be used to test objects of its class type. It must instead check the parameter’s type.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-public boolean equals(Object obj) {
-  MyClass mc = (MyClass)obj;  // Noncompliant
+public boolean equals(Object obj) { // Noncompliant
+  MyClass mc = (MyClass)obj;
   // ...
 }
 </pre>

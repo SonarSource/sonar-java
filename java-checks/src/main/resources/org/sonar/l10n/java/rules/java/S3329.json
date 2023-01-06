@@ -8,7 +8,7 @@
   },
   "tags": [
     "cwe",
-    "owasp-a6",
+    "owasp-a3",
     "owasp-m5"
   ],
   "defaultSeverity": "Critical",
@@ -17,13 +17,10 @@
   "scope": "Main",
   "securityStandards": {
     "CWE": [
-      329,
-      330,
-      340,
-      1204
+      329
     ],
     "OWASP": [
-      "A6"
+      "A3"
     ],
     "OWASP Mobile": [
       "M5"
