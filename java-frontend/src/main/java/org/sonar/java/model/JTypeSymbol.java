@@ -67,7 +67,8 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
         // for "T.super.foo()", if T is an interface, 'super' keyword is used to access method of the interface itself
         return JTypeSymbol.this.type();
       }
-      return JTypeSymbol.this.superClass();
+      Type superClass = JTypeSymbol.this.superClass();
+      return superClass == null ? Symbols.unknownType : superClass;
     }
   };
 

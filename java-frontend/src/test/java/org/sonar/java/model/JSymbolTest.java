@@ -30,9 +30,12 @@ import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -215,6 +218,23 @@ class JSymbolTest {
     assertThat(cu.sema.variableSymbol(p.variableBinding))
       .as("of method parameter")
       .hasEnclosingClass(cu.sema.typeSymbol(c2.typeBinding));
+  }
+
+  @Test
+  void super_keyword_in_the_java_lang_Object_scope_has_unknown_type_instead_of_null() {
+    JavaTree.CompilationUnitTreeImpl cu = test("" +
+      "package java.lang;\n" +
+      "class Object {\n" +
+      "  void foo() { super.hashCode(); }\n" +
+      "}");
+    ClassTree objectClass = (ClassTree) cu.types().get(0);
+    MethodTree fooMethod = (MethodTree) objectClass.members().get(0);
+    ExpressionStatementTree firstStatement = (ExpressionStatementTree) fooMethod.block().body().get(0);
+    MethodInvocationTree hashCodeInvocation = (MethodInvocationTree) firstStatement.expression();
+    MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTree) hashCodeInvocation.methodSelect();
+    KeywordSuper keywordSuper = (KeywordSuper) methodSelect.expression();
+
+    assertThat(keywordSuper.symbolType()).isEqualTo(Symbols.unknownType);
   }
 
   private void variable_in_class_initializer(boolean isStatic) {
