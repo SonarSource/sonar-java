@@ -19,14 +19,19 @@
  */
 package org.sonar.java.model;
 
+import java.util.Objects;
+import java.util.stream.Stream;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -35,14 +40,17 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.Type;
 
-import java.util.Objects;
-import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
 class JTypeTest {
+
+  @RegisterExtension
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   @Test
   void isArray() {
@@ -256,6 +264,22 @@ class JTypeTest {
       .isSubtypeOf(classType)
       .isSubtypeOf(arrayType)
       .isNotSubtypeOf(primitiveType);
+  }
+
+  @Test
+  void is_subtype_of_should_not_throw_NPE() {
+    JType objectType = type("java.lang.Object");
+    ITypeBinding brokenStringBinding = spy(Objects.requireNonNull(sema.resolveType("java.lang.String")));
+    // simulate the NullPointerException described in SONARJAVA-4390
+    when(brokenStringBinding.isSubTypeCompatible(any()))
+      .thenThrow(new NullPointerException("test NPE"));
+
+    JType stringType = new JType(sema, brokenStringBinding);
+    // should catch the NullPointerException
+    assertThat(stringType.isSubtypeOf(objectType)).isFalse();
+
+    assertThat(logTester.logs(LoggerLevel.DEBUG))
+      .containsExactly("NullPointerException while resolving isSubTypeCompatible()");
   }
 
   @Test
