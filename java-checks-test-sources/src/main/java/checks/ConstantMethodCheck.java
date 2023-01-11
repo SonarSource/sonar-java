@@ -1,8 +1,17 @@
-class A implements Comparable<A> {
+package checks;
+
+import javax.validation.constraints.NotNull;
+
+public abstract class ConstantMethodCheck implements Comparable<ConstantMethodCheck> {
 
   int foo() {
     return 1; // Noncompliant [[sc=12;ec=13]] {{Remove this method and declare a constant for this value.}}
   }
+
+  boolean baz() {
+    return true; // Noncompliant [[sc=12;ec=16]] {{Remove this method and declare a constant for this value.}}
+  }
+
   String bar() {
     return ""; // Noncompliant [[sc=12;ec=14]] {{Remove this method and declare a constant for this value.}}
   }
@@ -29,7 +38,7 @@ class A implements Comparable<A> {
     return "";  // compliant, this method is an override
   }
   // removed @Override annotation
-  public int compareTo(A o) {
+  public int compareTo(@NotNull ConstantMethodCheck o) {
     return 0; // Compliant - method is an override
   }
   long gro() {
@@ -40,12 +49,12 @@ class A implements Comparable<A> {
   long puf() {
     return 1L; // Compliant
   }
-}
 
-@interface MyAnnotation {}
+  @interface MyAnnotation {}
 
-interface B {
-  default String defaultMethodReturningConstant() {
-    return "";
+  interface B {
+    default String defaultMethodReturningConstant() {
+      return "";
+    }
   }
 }
