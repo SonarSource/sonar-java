@@ -24,6 +24,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -50,6 +51,11 @@ public class HasNextCallingNextCheck extends IssuableSubscriptionVisitor {
       hasNextBodyVisitor.setHasNextOwner(methodTree.symbol().owner());
       methodTree.block().accept(hasNextBodyVisitor);
     }
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    hasNextBodyVisitor.clearHasNextOwner();
   }
 
   private static boolean isHasNextMethod(MethodTree methodTree) {
@@ -79,6 +85,10 @@ public class HasNextCallingNextCheck extends IssuableSubscriptionVisitor {
 
     public void setHasNextOwner(Symbol hasNextOwner) {
       this.hasNextOwner = hasNextOwner;
+    }
+
+    public void clearHasNextOwner() {
+      this.hasNextOwner = null;
     }
 
     @Override
