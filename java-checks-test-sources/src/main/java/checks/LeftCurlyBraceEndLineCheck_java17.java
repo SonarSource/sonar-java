@@ -3,6 +3,17 @@ package checks;
 import static java.util.Objects.requireNonNull;
 
 class LeftCurlyBraceEndLineCheck_java17 {
+
+  record MyRecord(
+    int id,
+    String title
+    ) {
+  }
+
+  record AnotherRecord(
+    ) {
+  }
+
   record Person(String name) {
     Person
     { // Noncompliant

@@ -55,7 +55,11 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private SyntaxToken declarationKeyword;
   private IdentifierTree simpleName;
   private TypeParameters typeParameters;
+  @Nullable
+  private SyntaxToken recordOpenParenToken;
   private List<VariableTree> recordComponents = Collections.emptyList();
+  @Nullable
+  private SyntaxToken recordCloseParenToken;
   @Nullable
   private SyntaxToken extendsKeyword;
   @Nullable
@@ -124,6 +128,12 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return this;
   }
 
+  public ClassTreeImpl completeRecordComponents(InternalSyntaxToken openParenToken, List<VariableTree> recordComponents, InternalSyntaxToken closeParenToken) {
+    this.recordOpenParenToken = openParenToken;
+    this.recordCloseParenToken = closeParenToken;
+    return completeRecordComponents(recordComponents);
+  }
+
   private static List<Tree> orderMembers(Tree.Kind kind, List<Tree> members) {
     if (kind == Tree.Kind.RECORD && members.size() > 1) {
       // eclipse's records members are not properly ordered
@@ -148,9 +158,21 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return typeParameters;
   }
 
+  @Nullable
+  @Override
+  public SyntaxToken recordOpenParenToken() {
+    return this.recordOpenParenToken;
+  }
+
   @Override
   public List<VariableTree> recordComponents() {
     return recordComponents;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken recordCloseParenToken() {
+    return this.recordCloseParenToken;
   }
 
   @Override
@@ -236,7 +258,9 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
       addIfNotNull(declarationKeyword),
       addIfNotNull(simpleName),
       Collections.singletonList(typeParameters),
+      addIfNotNull(recordOpenParenToken),
       recordComponents,
+      addIfNotNull(recordCloseParenToken),
       addIfNotNull(extendsKeyword),
       addIfNotNull(superClass),
       addIfNotNull(implementsKeyword),

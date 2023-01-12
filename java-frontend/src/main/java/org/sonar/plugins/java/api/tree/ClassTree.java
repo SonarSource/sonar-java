@@ -77,7 +77,13 @@ public interface ClassTree extends StatementTree {
   /**
    * @since Java 16
    */
+  @Nullable
+  SyntaxToken recordOpenParenToken();
+
   List<VariableTree> recordComponents();
+
+  @Nullable
+  SyntaxToken recordCloseParenToken();
 
   ModifiersTree modifiers();
 
