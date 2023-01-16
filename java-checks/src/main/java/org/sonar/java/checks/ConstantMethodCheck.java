@@ -64,6 +64,6 @@ public class ConstantMethodCheck extends IssuableSubscriptionVisitor {
     return returnedExpression != null
             && returnedExpression.is(Kind.INT_LITERAL, Kind.LONG_LITERAL,
             Kind.CHAR_LITERAL, Kind.STRING_LITERAL,
-            Kind.DOUBLE_LITERAL, Kind.FLOAT_LITERAL);
+            Kind.DOUBLE_LITERAL, Kind.FLOAT_LITERAL, Kind.BOOLEAN_LITERAL);
   }
 }

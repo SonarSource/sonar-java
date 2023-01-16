@@ -1,0 +1,11 @@
+{
+  'com.google.guava:guava:src/com/google/common/collect/ImmutableMap.java':[
+    612,
+  ],
+  'com.google.guava:guava:src/com/google/common/collect/ImmutableMapEntry.java':[
+    73,
+  ],
+  'com.google.guava:guava:src/com/google/common/collect/ImmutableSet.java':[
+    317,
+  ],
+}
