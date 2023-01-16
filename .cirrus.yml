@@ -184,6 +184,26 @@ ruling_win_task:
     - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
+autoscan_task:
+  depends_on:
+    - build
+  <<: *ONLY_SONARSOURCE_QA
+  eks_container:
+    <<: *CONTAINER_DEFINITION
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
+    cpu: 14
+    memory: 6G
+  maven_cache:
+    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  submodules_script:
+    - git submodule update --init --recursive
+  ruling_script:
+    - source cirrus-env QA
+    - source set_maven_build_version $BUILD_NUMBER
+    - cd its/ruling
+    - mvn package -Pit-autoscan -Dtest=org.sonar.java.it.AutoScanTest -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+  cleanup_before_cache_script: cleanup_maven_repository
+
 promote_task:
   depends_on:
     - qa_os_win

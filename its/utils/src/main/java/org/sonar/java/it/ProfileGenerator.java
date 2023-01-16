@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2013-2022 SonarSource SA
+ * Copyright (C) 2022-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@ package org.sonar.java.it;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import com.sonar.orchestrator.Orchestrator;
+import com.sonar.orchestrator.container.Server;
 import com.sonar.orchestrator.locator.FileLocation;
 import java.io.File;
 import java.io.IOException;
@@ -36,9 +37,10 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonarqube.ws.Rules;
+import org.sonarqube.ws.client.HttpConnector;
+import org.sonarqube.ws.client.WsClient;
+import org.sonarqube.ws.client.WsClientFactories;
 import org.sonarqube.ws.client.rules.SearchRequest;
-
-import static org.sonar.java.it.JavaRulingTest.newAdminWsClient;
 
 public class ProfileGenerator {
   private static final String LANGUAGE = "java";
@@ -145,5 +147,12 @@ public class ProfileGenerator {
       .filter(p -> qualityProfile.equalsIgnoreCase(p.getName()))
       .map(p -> p.getKey())
       .findFirst();
+  }
+
+  public static WsClient newAdminWsClient(Orchestrator orchestrator) {
+    return WsClientFactories.getDefault().newClient(HttpConnector.newBuilder()
+      .credentials(Server.ADMIN_LOGIN, Server.ADMIN_PASSWORD)
+      .url(orchestrator.getServer().getUrl())
+      .build());
   }
 }

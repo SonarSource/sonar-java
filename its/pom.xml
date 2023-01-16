@@ -14,8 +14,10 @@
   <name>SonarQube Java :: ITs</name>
 
   <modules>
+    <module>autoscan</module>
     <module>plugin</module>
     <module>ruling</module>
+    <module>utils</module>
   </modules>
 
   <properties>

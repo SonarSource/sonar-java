@@ -1,35 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.sonarsource.java</groupId>
-    <artifactId>java-its</artifactId>
-    <version>7.17.0-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>org.sonarsource.java</groupId>
+        <artifactId>java-its</artifactId>
+        <version>7.17.0-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>it-java-ruling</artifactId>
-
-  <name>SonarQube Java :: ITs :: Ruling</name>
-  <inceptionYear>2013</inceptionYear>
-
-  <properties>
-    <surefire.argLine>-server</surefire.argLine>
-    <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
-  </properties>
+    <artifactId>it-java-autoscan</artifactId>
+    <name>SonarQube Java :: ITs :: Autoscan</name>
+    <inceptionYear>2022</inceptionYear>
 
   <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
-      <version>1.7.30</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
@@ -54,9 +39,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-     <groupId>org.sonarsource.analyzer-commons</groupId>
-     <artifactId>sonar-performance-measure</artifactId>
-     <scope>test</scope>
+      <groupId>org.sonarsource.analyzer-commons</groupId>
+      <artifactId>sonar-performance-measure</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -79,8 +64,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
+      <groupId>org.sonarsource.java</groupId>
+      <artifactId>it-java-ruling</artifactId>
+      <version>7.17.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.analyzer-commons</groupId>
+      <artifactId>sonar-analyzer-commons</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -91,13 +82,16 @@
     </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>it-ruling</id>
-      <properties>
-        <skipTests>false</skipTests>
-      </properties>
-    </profile>
-  </profiles>
-
+    <properties>
+        <surefire.argLine>-server</surefire.argLine>
+        <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
+    </properties>
+    <profiles>
+      <profile>
+        <id>it-autoscan</id>
+        <properties>
+          <skipTests>false</skipTests>
+        </properties>
+      </profile>
+    </profiles>
 </project>

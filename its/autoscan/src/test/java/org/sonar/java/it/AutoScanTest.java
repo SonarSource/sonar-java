@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2013-2022 SonarSource SA
+ * Copyright (C) 2022-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -45,13 +45,12 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.assertj.core.api.Assertions;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class AutoScanTest {
 
@@ -176,11 +175,11 @@ public class AutoScanTest {
     List<IssueDiff> knownDiffs = GSON.fromJson(Files.readString(pathFor("src/test/resources/autoscan/" + DIFF_FILE + ".json")), GSON_LIST_ISSUE_DIFF_TYPE);
     IssueDiff knownTotal = IssueDiff.total(knownDiffs);
 
-    assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs);
-    assertThat(newTotal).isEqualTo(knownTotal);
-    assertThat(rulesCausingFPs).hasSize(7);
-    assertThat(rulesNotReporting).hasSize(6);
-    assertThat(rulesSilenced).hasSize(67);
+    Assertions.assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs);
+    Assertions.assertThat(newTotal).isEqualTo(knownTotal);
+    Assertions.assertThat(rulesCausingFPs).hasSize(7);
+    Assertions.assertThat(rulesNotReporting).hasSize(6);
+    Assertions.assertThat(rulesSilenced).hasSize(67);
 
     /**
      * 4. Check total number of differences (FPs + FNs)
