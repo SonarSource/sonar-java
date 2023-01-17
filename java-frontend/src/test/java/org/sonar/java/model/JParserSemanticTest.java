@@ -1003,7 +1003,9 @@ class JParserSemanticTest {
     assertThat(c.kind()).isEqualTo(Tree.Kind.RECORD);
     assertThat(c.declarationKeyword().text()).isEqualTo("record");
     assertThat(c.typeParameters()).hasSize(1);
+    assertThat(c.recordOpenParenToken()).isNotNull();
     assertThat(c.recordComponents()).hasSize(2);
+    assertThat(c.recordCloseParenToken()).isNotNull();
     assertThat(c.recordComponents().get(0).endToken()).isNotNull();
     assertThat(c.recordComponents().get(1).endToken()).isNull();
     assertThat(c.superInterfaces()).hasSize(1);

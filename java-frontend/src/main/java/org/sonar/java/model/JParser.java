@@ -688,10 +688,15 @@ public class JParser {
   private ClassTreeImpl convertRecordDeclaration(RecordDeclaration e, ModifiersTreeImpl modifiers, IdentifierTreeImpl name,
                                                  InternalSyntaxToken openBraceToken, List<Tree> members, InternalSyntaxToken closeBraceToken) {
     InternalSyntaxToken declarationKeyword = firstTokenBefore(e.getName(), TerminalTokens.TokenNameRestrictedIdentifierrecord);
+    List recordComponents = e.recordComponents();
+    InternalSyntaxToken openParen = firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN);
+    InternalSyntaxToken closeParen = firstTokenAfter(
+      recordComponents.isEmpty() ? e.getName() : (ASTNode) recordComponents.get(recordComponents.size() - 1),
+      TerminalTokens.TokenNameRPAREN);
     return new ClassTreeImpl(Tree.Kind.RECORD, openBraceToken, members, closeBraceToken)
       .complete(modifiers, declarationKeyword, name)
       .completeTypeParameters(convertTypeParameters(e.typeParameters()))
-      .completeRecordComponents(convertRecordComponents(e));
+      .completeRecordComponents(openParen, convertRecordComponents(e), closeParen);
   }
 
   private List<VariableTree> convertRecordComponents(RecordDeclaration e) {

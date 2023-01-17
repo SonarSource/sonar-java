@@ -97,9 +97,8 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
       return typeParameters.closeBracketToken();
     }
     // JDK 16 records
-    List<VariableTree> recordComponents = classTree.recordComponents();
-    if (!recordComponents.isEmpty()) {
-      return ListUtils.getLast(recordComponents).lastToken();
+    if(classTree.recordCloseParenToken() != null) {
+      return classTree.recordCloseParenToken();
     }
     IdentifierTree simpleName = classTree.simpleName();
     if (simpleName != null) {
