@@ -118,6 +118,11 @@ class S1114_Class2 extends S1114_Class1 {
   }
 }
 
+abstract class S1114_Class4 extends S1114_Class1 {
+  @Override
+  abstract protected void finalize() throws Throwable;
+}
+
 class S1114_Class1 {
   @Override
   protected void finalize() throws Throwable {  // Compliant, superclass is java.lang.Object
