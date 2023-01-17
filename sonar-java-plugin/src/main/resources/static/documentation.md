@@ -139,6 +139,11 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.17**
+
+* New method: `ClassTree#recordOpenParenToken()`. Use this method to get the opening parenthesis from the field list of a `record` declaration.
+* New method: `ClassTree#recordCloseParenToken()`. Use this method to get the closing parenthesis from the field list of a `record` declaration.
+
 #### **7.16**
 
 * New method: `Position#startOf(Tree)`. Use this static method to get the start position of a given `Tree`. Shortcuts the usually cumbersome operation of accessing a tree start position through the normal API, with `tree.firstToken().range().start()`.
