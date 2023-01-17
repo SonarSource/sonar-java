@@ -141,8 +141,8 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 #### **7.17**
 
-* New method: `ClassTree#recordOpenParenToken()`. Use this method to get the opening parenthesis from the field list of a `record` declaration.
-* New method: `ClassTree#recordCloseParenToken()`. Use this method to get the closing parenthesis from the field list of a `record` declaration.
+* New method: `ClassTree#recordOpenParenToken()`. Use this method to get the opening parenthesis from the component list of a `record` declaration.
+* New method: `ClassTree#recordCloseParenToken()`. Use this method to get the closing parenthesis from the component list of a `record` declaration.
 
 #### **7.16**
 
