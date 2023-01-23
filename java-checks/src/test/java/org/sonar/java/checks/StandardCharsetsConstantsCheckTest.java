@@ -22,23 +22,23 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;;
 
 class StandardCharsetsConstantsCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(7)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StandardCharsetsConstantsCheck_java8.java"))
+      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck_java8.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(8)
       .verifyIssues();
@@ -48,7 +48,7 @@ class StandardCharsetsConstantsCheckTest {
       .withJavaVersion(10)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(6)
       .verifyNoIssues();
