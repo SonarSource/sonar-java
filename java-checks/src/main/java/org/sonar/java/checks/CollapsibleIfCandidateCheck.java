@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -49,17 +48,16 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
     outerIf.clear();
   }
 
-  static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, @Nullable IfStatementTree outerIf) {
+  static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, IfStatementTree outerIf) {
     var quickFixBuilder = JavaQuickFix.newQuickFix("Merge this if statement with the (enclosing|nested) one");
-    if (outerIf == null) {
-      return quickFixBuilder.build();
-    }
     StatementTree containingStatement = outerIf.thenStatement();
     if (containingStatement.is(Tree.Kind.BLOCK)) {
       StatementTree thenStatement = ifStatement.thenStatement();
       if (thenStatement.is(Tree.Kind.BLOCK)) {
         SyntaxToken closingBrace = ((BlockTree) thenStatement).closeBraceToken();
         quickFixBuilder.addTextEdit(JavaTextEdit.removeTree(closingBrace));
+      } else {
+        quickFixBuilder.addTextEdit(JavaTextEdit.insertBeforeTree(ifStatement.thenStatement(), "{"));
       }
     }
     quickFixBuilder.addTextEdit(JavaTextEdit.replaceBetweenTree(outerIf.closeParenToken(), ifStatement.openParenToken(), " && ("));
@@ -70,12 +68,13 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
   public void visitIfStatement(IfStatementTree tree) {
 
     if (!outerIf.isEmpty() && !hasElseClause(tree)) {
+      IfStatementTree outerIfStatement = outerIf.peek();
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(tree.ifKeyword())
         .withMessage("Merge this if statement with the enclosing one.")
-        .withSecondaries(Collections.singletonList(new JavaFileScannerContext.Location("", outerIf.peek().ifKeyword())))
-        .withQuickFix(() -> computeQuickFix(tree, outerIf.peek()))
+        .withSecondaries(Collections.singletonList(new JavaFileScannerContext.Location("", outerIfStatement.ifKeyword())))
+        .withQuickFix(() -> computeQuickFix(tree, outerIfStatement))
         .report();
     }
 

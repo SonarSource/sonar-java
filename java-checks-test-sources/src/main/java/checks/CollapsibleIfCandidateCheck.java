@@ -20,4 +20,13 @@ public class CollapsibleIfCandidateCheck {
       // fix@qf2 {{Merge this if statement with the (enclosing|nested) one}}
       // edit@qf2 [[sl=-1;el=+0;sc=21;ec=11]] {{ && (}}
   }
+
+  void noBraceOnInner(File file) {
+    if (file != null) {
+      if (file.isFile() || file.isDirectory()) System.out.println("Good enough"); // Noncompliant [[sc=7;ec=9;quickfixes=qf3]]
+      // fix@qf3 {{Merge this if statement with the (enclosing|nested) one}}
+      // edit@qf3 [[sc=48;ec=48]] {{{}}
+      // edit@qf3 [[sl=-1;el=+0;sc=21;ec=11]] {{ && (}}
+    }
+  }
 }
