@@ -53,7 +53,7 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
     SyntaxToken lastToken = ifStatement.lastToken();
     if (lastToken.text().equals("}")) {
       return List.of(
-        JavaQuickFix.newQuickFix("Merge this if statement with the (enclosing|nested) one.")
+        JavaQuickFix.newQuickFix("Merge this if statement with the (enclosing|nested) one")
           .addTextEdit(JavaTextEdit.removeTree(lastToken))
           .build()
       );

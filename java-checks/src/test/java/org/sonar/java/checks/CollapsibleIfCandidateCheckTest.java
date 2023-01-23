@@ -22,12 +22,24 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class CollapsibleIfCandidateCheckTest {
 
   @Test
   void detected() {
     InternalCheckVerifier.newInstance()
-      .onFile("src/test/files/checks/CollapsibleIfCandidateCheck.java")
+      .onFile(nonCompilingTestSourcesPath("checks/CollapsibleIfCandidateCheck.java"))
+      .withCheck(new CollapsibleIfCandidateCheck())
+      .withQuickFixes()
+      .verifyIssues();
+  }
+
+  @Test
+  void test_quick_fixes() {
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/CollapsibleIfCandidateCheck.java"))
       .withCheck(new CollapsibleIfCandidateCheck())
       .withQuickFixes()
       .verifyIssues();
