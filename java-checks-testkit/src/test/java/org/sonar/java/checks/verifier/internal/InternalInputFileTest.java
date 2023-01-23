@@ -20,6 +20,7 @@
 package org.sonar.java.checks.verifier.internal;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -28,12 +29,11 @@ import org.junit.jupiter.api.function.Executable;
 import org.sonar.api.batch.fs.InputFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class InternalInputFileTest {
 
-  private static final String NO_SUCH_FILE_MESSAGE_WINDOWS = "foo.java (The system cannot find the file specified)";
-  private static final String NO_SUCH_FILE_MESSAGE_LINUX = "foo.java (No such file or directory)";
   private static final InternalTextPointer TEXT_POINTER = new InternalTextPointer(0, 0);
 
   @Test
@@ -63,9 +63,9 @@ class InternalInputFileTest {
     assertThat(inputFile.newRange(0, 0, 0, 0)).isNotNull();
 
     assertThat(inputFile).hasToString("foo.java");
-
-    IOException e = assertThrows(IOException.class, () -> inputFile.inputStream());
-    assertThat(e.getMessage()).matches(m -> NO_SUCH_FILE_MESSAGE_LINUX.equals(m) || NO_SUCH_FILE_MESSAGE_WINDOWS.equals(m));
+    assertThatThrownBy(inputFile::inputStream)
+      .isInstanceOf(FileNotFoundException.class)
+      .hasMessageContaining("foo.java");
 
     assertMethodNotSupported(() -> inputFile.selectLine(0), "InternalInputFile::selectLine(int)");
     assertThat(inputFile.status()).isEqualTo(InputFile.Status.SAME);
