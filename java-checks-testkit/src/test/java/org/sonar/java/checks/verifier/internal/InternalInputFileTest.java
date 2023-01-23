@@ -29,6 +29,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.sonar.api.batch.fs.InputFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class InternalInputFileTest {
@@ -62,9 +63,9 @@ class InternalInputFileTest {
     assertThat(inputFile.newRange(0, 0, 0, 0)).isNotNull();
 
     assertThat(inputFile).hasToString("foo.java");
-
-    FileNotFoundException e = assertThrows(FileNotFoundException.class, inputFile::inputStream);
-    assertThat(e.getMessage()).matches(m -> m.startsWith("foo.java"));
+    assertThatThrownBy(inputFile::inputStream)
+      .isInstanceOf(FileNotFoundException.class)
+      .hasMessageContaining("foo.java");
 
     assertMethodNotSupported(() -> inputFile.selectLine(0), "InternalInputFile::selectLine(int)");
     assertThat(inputFile.status()).isEqualTo(InputFile.Status.SAME);
