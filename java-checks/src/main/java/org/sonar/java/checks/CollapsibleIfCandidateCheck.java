@@ -19,18 +19,22 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 @Rule(key = "S1066")
 public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -45,12 +49,29 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
     outerIf.clear();
   }
 
+  List<JavaQuickFix> computeQuickFix(Tree ifStatement) {
+    SyntaxToken lastToken = ifStatement.lastToken();
+    if (lastToken.text().equals("}")) {
+      return List.of(
+        JavaQuickFix.newQuickFix("Merge this if statement with the (enclosing|nested) one.")
+          .addTextEdit(JavaTextEdit.removeTree(lastToken))
+          .build()
+      );
+    }
+    return Collections.emptyList();
+  }
+
   @Override
   public void visitIfStatement(IfStatementTree tree) {
 
     if (!outerIf.isEmpty() && !hasElseClause(tree)) {
-      context.reportIssue(this, tree.ifKeyword(), "Merge this if statement with the enclosing one.",
-        Collections.singletonList(new JavaFileScannerContext.Location("", outerIf.peek().ifKeyword())), null);
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(tree.ifKeyword())
+        .withMessage("Merge this if statement with the enclosing one.")
+        .withSecondaries(Collections.singletonList(new JavaFileScannerContext.Location("", outerIf.peek().ifKeyword())))
+        .withQuickFixes(() -> computeQuickFix(tree))
+        .report();
     }
 
     if (!hasElseClause(tree) && hasBodySingleIfStatement(tree.thenStatement())) {

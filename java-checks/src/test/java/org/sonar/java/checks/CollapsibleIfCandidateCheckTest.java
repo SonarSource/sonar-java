@@ -19,16 +19,17 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.checks.verifier.CheckVerifier;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 class CollapsibleIfCandidateCheckTest {
 
   @Test
   void detected() {
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile("src/test/files/checks/CollapsibleIfCandidateCheck.java")
       .withCheck(new CollapsibleIfCandidateCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 }
