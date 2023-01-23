@@ -22,14 +22,19 @@ package org.sonar.java.checks;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -62,7 +67,7 @@ public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements Jav
     List<AnnotationTree> annotations = modifiers.annotations();
 
     if (isClass() && isPublic(modifiers) && !(isFinal(modifiers) || !annotations.isEmpty())) {
-      context.reportIssue(this, tree.simpleName(), "Make " + tree.simpleName() + " a static final constant or non-public and provide accessors if needed.");
+      reportWithQuickFix(tree);
     }
     super.visitVariable(tree);
   }
@@ -78,5 +83,31 @@ public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements Jav
   private static boolean isPublic(ModifiersTree modifiers) {
     return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
   }
+  
+  private void reportWithQuickFix(VariableTree tree) {
+    QuickFixHelper.newIssue(context)
+    .forRule(this)
+    .onTree(tree.simpleName())
+    .withMessage( "Make " + tree.simpleName() + " a static final constant or non-public and provide accessors if needed.")
+    .withQuickFix(()->computeQuickFix(tree))
+    .report();
+  }
+  
+  static JavaQuickFix computeQuickFix(VariableTree tree){
+    ModifierKeywordTree publicModifier = getPublicModifier(tree.modifiers());
+    var quickFixBuilder = JavaQuickFix.newQuickFix("Replace public modifier with private");
+    quickFixBuilder.addTextEdit(JavaTextEdit.replaceTree(publicModifier, "private"));
+    return quickFixBuilder.build();
+  }
 
+  @Nonnull
+  static ModifierKeywordTree getPublicModifier(ModifiersTree modifiersTree) {
+    for (ModifierKeywordTree modifierKeywordTree : modifiersTree.modifiers()) {
+      if (modifierKeywordTree.modifier() == Modifier.PUBLIC) {
+        return modifierKeywordTree;
+      }
+    }
+    throw new IllegalStateException("Public modifier not found");
+  }
+  
 }

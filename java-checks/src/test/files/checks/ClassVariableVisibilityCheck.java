@@ -28,3 +28,14 @@ interface bar {
   public int blah = 0;
 
 }
+
+class Bar {
+  public int foo; // Noncompliant [[sc=14;ec=17;quickfixes=qf1]]
+  // fix@qf1 {{Replace public modifier with private}}
+  // edit@qf1 [[sc=3;ec=9]] {{private}}
+  
+  static public int foo; // Noncompliant [[sc=21;ec=24;quickfixes=qf2]]
+  // fix@qf2 {{Replace public modifier with private}}
+  // edit@qf2 [[sc=10;ec=16]] {{private}}
+  
+}
