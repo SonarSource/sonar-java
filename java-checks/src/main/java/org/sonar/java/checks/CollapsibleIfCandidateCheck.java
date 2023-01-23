@@ -48,22 +48,6 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
     outerIf.clear();
   }
 
-  static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, IfStatementTree outerIf) {
-    var quickFixBuilder = JavaQuickFix.newQuickFix("Merge this if statement with the (enclosing|nested) one");
-    StatementTree containingStatement = outerIf.thenStatement();
-    if (containingStatement.is(Tree.Kind.BLOCK)) {
-      StatementTree thenStatement = ifStatement.thenStatement();
-      if (thenStatement.is(Tree.Kind.BLOCK)) {
-        SyntaxToken closingBrace = ((BlockTree) thenStatement).closeBraceToken();
-        quickFixBuilder.addTextEdit(JavaTextEdit.removeTree(closingBrace));
-      } else {
-        quickFixBuilder.addTextEdit(JavaTextEdit.insertBeforeTree(ifStatement.thenStatement(), "{"));
-      }
-    }
-    quickFixBuilder.addTextEdit(JavaTextEdit.replaceBetweenTree(outerIf.closeParenToken(), ifStatement.openParenToken(), " && ("));
-    return quickFixBuilder.build();
-  }
-
   @Override
   public void visitIfStatement(IfStatementTree tree) {
 
@@ -109,5 +93,21 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
     }
 
     return false;
+  }
+
+  private static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, IfStatementTree outerIf) {
+    var quickFixBuilder = JavaQuickFix.newQuickFix("Merge this if statement with the (enclosing|nested) one");
+    StatementTree containingStatement = outerIf.thenStatement();
+    if (containingStatement.is(Tree.Kind.BLOCK)) {
+      StatementTree thenStatement = ifStatement.thenStatement();
+      if (thenStatement.is(Tree.Kind.BLOCK)) {
+        SyntaxToken closingBrace = ((BlockTree) thenStatement).closeBraceToken();
+        quickFixBuilder.addTextEdit(JavaTextEdit.removeTree(closingBrace));
+      } else {
+        quickFixBuilder.addTextEdit(JavaTextEdit.insertBeforeTree(ifStatement.thenStatement(), "{"));
+      }
+    }
+    quickFixBuilder.addTextEdit(JavaTextEdit.replaceBetweenTree(outerIf.closeParenToken(), ifStatement.openParenToken(), " && ("));
+    return quickFixBuilder.build();
   }
 }
