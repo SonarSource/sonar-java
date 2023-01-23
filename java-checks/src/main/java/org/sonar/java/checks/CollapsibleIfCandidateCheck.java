@@ -54,9 +54,13 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
     if (outerIf == null) {
       return quickFixBuilder.build();
     }
-    SyntaxToken lastToken = ifStatement.lastToken();
-    if ("}".equals(lastToken.text())) {
-      quickFixBuilder.addTextEdit(JavaTextEdit.removeTree(lastToken));
+    StatementTree containingStatement = outerIf.thenStatement();
+    if (containingStatement.is(Tree.Kind.BLOCK)) {
+      StatementTree thenStatement = ifStatement.thenStatement();
+      if (thenStatement.is(Tree.Kind.BLOCK)) {
+        SyntaxToken closingBrace = ((BlockTree) thenStatement).closeBraceToken();
+        quickFixBuilder.addTextEdit(JavaTextEdit.removeTree(closingBrace));
+      }
     }
     quickFixBuilder.addTextEdit(JavaTextEdit.replaceBetweenTree(outerIf.closeParenToken(), ifStatement.openParenToken(), " && ("));
     return quickFixBuilder.build();

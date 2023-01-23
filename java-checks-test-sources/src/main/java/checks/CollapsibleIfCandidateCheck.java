@@ -11,4 +11,13 @@ public class CollapsibleIfCandidateCheck {
       // edit@qf1 [[sl=-1;el=+0;sc=21;ec=11]] {{ && (}}
     }
   }
+
+  void noBraceOnOuter(File file) {
+    if (file != null)
+      if (file.isFile() || file.isDirectory()) { // Noncompliant [[sc=7;ec=9;quickfixes=qf2]]
+        /* ... */
+      }
+      // fix@qf2 {{Merge this if statement with the (enclosing|nested) one}}
+      // edit@qf2 [[sl=-1;el=+0;sc=21;ec=11]] {{ && (}}
+  }
 }
