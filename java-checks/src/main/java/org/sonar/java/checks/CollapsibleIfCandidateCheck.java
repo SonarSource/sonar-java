@@ -107,7 +107,7 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
         quickFixBuilder.addTextEdit(JavaTextEdit.insertBeforeTree(ifStatement.thenStatement(), "{"));
       }
     }
-    quickFixBuilder.addTextEdit(JavaTextEdit.replaceBetweenTree(outerIf.closeParenToken(), ifStatement.openParenToken(), " && ("));
+    quickFixBuilder.addTextEdit(JavaTextEdit.replaceBetweenTree(outerIf.closeParenToken(), ifStatement.ifKeyword(), " && "));
     return quickFixBuilder.build();
   }
 }
