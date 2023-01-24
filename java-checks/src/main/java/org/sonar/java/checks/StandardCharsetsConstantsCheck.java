@@ -286,7 +286,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     checkCall(newClassTree, newClassTree.methodSymbol(), newClassTree.arguments());
   }
 
-  private static List<JavaQuickFix> quickFixesOnCharsetCall(ExpressionTree callExpression, String constantName) {
+  private static List<JavaQuickFix> quickfixesOnCharsetCall(ExpressionTree callExpression, String constantName) {
     return List.of(
       JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\".")
         .addTextEdit(JavaTextEdit.replaceTree(callExpression, "java.nio.charset.StandardCharsets." + constantName))
@@ -299,7 +299,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       .forRule(this)
       .onTree(callExpression)
       .withMessage(String.format("Replace %s() call with StandardCharsets.%s", methodRef, constantName))
-      .withQuickFixes(() -> quickFixesOnCharsetCall(callExpression, constantName))
+      .withQuickFixes(() -> quickfixesOnCharsetCall(callExpression, constantName))
       .report();
   }
 
