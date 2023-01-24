@@ -27,6 +27,7 @@ import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -79,7 +80,11 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     if (methodWhereUsed != null && !isLiveInMethodEntry(privateFieldSymbol, methodWhereUsed)) {
       IdentifierTree declarationIdentifier = ((VariableTree) privateFieldSymbol.declaration()).simpleName();
       String message = String.format(MESSAGE, privateFieldSymbol.name());
-      reportIssue(declarationIdentifier, message);
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(declarationIdentifier)
+        .withMessage(message)
+        .report();
     }
   }
 
