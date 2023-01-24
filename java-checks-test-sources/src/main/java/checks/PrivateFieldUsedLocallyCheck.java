@@ -2,6 +2,7 @@ package checks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class PrivateFieldUsedLocallyCheck {
 
@@ -24,6 +25,20 @@ public class PrivateFieldUsedLocallyCheck {
     int onlyUsedHere() {
       privateList = new ArrayList<>(42);
       return privateList.size();
+    }
+  }
+
+  class MultiLineDeclaration {
+    // fix@qf3 {{Remove the "lowerCasedInput" field and declare it as a local variable in the relevant method}}
+    // edit@qf3 [[sl=+3;el=+3;sc=38;ec=38]] {{\nString lowerCasedInput = "Hello" +\n      "World!";\n}}
+    // edit@qf3 [[sl=+0;el=+1;sc=5;ec=16]] {{}}
+    // Noncompliant@+1 [[sc=20;ec=35;quickfixes=qf3]]
+    private String lowerCasedInput = "Hello" +
+      "World!";
+
+    String useLocally(String input) {
+      lowerCasedInput = input.toLowerCase(Locale.ROOT);
+      return input + " -> " + lowerCasedInput;
     }
   }
 
