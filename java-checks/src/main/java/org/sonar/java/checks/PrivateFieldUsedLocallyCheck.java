@@ -99,7 +99,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private JavaQuickFix computeQuickFix(Symbol.VariableSymbol symbol, VariableTree declaration, MethodTree methodWhereUsed) {
     String message = String.format(
-      "Remove the \"%s\" field and declare it as a local variable in the relevant method.",
+      "Remove the \"%s\" field and declare it as a local variable in the relevant method",
       symbol.name()
     );
     String newDeclaration = System.lineSeparator() + variableTreeToString(declaration) + System.lineSeparator();
