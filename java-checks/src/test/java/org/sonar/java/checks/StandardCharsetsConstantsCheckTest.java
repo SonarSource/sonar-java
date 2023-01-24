@@ -59,13 +59,4 @@ class StandardCharsetsConstantsCheckTest {
       .withQuickFixes()
       .verifyNoIssues();
   }
-
-  @Test
-  void test_quick_fixes() {
-    InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
-      .withCheck(new StandardCharsetsConstantsCheck())
-      .withQuickFixes()
-      .verifyIssues();
-  }
 }

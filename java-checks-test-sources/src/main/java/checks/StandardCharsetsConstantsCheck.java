@@ -137,9 +137,24 @@ class StandardCharsetsConstantsCheck {
     new OutputStreamWriter(outputStream, charsetName);
   }
 
-  void test_quickfixes() {
+  void quickfixes() {
     charset = com.google.common.base.Charsets.ISO_8859_1; // Noncompliant [[sc=47;ec=57;quickfixes=qf1]]
     // fix@qf1 {{Replace with "StandardCharsets.ISO_8859_1".}}
     // edit@qf1 [[sc=15;ec=46]] {{java.nio.charset.StandardCharsets}}
+    charset = com.google.common.base.Charsets.US_ASCII; // Noncompliant [[sc=47;ec=55;quickfixes=qf2]]
+    // fix@qf2 {{Replace with "StandardCharsets.US_ASCII".}}
+    // edit@qf2 [[sc=15;ec=46]] {{java.nio.charset.StandardCharsets}}
+    charset = com.google.common.base.Charsets.UTF_16; // Noncompliant [[sc=47;ec=53;quickfixes=qf3]]
+    // fix@qf3 {{Replace with "StandardCharsets.UTF_16".}}
+    // edit@qf3 [[sc=15;ec=46]] {{java.nio.charset.StandardCharsets}}
+    charset = com.google.common.base.Charsets.UTF_16BE; // Noncompliant [[sc=47;ec=55;quickfixes=qf4]]
+    // fix@qf4 {{Replace with "StandardCharsets.UTF_16BE".}}
+    // edit@qf4 [[sc=15;ec=46]] {{java.nio.charset.StandardCharsets}}
+    charset = com.google.common.base.Charsets.UTF_16LE; // Noncompliant [[sc=47;ec=55;quickfixes=qf5]]
+    // fix@qf5 {{Replace with "StandardCharsets.UTF_16LE".}}
+    // edit@qf5 [[sc=15;ec=46]] {{java.nio.charset.StandardCharsets}}
+    charset = com.google.common.base.Charsets.UTF_8; // Noncompliant [[sc=47;ec=52;quickfixes=qf6]]
+    // fix@qf6 {{Replace with "StandardCharsets.UTF_8".}}
+    // edit@qf6 [[sc=15;ec=46]] {{java.nio.charset.StandardCharsets}}
   }
 }
