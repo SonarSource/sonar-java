@@ -29,6 +29,8 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
@@ -41,6 +43,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.QuickFixHelper.contentForRange;
 import static org.sonar.java.se.ProgramState.isField;
 
 /**
@@ -82,14 +85,32 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     MethodTree methodWhereUsed = usedInOneMethodOnly(privateFieldSymbol, classSymbol);
 
     if (methodWhereUsed != null && !isLiveInMethodEntry(privateFieldSymbol, methodWhereUsed)) {
-      IdentifierTree declarationIdentifier = ((VariableTree) privateFieldSymbol.declaration()).simpleName();
+      VariableTree declaration = (VariableTree) privateFieldSymbol.declaration();
+      IdentifierTree declarationIdentifier = declaration.simpleName();
       String message = String.format(MESSAGE, privateFieldSymbol.name());
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(declarationIdentifier)
         .withMessage(message)
+        .withQuickFix(() -> computeQuickFix((Symbol.VariableSymbol) privateFieldSymbol, declaration, methodWhereUsed))
         .report();
     }
+  }
+
+  private JavaQuickFix computeQuickFix(Symbol.VariableSymbol symbol, VariableTree declaration, MethodTree methodWhereUsed) {
+    String message = String.format(
+      "Remove the \"%s\" field and declare it as a local variable in the relevant method.",
+      symbol.name()
+    );
+    String newDeclaration = System.lineSeparator() + variableTreeToString(declaration) + System.lineSeparator();
+    return JavaQuickFix.newQuickFix(message)
+      .addTextEdit(JavaTextEdit.insertAfterTree(methodWhereUsed.block().openBraceToken(), newDeclaration))
+      .addTextEdit(JavaTextEdit.removeTree(declaration))
+      .build();
+  }
+
+  private String variableTreeToString(VariableTree declaration) {
+    return contentForRange(declaration.type().firstToken(), declaration.endToken(), context);
   }
 
   private static boolean isLiveInMethodEntry(Symbol privateFieldSymbol, MethodTree methodTree) {
