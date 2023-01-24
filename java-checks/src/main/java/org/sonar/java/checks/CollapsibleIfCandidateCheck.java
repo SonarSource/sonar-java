@@ -19,18 +19,21 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 @Rule(key = "S1066")
 public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -49,8 +52,14 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
   public void visitIfStatement(IfStatementTree tree) {
 
     if (!outerIf.isEmpty() && !hasElseClause(tree)) {
-      context.reportIssue(this, tree.ifKeyword(), "Merge this if statement with the enclosing one.",
-        Collections.singletonList(new JavaFileScannerContext.Location("", outerIf.peek().ifKeyword())), null);
+      IfStatementTree outerIfStatement = outerIf.peek();
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(tree.ifKeyword())
+        .withMessage("Merge this if statement with the enclosing one.")
+        .withSecondaries(Collections.singletonList(new JavaFileScannerContext.Location("", outerIfStatement.ifKeyword())))
+        .withQuickFix(() -> computeQuickFix(tree, outerIfStatement))
+        .report();
     }
 
     if (!hasElseClause(tree) && hasBodySingleIfStatement(tree.thenStatement())) {
@@ -84,5 +93,21 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
     }
 
     return false;
+  }
+
+  private static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, IfStatementTree outerIf) {
+    var quickFixBuilder = JavaQuickFix.newQuickFix("Merge this if statement with the enclosing one");
+    StatementTree containingStatement = outerIf.thenStatement();
+    if (containingStatement.is(Tree.Kind.BLOCK)) {
+      StatementTree thenStatement = ifStatement.thenStatement();
+      if (thenStatement.is(Tree.Kind.BLOCK)) {
+        SyntaxToken closingBrace = ((BlockTree) thenStatement).closeBraceToken();
+        quickFixBuilder.addTextEdit(JavaTextEdit.removeTree(closingBrace));
+      } else {
+        quickFixBuilder.addTextEdit(JavaTextEdit.insertBeforeTree(ifStatement.thenStatement(), "{"));
+      }
+    }
+    quickFixBuilder.addTextEdit(JavaTextEdit.replaceBetweenTree(outerIf.closeParenToken(), ifStatement.ifKeyword(), " && "));
+    return quickFixBuilder.build();
   }
 }
