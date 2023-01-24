@@ -96,7 +96,7 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
   }
 
   private static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, IfStatementTree outerIf) {
-    var quickFixBuilder = JavaQuickFix.newQuickFix("Merge this if statement with the (enclosing|nested) one");
+    var quickFixBuilder = JavaQuickFix.newQuickFix("Merge this if statement with the enclosing one");
     StatementTree containingStatement = outerIf.thenStatement();
     if (containingStatement.is(Tree.Kind.BLOCK)) {
       StatementTree thenStatement = ifStatement.thenStatement();
