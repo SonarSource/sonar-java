@@ -239,7 +239,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     if (parent.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree parentMemberSelect = (MemberSelectExpressionTree) parent;
       return List.of(
-        JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + identifierTree.name() + "\".")
+        JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + identifierTree.name() + "\"")
           .addTextEdit(JavaTextEdit.replaceTree(parentMemberSelect.expression(), "java.nio.charset.StandardCharsets"))
           .build()
       );
@@ -288,7 +288,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
 
   private static List<JavaQuickFix> quickfixesOnCharsetCall(ExpressionTree callExpression, String constantName) {
     return List.of(
-      JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\".")
+      JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
         .addTextEdit(JavaTextEdit.replaceTree(callExpression, "java.nio.charset.StandardCharsets." + constantName))
         .build()
     );
@@ -309,7 +309,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       .onTree(charsetNameArgument)
       .withMessage(String.format("Replace charset name argument with StandardCharsets.%s", constantName))
       .withQuickFixes(() -> List.of(
-        JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\".")
+        JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
           .addTextEdit(JavaTextEdit.replaceTree(charsetNameArgument, "java.nio.charset.StandardCharsets." + constantName))
           .build()))
       .report();
