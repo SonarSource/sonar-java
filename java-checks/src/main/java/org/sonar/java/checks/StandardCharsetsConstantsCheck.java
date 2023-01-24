@@ -88,6 +88,8 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   private static final String COMMONS_IO_REVERSEDLINESFILEREADER = COMMONS_IO + ".input.ReversedLinesFileReader";
   private static final String COMMONS_IO_LOCKABLEFILEWRITER = COMMONS_IO + ".output.LockableFileWriter";
   private static final String COMMONS_IO_WRITEROUTPUTSTREAM = COMMONS_IO + ".output.WriterOutputStream";
+  private static final String REPLACE_WITH_STANDARD_CHARSETS = "Replace with \"StandardCharsets.";
+
 
   private static final List<Charset> STANDARD_CHARSETS = Arrays.asList(
           StandardCharsets.ISO_8859_1,
@@ -232,12 +234,12 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     }
   }
 
-  List<JavaQuickFix> computeQuickFix(IdentifierTree identifierTree) {
+  List<JavaQuickFix> quickFixesOnMemberSelect(IdentifierTree identifierTree) {
     Tree parent = identifierTree.parent();
     if (parent.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree parentMemberSelect = (MemberSelectExpressionTree) parent;
       return List.of(
-        JavaQuickFix.newQuickFix("Replace with \"StandardCharsets." + identifierTree.name() + "\".")
+        JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + identifierTree.name() + "\".")
           .addTextEdit(JavaTextEdit.replaceTree(parentMemberSelect.expression(), "java.nio.charset.StandardCharsets"))
           .build()
       );
@@ -256,7 +258,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
           .forRule(this)
           .onTree(identifierTree)
           .withMessage("Replace \"com.google.common.base.Charsets." + identifier + "\" with \"StandardCharsets." + identifier + "\".")
-          .withQuickFixes(() -> computeQuickFix(identifierTree))
+          .withQuickFixes(() -> quickFixesOnMemberSelect(identifierTree))
           .report();
       }
     }
@@ -281,6 +283,14 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     checkCall(newClassTree, newClassTree.methodSymbol(), newClassTree.arguments());
   }
 
+  private static List<JavaQuickFix> quickFixesOnCharsetCall(ExpressionTree callExpression, String constantName) {
+    return List.of(
+      JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\".")
+        .addTextEdit(JavaTextEdit.replaceTree(callExpression, "java.nio.charset.StandardCharsets." + constantName))
+        .build()
+    );
+  }
+
   private void checkCall(ExpressionTree callExpression, Symbol.MethodSymbol symbol, Arguments arguments) {
     getCharsetNameArgument(symbol, arguments)
       .ifPresent(charsetNameArgument -> getConstantName(charsetNameArgument)
@@ -289,24 +299,37 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
           switch (methodRef) {
             case "Charset.forName":
             case "Charsets.toCharset":
-              reportIssue(callExpression, String.format("Replace %s() call with StandardCharsets.%s", methodRef, constantName));
+              QuickFixHelper.newIssue(context)
+                .forRule(this)
+                .onTree(callExpression)
+                .withMessage(String.format("Replace %s() call with StandardCharsets.%s", methodRef, constantName))
+                .withQuickFixes(() -> quickFixesOnCharsetCall(callExpression, constantName))
+                .report();
               break;
             case "IOUtils.toString":
               if (arguments.size() == 2 && arguments.get(0).symbolType().is(BYTE_ARRAY)) {
                 reportIssue(callExpression, "Replace IOUtils.toString() call with new String(..., StandardCharsets." + constantName + ");");
               } else {
-                reportDefaultIssue(charsetNameArgument, constantName);
+                reportDefaultQuickfix(charsetNameArgument, constantName);
               }
               break;
             default:
-              reportDefaultIssue(charsetNameArgument, constantName);
+              reportDefaultQuickfix(charsetNameArgument, constantName);
               break;
           }
         }));
   }
 
-  private void reportDefaultIssue(ExpressionTree charsetNameArgument, String constantName) {
-    reportIssue(charsetNameArgument, "Replace charset name argument with StandardCharsets." + constantName);
+  private void reportDefaultQuickfix(ExpressionTree charsetNameArgument, String constantName) {
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(charsetNameArgument)
+      .withMessage(String.format("Replace charset name argument with StandardCharsets.%s", constantName))
+      .withQuickFixes(() -> List.of(
+        JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\".")
+          .addTextEdit(JavaTextEdit.replaceTree(charsetNameArgument, "java.nio.charset.StandardCharsets." + constantName))
+          .build()))
+      .report();
   }
 
   private static Optional<ExpressionTree> getCharsetNameArgument(Symbol symbol, Arguments arguments) {
