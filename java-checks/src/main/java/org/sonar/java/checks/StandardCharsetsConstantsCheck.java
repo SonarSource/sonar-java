@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,9 +30,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -227,13 +232,32 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     }
   }
 
+  List<JavaQuickFix> computeQuickFix(IdentifierTree identifierTree) {
+    Tree parent = identifierTree.parent();
+    if (parent.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree parentMemberSelect = (MemberSelectExpressionTree) parent;
+      return List.of(
+        JavaQuickFix.newQuickFix("Replace with \"StandardCharsets." + identifierTree.name() + "\".")
+          .addTextEdit(JavaTextEdit.replaceTree(parentMemberSelect.expression(), "java.nio.charset.StandardCharsets"))
+          .build()
+      );
+    }
+    return Collections.emptyList();
+  }
+
+
   private void onMemberSelectExpressionFound(IdentifierTree identifierTree) {
     Symbol symbol = identifierTree.symbol();
     if (symbol.isVariableSymbol() && symbol.owner().type().is("com.google.common.base.Charsets")) {
       String identifier = identifierTree.name();
       String aliasedIdentifier = identifier.replace("_", "-");
       if (STANDARD_CHARSETS.stream().anyMatch(c -> c.name().equals(aliasedIdentifier))) {
-        reportIssue(identifierTree, "Replace \"com.google.common.base.Charsets." + identifier + "\" with \"StandardCharsets." + identifier + "\".");
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(identifierTree)
+          .withMessage("Replace \"com.google.common.base.Charsets." + identifier + "\" with \"StandardCharsets." + identifier + "\".")
+          .withQuickFixes(() -> computeQuickFix(identifierTree))
+          .report();
       }
     }
   }

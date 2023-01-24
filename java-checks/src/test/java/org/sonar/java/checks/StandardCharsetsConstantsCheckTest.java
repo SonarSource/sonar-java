@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;;
 
@@ -28,29 +29,43 @@ class StandardCharsetsConstantsCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
+      .withQuickFixes()
       .verifyIssues();
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(7)
+      .withQuickFixes()
       .verifyIssues();
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck_java8.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(8)
+      .withQuickFixes()
       .verifyIssues();
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile("src/test/files/checks/StandardCharsetsConstantsCheck_java10.java")
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(10)
+      .withQuickFixes()
       .verifyIssues();
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(6)
+      .withQuickFixes()
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_quick_fixes() {
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
+      .withCheck(new StandardCharsetsConstantsCheck())
+      .withQuickFixes()
+      .verifyIssues();
   }
 }

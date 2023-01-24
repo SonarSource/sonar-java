@@ -136,4 +136,10 @@ class StandardCharsetsConstantsCheck {
     new InputStreamReader(inputStream, charsetName);
     new OutputStreamWriter(outputStream, charsetName);
   }
+
+  void test_quickfixes() {
+    charset = com.google.common.base.Charsets.ISO_8859_1; // Noncompliant [[sc=47;ec=57;quickfixes=qf1]]
+    // fix@qf1 {{Replace with "StandardCharsets.ISO_8859_1".}}
+    // edit@qf1 [[sc=15;ec=46]] {{java.nio.charset.StandardCharsets}}
+  }
 }
