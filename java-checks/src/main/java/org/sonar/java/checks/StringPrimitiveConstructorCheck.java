@@ -125,11 +125,9 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
       textEdit = JavaTextEdit.replaceTree(newClassTree, replacement);
     } else {
       Matchers matchers = Matchers.getByMatch(newClassTree);
-      if (matchers != null) {
-        message = String.format("Replace this \"%s\" constructor with the %s literal passed as parameter", matchers.constructor, matchers.literal);
-        String replacement = getFirstArgumentAsString(newClassTree);
-        textEdit = JavaTextEdit.replaceTree(newClassTree, replacement);
-      }
+      message = String.format("Replace this \"%s\" constructor with the %s literal passed as parameter", matchers.constructor, matchers.literal);
+      String replacement = getFirstArgumentAsString(newClassTree);
+      textEdit = JavaTextEdit.replaceTree(newClassTree, replacement);
     }
     return JavaQuickFix.newQuickFix(message).addTextEdit(textEdit).build();
   }
@@ -165,19 +163,21 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
     public final String constructor;
     public final String literal;
 
-    private Matchers(MethodMatchers matcher, String constructor, String literal) {
+    Matchers(MethodMatchers matcher, String constructor, String literal) {
       this.matcher = matcher;
       this.constructor = constructor;
       this.literal = literal;
     }
 
     public static Matchers getByMatch(NewClassTree newClassTree) {
-      for (Matchers matchers : values()) {
+      int lastIndex = values().length-1;
+      for(int i =0; i < lastIndex; i++) {
+        Matchers matchers = values()[i];
         if (matchers.matcher.matches(newClassTree)) {
           return matchers;
         }
       }
-      return null;
+      return values()[lastIndex];
     }
   }
 
