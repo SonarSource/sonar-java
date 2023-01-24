@@ -63,11 +63,15 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
     classSymbol.memberSymbols().stream()
       .filter(PrivateFieldUsedLocallyCheck::isPrivateField)
-      .filter(s -> !(s.isFinal() && s.isStatic()))
+      .filter(s -> !isAConstant(s))
       .filter(s -> !hasAnnotation(s))
       .filter(s -> !s.usages().isEmpty())
       .filter(s -> !fieldsReadOnAnotherInstance.contains(s))
       .forEach(s -> checkPrivateField(s, classSymbol));
+  }
+
+  private static boolean isAConstant(Symbol s) {
+    return s.isFinal() && s.isStatic();
   }
 
   private static boolean hasAnnotation(Symbol s) {
@@ -122,7 +126,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private static class FieldsReadOnAnotherInstanceVisitor extends BaseTreeVisitor {
 
-    private Set<Symbol> fieldsReadOnAnotherInstance = new HashSet<>();
+    private final Set<Symbol> fieldsReadOnAnotherInstance = new HashSet<>();
 
     static Set<Symbol> getFrom(Tree classTree) {
       FieldsReadOnAnotherInstanceVisitor fieldsReadOnAnotherInstanceVisitor = new FieldsReadOnAnotherInstanceVisitor();
