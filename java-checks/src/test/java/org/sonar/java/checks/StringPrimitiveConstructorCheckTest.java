@@ -20,17 +20,18 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class StringPrimitiveConstructorCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StringPrimitiveConstructorCheck.java"))
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/StringPrimitiveConstructorCheck.java"))
       .withCheck(new StringPrimitiveConstructorCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 }
