@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 class ArrayHashCodeAndToStringCheck {
 
+  Foo foo;
+
   void method(String[] args, String string) {
     String argStr = args.toString(); // Noncompliant [[sc=26;ec=34]] {{Use "Arrays.toString(array)" instead.}}
     int argHash = args.hashCode(); // Noncompliant {{Use "Arrays.hashCode(array)" instead.}}
@@ -23,5 +25,22 @@ class ArrayHashCodeAndToStringCheck {
 
     argStr = Arrays.toString(args); // Compliant
     argHash = Arrays.hashCode(args); // Compliant
+
+    int[][] array = new int[42][42];
+    array[0].toString(); // Noncompliant [[sc=14;ec=22;quickfixes=qfToString1]] {{Use "Arrays.toString(array)" instead.}}
+    // fix@qfToString1 {{Use "Arrays.toString(array)" instead.}}
+    // edit@qfToString1 [[sc=5;ec=24]] {{Arrays.toString(array[0])}}
+
+    this.foo.bar.myArray.toString(); // Noncompliant [[sc=26;ec=34;quickfixes=qfToString2]] {{Use "Arrays.toString(array)" instead.}}
+    // fix@qfToString2 {{Use "Arrays.toString(array)" instead.}}
+    // edit@qfToString2 [[sc=5;ec=36]] {{Arrays.toString(this.foo.bar.myArray)}}
+  }
+
+  class Foo {
+    Bar bar;
+  }
+
+  class Bar {
+    int[] myArray = new int[42];
   }
 }

@@ -19,17 +19,20 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+
+import java.util.Collections;
+import java.util.List;
 
 @Rule(key = "S2116")
 public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
@@ -45,25 +48,26 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    String methodName = mit.methodSymbol().name();
+    IdentifierTree methodTree = ExpressionUtils.methodName(mit);
+    String methodName = methodTree.name();
+    String methodCallee = QuickFixHelper.contentForTree(((MemberSelectExpressionTreeImpl) mit.methodSelect()).expression(), context);
     QuickFixHelper.newIssue(context)
       .forRule(this)
-      .onTree(ExpressionUtils.methodName(mit))
+      .onTree(methodTree)
       .withMessage("Use \"Arrays." + methodName + "(array)\" instead.")
-      .withQuickFixes(() -> getQuickFix(mit))
+      .withQuickFixes(() -> getQuickFix(mit, methodName, methodCallee))
       .report();
   }
 
-  private static List<JavaQuickFix> getQuickFix(MethodInvocationTree tree) {
-    String methodName = ExpressionUtils.methodName(tree).name();
+  private static List<JavaQuickFix> getQuickFix(MethodInvocationTree tree, String methodName, String methodCallee) {
     if ("toString".equals(methodName)) {
       JavaQuickFix toStringQuickFix = JavaQuickFix.newQuickFix("Use \"Arrays.toString(array)\" instead.")
-        .addTextEdit(JavaTextEdit.replaceTree(tree, "Arrays.toString(" + tree.firstToken().text() + ")"))
+        .addTextEdit(JavaTextEdit.replaceTree(tree, "Arrays.toString(" + methodCallee + ")"))
         .build();
       return Collections.singletonList(toStringQuickFix);
     } else {
       JavaQuickFix hashCodeQuickFix = JavaQuickFix.newQuickFix("Use \"Arrays.hashCode(array)\" instead.")
-        .addTextEdit(JavaTextEdit.replaceTree(tree, "Arrays.hashCode(" + tree.firstToken().text() + ")"))
+        .addTextEdit(JavaTextEdit.replaceTree(tree, "Arrays.hashCode(" + methodCallee + ")"))
         .build();
       return Collections.singletonList(hashCodeQuickFix);
     }
