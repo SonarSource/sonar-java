@@ -19,7 +19,12 @@
  */
 package org.sonar.java.checks.tests;
 
+import java.util.List;
+
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -40,8 +45,14 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends AbstractJUnit5NotCo
     Type type = returnType.symbolType();
     boolean methodReturnAValue = !type.isUnknown() && !type.isVoid();
     if(methodReturnAValue && !methodTree.symbol().metadata().isAnnotatedWith("org.junit.jupiter.api.TestFactory")) {
-      reportIssue(returnType, "Replace the return type by void.");
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(methodTree.returnType())
+        .withMessage("Replace the return type by void.")
+        .withQuickFixes(() -> List.of(JavaQuickFix.newQuickFix("Replace with void")
+          .addTextEdit(JavaTextEdit.replaceTree(returnType, "void"))
+          .build()))
+        .report();
     }
   }
-
 }

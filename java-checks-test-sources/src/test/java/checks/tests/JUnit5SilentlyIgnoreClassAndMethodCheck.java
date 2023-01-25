@@ -2,6 +2,7 @@ package checks.tests;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -70,4 +71,15 @@ class JUnit5SilentlyIgnoreClassAndMethodCheck {
     }
   }
 
+  @Nested
+  class Quickfixes {
+    @Test
+    List<String> quickFixes() { return Collections.emptyList(); } // Noncompliant [[sc=5;ec=17;quickfixes=qf1]]
+    // fix@qf1 {{Replace with void}}
+    // edit@qf1 [[sc=5;ec=17]] {{void}}
+    @Test
+    String toEmptyString() { return ""; } // Noncompliant [[sc=5;ec=11;quickfixes=qf2]]
+    // fix@qf2 {{Replace with void}}
+    // edit@qf2 [[sc=5;ec=11]] {{void}}
+  }
 }
