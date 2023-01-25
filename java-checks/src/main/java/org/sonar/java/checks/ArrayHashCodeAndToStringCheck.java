@@ -31,11 +31,15 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(key = "S2116")
 public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
+
+  private static final String ARRAYS = "java.util.Arrays";
+
+  private QuickFixHelper.ImportSupplier importSupplier;
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -55,22 +59,34 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
       .forRule(this)
       .onTree(methodTree)
       .withMessage("Use \"Arrays." + methodName + "(array)\" instead.")
-      .withQuickFixes(() -> getQuickFix(mit, methodName, methodCallee))
+      .withQuickFix(() -> getQuickFix(mit, methodName, methodCallee))
       .report();
   }
 
-  private static List<JavaQuickFix> getQuickFix(MethodInvocationTree tree, String methodName, String methodCallee) {
+  private JavaQuickFix getQuickFix(MethodInvocationTree tree, String methodName, String methodCallee) {
+    List<JavaTextEdit> edits = new ArrayList<>();
+    getImportSupplier()
+      .newImportEdit(ARRAYS)
+      .ifPresent(edits::add);
+
     if ("toString".equals(methodName)) {
-      JavaQuickFix toStringQuickFix = JavaQuickFix.newQuickFix("Use \"Arrays.toString(array)\" instead.")
-        .addTextEdit(JavaTextEdit.replaceTree(tree, "Arrays.toString(" + methodCallee + ")"))
+      edits.add(JavaTextEdit.replaceTree(tree, "Arrays.toString(" + methodCallee + ")"));
+      return JavaQuickFix.newQuickFix("Use \"Arrays.toString(array)\" instead.")
+        .addTextEdits(edits)
         .build();
-      return Collections.singletonList(toStringQuickFix);
     } else {
-      JavaQuickFix hashCodeQuickFix = JavaQuickFix.newQuickFix("Use \"Arrays.hashCode(array)\" instead.")
-        .addTextEdit(JavaTextEdit.replaceTree(tree, "Arrays.hashCode(" + methodCallee + ")"))
+      edits.add(JavaTextEdit.replaceTree(tree, "Arrays.hashCode(" + methodCallee + ")"));
+      return JavaQuickFix.newQuickFix("Use \"Arrays.hashCode(array)\" instead.")
+        .addTextEdits(edits)
         .build();
-      return Collections.singletonList(hashCodeQuickFix);
     }
+  }
+
+  private QuickFixHelper.ImportSupplier getImportSupplier() {
+    if (importSupplier == null) {
+      importSupplier = QuickFixHelper.newImportSupplier(context);
+    }
+    return importSupplier;
   }
 
 }
