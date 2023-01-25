@@ -24,12 +24,16 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.SyntacticEquivalence;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
@@ -47,7 +51,7 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
     for (CatchTree catchTree : ((TryStatementTree) tree).catches()) {
       for (CatchTree catchTreeToBeCompared : catches) {
         if (SyntacticEquivalence.areSemanticallyEquivalent(catchTree.block().body(), catchTreeToBeCompared.block().body())) {
-          reportIssue(catchTree, catchTreeToBeCompared);
+          reportIssueWithQuickFix(catchTree, catchTreeToBeCompared);
           break;
         }
       }
@@ -55,15 +59,33 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
     }
   }
 
-  private void reportIssue(CatchTree catchTree, CatchTree catchTreeToBeCompared) {
-    String message = "Combine this catch with the one at line " + LineUtils.startLine(catchTreeToBeCompared.catchKeyword())
-      + ", which has the same body." + context.getJavaVersion().java7CompatibilityMessage();
+  private void reportIssueWithQuickFix(CatchTree catchTree, CatchTree catchTreeToBeCompared) {
+    String quickFixMessage = "Combine this catch with the one at line " + LineUtils.startLine(catchTreeToBeCompared.catchKeyword());
+    String issueMessage = quickFixMessage + ", which has the same body." + context.getJavaVersion().java7CompatibilityMessage();
     List<JavaFileScannerContext.Location> flow = Collections.singletonList(new JavaFileScannerContext.Location("Combine with this catch", catchTreeToBeCompared));
-    reportIssue(catchTree.parameter(), message, flow, null);
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(catchTree.parameter())
+      .withMessage(issueMessage)
+      .withSecondaries(flow)
+      .withQuickFix( () -> computeQuickFix(catchTree, catchTreeToBeCompared, quickFixMessage) )
+      .report();
   }
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
     return version.isJava7Compatible();
   }
+
+  private JavaQuickFix computeQuickFix(CatchTree catchTree, CatchTree catchTreeToBeCompared, String qfMessage) {
+    var builder = JavaQuickFix.newQuickFix(qfMessage);
+    builder.addTextEdit(JavaTextEdit.removeTree(catchTree));
+    SyntaxToken openParent = catchTreeToBeCompared.openParenToken();
+    builder.addTextEdit(
+      JavaTextEdit.insertAfterTree(
+        openParent,
+        QuickFixHelper.contentForTree(catchTree.parameter().type(), context) + " | "));
+    return builder.build();
+  }
+
 }
