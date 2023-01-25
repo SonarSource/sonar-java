@@ -102,7 +102,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
       "Remove the \"%s\" field and declare it as a local variable in the relevant method",
       symbol.name()
     );
-    String newDeclaration = System.lineSeparator() + variableTreeToString(declaration) + System.lineSeparator();
+    String newDeclaration = "\n" + variableTreeToString(declaration);
     return JavaQuickFix.newQuickFix(message)
       .addTextEdit(JavaTextEdit.insertAfterTree(methodWhereUsed.block().openBraceToken(), newDeclaration))
       .addTextEdit(JavaTextEdit.removeTree(declaration))
