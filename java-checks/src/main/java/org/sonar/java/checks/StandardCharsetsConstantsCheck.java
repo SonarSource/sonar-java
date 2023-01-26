@@ -288,13 +288,21 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
         .build();
   }
 
-  private static List<JavaQuickFix> quickFixesOnMemberSelect(IdentifierTree identifierTree) {
+  private List<JavaQuickFix> quickFixesOnMemberSelect(IdentifierTree identifierTree) {
     Tree parent = identifierTree.parent();
     if (parent.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree parentMemberSelect = (MemberSelectExpressionTree) parent;
+
+      List<JavaTextEdit> edits = new ArrayList<>();
+      edits.add(JavaTextEdit.replaceTree(parentMemberSelect.expression(), "StandardCharsets"));
+
+      getImportSupplier()
+        .newImportEdit(JAVA_NIO_STANDARD_CHARSETS)
+        .ifPresent(edits::add);
+
       return List.of(
         JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + identifierTree.name() + "\"")
-          .addTextEdit(JavaTextEdit.replaceTree(parentMemberSelect.expression(), "java.nio.charset.StandardCharsets"))
+          .addTextEdits(edits)
           .build()
       );
     }
