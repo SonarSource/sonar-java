@@ -193,21 +193,27 @@ class StandardCharsetsConstantsCheck {
 
     org.apache.commons.io.IOUtils.toString(inputStream, "UTF-8"); // Noncompliant [[sc=57;ec=64;quickfixes=qf14]]
     // fix@qf14 {{Replace with "StandardCharsets.UTF_8"}}
-    // edit@qf14 [[sc=57;ec=64]] {{java.nio.charset.StandardCharsets.UTF_8}}
+    // edit@qf14 [[sc=57;ec=64]] {{StandardCharsets.UTF_8}}
+    // edit@qf14 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
     "".getBytes("UTF-8"); // Noncompliant [[sc=17;ec=24;quickfixes=qf15]]
     // fix@qf15 {{Replace with "StandardCharsets.UTF_8"}}
-    // edit@qf15 [[sc=17;ec=24]] {{java.nio.charset.StandardCharsets.UTF_8}}
+    // edit@qf15 [[sc=17;ec=24]] {{StandardCharsets.UTF_8}}
+    // edit@qf15 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
     new String(bytes, offset, length, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant [[sc=39;ec=81;quickfixes=qf16]]
     // fix@qf16 {{Replace with "StandardCharsets.UTF_8"}}
-    // edit@qf16 [[sc=39;ec=81]] {{java.nio.charset.StandardCharsets.UTF_8}}
+    // edit@qf16 [[sc=39;ec=81]] {{StandardCharsets.UTF_8}}
+    // edit@qf16 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
     org.apache.commons.io.FileUtils.write(file, charSequence, "UTF-8"); // Noncompliant [[sc=63;ec=70;quickfixes=qf17]]
     // fix@qf17 {{Replace with "StandardCharsets.UTF_8"}}
-    // edit@qf17 [[sc=63;ec=70]] {{java.nio.charset.StandardCharsets.UTF_8}}
+    // edit@qf17 [[sc=63;ec=70]] {{StandardCharsets.UTF_8}}
+    // edit@qf17 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
      org.apache.commons.io.IOUtils.toCharArray(inputStream, "UTF-8"); // Noncompliant [[sc=61;ec=68;quickfixes=qf18]]
     // fix@qf18 {{Replace with "StandardCharsets.UTF_8"}}
-    // edit@qf18 [[sc=61;ec=68]] {{java.nio.charset.StandardCharsets.UTF_8}}
+    // edit@qf18 [[sc=61;ec=68]] {{StandardCharsets.UTF_8}}
+    // edit@qf18 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
     new org.apache.commons.io.input.ReaderInputStream(reader, "ISO-8859-1", bufferSize); // Noncompliant [[sc=63;ec=75;quickfixes=qf19]]
     // fix@qf19 {{Replace with "StandardCharsets.ISO_8859_1"}}
-    // edit@qf19 [[sc=63;ec=75]] {{java.nio.charset.StandardCharsets.ISO_8859_1}}
+    // edit@qf19 [[sc=63;ec=75]] {{StandardCharsets.ISO_8859_1}}
+    // edit@qf19 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
   }
 }

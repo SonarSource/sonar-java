@@ -328,14 +328,20 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   }
 
   private void reportDefaultQuickfix(ExpressionTree charsetNameArgument, String constantName) {
+    List<JavaTextEdit> edits = new ArrayList<>();
+    edits.add(JavaTextEdit.replaceTree(charsetNameArgument, "StandardCharsets." + constantName));
+
+    getImportSupplier()
+      .newImportEdit(JAVA_NIO_STANDARD_CHARSETS)
+      .ifPresent(edits::add);
+
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(charsetNameArgument)
       .withMessage(String.format("Replace charset name argument with StandardCharsets.%s", constantName))
-      .withQuickFixes(() -> List.of(
-        JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
-          .addTextEdit(JavaTextEdit.replaceTree(charsetNameArgument, "java.nio.charset.StandardCharsets." + constantName))
-          .build()))
+      .withQuickFix(() -> JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
+          .addTextEdits(edits)
+          .build())
       .report();
   }
 
