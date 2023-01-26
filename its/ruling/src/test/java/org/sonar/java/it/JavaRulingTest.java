@@ -23,6 +23,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.sonar.orchestrator.Orchestrator;
+import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.build.Build;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
@@ -46,7 +47,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Fail;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -86,15 +86,27 @@ public class JavaRulingTest {
 
   private static Path effectiveDumpOldFolder;
 
+  public static boolean isCommunityEditionTestsOnly() {
+    return "true".equals(System.getProperty("communityEditionTestsOnly"));
+  }
   @ClassRule
-  public static Orchestrator orchestrator = Orchestrator.builderEnv()
-    .useDefaultAdminCredentialsForBuilds(true)
-    .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[9.4]"))
-    .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
-    .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.10.0.2181"))
-    .setEdition(Edition.DEVELOPER)
-    .activateLicense()
-    .build();
+  public static final Orchestrator ORCHESTRATOR = createOrchestrator();
+
+  private static Orchestrator createOrchestrator() {
+    OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
+      .useDefaultAdminCredentialsForBuilds(true)
+      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[9.4]"))
+      .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
+      .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.10.0.2181"));
+
+    if (isCommunityEditionTestsOnly()) {
+      orchestratorBuilder.setEdition(Edition.COMMUNITY);
+    } else {
+      orchestratorBuilder.setEdition(Edition.DEVELOPER)
+        .activateLicense();
+    }
+    return orchestratorBuilder.build();
+  }
 
   @BeforeClass
   public static void prepare_quality_profiles() throws Exception {
@@ -118,7 +130,7 @@ public class JavaRulingTest {
       "S1106"
       );
     Set<String> activatedRuleKeys = new HashSet<>();
-    ProfileGenerator.generate(orchestrator, rulesParameters, disabledRules, SUBSET_OF_ENABLED_RULES, activatedRuleKeys);
+    ProfileGenerator.generate(ORCHESTRATOR, rulesParameters, disabledRules, SUBSET_OF_ENABLED_RULES, activatedRuleKeys);
     instantiateTemplateRule("S2253", "stringToCharArray", "className=\"java.lang.String\";methodName=\"toCharArray\"", activatedRuleKeys);
     instantiateTemplateRule("S4011", "longDate", "className=\"java.util.Date\";argumentTypes=\"long\"", activatedRuleKeys);
     instantiateTemplateRule("S124", "commentRegexTest", "regularExpression=\"(?i).*TODO\\(user\\).*\";message=\"bad user\"", activatedRuleKeys);
@@ -198,6 +210,10 @@ public class JavaRulingTest {
 
   @Test
   public void eclipse_jetty_incremental() throws Exception {
+    if (isCommunityEditionTestsOnly()) {
+      return;
+    }
+
     List<String> dirs = Arrays.asList("jetty-http/", "jetty-io/", "jetty-jmx/", "jetty-server/", "jetty-slf4j-impl/", "jetty-util/", "jetty-util-ajax/", "jetty-xml/", "tests/jetty-http-tools/");
 
     String mainBranchSourceCode = "eclipse-jetty";
@@ -364,8 +380,8 @@ public class JavaRulingTest {
   }
 
   private static void prepareProject(String projectKey, String projectName) {
-    orchestrator.getServer().provisionProject(projectKey, projectName);
-    orchestrator.getServer().associateProjectToQualityProfile(projectKey, "java", "rules");
+    ORCHESTRATOR.getServer().provisionProject(projectKey, projectName);
+    ORCHESTRATOR.getServer().associateProjectToQualityProfile(projectKey, "java", "rules");
   }
 
   private static void executeDebugBuildWithCommonProperties(Build<?> build, String projectName) throws IOException {
@@ -389,9 +405,9 @@ public class JavaRulingTest {
     BuildResult buildResult;
     if (buildQuietly) {
       // if build fail, ruling job is not violently interrupted, allowing time to dump SQ logs
-      buildResult = orchestrator.executeBuildQuietly(build);
+      buildResult = ORCHESTRATOR.executeBuildQuietly(build);
     } else {
-      buildResult = orchestrator.executeBuild(build);
+      buildResult = ORCHESTRATOR.executeBuild(build);
     }
     if (buildResult.isSuccess()) {
       assertNoDifferences(projectName);
@@ -402,7 +418,7 @@ public class JavaRulingTest {
   }
 
   private static void dumpServerLogs() throws IOException {
-    Server server = orchestrator.getServer();
+    Server server = ORCHESTRATOR.getServer();
     LOG.error("::::::::::::::::::::::::::::::::::: DUMPING SERVER LOGS :::::::::::::::::::::::::::::::::::");
     dumpServerLogLastLines(server.getAppLogs());
     dumpServerLogLastLines(server.getCeLogs());
@@ -438,7 +454,7 @@ public class JavaRulingTest {
       return;
     }
     activatedRuleKeys.add(instantiationKey);
-    newAdminWsClient(orchestrator)
+    newAdminWsClient(ORCHESTRATOR)
       .rules()
       .create(new CreateRequest()
       .setName(instantiationKey)
@@ -451,7 +467,7 @@ public class JavaRulingTest {
       .setParams(Arrays.asList(("name=\"" + instantiationKey + "\";key=\"" + instantiationKey + "\";" +
         "markdown_description=\"" + instantiationKey + "\";" + params).split(";", 0))));
 
-    String profileKey = newAdminWsClient(orchestrator).qualityprofiles()
+    String profileKey = newAdminWsClient(ORCHESTRATOR).qualityprofiles()
       .search(new SearchRequest())
       .getProfilesList().stream()
       .filter(qualityProfile -> "rules".equals(qualityProfile.getName()))
@@ -463,7 +479,7 @@ public class JavaRulingTest {
       LOG.error("Could not retrieve profile key : Template rule " + ruleTemplateKey + " has not been activated");
     } else {
       String ruleKey = "java:" + instantiationKey;
-      newAdminWsClient(orchestrator).qualityprofiles()
+      newAdminWsClient(ORCHESTRATOR).qualityprofiles()
         .activateRule(new ActivateRuleRequest()
           .setKey(profileKey)
           .setRule(ruleKey)
@@ -479,5 +495,4 @@ public class JavaRulingTest {
       .url(orchestrator.getServer().getUrl())
       .build());
   }
-
 }

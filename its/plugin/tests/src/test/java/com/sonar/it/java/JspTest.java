@@ -39,10 +39,17 @@ public class JspTest {
 
   private static final String PROJECT = "servlet-jsp";
 
-  @ClassRule
-  public static final Orchestrator ORCHESTRATOR;
+  public static boolean isCommunityEditionTestsOnly() {
+    return "true".equals(System.getProperty("communityEditionTestsOnly"));
+  }
 
-  static {
+  @ClassRule
+  public static final Orchestrator ENTERPRISE_ORCHESTRATOR_OR_NULL = getEnterpriseOrchestratorOrNull();
+
+  private static Orchestrator getEnterpriseOrchestratorOrNull() {
+    if (isCommunityEditionTestsOnly()) {
+      return null;
+    }
     OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
@@ -53,17 +60,21 @@ public class JspTest {
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-jsp.xml"))
       .activateLicense();
     orchestratorBuilder.addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")));
-    ORCHESTRATOR = orchestratorBuilder.build();
+    return orchestratorBuilder.build();
   }
 
   @Test
   public void should_transpile_jsp() throws Exception {
+    if (isCommunityEditionTestsOnly()) {
+      return;
+    }
+
     MavenBuild build = MavenBuild.create(TestUtils.projectPom(PROJECT))
       .setCleanPackageSonarGoals()
       .setDebugLogs(true)
       .setProperty("sonar.scm.disabled", "true");
-    TestUtils.provisionProject(ORCHESTRATOR, "org.sonarsource.it.projects:" + PROJECT, PROJECT, "java", "jsp");
-    ORCHESTRATOR.executeBuild(build);
+    TestUtils.provisionProject(ENTERPRISE_ORCHESTRATOR_OR_NULL, "org.sonarsource.it.projects:" + PROJECT, PROJECT, "java", "jsp");
+    ENTERPRISE_ORCHESTRATOR_OR_NULL.executeBuild(build);
 
     Path visitTest = TestUtils.projectDir(PROJECT).toPath().resolve("target/sonar/visit.txt");
     List<String> visitTestLines = Files.readAllLines(visitTest);
