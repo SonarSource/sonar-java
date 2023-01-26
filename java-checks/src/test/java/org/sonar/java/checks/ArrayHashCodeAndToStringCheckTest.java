@@ -20,17 +20,18 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ArrayHashCodeAndToStringCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ArrayHashCodeAndToStringCheck.java"))
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/ArrayHashCodeAndToStringCheck.java"))
       .withCheck(new ArrayHashCodeAndToStringCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 
