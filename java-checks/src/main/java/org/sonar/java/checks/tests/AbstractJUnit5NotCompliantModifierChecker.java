@@ -50,10 +50,10 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
       .forRule(this)
       .onTree(modifier)
       .withMessage(String.format(WRONG_MODIFIER_ISSUE_MESSAGE, modifier.keyword().text()))
-     .withQuickFix(() -> 
+      .withQuickFix(() ->
         JavaQuickFix.newQuickFix("Remove modifier")
-        .addTextEdit(JavaTextEdit.removeTree(modifier))
-        .build())
+          .addTextEdit(JavaTextEdit.removeTree(modifier))
+          .build())
       .report();
   }
 
