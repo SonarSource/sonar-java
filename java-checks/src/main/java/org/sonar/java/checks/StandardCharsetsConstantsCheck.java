@@ -67,6 +67,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   private static final String JAVA_IO_WRITER = "java.io.Writer";
   private static final String JAVA_IO_READER = "java.io.Reader";
   private static final String JAVA_NIO_CHARSET = "java.nio.charset.Charset";
+  private static final String JAVA_NIO_STANDARD_CHARSETS = "java.nio.charset.StandardCharsets";
   private static final String JAVA_NIO_FILE_PATH = "java.nio.file.Path";
   private static final String JAVA_NIO_CHANNELS_READABLEBYTECHANNEL = "java.nio.channels.ReadableByteChannel";
   private static final String JAVA_NET_URI = "java.net.URI";
@@ -274,20 +275,17 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     checkCall(newClassTree, newClassTree.methodSymbol(), newClassTree.arguments());
   }
 
-  private List<JavaQuickFix> quickfixesOnCharsetCall(ExpressionTree callExpression, String constantName) {
-    final String charsetFullyQualifiedName = "java.nio.charset.StandardCharsets";
+  private JavaQuickFix quickfixOnCharsetCall(ExpressionTree callExpression, String constantName) {
     List<JavaTextEdit> edits = new ArrayList<>();
     edits.add(JavaTextEdit.replaceTree(callExpression, "StandardCharsets." + constantName));
 
     getImportSupplier()
-      .newImportEdit(charsetFullyQualifiedName)
+      .newImportEdit(JAVA_NIO_STANDARD_CHARSETS)
       .ifPresent(edits::add);
 
-    return List.of(
-      JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
+    return JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
         .addTextEdits(edits)
-        .build()
-    );
+        .build();
   }
 
   private static List<JavaQuickFix> quickFixesOnMemberSelect(IdentifierTree identifierTree) {
@@ -317,7 +315,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       .forRule(this)
       .onTree(callExpression)
       .withMessage(String.format("Replace %s() call with StandardCharsets.%s", methodRef, constantName))
-      .withQuickFixes(() -> quickfixesOnCharsetCall(callExpression, constantName))
+      .withQuickFix(() -> quickfixOnCharsetCall(callExpression, constantName))
       .report();
   }
 
