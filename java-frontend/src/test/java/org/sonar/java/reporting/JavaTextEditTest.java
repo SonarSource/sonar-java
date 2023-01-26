@@ -93,6 +93,23 @@ class JavaTextEditTest {
     assertThat(javaTextEdit.getReplacement()).isEqualTo("replacement");
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 13);
   }
+  
+  @Test
+  void test_replace_between_tree_exclude_edges() {
+    Tree firstMember = classTree.members().get(0);
+    JavaTextEdit javaTextEdit = JavaTextEdit.replaceBetweenTree(firstMember.firstToken(), false, firstMember.lastToken(), false, "replacement");
+    assertThat(javaTextEdit.getReplacement()).isEqualTo("replacement");
+    assertTextSpan(javaTextEdit.getTextSpan(), 4, 5, 4, 12);
+    
+    javaTextEdit = JavaTextEdit.replaceBetweenTree(firstMember.firstToken(), false, firstMember.lastToken(), true, "replacement");
+    assertTextSpan(javaTextEdit.getTextSpan(), 4, 5, 4, 13);
+    
+    javaTextEdit = JavaTextEdit.replaceBetweenTree(firstMember.firstToken(), true, firstMember.lastToken(), false, "replacement");
+    assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 12);
+    
+    javaTextEdit = JavaTextEdit.replaceBetweenTree(firstMember.firstToken(), true, firstMember.lastToken(), true, "replacement");
+    assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 13);
+  }
 
   @Test
   void test_remove_between_tree() {
