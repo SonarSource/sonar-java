@@ -96,12 +96,15 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
         .forRule(this)
         .onTree(declarationIdentifier)
         .withMessage(message)
-        .withQuickFix(() -> computeQuickFix((Symbol.VariableSymbol) privateFieldSymbol, declaration, methodWhereUsed))
+        .withQuickFixes(() -> computeQuickFix((Symbol.VariableSymbol) privateFieldSymbol, declaration, methodWhereUsed))
         .report();
     }
   }
 
-  private JavaQuickFix computeQuickFix(Symbol.VariableSymbol symbol, VariableTree declaration, MethodTree methodWhereUsed) {
+  private List<JavaQuickFix> computeQuickFix(Symbol.VariableSymbol symbol, VariableTree declaration, MethodTree methodWhereUsed) {
+    if (variableWouldClashWithParameter(symbol, methodWhereUsed)) {
+      return Collections.emptyList();
+    }
     BlockTree block = methodWhereUsed.block();
     SyntaxToken openingBrace = block.openBraceToken();
 
@@ -109,11 +112,19 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     String declarationMinusModifiers = contentForRange(declaration.type().firstToken(), declaration.endToken(), context);
     String newDeclaration = "\n" + padding + declarationMinusModifiers;
 
-    return JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
-      .addTextEdits(editUsagesWithThis(symbol))
-      .addTextEdit(JavaTextEdit.insertAfterTree(openingBrace, newDeclaration))
-      .addTextEdit(JavaTextEdit.removeTree(declaration))
-      .build();
+    return List.of(
+      JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
+        .addTextEdits(editUsagesWithThis(symbol))
+        .addTextEdit(JavaTextEdit.insertAfterTree(openingBrace, newDeclaration))
+        .addTextEdit(JavaTextEdit.removeTree(declaration))
+        .build()
+    );
+  }
+
+  private static boolean variableWouldClashWithParameter(Symbol.VariableSymbol symbol, MethodTree method) {
+    return method.parameters()
+      .stream()
+      .anyMatch(parameter -> parameter.symbol().name().equals(symbol.name()));
   }
 
   private static String generateLeftPadding(BlockTree block) {

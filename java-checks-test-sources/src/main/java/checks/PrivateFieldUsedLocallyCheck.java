@@ -46,4 +46,12 @@ public class PrivateFieldUsedLocallyCheck {
     }
   }
 
+  class ParameterAmbiguity {
+    private int parameter; // Noncompliant [[sc=17;ec=26;quickfixes=]]
+    int useLocally(int parameter) {
+      this.parameter = parameter;
+      return this.parameter * 2;
+    }
+  }
+
 }
