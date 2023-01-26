@@ -114,11 +114,8 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
   }
 
   private static String generateLeftPadding(BlockTree block) {
-    int column = block.body().get(0).firstToken().range().start().column();
-    if (column == 0) {
-      return "";
-    }
-    return " ".repeat(column - 1);
+    int spacesOnTheLeft = Math.max(0, block.body().get(0).firstToken().range().start().column() - 1);
+    return " ".repeat(spacesOnTheLeft);
   }
 
   private String variableTreeToString(VariableTree declaration) {
