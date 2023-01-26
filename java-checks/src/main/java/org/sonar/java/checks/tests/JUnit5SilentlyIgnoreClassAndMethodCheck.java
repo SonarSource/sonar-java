@@ -49,7 +49,10 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends AbstractJUnit5NotCo
         .forRule(this)
         .onTree(methodTree.returnType())
         .withMessage("Replace the return type by void.")
-        .withQuickFixes(() -> List.of(JavaQuickFix.newQuickFix("Replace with void")
+     .withQuickFix(() -> 
+        JavaQuickFix.newQuickFix("Remove modifier")
+        .addTextEdit(JavaTextEdit.removeTree(modifier))
+        .build())
           .addTextEdit(JavaTextEdit.replaceTree(returnType, "void"))
           .build()))
         .report();
