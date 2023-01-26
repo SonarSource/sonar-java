@@ -44,13 +44,11 @@ class StandardCharsetsConstantsCheckTest {
       .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck_java8.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(8)
-      .withQuickFixes()
       .verifyIssues();
     InternalCheckVerifier.newInstance()
       .onFile("src/test/files/checks/StandardCharsetsConstantsCheck_java10.java")
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(10)
-      .withQuickFixes()
       .verifyIssues();
     InternalCheckVerifier.newInstance()
       .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -101,6 +102,8 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
 
   private static final Map<String, String> ALIAS_TO_CONSTANT = createAliasToConstantNameMap();
   private static final int JAVA_10 = 10;
+
+  private QuickFixHelper.ImportSupplier importSupplier;
 
   private static final MethodMatchers JAVA10_METHOD_MATCHERS = MethodMatchers.or(
     MethodMatchers.create().ofTypes(JAVA_IO_BYTEARRAYOUTPUTSTREAM).names(TO_STRING)
@@ -234,28 +237,6 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     }
   }
 
-  List<JavaQuickFix> quickFixesOnMemberSelect(IdentifierTree identifierTree) {
-    Tree parent = identifierTree.parent();
-    if (parent.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree parentMemberSelect = (MemberSelectExpressionTree) parent;
-      return List.of(
-        JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + identifierTree.name() + "\"")
-          .addTextEdit(JavaTextEdit.replaceTree(parentMemberSelect.expression(), "java.nio.charset.StandardCharsets"))
-          .build()
-      );
-    }
-    return Collections.emptyList();
-  }
-
-  private void reportQuickfixOnMemberSelect(IdentifierTree identifierTree, String identifier) {
-    QuickFixHelper.newIssue(context)
-      .forRule(this)
-      .onTree(identifierTree)
-      .withMessage("Replace \"com.google.common.base.Charsets." + identifier + "\" with \"StandardCharsets." + identifier + "\".")
-      .withQuickFixes(() -> quickFixesOnMemberSelect(identifierTree))
-      .report();
-  }
-
   private void onMemberSelectExpressionFound(IdentifierTree identifierTree) {
     Symbol symbol = identifierTree.symbol();
     if (symbol.isVariableSymbol() && symbol.owner().type().is("com.google.common.base.Charsets")) {
@@ -281,17 +262,54 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     checkCall(mit, mit.methodSymbol(), mit.arguments());
   }
 
+  private QuickFixHelper.ImportSupplier getImportSupplier() {
+    if (importSupplier == null) {
+      importSupplier = QuickFixHelper.newImportSupplier(context);
+    }
+    return importSupplier;
+  }
+
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
     checkCall(newClassTree, newClassTree.methodSymbol(), newClassTree.arguments());
   }
 
-  private static List<JavaQuickFix> quickfixesOnCharsetCall(ExpressionTree callExpression, String constantName) {
+  private List<JavaQuickFix> quickfixesOnCharsetCall(ExpressionTree callExpression, String constantName) {
+    final String charsetFullyQualifiedName = "java.nio.charset.StandardCharsets";
+    List<JavaTextEdit> edits = new ArrayList<>();
+    edits.add(JavaTextEdit.replaceTree(callExpression, "StandardCharsets." + constantName));
+
+    getImportSupplier()
+      .newImportEdit(charsetFullyQualifiedName)
+      .ifPresent(edits::add);
+
     return List.of(
       JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
-        .addTextEdit(JavaTextEdit.replaceTree(callExpression, "java.nio.charset.StandardCharsets." + constantName))
+        .addTextEdits(edits)
         .build()
     );
+  }
+
+  private static List<JavaQuickFix> quickFixesOnMemberSelect(IdentifierTree identifierTree) {
+    Tree parent = identifierTree.parent();
+    if (parent.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree parentMemberSelect = (MemberSelectExpressionTree) parent;
+      return List.of(
+        JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + identifierTree.name() + "\"")
+          .addTextEdit(JavaTextEdit.replaceTree(parentMemberSelect.expression(), "java.nio.charset.StandardCharsets"))
+          .build()
+      );
+    }
+    return Collections.emptyList();
+  }
+
+  private void reportQuickfixOnMemberSelect(IdentifierTree identifierTree, String identifier) {
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(identifierTree)
+      .withMessage("Replace \"com.google.common.base.Charsets." + identifier + "\" with \"StandardCharsets." + identifier + "\".")
+      .withQuickFixes(() -> quickFixesOnMemberSelect(identifierTree))
+      .report();
   }
 
   private void reportQuickfixOnCharsetCall(ExpressionTree callExpression, String constantName, String methodRef) {

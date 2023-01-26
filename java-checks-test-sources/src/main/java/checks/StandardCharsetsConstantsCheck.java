@@ -11,7 +11,6 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Collection;
 
@@ -117,12 +116,12 @@ class StandardCharsetsConstantsCheck {
     new org.apache.commons.io.output.WriterOutputStream(writer, "UTF-8", bufferSize, writeImmediately); // Noncompliant
 
     // Compliant
-    charset = StandardCharsets.ISO_8859_1;
-    charset = StandardCharsets.US_ASCII;
-    charset = StandardCharsets.UTF_16;
-    charset = StandardCharsets.UTF_16BE;
-    charset = StandardCharsets.UTF_16LE;
-    charset = StandardCharsets.UTF_8;
+    charset = java.nio.charset.StandardCharsets.ISO_8859_1;
+    charset = java.nio.charset.StandardCharsets.US_ASCII;
+    charset = java.nio.charset.StandardCharsets.UTF_16;
+    charset = java.nio.charset.StandardCharsets.UTF_16BE;
+    charset = java.nio.charset.StandardCharsets.UTF_16LE;
+    charset = java.nio.charset.StandardCharsets.UTF_8;
 
     "".getBytes(charsetName);
     "".getBytes("Windows-1252");
@@ -159,25 +158,32 @@ class StandardCharsetsConstantsCheck {
 
     Charset.forName("ISO-8859-1"); // Noncompliant [[sc=5;ec=34;quickfixes=qf7]]
     // fix@qf7 {{Replace with "StandardCharsets.ISO_8859_1"}}
-    // edit@qf7 [[sc=5;ec=34]] {{java.nio.charset.StandardCharsets.ISO_8859_1}}
+    // edit@qf7 [[sc=5;ec=34]] {{StandardCharsets.ISO_8859_1}}
+    // edit@qf7 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
     Charset.forName("ISO_8859_1"); // Noncompliant [[sc=5;ec=34;quickfixes=qf8]]
     // fix@qf8 {{Replace with "StandardCharsets.ISO_8859_1"}}
-    // edit@qf8 [[sc=5;ec=34]] {{java.nio.charset.StandardCharsets.ISO_8859_1}}
+    // edit@qf8 [[sc=5;ec=34]] {{StandardCharsets.ISO_8859_1}}
+    // edit@qf8 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
     Charset.forName("UTF8"); // Noncompliant [[sc=5;ec=28;quickfixes=qf9]]
     // fix@qf9 {{Replace with "StandardCharsets.UTF_8"}}
-    // edit@qf9 [[sc=5;ec=28]] {{java.nio.charset.StandardCharsets.UTF_8}}
+    // edit@qf9 [[sc=5;ec=28]] {{StandardCharsets.UTF_8}}
+    // edit@qf9 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
     Charset.forName("utf-8"); // Noncompliant [[sc=5;ec=29;quickfixes=qf10]]
     // fix@qf10 {{Replace with "StandardCharsets.UTF_8"}}
-    // edit@qf10 [[sc=5;ec=29]] {{java.nio.charset.StandardCharsets.UTF_8}}
+    // edit@qf10 [[sc=5;ec=29]] {{StandardCharsets.UTF_8}}
+    // edit@qf10 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
     Charset.forName("UTF-16LE"); // Noncompliant [[sc=5;ec=32;quickfixes=qf11]]
     // fix@qf11 {{Replace with "StandardCharsets.UTF_16LE"}}
-    // edit@qf11 [[sc=5;ec=32]] {{java.nio.charset.StandardCharsets.UTF_16LE}}
+    // edit@qf11 [[sc=5;ec=32]] {{StandardCharsets.UTF_16LE}}
+    // edit@qf11 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
     Charset.forName("UnicodeLittleUnmarked"); // Noncompliant [[sc=5;ec=45;quickfixes=qf12]]
     // fix@qf12 {{Replace with "StandardCharsets.UTF_16LE"}}
-    // edit@qf12 [[sc=5;ec=45]] {{java.nio.charset.StandardCharsets.UTF_16LE}}
+    // edit@qf12 [[sc=5;ec=45]] {{StandardCharsets.UTF_16LE}}
+    // edit@qf12 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
     org.apache.commons.codec.Charsets.toCharset("UTF-8"); // Noncompliant [[sc=5;ec=57;quickfixes=qf13]]
     // fix@qf13 {{Replace with "StandardCharsets.UTF_8"}}
-    // edit@qf13 [[sc=5;ec=57]] {{java.nio.charset.StandardCharsets.UTF_8}}
+    // edit@qf13 [[sc=5;ec=57]] {{StandardCharsets.UTF_8}}
+    // edit@qf13 [[sl=13;sc=33;el=13;ec=33]] {{\nimport java.nio.charset.StandardCharsets;}}
 
     org.apache.commons.io.IOUtils.toString(inputStream, "UTF-8"); // Noncompliant [[sc=57;ec=64;quickfixes=qf14]]
     // fix@qf14 {{Replace with "StandardCharsets.UTF_8"}}
