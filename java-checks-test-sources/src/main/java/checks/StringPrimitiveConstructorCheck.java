@@ -87,7 +87,7 @@ class QuickFixes {
 
   Short myShort = new Short((short) 0); // Noncompliant [[sc=23;ec=28;quickfixes=qf9]]
   // fix@qf9 {{Replace this "Short" constructor with the short literal passed as parameter}}
-  // edit@qf9 [[sc=19;ec=39]] {{(short)0}}
+  // edit@qf9 [[sc=19;ec=39]] {{(short) 0}}
 
   Float myFloat = new Float(1.0f); // Noncompliant [[sc=23;ec=28;quickfixes=qf10]]
   // fix@qf10 {{Replace this "Float" constructor with the float literal passed as parameter}}
@@ -95,7 +95,7 @@ class QuickFixes {
 
   BigInteger bigInteger1 = new BigInteger("1"); // Noncompliant [[sc=32;ec=42;quickfixes=qf11]]
   // fix@qf11 {{Replace this "BigInteger" constructor with "BigInteger.valueOf()" static method}}
-  // edit@qf11 [[sc=28;ec=47]] {{BigInteger.valueOf(1)}}
+  // edit@qf11 [[sc=28;ec=47]] {{BigInteger.valueOf(1L)}}
 
   BigInteger bigInteger2 = new BigInteger("9223372036854775807"); // Noncompliant [[sc=32;ec=42;quickfixes=qf12]]
   // fix@qf12 {{Replace this "BigInteger" constructor with "BigInteger.valueOf()" static method}}
