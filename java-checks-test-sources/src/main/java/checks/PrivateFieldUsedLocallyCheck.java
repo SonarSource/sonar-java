@@ -5,15 +5,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class PrivateFieldUsedLocallyCheck {
-  class LocalVariableAmbiguity {
-    private int localVariable; // Noncompliant [[sc=17;ec=30;quickfixes=]]
-
-    int useLocally(int parameter) {
-      int localVariable = 12;
-      this.localVariable = localVariable;
-      return this.localVariable * parameter;
-    }
-  }
 
   class UseLocallyWithThis {
 
@@ -63,6 +54,16 @@ public class PrivateFieldUsedLocallyCheck {
     int useLocally(int parameter) {
       this.parameter = parameter;
       return this.parameter * 2;
+    }
+  }
+
+  class LocalVariableAmbiguity {
+    private int localVariable; // Noncompliant [[sc=17;ec=30;quickfixes=]]
+
+    int useLocally(int parameter) {
+      int localVariable = 12;
+      this.localVariable = localVariable;
+      return this.localVariable * parameter;
     }
   }
 
