@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
@@ -106,6 +107,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     String declarationMinusModifiers = variableTreeToString(declaration);
     String newDeclaration = "\n" + padding + declarationMinusModifiers;
     return JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
+      .addTextEdits(editUsagesWithThis(symbol))
       .addTextEdit(JavaTextEdit.insertAfterTree(openingBrace, newDeclaration))
       .addTextEdit(JavaTextEdit.removeTree(declaration))
       .build();
@@ -121,6 +123,20 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private String variableTreeToString(VariableTree declaration) {
     return contentForRange(declaration.type().firstToken(), declaration.endToken(), context);
+  }
+
+  /**
+   * Returns edits to transform all usages in the form of this.myVariable to myVariable.
+   * @return
+   */
+  private static List<JavaTextEdit> editUsagesWithThis(Symbol symbol) {
+    return symbol.usages().stream()
+      .map(Tree::parent)
+      .filter(parent -> parent.is(Kind.MEMBER_SELECT))
+      .map(MemberSelectExpressionTree.class::cast)
+      .filter(memberSelect -> ExpressionUtils.isThis(memberSelect.expression()))
+      .map(memberSelect -> JavaTextEdit.removeBetweenTree(memberSelect.expression(), memberSelect.operatorToken()))
+      .collect(Collectors.toList());
   }
 
   private static boolean isLiveInMethodEntry(Symbol privateFieldSymbol, MethodTree methodTree) {
