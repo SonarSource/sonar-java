@@ -54,9 +54,6 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
         JavaQuickFix.newQuickFix("Remove modifier")
         .addTextEdit(JavaTextEdit.removeTree(modifier))
         .build())
-        JavaQuickFix.newQuickFix("Remove modifier")
-        .addTextEdit(JavaTextEdit.removeTree(modifier))
-        .build()))
       .report();
   }
 

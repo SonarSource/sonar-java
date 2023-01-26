@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks.tests;
 
-import java.util.List;
-
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -50,11 +48,9 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends AbstractJUnit5NotCo
         .onTree(methodTree.returnType())
         .withMessage("Replace the return type by void.")
      .withQuickFix(() -> 
-        JavaQuickFix.newQuickFix("Remove modifier")
-        .addTextEdit(JavaTextEdit.removeTree(modifier))
-        .build())
+        JavaQuickFix.newQuickFix("Replace with void")
           .addTextEdit(JavaTextEdit.replaceTree(returnType, "void"))
-          .build()))
+          .build())
         .report();
     }
   }
