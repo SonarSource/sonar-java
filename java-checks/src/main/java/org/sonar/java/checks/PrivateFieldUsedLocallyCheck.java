@@ -54,6 +54,7 @@ import static org.sonar.java.se.ProgramState.isField;
 public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Remove the \"%s\" field and declare it as a local variable in the relevant methods.";
+  private static final String QUICK_FIX_MESSAGE = "Move declaration to the relevant method";
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -99,16 +100,12 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
   }
 
   private JavaQuickFix computeQuickFix(Symbol.VariableSymbol symbol, VariableTree declaration, MethodTree methodWhereUsed) {
-    String message = String.format(
-      "Remove the \"%s\" field and declare it as a local variable in the relevant method",
-      symbol.name()
-    );
     BlockTree block = methodWhereUsed.block();
     var openingBrace = block.openBraceToken();
     String padding = generateLeftPadding(block);
     String declarationMinusModifiers = variableTreeToString(declaration);
     String newDeclaration = "\n" + padding + declarationMinusModifiers;
-    return JavaQuickFix.newQuickFix(message)
+    return JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
       .addTextEdit(JavaTextEdit.insertAfterTree(openingBrace, newDeclaration))
       .addTextEdit(JavaTextEdit.removeTree(declaration))
       .build();
