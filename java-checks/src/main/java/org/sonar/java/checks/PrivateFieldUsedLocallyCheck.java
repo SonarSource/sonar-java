@@ -102,7 +102,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
   }
 
   private List<JavaQuickFix> computeQuickFix(Symbol.VariableSymbol symbol, VariableTree declaration, MethodTree methodWhereUsed) {
-    if (variableWouldClashWithParameter(symbol, methodWhereUsed)) {
+    if (relocationWouldClashWithLocalVariables(symbol, methodWhereUsed)) {
       return Collections.emptyList();
     }
     BlockTree block = methodWhereUsed.block();
@@ -121,10 +121,19 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     );
   }
 
-  private static boolean variableWouldClashWithParameter(Symbol.VariableSymbol symbol, MethodTree method) {
-    return method.parameters()
+  /*
+   * Compares the name of the field against the local variables and parameters in the method to ensure that moving the
+   * field declaration to the method would not create any clash.
+   */
+  private static boolean relocationWouldClashWithLocalVariables(Symbol.VariableSymbol symbol, MethodTree method) {
+    LocalVariableCollector collector = new LocalVariableCollector();
+    method.accept(collector);
+    if (collector.variables.isEmpty()) {
+      return false;
+    }
+    return collector.variables
       .stream()
-      .anyMatch(parameter -> parameter.symbol().name().equals(symbol.name()));
+      .anyMatch(variable -> variable.symbol().name().equals(symbol.name()));
   }
 
   private static String generateLeftPadding(BlockTree block) {
@@ -201,6 +210,15 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
       }
 
       super.visitMemberSelectExpression(tree);
+    }
+  }
+
+  private static class LocalVariableCollector extends BaseTreeVisitor {
+    private final Set<VariableTree> variables = new HashSet<>();
+
+    @Override
+    public void visitVariable(VariableTree tree) {
+      variables.add(tree);
     }
   }
 

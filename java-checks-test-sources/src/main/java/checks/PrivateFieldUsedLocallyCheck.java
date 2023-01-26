@@ -5,17 +5,29 @@ import java.util.List;
 import java.util.Locale;
 
 public class PrivateFieldUsedLocallyCheck {
+  class LocalVariableAmbiguity {
+    private int localVariable; // Noncompliant [[sc=17;ec=30;quickfixes=]]
 
-  // fix@qf1 {{Move declaration to the relevant method}}
-  // edit@qf1 [[sl=+3;el=+3;sc=5;ec=10]] {{}}
-  // edit@qf1 [[sl=+4;el=+4;sc=12;ec=17]] {{}}
-  // edit@qf1 [[sl=+2;el=+2;sc=45;ec=45]] {{\n    int privateField = 1;}}
-  // edit@qf1 [[sc=3;ec=32]] {{}}
-  private int privateField = 1; // Noncompliant [[sc=15;ec=27;quickfixes=qf1]]
+    int useLocally(int parameter) {
+      int localVariable = 12;
+      this.localVariable = localVariable;
+      return this.localVariable * parameter;
+    }
+  }
 
-  public int useLocallyWithThis(int value) {
-    this.privateField = 42;
-    return this.privateField * value;
+  class UseLocallyWithThis {
+
+    // fix@qf1 {{Move declaration to the relevant method}}
+    // edit@qf1 [[sl=+3;el=+3;sc=7;ec=12]] {{}}
+    // edit@qf1 [[sl=+4;el=+4;sc=14;ec=19]] {{}}
+    // edit@qf1 [[sl=+2;el=+2;sc=39;ec=39]] {{\n      int privateField = 1;}}
+    // edit@qf1 [[sc=5;ec=34]] {{}}
+    private int privateField = 1; // Noncompliant [[sc=17;ec=29;quickfixes=qf1]]
+
+    public int useLocally(int value) {
+      this.privateField = 42;
+      return this.privateField * value;
+    }
   }
 
   class InitializedInMethod {
