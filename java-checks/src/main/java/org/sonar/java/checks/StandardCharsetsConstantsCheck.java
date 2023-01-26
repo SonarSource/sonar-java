@@ -38,6 +38,7 @@ import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -268,6 +269,11 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       importSupplier = QuickFixHelper.newImportSupplier(context);
     }
     return importSupplier;
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    importSupplier = null;
   }
 
   @Override
