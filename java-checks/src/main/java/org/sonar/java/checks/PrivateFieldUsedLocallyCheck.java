@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -102,10 +103,12 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private JavaQuickFix computeQuickFix(Symbol.VariableSymbol symbol, VariableTree declaration, MethodTree methodWhereUsed) {
     BlockTree block = methodWhereUsed.block();
-    var openingBrace = block.openBraceToken();
+    SyntaxToken openingBrace = block.openBraceToken();
+
     String padding = generateLeftPadding(block);
-    String declarationMinusModifiers = variableTreeToString(declaration);
+    String declarationMinusModifiers = contentForRange(declaration.type().firstToken(), declaration.endToken(), context);
     String newDeclaration = "\n" + padding + declarationMinusModifiers;
+
     return JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
       .addTextEdits(editUsagesWithThis(symbol))
       .addTextEdit(JavaTextEdit.insertAfterTree(openingBrace, newDeclaration))
@@ -118,13 +121,8 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     return " ".repeat(spacesOnTheLeft);
   }
 
-  private String variableTreeToString(VariableTree declaration) {
-    return contentForRange(declaration.type().firstToken(), declaration.endToken(), context);
-  }
-
   /**
    * Returns edits to transform all usages in the form of this.myVariable to myVariable.
-   * @return
    */
   private static List<JavaTextEdit> editUsagesWithThis(Symbol symbol) {
     return symbol.usages().stream()
