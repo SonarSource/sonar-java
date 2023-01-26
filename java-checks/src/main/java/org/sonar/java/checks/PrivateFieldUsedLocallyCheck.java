@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -102,11 +103,23 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
       "Remove the \"%s\" field and declare it as a local variable in the relevant method",
       symbol.name()
     );
-    String newDeclaration = "\n" + variableTreeToString(declaration);
+    BlockTree block = methodWhereUsed.block();
+    var openingBrace = block.openBraceToken();
+    String padding = generateLeftPadding(block);
+    String declarationMinusModifiers = variableTreeToString(declaration);
+    String newDeclaration = "\n" + padding + declarationMinusModifiers;
     return JavaQuickFix.newQuickFix(message)
-      .addTextEdit(JavaTextEdit.insertAfterTree(methodWhereUsed.block().openBraceToken(), newDeclaration))
+      .addTextEdit(JavaTextEdit.insertAfterTree(openingBrace, newDeclaration))
       .addTextEdit(JavaTextEdit.removeTree(declaration))
       .build();
+  }
+
+  private static String generateLeftPadding(BlockTree block) {
+    int column = block.body().get(0).firstToken().range().start().column();
+    if (column == 0) {
+      return "";
+    }
+    return " ".repeat(column - 1);
   }
 
   private String variableTreeToString(VariableTree declaration) {
