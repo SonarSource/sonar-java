@@ -43,15 +43,7 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends AbstractJUnit5NotCo
     Type type = returnType.symbolType();
     boolean methodReturnAValue = !type.isUnknown() && !type.isVoid();
     if(methodReturnAValue && !methodTree.symbol().metadata().isAnnotatedWith("org.junit.jupiter.api.TestFactory")) {
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
-        .onTree(methodTree.returnType())
-        .withMessage("Replace the return type by void.")
-        .withQuickFix(() ->
-          JavaQuickFix.newQuickFix("Replace with void")
-            .addTextEdit(JavaTextEdit.replaceTree(returnType, "void"))
-            .build())
-        .report();
+      reportIssue(returnType, "Replace the return type by void.");
     }
   }
 }

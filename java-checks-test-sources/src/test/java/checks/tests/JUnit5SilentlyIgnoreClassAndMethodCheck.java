@@ -79,20 +79,10 @@ class JUnit5SilentlyIgnoreClassAndMethodCheck {
     // edit@qf4 [[sc=5;ec=12]] {{}}
 
     @Test
-    List<String> quickFixes() { return Collections.emptyList(); } // Noncompliant [[sc=5;ec=17;quickfixes=qf1]]
-    // fix@qf1 {{Replace with void}}
-    // edit@qf1 [[sc=5;ec=17]] {{void}}
-
-    @Test
     static void staticTest() {} // Noncompliant [[sc=5;ec=11;quickfixes=qf5]]
     // fix@qf5 {{Remove modifier}}
     // edit@qf5 [[sc=5;ec=11]] {{}}
 
-    @Test
-    String toEmptyString() { return ""; } // Noncompliant [[sc=5;ec=11;quickfixes=qf2]]
-    // fix@qf2 {{Replace with void}}
-    // edit@qf2 [[sc=5;ec=11]] {{void}}
-    
     @Nested
     private class PrivateWithOneTest { // Noncompliant [[sc=5;ec=12;quickfixes=qf3]]
       // fix@qf3 {{Remove modifier}}
