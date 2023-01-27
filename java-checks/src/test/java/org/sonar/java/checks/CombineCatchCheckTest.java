@@ -41,6 +41,7 @@ class CombineCatchCheckTest {
     InternalCheckVerifier.newInstance()
       .onFile(nonCompilingTestSourcesPath("checks/CombineCatchCheck_no_version.java"))
       .withCheck(new CombineCatchCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 

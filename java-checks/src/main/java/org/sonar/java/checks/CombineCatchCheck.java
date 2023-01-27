@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -28,7 +29,6 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.JavaTree.UnionTypeTreeImpl;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.SyntacticEquivalence;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -36,7 +36,6 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -82,44 +81,60 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
   }
 
   private JavaQuickFix computeQuickFix(CatchTree catchTree, CatchTree catchTreeToBeCompared, String qfMessage) {
-
     List<TypeTree> upperCatchTypes = getExceptionTypesCaught(catchTreeToBeCompared);
     List<TypeTree> lowerCatchTypes = getExceptionTypesCaught(catchTree);
-    StringBuilder sb = new StringBuilder();
-    appendTypesNotCovered(sb, upperCatchTypes, lowerCatchTypes);
-    appendTypesNotCovered(sb, lowerCatchTypes, upperCatchTypes);
-    sb.delete(sb.lastIndexOf("| "), sb.length());
-    sb.append(catchTreeToBeCompared.parameter().simpleName().name());
+
+    List<TypeTree> mergedTypes = mergeCatchTypes(upperCatchTypes, lowerCatchTypes);
 
     var builder = JavaQuickFix.newQuickFix(qfMessage);
     builder.addTextEdit(JavaTextEdit.removeTree(catchTree));
-    SyntaxToken openParent = catchTreeToBeCompared.openParenToken();
-    SyntaxToken closeParent = catchTreeToBeCompared.closeParenToken();
+    String replacement = computeReplacementString(mergedTypes, catchTreeToBeCompared);
     builder.addTextEdit(
-      JavaTextEdit.replaceBetweenTree(openParent, false, closeParent, false, sb.toString())
+      JavaTextEdit.replaceBetweenTree(
+        catchTreeToBeCompared.openParenToken(), false,
+        catchTreeToBeCompared.closeParenToken(), false,
+        replacement)
       );
     return builder.build();
   }
 
-  private void appendTypesNotCovered(StringBuilder sb, List<TypeTree> typesToAppend, List<TypeTree> typesToCompare) {
-    for(TypeTree typeToAppend : typesToAppend) {
-      if(typesToCompare.stream().noneMatch( typeToCompare -> typeToAppend.symbolType().isSubtypeOf(typeToCompare.symbolType()))){
-        sb.append(formatType(typeToAppend) + " | ");
+  private String computeReplacementString(Collection<TypeTree> types, CatchTree toReplaceCatch) {
+    StringBuilder sb = new StringBuilder();
+    types.forEach(type -> sb.append(formatType(type) + " | "));
+    sb.delete(sb.lastIndexOf("| "), sb.length());
+    sb.append(toReplaceCatch.parameter().simpleName().name());
+    return sb.toString();
+  }
+
+  private static List<TypeTree> mergeCatchTypes(List<TypeTree> upperCatchTypes, List<TypeTree> lowerCatchTypes) {
+    List<TypeTree> result = new ArrayList<>();
+    for (TypeTree upperType : upperCatchTypes) {
+      if (isNotMaskedBySuperType(upperType, lowerCatchTypes)) {
+        result.add(upperType);
       }
     }
+    result.addAll(lowerCatchTypes);
+    return result;
+  }
+
+  private static boolean isNotMaskedBySuperType(TypeTree type, List<TypeTree> types) {
+    for (TypeTree other : types) {
+      if (type.symbolType().isSubtypeOf(other.symbolType())) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private String formatType(TypeTree type) {
-    if(type instanceof IdentifierTreeImpl) {
-      return type.toString();
-    }else if(type instanceof MemberSelectExpressionTreeImpl) {
+    if(type instanceof MemberSelectExpressionTreeImpl) {
       MemberSelectExpressionTreeImpl mtype = (MemberSelectExpressionTreeImpl) type;
       return QuickFixHelper.contentForTree(mtype, context);
     }
-    return "";
+    return type.toString();
   }
 
-  private List<TypeTree> getExceptionTypesCaught(CatchTree catchTree){
+  private static List<TypeTree> getExceptionTypesCaught(CatchTree catchTree){
     TypeTree catchType = catchTree.parameter().type();
     if(catchType instanceof UnionTypeTreeImpl) {
       UnionTypeTreeImpl unionTypes = (UnionTypeTreeImpl) catchType;
