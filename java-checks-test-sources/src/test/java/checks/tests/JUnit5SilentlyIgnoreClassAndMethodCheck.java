@@ -90,5 +90,23 @@ class JUnit5SilentlyIgnoreClassAndMethodCheck {
       @Test
       void test() {}
     }
+
+    @Test
+    List<String> quickFixes() { return Collections.emptyList(); } // Noncompliant [[sc=5;ec=17;quickfixes=qf1]]
+    // fix@qf1 {{Replace with void}}
+    // edit@qf1 [[sc=5;ec=17]] {{void}}
+    // edit@qf1 [[sc=40;ec=63]] {{}}
+    
+    @Test
+    Object bar(boolean b, Object o) { // Noncompliant [[sc=5;ec=11;quickfixes=qf2]]
+      // fix@qf2 {{Replace with void}}
+      // edit@qf2 [[sc=5;ec=11]] {{void}}
+      // edit@qf2 [[sl=+6;sc=16;el=+6;ec=39]] {{}}
+      // edit@qf2 [[sl=+8;sc=14;el=+8;ec=15]] {{}}
+      if (b) {
+        return Collections.emptyList();
+      }
+      return o;
+    }
   }
 }
