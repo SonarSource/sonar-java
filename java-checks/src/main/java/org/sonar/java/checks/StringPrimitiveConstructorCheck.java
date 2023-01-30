@@ -26,9 +26,6 @@ import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.model.expression.LiteralTreeImpl;
-import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -43,26 +40,31 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor {
 
   private static final String QUICK_FIX_MESSAGE = "Replace this \"%s\" constructor with %s";
+  private static final String ISSUE_MESSAGE = "Remove this \"%s\" constructor";
 
   private static final String STRING = "java.lang.String";
   private static final BigInteger MIN_BIG_INTEGER_VALUE = BigInteger.valueOf(Long.MIN_VALUE);
   private static final BigInteger MAX_BIG_INTEGER_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
 
   private static final MethodMatchers EMPTY_STRING_MATCHER = MethodMatchers.create().ofTypes(STRING).constructor().addWithoutParametersMatcher().build();
-  private static final MethodMatchers BIG_INT_MATCHER = MethodMatchers.create().ofTypes("java.math.BigInteger").constructor().addParametersMatcher(STRING).build();
+  private static final MethodMatchers BIG_INT_MATCHER = primitiveConstructorMatcher("java.math.BigInteger", STRING);
 
   private static final MethodMatchers matchers = MethodMatchers.or(
     EMPTY_STRING_MATCHER,
     BIG_INT_MATCHER,
-    MethodMatchers.create().ofTypes(STRING).constructor().addParametersMatcher(STRING).build(),
-    MethodMatchers.create().ofTypes("java.lang.Byte").constructor().addParametersMatcher("byte").build(),
-    MethodMatchers.create().ofTypes("java.lang.Character").constructor().addParametersMatcher("char").build(),
-    MethodMatchers.create().ofTypes("java.lang.Short").constructor().addParametersMatcher("short").build(),
-    MethodMatchers.create().ofTypes("java.lang.Integer").constructor().addParametersMatcher("int").build(),
-    MethodMatchers.create().ofTypes("java.lang.Long").constructor().addParametersMatcher("long").build(),
-    MethodMatchers.create().ofTypes("java.lang.Float").constructor().addParametersMatcher("float").build(),
-    MethodMatchers.create().ofTypes("java.lang.Double").constructor().addParametersMatcher("double").build(),
-    MethodMatchers.create().ofTypes("java.lang.Boolean").constructor().addParametersMatcher("boolean").build());
+    primitiveConstructorMatcher(STRING, STRING),
+    primitiveConstructorMatcher("java.lang.Byte", "byte"),
+    primitiveConstructorMatcher("java.lang.Character", "char"),
+    primitiveConstructorMatcher("java.lang.Short", "short"),
+    primitiveConstructorMatcher("java.lang.Integer", "int"),
+    primitiveConstructorMatcher("java.lang.Long", "long"),
+    primitiveConstructorMatcher("java.lang.Float", "float"),
+    primitiveConstructorMatcher("java.lang.Double", "double"),
+    primitiveConstructorMatcher("java.lang.Boolean", "boolean"));
+
+  private static MethodMatchers primitiveConstructorMatcher(String constructor, String param) {
+    return MethodMatchers.create().ofTypes(constructor).constructor().addParametersMatcher(param).build();
+  }
 
   private static final Map<String, String> classToLiteral = Map.of(
     "String", "string",
@@ -95,7 +97,7 @@ public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(newClassTree.identifier())
-        .withMessage("Remove this \"" + newClassTree.symbolType().name() + "\" constructor")
+        .withMessage(ISSUE_MESSAGE, newClassTree.symbolType().name())
         .withQuickFix(() -> computeQuickFix(newClassTree))
         .report();
     }
@@ -120,7 +122,7 @@ public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor
   private JavaQuickFix computeQuickFix(NewClassTree newClassTree) {
     String message = "";
     JavaTextEdit textEdit = null;
-    String className = QuickFixHelper.contentForTree(newClassTree.identifier(), context);
+    String className = newClassTree.symbolType().name();
     if (EMPTY_STRING_MATCHER.matches(newClassTree)) {
       message = formatQuickFixMessage(className, "an empty string \"\"");
       textEdit = JavaTextEdit.replaceTree(newClassTree, "\"\"");
@@ -137,23 +139,13 @@ public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor
     return JavaQuickFix.newQuickFix(message).addTextEdit(textEdit).build();
   }
 
-  private String formatQuickFixMessage(String constructor, String replacement) {
+  private static String formatQuickFixMessage(String constructor, String replacement) {
     return String.format(QUICK_FIX_MESSAGE, constructor, replacement);
   }
 
   private String getFirstArgumentAsString(NewClassTree newClassTree) {
     ExpressionTree expr = newClassTree.arguments().get(0);
-    if (expr instanceof LiteralTreeImpl) {
-      LiteralTreeImpl arg = (LiteralTreeImpl) expr;
-      return arg.value();
-    } else if (expr instanceof IdentifierTreeImpl) {
-      IdentifierTreeImpl arg = (IdentifierTreeImpl) expr;
-      return arg.name();
-    } else if (expr instanceof TypeCastExpressionTreeImpl){
-      return QuickFixHelper.contentForTree(expr, context);
-    }else {
-      return "";
-    }
+    return QuickFixHelper.contentForTree(expr, context);
   }
 
 }
