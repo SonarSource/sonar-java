@@ -207,12 +207,196 @@ class Interruptable {
     }
   }
 
+  public void throwNewInterruptedExceptionFromCatch() throws InterruptedException {
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Compliant
+      throw new InterruptedException();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Compliant
+      throw new CustomizedInterruptedException();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Noncompliant, RuntimeException is not an InterruptedException
+      throw new RuntimeException();
+    }
+  }
+
+  public void catchSubtypeOfInterruptedException() throws InterruptedException {
+    try {
+      throwsInterruptedException();
+    } catch (CustomizedInterruptedException e) { // Compliant
+      throw new InterruptedException();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (CustomizedInterruptedException e) { // Compliant
+      throw new CustomizedInterruptedException();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (CustomizedInterruptedException e) { // Noncompliant, RuntimeException is not an InterruptedException
+      throw new RuntimeException();
+    }
+  }
+
+  public void throwNewInterruptedExceptionFromFunction() throws InterruptedException {
+
+    try {
+      throwsInterruptedException();
+    } catch (CustomizedInterruptedException e) { // Compliant
+      interruptByThrowingInterruptedExceptionL4();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (CustomizedInterruptedException e) { // Compliant
+      interruptByThrowingInterruptedExceptionL3();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (CustomizedInterruptedException e) { // Compliant
+      interruptByThrowingInterruptedExceptionL2();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (CustomizedInterruptedException e) { // Noncompliant, too many levels
+      interruptByThrowingInterruptedExceptionL1();
+    }
+  }
+
+  public void throwNewCustomizedInterruptedExceptionFromFunction() throws InterruptedException {
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Compliant
+      interruptByThrowingCustomizedInterruptedExceptionL4();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Compliant
+      interruptByThrowingCustomizedInterruptedExceptionL3();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Compliant
+      interruptByThrowingCustomizedInterruptedExceptionL2();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Noncompliant, too many levels
+      interruptByThrowingCustomizedInterruptedExceptionL1();
+    }
+  }
+
+  public void rethrowSameException() throws InterruptedException {
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Compliant
+      doSomething();
+      throw e;
+    }
+
+    RuntimeException re = new RuntimeException();
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Noncompliant, re is not e
+      doSomething();
+      throw re;
+    }
+
+    InterruptedException ie = new InterruptedException();
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Noncompliant, ie is not e; even though ie is also an InterruptedException.
+      doSomething();                   // This might change with a later revision of the implementation of this rule.
+      throw ie;
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Noncompliant, a RuntimeException is thrown.
+      doSomething();
+      throw getRuntimeException();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Noncompliant, even though an InterruptedException is thrown.
+      doSomething();                   // This might change with a later revision of the implementation of this rule.
+      throw getInterruptedException();
+    }
+  }
+
+  private static RuntimeException getRuntimeException() {
+    return new RuntimeException();
+  }
+
+  private static InterruptedException getInterruptedException() {
+    return new InterruptedException();
+  }
+
+  private static void doSomething() {
+  }
+
+  private static void interruptByThrowingInterruptedExceptionL1() throws InterruptedException {
+    interruptByThrowingInterruptedExceptionL2();
+  }
+
+  private static void interruptByThrowingInterruptedExceptionL2() throws InterruptedException {
+    interruptByThrowingInterruptedExceptionL3();
+  }
+
+  private static void interruptByThrowingInterruptedExceptionL3() throws InterruptedException {
+    interruptByThrowingInterruptedExceptionL4();
+  }
+
+  private static void interruptByThrowingInterruptedExceptionL4() throws InterruptedException {
+    throw new InterruptedException();
+  }
+
+  private static void interruptByThrowingCustomizedInterruptedExceptionL1() throws InterruptedException {
+    interruptByThrowingCustomizedInterruptedExceptionL2();
+  }
+
+  private static void interruptByThrowingCustomizedInterruptedExceptionL2() throws InterruptedException {
+    interruptByThrowingCustomizedInterruptedExceptionL3();
+  }
+
+  private static void interruptByThrowingCustomizedInterruptedExceptionL3() throws InterruptedException {
+    interruptByThrowingCustomizedInterruptedExceptionL4();
+  }
+
+  private static void interruptByThrowingCustomizedInterruptedExceptionL4() throws InterruptedException {
+    throw new CustomizedInterruptedException();
+  }
+
   public void throwsException() throws Exception {
     throw new Exception();
   }
 
   public void throwsInterruptedException() throws InterruptedException {
     throw new InterruptedException();
+  }
+
+  public void throwsCustomizedInterruptedException() throws InterruptedException {
+    throw new InterruptedException();
+  }
+
+  private static class CustomizedInterruptedException extends InterruptedException {
   }
 
 }
