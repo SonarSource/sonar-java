@@ -19,17 +19,20 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S2225")
 public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
@@ -46,9 +49,18 @@ public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.METHOD)) {
       interestingMethodName = interestingMethodName((MethodTree) tree);
     } else if (interestingMethodName != null) {
-      ExpressionTree returnExpression = ExpressionUtils.skipParentheses(((ReturnStatementTree) tree).expression());
+      ExpressionTree rawReturnExpression = ((ReturnStatementTree) tree).expression();
+      ExpressionTree returnExpression = ExpressionUtils.skipParentheses(rawReturnExpression);
       if (returnExpression.is(Kind.NULL_LITERAL)) {
-        reportIssue(returnExpression, "toString".equals(interestingMethodName) ? "Return empty string instead." : "Return a non null object.");
+        boolean isToString = "toString".equals(interestingMethodName);
+        InternalJavaIssueBuilder builder = QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(returnExpression)
+          .withMessage(isToString ? "Return empty string instead." : "Return a non null object.");
+        if(isToString) {
+          builder.withQuickFix(() -> computeQuickFix(rawReturnExpression));
+        }
+        builder.report();
       }
     }
   }
@@ -66,6 +78,13 @@ public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
       return methodName;
     }
     return null;
+  }
+
+  private static JavaQuickFix computeQuickFix(ExpressionTree rawReturnExpression) {
+    return JavaQuickFix
+      .newQuickFix("Replace null with an empty string")
+      .addTextEdit(JavaTextEdit.replaceTree(rawReturnExpression, "\"\""))
+      .build();
   }
 
 }
