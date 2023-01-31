@@ -122,7 +122,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
   }
 
   /*
-   * Compares the name of the field against the local variables and parameters in the method to ensure that moving the
+   * Compares the field name against local variables and parameters in the method to ensure that moving the
    * field declaration to the method would not create any clash.
    */
   private static boolean relocationWouldClashWithLocalVariables(Symbol.VariableSymbol symbol, MethodTree method) {
