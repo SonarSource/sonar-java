@@ -67,4 +67,13 @@ public class PrivateFieldUsedLocallyCheck {
     }
   }
 
+  class NoIssueRaisedWhenOnlyInConstructor {
+    private int arg; // Compliant because we do not look into constructors
+
+    NoIssueRaisedWhenOnlyInConstructor(int b) {
+      arg = b;
+      System.out.println(arg);
+    }
+  }
+
 }
