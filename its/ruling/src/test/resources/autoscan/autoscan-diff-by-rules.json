@@ -1652,7 +1652,7 @@
   {
     "ruleKey": "S3400",
     "hasTruePositives": true,
-    "falseNegatives": 1,
+    "falseNegatives": 0,
     "falsePositives": 0
   },
   {

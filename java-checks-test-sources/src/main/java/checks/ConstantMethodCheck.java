@@ -2,7 +2,7 @@ package checks;
 
 import javax.validation.constraints.NotNull;
 
-public abstract class ConstantMethodCheck implements Comparable<ConstantMethodCheck> {
+public final class ConstantMethodCheck implements Comparable<ConstantMethodCheck> {
 
   int foo() {
     return 1; // Noncompliant [[sc=12;ec=13]] {{Remove this method and declare a constant for this value.}}
@@ -25,7 +25,7 @@ public abstract class ConstantMethodCheck implements Comparable<ConstantMethodCh
     System.out.println("foo");
     return 1;
   }
-  abstract void bom();
+
   void bah(){
     return;
   }
@@ -37,6 +37,7 @@ public abstract class ConstantMethodCheck implements Comparable<ConstantMethodCh
   public String toString() {
     return "";  // compliant, this method is an override
   }
+
   // removed @Override annotation
   public int compareTo(@NotNull ConstantMethodCheck o) {
     return 0; // Compliant - method is an override
@@ -46,15 +47,52 @@ public abstract class ConstantMethodCheck implements Comparable<ConstantMethodCh
   }
 
   @MyAnnotation
-  long puf() {
+  long annotatedMethod() {
     return 1L; // Compliant
   }
 
   @interface MyAnnotation {}
 
-  interface B {
-    default String defaultMethodReturningConstant() {
+  interface Interface {
+    String methodWithoutBody();
+
+    default String methodReturningConstant() {
       return "";
     }
   }
+
+  static class NoFinalClass {
+    final long finalMethod() {
+      return 1L; // Noncompliant
+    }
+
+    long noFinalMethod() {
+      return 1L; // Compliant
+    }
+
+    private long nonFinalButPrivateMethod() {
+      return 1L; // Noncompliant
+    }
+  }
+
+  record Record(int value) {
+    final long finalMethod() {
+      return 1L; // Noncompliant
+    }
+    String noFinalMethod() {
+      // Noncompliant@+1
+      return """
+          text block
+        """;
+    }
+  }
+
+  abstract class AbstractClass {
+    abstract void abstractMethod(); // Compliant
+
+    long noFinalMethod() {
+      return 1L; // Compliant
+    }
+  }
 }
+
