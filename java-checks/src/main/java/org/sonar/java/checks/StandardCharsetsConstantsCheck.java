@@ -227,6 +227,18 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   }
 
   @Override
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
+    importSupplier = null;
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    importSupplier = null;
+  }
+
+
+  @Override
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.IDENTIFIER);
   }
@@ -251,34 +263,57 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   }
 
   @Override
-  protected MethodMatchers getMethodInvocationMatchers() {
-    if (context.getJavaVersion().asInt() >= JAVA_10) {
-      return MethodMatchers.or(JAVA8_METHOD_MATCHERS, JAVA10_METHOD_MATCHERS);
-    } else {
-      return JAVA8_METHOD_MATCHERS;
-    }
-  }
-
-  @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     checkCall(mit, mit.methodSymbol(), mit.arguments());
-  }
-
-  private QuickFixHelper.ImportSupplier getImportSupplier() {
-    if (importSupplier == null) {
-      importSupplier = QuickFixHelper.newImportSupplier(context);
-    }
-    return importSupplier;
-  }
-
-  @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    importSupplier = null;
   }
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
     checkCall(newClassTree, newClassTree.methodSymbol(), newClassTree.arguments());
+  }
+
+  private void checkCall(ExpressionTree callExpression, Symbol.MethodSymbol symbol, Arguments arguments) {
+    getCharsetNameArgument(symbol, arguments)
+      .ifPresent(charsetNameArgument -> getConstantName(charsetNameArgument)
+        .ifPresent(constantName -> {
+          String methodRef = getMethodRef(symbol);
+          switch (methodRef) {
+            case "Charset.forName":
+            case "Charsets.toCharset":
+              reportQuickfixOnCharsetCall(callExpression, constantName, methodRef);
+              break;
+            case "IOUtils.toString":
+              if (arguments.size() == 2 && arguments.get(0).symbolType().is(BYTE_ARRAY)) {
+                String issueMsg = String.format("Replace IOUtils.toString() call with new String(..., StandardCharsets.%s);", constantName);
+                reportIssue(callExpression, issueMsg);
+              } else {
+                reportDefaultQuickfix(charsetNameArgument, constantName);
+              }
+              break;
+            default:
+              reportDefaultQuickfix(charsetNameArgument, constantName);
+              break;
+          }
+        }));
+  }
+
+  private void reportQuickfixOnMemberSelect(IdentifierTree identifierTree, String identifier) {
+    String issueMsg = String.format("Replace \"com.google.common.base.Charsets.%s\" with \"StandardCharsets.%s\".", identifier, identifier);
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(identifierTree)
+      .withMessage(issueMsg)
+      .withQuickFixes(() -> quickFixesOnMemberSelect(identifierTree))
+      .report();
+  }
+
+  private void reportQuickfixOnCharsetCall(ExpressionTree callExpression, String constantName, String methodRef) {
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(callExpression)
+      .withMessage(String.format("Replace %s() call with StandardCharsets.%s", methodRef, constantName))
+      .withQuickFix(() -> quickfixOnCharsetCall(callExpression, constantName))
+      .report();
   }
 
   private JavaQuickFix quickfixOnCharsetCall(ExpressionTree callExpression, String constantName) {
@@ -315,24 +350,6 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     return Collections.emptyList();
   }
 
-  private void reportQuickfixOnMemberSelect(IdentifierTree identifierTree, String identifier) {
-    QuickFixHelper.newIssue(context)
-      .forRule(this)
-      .onTree(identifierTree)
-      .withMessage("Replace \"com.google.common.base.Charsets." + identifier + "\" with \"StandardCharsets." + identifier + "\".")
-      .withQuickFixes(() -> quickFixesOnMemberSelect(identifierTree))
-      .report();
-  }
-
-  private void reportQuickfixOnCharsetCall(ExpressionTree callExpression, String constantName, String methodRef) {
-    QuickFixHelper.newIssue(context)
-      .forRule(this)
-      .onTree(callExpression)
-      .withMessage(String.format("Replace %s() call with StandardCharsets.%s", methodRef, constantName))
-      .withQuickFix(() -> quickfixOnCharsetCall(callExpression, constantName))
-      .report();
-  }
-
   private void reportDefaultQuickfix(ExpressionTree charsetNameArgument, String constantName) {
     List<JavaTextEdit> edits = new ArrayList<>();
     edits.add(JavaTextEdit.replaceTree(charsetNameArgument, "StandardCharsets." + constantName));
@@ -351,32 +368,16 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       .report();
   }
 
-  private void checkCall(ExpressionTree callExpression, Symbol.MethodSymbol symbol, Arguments arguments) {
-    getCharsetNameArgument(symbol, arguments)
-      .ifPresent(charsetNameArgument -> getConstantName(charsetNameArgument)
-        .ifPresent(constantName -> {
-          String methodRef = getMethodRef(symbol);
-          switch (methodRef) {
-            case "Charset.forName":
-            case "Charsets.toCharset":
-              reportQuickfixOnCharsetCall(callExpression, constantName, methodRef);
-              break;
-            case "IOUtils.toString":
-              if (arguments.size() == 2 && arguments.get(0).symbolType().is(BYTE_ARRAY)) {
-                reportIssue(callExpression, "Replace IOUtils.toString() call with new String(..., StandardCharsets." + constantName + ");");
-              } else {
-                reportDefaultQuickfix(charsetNameArgument, constantName);
-              }
-              break;
-            default:
-              reportDefaultQuickfix(charsetNameArgument, constantName);
-              break;
-          }
-        }));
+  private QuickFixHelper.ImportSupplier getImportSupplier() {
+    if (importSupplier == null) {
+      importSupplier = QuickFixHelper.newImportSupplier(context);
+    }
+    return importSupplier;
   }
 
   private static Optional<ExpressionTree> getCharsetNameArgument(Symbol symbol, Arguments arguments) {
-    List<ExpressionTree> stringArguments = arguments.stream().filter(argument -> argument.symbolType().is(JAVA_LANG_STRING)).collect(Collectors.toList());
+    List<ExpressionTree> stringArguments = arguments.stream().filter(
+      argument -> argument.symbolType().is(JAVA_LANG_STRING)).collect(Collectors.toList());
     if (stringArguments.isEmpty()) {
       return Optional.empty();
     }
@@ -409,5 +410,14 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
     return version.isJava7Compatible();
+  }
+
+  @Override
+  protected MethodMatchers getMethodInvocationMatchers() {
+    if (context.getJavaVersion().asInt() >= JAVA_10) {
+      return MethodMatchers.or(JAVA8_METHOD_MATCHERS, JAVA10_METHOD_MATCHERS);
+    } else {
+      return JAVA8_METHOD_MATCHERS;
+    }
   }
 }
