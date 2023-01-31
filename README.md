@@ -99,9 +99,11 @@ The "Sanity Test" is a test which runs all checks against all the test sources f
 
 The "Plugin Test" is an integration test suite which verifies plugin features such as metric calculation, coverage etc. To launch it:
 
-    mvn clean install -Pit-plugin
+    mvn clean install -Pit-plugin -DcommunityEditionTestsOnly=true
 
-Beware that some tests, specifically the `JspTest`, may fail due a missing or unauthorized Github token.
+Note for internal contributors: in order to execute also the tests that depend on the SonarQube Enterprise Edition, use:
+
+    mvn clean install -Pit-plugin
 
 #### Ruling Test
 
@@ -116,9 +118,13 @@ Failing to do so will produce inconsistencies with the expected results.
 
 From the `its/ruling` folder, launch the ruling tests:
 
-    mvn clean install -DskipTests=false
+    mvn clean install -Pit-ruling -DcommunityEditionTestsOnly=true 
     # Alternatively
-    JAVA_HOME=/my/local/java17/jdk/ mvn clean install -DskipTests=false
+    JAVA_HOME=/my/local/java17/jdk/ mvn clean install -Pit-ruling -DcommunityEditionTestsOnly=true
+
+Note for internal contributors: in order to execute also the tests that depend on the SonarQube Enterprise Edition, use: 
+
+    mvn clean install -Pit-ruling
 
 This test gives you the opportunity to examine the issues created by each rule and make sure they're what you expect. Any implemented rule is highly likely to raise issues on the multiple projects we use as ruling code base.
 
