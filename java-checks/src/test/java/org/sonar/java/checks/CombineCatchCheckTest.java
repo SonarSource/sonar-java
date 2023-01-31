@@ -20,33 +20,35 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class CombineCatchCheckTest {
 
   @Test
   void java_version_unset() {
-    CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CombineCatchCheck_no_version.java"))
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/CombineCatchCheck_no_version.java"))
       .withCheck(new CombineCatchCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 
   @Test
   void java_version_unset_not_compiling() {
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(nonCompilingTestSourcesPath("checks/CombineCatchCheck_no_version.java"))
       .withCheck(new CombineCatchCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 
   @Test
   void java_version_set() {
-    CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CombineCatchCheck.java"))
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/CombineCatchCheck.java"))
       .withCheck(new CombineCatchCheck())
       .withJavaVersion(7)
       .verifyIssues();

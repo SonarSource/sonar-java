@@ -1,6 +1,6 @@
 package checks;
-
 import java.io.IOException;
+import java.nio.charset.CharacterCodingException;
 import java.sql.SQLException;
 
 class CombineCatchCheck {
@@ -76,4 +76,66 @@ class CombineCatchCheck {
 class CombineCatchCheckLogger {
   void log(Exception e) {
   }
+}
+
+class QuickFix {
+
+  void foo() {
+    try {
+      canThrow();
+    } catch (IOException | java.lang.IllegalArgumentException e) {
+      doCleanup();
+      System.out.println(e.getMessage());
+    }
+    catch (SQLException e) {  // Noncompliant [[sc=12;ec=26;secondary=-4;quickfixes=qf1]]
+      doCleanup();
+      System.out.println(e.getMessage());
+    }
+    // fix@qf1 {{Combine this catch with the one at line 86}}
+    // edit@qf1 [[sl=+0;el=+3;sc=5;ec=6]] {{}}
+    // edit@qf1 [[sl=-4;el=-4;sc=14;ec=64;]] {{IOException | java.lang.IllegalArgumentException | SQLException e}}
+    catch (ArrayStoreException  e) {  // Compliant; block contents are different
+      doCleanup();
+      throw e;
+    }
+  }
+
+  void foo2() {
+    try {
+      canThrow();
+    } catch (IOException e) {
+      doCleanup();
+      System.out.println(e.getMessage());
+    }
+    catch (SQLException | IllegalArgumentException e) {  // Noncompliant [[sc=12;ec=53;secondary=-4;quickfixes=qf2]]
+      doCleanup();
+      System.out.println(e.getMessage());
+    }
+    // fix@qf2 {{Combine this catch with the one at line 106}}
+    // edit@qf2 [[sl=+0;el=+3;sc=5;ec=6]] {{}}
+    // edit@qf2 [[sl=-4;el=-4;sc=14;ec=27]] {{IOException | SQLException | IllegalArgumentException e}}
+  }
+
+  void foo3() {
+    try {
+      canThrow();
+    } catch (CharacterCodingException e) {
+      doCleanup();
+      System.out.println(e.getMessage());
+    }
+    catch (SQLException | IOException e) {  // Noncompliant [[sc=12;ec=40;secondary=-4;quickfixes=qf3]]
+      doCleanup();
+      System.out.println(e.getMessage());
+    }
+    // fix@qf3 {{Combine this catch with the one at line 122}}
+    // edit@qf3 [[sl=+0;el=+3;sc=5;ec=6]] {{}}
+    // edit@qf3 [[sl=-4;el=-4;sc=14;ec=40]] {{SQLException | IOException e}}
+  }
+
+  void canThrow() throws IOException, SQLException, IllegalArgumentException {}
+
+  void canThrow2() throws IOException, SQLException, IllegalArgumentException {}
+
+  private void doCleanup() {}
+
 }

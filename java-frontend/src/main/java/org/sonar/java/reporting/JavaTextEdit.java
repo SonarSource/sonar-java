@@ -63,6 +63,10 @@ public class JavaTextEdit {
   public static JavaTextEdit replaceBetweenTree(Tree startTree, Tree endTree, String replacement) {
     return replaceTextSpan(AnalyzerMessage.textSpanBetween(startTree, endTree), replacement);
   }
+  
+  public static JavaTextEdit replaceBetweenTree(Tree startTree, boolean includeStart, Tree endTree, boolean includeEnd, String replacement) {
+    return replaceTextSpan(AnalyzerMessage.textSpanBetween(startTree, includeStart, endTree, includeEnd), replacement);
+  }
 
   public static JavaTextEdit replaceTextSpan(TextSpan textSpan, String replacement) {
     return new JavaTextEdit(textSpan, replacement);

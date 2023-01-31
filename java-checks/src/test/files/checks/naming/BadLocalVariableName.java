@@ -13,9 +13,10 @@ class BadLocalVariableName {
     }
 
     try (Closeable BAD_RESOURCE = open()) {
+    } catch (IOException BAD_EXCEPTION) {
     } catch (Exception BAD_EXCEPTION) {
-    } catch (Exception e) {
     }
+
   }
 
   Object FIELD_SHOULD_NOT_BE_CHECKED = new Object(){
