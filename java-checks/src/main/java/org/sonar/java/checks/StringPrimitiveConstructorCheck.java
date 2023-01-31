@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor {
 
   private static final String QUICK_FIX_MESSAGE = "Replace this \"%s\" constructor with %s";
+  private static final String REPLACEMENT_MESSAGE = "the %s literal passed as parameter";
   private static final String ISSUE_MESSAGE = "Remove this \"%s\" constructor";
 
   private static final String STRING = "java.lang.String";
@@ -120,8 +121,8 @@ public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor
   }
 
   private JavaQuickFix computeQuickFix(NewClassTree newClassTree) {
-    String message = "";
-    JavaTextEdit textEdit = null;
+    String message;
+    JavaTextEdit textEdit;
     String className = newClassTree.symbolType().name();
     if (EMPTY_STRING_MATCHER.matches(newClassTree)) {
       message = formatQuickFixMessage(className, "an empty string \"\"");
@@ -132,7 +133,7 @@ public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor
       message = formatQuickFixMessage(className, "\"BigInteger.valueOf()\" static method");
       textEdit = JavaTextEdit.replaceTree(newClassTree, replacement);
     } else {
-      message = formatQuickFixMessage(className, "the " + classToLiteral.get(className) + " literal passed as parameter");
+      message = formatQuickFixMessage(className, String.format(REPLACEMENT_MESSAGE, classToLiteral.get(className)));
       String replacement = getFirstArgumentAsString(newClassTree);
       textEdit = JavaTextEdit.replaceTree(newClassTree, replacement);
     }
