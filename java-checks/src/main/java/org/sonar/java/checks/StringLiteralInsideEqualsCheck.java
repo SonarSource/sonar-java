@@ -19,7 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -28,9 +33,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S1132")
 public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor {
@@ -48,7 +50,12 @@ public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor 
   private void check(MethodInvocationTree tree) {
     if (isEquals(tree.methodSelect()) && tree.arguments().size() == 1 && tree.arguments().get(0).is(Kind.STRING_LITERAL)) {
       LiteralTree stringLiteral = (LiteralTree) tree.arguments().get(0);
-      reportIssue(stringLiteral, "Move the " + stringLiteral.value() + " string literal on the left side of this string comparison.");
+      QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(stringLiteral)
+      .withMessage("Move the " + stringLiteral.value() + " string literal on the left side of this string comparison.")
+      .withQuickFix(() -> computeQuickFix(tree))
+      .report();
     }
   }
 
@@ -65,6 +72,24 @@ public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor 
   private static boolean isEquals(IdentifierTree tree) {
     return "equals".equals(tree.name()) ||
       "equalsIgnoreCase".equals(tree.name());
+  }
+
+  private JavaQuickFix computeQuickFix(MethodInvocationTree tree) {
+    String equalsParameterValue = QuickFixHelper.contentForTree(tree.arguments().get(0), context);
+    String quickFixMessage = String.format("Move %s on the left side of .equals", cutStringTooLong(equalsParameterValue));
+    Tree leftSideMember = ((MemberSelectExpressionTree) tree.methodSelect()).expression();
+    return JavaQuickFix.newQuickFix(quickFixMessage)
+      .addTextEdit(JavaTextEdit.replaceTree(tree.arguments().get(0), QuickFixHelper.contentForTree(leftSideMember, context)))
+      .addTextEdit(JavaTextEdit.replaceTree(leftSideMember, equalsParameterValue))
+      .build();
+  }
+
+  private static String cutStringTooLong(String s) {
+    if(s.length() > 10) {
+      return s.substring(0, 10) + "\"...";
+    }else {
+      return s;
+    }
   }
 
 }
