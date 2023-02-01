@@ -51,11 +51,11 @@ public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor 
     if (isEquals(tree.methodSelect()) && tree.arguments().size() == 1 && tree.arguments().get(0).is(Kind.STRING_LITERAL)) {
       LiteralTree stringLiteral = (LiteralTree) tree.arguments().get(0);
       QuickFixHelper.newIssue(context)
-      .forRule(this)
-      .onTree(stringLiteral)
-      .withMessage("Move the " + stringLiteral.value() + " string literal on the left side of this string comparison.")
-      .withQuickFix(() -> computeQuickFix(tree))
-      .report();
+        .forRule(this)
+        .onTree(stringLiteral)
+        .withMessage("Move the " + stringLiteral.value() + " string literal on the left side of this string comparison.")
+        .withQuickFix(() -> computeQuickFix(tree))
+        .report();
     }
   }
 
@@ -75,21 +75,18 @@ public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor 
   }
 
   private JavaQuickFix computeQuickFix(MethodInvocationTree tree) {
-    String equalsParameterValue = QuickFixHelper.contentForTree(tree.arguments().get(0), context);
-    String quickFixMessage = String.format("Move %s on the left side of .equals", cutStringTooLong(equalsParameterValue));
+    Tree equalsArgument = tree.arguments().get(0);
+    String equalsParameterValue = QuickFixHelper.contentForTree(equalsArgument, context);
+    String quickFixMessage = String.format("Move %s on the left side of .equals", cutTooLongString(equalsParameterValue));
     Tree leftSideMember = ((MemberSelectExpressionTree) tree.methodSelect()).expression();
     return JavaQuickFix.newQuickFix(quickFixMessage)
-      .addTextEdit(JavaTextEdit.replaceTree(tree.arguments().get(0), QuickFixHelper.contentForTree(leftSideMember, context)))
+      .addTextEdit(JavaTextEdit.replaceTree(equalsArgument, QuickFixHelper.contentForTree(leftSideMember, context)))
       .addTextEdit(JavaTextEdit.replaceTree(leftSideMember, equalsParameterValue))
       .build();
   }
 
-  private static String cutStringTooLong(String s) {
-    if(s.length() > 10) {
-      return s.substring(0, 10) + "\"...";
-    }else {
-      return s;
-    }
+  private static String cutTooLongString(String s) {
+    return s.length() > 10 ? (s.substring(0, 10) + "\"...") : s;
   }
 
 }
