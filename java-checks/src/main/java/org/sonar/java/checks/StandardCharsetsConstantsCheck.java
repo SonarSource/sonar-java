@@ -232,12 +232,10 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     importSupplier = null;
   }
 
-
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     importSupplier = null;
   }
-
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
