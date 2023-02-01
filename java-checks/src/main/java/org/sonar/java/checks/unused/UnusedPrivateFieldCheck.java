@@ -193,7 +193,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private JavaQuickFix computeQuickFix(VariableTree tree, List<AssignmentExpressionTree> assignments) {
+  private static JavaQuickFix computeQuickFix(VariableTree tree, List<AssignmentExpressionTree> assignments) {
     AnalyzerMessage.TextSpan textSpan = computeTextSpan(tree);
     List<JavaTextEdit> edits = new ArrayList<>(assignments.size() + 1);
     assignments.sort(new TreeSorter().reversed());
