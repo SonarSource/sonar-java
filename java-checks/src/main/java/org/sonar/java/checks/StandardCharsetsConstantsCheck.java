@@ -227,10 +227,11 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
     importSupplier = null;
   }
+
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
