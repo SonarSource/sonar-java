@@ -8,7 +8,7 @@ public class PrivateFieldUsedLocallyCheck {
 
   class UseLocallyWithThis {
 
-    // fix@qf1 {{Move declaration to the relevant method}}
+    // fix@qf1 {{Move this field to the only method where it is used}}
     // edit@qf1 [[sl=+3;el=+3;sc=7;ec=12]] {{}}
     // edit@qf1 [[sl=+4;el=+4;sc=14;ec=19]] {{}}
     // edit@qf1 [[sl=+2;el=+2;sc=39;ec=39]] {{\n      int privateField = 1;}}
@@ -23,7 +23,7 @@ public class PrivateFieldUsedLocallyCheck {
 
   class InitializedInMethod {
 
-    // fix@qf2 {{Move declaration to the relevant method}}
+    // fix@qf2 {{Move this field to the only method where it is used}}
     // edit@qf2 [[sl=+2;el=+2;sc=25;ec=25]] {{\n      List<Integer> privateList;}}
     // edit@qf2 [[sc=5;ec=39]] {{}}
     private List<Integer> privateList; // Noncompliant [[sc=27;ec=38;quickfixes=qf2]]
@@ -36,7 +36,7 @@ public class PrivateFieldUsedLocallyCheck {
   }
 
   class MultiLineDeclaration {
-    // fix@qf3 {{Move declaration to the relevant method}};
+    // fix@qf3 {{Move this field to the only method where it is used}};
     // edit@qf3 [[sl=+3;el=+3;sc=38;ec=38]] {{\n      String lowerCasedInput = "Hello" +\n      "World!";}}
     // edit@qf3 [[sl=+0;el=+1;sc=5;ec=16]] {{}}
     // Noncompliant@+1 [[sc=20;ec=35;quickfixes=qf3]]

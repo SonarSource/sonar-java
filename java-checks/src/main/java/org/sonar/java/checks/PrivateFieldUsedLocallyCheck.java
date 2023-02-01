@@ -56,7 +56,7 @@ import static org.sonar.java.se.ProgramState.isField;
 public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Remove the \"%s\" field and declare it as a local variable in the relevant methods.";
-  private static final String QUICK_FIX_MESSAGE = "Move declaration to the relevant method";
+  private static final String QUICK_FIX_MESSAGE = "Move this field to the only method where it is used";
 
   @Override
   public List<Kind> nodesToVisit() {
