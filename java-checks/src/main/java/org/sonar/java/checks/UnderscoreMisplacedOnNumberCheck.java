@@ -48,9 +48,16 @@ public class UnderscoreMisplacedOnNumberCheck extends IssuableSubscriptionVisito
   public void visitNode(Tree tree) {
     LiteralTree literalTree = (LiteralTree) tree;
     String value = literalTree.value();
-    if (hasIrregularPattern(value) ) {
+
+    /* Binary numbers are never flagged. Splitting binary numbers into irregular groups may be legitimate where binary numbers are e.g.
+    used for encoding a series of flags and different groups have different meanings or are related to different topics/properties. */
+    if (isNotABinaryNumber(value) && hasIrregularPattern(value)) {
       reportIssue(literalTree, "Review this number; its irregular pattern indicates an error.");
     }
+  }
+
+  private static boolean isNotABinaryNumber(String literalValue) {
+    return !literalValue.startsWith("0b") && !literalValue.startsWith("0B");
   }
 
   private static boolean hasIrregularPattern(String literalValue) {

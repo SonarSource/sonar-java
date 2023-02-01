@@ -3,9 +3,23 @@
 <p>This rule raises an issue when underscores (<code>_</code>) are used to break a number into irregular subgroups.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-int duos = 1_00_00;
-int million = 1_000_00_000;  // Noncompliant
+int thousand = 100_0
+int tenThousand = 100_00;
+int million = 1_000_00_000;
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
 int thousand = 1000;
-int tenThousand = 100_00;  // Noncompliant
+int tenThousand = 10_000;
+int tenThousandWithout = 10000;
+int duos = 1_00_00;
+int million = 100_000_000;
+</pre>
+<h2>Exceptions</h2>
+<p>No issue will be raised on binary numbers (starting with <code>0b</code> or <code>0B</code>). Binary number bits are often grouped corresponding to
+certain meanings, resulting in irregular bit group sizes.</p>
+<pre>
+int configValue1 = 0b00_000_10_1; // Compliant
+int configValue2 = 0B00_000_10_1; // Compliant
 </pre>
 

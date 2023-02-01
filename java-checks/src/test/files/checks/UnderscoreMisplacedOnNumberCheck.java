@@ -4,12 +4,14 @@ class A {
   int i1 = 10000000; // compliant
   int i2 = 10_000_000; // Compliant
   int i3 = 10_000_00_000; // Noncompliant {{Review this number; its irregular pattern indicates an error.}}
+  int i4 = 10000_000_000; // Noncompliant
 
-  int b0 = 0b0000; // Compliant
+  int b0 = 0b0000; // compliant
   int b1 = 0b01101001010011011110010101011110; // compliant
   int b2 = 0b0110_1001_0100_1101_1110_0101_0101_1110; // compliant
-  int b3 = 0b011010010100110_111_10010101011110; // Noncompliant {{Review this number; its irregular pattern indicates an error.}}
-  int b4 = 10000_000_000; // Noncompliant
+  int b3 = 0b011010010100110_111_10010101011110; // compliant
+  int b4 = 0B10000_000_000; // compliant
+  int b5 = 0b1_1; // compliant
 
   long l0 = 0x0000L; // Compliant
   long l1 = 0x7fffffffffffffffL; // compliant
