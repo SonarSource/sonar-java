@@ -27,4 +27,17 @@ public class UnusedPrivateFieldCheckWithQuickfixes {
       }
     }
   }
+
+  private class QuickFixesRemovesAsssignmentFromLoopInitializer {
+    // fix@qf3 {{Remove this unused private field}}
+    // edit@qf3 [[sl=+3;el=+3;sc=12;ec=26]] {{}}
+    // edit@qf3 [[sc=5;ec=19]] {{}}
+    private int x; // Noncompliant [[sc=17;ec=18;quickfixes=qf3]]
+
+    QuickFixesRemovesAsssignmentFromLoopInitializer(int x, int y) {
+      for (this.x = x + y; y < 0; y++) {
+        System.out.println("Hello y = " + y);
+      }
+    }
+  }
 }
