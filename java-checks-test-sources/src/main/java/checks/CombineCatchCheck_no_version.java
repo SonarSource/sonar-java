@@ -132,9 +132,23 @@ class QuickFix {
     // edit@qf3 [[sl=-4;el=-4;sc=14;ec=40]] {{SQLException | IOException e}}
   }
 
+  void foo4() {
+    try {
+      canThrow3();
+    }
+    catch (java.nio.charset.MalformedInputException e) {}
+    catch (CharacterCodingException e2) {} // Noncompliant 
+    catch (IOException e3) {} // Noncompliant [[sc=12;ec=26;quickfixes=qf4]]
+    // fix@qf4 {{Combine this catch with the one at line 140}}
+    // edit@qf4 [[sc=5;ec=30]] {{}}
+    // edit@qf4 [[sl=-1;el=-1;sc=12;ec=39]] {{IOException e2}}
+  }
+
   void canThrow() throws IOException, SQLException, IllegalArgumentException {}
 
   void canThrow2() throws IOException, SQLException, IllegalArgumentException {}
+
+  void canThrow3() throws IOException {}
 
   private void doCleanup() {}
 

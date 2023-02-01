@@ -21,7 +21,7 @@ class CombineCatchCheckWithVersion {
       doCleanup();
       throw e;
     }
-   catch (ArrayStoreException e) {  // Noncompliant [[sc=11;ec=32;secondary=12]] {{Combine this catch with the one at line 12, which has the same body.}}
+   catch (ArrayStoreException e) {  // Noncompliant [[sc=11;ec=32;secondary=16]] {{Combine this catch with the one at line 16, which has the same body.}}
     doCleanup();
     logger.log(e);
   }

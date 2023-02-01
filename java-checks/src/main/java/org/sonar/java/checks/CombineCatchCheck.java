@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +51,7 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
 
   @Override
   public void visitNode(Tree tree) {
-    List<CatchTree> catches = new ArrayList<>();
+    ArrayDeque<CatchTree> catches = new ArrayDeque<>();
     for (CatchTree catchTree : ((TryStatementTree) tree).catches()) {
       for (CatchTree catchTreeToBeCompared : catches) {
         if (SyntacticEquivalence.areSemanticallyEquivalent(catchTree.block().body(), catchTreeToBeCompared.block().body())) {
@@ -58,7 +59,7 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
           break;
         }
       }
-      catches.add(catchTree);
+      catches.push(catchTree);
     }
   }
 
