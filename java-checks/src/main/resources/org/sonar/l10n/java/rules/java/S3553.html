@@ -27,4 +27,16 @@ public String sayHello(String name) {
   }
 }
 </pre>
+<h2>Exceptions</h2>
+<p>No issues will be raised if a method is overriding, as the developer has no control over the signature at this point.</p>
+<pre>
+@Override
+public String sayHello(Optional&lt;String&gt; name) {
+  if (name == null || !name.isPresent()) {
+    return "Hello World";
+  } else {
+    return "Hello " + name;
+  }
+}
+</pre>
 

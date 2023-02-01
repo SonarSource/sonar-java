@@ -18,3 +18,10 @@ class OptionalAsParameterCheck {
   void foo(OptionalLong l) {} // Noncompliant [[sc=12;ec=24]] {{Specify a "long" parameter instead.}}
   void foo(OptionalDouble d) {} // Noncompliant [[sc=12;ec=26]] {{Specify a "double" parameter instead.}}
 }
+
+class Child extends OptionalAsParameterCheck {
+  @Override
+  void foo(Optional<OptionalAsParameterCheck> a) {} // Compliant, as this method is overriding.
+
+  void bar(Optional o) {} // Compliant, as this method is overriding.
+}
