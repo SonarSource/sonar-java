@@ -102,7 +102,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
   }
 
   private List<JavaQuickFix> computeQuickFix(Symbol.VariableSymbol symbol, VariableTree declaration, MethodTree methodWhereUsed) {
-    if (relocationWouldClashWithLocalVariables(symbol, methodWhereUsed)) {
+    if (wouldRelocationClashWithLocalVariables(symbol, methodWhereUsed)) {
       return Collections.emptyList();
     }
     BlockTree block = methodWhereUsed.block();
@@ -125,7 +125,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
    * Compares the field name against local variables and parameters in the method to ensure that moving the
    * field declaration to the method would not create any clash.
    */
-  private static boolean relocationWouldClashWithLocalVariables(Symbol.VariableSymbol symbol, MethodTree method) {
+  private static boolean wouldRelocationClashWithLocalVariables(Symbol.VariableSymbol symbol, MethodTree method) {
     LocalVariableCollector collector = new LocalVariableCollector();
     method.accept(collector);
     if (collector.variables.isEmpty()) {
