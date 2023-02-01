@@ -23,23 +23,30 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.QuickFixHelper.contentForRange;
 import static org.sonar.java.se.ProgramState.isField;
 
 /**
@@ -49,6 +56,7 @@ import static org.sonar.java.se.ProgramState.isField;
 public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Remove the \"%s\" field and declare it as a local variable in the relevant methods.";
+  private static final String QUICK_FIX_MESSAGE = "Move this field to the only method where it is used";
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -62,11 +70,15 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
     classSymbol.memberSymbols().stream()
       .filter(PrivateFieldUsedLocallyCheck::isPrivateField)
-      .filter(s -> !(s.isFinal() && s.isStatic()))
+      .filter(s -> !isAConstant(s))
       .filter(s -> !hasAnnotation(s))
       .filter(s -> !s.usages().isEmpty())
       .filter(s -> !fieldsReadOnAnotherInstance.contains(s))
       .forEach(s -> checkPrivateField(s, classSymbol));
+  }
+
+  private static boolean isAConstant(Symbol s) {
+    return s.isFinal() && s.isStatic();
   }
 
   private static boolean hasAnnotation(Symbol s) {
@@ -77,10 +89,69 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     MethodTree methodWhereUsed = usedInOneMethodOnly(privateFieldSymbol, classSymbol);
 
     if (methodWhereUsed != null && !isLiveInMethodEntry(privateFieldSymbol, methodWhereUsed)) {
-      IdentifierTree declarationIdentifier = ((VariableTree) privateFieldSymbol.declaration()).simpleName();
+      VariableTree declaration = (VariableTree) privateFieldSymbol.declaration();
+      IdentifierTree declarationIdentifier = declaration.simpleName();
       String message = String.format(MESSAGE, privateFieldSymbol.name());
-      reportIssue(declarationIdentifier, message);
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(declarationIdentifier)
+        .withMessage(message)
+        .withQuickFixes(() -> computeQuickFix((Symbol.VariableSymbol) privateFieldSymbol, declaration, methodWhereUsed))
+        .report();
     }
+  }
+
+  private List<JavaQuickFix> computeQuickFix(Symbol.VariableSymbol symbol, VariableTree declaration, MethodTree methodWhereUsed) {
+    if (wouldRelocationClashWithLocalVariables(symbol, methodWhereUsed)) {
+      return Collections.emptyList();
+    }
+    BlockTree block = methodWhereUsed.block();
+    SyntaxToken openingBrace = block.openBraceToken();
+
+    String padding = generateLeftPadding(block);
+    String declarationMinusModifiers = contentForRange(declaration.type().firstToken(), declaration.endToken(), context);
+    String newDeclaration = "\n" + padding + declarationMinusModifiers;
+
+    return List.of(
+      JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
+        .addTextEdits(editUsagesWithThis(symbol))
+        .addTextEdit(JavaTextEdit.insertAfterTree(openingBrace, newDeclaration))
+        .addTextEdit(JavaTextEdit.removeTree(declaration))
+        .build()
+    );
+  }
+
+  /*
+   * Compares the field name against local variables and parameters in the method to ensure that moving the
+   * field declaration to the method would not create any clash.
+   */
+  private static boolean wouldRelocationClashWithLocalVariables(Symbol.VariableSymbol symbol, MethodTree method) {
+    LocalVariableCollector collector = new LocalVariableCollector();
+    method.accept(collector);
+    if (collector.variables.isEmpty()) {
+      return false;
+    }
+    return collector.variables
+      .stream()
+      .anyMatch(variable -> variable.symbol().name().equals(symbol.name()));
+  }
+
+  private static String generateLeftPadding(BlockTree block) {
+    int spacesOnTheLeft = Math.max(0, block.body().get(0).firstToken().range().start().column() - 1);
+    return " ".repeat(spacesOnTheLeft);
+  }
+
+  /**
+   * Returns edits to transform all usages in the form of this.myVariable to myVariable.
+   */
+  private static List<JavaTextEdit> editUsagesWithThis(Symbol symbol) {
+    return symbol.usages().stream()
+      .map(Tree::parent)
+      .filter(parent -> parent.is(Kind.MEMBER_SELECT))
+      .map(MemberSelectExpressionTree.class::cast)
+      .filter(memberSelect -> ExpressionUtils.isThis(memberSelect.expression()))
+      .map(memberSelect -> JavaTextEdit.removeBetweenTree(memberSelect.expression(), memberSelect.operatorToken()))
+      .collect(Collectors.toList());
   }
 
   private static boolean isLiveInMethodEntry(Symbol privateFieldSymbol, MethodTree methodTree) {
@@ -117,7 +188,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private static class FieldsReadOnAnotherInstanceVisitor extends BaseTreeVisitor {
 
-    private Set<Symbol> fieldsReadOnAnotherInstance = new HashSet<>();
+    private final Set<Symbol> fieldsReadOnAnotherInstance = new HashSet<>();
 
     static Set<Symbol> getFrom(Tree classTree) {
       FieldsReadOnAnotherInstanceVisitor fieldsReadOnAnotherInstanceVisitor = new FieldsReadOnAnotherInstanceVisitor();
@@ -139,6 +210,15 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
       }
 
       super.visitMemberSelectExpression(tree);
+    }
+  }
+
+  private static class LocalVariableCollector extends BaseTreeVisitor {
+    private final Set<VariableTree> variables = new HashSet<>();
+
+    @Override
+    public void visitVariable(VariableTree tree) {
+      variables.add(tree);
     }
   }
 
