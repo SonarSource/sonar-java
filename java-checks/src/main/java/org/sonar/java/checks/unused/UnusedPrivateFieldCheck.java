@@ -22,7 +22,6 @@ package org.sonar.java.checks.unused;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +38,6 @@ import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Position;
-import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -196,11 +194,11 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   private static JavaQuickFix computeQuickFix(VariableTree tree, List<AssignmentExpressionTree> assignments) {
     AnalyzerMessage.TextSpan textSpan = computeTextSpan(tree);
     List<JavaTextEdit> edits = new ArrayList<>(assignments.size() + 1);
-    assignments.sort(new TreeSorter().reversed());
     assignments.forEach(assignment -> edits.add(JavaTextEdit.removeTree(assignment)));
     edits.add(JavaTextEdit.removeTextSpan(textSpan));
     return JavaQuickFix.newQuickFix("Remove this unused private field")
       .addTextEdits(edits)
+      .reverseSortEdits()
       .build();
   }
 
@@ -233,38 +231,6 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
 
   private static Optional<SyntaxToken> getPrecedingComma(VariableTree variable) {
     return QuickFixHelper.previousVariable(variable).map(VariableTree::lastToken);
-  }
-
-  private static class TreeSorter implements Comparator<AssignmentExpressionTree> {
-
-    @Override
-    public int compare(AssignmentExpressionTree first, AssignmentExpressionTree second) {
-      Range firstRange = Range.at(
-        first.firstToken().range().start().line(),
-        first.firstToken().range().start().column(),
-        first.lastToken().range().end().line(),
-        first.lastToken().range().end().column()
-      );
-      Range secondRange = Range.at(
-        second.firstToken().range().start().line(),
-        second.firstToken().range().start().column(),
-        second.lastToken().range().end().line(),
-        second.lastToken().range().end().column()
-      );
-      int result = firstRange.start().line() - secondRange.start().line();
-      if (result != 0) {
-        return result;
-      }
-      result = firstRange.start().column() - secondRange.start().column();
-      if (result != 0) {
-        return result;
-      }
-      result = firstRange.end().line() - secondRange.end().line();
-      if (result != 0) {
-        return result;
-      }
-      return firstRange.end().column() - secondRange.end().column();
-    }
   }
 
 }
