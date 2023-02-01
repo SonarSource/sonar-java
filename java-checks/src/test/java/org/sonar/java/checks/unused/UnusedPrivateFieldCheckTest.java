@@ -52,4 +52,13 @@ class UnusedPrivateFieldCheckTest {
       .withCheck(new UnusedPrivateFieldCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_quick_fixes() {
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldCheckWithQuickfixes.java"))
+      .withCheck(new UnusedPrivateFieldCheck())
+      .withQuickFixes()
+      .verifyIssues();
+  }
 }

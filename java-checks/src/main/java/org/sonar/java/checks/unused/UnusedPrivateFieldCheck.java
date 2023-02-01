@@ -73,6 +73,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
 
   private final List<ClassTree> classes = new ArrayList<>();
   private final Map<Symbol, List<IdentifierTree>> assignments = new HashMap<>();
+  private final Map<Symbol, List<AssignmentExpressionTree>> assignmentExpressions = new HashMap<>();
   private final Set<String> unknownIdentifiers = new HashSet<>();
   private boolean hasNativeMethod = false;
 
@@ -88,6 +89,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     }
     classes.clear();
     assignments.clear();
+    assignmentExpressions.clear();
     unknownIdentifiers.clear();
     hasNativeMethod = false;
   }
@@ -157,7 +159,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
           .forRule(this)
           .onTree(tree.simpleName())
           .withMessage("Remove this unused \"" + name + "\" private field.")
-          .withQuickFix(() -> computeQuickFix(tree))
+          .withQuickFix(() -> computeQuickFix(tree, assignmentExpressions.getOrDefault(symbol, Collections.emptyList())))
           .report();
       }
     }
@@ -173,30 +175,32 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
 
   private void collectAssignment(ExpressionTree expressionTree) {
     if (expressionTree.is(ASSIGNMENT_KINDS)) {
-      addAssignment(((AssignmentExpressionTree) expressionTree).variable());
+      AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) expressionTree;
+      ExpressionTree variable = (assignmentExpressionTree).variable();
+      IdentifierTree identifier = null;
+      if (variable.is(Tree.Kind.IDENTIFIER)) {
+        identifier = (IdentifierTree) variable;
+      } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+        identifier = ((MemberSelectExpressionTree) variable).identifier();
+      }
+      if (identifier != null) {
+        Symbol reference = identifier.symbol();
+        if (!reference.isUnknown()) {
+          assignments.computeIfAbsent(reference, k -> new ArrayList<>()).add(identifier);
+          List<AssignmentExpressionTree> assignmentsToVariable = assignmentExpressions.computeIfAbsent(reference, k-> new ArrayList<>());
+          assignmentsToVariable.add(assignmentExpressionTree);
+        }
+      }
     }
   }
 
-  private void addAssignment(ExpressionTree tree) {
-    ExpressionTree variable = ExpressionUtils.skipParentheses(tree);
-    if (variable.is(Tree.Kind.IDENTIFIER)) {
-      addAssignment((IdentifierTree) variable);
-    } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
-      addAssignment(((MemberSelectExpressionTree) variable).identifier());
-    }
-  }
-
-  private void addAssignment(IdentifierTree identifier) {
-    Symbol reference = identifier.symbol();
-    if (!reference.isUnknown()) {
-      assignments.computeIfAbsent(reference, k -> new ArrayList<>()).add(identifier);
-    }
-  }
-
-  private static JavaQuickFix computeQuickFix(VariableTree tree) {
+  private JavaQuickFix computeQuickFix(VariableTree tree, List<AssignmentExpressionTree> assignments) {
     AnalyzerMessage.TextSpan textSpan = computeTextSpan(tree);
+    List<JavaTextEdit> edits = new ArrayList<>(assignments.size() + 1);
+    assignments.forEach(assignment -> edits.add(JavaTextEdit.removeTree(assignment)));
+    edits.add(JavaTextEdit.removeTextSpan(textSpan));
     return JavaQuickFix.newQuickFix("Remove this unused private field")
-      .addTextEdit(JavaTextEdit.removeTextSpan(textSpan))
+      .addTextEdits(edits)
       .build();
   }
 
