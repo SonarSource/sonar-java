@@ -914,7 +914,6 @@ public final class CheckList {
     StandardCharsetsConstantsCheck.class,
     ThreadLocalCleanupCheck.class,
     ThreadOverridesRunCheck.class,
-    UnusedMethodParameterCheck.class,
     UnusedPrivateClassCheck.class,
     UnusedPrivateFieldCheck.class,
     VerifiedServerHostnamesCheck.class,

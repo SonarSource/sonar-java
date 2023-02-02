@@ -43,6 +43,6 @@ class UnusedMethodParameterCheckTest {
       .onFile(nonCompilingTestSourcesPath("checks/unused/UnusedMethodParameterCheck.java"))
       .withCheck(new UnusedMethodParameterCheck())
       .withQuickFixes()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 }
