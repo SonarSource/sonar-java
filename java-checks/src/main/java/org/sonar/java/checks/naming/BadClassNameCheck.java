@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
@@ -57,8 +58,10 @@ public class BadClassNameCheck extends BaseTreeVisitor implements JavaFileScanne
 
   @Override
   public void visitClass(ClassTree tree) {
-    if (tree.is(Tree.Kind.CLASS, Tree.Kind.RECORD) && tree.simpleName() != null && !pattern.matcher(tree.simpleName().name()).matches()) {
-      context.reportIssue(this, tree.simpleName(), String.format(ISSUE_MESSAGE, tree.kind().name().toLowerCase(Locale.ROOT), format));
+    IdentifierTree simpleName = tree.simpleName();
+    boolean isNameNotMatching = (tree.is(Tree.Kind.CLASS, Tree.Kind.RECORD) && simpleName != null && !pattern.matcher(simpleName.name()).matches());
+    if (isNameNotMatching && !tree.symbol().type().isSubtypeOf("java.util.ResourceBundle")) {
+      context.reportIssue(this, simpleName, String.format(ISSUE_MESSAGE, tree.kind().name().toLowerCase(Locale.ROOT), format));
     }
     super.visitClass(tree);
   }
