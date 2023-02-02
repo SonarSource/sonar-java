@@ -142,6 +142,10 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
       if (isInitVectorCopiedFromByteBuffer(methodInvocation)) {
         secureRandomFound = true;
       }
+      if (methodInvocation.methodSymbol().isUnknown()) {
+        secureRandomFound = true;
+      }
+
       super.visitMethodInvocation(methodInvocation);
     }
 

@@ -242,7 +242,6 @@ class CipherBlockChainingCheck {
     ivBuffer.get(other);
     IvParameterSpec iv = new IvParameterSpec(biv); // Noncompliant
   }
-
 }
 
 interface CipherBlockChainingCheckI {
