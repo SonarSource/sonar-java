@@ -75,10 +75,9 @@ class ThreadRunCheck {
 
   void quickFix() {
     Runnable runnable = null;
-
     Thread myThread = new Thread(runnable);
     myThread.run(); // Noncompliant [[sc=14;ec=17;quickfixes=qf1]]
-    // fix@qf1 {{Call method Thread.start()}}
+    // fix@qf1 {{Replace run() with start()}}
     // edit@qf1 [[sc=14;ec=17]] {{start}}
   }
 }

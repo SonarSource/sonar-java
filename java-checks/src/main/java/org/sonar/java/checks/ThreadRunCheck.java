@@ -65,7 +65,7 @@ public class ThreadRunCheck extends AbstractMethodDetection {
   }
 
   private static JavaQuickFix computeQuickFix(IdentifierTree methodName) {
-    return JavaQuickFix.newQuickFix("Call method Thread.start()")
+    return JavaQuickFix.newQuickFix("Replace run() with start()")
       .addTextEdit(JavaTextEdit.replaceTree(methodName, "start"))
       .build();
   }
