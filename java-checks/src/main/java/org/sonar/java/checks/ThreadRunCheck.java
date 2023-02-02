@@ -20,9 +20,13 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -50,7 +54,19 @@ public class ThreadRunCheck extends AbstractMethodDetection {
     if (parent != null && THREAD_RUN_METHOD_MATCHER.matches((MethodTree) parent)) {
       return;
     }
-    reportIssue(ExpressionUtils.methodName(mit), "Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
+
+    IdentifierTree methodName = ExpressionUtils.methodName(mit);
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(methodName)
+      .withMessage("Call the method Thread.start() to execute the content of the run() method in a dedicated thread.")
+      .withQuickFix(() -> computeQuickFix(methodName))
+      .report();
   }
 
+  private static JavaQuickFix computeQuickFix(IdentifierTree methodName) {
+    return JavaQuickFix.newQuickFix("Replace run() with start()")
+      .addTextEdit(JavaTextEdit.replaceTree(methodName, "start"))
+      .build();
+  }
 }
