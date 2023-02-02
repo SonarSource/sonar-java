@@ -49,8 +49,7 @@ public class RawTypeCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    Boolean overridesParentMethod = tree.isOverriding();
-    if (overridesParentMethod == null || Boolean.TRUE.equals(overridesParentMethod)) {
+    if (!Boolean.FALSE.equals(tree.isOverriding())) {
       // only scan body of the method
       scan(tree.block());
     } else {
