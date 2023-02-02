@@ -19,20 +19,35 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @Rule(key = "S1656")
 public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
@@ -54,9 +69,54 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
     }
     AssignmentExpressionTree node = (AssignmentExpressionTree) tree;
     if (SyntacticEquivalence.areEquivalent(node.expression(), node.variable())) {
-      reportIssue(reportTree(node), ISSUE_MESSAGE);
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(reportTree(node))
+        .withMessage(ISSUE_MESSAGE)
+        .withQuickFix(() -> getQuickFix(node))
+        .report();
       updateWarnings(node);
     }
+  }
+
+  private static JavaQuickFix getQuickFix(AssignmentExpressionTree tree) {
+    ClassTree classParent = (ClassTree) ExpressionUtils.getParentOfType(tree, Tree.Kind.CLASS);
+    MethodTree methodParent = (MethodTree) ExpressionUtils.getParentOfType(tree, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    String name = getName(tree.variable());
+
+    if (methodParent != null && classParent != null) {
+      boolean isParameter = methodParent.parameters().stream()
+        .map(p -> p.simpleName().name())
+        .anyMatch(p -> p.equals(name));
+
+      if (isParameter) {
+        List<String> memberNames = classParent.members().stream()
+          .filter(m -> m.is(Tree.Kind.VARIABLE))
+          .map(VariableTree.class::cast)
+          .map(m -> m.simpleName().name())
+          .collect(Collectors.toList());
+
+        if (memberNames.contains(name)) {
+          return JavaQuickFix.newQuickFix("Correct this useless self-assignment")
+            .addTextEdit(JavaTextEdit.insertBeforeTree(tree.variable(), "this."))
+            .build();
+        }
+      }
+    }
+    return JavaQuickFix.newQuickFix("Remove this useless self-assignment")
+      .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(tree, true,
+        QuickFixHelper.nextToken(tree), true)))
+      .build();
+  }
+
+  private static String getName(ExpressionTree variable) {
+    if (variable.is(Tree.Kind.IDENTIFIER)) {
+      return ((IdentifierTree) variable).name();
+    }
+    if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+      return ((MemberSelectExpressionTree) variable).identifier().name();
+    }
+    return "";
   }
 
   private static SyntaxToken reportTree(AssignmentExpressionTree node) {
@@ -66,16 +126,20 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      warnings.forEach(warning -> reportIssue(reportTree((AssignmentExpressionTree) warning.syntaxTree()), ISSUE_MESSAGE));
+      warnings.forEach(warning -> {
+        AssignmentExpressionTree node = (AssignmentExpressionTree) warning.syntaxTree();
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(reportTree(node))
+          .withMessage(ISSUE_MESSAGE)
+          .withQuickFix(() -> getQuickFix(node))
+          .report();
+      });
     }
   }
 
   private void updateWarnings(AssignmentExpressionTree tree) {
-    for (Iterator<JWarning> iterator = warnings.iterator(); iterator.hasNext();) {
-      JWarning warning = iterator.next();
-      if (tree.equals(warning.syntaxTree())) {
-        iterator.remove();
-      }
-    }
+    warnings.removeIf(warning -> tree.equals(warning.syntaxTree()));
   }
+
 }

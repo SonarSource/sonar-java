@@ -19,12 +19,6 @@
  */
 package org.sonar.java.model;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -40,6 +34,13 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import javax.annotation.Nullable;
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
@@ -160,7 +161,7 @@ class ExpressionUtilsTest {
     assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(1).expression())).isPresent();
 
     assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(0).expression())).
-    contains(ExpressionUtils.getAssignedSymbol(assignments.get(1).expression()).get());
+      contains(ExpressionUtils.getAssignedSymbol(assignments.get(1).expression()).get());
 
     assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(2).expression())).isNotPresent();
     assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(3).expression())).isNotPresent();
@@ -252,12 +253,12 @@ class ExpressionUtilsTest {
 
   private List<AssignmentExpressionTree> findAssignmentExpressionTrees(MethodTree methodTree) {
     return methodTree.block().body().stream()
-          .filter(s -> s.is(Tree.Kind.EXPRESSION_STATEMENT))
-          .map(ExpressionStatementTree.class::cast)
-          .map(ExpressionStatementTree::expression)
-          .filter(e -> e instanceof AssignmentExpressionTree)
-          .map(AssignmentExpressionTree.class::cast)
-          .collect(Collectors.toList());
+      .filter(s -> s.is(Tree.Kind.EXPRESSION_STATEMENT))
+      .map(ExpressionStatementTree.class::cast)
+      .map(ExpressionStatementTree::expression)
+      .filter(e -> e instanceof AssignmentExpressionTree)
+      .map(AssignmentExpressionTree.class::cast)
+      .collect(Collectors.toList());
   }
 
   private List<VariableTree> findVariableTrees(MethodTree methodTree) {
@@ -280,6 +281,23 @@ class ExpressionUtilsTest {
         assertThat(enclosingMethod).isNull();
       } else {
         assertThat(enclosingMethod.simpleName().name()).isEqualTo(expectedName);
+      }
+    });
+  }
+
+  @Test
+  void parent_of_type_method_test() {
+    File file = new File("src/test/files/model/ExpressionEnclosingMethodTest.java");
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
+    FindAssignment findAssignment = new FindAssignment();
+    tree.accept(findAssignment);
+    findAssignment.assignments.forEach(a -> {
+      ClassTree parent = (ClassTree) ExpressionUtils.getParentOfType(a, Tree.Kind.CLASS, Tree.Kind.INTERFACE);
+      if (parent.is(Tree.Kind.CLASS)) {
+        assertThat(parent.simpleName().name()).isEqualTo("Clazz");
+      }
+      if (parent.is(Tree.Kind.INTERFACE)) {
+        assertThat(parent.simpleName().name()).isEqualTo("I1");
       }
     });
   }
@@ -363,7 +381,7 @@ class ExpressionUtilsTest {
 
   private void assertResolveAsConstant(String code, @Nullable Object expected) {
     CompilationUnitTree unit = JParserTestUtils.parse("class A { Object f = " + code + "; }");
-    ExpressionTree expression = ((VariableTree)((ClassTree) unit.types().get(0)).members().get(0)).initializer();
+    ExpressionTree expression = ((VariableTree) ((ClassTree) unit.types().get(0)).members().get(0)).initializer();
     Object actual = ExpressionUtils.resolveAsConstant(expression);
     if (expected == null) {
       assertThat(actual).isNull();

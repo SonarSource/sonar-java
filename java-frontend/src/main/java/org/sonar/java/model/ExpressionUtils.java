@@ -184,6 +184,15 @@ public final class ExpressionUtils {
     return (MethodTree) result;
   }
 
+  @CheckForNull
+  public static Tree getParentOfType(Tree tree, Tree.Kind... kinds) {
+    Tree result = tree.parent();
+    while (result != null && !result.is(kinds)) {
+      result = result.parent();
+    }
+    return result;
+  }
+
   public static Optional<Symbol> getAssignedSymbol(ExpressionTree exp) {
     Tree parent = exp.parent();
     if (parent != null) {
