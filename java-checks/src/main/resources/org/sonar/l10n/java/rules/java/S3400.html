@@ -12,5 +12,11 @@ int getBestNumber() {
 static final int BEST_NUMBER = 12;
 </pre>
 <h2>Exceptions</h2>
-<p>Methods with annotations, such as <code>@Override</code> and Spring’s <code>@RequestMapping</code>, are ignored.</p>
+<p>The following types of method are ignored:</p>
+<ul>
+  <li> methods that override a method. </li>
+  <li> methods that are not final (not having the <code>final</code>, <code>private</code> or <code>static</code> modifier and not in a record or a
+  final class). </li>
+  <li> methods with annotations, such as <code>@Override</code> or Spring’s <code>@RequestMapping</code>. </li>
+</ul>
 

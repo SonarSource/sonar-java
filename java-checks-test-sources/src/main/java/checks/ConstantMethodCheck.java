@@ -66,6 +66,10 @@ public final class ConstantMethodCheck implements Comparable<ConstantMethodCheck
       return 1L; // Noncompliant
     }
 
+    static long staticMethod() {
+      return 1L; // Noncompliant
+    }
+
     long noFinalMethod() {
       return 1L; // Compliant
     }
@@ -84,6 +88,27 @@ public final class ConstantMethodCheck implements Comparable<ConstantMethodCheck
       return """
           text block
         """;
+    }
+  }
+
+  enum MyEnum {
+    ONE() {
+      int overridableMethod() {
+        return 1; // Compliant, override
+      }
+    },
+    TWO(){
+      int overridableMethod() {
+        return 2; // Compliant, override
+      }
+    };
+
+    int overridableMethod() {
+      return 0; // Compliant, overridable
+    }
+
+    static int nonOverridableStaticMethod() {
+      return 0; // Noncompliant
     }
   }
 
