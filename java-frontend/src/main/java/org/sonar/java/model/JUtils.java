@@ -277,13 +277,18 @@ public final class JUtils {
     return method.declarationParameters().get(param).metadata();
   }
 
-  public static boolean hasUnknownTypeInHierarchy(Symbol.MethodSymbol symbol) {
+  public static boolean hasUnknownTypePreventingOverrideResolution(Symbol.MethodSymbol symbol) {
     Symbol owner = symbol.owner();
     if (owner == null || !owner.isTypeSymbol()) {
       // Broken hierarchy
       return true;
     }
-    return hasUnknownTypeInHierarchy((Symbol.TypeSymbol) owner);
+    boolean hasUnknownParameterType = symbol.parameterTypes().stream().anyMatch(Type::isUnknown);
+    if (hasUnknownParameterType) {
+      return hasUnknownTypeInHierarchyOrAnyMatchingMethod((Symbol.TypeSymbol) owner, symbol);
+    } else {
+      return hasUnknownTypeInHierarchy((Symbol.TypeSymbol) owner);
+    }
   }
 
   public static boolean hasUnknownTypeInHierarchy(Symbol.TypeSymbol typeSymbol) {
@@ -298,6 +303,36 @@ public final class JUtils {
       return false;
     }
     return hasUnknownTypeInHierarchy(superClass.symbol());
+  }
+
+  /**
+   * @param typeSymbol to lookup recursively for unknown symbol on itself, its interfaces and its super classes hierarchy.
+   * @param methodSymbol a method having at least one unknown parameter type that prevent the overriding resolution
+   *                    to find any exact match. This methodSymbol will be used to find a potential match, just by
+   *                    comparing the name and parameter count.
+   * @return true if the given typeSymbol and its inheritance hierarchy is 100% known and no method in the inheritance
+   * cloud match (name and parameter count) the given methodSymbol. In this case, we are sure the methodSymbol does not
+   * override any another methods.
+   */
+  private static boolean hasUnknownTypeInHierarchyOrAnyMatchingMethod(Symbol.TypeSymbol typeSymbol, Symbol.MethodSymbol methodSymbol) {
+    if (typeSymbol.isUnknown()) {
+      return true;
+    }
+    if (typeSymbol != methodSymbol.owner() && typeSymbol.memberSymbols().stream()
+      .anyMatch(member -> member.isMethodSymbol() &&
+        ((Symbol.MethodSymbol) member).parameterTypes().size() == methodSymbol.parameterTypes().size() &&
+        methodSymbol.name().equals(member.name()))) {
+      return true;
+    }
+    if (typeSymbol.interfaces().stream().map(Type::symbol)
+      .anyMatch(interfaceSymbol -> hasUnknownTypeInHierarchyOrAnyMatchingMethod(interfaceSymbol, methodSymbol))) {
+      return true;
+    }
+    Type superClass = typeSymbol.superClass();
+    if (superClass == null) {
+      return false;
+    }
+    return hasUnknownTypeInHierarchyOrAnyMatchingMethod(superClass.symbol(), methodSymbol);
   }
 
 }
