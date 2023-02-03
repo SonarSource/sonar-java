@@ -88,6 +88,8 @@
     <orchestrator.version>3.40.0.183</orchestrator.version>
     <sslr.version>1.24.0.633</sslr.version>
     <argLine>-Xmx512m</argLine>
+    <datadog.version>1.6.0</datadog.version>
+    <datadog.compilerplugin.version>0.1.1</datadog.compilerplugin.version>
     <gitRepositoryName>sonar-java</gitRepositoryName>
     <!-- Use more recent version than the one in parent-oss to support jreMinVersion -->
     <version.sonar-packaging.plugin>1.20.0.405</version.sonar-packaging.plugin>
@@ -285,7 +287,9 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <configuration/>
+          <configuration>
+            <argLine>${dd.java.agent.arg}</argLine>
+          </configuration>
         </plugin>
 
         <plugin>
@@ -333,5 +337,52 @@
       </plugin>
     </plugins>
   </build>
-
+  <profiles>
+    <profile>
+      <id>dd-civisibility</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <dd.java.agent.arg>
+          -javaagent:${settings.localRepository}/com/datadoghq/dd-java-agent/${datadog.version}/dd-java-agent-${datadog.version}.jar
+          -Ddd.service=sonar-java
+          -Ddd.civisibility.enabled=true
+        </dd.java.agent.arg>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>com.datadoghq</groupId>
+          <artifactId>dd-java-agent</artifactId>
+          <version>${datadog.version}</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.datadoghq</groupId>
+          <artifactId>dd-javac-plugin-client</artifactId>
+          <version>${datadog.compilerplugin.version}</version>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <annotationProcessorPaths>
+                <annotationProcessorPath>
+                  <groupId>com.datadoghq</groupId>
+                  <artifactId>dd-javac-plugin</artifactId>
+                  <version>${datadog.compilerplugin.version}</version>
+                </annotationProcessorPath>
+              </annotationProcessorPaths>
+              <compilerArgs>
+                <arg>-Xplugin:DatadogCompilerPlugin</arg>
+              </compilerArgs>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

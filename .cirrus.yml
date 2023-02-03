@@ -16,6 +16,14 @@ env:
   CIRRUS_SHELL: bash
   # Allows to run builds for the 50 last commits in a branch:
   CIRRUS_CLONE_DEPTH: 50
+  DD_API_KEY: VAULT[development/team/languages/kv/data/datadog data.apikey]
+  DD_CIVISIBILITY_AGENTLESS_ENABLED: true
+  DD_SITE: datadoghq.eu
+  DD_ENV: ci
+  DD_GIT_REPOSITORY_URL: $CIRRUS_REPO_CLONE_URL
+  DD_GIT_COMMIT_SHA: $CIRRUS_CHANGE_IN_REPO
+  DD_GIT_BRANCH: $CIRRUS_BRANCH
+  DD_GIT_COMMIT_MESSAGE: $CIRRUS_CHANGE_MESSAGE
 
 container_definition: &CONTAINER_DEFINITION
   image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j11-latest
@@ -60,7 +68,7 @@ build_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
     - source cirrus-env BUILD
-    - regular_mvn_build_deploy_analyze -Dsonar.analysisCache.enabled=true
+    - regular_mvn_build_deploy_analyze -Dsonar.analysisCache.enabled=true -Pdd-civisibility
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
 
@@ -123,7 +131,7 @@ plugin_qa_task:
     - cd docs/java-custom-rules-example
     - mvn clean install -B -e -V
     - cd ../../its/plugin
-    - mvn package -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
+    - mvn package -Pit-plugin,dd-civisibility -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 sanity_task:
@@ -141,7 +149,7 @@ sanity_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - mvn clean install -Dmaven.test.skip=true
-    - mvn verify -f java-checks/pom.xml -Psanity -Dtest=SanityTest
+    - mvn verify -f java-checks/pom.xml -Psanity,dd-civisibility -Dtest=SanityTest
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_task:
@@ -161,7 +169,7 @@ ruling_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
-    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package -Pit-ruling,dd-civisibility -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_win_task:
@@ -177,7 +185,7 @@ ruling_win_task:
     - init_git_submodules its/sources
     - git submodule update --init --recursive
     - cd its/ruling
-    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package -Pit-ruling,dd-civisibility -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 promote_task:
