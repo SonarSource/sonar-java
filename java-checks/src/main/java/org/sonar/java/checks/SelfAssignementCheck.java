@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
@@ -39,7 +38,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -80,11 +78,11 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
   }
 
   private static JavaQuickFix getQuickFix(AssignmentExpressionTree tree) {
-    ClassTree classParent = (ClassTree) ExpressionUtils.getParentOfType(tree, Tree.Kind.CLASS);
+    ClassTree classParent = (ClassTree) ExpressionUtils.getParentOfType(tree, Tree.Kind.CLASS, Tree.Kind.INTERFACE);
     MethodTree methodParent = (MethodTree) ExpressionUtils.getParentOfType(tree, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
     String name = getName(tree.variable());
 
-    if (methodParent != null && classParent != null) {
+    if (methodParent != null) {
       boolean isParameter = methodParent.parameters().stream()
         .map(p -> p.simpleName().name())
         .anyMatch(p -> p.equals(name));

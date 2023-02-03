@@ -59,7 +59,7 @@ class SelfAssignmentCheckD {
   String b;
   String c;
 
-  public SelfAssignmentCheckD(String a, String b) {
+  public SelfAssignmentCheckD(String a, String b, String d) {
     a = a; // Noncompliant [[sc=7;ec=8;quickfixes=qf2]] {{Remove or correct this useless self-assignment.}}
     // fix@qf2 {{Disambiguate this self-assignment}}
     // edit@qf2 [[sc=5;ec=5]] {{this.}}
@@ -71,6 +71,10 @@ class SelfAssignmentCheckD {
     this.c = c; // Noncompliant [[sc=12;ec=13;quickfixes=qf4]] {{Remove or correct this useless self-assignment.}}
     // fix@qf4 {{Remove this useless self-assignment}}
     // edit@qf4 [[sc=5;ec=16]] {{}}
+
+    d = d; // Noncompliant [[sc=7;ec=8;quickfixes=qf5]] {{Remove or correct this useless self-assignment.}}
+    // fix@qf5 {{Remove this useless self-assignment}}
+    // edit@qf5 [[sc=5;ec=11]] {{}}
 
     this.a = getA(); // Compliant
 

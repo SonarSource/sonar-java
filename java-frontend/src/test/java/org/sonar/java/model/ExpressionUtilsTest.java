@@ -298,6 +298,7 @@ class ExpressionUtilsTest {
       } else if (parent.is(Tree.Kind.INTERFACE)) {
         assertThat(parent.simpleName().name()).isEqualTo("I1");
       }
+      assertThat(ExpressionUtils.getParentOfType(tree, Tree.Kind.COMPILATION_UNIT)).isNull();
     });
   }
 

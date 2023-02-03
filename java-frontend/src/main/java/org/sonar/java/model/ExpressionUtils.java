@@ -184,7 +184,7 @@ public final class ExpressionUtils {
     return (MethodTree) result;
   }
 
-  @CheckForNull
+  @Nullable
   public static Tree getParentOfType(Tree tree, Tree.Kind... kinds) {
     Tree result = tree.parent();
     while (result != null && !result.is(kinds)) {
