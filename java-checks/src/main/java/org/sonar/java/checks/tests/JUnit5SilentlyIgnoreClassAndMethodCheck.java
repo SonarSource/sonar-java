@@ -67,7 +67,7 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends AbstractJUnit5NotCo
     }
   }
 
-   static final class ReturnStatementVisitor extends BaseTreeVisitor {
+  static final class ReturnStatementVisitor extends BaseTreeVisitor {
     private List<ReturnStatementTree> returnStatementTrees = new ArrayList<>();
 
     ReturnStatementVisitor(MethodTree methodTree) {
