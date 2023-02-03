@@ -922,7 +922,7 @@ class JUtilsTest {
   @Test
   void test_has_unknown_type_in_hierarchy_with_unexpected_null_owner() {
     JInitializerBlockSymbol method = new JInitializerBlockSymbol(null, true);
-    assertThat(JUtils.hasUnknownTypeInHierarchy(method)).isTrue();
+    assertThat(JUtils.hasUnknownTypePreventingOverrideResolution(method)).isTrue();
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {

@@ -89,6 +89,40 @@ class MethodTreeImplTest {
   }
 
   @Test
+  void unknown_override_because_of_unknown_parameter_type() {
+    CompilationUnitTree cut = createTree("" +
+      "interface I       { void bar(int a); }\n" +
+      "class A           { void foo(String arg) {} }\n" +
+      "class B extends A implements I { void foo(Unknown arg) {} void bar(Unknown arg) {} }\n");
+    ClassTree classB = (ClassTree) cut.types().get(2);
+    MethodTreeImpl fooMethodOfB = (MethodTreeImpl) classB.members().get(0);
+    MethodTreeImpl barMethodOfB = (MethodTreeImpl) classB.members().get(1);
+    assertThat(fooMethodOfB.isOverriding()).isNull();
+    assertThat(barMethodOfB.isOverriding()).isNull();
+  }
+
+  @Test
+  void unknown_override_because_of_unknown_parameter_type_and_hierarchy() {
+    CompilationUnitTree cut = createTree("" +
+      "class A extends Unknown {}\n" +
+      "class B extends A { void foo(Unknown arg) {} }\n");
+    ClassTree classB = (ClassTree) cut.types().get(1);
+    MethodTreeImpl fooMethodOfB = (MethodTreeImpl) classB.members().get(0);
+    assertThat(fooMethodOfB.isOverriding()).isNull();
+  }
+
+  @Test
+  void resolved_override_even_with_unknown_parameter_type() {
+    CompilationUnitTree cut = createTree("" +
+      "interface I          { void foo(int a, int b); }\n" +
+      "class A implements I { void bar(Unknown arg) {} void foo() {} int foo; }\n" +
+      "class B extends A    { void foo(Unknown arg) {} void foo(String arg) {} }\n");
+    ClassTree classB = (ClassTree) cut.types().get(2);
+    MethodTreeImpl fooMethodOfB = (MethodTreeImpl) classB.members().get(0);
+    assertThat(fooMethodOfB.isOverriding()).isFalse();
+  }
+
+  @Test
   void override_unknown_in_super_class() {
     CompilationUnitTree cut = createTree("class A extends Unknown {}\n" +
       "class B extends A { void foo(){}}");
@@ -140,17 +174,17 @@ class MethodTreeImplTest {
   }
 
   @Test
-  void static_method_cannot_be_overriden() {
+  void static_method_cannot_be_overridden() {
     assertThat(getUniqueMethod("class A{ static void m(){}}").isOverriding()).isFalse();
   }
 
   @Test
-  void private_method_cannot_be_overriden() {
+  void private_method_cannot_be_overridden() {
     assertThat(getUniqueMethod("class A{ private void m(){}}").isOverriding()).isFalse();
   }
 
   @Test
-  void override_annotated_method_should_be_overriden() {
+  void override_annotated_method_should_be_overridden() {
     assertThat(getUniqueMethod("class A{ @Override void m(){}}").isOverriding()).isTrue();
     assertThat(getUniqueMethod("class A{ @Foo @Override void m(){}}").isOverriding()).isTrue();
     assertThat(getUniqueMethod("class A{ @java.lang.Override void m(){}}").isOverriding()).isTrue();
