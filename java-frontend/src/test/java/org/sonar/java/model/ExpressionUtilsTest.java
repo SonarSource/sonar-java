@@ -295,8 +295,7 @@ class ExpressionUtilsTest {
       ClassTree parent = (ClassTree) ExpressionUtils.getParentOfType(a, Tree.Kind.CLASS, Tree.Kind.INTERFACE);
       if (parent.is(Tree.Kind.CLASS)) {
         assertThat(parent.simpleName().name()).isEqualTo("Clazz");
-      }
-      if (parent.is(Tree.Kind.INTERFACE)) {
+      } else if (parent.is(Tree.Kind.INTERFACE)) {
         assertThat(parent.simpleName().name()).isEqualTo("I1");
       }
     });

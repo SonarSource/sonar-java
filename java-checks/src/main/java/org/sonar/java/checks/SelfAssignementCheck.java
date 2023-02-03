@@ -97,7 +97,7 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
           .collect(Collectors.toList());
 
         if (memberNames.contains(name)) {
-          return JavaQuickFix.newQuickFix("Correct this useless self-assignment")
+          return JavaQuickFix.newQuickFix("Disambiguate this self-assignment")
             .addTextEdit(JavaTextEdit.insertBeforeTree(tree.variable(), "this."))
             .build();
         }

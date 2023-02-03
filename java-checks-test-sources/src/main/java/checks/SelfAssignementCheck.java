@@ -48,7 +48,7 @@ class SelfAssignmentCheckC {
 
   public SelfAssignmentCheckC(String a) {
     a = a; // Noncompliant [[sc=7;ec=8;quickfixes=qf1]] {{Remove or correct this useless self-assignment.}}
-    // fix@qf1 {{Correct this useless self-assignment}}
+    // fix@qf1 {{Disambiguate this self-assignment}}
     // edit@qf1 [[sc=5;ec=5]] {{this.}}
   }
 }
@@ -61,7 +61,7 @@ class SelfAssignmentCheckD {
 
   public SelfAssignmentCheckD(String a, String b) {
     a = a; // Noncompliant [[sc=7;ec=8;quickfixes=qf2]] {{Remove or correct this useless self-assignment.}}
-    // fix@qf2 {{Correct this useless self-assignment}}
+    // fix@qf2 {{Disambiguate this self-assignment}}
     // edit@qf2 [[sc=5;ec=5]] {{this.}}
 
     c = c; // Noncompliant [[sc=7;ec=8;quickfixes=qf3]] {{Remove or correct this useless self-assignment.}}
