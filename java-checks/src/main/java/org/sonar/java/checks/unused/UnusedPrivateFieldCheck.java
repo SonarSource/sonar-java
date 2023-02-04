@@ -52,6 +52,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1068")
@@ -191,7 +192,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static JavaQuickFix computeQuickFix(VariableTree tree, List<AssignmentExpressionTree> assignments) {
+  private JavaQuickFix computeQuickFix(VariableTree tree, List<AssignmentExpressionTree> assignments) {
     AnalyzerMessage.TextSpan textSpan = computeTextSpan(tree);
     List<JavaTextEdit> edits = new ArrayList<>(assignments.size() + 1);
     edits.addAll(computeExpressionCaptures(assignments));
@@ -229,7 +230,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     return AnalyzerMessage.textSpanFor(tree);
   }
 
-  private static List<JavaTextEdit> computeExpressionCaptures(List<AssignmentExpressionTree> assignments) {
+  private List<JavaTextEdit> computeExpressionCaptures(List<AssignmentExpressionTree> assignments) {
     List<JavaTextEdit> edits = new ArrayList<>();
     for (int i = 1; i <= assignments.size(); i++) {
       AssignmentExpressionTree assignment = assignments.get(i - 1);
@@ -242,15 +243,20 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     return edits;
   }
 
-  private static String computeReplacement(ExpressionTree variable, int index) {
+  private String computeReplacement(ExpressionTree variable, int index) {
     String name = "";
+    IdentifierTree identifier;
     if (variable.is(Tree.Kind.IDENTIFIER)) {
-      name = ((IdentifierTree) variable).name() + index;
-    } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
-      name = ((MemberSelectExpressionTree) variable).identifier().name() +  index;
+      identifier = ((IdentifierTree) variable);
+      name = identifier.name() + index;
+    } else {
+      identifier = ((MemberSelectExpressionTree) variable).identifier();
+      name = identifier.name() +  index;
     }
     name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
-    return String.format("var valueFormerlyAssignedTo%s = ", name);
+    TypeTree typeInDeclaration = ((VariableTree) identifier.symbol().declaration()).type();
+    String type = QuickFixHelper.contentForTree(typeInDeclaration, context);
+    return String.format("%s valueFormerlyAssignedTo%s = ", type, name);
   }
 
   private static Optional<SyntaxToken> getPrecedingComma(VariableTree variable) {
