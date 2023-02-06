@@ -67,12 +67,20 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
     }
     AssignmentExpressionTree node = (AssignmentExpressionTree) tree;
     if (SyntacticEquivalence.areEquivalent(node.expression(), node.variable())) {
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
-        .onTree(reportTree(node))
-        .withMessage(ISSUE_MESSAGE)
-        .withQuickFix(() -> getQuickFix(node))
-        .report();
+      if (node.parent().is(Tree.Kind.VARIABLE) || node.parent().is(Tree.Kind.ASSIGNMENT)) {
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(reportTree(node))
+          .withMessage(ISSUE_MESSAGE)
+          .report();
+      } else {
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(reportTree(node))
+          .withMessage(ISSUE_MESSAGE)
+          .withQuickFix(() -> getQuickFix(node))
+          .report();
+      }
       updateWarnings(node);
     }
   }
@@ -82,25 +90,24 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
     MethodTree methodParent = (MethodTree) ExpressionUtils.getParentOfType(tree, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
     String name = getName(tree.variable());
 
-    if (methodParent != null) {
-      boolean isParameter = methodParent.parameters().stream()
-        .map(p -> p.simpleName().name())
-        .anyMatch(p -> p.equals(name));
+    boolean isMethodParameter = methodParent.parameters().stream()
+      .map(p -> p.simpleName().name())
+      .anyMatch(p -> p.equals(name));
 
-      if (isParameter) {
-        List<String> memberNames = classParent.members().stream()
-          .filter(m -> m.is(Tree.Kind.VARIABLE))
-          .map(VariableTree.class::cast)
-          .map(m -> m.simpleName().name())
-          .collect(Collectors.toList());
+    if (isMethodParameter) {
+      List<String> memberNames = classParent.members().stream()
+        .filter(m -> m.is(Tree.Kind.VARIABLE))
+        .map(VariableTree.class::cast)
+        .map(m -> m.simpleName().name())
+        .collect(Collectors.toList());
 
-        if (memberNames.contains(name)) {
-          return JavaQuickFix.newQuickFix("Disambiguate this self-assignment")
-            .addTextEdit(JavaTextEdit.insertBeforeTree(tree.variable(), "this."))
-            .build();
-        }
+      if (memberNames.contains(name)) {
+        return JavaQuickFix.newQuickFix("Disambiguate this self-assignment")
+          .addTextEdit(JavaTextEdit.insertBeforeTree(tree.variable(), "this."))
+          .build();
       }
     }
+
     return JavaQuickFix.newQuickFix("Remove this useless self-assignment")
       .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(tree, true,
         QuickFixHelper.nextToken(tree), true)))
@@ -126,6 +133,9 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
       warnings.forEach(warning -> {
         AssignmentExpressionTree node = (AssignmentExpressionTree) warning.syntaxTree();
+        if (node.parent().is(Tree.Kind.VARIABLE)) {
+          return;
+        }
         QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(reportTree(node))

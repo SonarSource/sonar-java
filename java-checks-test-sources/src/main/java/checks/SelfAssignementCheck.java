@@ -4,6 +4,16 @@ class SelfAssignementCheck {
   int a, c = 0;
   int[] b = {0};
 
+  int m = a = a; // Noncompliant [[sc=13;ec=14;quickfixes=!]]
+
+  int x = a = a = a; // Noncompliant [[sc=17;ec=18;quickfixes=!]]
+
+  int s = getS(); // Compliant
+
+  int getS() {
+    return 0;
+  }
+
   void method() {
     a = a; // Noncompliant [[sc=7;ec=8]] {{Remove or correct this useless self-assignment.}}
     this.a = this.a; // Noncompliant
