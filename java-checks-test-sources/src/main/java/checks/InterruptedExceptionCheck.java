@@ -321,8 +321,7 @@ class Interruptable {
     InterruptedException ie = new InterruptedException();
     try {
       throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, ie is not e; even though ie is also an InterruptedException.
-      doSomething();                   // This might change with a later revision of the implementation of this rule.
+    } catch (InterruptedException e) { // Compliant
       throw ie;
     }
 
@@ -335,10 +334,41 @@ class Interruptable {
 
     try {
       throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, even though an InterruptedException is thrown.
-      doSomething();                   // This might change with a later revision of the implementation of this rule.
+    } catch (InterruptedException e) { // Compliant
       throw getInterruptedException();
     }
+  }
+
+  public void cutControlFlow() throws InterruptedException {
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Noncompliant, because neither foo nor bar belong to the control flow of this catch block.
+
+      Object instance = new Object() {
+        void foo() {
+          Thread.currentThread().interrupt();
+        }
+
+        void bar() throws InterruptedException {
+          throw new InterruptedException();
+        }
+      };
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Noncompliant, because neither foo, nor bar belong to the control flow of this catch block.
+        Runnable foo = () -> Thread.currentThread().interrupt();
+        Action bar = () -> {
+          throw new InterruptedException();
+        };
+    }
+  }
+
+  @FunctionalInterface
+  public interface Action {
+    void action() throws InterruptedException;
   }
 
   private static RuntimeException getRuntimeException() {

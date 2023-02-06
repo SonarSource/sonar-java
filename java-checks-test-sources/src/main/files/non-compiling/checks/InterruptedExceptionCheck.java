@@ -176,14 +176,6 @@ class Interruptable {
       System.out.println("--- waitForNextExecution: Service interrupted. Cancel execution of task {}.");
     }
     Thread.currentThread().interrupt();
-  }
-
-  public void throwNewInterruptedExceptionFromCatch() throws InterruptedException {
-    try {
-      throwsInterruptedException();
-    } catch (InterruptedException e) { // Compliant
-      throw new InterruptedException();
-    }
 
     try {
       throwsInterruptedException();
@@ -196,73 +188,5 @@ class Interruptable {
     } catch (InterruptedException e) { // Noncompliant, unknown supertype of exception is not regarded an InterruptedException
       throw new CustomizedInterruptedException();
     }
-
-    try {
-      throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, RuntimeException is not an InterruptedException
-      throw new RuntimeException();
-    }
   }
-
-
-  public void catchSubtypeOfInterruptedException() throws InterruptedException {
-    try {
-      throwsInterruptedException();
-    } catch (CustomizedInterruptedException e) { // Compliant, unknown supertype of catched exception is not regarded an InterruptedException
-      throw new InterruptedException();
-    }
-
-    try {
-      throwsInterruptedException();
-    } catch (CustomizedInterruptedException e) { // Compliant, unknown supertype of catched exception is not regarded an InterruptedException
-      throw new CustomizedInterruptedException();
-    }
-
-    try {
-      throwsInterruptedException();
-    } catch (CustomizedInterruptedException e) { // Compliant, unknown supertype of catched exception is not regarded an InterruptedException
-      throw new RuntimeException();
-    }
-  }
-
-  public void throwNewInterruptedExceptionFromFunction() throws InterruptedException {
-
-    try {
-      throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, unknown function is not regarded interrupting this thread
-      nonExistingFunction();
-    }
-
-    try {
-      throwsInterruptedException();
-    } catch (InterruptedException e) { // Compliant, known function that interrupts this thread
-      interruptByThrowingInterruptedException();
-    }
-  }
-
-  public void rethrowSameException() throws InterruptedException {
-
-    try {
-      throwsInterruptedException();
-    } catch (InterruptedException e) { // Compliant
-      doSomething();
-      throw e;
-    }
-
-    RuntimeException re = new RuntimeException();
-    try {
-      throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, re is not e
-      doSomething();
-      throw re;
-    }
-  }
-
-  private static void interruptByThrowingInterruptedException() throws InterruptedException {
-    throw new InterruptedException();
-  }
-
-  private static class CustomizedInterruptedException extends NonExistentException {
-  }
-
 }
