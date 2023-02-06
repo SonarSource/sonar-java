@@ -52,6 +52,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1068")
@@ -72,7 +73,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     Tree.Kind.OR_ASSIGNMENT};
 
   private final List<ClassTree> classes = new ArrayList<>();
-  private final Map<Symbol, List<IdentifierTree>> assignments = new HashMap<>();
+  private final Map<Symbol, List<AssignmentExpressionTree>> assignments = new HashMap<>();
   private final Set<String> unknownIdentifiers = new HashSet<>();
   private boolean hasNativeMethod = false;
 
@@ -157,7 +158,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
           .forRule(this)
           .onTree(tree.simpleName())
           .withMessage("Remove this unused \"" + name + "\" private field.")
-          .withQuickFix(() -> computeQuickFix(tree))
+          .withQuickFix(() -> computeQuickFix(tree, assignments.getOrDefault(symbol, Collections.emptyList())))
           .report();
       }
     }
@@ -173,30 +174,32 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
 
   private void collectAssignment(ExpressionTree expressionTree) {
     if (expressionTree.is(ASSIGNMENT_KINDS)) {
-      addAssignment(((AssignmentExpressionTree) expressionTree).variable());
+      AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) expressionTree;
+      ExpressionTree variable = (assignmentExpressionTree).variable();
+      IdentifierTree identifier = null;
+      if (variable.is(Tree.Kind.IDENTIFIER)) {
+        identifier = (IdentifierTree) variable;
+      } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+        identifier = ((MemberSelectExpressionTree) variable).identifier();
+      } else {
+        return;
+      }
+      Symbol reference = identifier.symbol();
+      if (!reference.isUnknown()) {
+        List<AssignmentExpressionTree> assignmentsToVariable = assignments.computeIfAbsent(reference, k -> new ArrayList<>());
+        assignmentsToVariable.add(assignmentExpressionTree);
+      }
     }
   }
 
-  private void addAssignment(ExpressionTree tree) {
-    ExpressionTree variable = ExpressionUtils.skipParentheses(tree);
-    if (variable.is(Tree.Kind.IDENTIFIER)) {
-      addAssignment((IdentifierTree) variable);
-    } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
-      addAssignment(((MemberSelectExpressionTree) variable).identifier());
-    }
-  }
-
-  private void addAssignment(IdentifierTree identifier) {
-    Symbol reference = identifier.symbol();
-    if (!reference.isUnknown()) {
-      assignments.computeIfAbsent(reference, k -> new ArrayList<>()).add(identifier);
-    }
-  }
-
-  private static JavaQuickFix computeQuickFix(VariableTree tree) {
+  private JavaQuickFix computeQuickFix(VariableTree tree, List<AssignmentExpressionTree> assignments) {
     AnalyzerMessage.TextSpan textSpan = computeTextSpan(tree);
+    List<JavaTextEdit> edits = new ArrayList<>(assignments.size() + 1);
+    edits.addAll(computeExpressionCaptures(assignments));
+    edits.add(JavaTextEdit.removeTextSpan(textSpan));
     return JavaQuickFix.newQuickFix("Remove this unused private field")
-      .addTextEdit(JavaTextEdit.removeTextSpan(textSpan))
+      .addTextEdits(edits)
+      .reverseSortEdits()
       .build();
   }
 
@@ -225,6 +228,35 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     }
     // By default, we delete the variable's tree
     return AnalyzerMessage.textSpanFor(tree);
+  }
+
+  private List<JavaTextEdit> computeExpressionCaptures(List<AssignmentExpressionTree> assignments) {
+    List<JavaTextEdit> edits = new ArrayList<>();
+    for (int i = 1; i <= assignments.size(); i++) {
+      AssignmentExpressionTree assignment = assignments.get(i - 1);
+      ExpressionTree variable = assignment.variable();
+      String replacement = computeReplacement(variable, i);
+      edits.add(
+        JavaTextEdit.replaceBetweenTree(variable, true, assignment.expression(), false, replacement)
+      );
+    }
+    return edits;
+  }
+
+  private String computeReplacement(ExpressionTree variable, int index) {
+    String name = "";
+    IdentifierTree identifier;
+    if (variable.is(Tree.Kind.IDENTIFIER)) {
+      identifier = ((IdentifierTree) variable);
+      name = identifier.name() + index;
+    } else {
+      identifier = ((MemberSelectExpressionTree) variable).identifier();
+      name = identifier.name() +  index;
+    }
+    name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+    TypeTree typeInDeclaration = ((VariableTree) identifier.symbol().declaration()).type();
+    String type = QuickFixHelper.contentForTree(typeInDeclaration, context);
+    return String.format("%s valueFormerlyAssignedTo%s = ", type, name);
   }
 
   private static Optional<SyntaxToken> getPrecedingComma(VariableTree variable) {

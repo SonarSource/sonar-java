@@ -23,15 +23,15 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class UnusedPrivateFieldCheckTest {
 
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/unused/UnusedPrivateFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldCheck.java"))
       .withCheck(new UnusedPrivateFieldCheck())
       .withQuickFixes()
       .verifyIssues();
@@ -48,8 +48,17 @@ class UnusedPrivateFieldCheckTest {
   @Test
   void test_native() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/unused/UnusedPrivateFieldCheckWithNative.java"))
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldCheckWithNative.java"))
       .withCheck(new UnusedPrivateFieldCheck())
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_quick_fixes() {
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldCheckWithQuickfixes.java"))
+      .withCheck(new UnusedPrivateFieldCheck())
+      .withQuickFixes()
+      .verifyIssues();
   }
 }

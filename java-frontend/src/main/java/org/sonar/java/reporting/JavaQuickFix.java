@@ -21,6 +21,7 @@ package org.sonar.java.reporting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class JavaQuickFix {
@@ -79,9 +80,36 @@ public class JavaQuickFix {
       return this;
     }
 
+    public Builder reverseSortEdits() {
+      textEdits.sort(new TreeSorter().reversed());
+      return this;
+    }
+
     public JavaQuickFix build() {
       return new JavaQuickFix(description, textEdits);
     }
-  }
 
+    private static class TreeSorter implements Comparator<JavaTextEdit> {
+
+      @Override
+      public int compare(JavaTextEdit a, JavaTextEdit b) {
+        AnalyzerMessage.TextSpan first = a.getTextSpan();
+        AnalyzerMessage.TextSpan second = b.getTextSpan();
+
+        int result = first.startLine - second.startLine;
+        if (result != 0) {
+          return result;
+        }
+        result = first.startCharacter - second.startCharacter;
+        if (result != 0) {
+          return result;
+        }
+        result = first.endLine - second.endLine;
+        if (result != 0) {
+          return result;
+        }
+        return first.endCharacter - second.endCharacter;
+      }
+    }
+  }
 }

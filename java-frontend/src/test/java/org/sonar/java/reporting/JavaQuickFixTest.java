@@ -20,6 +20,7 @@
 package org.sonar.java.reporting;
 
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,6 +61,54 @@ class JavaQuickFixTest {
       .build();
     assertThat(quickFix.getDescription()).isEqualTo("description");
     assertThat(quickFix.getTextEdits()).hasSize(2).containsExactly(edit1, edit2);
+  }
+
+  @Test
+  void reverseSortEdits_sorts_as_expected() {
+    JavaTextEdit edit1 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1,2,3,4));
+    JavaTextEdit edit2 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(2,3,4,5));
+
+    assert_text_edits_are_ordered_as_expected(
+      Collections.emptyList(),
+      Collections.emptyList()
+    );
+
+    assert_text_edits_are_ordered_as_expected(
+      Collections.singletonList(edit1),
+      Collections.singletonList(edit1)
+    );
+
+    assert_text_edits_are_ordered_as_expected(
+      List.of(edit1, edit1),
+      List.of(edit1, edit1)
+    );
+
+    assert_text_edits_are_ordered_as_expected(
+      List.of(edit1, edit2),
+      List.of(edit2, edit1)
+    );
+
+    JavaTextEdit edit3 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1, 1, 1, 2));
+    JavaTextEdit edit4 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1, 1, 2, 1));
+    assert_text_edits_are_ordered_as_expected(
+      List.of(edit3, edit4),
+      List.of(edit4, edit3)
+    );
+
+    JavaTextEdit edit5 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1, 1, 1, 1));
+    JavaTextEdit edit6 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1, 2, 1, 3));
+    assert_text_edits_are_ordered_as_expected(
+      List.of(edit5, edit6),
+      List.of(edit6, edit5)
+    );
+  }
+
+  void assert_text_edits_are_ordered_as_expected(List<JavaTextEdit> editsToAdd, List<JavaTextEdit> expectedOrder) {
+    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("Text edits should be ordered as expected")
+      .addTextEdits(editsToAdd)
+      .reverseSortEdits()
+      .build();
+    assertThat(quickFix.getTextEdits()).isEqualTo(expectedOrder);
   }
 
 }
