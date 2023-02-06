@@ -20,6 +20,7 @@
 package org.sonar.java.checks.tests;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.sonar.check.Rule;
@@ -65,21 +66,21 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends AbstractJUnit5NotCo
         .report();
     }
   }
-}
 
-final class ReturnStatementVisitor extends BaseTreeVisitor {
-  private List<ReturnStatementTree> returnStatementTrees = new ArrayList<>();
+  static final class ReturnStatementVisitor extends BaseTreeVisitor {
+    private List<ReturnStatementTree> returnStatementTrees = new ArrayList<>();
 
-  ReturnStatementVisitor(MethodTree methodTree) {
-    scan(methodTree);
-  }
+    ReturnStatementVisitor(MethodTree methodTree) {
+      scan(methodTree);
+    }
 
-  @Override
-  public void visitReturnStatement(ReturnStatementTree tree) {
-    returnStatementTrees.add(tree);
-  }
+    @Override
+    public void visitReturnStatement(ReturnStatementTree tree) {
+      returnStatementTrees.add(tree);
+    }
 
-  List<ReturnStatementTree> returnStatementTrees() {
-    return returnStatementTrees;
+    List<ReturnStatementTree> returnStatementTrees() {
+      return Collections.unmodifiableList(returnStatementTrees);
+    }
   }
 }
