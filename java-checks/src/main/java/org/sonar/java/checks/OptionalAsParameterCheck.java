@@ -48,11 +48,17 @@ public class OptionalAsParameterCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    for (VariableTree parameter : ((MethodTree) tree).parameters()) {
-      TypeTree typeTree = parameter.type();
-      Optional<String> msg = expectedTypeInsteadOfOptional(typeTree.symbolType());
-      if (msg.isPresent()) {
-        reportIssue(typeTree, msg.get());
+    final var methodTree = (MethodTree) tree;
+
+    // If the method is overriding something, the user has no control over the parameter type here, so we should not raise an issue.
+    if (Boolean.FALSE.equals(methodTree.isOverriding())) {
+
+      for (VariableTree parameter : methodTree.parameters()) {
+        TypeTree typeTree = parameter.type();
+        Optional<String> msg = expectedTypeInsteadOfOptional(typeTree.symbolType());
+        if (msg.isPresent()) {
+          reportIssue(typeTree, msg.get());
+        }
       }
     }
   }

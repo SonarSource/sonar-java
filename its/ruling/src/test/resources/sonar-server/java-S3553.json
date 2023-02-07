@@ -23,9 +23,6 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/queue/ReportSubmitter.java':[
 101,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerContextImpl.java':[
-215,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/AverageFormula.java':[
 119,
 119,
