@@ -139,3 +139,77 @@ class S1114_MyObject {
     super.finalize();
   }
 }
+
+class CutControlFlowInnerClass extends S1114_Class1 {
+  @Override
+  protected void finalize() throws Throwable {  // Noncompliant, there is no call to finalize here
+    class InnerClass {
+      void foo() throws Throwable {
+        super.finalize(); // Compliant, this call is not inside the control flow of a finalize method
+      }
+    }
+  }
+}
+
+class CutControlFlowLambda extends S1114_Class1 {
+  @Override
+  protected void finalize() throws Throwable {  // Noncompliant, there is no call to finalize here
+
+    ThrowingRunnable r = () -> super.finalize(); // Compliant, this call is not inside the control flow of a finalize method
+    foo();
+  }
+
+  @FunctionalInterface
+  private static interface ThrowingRunnable {
+      public void run() throws Throwable;
+  }
+}
+
+class ScanAlsoInnerClasses extends S1114_Class1 {
+  @Override
+  protected void finalize() throws Throwable {  // Noncompliant, there is no call to finalize here
+    class InnerClassCompliant {
+      @Override
+      public void finalize() throws Throwable {
+        super.finalize(); // Compliant, this call is not inside the control flow of a finalize method
+      }
+    }
+
+    class InnerClassNonCompliant {
+      @Override
+      public void finalize() throws Throwable {
+        foo(); // Noncompliant, there is no call to finalize here
+      }
+    }
+  }
+
+  protected void bar() throws Throwable {  // Compliant, this is not a finalize method.
+    class InnerClassCompliant {
+      @Override
+      public void finalize() throws Throwable {
+        super.finalize(); // Compliant, this call is not inside the control flow of a finalize method
+      }
+    }
+
+    class InnerClassNonCompliant {
+      @Override
+      public void finalize() throws Throwable {
+        foo(); // Noncompliant, there is no call to finalize here
+      }
+    }
+  }
+  
+  class InnerClassCompliant {
+    @Override
+    public void finalize() throws Throwable {
+      super.finalize(); // Compliant, this call is not inside the control flow of a finalize method
+    }
+  }
+
+  class InnerClassNonCompliant {
+    @Override
+    public void finalize() throws Throwable {
+      foo(); // Noncompliant, there is no call to finalize here
+    }
+  }
+}
