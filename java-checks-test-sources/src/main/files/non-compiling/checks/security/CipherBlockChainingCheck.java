@@ -27,7 +27,7 @@ class CipherBlockChainingCheck {
   }
 
   void unknownFunctionIv() throws UnsupportedEncodingException {
-    byte[] iv = unknown(16); // "iv" is random thanks to SecureRandom
+    byte[] iv = unknown(16); 
     IvParameterSpec ivParameterSpec = new IvParameterSpec(iv); // Compliant, because function cannot be resolved
   }
 }
