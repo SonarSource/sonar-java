@@ -20,16 +20,28 @@
 package org.sonar.java.checks.security;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.InterruptedExceptionCheck;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class CipherBlockChainingCheckTest {
+
+  private static final String SOURCE_PATH = "checks/security/CipherBlockChainingCheck.java";
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/CipherBlockChainingCheck.java"))
+      .onFile(mainCodeSourcesPath(SOURCE_PATH))
+      .withCheck(new CipherBlockChainingCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath(SOURCE_PATH))
       .withCheck(new CipherBlockChainingCheck())
       .verifyIssues();
   }
