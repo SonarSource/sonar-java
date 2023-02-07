@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
@@ -46,6 +46,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2142")
@@ -54,20 +55,25 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
   private static final String MESSAGE = "Either re-interrupt this method or rethrow the \"%s\" that can be caught here.";
 
   private static final Predicate<Type> INTERRUPTING_TYPE_PREDICATE = catchType ->
-    catchType.is("java.lang.InterruptedException") ||
-    catchType.is("java.lang.ThreadDeath");
+    catchType.isSubtypeOf("java.lang.InterruptedException") ||
+    catchType.isSubtypeOf("java.lang.ThreadDeath");
 
   private static final Predicate<Type> GENERIC_EXCEPTION_PREDICATE = catchType ->
     catchType.is("java.lang.Exception") ||
     catchType.is("java.lang.Throwable");
 
-  private Deque<Boolean> withinInterruptingFinally = new LinkedList<>();
+  private final Deque<Boolean> withinInterruptingFinally = new LinkedList<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.TRY_STATEMENT);
   }
 
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    withinInterruptingFinally.clear();
+  }
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     withinInterruptingFinally.clear();
@@ -81,6 +87,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     for (CatchTree catchTree : tryStatementTree.catches()) {
       VariableTree catchParameter = catchTree.parameter();
       List<Type> caughtTypes = getCaughtTypes(catchParameter);
+
       Optional<Type> interruptType = caughtTypes.stream().filter(INTERRUPTING_TYPE_PREDICATE).findFirst();
       if (interruptType.isPresent()) {
         if (wasNotInterrupted(catchTree)) {
@@ -109,7 +116,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean wasNotInterrupted(CatchTree catchTree) {
-    BlockVisitor blockVisitor = new BlockVisitor(catchTree.parameter().symbol());
+    BlockVisitor blockVisitor = new BlockVisitor();
     catchTree.block().accept(blockVisitor);
     return !blockVisitor.threadInterrupted && !isWithinInterruptingFinally();
   }
@@ -143,12 +150,10 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
 
   private static boolean throwInterruptedException(Symbol.MethodSymbol symbol) {
     return !symbol.isUnknown()
-      && symbol.thrownTypes().stream().anyMatch(t -> t.is("java.lang.InterruptedException"));
+      && symbol.thrownTypes().stream().anyMatch(INTERRUPTING_TYPE_PREDICATE);
   }
 
   private static class BlockVisitor extends BaseTreeVisitor {
-    @Nullable
-    private final Symbol catchedException;
     boolean threadInterrupted = false;
     private int depth = 0;
 
@@ -160,14 +165,6 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
       .addWithoutParametersMatcher()
       .build();
 
-    public BlockVisitor() {
-      this.catchedException = null;
-    }
-
-    public BlockVisitor(Symbol catchedException) {
-      this.catchedException = catchedException;
-    }
-
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (threadInterrupted || INTERRUPT_MATCHERS.matches(tree)) {
@@ -175,10 +172,9 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
         return;
       }
       depth++;
-      Tree declaration = tree.methodSymbol().declaration();
+      MethodTree declaration = tree.methodSymbol().declaration();
       if (declaration != null && depth <= MAX_DEPTH) {
-        //Declaration of MethodInvocationTree is MethodTree
-        BlockTree block = ((MethodTree) declaration).block();
+        BlockTree block = declaration.block();
         if (block != null) {
           block.accept(this);
         }
@@ -189,14 +185,21 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitThrowStatement(ThrowStatementTree tree) {
-      if (threadInterrupted ||
-        (tree.expression().is(Tree.Kind.IDENTIFIER) &&
-          ((IdentifierTree) tree.expression()).symbol().equals(catchedException))) {
+      if (threadInterrupted || INTERRUPTING_TYPE_PREDICATE.test(tree.expression().symbolType())) {
         threadInterrupted = true;
-        return;
+      } else {
+        super.visitThrowStatement(tree);
       }
-      super.visitThrowStatement(tree);
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // Cut visit on anonymous and local classes, because we only want to analyze actual control flow.
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree tree) {
+      // Cut visit on lambdas, because we only want to analyze actual control flow.
     }
   }
-
 }

@@ -176,6 +176,17 @@ class Interruptable {
       System.out.println("--- waitForNextExecution: Service interrupted. Cancel execution of task {}.");
     }
     Thread.currentThread().interrupt();
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Noncompliant, unknown exception type is not regarded an InterruptedException
+      throw new NonExistentException();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (InterruptedException e) { // Noncompliant, unknown supertype of exception is not regarded an InterruptedException
+      throw new CustomizedInterruptedException();
+    }
   }
-  
 }
