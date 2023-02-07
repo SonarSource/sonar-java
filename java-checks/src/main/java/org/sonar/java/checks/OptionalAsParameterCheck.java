@@ -51,7 +51,7 @@ public class OptionalAsParameterCheck extends IssuableSubscriptionVisitor {
     final var methodTree = (MethodTree) tree;
 
     // If the method is overriding something, the user has no control over the parameter type here, so we should not raise an issue.
-    if (methodTree.isOverriding() == Boolean.FALSE) {
+    if (Boolean.FALSE.equals(methodTree.isOverriding())) {
 
       for (VariableTree parameter : methodTree.parameters()) {
         TypeTree typeTree = parameter.type();
