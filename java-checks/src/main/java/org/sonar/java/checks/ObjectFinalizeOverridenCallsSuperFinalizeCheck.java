@@ -22,12 +22,23 @@ package org.sonar.java.checks;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.tree.*;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "ObjectFinalizeOverridenCallsSuperFinalizeCheck", repositoryKey = "squid")
