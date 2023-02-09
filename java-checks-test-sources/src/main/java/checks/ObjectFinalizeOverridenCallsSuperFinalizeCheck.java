@@ -145,7 +145,7 @@ class CutControlFlowInnerClass extends S1114_Class1 {
   protected void finalize() throws Throwable {  // Noncompliant, there is no call to finalize here
     class InnerClass {
       void foo() throws Throwable {
-        super.finalize(); // Compliant, this call is not inside the control flow of a finalize method
+        super.finalize();
       }
     }
   }
@@ -155,7 +155,7 @@ class CutControlFlowLambda extends S1114_Class1 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant, there is no call to finalize here
 
-    ThrowingRunnable r = () -> super.finalize(); // Compliant, this call is not inside the control flow of a finalize method
+    ThrowingRunnable r = () -> super.finalize();
     foo();
   }
 
