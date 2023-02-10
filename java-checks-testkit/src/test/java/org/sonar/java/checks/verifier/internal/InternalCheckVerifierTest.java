@@ -967,7 +967,7 @@ class InternalCheckVerifierTest {
       .withCheck(check)
       .verifyNoIssues();
 
-    verify(check, times(1)).scanWithoutParsing(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
+    verify(check, times(0)).scanWithoutParsing(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
     verify(check, times(1)).endOfAnalysis(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
   }
 

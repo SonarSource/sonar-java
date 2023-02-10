@@ -20,28 +20,6 @@
 package org.sonar.java;
 
 import com.sonar.sslr.api.RecognitionException;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.LongSupplier;
-import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
@@ -61,6 +39,8 @@ import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.caching.CacheContextImpl;
+import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
@@ -72,8 +52,26 @@ import org.sonar.java.reporting.JavaIssue;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonar.plugins.java.api.caching.JavaReadCache;
+import org.sonar.plugins.java.api.caching.JavaWriteCache;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URISyntaxException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+import java.util.function.LongSupplier;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @ScannerSide
 @SonarLintSide
@@ -97,6 +95,7 @@ public class SonarComponents {
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
+  public static final String CONTENT_HASH_MD_5 = "java:contentHash:md5";
   @VisibleForTesting
   static LongSupplier maxMemoryInBytesProvider = () -> Runtime.getRuntime().maxMemory();
 
@@ -115,6 +114,8 @@ public class SonarComponents {
   private final List<JavaCheck> jspChecks;
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
+
+  private JavaWriteCache writeCache;
   private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
 
   private boolean alreadyLoggedSkipStatus = false;
@@ -168,6 +169,9 @@ public class SonarComponents {
         registerMainCheckClasses(registrarContext.repositoryKey(), checkClasses);
         registerTestCheckClasses(registrarContext.repositoryKey(), testCheckClasses);
       }
+    }
+    if (context != null && context.isCacheEnabled()) {
+      writeCache = CacheContextImpl.of(context).getWriteCache();
     }
   }
 
@@ -454,6 +458,7 @@ public class SonarComponents {
   public boolean fileCanBeSkipped(InputFile inputFile) {
     if (inputFile instanceof GeneratedFile) {
       // Generated files should not be skipped as we cannot assess the change status of the source file
+      writeToCache(inputFile);
       return false;
     }
     boolean canSkipInContext;
@@ -476,15 +481,54 @@ public class SonarComponents {
         );
         alreadyLoggedSkipStatus = true;
       }
+      writeToCache(inputFile);
       return false;
     }
-    return canSkipInContext && inputFile.status() == InputFile.Status.SAME;
+    if(!canSkipInContext) {
+      writeToCache(inputFile);
+      return false;
+    }
+    JavaReadCache readCache = CacheContextImpl.of(context).getReadCache();
+    try {
+      byte[] fileHash = readCache.readBytes(CONTENT_HASH_MD_5 + inputFile.key());
+      LOG.debug("Reading cache for the file {}", inputFile.key());
+      byte[] bytes = FileHashingUtils.inputFileContentHash(inputFile);
+      boolean isHashEqual = MessageDigest.isEqual(fileHash, bytes);
+      if (isHashEqual) {
+        copyFromPrevious(inputFile);
+      } else {
+        writeToCache(inputFile);
+      }
+      return isHashEqual;
+    } catch (IOException | NoSuchAlgorithmException e) {
+      throw new AnalysisException("Failed to compute content hash for file {}" + inputFile.key());
+    }
+  }
+
+  private void copyFromPrevious(InputFile inputFile) {
+    if (writeCache != null) {
+      LOG.debug("Coping cache from previous for file {}", inputFile.key());
+      writeCache.copyFromPrevious(CONTENT_HASH_MD_5 + inputFile.key());
+    }
+  }
+
+  private void writeToCache(InputFile inputFile) {
+    if (writeCache != null) {
+      LOG.debug("Writing to the cache for file {}", inputFile.key());
+      String cacheKey = CONTENT_HASH_MD_5 + inputFile.key();
+      try {
+        writeCache.write(cacheKey, FileHashingUtils.inputFileContentHash(inputFile));
+      } catch (IllegalArgumentException e) {
+        LOG.debug("Tried to write multiple times to cache key '%s'. Ignoring writes after the first.", cacheKey);
+      } catch (IOException | NoSuchAlgorithmException e) {
+        LOG.debug("Failed to compute content hash for file {}", inputFile.key());
+      }
+    }
   }
 
   public InputComponent project() {
     return context.project();
   }
-
   public void collectUndefinedTypes(Set<JProblem> undefinedTypes) {
     this.undefinedTypes.addAll(undefinedTypes);
   }
