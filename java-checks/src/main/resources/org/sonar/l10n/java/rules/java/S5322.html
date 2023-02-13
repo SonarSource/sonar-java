@@ -4,14 +4,14 @@ in the past to the following vulnerabilities:</p>
   <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1677">CVE-2019-1677</a> </li>
   <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-1275">CVE-2015-1275</a> </li>
 </ul>
-<p>Receivers can be declared in the manifest or in the code to make them context specific. If the receiver is declared in the manifest Android will
+<p>Receivers can be declared in the manifest or in the code to make them context-specific. If the receiver is declared in the manifest Android will
 start the application if it is not already running once a matching broadcast is received. The receiver is an entry point into the application.</p>
 <p>Other applications can send potentially malicious broadcasts, so it is important to consider broadcasts as untrusted and to limit the applications
 that can send broadcasts to the receiver.</p>
 <p>Permissions can be specified to restrict broadcasts to authorized applications. Restrictions can be enforced by both the sender and receiver of a
 broadcast. If permissions are specified when registering a broadcast receiver, then only broadcasters who were granted this permission can send a
 message to the receiver.</p>
-<p>This rule raises an issue when a receiver is registered without specifying any "broadcast permission".</p>
+<p>This rule raises an issue when a receiver is registered without specifying any broadcast permission.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
   <li> The data extracted from intents is not sanitized. </li>
@@ -19,7 +19,7 @@ message to the receiver.</p>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
-<p>Restrict the access to broadcasted intents. See <a
+<p>Restrict the access to broadcasted intents. See the <a
 href="https://developer.android.com/guide/components/broadcasts.html#restricting_broadcasts_with_permissions">Android documentation</a> for more
 information.</p>
 <h2>Sensitive Code Example</h2>

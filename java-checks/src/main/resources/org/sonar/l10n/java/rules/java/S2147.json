@@ -13,5 +13,5 @@
   "ruleSpecification": "RSPEC-2147",
   "sqKey": "S2147",
   "scope": "All",
-  "quickfix": "unknown"
+  "quickfix": "covered"
 }

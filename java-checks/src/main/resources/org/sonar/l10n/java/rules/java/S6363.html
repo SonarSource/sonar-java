@@ -1,5 +1,5 @@
 <p>WebViews can be used to display web content as part of a mobile application. A browser engine is used to render and display the content. Like a web
-application a mobile application that uses WebViews can be vulnerable to Cross-Site Scripting if untrusted code is rendered.</p>
+application, a mobile application that uses WebViews can be vulnerable to Cross-Site Scripting if untrusted code is rendered.</p>
 <p>If malicious JavaScript code in a WebView is executed this can leak the contents of sensitive files when access to local files is enabled.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
@@ -8,7 +8,7 @@ application a mobile application that uses WebViews can be vulnerable to Cross-S
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
-<p>It’s recommended to disable access to local files for WebViews unless it is necessary. In the case of a successful attack through a Cross-Site
+<p>It is recommended to disable access to local files for WebViews unless it is necessary. In the case of a successful attack through a Cross-Site
 Scripting vulnerability the attackers attack surface decreases drastically if no files can be read out.</p>
 <h2>Sensitive Code Example</h2>
 <pre>
