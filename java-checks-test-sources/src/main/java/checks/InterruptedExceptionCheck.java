@@ -25,7 +25,7 @@ public class InterruptedExceptionCheck {
     }catch (java.io.IOException e) {
       LOGGER.log(Level.WARN, "Interrupted!", e);
     }catch (InterruptedException e) { // Noncompliant [[sc=13;ec=35]] {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
-        LOGGER.log(Level.WARN, "Interrupted!", e);
+      LOGGER.log(Level.WARN, "Interrupted!", e);
     }
   }
 
@@ -57,10 +57,10 @@ public class InterruptedExceptionCheck {
     try {
       throw  new InterruptedException();
     } catch (InterruptedException e) {
-        LOGGER.log(Level.WARN, "Interrupted!", e);
-        // clean up state...
-        Thread.currentThread().interrupt();
-      }
+      LOGGER.log(Level.WARN, "Interrupted!", e);
+      // clean up state...
+      Thread.currentThread().interrupt();
+    }
     try {
       while (true) {
         throw  new InterruptedException();
@@ -71,7 +71,7 @@ public class InterruptedExceptionCheck {
       // clean up state...
       new Interruptable().interrupt();
     }
-    }
+  }
 
   public Object getNextTask(BlockingQueue<Object> queue) {
     boolean interrupted = false;
@@ -96,14 +96,14 @@ class Interruptable {
   static final Log LOGGER = null;
 
   void interrupt() {
-    
+
   }
 
   private static void waitForNextExecution(Set<Runnable> running, LongSupplier waitTimeoutMillis) {
     try {
       Thread.sleep(waitTimeoutMillis.getAsLong());
     } catch (InterruptedException e) { //Compliant
-      cancelAllSubTasksAndInterrupt(running); 
+      cancelAllSubTasksAndInterrupt(running);
     }
   }
 
@@ -113,12 +113,12 @@ class Interruptable {
     }
     Thread.currentThread().interrupt();
   }
-  
+
   private static void waitForNextExecution1(Set<Runnable> running, LongSupplier waitTimeoutMillis) {
     try {
       Thread.sleep(waitTimeoutMillis.getAsLong());
     } catch (InterruptedException e) { // Noncompliant, too many levels
-      cancelAllSubTasksAndInterrupt1(running); 
+      cancelAllSubTasksAndInterrupt1(running);
     }
   }
 
@@ -126,7 +126,7 @@ class Interruptable {
     cancelAllSubTasksAndInterrupt2(subTasks);
   }
 
-  private static void cancelAllSubTasksAndInterrupt2(Set<Runnable> subTasks) { 
+  private static void cancelAllSubTasksAndInterrupt2(Set<Runnable> subTasks) {
     cancelAllSubTasksAndInterrupt3(subTasks);
   }
 
@@ -134,7 +134,7 @@ class Interruptable {
     cancelAllSubTasksAndInterrupt4(subTasks);
     if (LOGGER != null )throw new RuntimeException();
   }
-  
+
   private static void cancelAllSubTasksAndInterrupt4(Set<Runnable> subTasks) {
     for (Runnable task : subTasks) {
       System.out.println("--- waitForNextExecution: Service interrupted. Cancel execution of task {}.");
@@ -275,7 +275,6 @@ class Interruptable {
   }
 
   public void throwNewCustomizedInterruptedExceptionFromFunction() throws InterruptedException {
-
     try {
       throwsInterruptedException();
     } catch (InterruptedException e) { // Compliant
@@ -302,7 +301,6 @@ class Interruptable {
   }
 
   public void rethrowSameException() throws InterruptedException {
-
     try {
       throwsInterruptedException();
     } catch (InterruptedException e) { // Compliant
@@ -340,7 +338,6 @@ class Interruptable {
   }
 
   public void cutControlFlow() throws InterruptedException {
-
     try {
       throwsInterruptedException();
     } catch (InterruptedException e) { // Noncompliant, because neither foo nor bar belong to the control flow of this catch block.
@@ -359,11 +356,74 @@ class Interruptable {
     try {
       throwsInterruptedException();
     } catch (InterruptedException e) { // Noncompliant, because neither foo, nor bar belong to the control flow of this catch block.
-        Runnable foo = () -> Thread.currentThread().interrupt();
-        Action bar = () -> {
-          throw new InterruptedException();
-        };
+      Runnable foo = () -> Thread.currentThread().interrupt();
+      Action bar = () -> {
+        throw new InterruptedException();
+      };
     }
+  }
+
+  void falsePositivesSonarjava4406() {
+    try {
+      try {
+        throwsInterruptedException();
+      } catch (InterruptedException ie) { // Noncompliant, because interruption state is lost.
+      }
+    } catch (Exception e) { // Compliant, because inner try does not throw an InterruptedException
+    }
+
+    try {
+      try {
+        throwsInterruptedException();
+      } catch (InterruptedException ie) { // Compliant
+        Thread.currentThread().interrupt();
+      }
+    } catch (Exception e) { // Compliant, because inner try does not throw an InterruptedException
+    }
+
+    try {
+      try {
+        throwsInterruptedException();
+      } catch (InterruptedException ie) { // Compliant
+        throw new InterruptedException();
+      }
+    } catch (InterruptedException e) { // Noncompliant, because explicitly catch InterruptedException
+    }
+
+    try {
+      try {
+        throwsInterruptedException();
+      } catch (RuntimeException ie) { // Compliant
+      }
+    } catch (Exception e) { // Noncompliant, because inner try may throw an InterruptedException
+    }
+
+  }
+
+  public void throwInterruptedExceptionFromResourceList() throws InterruptedException {
+    try {
+      try(AutoCloseable autocloseable = getAutoCloseableThrowsInterruptedException()) {
+        doSomething();
+      } catch (IOException ie) {
+        doSomething();
+      }
+    } catch (Exception e) { // Noncompliant
+    }
+  }
+
+  public void throwInterruptedExceptionWithinThrowStatement() throws InterruptedException {
+    try {
+      throw getRuntimeExceptionThrowsInterruptedException();
+    } catch (Exception e) { // Noncompliant
+    }
+  }
+
+  private AutoCloseable getAutoCloseableThrowsInterruptedException() throws InterruptedException {
+    throw getInterruptedException();
+  }
+
+  private RuntimeException getRuntimeExceptionThrowsInterruptedException() throws InterruptedException {
+    throw getInterruptedException();
   }
 
   @FunctionalInterface
@@ -414,15 +474,11 @@ class Interruptable {
     throw new CustomizedInterruptedException();
   }
 
-  public void throwsException() throws Exception {
+  public static void throwsException() throws Exception {
     throw new Exception();
   }
 
-  public void throwsInterruptedException() throws InterruptedException {
-    throw new InterruptedException();
-  }
-
-  public void throwsCustomizedInterruptedException() throws InterruptedException {
+  public static void throwsInterruptedException() throws InterruptedException {
     throw new InterruptedException();
   }
 
