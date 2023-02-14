@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.spring;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -37,20 +36,24 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
     return Collections.singletonList(Tree.Kind.METHOD);
   }
 
-  private static final List<String> REQUEST_ANNOTATIONS = Arrays.asList(
+  private static final List<String> REQUEST_ANNOTATIONS = List.of(
     "org.springframework.web.bind.annotation.RequestMapping",
     "org.springframework.web.bind.annotation.GetMapping",
     "org.springframework.web.bind.annotation.PostMapping",
     "org.springframework.web.bind.annotation.PutMapping",
     "org.springframework.web.bind.annotation.DeleteMapping",
-    "org.springframework.web.bind.annotation.PatchMapping");
+    "org.springframework.web.bind.annotation.PatchMapping"
+  );
 
-  private static final List<String> ENTITY_ANNOTATIONS = Arrays.asList(
+  private static final List<String> ENTITY_ANNOTATIONS = List.of(
     "javax.persistence.Entity",
     "org.springframework.data.mongodb.core.mapping.Document",
-    "org.springframework.data.elasticsearch.annotations.Document");
+    "org.springframework.data.elasticsearch.annotations.Document"
+  );
 
   private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
+
+  private static final String JSON_CREATOR_ANNOTATION = "com.fasterxml.jackson.annotation.JsonCreator";
 
   @Override
   public void visitNode(Tree tree) {
@@ -61,6 +64,7 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
       methodTree.parameters().stream()
         .filter(PersistentEntityUsedAsRequestParameterCheck::hasNoPathVariableAnnotation)
         .filter(PersistentEntityUsedAsRequestParameterCheck::isPersistentEntity)
+        .filter(PersistentEntityUsedAsRequestParameterCheck::hasNoCustomSerialization)
         .forEach(p -> reportIssue(p.simpleName(), "Replace this persistent entity with a simple POJO or DTO object."));
     }
   }
@@ -75,5 +79,10 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
 
   private static boolean hasNoPathVariableAnnotation(VariableTree variableTree) {
     return !variableTree.symbol().metadata().isAnnotatedWith(PATH_VARIABLE_ANNOTATION);
+  }
+
+  private static boolean hasNoCustomSerialization(VariableTree variableTree) {
+    Symbol.TypeSymbol entitySymbol = variableTree.type().symbolType().symbol();
+    return entitySymbol.memberSymbols().stream().noneMatch(member -> member.isMethodSymbol() && member.metadata().isAnnotatedWith(JSON_CREATOR_ANNOTATION));
   }
 }
