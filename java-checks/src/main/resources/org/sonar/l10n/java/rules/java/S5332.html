@@ -68,7 +68,7 @@ ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.CLEARTEXT) // Se
   .build();
 </pre>
 <p>Android WebView can be configured to allow a secure origin to load content from any other origin, even if that origin is insecure (mixed
-content);</p>
+content):</p>
 <pre>
 import android.webkit.WebView
 
@@ -79,22 +79,22 @@ webView.getSettings().setMixedContentMode(MIXED_CONTENT_ALWAYS_ALLOW); // Sensit
 <p>Use instead these clients from <a href="https://commons.apache.org/proper/commons-net/">Apache commons net</a> and <a
 href="http://www.jcraft.com/jsch/">JSch/ssh</a> library:</p>
 <pre>
-JSch jsch = new JSch(); // Compliant
+JSch jsch = new JSch();
 
 if(implicit) {
   // implicit mode is considered deprecated but offer the same security than explicit mode
-  FTPSClient ftpsClient = new FTPSClient(true); // Compliant
+  FTPSClient ftpsClient = new FTPSClient(true);
 }
 else {
-  FTPSClient ftpsClient = new FTPSClient(); // Compliant
+  FTPSClient ftpsClient = new FTPSClient();
 }
 
 if(implicit) {
   // implicit mode is considered deprecated but offer the same security than explicit mode
-  SMTPSClient smtpsClient = new SMTPSClient(true); // Compliant
+  SMTPSClient smtpsClient = new SMTPSClient(true);
 }
 else {
-  SMTPSClient smtpsClient = new SMTPSClient(); // Compliant
+  SMTPSClient smtpsClient = new SMTPSClient();
   smtpsClient.connect("127.0.0.1", 25);
   if (smtpsClient.execTLS()) {
     // commands
@@ -103,10 +103,10 @@ else {
 </pre>
 <p>Perform HTTP encrypted connections, with <a href="https://square.github.io/okhttp/https/">okhttp</a> library for instance:</p>
 <pre>
-ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS) // Compliant
+ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
   .build();
 </pre>
-<p>The most secure mode for Android WebView is <code>MIXED_CONTENT_NEVER_ALLOW</code>;</p>
+<p>The most secure mode for Android WebView is <code>MIXED_CONTENT_NEVER_ALLOW</code>:</p>
 <pre>
 import android.webkit.WebView
 

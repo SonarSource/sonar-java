@@ -14,5 +14,5 @@
   "ruleSpecification": "RSPEC-5810",
   "sqKey": "S5810",
   "scope": "Tests",
-  "quickfix": "unknown"
+  "quickfix": "covered"
 }
