@@ -92,7 +92,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
   private static MethodInvocationTree findLastSuperFinalizeInvocation(BlockTree blockTree) {
     FindLastSuperFinalizeInvocationVisitor visitor = new FindLastSuperFinalizeInvocationVisitor();
     blockTree.accept(visitor);
-    return visitor.getLastSuperFinalizeInvocation();
+    return visitor.lastSuperFinalizeInvocation;
   }
 
   private static boolean isLastStatement(BlockTree blockTree, MethodInvocationTree lastStatementTree) {
@@ -119,12 +119,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
   private static class FindLastSuperFinalizeInvocationVisitor extends BaseTreeVisitor {
 
     @Nullable
-    private MethodInvocationTree lastSuperFinalizeInvocation;
-
-    @Nullable
-    MethodInvocationTree getLastSuperFinalizeInvocation() {
-      return lastSuperFinalizeInvocation;
-    }
+    public MethodInvocationTree lastSuperFinalizeInvocation;
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
