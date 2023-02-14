@@ -37,6 +37,8 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S1132")
 public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor {
 
+  private static final int MESSAGE_ARG_MAX_LENGTH = 10;
+
   @Override
   public List<Kind> nodesToVisit() {
     return Collections.singletonList(Kind.METHOD_INVOCATION);
@@ -48,37 +50,33 @@ public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor 
   }
 
   private void check(MethodInvocationTree tree) {
-    if (isEquals(tree.methodSelect()) && tree.arguments().size() == 1 && tree.arguments().get(0).is(Kind.STRING_LITERAL)) {
+    if (tree.methodSelect() instanceof MemberSelectExpressionTree && isEquals(tree)) {
       LiteralTree stringLiteral = (LiteralTree) tree.arguments().get(0);
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
-        .onTree(stringLiteral)
-        .withMessage("Move the " + stringLiteral.value() + " string literal on the left side of this string comparison.")
-        .withQuickFix(() -> computeQuickFix(tree))
-        .report();
+      ExpressionTree leftSideMember = ((MemberSelectExpressionTree) tree.methodSelect()).expression();
+      if (!leftSideMember.is(Kind.STRING_LITERAL)) {
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(stringLiteral)
+          .withMessage("Move the " + stringLiteral.value() + " string literal on the left side of this string comparison.")
+          .withQuickFix(() -> computeQuickFix(stringLiteral, leftSideMember))
+          .report();
+      }
     }
   }
 
-  private static boolean isEquals(ExpressionTree tree) {
-    if (tree.is(Kind.IDENTIFIER)) {
-      return isEquals((IdentifierTree) tree);
-    } else if (tree.is(Kind.MEMBER_SELECT)) {
-      return isEquals(((MemberSelectExpressionTree) tree).identifier());
-    } else {
-      return false;
-    }
+  private static boolean isEquals(MethodInvocationTree tree) {
+    IdentifierTree identifier = ((MemberSelectExpressionTree) tree.methodSelect()).identifier();
+    return isNamedEquals(identifier) && tree.arguments().size() == 1 && tree.arguments().get(0).is(Kind.STRING_LITERAL);
   }
 
-  private static boolean isEquals(IdentifierTree tree) {
+  private static boolean isNamedEquals(IdentifierTree tree) {
     return "equals".equals(tree.name()) ||
       "equalsIgnoreCase".equals(tree.name());
   }
 
-  private JavaQuickFix computeQuickFix(MethodInvocationTree tree) {
-    Tree equalsArgument = tree.arguments().get(0);
+  private JavaQuickFix computeQuickFix(LiteralTree equalsArgument, ExpressionTree leftSideMember) {
     String equalsParameterValue = QuickFixHelper.contentForTree(equalsArgument, context);
     String quickFixMessage = String.format("Move %s on the left side of .equals", cutTooLongString(equalsParameterValue));
-    Tree leftSideMember = ((MemberSelectExpressionTree) tree.methodSelect()).expression();
     return JavaQuickFix.newQuickFix(quickFixMessage)
       .addTextEdit(JavaTextEdit.replaceTree(equalsArgument, QuickFixHelper.contentForTree(leftSideMember, context)))
       .addTextEdit(JavaTextEdit.replaceTree(leftSideMember, equalsParameterValue))
@@ -86,7 +84,7 @@ public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor 
   }
 
   private static String cutTooLongString(String s) {
-    return s.length() > 10 ? (s.substring(0, 10) + "\"...") : s;
+    return s.length() > MESSAGE_ARG_MAX_LENGTH ? (s.substring(0, MESSAGE_ARG_MAX_LENGTH) + "\"...") : s;
   }
 
 }
