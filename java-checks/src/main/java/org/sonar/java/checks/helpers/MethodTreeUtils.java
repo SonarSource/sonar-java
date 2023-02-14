@@ -139,7 +139,7 @@ public final class MethodTreeUtils {
   }
 
   public static class MethodInvocationCollector extends BaseTreeVisitor {
-    private final List<Tree> invocationTree = new ArrayList<>();
+    protected final List<Tree> invocationTree = new ArrayList<>();
     private final Predicate<Symbol.MethodSymbol> collectPredicate;
 
     public MethodInvocationCollector(Predicate<Symbol.MethodSymbol> collectPredicate) {
