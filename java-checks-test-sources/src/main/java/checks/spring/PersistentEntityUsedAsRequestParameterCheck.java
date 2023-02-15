@@ -2,6 +2,8 @@ package checks.spring;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -111,6 +113,56 @@ class PersistentEntityUsedAsRequestParameterCheck {
 
     @DeleteMapping
     public void ok5(Bar bar) {
+    }
+  }
+
+  @Entity
+  class Wish {
+    @Id
+    private Long id;
+
+    @JsonCreator
+    public static Wish fromJsonNode() {
+      return null;
+    }
+
+    public void setId(Long id) {
+      this.id = id;
+    }
+
+    public Long getId() {
+      return id;
+    }
+  }
+
+  @Entity
+  class WishConstruct {
+    @Id
+    private Long id;
+
+    @JsonCreator
+    public WishConstruct() {
+    }
+
+    public void setId(Long id) {
+      this.id = id;
+    }
+
+    public Long getId() {
+      return id;
+    }
+  }
+
+  @Controller
+  class WishListController {
+    @PostMapping(path = "/saveForLater")
+    public String saveForLater(Wish wish) {  // Compliant, Wish has annotated static method
+      return "";
+    }
+
+    @PostMapping(path = "/saveForLater2")
+    public String saveForLater2(WishConstruct wish) { // Compliant, WishConstruct has annotated constructor
+      return "";
     }
   }
 }
