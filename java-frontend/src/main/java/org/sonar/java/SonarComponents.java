@@ -40,6 +40,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.caching.CacheContextImpl;
+import org.sonar.java.caching.ContentHashCache;
 import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -95,7 +96,6 @@ public class SonarComponents {
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
-  public static final String CONTENT_HASH_MD_5 = "java:contentHash:md5";
   @VisibleForTesting
   static LongSupplier maxMemoryInBytesProvider = () -> Runtime.getRuntime().maxMemory();
 
@@ -115,7 +115,6 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
 
-  private JavaWriteCache writeCache;
   private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
 
   private boolean alreadyLoggedSkipStatus = false;
@@ -169,9 +168,6 @@ public class SonarComponents {
         registerMainCheckClasses(registrarContext.repositoryKey(), checkClasses);
         registerTestCheckClasses(registrarContext.repositoryKey(), testCheckClasses);
       }
-    }
-    if (context != null && context.isCacheEnabled()) {
-      writeCache = CacheContextImpl.of(context).getWriteCache();
     }
   }
 
@@ -458,7 +454,6 @@ public class SonarComponents {
   public boolean fileCanBeSkipped(InputFile inputFile) {
     if (inputFile instanceof GeneratedFile) {
       // Generated files should not be skipped as we cannot assess the change status of the source file
-      writeToCache(inputFile);
       return false;
     }
     boolean canSkipInContext;
@@ -481,50 +476,16 @@ public class SonarComponents {
         );
         alreadyLoggedSkipStatus = true;
       }
-      writeToCache(inputFile);
+      ContentHashCache.getInstance(context).writeToCache(inputFile);
       return false;
     }
     if(!canSkipInContext) {
-      writeToCache(inputFile);
+      ContentHashCache.getInstance(context).writeToCache(inputFile);
       return false;
     }
-    JavaReadCache readCache = CacheContextImpl.of(context).getReadCache();
-    try {
-      byte[] fileHash = readCache.readBytes(CONTENT_HASH_MD_5 + inputFile.key());
-      LOG.debug("Reading cache for the file {}", inputFile.key());
-      byte[] bytes = FileHashingUtils.inputFileContentHash(inputFile);
-      boolean isHashEqual = MessageDigest.isEqual(fileHash, bytes);
-      if (isHashEqual) {
-        copyFromPrevious(inputFile);
-      } else {
-        writeToCache(inputFile);
-      }
-      return isHashEqual;
-    } catch (IOException | NoSuchAlgorithmException e) {
-      throw new AnalysisException("Failed to compute content hash for file {}" + inputFile.key());
-    }
+    return ContentHashCache.getInstance(context).hasSameHashCached(inputFile);
   }
 
-  private void copyFromPrevious(InputFile inputFile) {
-    if (writeCache != null) {
-      LOG.debug("Coping cache from previous for file {}", inputFile.key());
-      writeCache.copyFromPrevious(CONTENT_HASH_MD_5 + inputFile.key());
-    }
-  }
-
-  private void writeToCache(InputFile inputFile) {
-    if (writeCache != null) {
-      LOG.debug("Writing to the cache for file {}", inputFile.key());
-      String cacheKey = CONTENT_HASH_MD_5 + inputFile.key();
-      try {
-        writeCache.write(cacheKey, FileHashingUtils.inputFileContentHash(inputFile));
-      } catch (IllegalArgumentException e) {
-        LOG.debug("Tried to write multiple times to cache key '%s'. Ignoring writes after the first.", cacheKey);
-      } catch (IOException | NoSuchAlgorithmException e) {
-        LOG.debug("Failed to compute content hash for file {}", inputFile.key());
-      }
-    }
-  }
 
   public InputComponent project() {
     return context.project();

@@ -19,8 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,15 +33,14 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
+import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalInputFile;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
-import org.sonar.plugins.java.api.InputFileScannerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.in;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -124,12 +126,19 @@ class MissingPackageInfoCheckTest {
   }
 
   @Test
-  void cache_deserialization_throws_IOException() throws IOException {
+  void cache_deserialization_throws_IOException() throws IOException, NoSuchAlgorithmException {
+    InputFile cachedFile = InternalInputFile
+      .inputFile("", new File(mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")), InputFile.Status.SAME);
+    byte[] cachedHash = FileHashingUtils.inputFileContentHash(cachedFile);
     var inputStream = mock(InputStream.class);
     doThrow(new IOException()).when(inputStream).readAllBytes();
     var readCache = mock(ReadCache.class);
-    doReturn(inputStream).when(readCache).read(any());
+    InternalWriteCache writeCache = new InternalWriteCache();
+    writeCache.bind(readCache);
+    doReturn(inputStream).when(readCache).read("java:S1228;S4032:package:"+cachedFile.key());
     doReturn(true).when(readCache).contains(any());
+    doReturn(new ByteArrayInputStream(cachedHash))
+      .when(readCache).read("java:contentHash:MD5:"+cachedFile.key());
 
     var verifier = CheckVerifier.newVerifier()
       .withCache(readCache, writeCache)
@@ -159,12 +168,21 @@ class MissingPackageInfoCheckTest {
   }
 
   @Test
-  void emptyCache() {
+  void emptyCache() throws NoSuchAlgorithmException, IOException {
     logTester.setLevel(LoggerLevel.TRACE);
+    InputFile cachedFile = InternalInputFile
+      .inputFile("", new File(mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")), InputFile.Status.SAME);
+    byte[] cachedHash = FileHashingUtils.inputFileContentHash(cachedFile);
+    InternalReadCache readCache = new InternalReadCache();
+    readCache.put("java:contentHash:MD5:"+cachedFile.key(), cachedHash);
+    InternalWriteCache writeCache = new InternalWriteCache();
+    writeCache.bind(readCache);
+
     verifier
       .addFiles(InputFile.Status.SAME,
         mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")
       )
+      .withCache(readCache, writeCache)
       .withCheck(new MissingPackageInfoCheck())
       .verifyNoIssues();
 

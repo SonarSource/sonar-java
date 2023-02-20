@@ -21,8 +21,12 @@ package org.sonar.java.caching;
 
 import org.sonar.api.batch.fs.InputFile;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -31,11 +35,19 @@ public class FileHashingUtils {
   private FileHashingUtils() {
   }
 
-  private static final String HASH_ALGORITHM = "MD5";
+  public static final String HASH_ALGORITHM = "MD5";
 
   public static byte[] inputFileContentHash(InputFile inputFile) throws IOException, NoSuchAlgorithmException {
     byte[] contentBytes = inputFile.contents().getBytes(StandardCharsets.UTF_8);
     MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGORITHM);
     return messageDigest.digest(contentBytes);
   }
+
+  public static byte[] inputFileContentHash(String filepath) throws IOException, NoSuchAlgorithmException {
+     File file = new File(filepath);
+     String contents = new String(Files.readAllBytes(file.toPath()), UTF_8);
+     MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGORITHM);
+     return messageDigest.digest(contents.getBytes());
+  }
+
 }
