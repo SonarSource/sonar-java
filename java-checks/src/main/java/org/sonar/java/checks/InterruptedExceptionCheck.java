@@ -179,6 +179,15 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
       scan(tryStatementTree.catches());
       scan(tryStatementTree.finallyBlock());
     }
+
+    @Override
+    public void visitThrowStatement(ThrowStatementTree tree) {
+      // besides to method invocation, we also need to collect throw statements
+      if (isInterruptingExceptionExpression(tree.expression())) {
+        invocationTree.add(tree);
+      }
+      super.visitThrowStatement(tree);
+    }
   }
 
   private static class BlockVisitor extends BaseTreeVisitor {

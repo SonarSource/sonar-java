@@ -363,6 +363,29 @@ class Interruptable {
     }
   }
 
+  public void throwExceptionInTryDirectly() throws InterruptedException {
+    try {
+      throw new RuntimeException();
+    } catch (Exception e) { // Compliant
+    }
+
+    try {
+      throw new InterruptedException();
+    } catch (Exception e) { // Noncompliant
+    }
+
+    try {
+      InterruptedException ie = new InterruptedException();
+      throw ie;
+    } catch (Exception e) { // Noncompliant
+    }
+
+    try {
+      throw getInterruptedException();
+    } catch (Exception e) { // Noncompliant
+    }
+  }
+
   void falsePositivesSonarjava4406() {
     try {
       try {
@@ -379,6 +402,15 @@ class Interruptable {
         Thread.currentThread().interrupt();
       }
     } catch (Exception e) { // Compliant, because inner try does not throw an InterruptedException
+    }
+
+    try {
+      try {
+        throwsInterruptedException();
+      } catch (InterruptedException ie) { // Compliant
+        throw new InterruptedException();
+      }
+    } catch (Exception e) { // Noncompliant, because inner try throws an InterruptedException
     }
 
     try {
