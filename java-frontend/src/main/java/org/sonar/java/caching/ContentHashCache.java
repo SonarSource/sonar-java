@@ -66,6 +66,7 @@ public class ContentHashCache {
       return isHashEqual;
     } catch (IllegalArgumentException e) {
       LOG.error(String.format("Could not find key %s in the cache", cacheKey));
+      writeToCache(inputFile);
     } catch (IOException | NoSuchAlgorithmException e) {
       LOG.error(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
     }
