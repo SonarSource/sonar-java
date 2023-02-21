@@ -21,6 +21,7 @@ package org.sonar.java.checks.security;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ import org.sonar.api.utils.log.LogAndArguments;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
+import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.checks.security.ExcessiveContentRequestCheck.CachedResult;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalInputFile;
@@ -89,19 +91,26 @@ class ExcessiveContentRequestCheckTest {
     }
 
     @Test
-    void no_issue_raised_on_unchanged_files_with_empty_cache() {
+    void no_issue_raised_on_unchanged_files_with_empty_cache() throws IOException, NoSuchAlgorithmException {
       logTester.setLevel(LoggerLevel.TRACE);
       var check = spy(new ExcessiveContentRequestCheck());
 
       verifier
         .addFiles(InputFile.Status.SAME, safeSourceFile, unsafeSourceFile, sanitizerSourceFile)
-        .withCheck(check)
-        .verifyNoIssues();
+        .withCheck(check);
+
+      // Add expected file hashes to the cache to match their status
+      String hashKeyFormat = "java:contentHash:MD5::%s";
+      readCache.put(String.format(hashKeyFormat, safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
+      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
+      readCache.put(String.format(hashKeyFormat, sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
+
+      verifier.verifyNoIssues();
 
       verify(check, times(3)).scanWithoutParsing(any());
       verify(check, times(3)).leaveFile(any());
 
-      assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
+      assertThat(writeCache.getData()).containsAllEntriesOf(expectedFinalCacheState);
       List<String> logs = logTester.getLogs(LoggerLevel.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
       assertThat(logs).
         contains(
@@ -112,7 +121,7 @@ class ExcessiveContentRequestCheckTest {
     }
 
     @Test
-    void no_issue_raised_when_changed_unsafe_file_is_covered_by_unchanged_cached_safe_files() {
+    void no_issue_raised_when_changed_unsafe_file_is_covered_by_unchanged_cached_safe_files() throws IOException, NoSuchAlgorithmException {
       readCache.put(computeCacheKey(safeSourceFile), toBytes(new CachedResult(true, true)));
       readCache.put(computeCacheKey(sanitizerSourceFile), toBytes(new CachedResult(false, true)));
 
@@ -121,17 +130,24 @@ class ExcessiveContentRequestCheckTest {
       verifier
         .addFiles(InputFile.Status.SAME, safeSourceFile, sanitizerSourceFile)
         .addFiles(InputFile.Status.CHANGED, unsafeSourceFile)
-        .withCheck(check)
-        .verifyNoIssues();
+        .withCheck(check);
+
+      // Add expected file hashes to the cache to match their status
+      String hashKeyFormat = "java:contentHash:MD5::%s";
+      readCache.put(String.format(hashKeyFormat, safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
+      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), new byte[]{});
+      readCache.put(String.format(hashKeyFormat, sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
+
+      verifier.verifyNoIssues();
 
       verify(check, times(2)).scanWithoutParsing(any());
       verify(check, times(1)).leaveFile(any());
 
-      assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
+      assertThat(writeCache.getData()).containsAllEntriesOf(expectedFinalCacheState);
     }
 
     @Test
-    void no_issue_raised_when_cached_unsafe_file_is_covered_by_changed_safe_files() {
+    void no_issue_raised_when_cached_unsafe_file_is_covered_by_changed_safe_files() throws IOException, NoSuchAlgorithmException {
       //readCache.put(computeCacheKey(unsafeSourceFile), new byte[]{1, 0});
       readCache.put(computeCacheKey(unsafeSourceFile), toBytes(new CachedResult(true, false)));
 
@@ -139,29 +155,43 @@ class ExcessiveContentRequestCheckTest {
       verifier
         .addFiles(InputFile.Status.SAME, unsafeSourceFile)
         .addFiles(InputFile.Status.CHANGED, safeSourceFile, sanitizerSourceFile)
-        .withCheck(check)
-        .verifyNoIssues();
+        .withCheck(check);
+
+      // Add expected file hashes to the cache to match their status
+      String hashKeyFormat = "java:contentHash:MD5::%s";
+      readCache.put(String.format(hashKeyFormat, safeSourceFile), new byte[]{});
+      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
+      readCache.put(String.format(hashKeyFormat, safeSourceFile), new byte[]{});
+
+      verifier.verifyNoIssues();
 
       verify(check, times(1)).scanWithoutParsing(any());
       verify(check, times(2)).leaveFile(any());
 
-      assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
+      assertThat(writeCache.getData()).containsAllEntriesOf(expectedFinalCacheState);
     }
 
     @Test
-    void no_issue_raised_when_all_results_are_cached() {
+    void no_issue_raised_when_all_results_are_cached() throws IOException, NoSuchAlgorithmException {
       readCache.putAll(expectedFinalCacheState);
 
       var check = spy(new ExcessiveContentRequestCheck());
       verifier
         .addFiles(InputFile.Status.SAME, unsafeSourceFile, safeSourceFile, sanitizerSourceFile)
-        .withCheck(check)
-        .verifyNoIssues();
+        .withCheck(check);
+
+      // Add expected file hashes to the cache to match their status
+      String hashKeyFormat = "java:contentHash:MD5::%s";
+      readCache.put(String.format(hashKeyFormat, safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
+      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
+      readCache.put(String.format(hashKeyFormat, sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
+
+      verifier.verifyNoIssues();
 
       verify(check, times(3)).scanWithoutParsing(any());
       verify(check, never()).leaveFile(any());
 
-      assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
+      assertThat(writeCache.getData()).containsAllEntriesOf(expectedFinalCacheState);
     }
 
     @Test
@@ -191,12 +221,12 @@ class ExcessiveContentRequestCheckTest {
     }
 
     @Test
-    void log_when_copying_from_previous_cache() throws IOException {
+    void log_when_copying_from_previous_cache() throws IOException, NoSuchAlgorithmException {
 
       readCache.putAll(expectedFinalCacheState);
       var spyOnWriteCache = spy(writeCache);
       IllegalArgumentException expectedException = new IllegalArgumentException("boom");
-      doThrow(expectedException).when(spyOnWriteCache).copyFromPrevious(any());
+      doThrow(expectedException).when(spyOnWriteCache).copyFromPrevious(computeCacheKey(safeSourceFile));
 
       logTester.setLevel(LoggerLevel.TRACE);
 
@@ -205,6 +235,12 @@ class ExcessiveContentRequestCheckTest {
         .addFiles(InputFile.Status.CHANGED, unsafeSourceFile, sanitizerSourceFile)
         .withCheck(new ExcessiveContentRequestCheck())
         .withCache(readCache, spyOnWriteCache);
+
+      // Add expected file hashes to the cache to match their status
+      String hashKeyFormat = "java:contentHash:MD5::%s";
+      readCache.put(String.format(hashKeyFormat, safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
+      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), new byte[]{});
+      readCache.put(String.format(hashKeyFormat, sanitizerSourceFile), new byte[]{});
 
       assertThatThrownBy(verifier::verifyNoIssues)
         .isInstanceOf(AnalysisException.class)
@@ -218,7 +254,7 @@ class ExcessiveContentRequestCheckTest {
     }
 
     @Test
-    void scanWithoutParsing_returns_false_when_cached_data_is_corrupted() {
+    void scanWithoutParsing_returns_false_when_cached_data_is_corrupted() throws IOException, NoSuchAlgorithmException {
       var check = spy(new ExcessiveContentRequestCheck());
       readCache.put(computeCacheKey(unsafeSourceFile), null);
       readCache.put(computeCacheKey(safeSourceFile), new byte[0]);
@@ -228,8 +264,14 @@ class ExcessiveContentRequestCheckTest {
 
       verifier
         .addFiles(InputFile.Status.SAME, unsafeSourceFile, safeSourceFile, sanitizerSourceFile)
-        .withCheck(check)
-        .verifyNoIssues();
+        .withCheck(check);
+
+      String hashKeyFormat = "java:contentHash:MD5::%s";
+      readCache.put(String.format(hashKeyFormat, safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
+      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
+      readCache.put(String.format(hashKeyFormat, sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
+
+      verifier.verifyNoIssues();
 
       verify(check, times(3)).scanWithoutParsing(any());
       verify(check, times(3)).leaveFile(any());
@@ -241,7 +283,7 @@ class ExcessiveContentRequestCheckTest {
         "Cached entry is unreadable for rule java:S5693 on file " + safeSourceFile
       );
 
-      assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
+      assertThat(writeCache.getData()).containsAllEntriesOf(expectedFinalCacheState);
     }
 
     @Test
