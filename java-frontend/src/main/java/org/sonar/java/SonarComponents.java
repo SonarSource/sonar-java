@@ -452,6 +452,7 @@ public class SonarComponents {
 
 
   public boolean fileCanBeSkipped(InputFile inputFile) {
+    var contentHashCache = new ContentHashCache(context);
     if (inputFile instanceof GeneratedFile) {
       // Generated files should not be skipped as we cannot assess the change status of the source file
       return false;
@@ -476,14 +477,14 @@ public class SonarComponents {
         );
         alreadyLoggedSkipStatus = true;
       }
-      ContentHashCache.getInstance(context).writeToCache(inputFile);
+      contentHashCache.writeToCache(inputFile);
       return false;
     }
     if(!canSkipInContext) {
-      ContentHashCache.getInstance(context).writeToCache(inputFile);
+      contentHashCache.writeToCache(inputFile);
       return false;
     }
-    return ContentHashCache.getInstance(context).hasSameHashCached(inputFile);
+    return contentHashCache.hasSameHashCached(inputFile);
   }
 
 

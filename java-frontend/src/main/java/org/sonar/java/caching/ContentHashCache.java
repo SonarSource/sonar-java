@@ -35,24 +35,16 @@ public class ContentHashCache {
   private static final String CONTENT_HASH_KEY = String.format("java:contentHash:%s:", FileHashingUtils.HASH_ALGORITHM);
   private static final String HASH_COMPUTE_FAIL_MSG = "Failed to compute content hash for file %s";
   
-  private static ContentHashCache instance;
   private ReadCache readCache;
   private WriteCache writeCache;
   private boolean enabled = false;
   
-  private ContentHashCache(SensorContext context) {
+  public ContentHashCache(SensorContext context) {
     enabled = context.isCacheEnabled();
     if(enabled) {
       readCache = context.previousCache();
       writeCache = context.nextCache();
     }
-  }
-  
-  public static ContentHashCache getInstance(SensorContext context) {
-    if(instance == null) {
-      instance = new ContentHashCache(context);
-    }
-    return instance;
   }
 
   public boolean hasSameHashCached(InputFile inputFile) {
