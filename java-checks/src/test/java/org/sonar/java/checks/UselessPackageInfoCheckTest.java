@@ -19,8 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -29,7 +31,8 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
-import org.sonar.java.caching.CacheReadException;
+import org.sonar.java.caching.FileHashingUtils;
+import org.sonar.java.checks.helpers.HashCacheTestHelper;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
@@ -106,19 +109,24 @@ class UselessPackageInfoCheckTest {
 
   @Test
   void caching() throws IOException, ClassNotFoundException {
+    String changedFilePath1 = mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/package-info.java");
+    String changedFilePath2 = mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java");
     verifier
       .onFiles(
         mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"),
         mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld2.java"),
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/package-info.java"),
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java")
+        changedFilePath1,
+        changedFilePath2
       )
       .withCheck(new UselessPackageInfoCheck())
+      .withCache(readCache, writeCache)
       .verifyIssueOnFile("Remove this package.");
 
     var check = spy(new UselessPackageInfoCheck());
 
     var populatedReadCache = new InternalReadCache().putAll(writeCache);
+    populatedReadCache.put(HashCacheTestHelper.contentHashKey(changedFilePath1), new byte[0]);
+    populatedReadCache.put(HashCacheTestHelper.contentHashKey(changedFilePath2), new byte[0]);
     var writeCache2 = new InternalWriteCache().bind(populatedReadCache);
     CheckVerifier.newVerifier()
       .withCache(populatedReadCache, writeCache2)
@@ -127,8 +135,8 @@ class UselessPackageInfoCheckTest {
         mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld2.java")
       )
       .addFiles(InputFile.Status.CHANGED,
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/package-info.java"),
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java")
+        changedFilePath1,
+        changedFilePath2
       )
       .withCheck(check)
       .verifyIssueOnFile("Remove this package.");
@@ -136,23 +144,28 @@ class UselessPackageInfoCheckTest {
     verify(check, times(2)).scanFile(any());
     verify(check, times(2)).scanWithoutParsing(any());
     assertThat(writeCache2.getData())
-      .hasSize(4)
+      .hasSizeGreaterThanOrEqualTo(4)
       .containsExactlyInAnyOrderEntriesOf(writeCache.getData());
   }
 
   @Test
-  void cache_deserialization_throws_IOException() throws IOException {
+  void cache_deserialization_throws_IOException() throws IOException, NoSuchAlgorithmException {
     var inputStream = mock(InputStream.class);
     doThrow(new IOException()).when(inputStream).readAllBytes();
-    var readCache = mock(ReadCache.class);
-    doReturn(inputStream).when(readCache).read(any());
-    doReturn(true).when(readCache).contains(any());
+    var localReadCache = mock(ReadCache.class);
+    
+    String filePath = mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java");
+    InputFile cachedFile = HashCacheTestHelper.inputFileFromPath(filePath);
+    byte[] cachedHash = FileHashingUtils.inputFileContentHash(cachedFile);
+    
+    doReturn(inputStream).when(localReadCache).read("java:S1228;S4032:package:"+cachedFile.key());
+    doReturn(true).when(localReadCache).contains(any());
+    doReturn(new ByteArrayInputStream(cachedHash))
+    .when(localReadCache).read("java:contentHash:MD5:"+cachedFile.key());
 
     var verifier = CheckVerifier.newVerifier()
-      .withCache(readCache, writeCache)
-      .addFiles(InputFile.Status.SAME,
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
-      )
+      .withCache(localReadCache, new InternalWriteCache().bind(localReadCache))
+      .addFiles(InputFile.Status.SAME, filePath)
       .withCheck(new UselessPackageInfoCheck());
 
     assertThatThrownBy(verifier::verifyNoIssues)
@@ -176,13 +189,14 @@ class UselessPackageInfoCheckTest {
   }
 
   @Test
-  void emptyCache() {
+  void emptyCache() throws NoSuchAlgorithmException, IOException {
     logTester.setLevel(LoggerLevel.TRACE);
+    String filePath = mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java");
+    ReadCache populatedReadCache = HashCacheTestHelper.internalReadCacheFromFile(filePath);
     verifier
-      .addFiles(InputFile.Status.SAME,
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
-      )
+      .addFiles(InputFile.Status.SAME, filePath)
       .withCheck(new UselessPackageInfoCheck())
+      .withCache(populatedReadCache, new InternalWriteCache().bind(populatedReadCache))
       .verifyNoIssues();
 
     assertThat(logTester.logs(LoggerLevel.TRACE).stream()

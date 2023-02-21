@@ -19,8 +19,10 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +35,8 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
+import org.sonar.java.caching.FileHashingUtils;
+import org.sonar.java.checks.helpers.HashCacheTestHelper;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
@@ -142,7 +146,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
   }
 
   @Test
-  void caching() {
+  void caching() throws NoSuchAlgorithmException, IOException {
     var unchangedFiles = Stream.of(
       "app/SpringBootApp1.java",
       "fourthApp/SpringBootApp4.java"
@@ -155,22 +159,29 @@ class SpringBeansShouldBeAccessibleCheckTest {
       "Ko/Ko.java"
     ).map(path -> mainCodeSourcesPath(BASE_PATH + "springBootApplication/" + path)).collect(Collectors.toList());
 
+    ReadCache existingReadCache = HashCacheTestHelper.internalReadCacheFromFiles(unchangedFiles);
+    writeCache.bind(existingReadCache);
     var check = spy(new SpringBeansShouldBeAccessibleCheck());
     verifier
       .addFiles(InputFile.Status.SAME, unchangedFiles)
       .addFiles(InputFile.Status.CHANGED, changedFiles)
       .withCheck(check)
+      .withCache(existingReadCache, writeCache)
       .verifyIssues();
 
     verify(check, times(15)).visitNode(any());
     verify(check, times(2)).scanWithoutParsing(any());
     assertThat(writeCache.getData())
-      .hasSize(7);
+      .hasSizeGreaterThanOrEqualTo(7);
 
 
     check = spy(new SpringBeansShouldBeAccessibleCheck());
 
     var populatedReadCache = new InternalReadCache().putAll(writeCache);
+    for(String changedFile : changedFiles) {
+      populatedReadCache.put(HashCacheTestHelper.contentHashKey(changedFile), 
+        HashCacheTestHelper.getSlightlyDifferentContentHash(changedFile));
+    }
     var finalWriteCache = new InternalWriteCache().bind(populatedReadCache);
     CheckVerifier.newVerifier()
       .withCache(populatedReadCache, finalWriteCache)
@@ -182,23 +193,28 @@ class SpringBeansShouldBeAccessibleCheckTest {
     verify(check, times(12)).visitNode(any());
     verify(check, times(2)).scanWithoutParsing(any());
     assertThat(finalWriteCache.getData())
-      .hasSize(7)
+      .hasSizeGreaterThanOrEqualTo(7)
       .containsExactlyEntriesOf(writeCache.getData());
   }
 
   @Test
-  void cache_deserialization_throws_IOException() throws IOException {
+  void cache_deserialization_throws_IOException() throws IOException, NoSuchAlgorithmException {
     var inputStream = mock(InputStream.class);
     doThrow(new IOException()).when(inputStream).readAllBytes();
-    var readCache = mock(ReadCache.class);
-    doReturn(inputStream).when(readCache).read(any());
-    doReturn(true).when(readCache).contains(any());
+    var localReadCache = mock(ReadCache.class);
+
+    String filePath = mainCodeSourcesPath(BASE_PATH + "springBootApplication/app/SpringBootApp1.java");
+    InputFile cachedFile = HashCacheTestHelper.inputFileFromPath(filePath);
+    byte[] cachedHash = FileHashingUtils.inputFileContentHash(cachedFile);
+
+    doReturn(inputStream).when(localReadCache).read("java:S4605:targeted:" + cachedFile.key());
+    doReturn(true).when(localReadCache).contains(any());
+    doReturn(new ByteArrayInputStream(cachedHash))
+      .when(localReadCache).read("java:contentHash:MD5:" + cachedFile.key());
 
     var verifier = CheckVerifier.newVerifier()
-      .withCache(readCache, writeCache)
-      .addFiles(InputFile.Status.SAME,
-        mainCodeSourcesPath(BASE_PATH + "springBootApplication/app/SpringBootApp1.java")
-      )
+      .withCache(localReadCache, new InternalWriteCache().bind(localReadCache))
+      .addFiles(InputFile.Status.SAME, filePath)
       .withCheck(new SpringBeansShouldBeAccessibleCheck());
 
     assertThatThrownBy(verifier::verifyNoIssues)
@@ -224,13 +240,14 @@ class SpringBeansShouldBeAccessibleCheckTest {
   }
 
   @Test
-  void emptyCache() {
+  void emptyCache() throws NoSuchAlgorithmException, IOException {
     logTester.setLevel(LoggerLevel.TRACE);
+    String filePath = mainCodeSourcesPath(BASE_PATH + "springBootApplication/app/SpringBootApp1.java");
+    ReadCache populatedReadCache = HashCacheTestHelper.internalReadCacheFromFile(filePath);
     verifier
-      .addFiles(InputFile.Status.SAME,
-        mainCodeSourcesPath(BASE_PATH + "springBootApplication/app/SpringBootApp1.java")
-      )
+      .addFiles(InputFile.Status.SAME, filePath)
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
+      .withCache(populatedReadCache, new InternalWriteCache().bind(populatedReadCache))
       .verifyNoIssues();
 
     assertThat(logTester.logs(LoggerLevel.TRACE).stream().filter(
