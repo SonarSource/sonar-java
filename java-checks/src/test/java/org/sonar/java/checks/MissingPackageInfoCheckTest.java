@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
@@ -34,8 +33,8 @@ import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.caching.FileHashingUtils;
+import org.sonar.java.checks.helpers.HashCacheTestHelper;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalInputFile;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
 
@@ -90,7 +89,7 @@ class MissingPackageInfoCheckTest {
   }
 
   @Test
-  void caching() {
+  void caching() throws NoSuchAlgorithmException, IOException {
     verifier
       .onFiles(
         mainCodeSourcesPath("DefaultPackage.java"),
@@ -100,10 +99,11 @@ class MissingPackageInfoCheckTest {
         mainCodeSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java")
       )
       .withCheck(new MissingPackageInfoCheck())
+      .withCache(readCache, writeCache)
       .verifyIssueOnProject(EXPECTED_MESSAGE);
 
     var check = spy(new MissingPackageInfoCheck());
-
+    
     var populatedReadCache = new InternalReadCache().putAll(writeCache);
     var writeCache2 = new InternalWriteCache().bind(populatedReadCache);
     CheckVerifier.newVerifier()
@@ -121,33 +121,30 @@ class MissingPackageInfoCheckTest {
     verify(check, times(0)).scanFile(any());
     verify(check, times(5)).scanWithoutParsing(any());
     assertThat(writeCache2.getData())
-      .hasSize(5)
+      .hasSizeGreaterThanOrEqualTo(5)
       .containsExactlyInAnyOrderEntriesOf(writeCache.getData());
   }
 
   @Test
   void cache_deserialization_throws_IOException() throws IOException, NoSuchAlgorithmException {
-    InputFile cachedFile = InternalInputFile
-      .inputFile("", new File(mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")), InputFile.Status.SAME);
+    String filePath = mainCodeSourcesPath("checks/packageInfo/HelloWorld.java");
+    InputFile cachedFile = HashCacheTestHelper.inputFileFromPath(filePath);
     byte[] cachedHash = FileHashingUtils.inputFileContentHash(cachedFile);
     var inputStream = mock(InputStream.class);
     doThrow(new IOException()).when(inputStream).readAllBytes();
-    var readCache = mock(ReadCache.class);
-    InternalWriteCache writeCache = new InternalWriteCache();
-    writeCache.bind(readCache);
-    doReturn(inputStream).when(readCache).read("java:S1228;S4032:package:"+cachedFile.key());
-    doReturn(true).when(readCache).contains(any());
+    var localReadCache = mock(ReadCache.class);
+    InternalWriteCache localWriteCache = new InternalWriteCache().bind(localReadCache);
+    doReturn(inputStream).when(localReadCache).read("java:S1228;S4032:package:"+cachedFile.key());
+    doReturn(true).when(localReadCache).contains(any());
     doReturn(new ByteArrayInputStream(cachedHash))
-      .when(readCache).read("java:contentHash:MD5:"+cachedFile.key());
+      .when(localReadCache).read("java:contentHash:MD5:"+cachedFile.key());
 
-    var verifier = CheckVerifier.newVerifier()
-      .withCache(readCache, writeCache)
-      .addFiles(InputFile.Status.SAME,
-        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")
-      )
+    var localVerifier = CheckVerifier.newVerifier()
+      .withCache(localReadCache, localWriteCache)
+      .addFiles(InputFile.Status.SAME, filePath)
       .withCheck(new MissingPackageInfoCheck());
 
-    assertThatThrownBy(verifier::verifyNoIssues)
+    assertThatThrownBy(localVerifier::verifyNoIssues)
       .isInstanceOf(AnalysisException.class)
       .hasRootCauseInstanceOf(IOException.class);
   }
@@ -170,24 +167,17 @@ class MissingPackageInfoCheckTest {
   @Test
   void emptyCache() throws NoSuchAlgorithmException, IOException {
     logTester.setLevel(LoggerLevel.TRACE);
-    InputFile cachedFile = InternalInputFile
-      .inputFile("", new File(mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")), InputFile.Status.SAME);
-    byte[] cachedHash = FileHashingUtils.inputFileContentHash(cachedFile);
-    InternalReadCache readCache = new InternalReadCache();
-    readCache.put("java:contentHash:MD5:"+cachedFile.key(), cachedHash);
-    InternalWriteCache writeCache = new InternalWriteCache();
-    writeCache.bind(readCache);
-
-    verifier
-      .addFiles(InputFile.Status.SAME,
-        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")
-      )
-      .withCache(readCache, writeCache)
+    String filePath = mainCodeSourcesPath("checks/packageInfo/HelloWorld.java");
+    ReadCache populatedReadCache = HashCacheTestHelper.internalReadCacheFromFile(filePath);
+    CheckVerifier.newVerifier()
+      .addFiles(InputFile.Status.SAME, filePath)
+      .withCache(populatedReadCache, new InternalWriteCache().bind(populatedReadCache))
       .withCheck(new MissingPackageInfoCheck())
       .verifyNoIssues();
 
     assertThat(logTester.logs(LoggerLevel.TRACE).stream()
       .filter(msg -> msg.matches("Cache miss for key '[^']+'")))
-      .hasSize(1);
+        .hasSize(1);
   }
+
 }
