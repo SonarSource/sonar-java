@@ -39,9 +39,7 @@ import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.caching.ContentHashCache;
-import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
@@ -53,8 +51,6 @@ import org.sonar.java.reporting.JavaIssue;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
-import org.sonar.plugins.java.api.caching.JavaReadCache;
-import org.sonar.plugins.java.api.caching.JavaWriteCache;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 
@@ -65,8 +61,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.function.LongSupplier;
 import java.util.function.UnaryOperator;
@@ -484,9 +478,12 @@ public class SonarComponents {
       contentHashCache.writeToCache(inputFile);
       return false;
     }
+    if (!inputFile.status().equals(InputFile.Status.SAME)) {
+      LOG.trace("File status is: " + inputFile.status() + ". File can be skipped.");
+      return false;
+    }
     return contentHashCache.hasSameHashCached(inputFile);
   }
-
 
   public InputComponent project() {
     return context.project();
