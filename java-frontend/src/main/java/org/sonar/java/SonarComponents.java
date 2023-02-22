@@ -480,6 +480,7 @@ public class SonarComponents {
     }
     if (!inputFile.status().equals(InputFile.Status.SAME)) {
       LOG.trace("File status is: " + inputFile.status() + ". File can be skipped.");
+      contentHashCache.writeToCache(inputFile);
       return false;
     }
     return contentHashCache.hasSameHashCached(inputFile);
