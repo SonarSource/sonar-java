@@ -745,6 +745,7 @@ public final class CheckList {
     ForLoopCounterChangedCheck.class,
     CollapsibleIfCandidateCheck.class,
     MutableMembersUsageCheck.class,
+    UnsupportedOperationUsageCheck.class,
     LambdaTooBigCheck.class,
     CollectionImplementationReferencedCheck.class,
     NestedTryCatchCheck.class,
