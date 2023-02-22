@@ -1,0 +1,15 @@
+{
+  "title": "Methods 'add', 'remove' and some other should not be called on fixed-length collections",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4265",
+  "sqKey": "S4265",
+  "scope": "All",
+  "quickfix": "unknown"
+}

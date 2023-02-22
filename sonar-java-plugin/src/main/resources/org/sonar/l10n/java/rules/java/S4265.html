@@ -1,0 +1,13 @@
+<p>FixedSizeList from the Commons library, the list returned from Arrays.asList and some other offer methods
+(as required by the List interface they implement), but neither truly supports their use. All this types have fixed lengths and
+will throw errors if a method is called.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+List&lt;String&gt; strings = Arrays.asList("Hello");
+strings.add("world");  // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+List&lt;String&gt; strings = Arrays.asList("Hello", "world");
+</pre>
+
