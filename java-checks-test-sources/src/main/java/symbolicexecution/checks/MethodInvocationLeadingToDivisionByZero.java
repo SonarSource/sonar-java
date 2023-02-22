@@ -66,6 +66,22 @@ class MethodInvocationLeadingToDivisionByZero {
     divByZeroIfZero(0); // Noncompliant {{A division by zero will occur when invoking method "divByZeroIfZero()".}}
   }
 
+  String foo8(Integer v) {
+    String x = "";
+    x += switch(v) { // Compliant - no division by zero but this shouldn't cause the check to crash
+      case 0, 5, 12 -> "x";
+      case 1 -> "a";
+      case 2 -> {
+        StringBuilder sb = new StringBuilder("abc");
+        sb.append("<br>");
+        yield sb.toString();
+      }
+      default -> "y";
+    };
+
+    return x;
+  }
+
   static int divByZeroIfZero(int i) {
     if (i == 0) {
       return 7 / i; // Noncompliant {{Make sure "i" can't be zero before doing this division.}}
