@@ -21,14 +21,15 @@ package org.sonar.java.caching;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.java.TestUtils;
-import org.sonar.java.checks.verifier.internal.InternalReadCache;
-import org.sonar.java.checks.verifier.internal.InternalWriteCache;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -60,9 +61,52 @@ class ContentHashCacheTest {
 
   @Test
   void hasSameHashCached_writesToCache_whenKeyIsNotPresent() {
-    ContentHashCache contentHashCache = spy(new ContentHashCache(getSensorContextTesterWithEmptyCache(true)));
+    ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTesterWithEmptyCache(true));
     contentHashCache.hasSameHashCached(inputFile);
-    verify(contentHashCache, times(1)).writeToCache(inputFile);
+    Assertions.assertTrue(contentHashCache.writeToCache(inputFile));
+  }
+
+  @Test
+  void hasSameHashCached_returns_false_whenContentHashFileIsNotSameAsOneInCache() {
+    SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
+    sensorContext.setCacheEnabled(true);
+    ReadCache readCache = mock(ReadCache.class);
+    when(readCache.read("java:contentHash:MD5:" + inputFile.key())).thenReturn(new ByteArrayInputStream("Dummy content hash".getBytes()));
+    when(readCache.contains("java:contentHash:MD5:" + inputFile.key())).thenReturn(true);
+    WriteCache writeCache = mock(WriteCache.class);
+    sensorContext.setPreviousCache(readCache);
+    sensorContext.setNextCache(writeCache);
+    ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+    Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile));
+  }
+
+  @Test
+  void hasSameHashCached_returns_false_whenFileHashingUtilsThrowsException() throws IOException, NoSuchAlgorithmException {
+    SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
+    sensorContext.setCacheEnabled(true);
+    ReadCache readCache = mock(ReadCache.class);
+    when(readCache.read("java:contentHash:MD5:" + inputFile.key())).thenReturn(new ByteArrayInputStream(FileHashingUtils.inputFileContentHash(inputFile)));
+    when(readCache.contains("java:contentHash:MD5:" + inputFile.key())).thenReturn(true);
+    WriteCache writeCache = mock(WriteCache.class);
+    sensorContext.setPreviousCache(readCache);
+    sensorContext.setNextCache(writeCache);
+    try (MockedStatic<FileHashingUtils> mockedFiles = Mockito.mockStatic(FileHashingUtils.class)) {
+      ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+      mockedFiles.when(() -> FileHashingUtils.inputFileContentHash(inputFile)).thenThrow(new NoSuchAlgorithmException());
+      Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile));
+    }
+  }
+
+  @Test
+  void hasSameHashCached_returns_true_whenWriteCacheIsNull() throws IOException, NoSuchAlgorithmException {
+    SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
+    sensorContext.setCacheEnabled(true);
+    ReadCache readCache = mock(ReadCache.class);
+    when(readCache.read("java:contentHash:MD5:" + inputFile.key())).thenReturn(new ByteArrayInputStream(FileHashingUtils.inputFileContentHash(inputFile)));
+    sensorContext.setPreviousCache(readCache);
+    sensorContext.setNextCache(null);
+    ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+    Assertions.assertTrue(contentHashCache.hasSameHashCached(inputFile));
   }
 
   @Test
@@ -83,11 +127,48 @@ class ContentHashCacheTest {
     Assertions.assertFalse(contentHashCache.contains(inputFile));
   }
 
+  @Test
+  void writeToCache_returns_false_whenWriteCacheIsNull() {
+    SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
+    sensorContext.setCacheEnabled(true);
+    ReadCache readCache = mock(ReadCache.class);
+    when(readCache.read("java:contentHash:MD5:" + inputFile.key())).thenReturn(new ByteArrayInputStream("Dummy content hash".getBytes()));
+    sensorContext.setPreviousCache(readCache);
+    sensorContext.setNextCache(null);
+    ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+    Assertions.assertFalse(contentHashCache.writeToCache(inputFile));
+  }
+
+  @Test
+  void writeToCache_returns_false_whenWritingToCacheThrowsException() throws IOException, NoSuchAlgorithmException {
+    SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
+    sensorContext.setCacheEnabled(true);
+    WriteCache writeCache = mock(WriteCache.class);
+    sensorContext.setNextCache(writeCache);
+    doThrow(new IllegalArgumentException()).when(writeCache).write("java:contentHash:MD5:" + inputFile.key(), FileHashingUtils.inputFileContentHash(inputFile));
+    ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+    Assertions.assertFalse(contentHashCache.writeToCache(inputFile));
+  }
+
+  @Test
+  void writeToCache_returns_false_whenFileHashingUtilsThrowsException() {
+    SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
+    sensorContext.setCacheEnabled(true);
+    WriteCache writeCache = mock(WriteCache.class);
+    sensorContext.setNextCache(writeCache);
+    try (MockedStatic<FileHashingUtils> mockedFiles = Mockito.mockStatic(FileHashingUtils.class)) {
+      mockedFiles.when(() -> FileHashingUtils.inputFileContentHash(inputFile)).thenThrow(new NoSuchAlgorithmException());
+      ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+      Assertions.assertFalse(contentHashCache.writeToCache(inputFile));
+    }
+  }
+
   private SensorContextTester getSensorContextTesterWithEmptyCache(boolean isCacheEnabled) {
     SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
     sensorContext.setCacheEnabled(isCacheEnabled);
-    ReadCache readCache = new InternalReadCache();
-    WriteCache writeCache = new InternalWriteCache().bind(readCache);
+    ReadCache readCache = mock(ReadCache.class);
+    when(readCache.read("java:contentHash:MD5:" + inputFile.key())).thenThrow(new IllegalArgumentException());
+    WriteCache writeCache = mock(WriteCache.class);
     sensorContext.setPreviousCache(readCache);
     sensorContext.setNextCache(writeCache);
 
@@ -97,8 +178,10 @@ class ContentHashCacheTest {
   private SensorContextTester getSensorContextTester() throws IOException, NoSuchAlgorithmException {
     SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
     sensorContext.setCacheEnabled(true);
-    ReadCache readCache = new InternalReadCache().put("java:contentHash:MD5:" + inputFile.key(), FileHashingUtils.inputFileContentHash(inputFile));
-    WriteCache writeCache = new InternalWriteCache().bind(readCache);
+    ReadCache readCache = mock(ReadCache.class);
+    when(readCache.read("java:contentHash:MD5:" + inputFile.key())).thenReturn(new ByteArrayInputStream(FileHashingUtils.inputFileContentHash(inputFile)));
+    when(readCache.contains("java:contentHash:MD5:" + inputFile.key())).thenReturn(true);
+    WriteCache writeCache = mock(WriteCache.class);
     sensorContext.setPreviousCache(readCache);
     sensorContext.setNextCache(writeCache);
 

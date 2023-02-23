@@ -82,22 +82,24 @@ public class ContentHashCache {
     return readCache.contains(getCacheKey(inputFile));
   }
 
-  public void writeToCache(InputFile inputFile) {
+  public boolean writeToCache(InputFile inputFile) {
     if (!enabled) {
       LOG.trace("Cannot write on cache when disabled");
-      return;
+      return false;
     }
     if (writeCache != null) {
       LOG.trace(String.format("Writing to the cache for file %s", inputFile.key()));
       String cacheKey = getCacheKey(inputFile);
       try {
         writeCache.write(cacheKey, FileHashingUtils.inputFileContentHash(inputFile));
+        return true;
       } catch (IllegalArgumentException e) {
         LOG.error(String.format("Tried to write multiple times to cache key '%s'. Ignoring writes after the first.", cacheKey));
       } catch (IOException | NoSuchAlgorithmException e) {
         LOG.error(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
       }
     }
+    return false;
   }
 
   private void copyFromPrevious(InputFile inputFile) {
