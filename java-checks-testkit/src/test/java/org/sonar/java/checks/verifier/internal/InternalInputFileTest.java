@@ -34,6 +34,7 @@ class InternalInputFileTest {
 
   private static final String NO_SUCH_FILE_MESSAGE_WINDOWS = "foo.java (The system cannot find the file specified)";
   private static final String NO_SUCH_FILE_MESSAGE_LINUX = "foo.java (No such file or directory)";
+  private static final String NO_SUCH_FILE_MESSAGE_LINUX_FR = "foo.java (Aucun fichier ou dossier de ce type)";
   private static final InternalTextPointer TEXT_POINTER = new InternalTextPointer(0, 0);
 
   @Test
@@ -65,7 +66,7 @@ class InternalInputFileTest {
     assertThat(inputFile).hasToString("foo.java");
 
     IOException e = assertThrows(IOException.class, () -> inputFile.inputStream());
-    assertThat(e.getMessage()).matches(m -> NO_SUCH_FILE_MESSAGE_LINUX.equals(m) || NO_SUCH_FILE_MESSAGE_WINDOWS.equals(m));
+    assertThat(e.getMessage()).isIn(NO_SUCH_FILE_MESSAGE_LINUX, NO_SUCH_FILE_MESSAGE_WINDOWS, NO_SUCH_FILE_MESSAGE_LINUX_FR);
 
     assertMethodNotSupported(() -> inputFile.selectLine(0), "InternalInputFile::selectLine(int)");
     assertThat(inputFile.status()).isEqualTo(InputFile.Status.SAME);
