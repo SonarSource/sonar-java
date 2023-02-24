@@ -73,7 +73,6 @@ import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
-import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 
 @ScannerSide
 @SonarLintSide
@@ -95,7 +94,7 @@ public class SonarComponents {
    */
   public static final String SONAR_CAN_SKIP_UNCHANGED_FILES_KEY = "sonar.java.skipUnchanged";
 
-  private static final Version SONARLINT_6_3 = Version.parse("6.3");
+  private static final Version PLUGIN_API_9_13 = Version.parse("9.13");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
   @VisibleForTesting
   static LongSupplier maxMemoryInBytesProvider = () -> Runtime.getRuntime().maxMemory();
@@ -331,7 +330,7 @@ public class SonarComponents {
   }
 
   public boolean isQuickFixCompatible() {
-    return isSonarLintContext() && ((SonarLintRuntime) context.runtime()).getSonarLintPluginApiVersion().isGreaterThanOrEqual(SONARLINT_6_3);
+    return isSonarLintContext() && context.runtime().getApiVersion().isGreaterThanOrEqual(PLUGIN_API_9_13);
   }
 
   public boolean isSetQuickFixAvailableCompatible() {

@@ -41,6 +41,7 @@ import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
@@ -102,17 +103,24 @@ public class JavaSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     PerformanceMeasure.Duration sensorDuration = createPerformanceMeasureReport(context);
+    try {
+      sonarComponents.setSensorContext(context);
+      sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
 
-    sonarComponents.setSensorContext(context);
-    sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
+      Measurer measurer = new Measurer(context, noSonarFilter);
 
-    Measurer measurer = new Measurer(context, noSonarFilter);
-
-    JavaFrontend frontend = new JavaFrontend(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
-      insertSymbolicExecutionVisitor(sonarComponents.mainChecks()));
-    frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
-
-    sensorDuration.stop();
+      JavaFrontend frontend = new JavaFrontend(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
+        insertSymbolicExecutionVisitor(sonarComponents.mainChecks()));
+      frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
+    } catch (AnalysisException e) {
+      if (context.isCancelled()) {
+        LOG.debug("Analysis cancelled", e);
+      } else {
+        throw e;
+      }
+    } finally {
+      sensorDuration.stop();
+    }
   }
 
   private static UnaryOperator<List<JavaCheck>> createCheckFilter(boolean isAutoScanCheckFiltering) {

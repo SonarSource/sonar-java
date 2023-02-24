@@ -68,6 +68,7 @@ class InternalSensorContextTest {
     assertMethodNotSupported(() -> context.newSignificantCode(), "InternalSensorContext::newSignificantCode()");
     assertMethodNotSupported(() -> context.newSymbolTable(), "InternalSensorContext::newSymbolTable()");
     assertMethodNotSupported(() -> context.settings(), "InternalSensorContext::settings()");
+    assertMethodNotSupported(() -> context.markAsUnchanged(null), "InternalSensorContext::markAsUnchanged(InputFile)");
   }
 
   @Test

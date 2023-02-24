@@ -40,13 +40,7 @@
     <dependency>
       <groupId>org.sonarsource.sonarlint.core</groupId>
       <artifactId>sonarlint-core</artifactId>
-      <version>${sonarlint.plugin.api.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.sonarsource.sonarlint.core</groupId>
-      <artifactId>sonarlint-plugin-api</artifactId>
-      <version>${sonarlint.plugin.api.version}</version>
+      <version>8.13.1.60852</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -28,16 +28,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.DefaultTextPointer;
 import org.sonar.api.batch.fs.internal.DefaultTextRange;
 import org.sonar.api.batch.rule.Severity;
@@ -46,6 +48,12 @@ import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.batch.sensor.issue.IssueLocation;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
+import org.sonar.api.batch.sensor.issue.fix.InputFileEdit;
+import org.sonar.api.batch.sensor.issue.fix.NewInputFileEdit;
+import org.sonar.api.batch.sensor.issue.fix.NewQuickFix;
+import org.sonar.api.batch.sensor.issue.fix.NewTextEdit;
+import org.sonar.api.batch.sensor.issue.fix.QuickFix;
+import org.sonar.api.batch.sensor.issue.fix.TextEdit;
 import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.LogTesterJUnit5;
@@ -58,13 +66,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.sonarlint.core.analyzer.issue.DefaultQuickFix;
-import org.sonarsource.sonarlint.core.analyzer.sensor.DefaultSonarLintIssue;
-import org.sonarsource.sonarlint.core.client.api.common.ClientInputFileEdit;
-import org.sonarsource.sonarlint.core.client.api.common.TextEdit;
-import org.sonarsource.sonarlint.core.container.analysis.filesystem.SonarLintInputFile;
-import org.sonarsource.sonarlint.plugin.api.issue.NewQuickFix;
-import org.sonarsource.sonarlint.plugin.api.issue.NewSonarLintIssue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -74,6 +75,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 class InternalJavaIssueBuilderTest {
@@ -370,14 +372,17 @@ class InternalJavaIssueBuilderTest {
 
     @BeforeEach
     public void setup() {
-      sct = Mockito.spy(SensorContextTester.create(new File("")));
-      when(sct.newIssue()).thenReturn(new MockSonarLintIssue(sct));
+      sct = spy(SensorContextTester.create(new File("")));
+      when(sct.newIssue()).<NewIssue>thenAnswer(i -> {
+        var newIssue = (DefaultIssue) i.callRealMethod();
+        return new MockSonarLintIssue(newIssue, sct);
+      });
 
       sc = mock(SonarComponents.class);
       when(sc.context()).thenReturn(sct);
       when(sc.getRuleKey(any())).thenReturn(Optional.of(RULE_KEY));
 
-      ipf = mock(SonarLintInputFile.class);
+      ipf = mock(DefaultInputFile.class);
       when(ipf.isFile()).thenReturn(true);
       when(ipf.newRange(anyInt(), anyInt(), anyInt(), anyInt()))
         .thenAnswer(new Answer<TextRange>() {
@@ -423,10 +428,10 @@ class InternalJavaIssueBuilderTest {
       assertThat(issue.saved).isTrue();
       assertThat(issue.quickFixes).hasSize(1);
 
-      DefaultQuickFix defaultQuickFix = issue.quickFixes.get(0);
+      MockQuickFix defaultQuickFix = issue.quickFixes.get(0);
       assertThat(defaultQuickFix.message()).isEqualTo("description");
 
-      List<ClientInputFileEdit> edits = defaultQuickFix.inputFileEdits();
+      List<InputFileEdit> edits = defaultQuickFix.inputFileEdits();
       assertThat(edits).hasSize(1);
 
       List<TextEdit> textEdits = edits.get(0).textEdits();
@@ -440,11 +445,14 @@ class InternalJavaIssueBuilderTest {
     @Test
     void test_report_issue_with_broken_quick_fix() {
       when(sc.isQuickFixCompatible()).thenReturn(true);
-      when(sct.newIssue()).thenReturn(new MockSonarLintIssue(sct) {
-        @Override
-        public NewQuickFix newQuickFix() {
-          throw new RuntimeException("Exception message");
-        }
+      when(sct.newIssue()).<NewIssue>thenAnswer(i -> {
+        var newIssue = (DefaultIssue) i.callRealMethod();
+        return new MockSonarLintIssue(newIssue, sct) {
+          @Override
+          public MockQuickFix newQuickFix() {
+            throw new RuntimeException("Exception message");
+          }
+        };
       });
 
       addIssueWithQuickFix();
@@ -514,26 +522,123 @@ class InternalJavaIssueBuilderTest {
     }
   }
 
-  private static class MockSonarLintIssue implements NewIssue, NewSonarLintIssue, Issue {
-    private final DefaultSonarLintIssue parent = new DefaultSonarLintIssue(null, null, null);
-    private final SensorContextTester context;
-    private final List<DefaultQuickFix> quickFixes = new ArrayList<>();
+  private static class MockTextEdit implements NewTextEdit, TextEdit {
+
+    private TextRange textRange;
+    private String newText;
+
+    @Override
+    public NewTextEdit at(TextRange textRange) {
+      this.textRange = textRange;
+      return this;
+    }
+
+    @Override
+    public NewTextEdit withNewText(String s) {
+      this.newText = s;
+      return this;
+    }
+
+    @Override
+    public TextRange range() {
+      return textRange;
+    }
+
+    @Override
+    public String newText() {
+      return newText;
+    }
+  }
+
+  private static class MockInputFileEdit implements NewInputFileEdit, InputFileEdit {
+
+    private final List<MockTextEdit> textEdits = new ArrayList<>();
+    private InputFile target;
+
+    @Override
+    public InputFile target() {
+      return target;
+    }
+
+    @Override
+    public List<TextEdit> textEdits() {
+      return textEdits.stream().map(TextEdit.class::cast).collect(Collectors.toList());
+    }
+
+    @Override
+    public NewInputFileEdit on(InputFile inputFile) {
+      this.target = inputFile;
+      return this;
+    }
+
+    @Override
+    public NewTextEdit newTextEdit() {
+      return new MockTextEdit();
+    }
+
+    @Override
+    public NewInputFileEdit addTextEdit(NewTextEdit newTextEdit) {
+      textEdits.add((MockTextEdit) newTextEdit);
+      return this;
+    }
+  }
+
+  private static class MockQuickFix implements NewQuickFix, QuickFix {
+
+    private final List<MockInputFileEdit> inputFileEdits = new ArrayList<>();
+
+    private String message;
+
+    @Override
+    public NewQuickFix message(String s) {
+      this.message = s;
+      return this;
+    }
+
+    @Override
+    public NewInputFileEdit newInputFileEdit() {
+      return new MockInputFileEdit();
+    }
+
+    @Override
+    public NewQuickFix addInputFileEdit(NewInputFileEdit newInputFileEdit) {
+      inputFileEdits.add((MockInputFileEdit) newInputFileEdit);
+      return this;
+    }
+
+    @Override
+    public String message() {
+      return message;
+    }
+
+    @Override
+    public List<InputFileEdit> inputFileEdits() {
+      return inputFileEdits.stream().map(InputFileEdit.class::cast).collect(Collectors.toList());
+    }
+  }
+
+
+  private static class MockSonarLintIssue implements NewIssue, Issue {
+    private final DefaultIssue parent;
+    private final SensorContextTester sct;
+    private final List<MockQuickFix> quickFixes = new ArrayList<>();
     private boolean isQuickFixAvailable = false;
     private boolean saved;
 
-    MockSonarLintIssue(SensorContextTester context) {
-      this.context = context;
+    MockSonarLintIssue(DefaultIssue parent, SensorContextTester sct) {
+      this.parent = parent;
+      this.sct = sct;
     }
 
     @Override
-    public NewQuickFix newQuickFix() {
-      return parent.newQuickFix();
+    public MockQuickFix newQuickFix() {
+      return new MockQuickFix();
     }
 
     @Override
-    public NewSonarLintIssue addQuickFix(NewQuickFix newQuickFix) {
-      quickFixes.add((DefaultQuickFix) newQuickFix);
-      return parent.addQuickFix(newQuickFix);
+    public MockSonarLintIssue addQuickFix(NewQuickFix newQuickFix) {
+      quickFixes.add((MockQuickFix) newQuickFix);
+      return this;
     }
 
     @Override
@@ -576,15 +681,19 @@ class InternalJavaIssueBuilderTest {
     }
 
     @Override
+    public NewIssue addFlow(Iterable<NewIssueLocation> iterable, FlowType flowType, @Nullable String s) {
+      return null;
+    }
+
+    @Override
     public NewIssueLocation newLocation() {
       return parent.newLocation();
     }
 
     @Override
     public void save() {
-      // save() is final in DefaultSonarLintIssue
       this.saved = true;
-      context.allIssues().add(this);
+      sct.allIssues().add(this);
     }
 
     @Override
@@ -620,6 +729,11 @@ class InternalJavaIssueBuilderTest {
     @Override
     public Optional<String> ruleDescriptionContextKey() {
       return Optional.empty();
+    }
+
+    @Override
+    public List<QuickFix> quickFixes() {
+      return quickFixes.stream().map(QuickFix.class::cast).collect(Collectors.toList());
     }
 
     @Override

@@ -31,6 +31,8 @@ import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.sensor.issue.NewIssue;
+import org.sonar.api.batch.sensor.issue.fix.NewInputFileEdit;
+import org.sonar.api.batch.sensor.issue.fix.NewQuickFix;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -39,9 +41,6 @@ import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.sonarlint.plugin.api.issue.NewInputFileEdit;
-import org.sonarsource.sonarlint.plugin.api.issue.NewQuickFix;
-import org.sonarsource.sonarlint.plugin.api.issue.NewSonarLintIssue;
 
 public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
 
@@ -250,16 +249,16 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
       return;
     }
     if (isQuickFixCompatible) {
-      addQuickFixes(inputFile, ruleKey, flatQuickFixes, (NewSonarLintIssue) newIssue);
+      addQuickFixes(inputFile, ruleKey, flatQuickFixes, newIssue);
     } else {
       newIssue.setQuickFixAvailable(true);
     }
   }
 
-  private static void addQuickFixes(InputFile inputFile, RuleKey ruleKey, Iterable<JavaQuickFix> quickFixes, NewSonarLintIssue sonarLintIssue) {
+  private static void addQuickFixes(InputFile inputFile, RuleKey ruleKey, Iterable<JavaQuickFix> quickFixes, NewIssue issueWithQFSupport) {
     try {
       for (JavaQuickFix quickFix : quickFixes) {
-        NewQuickFix newQuickFix = sonarLintIssue.newQuickFix()
+        NewQuickFix newQuickFix = issueWithQFSupport.newQuickFix()
           .message(quickFix.getDescription());
 
         NewInputFileEdit edit = newQuickFix.newInputFileEdit().on(inputFile);
@@ -270,7 +269,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
               .withNewText(javaTextEdit.getReplacement()))
           .forEach(edit::addTextEdit);
         newQuickFix.addInputFileEdit(edit);
-        sonarLintIssue.addQuickFix(newQuickFix);
+        issueWithQFSupport.addQuickFix(newQuickFix);
       }
     } catch (RuntimeException e) {
       // We still want to report the issue if we did not manage to create a quick fix.

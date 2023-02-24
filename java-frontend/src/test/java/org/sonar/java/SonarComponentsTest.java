@@ -85,7 +85,6 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
-import org.sonarsource.sonarlint.core.container.global.SonarLintRuntimeImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -447,12 +446,12 @@ class SonarComponentsTest {
     context.setRuntime(sonarQube);
     assertThat(sonarComponents.isQuickFixCompatible()).isFalse();
 
-    SonarRuntime sonarLintWithoutQuickFix = new SonarLintRuntimeImpl(V8_9, Version.create(5, 3), -1L);
+    SonarRuntime sonarLintWithoutQuickFix = SonarRuntimeImpl.forSonarLint(Version.create(9, 12));
     context.setRuntime(sonarLintWithoutQuickFix);
     assertThat(sonarComponents.isQuickFixCompatible()).isFalse();
 
-    // support of quickfixes introduced in 6.3
-    SonarRuntime sonarLintWithQuickFix = new SonarLintRuntimeImpl(V8_9, Version.create(6, 4), -1L);
+    // support of quickfixes API introduced in sonar plugin API 9.13
+    SonarRuntime sonarLintWithQuickFix = SonarRuntimeImpl.forSonarLint(Version.create(9, 13));
     context.setRuntime(sonarLintWithQuickFix);
     assertThat(sonarComponents.isQuickFixCompatible()).isTrue();
   }
