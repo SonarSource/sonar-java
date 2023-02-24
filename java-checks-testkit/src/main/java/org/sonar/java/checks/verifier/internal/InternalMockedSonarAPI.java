@@ -34,7 +34,7 @@ class InternalMockedSonarAPI {
   static final class NotSupportedException extends RuntimeException {
 
     private static final long serialVersionUID = 6465870479166535810L;
-    private static final String EXCEPTION_MESSAGE = "Method unsuported by the rule verifier framework: '%s::%s'";
+    private static final String EXCEPTION_MESSAGE = "Method unsupported by the rule verifier framework: '%s::%s'";
 
     private NotSupportedException(Class<?> clazz, String methodSignature) {
       super(String.format(EXCEPTION_MESSAGE, clazz.getSimpleName(), methodSignature));

@@ -40,6 +40,6 @@ class InternalTextRangeTest {
 
   private static void assertMethodNotSupported(Executable executable, String expectedMessage) {
     InternalMockedSonarAPI.NotSupportedException e = assertThrows(InternalMockedSonarAPI.NotSupportedException.class, executable);
-    assertThat(e).hasMessage(String.format("Method unsuported by the rule verifier framework: '%s'", expectedMessage));
+    assertThat(e).hasMessage(String.format("Method unsupported by the rule verifier framework: '%s'", expectedMessage));
   }
 }
