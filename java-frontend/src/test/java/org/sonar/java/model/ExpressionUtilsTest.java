@@ -368,6 +368,21 @@ class ExpressionUtilsTest {
     assertResolveAsConstant("8 - (3 + x) % 5 * 2", null);
     assertResolveAsConstant("8 - (x + x) % 5 * 2", null);
   }
+  
+  @Test
+  void resolve_as_constant_division_by_zero() {
+    assertResolveAsConstant("5 / 0", null);
+    assertResolveAsConstant("5L / 0", null);
+    assertResolveAsConstant("5D / 0", null);
+
+    assertResolveAsConstant("5 / 0L", null);
+    assertResolveAsConstant("5L / 0L", null);
+    assertResolveAsConstant("5D / 0L", null);
+
+    assertResolveAsConstant("5 / 0D", null);
+    assertResolveAsConstant("5L / 0D", null);
+    assertResolveAsConstant("5D / 0D", null);
+  }
 
   @Test
   void resolve_as_constant_unknown_symbol() {
