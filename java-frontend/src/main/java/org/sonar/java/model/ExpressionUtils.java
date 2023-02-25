@@ -21,8 +21,12 @@ package org.sonar.java.model;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
+
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -38,6 +42,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 public final class ExpressionUtils {
+  private static final Logger LOG = Loggers.get(ExpressionUtils.class);
 
   private ExpressionUtils() {
   }
@@ -331,10 +336,14 @@ public final class ExpressionUtils {
 
   @CheckForNull
   private static Object resolveArithmeticOperation(Object left, Object right, BiFunction<Long, Long, Object> longOperation, BiFunction<Integer, Integer, Object> intOperation) {
-    if (left instanceof Integer && right instanceof Integer) {
-      return intOperation.apply(((Number) left).intValue(), ((Number) right).intValue());
-    } else if ((left instanceof Long || right instanceof Long) && (left instanceof Integer || right instanceof Integer)) {
-      return longOperation.apply(((Number) left).longValue(), ((Number) right).longValue());
+    try {
+      if (left instanceof Integer && right instanceof Integer) {
+        return intOperation.apply(((Number) left).intValue(), ((Number) right).intValue());
+      } else if ((left instanceof Long || right instanceof Long) && (left instanceof Integer || right instanceof Integer)) {
+        return longOperation.apply(((Number) left).longValue(), ((Number) right).longValue());
+      }
+    } catch (ArithmeticException e) {
+      LOG.warn("Arithmetic exception caught while try to resolve an operation as a constant", e);
     }
     return null;
   }
