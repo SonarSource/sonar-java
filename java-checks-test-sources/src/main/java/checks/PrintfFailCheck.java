@@ -70,6 +70,10 @@ public class PrintfFailCheck {
     String.format("value is %d", value); // Compliant
     String.format("%0$s", "tmp"); // Compliant, reported by S3457
 
+    String.format("%2147483648$g", 42.0);
+    String.format("%2147483648g", 42.0);
+    String.format("%.2147483648g", 42.0);
+
     // String.formatted ================================================================================================
     "The value of my integer is %d".formatted("Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
     "First {0} and then {1}".formatted("foo", "bar");
