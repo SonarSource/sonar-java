@@ -145,7 +145,7 @@ class ContentHashCacheTest {
     sensorContext.setCacheEnabled(true);
     WriteCache writeCache = mock(WriteCache.class);
     sensorContext.setNextCache(writeCache);
-    doThrow(new IllegalArgumentException()).when(writeCache).write("java:contentHash:MD5:" + inputFile.key(), FileHashingUtils.inputFileContentHash(inputFile));
+    doThrow(new IllegalArgumentException()).when(writeCache).write("java:contentHash:MD5:" + inputFile.key(), FileHashingUtils.inputFileContentHash(file.getPath()));
     ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
     Assertions.assertFalse(contentHashCache.writeToCache(inputFile));
   }

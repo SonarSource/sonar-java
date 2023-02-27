@@ -751,6 +751,18 @@ class SonarComponentsTest {
   }
 
   @Test
+  void fileCanBeSkipped_returns_false_when_inputFileStatusIsDifferentFromSame() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    SensorContext contextMock = mock(SensorContext.class);
+    sonarComponents.setSensorContext(contextMock);
+
+    when(sonarComponents.canSkipUnchangedFiles()).thenReturn(true);
+    InputFile inputFile = mock(InputFile.class);
+    when(inputFile.status()).thenReturn(InputFile.Status.CHANGED);
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+  }
+
+  @Test
   void fileCanBeSkipped_returns_false_when_canSkipUnchangedFile_isFalse() throws ApiMismatchException {
     SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
     SensorContext contextMock = mock(SensorContext.class);
