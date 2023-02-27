@@ -21,8 +21,6 @@ package org.sonar.java.caching;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
@@ -81,20 +79,22 @@ class ContentHashCacheTest {
   }
 
   @Test
-  void hasSameHashCached_returns_false_whenFileHashingUtilsThrowsException() throws IOException, NoSuchAlgorithmException {
+  void hasSameHashCached_returns_false_whenFileHashingUtilsThrowsException() throws IOException {
     SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
     sensorContext.setCacheEnabled(true);
     ReadCache readCache = mock(ReadCache.class);
-    when(readCache.read("java:contentHash:MD5:" + inputFile.key())).thenReturn(new ByteArrayInputStream(FileHashingUtils.inputFileContentHash(inputFile)));
-    when(readCache.contains("java:contentHash:MD5:" + inputFile.key())).thenReturn(true);
+    // Mocking input file to throw IOException because
+    // mocking static method requires mockito-inline, which currently breaks the tests.
+    InputFile inputFile1 = mock(InputFile.class);
+    when(inputFile1.key()).thenReturn("key");
+    when(readCache.read("java:contentHash:MD5:" + inputFile1.key())).thenReturn(new ByteArrayInputStream("string".getBytes()));
+    when(readCache.contains("java:contentHash:MD5:" + inputFile1.key())).thenReturn(true);
     WriteCache writeCache = mock(WriteCache.class);
     sensorContext.setPreviousCache(readCache);
     sensorContext.setNextCache(writeCache);
-    try (MockedStatic<FileHashingUtils> mockedFiles = Mockito.mockStatic(FileHashingUtils.class)) {
-      ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
-      mockedFiles.when(() -> FileHashingUtils.inputFileContentHash(inputFile)).thenThrow(new NoSuchAlgorithmException());
-      Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile));
-    }
+    when(inputFile1.contents()).thenThrow(new IOException());
+    ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+    Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile1));
   }
 
   @Test
@@ -151,16 +151,19 @@ class ContentHashCacheTest {
   }
 
   @Test
-  void writeToCache_returns_false_whenFileHashingUtilsThrowsException() {
+  void writeToCache_returns_false_whenFileHashingUtilsThrowsException() throws IOException {
     SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
     sensorContext.setCacheEnabled(true);
     WriteCache writeCache = mock(WriteCache.class);
     sensorContext.setNextCache(writeCache);
-    try (MockedStatic<FileHashingUtils> mockedFiles = Mockito.mockStatic(FileHashingUtils.class)) {
-      mockedFiles.when(() -> FileHashingUtils.inputFileContentHash(inputFile)).thenThrow(new NoSuchAlgorithmException());
-      ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
-      Assertions.assertFalse(contentHashCache.writeToCache(inputFile));
-    }
+    // Mocking input file to throw IOException because
+    // mocking static method requires mockito-inline, which currently breaks the tests.
+    InputFile inputFile1 = mock(InputFile.class);
+    when(inputFile1.key()).thenReturn("key");
+    when(inputFile1.contents()).thenThrow(new IOException());
+
+    ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+    Assertions.assertFalse(contentHashCache.writeToCache(inputFile1));
   }
 
   private SensorContextTester getSensorContextTesterWithEmptyCache(boolean isCacheEnabled) {
