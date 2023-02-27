@@ -21,14 +21,14 @@ package org.sonar.java.caching;
 
 import org.sonar.api.batch.fs.InputFile;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class FileHashingUtils {
 
@@ -44,10 +44,10 @@ public class FileHashingUtils {
   }
 
   public static byte[] inputFileContentHash(String filepath) throws IOException, NoSuchAlgorithmException {
-     File file = new File(filepath);
-     String contents = new String(Files.readAllBytes(file.toPath()), UTF_8);
-     MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGORITHM);
-     return messageDigest.digest(contents.getBytes());
+    File file = new File(filepath);
+    String contents = new String(Files.readAllBytes(file.toPath()), UTF_8);
+    MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGORITHM);
+    return messageDigest.digest(contents.getBytes());
   }
 
 }

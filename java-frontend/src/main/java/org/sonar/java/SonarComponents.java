@@ -61,7 +61,16 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.LongSupplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -368,6 +377,7 @@ public class SonarComponents {
 
   /**
    * Returns the batch mode size as read from configuration, in Kilo Bytes. If not value can be found, compute dynamically an ideal value.
+   *
    * @return the batch mode size or a default value of -1L.
    */
   public long getBatchModeSizeInKB() {
@@ -474,7 +484,7 @@ public class SonarComponents {
       contentHashCache.writeToCache(inputFile);
       return false;
     }
-    if(!canSkipInContext) {
+    if (!canSkipInContext) {
       contentHashCache.writeToCache(inputFile);
       return false;
     }
@@ -489,6 +499,7 @@ public class SonarComponents {
   public InputComponent project() {
     return context.project();
   }
+
   public void collectUndefinedTypes(Set<JProblem> undefinedTypes) {
     this.undefinedTypes.addAll(undefinedTypes);
   }
