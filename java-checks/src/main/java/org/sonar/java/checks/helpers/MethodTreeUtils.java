@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
@@ -83,8 +82,8 @@ public final class MethodTreeUtils {
     return isPublic(m) && !isStatic(m) && hasHashCodeSignature;
   }
 
-	public static boolean isNamed(MethodTree m, String name) {
-		return StringUtils.isNotBlank(name) && name.equals(m.simpleName().name());
+  public static boolean isNamed(MethodTree m, String name) {
+    return StringUtils.isNotBlank(name) && name.equals(m.simpleName().name());
   }
 
   private static boolean isStatic(MethodTree m) {
@@ -131,14 +130,12 @@ public final class MethodTreeUtils {
 
   public static Optional<MethodInvocationTree> subsequentMethodInvocation(Tree tree, MethodMatchers methodMatchers) {
     return consecutiveMethodInvocation(tree)
-      .map(consecutiveMethod ->
-        methodMatchers.matches(consecutiveMethod) ?
-          consecutiveMethod : subsequentMethodInvocation(consecutiveMethod, methodMatchers).orElse(null));
+      .map(consecutiveMethod -> methodMatchers.matches(consecutiveMethod) ? consecutiveMethod : subsequentMethodInvocation(consecutiveMethod, methodMatchers).orElse(null));
   }
 
   @VisibleForTesting
   static boolean hasKind(@Nullable Tree tree, Tree.Kind kind) {
-    return tree != null &&  tree.kind() == kind;
+    return tree != null && tree.kind() == kind;
   }
 
   public static class MethodInvocationCollector extends BaseTreeVisitor {

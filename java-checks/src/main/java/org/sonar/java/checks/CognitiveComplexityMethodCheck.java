@@ -31,18 +31,21 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3776")
-public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor {
+public class CognitiveComplexityMethodCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAX = 15;
 
   @RuleProperty(
-          key = "Threshold",
-          description = "The maximum authorized complexity.",
-          defaultValue = "" + DEFAULT_MAX)
+    key = "Threshold",
+    description = "The maximum authorized complexity.",
+    defaultValue = "" + DEFAULT_MAX)
   private int max = DEFAULT_MAX;
 
-	@RuleProperty(key = "Ignored Method names", description = "Ignored Method names, separated by ';'", defaultValue = "")
-	private String ignoredMethods = "";
+  @RuleProperty(
+    key = "Ignored Method names",
+    description = "Ignored Method names, separated by ';'",
+    defaultValue = "")
+  private String ignoredMethods = "";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -67,17 +70,15 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     this.max = max;
   }
 
-	public void setIgnoredMethods(String ignoredMethods) {
-		this.ignoredMethods = ignoredMethods;
-	}
+  public void setIgnoredMethods(String ignoredMethods) {
+    this.ignoredMethods = ignoredMethods;
+  }
 
-	private boolean isExcluded(MethodTree methodTree) {
-		return MethodTreeUtils.isEqualsMethod(methodTree)
-				||
-				MethodTreeUtils.isHashCodeMethod(methodTree)
-				||
-				Arrays.stream(ignoredMethods.split(";"))
-						.map(ignoredMethodName -> MethodTreeUtils.isNamed(methodTree, ignoredMethodName))
-						.reduce(Boolean.FALSE, (base, acc) -> base || acc);
+  private boolean isExcluded(MethodTree methodTree) {
+    return MethodTreeUtils.isEqualsMethod(methodTree) ||
+      MethodTreeUtils.isHashCodeMethod(methodTree) ||
+      Arrays.stream(ignoredMethods.split(";"))
+        .map(ignoredMethodName -> MethodTreeUtils.isNamed(methodTree, ignoredMethodName))
+        .reduce(Boolean.FALSE, (base, acc) -> base || acc);
   }
 }
