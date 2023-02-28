@@ -38,10 +38,12 @@ public class ContentHashCache {
 
   private ReadCache readCache;
   private WriteCache writeCache;
-  private boolean enabled;
+  private final boolean enabled;
 
   public ContentHashCache(SensorContext context) {
-    enabled = context.isCacheEnabled();
+    CacheContextImpl cacheContext = CacheContextImpl.of(context);
+    enabled = cacheContext.isCacheEnabled();
+
     if (enabled) {
       readCache = context.previousCache();
       writeCache = context.nextCache();
