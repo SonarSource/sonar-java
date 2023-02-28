@@ -47,7 +47,7 @@ public class FileHashingUtils {
     File file = new File(filepath);
     String contents = new String(Files.readAllBytes(file.toPath()), UTF_8);
     MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGORITHM);
-    return messageDigest.digest(contents.getBytes());
+    return messageDigest.digest(contents.getBytes(UTF_8));
   }
 
 }
