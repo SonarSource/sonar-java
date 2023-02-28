@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+
 import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.StringUtils;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -80,8 +83,8 @@ public final class MethodTreeUtils {
     return isPublic(m) && !isStatic(m) && hasHashCodeSignature;
   }
 
-  private static boolean isNamed(MethodTree m, String name) {
-    return name.equals(m.simpleName().name());
+	public static boolean isNamed(MethodTree m, String name) {
+		return StringUtils.isNotBlank(name) && name.equals(m.simpleName().name());
   }
 
   private static boolean isStatic(MethodTree m) {

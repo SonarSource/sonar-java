@@ -29,6 +29,7 @@ class CognitiveComplexityMethodCheckTest {
 
     CognitiveComplexityMethodCheck check = new CognitiveComplexityMethodCheck();
     check.setMax(0);
+	check.setIgnoredMethods("getIgnoredWeight;noNestingForIfElseIfIgnored");
     CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CognitiveComplexityMethodCheckMax0.java")
       .withCheck(check)

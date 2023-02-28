@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
@@ -26,9 +29,6 @@ import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S3776")
 public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor {
@@ -40,6 +40,9 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
           description = "The maximum authorized complexity.",
           defaultValue = "" + DEFAULT_MAX)
   private int max = DEFAULT_MAX;
+
+	@RuleProperty(key = "Ignored Method names", description = "Ignored Method names, separated by ';'", defaultValue = "")
+	private String ignoredMethods = "";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -64,7 +67,17 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     this.max = max;
   }
 
-  private static boolean isExcluded(MethodTree methodTree) {
-    return MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
+	public void setIgnoredMethods(String ignoredMethods) {
+		this.ignoredMethods = ignoredMethods;
+	}
+
+	private boolean isExcluded(MethodTree methodTree) {
+		return MethodTreeUtils.isEqualsMethod(methodTree)
+				||
+				MethodTreeUtils.isHashCodeMethod(methodTree)
+				||
+				Arrays.stream(ignoredMethods.split(";"))
+						.map(ignoredMethodName -> MethodTreeUtils.isNamed(methodTree, ignoredMethodName))
+						.reduce(Boolean.FALSE, (base, acc) -> base || acc);
   }
 }
