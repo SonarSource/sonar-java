@@ -19,12 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,11 +29,19 @@ import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.caching.FileHashingUtils;
+import org.sonar.java.checks.helpers.HashCacheTestHelper;
 import org.sonar.java.checks.security.ExcessiveContentRequestCheck.CachedResult;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalInputFile;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
+
+import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -100,10 +102,9 @@ class ExcessiveContentRequestCheckTest {
         .withCheck(check);
 
       // Add expected file hashes to the cache to match their status
-      String hashKeyFormat = "java:contentHash:MD5::%s";
-      readCache.put(String.format(hashKeyFormat, safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
-      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
-      readCache.put(String.format(hashKeyFormat, sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
 
       verifier.verifyNoIssues();
 
@@ -133,10 +134,9 @@ class ExcessiveContentRequestCheckTest {
         .withCheck(check);
 
       // Add expected file hashes to the cache to match their status
-      String hashKeyFormat = "java:contentHash:MD5::%s";
-      readCache.put(String.format(hashKeyFormat, safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
-      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), new byte[]{});
-      readCache.put(String.format(hashKeyFormat, sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(unsafeSourceFile), new byte[]{});
+      readCache.put(HashCacheTestHelper.contentHashKey(sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
 
       verifier.verifyNoIssues();
 
@@ -158,10 +158,9 @@ class ExcessiveContentRequestCheckTest {
         .withCheck(check);
 
       // Add expected file hashes to the cache to match their status
-      String hashKeyFormat = "java:contentHash:MD5::%s";
-      readCache.put(String.format(hashKeyFormat, safeSourceFile), new byte[]{});
-      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
-      readCache.put(String.format(hashKeyFormat, safeSourceFile), new byte[]{});
+      readCache.put(HashCacheTestHelper.contentHashKey(safeSourceFile), new byte[]{});
+      readCache.put(HashCacheTestHelper.contentHashKey(unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(safeSourceFile), new byte[]{});
 
       verifier.verifyNoIssues();
 
@@ -181,10 +180,9 @@ class ExcessiveContentRequestCheckTest {
         .withCheck(check);
 
       // Add expected file hashes to the cache to match their status
-      String hashKeyFormat = "java:contentHash:MD5::%s";
-      readCache.put(String.format(hashKeyFormat, safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
-      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
-      readCache.put(String.format(hashKeyFormat, sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
 
       verifier.verifyNoIssues();
 
@@ -237,10 +235,9 @@ class ExcessiveContentRequestCheckTest {
         .withCache(readCache, spyOnWriteCache);
 
       // Add expected file hashes to the cache to match their status
-      String hashKeyFormat = "java:contentHash:MD5::%s";
-      readCache.put(String.format(hashKeyFormat, safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
-      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), new byte[]{});
-      readCache.put(String.format(hashKeyFormat, sanitizerSourceFile), new byte[]{});
+      readCache.put(HashCacheTestHelper.contentHashKey(safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(unsafeSourceFile), new byte[]{});
+      readCache.put(HashCacheTestHelper.contentHashKey(sanitizerSourceFile), new byte[]{});
 
       assertThatThrownBy(verifier::verifyNoIssues)
         .isInstanceOf(AnalysisException.class)
@@ -266,10 +263,9 @@ class ExcessiveContentRequestCheckTest {
         .addFiles(InputFile.Status.SAME, unsafeSourceFile, safeSourceFile, sanitizerSourceFile)
         .withCheck(check);
 
-      String hashKeyFormat = "java:contentHash:MD5::%s";
-      readCache.put(String.format(hashKeyFormat, safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
-      readCache.put(String.format(hashKeyFormat, unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
-      readCache.put(String.format(hashKeyFormat, sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(unsafeSourceFile), FileHashingUtils.inputFileContentHash(unsafeSourceFile));
+      readCache.put(HashCacheTestHelper.contentHashKey(sanitizerSourceFile), FileHashingUtils.inputFileContentHash(sanitizerSourceFile));
 
       verifier.verifyNoIssues();
 
