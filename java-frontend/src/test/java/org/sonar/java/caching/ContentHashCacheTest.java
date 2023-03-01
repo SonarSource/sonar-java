@@ -82,11 +82,11 @@ class ContentHashCacheTest {
     when(inputFile1.status()).thenReturn(InputFile.Status.SAME);
     when(inputFile1.key()).thenReturn("key");
     ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTesterWithEmptyCache(false));
-    Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile1));
+    Assertions.assertTrue(contentHashCache.hasSameHashCached(inputFile1));
 
     List<String> logs = logTester.getLogs(LoggerLevel.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
     assertThat(logs).
-      contains("Cannot read cached hashes when the cache is disabled (" + inputFile1.key() + ").");
+      contains("Cache is disabled. File status is: " + inputFile1.status() + ". File can be skipped.");
   }
 
   @Test
@@ -99,7 +99,7 @@ class ContentHashCacheTest {
 
     List<String> logs = logTester.getLogs(LoggerLevel.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
     assertThat(logs).
-      contains("Cache is disabled. File status is: " + inputFile1.status() + ". File can be skipped.");
+      contains("Cache is disabled. File status is: " + inputFile1.status() + ". File can't be skipped.");
   }
 
   @Test

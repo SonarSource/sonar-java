@@ -52,11 +52,11 @@ public class ContentHashCache {
 
   public boolean hasSameHashCached(InputFile inputFile) {
     if (!enabled) {
-      if (inputFile.status() != InputFile.Status.SAME) {
+      if (inputFile.status() == InputFile.Status.SAME) {
         LOG.trace(() -> "Cache is disabled. File status is: " + inputFile.status() + ". File can be skipped.");
-        return false;
+        return true;
       }
-      LOG.trace(() -> "Cannot read cached hashes when the cache is disabled (" + inputFile.key() + ").");
+      LOG.trace(() -> "Cache is disabled. File status is: " + inputFile.status() + ". File can't be skipped.");
       return false;
     }
     String cacheKey = getCacheKey(inputFile);
