@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.utils.log.LogAndArguments;
@@ -497,6 +498,9 @@ class VisitorsBridgeTest {
       InputFile inputFile = new GeneratedFile(Path.of("non-existing-generated-file.java"));
 
       SonarComponents sonarComponents = spy(new SonarComponents(null, null, null, null, null));
+      SensorContext contextMock = mock(SensorContext.class);
+      sonarComponents.setSensorContext(contextMock);
+
       doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
       VisitorsBridge visitorsBridge = new VisitorsBridge(
         Collections.singletonList(new EndOfAnalysisVisitor()),
