@@ -19,11 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -37,6 +32,12 @@ import org.sonar.java.checks.helpers.HashCacheTestHelper;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -89,7 +90,7 @@ class MissingPackageInfoCheckTest {
   }
 
   @Test
-  void caching() throws NoSuchAlgorithmException, IOException {
+  void caching() {
     verifier
       .onFiles(
         mainCodeSourcesPath("DefaultPackage.java"),
@@ -103,7 +104,7 @@ class MissingPackageInfoCheckTest {
       .verifyIssueOnProject(EXPECTED_MESSAGE);
 
     var check = spy(new MissingPackageInfoCheck());
-    
+
     var populatedReadCache = new InternalReadCache().putAll(writeCache);
     var writeCache2 = new InternalWriteCache().bind(populatedReadCache);
     CheckVerifier.newVerifier()
@@ -134,10 +135,10 @@ class MissingPackageInfoCheckTest {
     doThrow(new IOException()).when(inputStream).readAllBytes();
     var localReadCache = mock(ReadCache.class);
     InternalWriteCache localWriteCache = new InternalWriteCache().bind(localReadCache);
-    doReturn(inputStream).when(localReadCache).read("java:S1228;S4032:package:"+cachedFile.key());
+    doReturn(inputStream).when(localReadCache).read("java:S1228;S4032:package:" + cachedFile.key());
     doReturn(true).when(localReadCache).contains(any());
     doReturn(new ByteArrayInputStream(cachedHash))
-      .when(localReadCache).read("java:contentHash:MD5:"+cachedFile.key());
+      .when(localReadCache).read("java:contentHash:MD5:" + cachedFile.key());
 
     var localVerifier = CheckVerifier.newVerifier()
       .withCache(localReadCache, localWriteCache)
@@ -177,7 +178,7 @@ class MissingPackageInfoCheckTest {
 
     assertThat(logTester.logs(LoggerLevel.TRACE).stream()
       .filter(msg -> msg.matches("Cache miss for key '[^']+'")))
-        .hasSize(1);
+      .hasSize(1);
   }
 
 }

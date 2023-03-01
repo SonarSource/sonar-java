@@ -117,7 +117,6 @@ public class SonarComponents {
   private final List<JavaCheck> jspChecks;
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
-
   private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
 
   private boolean alreadyLoggedSkipStatus = false;
@@ -407,6 +406,7 @@ public class SonarComponents {
 
   /**
    * Returns an OS-independent key that should identify the module within the project
+   *
    * @return A key representing the module
    */
   public String getModuleKey() {
@@ -485,11 +485,6 @@ public class SonarComponents {
       return false;
     }
     if (!canSkipInContext) {
-      contentHashCache.writeToCache(inputFile);
-      return false;
-    }
-    if (!inputFile.status().equals(InputFile.Status.SAME)) {
-      LOG.trace("File status is: " + inputFile.status() + ". File can be skipped.");
       contentHashCache.writeToCache(inputFile);
       return false;
     }

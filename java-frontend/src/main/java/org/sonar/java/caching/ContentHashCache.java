@@ -52,7 +52,12 @@ public class ContentHashCache {
 
   public boolean hasSameHashCached(InputFile inputFile) {
     if (!enabled) {
-      LOG.trace("Cannot read from cache when disabled");
+      if (!inputFile.status().equals(InputFile.Status.SAME)) {
+        LOG.trace(() -> "Cache is disabled. File status is: " + inputFile.status() + ". File can be skipped.");
+        writeToCache(inputFile);
+        return false;
+      }
+      LOG.trace(() -> "Cannot read cached hashes when the cache is disabled (" + inputFile.key() + ").");
       return false;
     }
     String cacheKey = getCacheKey(inputFile);
@@ -78,7 +83,7 @@ public class ContentHashCache {
 
   public boolean contains(InputFile inputFile) {
     if (!enabled) {
-      LOG.trace("Cannot read from cache when disabled");
+      LOG.trace(() -> "Cannot lookup cached hashes when the cache is disabled (" + inputFile.key() + ").");
       return false;
     }
     return readCache.contains(getCacheKey(inputFile));
@@ -86,7 +91,7 @@ public class ContentHashCache {
 
   public boolean writeToCache(InputFile inputFile) {
     if (!enabled) {
-      LOG.trace("Cannot write on cache when disabled");
+      LOG.trace(() -> "Cannot write hashes to the cache when the cache is disabled (" + inputFile.key() + ").");
       return false;
     }
     if (writeCache != null) {
@@ -96,9 +101,9 @@ public class ContentHashCache {
         writeCache.write(cacheKey, FileHashingUtils.inputFileContentHash(inputFile));
         return true;
       } catch (IllegalArgumentException e) {
-        LOG.error(String.format("Tried to write multiple times to cache key '%s'. Ignoring writes after the first.", cacheKey));
+        LOG.warn(String.format("Tried to write multiple times to cache key '%s'. Ignoring writes after the first.", cacheKey));
       } catch (IOException | NoSuchAlgorithmException e) {
-        LOG.error(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
+        LOG.warn(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
       }
     }
     return false;
@@ -106,7 +111,7 @@ public class ContentHashCache {
 
   private void copyFromPrevious(InputFile inputFile) {
     if (writeCache != null) {
-      LOG.trace("Coping cache from previous for file {}", inputFile.key());
+      LOG.trace("Copying cache from previous for file {}", inputFile.key());
       writeCache.copyFromPrevious(getCacheKey(inputFile));
     }
   }

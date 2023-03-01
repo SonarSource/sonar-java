@@ -52,9 +52,19 @@ class ContentHashCacheTest {
   }
 
   @Test
-  void hasSameHashCached_returns_false_whenCacheIsDisabled() {
+  void hasSameHashCached_returns_false_whenCacheIsDisabledAndInputFileStatusIsSame() {
+    InputFile inputFile1 = mock(InputFile.class);
+    when(inputFile1.status()).thenReturn(InputFile.Status.SAME);
     ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTesterWithEmptyCache(false));
-    Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile));
+    Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile1));
+  }
+
+  @Test
+  void hasSameHashCached_returns_false_whenCacheIsDisabledAndInputFileStatusIsChanged() {
+    InputFile inputFile1 = mock(InputFile.class);
+    when(inputFile1.status()).thenReturn(InputFile.Status.CHANGED);
+    ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTesterWithEmptyCache(false));
+    Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile1));
   }
 
   @Test
