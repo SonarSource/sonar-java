@@ -52,9 +52,8 @@ public class ContentHashCache {
 
   public boolean hasSameHashCached(InputFile inputFile) {
     if (!enabled) {
-      if (!inputFile.status().equals(InputFile.Status.SAME)) {
+      if (inputFile.status() != InputFile.Status.SAME) {
         LOG.trace(() -> "Cache is disabled. File status is: " + inputFile.status() + ". File can be skipped.");
-        writeToCache(inputFile);
         return false;
       }
       LOG.trace(() -> "Cannot read cached hashes when the cache is disabled (" + inputFile.key() + ").");
@@ -62,7 +61,7 @@ public class ContentHashCache {
     }
     String cacheKey = getCacheKey(inputFile);
     try {
-      LOG.trace("Reading cache for the file {}", inputFile.key());
+      LOG.trace(() -> "Reading cache for the file " + inputFile.key());
       byte[] cachedHash = readCache.read(cacheKey).readAllBytes();
       byte[] fileHash = FileHashingUtils.inputFileContentHash(inputFile);
       boolean isHashEqual = MessageDigest.isEqual(fileHash, cachedHash);
@@ -73,10 +72,10 @@ public class ContentHashCache {
       }
       return isHashEqual;
     } catch (IllegalArgumentException e) {
-      LOG.trace(String.format("Could not find key %s in the cache", cacheKey));
+      LOG.warn(String.format("Could not find key %s in the cache", cacheKey));
       writeToCache(inputFile);
     } catch (IOException | NoSuchAlgorithmException e) {
-      LOG.trace(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
+      LOG.warn(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
     }
     return false;
   }
@@ -94,26 +93,22 @@ public class ContentHashCache {
       LOG.trace(() -> "Cannot write hashes to the cache when the cache is disabled (" + inputFile.key() + ").");
       return false;
     }
-    if (writeCache != null) {
-      LOG.trace(String.format("Writing to the cache for file %s", inputFile.key()));
-      String cacheKey = getCacheKey(inputFile);
-      try {
-        writeCache.write(cacheKey, FileHashingUtils.inputFileContentHash(inputFile));
-        return true;
-      } catch (IllegalArgumentException e) {
-        LOG.warn(String.format("Tried to write multiple times to cache key '%s'. Ignoring writes after the first.", cacheKey));
-      } catch (IOException | NoSuchAlgorithmException e) {
-        LOG.warn(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
-      }
+    LOG.trace(() -> "Writing to the cache for file " + inputFile.key());
+    String cacheKey = getCacheKey(inputFile);
+    try {
+      writeCache.write(cacheKey, FileHashingUtils.inputFileContentHash(inputFile));
+      return true;
+    } catch (IllegalArgumentException e) {
+      LOG.warn(String.format("Tried to write multiple times to cache key %s. Ignoring writes after the first.", cacheKey));
+    } catch (IOException | NoSuchAlgorithmException e) {
+      LOG.warn(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
     }
     return false;
   }
 
   private void copyFromPrevious(InputFile inputFile) {
-    if (writeCache != null) {
-      LOG.trace("Copying cache from previous for file {}", inputFile.key());
-      writeCache.copyFromPrevious(getCacheKey(inputFile));
-    }
+    LOG.trace(() -> "Copying cache from previous for file " + inputFile.key());
+    writeCache.copyFromPrevious(getCacheKey(inputFile));
   }
 
   private static String getCacheKey(InputFile inputFile) {
