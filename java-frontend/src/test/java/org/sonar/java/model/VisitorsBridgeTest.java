@@ -34,8 +34,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.testfixtures.log.LogAndArguments;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
@@ -413,9 +413,9 @@ class VisitorsBridgeTest {
       Collections.emptyList(),
       null
     );
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isEmpty();
     visitorsBridge.endOfAnalysis();
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isEmpty();
   }
 
   @Test
@@ -428,9 +428,9 @@ class VisitorsBridgeTest {
       sonarComponents
     );
 
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isEmpty();
     visitorsBridge.visitFile(null, false);
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isEmpty();
     visitorsBridge.endOfAnalysis();
     List<LogAndArguments> logsAfterEndOfAnalysis = logTester.getLogs(LoggerLevel.INFO);
     assertThat(logsAfterEndOfAnalysis).hasSize(1);
@@ -448,9 +448,9 @@ class VisitorsBridgeTest {
       sonarComponents
     );
 
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isEmpty();
     visitorsBridge.visitFile(null, true);
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isEmpty();
     visitorsBridge.endOfAnalysis();
     List<LogAndArguments> logsAfterEndOfAnalysis = logTester.getLogs(LoggerLevel.INFO);
     assertThat(logsAfterEndOfAnalysis).hasSize(1);

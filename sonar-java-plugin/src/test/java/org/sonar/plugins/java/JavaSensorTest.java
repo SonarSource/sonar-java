@@ -52,9 +52,9 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.DefaultJavaResourceLocator;
@@ -291,7 +291,7 @@ class JavaSensorTest {
 
   @Test
   void performance_measure_should_log_in_debug_mode() throws IOException {
-    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(LoggerLevel.DEBUG);
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.performance.measure", "true");
     Path workDir = tmp.newFolder().toPath();
@@ -305,7 +305,7 @@ class JavaSensorTest {
 
   @Test
   void custom_performance_measure_file_path_can_be_provided() throws IOException {
-    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(LoggerLevel.DEBUG);
     MapSettings settings = new MapSettings();
     Path workDir = tmp.newFolder().toPath();
     Path customPerformanceFile = workDir.resolve("custom.performance.measure.json");
@@ -322,7 +322,7 @@ class JavaSensorTest {
 
   @Test
   void custom_performance_measure_file_path_can_be_empty() throws IOException {
-    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(LoggerLevel.DEBUG);
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.performance.measure", "true");
     settings.setProperty("sonar.java.performance.measure.path", "");

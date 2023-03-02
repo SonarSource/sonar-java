@@ -33,7 +33,7 @@ import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
@@ -102,6 +102,8 @@ class BehaviorCacheTest {
 
   @Test
   void compute_behavior_only_once() throws Exception {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
     assertThat(sev.behaviorCache.behaviors.values()).allMatch(MethodBehavior::isVisited);
@@ -170,6 +172,8 @@ class BehaviorCacheTest {
 
   @Test
   void hardcoded_behaviors() throws Exception {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     BehaviorCache behaviorCache = new BehaviorCache();
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.singletonList(new NullDereferenceCheck()));
 
@@ -341,6 +345,8 @@ class BehaviorCacheTest {
 
   @Test
   void log_when_unable_to_load_resources_with_method_behavior() throws Exception {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors
       .loadHardcodedBehaviors(() -> Collections.singletonList((InputStream) null));
     assertThat(result).isEmpty();

@@ -39,7 +39,7 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.ExternalIssue;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -183,6 +183,8 @@ class SpotBugsSensorTest {
 
   @Test
   void issues_when_xml_file_has_errors() throws IOException {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     List<ExternalIssue> externalIssues = executeSensorImporting("spotbugsXml-with-errors.xml");
     assertThat(externalIssues).hasSize(1);
 
@@ -206,6 +208,8 @@ class SpotBugsSensorTest {
 
   @Test
   void no_issues_without_srcdir() throws IOException {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     List<ExternalIssue> externalIssues = executeSensorImporting("spotbugsXml-without-srcdir.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactlyInAnyOrder(

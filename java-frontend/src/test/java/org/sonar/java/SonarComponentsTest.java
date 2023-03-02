@@ -70,9 +70,9 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.testfixtures.log.LogAndArguments;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.check.Rule;
 import org.sonar.java.classpath.ClasspathForMain;
@@ -803,7 +803,7 @@ class SonarComponentsTest {
   @ParameterizedTest
   @MethodSource("fileCanBeSkipped_only_logs_on_first_call_input")
   void fileCanBeSkipped_only_logs_on_the_first_call(SonarComponents sonarComponents, InputFile inputFile, String logMessage) throws ApiMismatchException {
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isEmpty();
 
     sonarComponents.fileCanBeSkipped(inputFile);
     List<LogAndArguments> logs = logTester.getLogs(LoggerLevel.INFO);
@@ -888,6 +888,8 @@ class SonarComponentsTest {
 
     @Test
     void log_only_50_undefined_types() {
+      logTester.setLevel(LoggerLevel.DEBUG);
+
       String source = generateSource(26);
 
       // artificially populated the semantic errors with 26 unknown types and 52 errors
@@ -918,6 +920,8 @@ class SonarComponentsTest {
 
     @Test
     void log_all_undefined_types_if_less_than_threshold() {
+      logTester.setLevel(LoggerLevel.DEBUG);
+
       String source = generateSource(1);
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors

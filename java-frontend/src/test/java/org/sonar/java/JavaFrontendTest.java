@@ -54,9 +54,9 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
+import org.sonar.api.testfixtures.log.LogAndArguments;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -417,6 +417,7 @@ class JavaFrontendTest {
 
   @Test
   void test_file_by_file_scan() throws IOException {
+    logTester.setLevel(LoggerLevel.DEBUG);
     scan(SONARLINT_RUNTIME, "class A {}", "class B { A a; }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());

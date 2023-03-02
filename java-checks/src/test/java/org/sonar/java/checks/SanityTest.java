@@ -42,10 +42,9 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.api.utils.log.Loggers;
@@ -123,24 +122,23 @@ class SanityTest {
       fail(String.format("Should have been able to execute all the rules on all the test files. %d file(s) made at least 1 rule fail.", exceptions.size()));
     }
 
-    List<LogAndArguments> errorLogs = logTester.getLogs(LoggerLevel.ERROR);
-    List<LogAndArguments> parsingErrors = errorLogs.stream()
+    List<String> errorLogs = logTester.logs(LoggerLevel.ERROR);
+    List<String> parsingErrors = errorLogs.stream()
       .filter(SanityTest::isParseError)
       .collect(Collectors.toList());
-    List<LogAndArguments> typeResolutionErrors = errorLogs.stream()
+    List<String> typeResolutionErrors = errorLogs.stream()
       .filter(SanityTest::isTypeResolutionError)
       .collect(Collectors.toList());
 
     assertThat(errorLogs).hasSize(24);
 
-    List<LogAndArguments> remainingErrors = new ArrayList<>(errorLogs);
+    List<String> remainingErrors = new ArrayList<>(errorLogs);
     remainingErrors.removeAll(parsingErrors);
     remainingErrors.removeAll(typeResolutionErrors);
     assertThat(remainingErrors).isEmpty();
 
     assertThat(typeResolutionErrors)
       .hasSize(16)
-      .map(LogAndArguments::getFormattedMsg)
       .map(log -> log.substring("ECJ Unable to resolve type ".length()))
       // FIXME investigate root cause (seems to be a conflict of version, with classes from JDK not resolved correctly
       .containsOnly(
@@ -163,7 +161,6 @@ class SanityTest {
 
     assertThat(parsingErrors)
       .hasSize(8)
-      .map(LogAndArguments::getFormattedMsg)
       .allMatch(log ->
       // ECJ error message
       log.startsWith("Parse error at line ")
@@ -174,13 +171,12 @@ class SanityTest {
 
   }
 
-  private static boolean isParseError(LogAndArguments log) {
-    String message = log.getFormattedMsg();
-    return message.startsWith("Unable to parse source file : '") || message.startsWith("Parse error at line ");
+  private static boolean isParseError(String log) {
+    return log.startsWith("Unable to parse source file : '") || log.startsWith("Parse error at line ");
   }
 
-  private static boolean isTypeResolutionError(LogAndArguments log) {
-    return log.getFormattedMsg().startsWith("ECJ Unable to resolve type ");
+  private static boolean isTypeResolutionError(String log) {
+    return log.startsWith("ECJ Unable to resolve type ");
   }
 
   private static String processExceptions(List<SanityCheckException> exceptions) {

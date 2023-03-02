@@ -56,7 +56,7 @@ import org.sonar.api.batch.sensor.issue.fix.QuickFix;
 import org.sonar.api.batch.sensor.issue.fix.TextEdit;
 import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
@@ -300,6 +300,8 @@ class InternalJavaIssueBuilderTest {
 
   @Test
   void test_sonar_component_is_null() {
+    logTester.setLevel(LoggerLevel.TRACE);
+
     InternalJavaIssueBuilder builder = new InternalJavaIssueBuilder(inputFile, null);
     builder.forRule(CHECK)
       .onTree(compilationUnitTree.types().get(0))
@@ -311,6 +313,8 @@ class InternalJavaIssueBuilderTest {
 
   @Test
   void test_sonar_rule_key_not_registered() {
+    logTester.setLevel(LoggerLevel.TRACE);
+
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.getRuleKey(any())).thenReturn(Optional.empty());
     InternalJavaIssueBuilder builder = new InternalJavaIssueBuilder(inputFile, sonarComponents);

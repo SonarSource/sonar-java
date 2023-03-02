@@ -31,7 +31,7 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -191,6 +191,8 @@ class SurefireJavaParserTest {
 
   @Test
   void should_log_missing_resource_with_debug_level() throws Exception {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     parser = new SurefireJavaParser(mock(JavaResourceLocator.class));
     parser.collect(mockContext(), getDirs("resourceNotFound"), true);
     assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -268,6 +268,8 @@ class JTypeTest {
 
   @Test
   void is_subtype_of_should_not_throw_NPE() {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     JType objectType = type("java.lang.Object");
     ITypeBinding brokenStringBinding = spy(Objects.requireNonNull(sema.resolveType("java.lang.String")));
     // simulate the NullPointerException described in SONARJAVA-4390

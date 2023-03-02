@@ -43,7 +43,7 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.model.GeneratedFile;
 
@@ -95,6 +95,8 @@ class JasperTest {
 
   @Test
   void test_empty() throws Exception {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     SensorContextTester ctx = SensorContextTester.create(tempFolder);
     ctx.fileSystem().setWorkDir(workDir);
     Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
@@ -175,6 +177,8 @@ class JasperTest {
 
   @Test
   void test_with_classpath_jee6_jstl() throws Exception {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     SensorContextTester ctx = jspContext(
       "<%@ taglib uri = \"http://java.sun.com/jsp/jstl/core\" prefix = \"c\" %>\n" +
       "<html>\n" +
@@ -192,6 +196,8 @@ class JasperTest {
 
   @Test
   void test_compilation_without_webinf() throws Exception {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     SensorContext ctx = jspContext(JSP_SOURCE, tempFolder.resolve("test.jsp"));
     Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
 
@@ -204,6 +210,8 @@ class JasperTest {
 
   @Test
   void test_exception_handling() throws Exception {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     SensorContextTester ctx = jspContext("<%=");
     Collection<GeneratedFile> inputFiles = new Jasper().generateFiles(ctx, emptyList());
     assertThat(inputFiles).isEmpty();
@@ -291,6 +299,8 @@ class JasperTest {
 
   @Test
   void test_failing_tag_compilation() throws Exception {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
     String tagLib = "<%@ taglib prefix=\"t\" tagdir=\"/WEB-INF/tags\" %>";
     SensorContextTester ctx = jspContext(tagLib +
       "<t:mytag />");
