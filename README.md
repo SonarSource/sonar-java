@@ -145,6 +145,6 @@ You can debug ITs by adding `-Dmaven.binary=mvnDebug` as an option when running 
 
 ### License
 
-Copyright 2012-2022 SonarSource.
+Copyright 2012-2023 SonarSource.
 
 Licensed under the [GNU Lesser General Public License, Version 3.0](https://www.gnu.org/licenses/lgpl.txt)
