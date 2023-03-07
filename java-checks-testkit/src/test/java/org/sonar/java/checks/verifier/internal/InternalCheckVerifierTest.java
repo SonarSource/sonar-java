@@ -19,7 +19,10 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +36,7 @@ import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.caching.DummyCache;
+import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -950,9 +954,10 @@ class InternalCheckVerifierTest {
   }
 
   @Test
-  void withCache_effectively_sets_the_caches_for_scanWithoutParsing() {
-    ReadCache readCache = new InternalReadCache();
-    WriteCache writeCache = new InternalWriteCache();
+  void withCache_effectively_sets_the_caches_for_scanWithoutParsing() throws IOException, NoSuchAlgorithmException {
+    InputFile inputFile = InternalInputFile.inputFile("", new File(TEST_FILE), InputFile.Status.SAME);
+    ReadCache readCache = new InternalReadCache().put("java:contentHash:MD5::" + TEST_FILE, FileHashingUtils.inputFileContentHash(inputFile));
+    WriteCache writeCache = new InternalWriteCache().bind(readCache);
     CacheContext cacheContext = new InternalCacheContext(
       true,
       new JavaReadCacheImpl(readCache),
