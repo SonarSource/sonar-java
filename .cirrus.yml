@@ -112,11 +112,6 @@ plugin_qa_task:
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 14
     memory: 6G
-  env:
-    matrix:
-      - SQ_VERSION: LATEST_RELEASE[8.9]
-      - SQ_VERSION: LATEST_RELEASE
-      - SQ_VERSION: DEV
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
@@ -127,7 +122,7 @@ plugin_qa_task:
     - cd docs/java-custom-rules-example
     - mvn clean install -B -e -V
     - cd ../../its/plugin
-    - mvn package -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
+    - mvn package -Pit-plugin -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 sanity_task:
@@ -165,7 +160,7 @@ ruling_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
-    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_win_task:
@@ -181,7 +176,7 @@ ruling_win_task:
     - init_git_submodules its/sources
     - git submodule update --init --recursive
     - cd its/ruling
-    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 promote_task:
