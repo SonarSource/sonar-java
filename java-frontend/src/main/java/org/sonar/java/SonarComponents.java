@@ -20,42 +20,6 @@
 package org.sonar.java;
 
 import com.sonar.sslr.api.RecognitionException;
-import org.sonar.api.SonarProduct;
-import org.sonar.api.batch.ScannerSide;
-import org.sonar.api.batch.bootstrap.ProjectDefinition;
-import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.batch.fs.InputComponent;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.rule.CheckFactory;
-import org.sonar.api.batch.rule.Checks;
-import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
-import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
-import org.sonar.api.config.Configuration;
-import org.sonar.api.measures.FileLinesContext;
-import org.sonar.api.measures.FileLinesContextFactory;
-import org.sonar.api.rule.RuleKey;
-import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.caching.ContentHashCache;
-import org.sonar.java.classpath.ClasspathForMain;
-import org.sonar.java.classpath.ClasspathForTest;
-import org.sonar.java.exceptions.ApiMismatchException;
-import org.sonar.java.model.GeneratedFile;
-import org.sonar.java.model.JProblem;
-import org.sonar.java.model.LineUtils;
-import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaIssue;
-import org.sonar.plugins.java.api.CheckRegistrar;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JspCodeVisitor;
-import org.sonarsource.api.sonarlint.SonarLintSide;
-import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -76,6 +40,40 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import org.sonar.api.SonarProduct;
+import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.batch.bootstrap.ProjectDefinition;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputComponent;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.rule.Checks;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
+import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
+import org.sonar.api.config.Configuration;
+import org.sonar.api.measures.FileLinesContext;
+import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.Version;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.exceptions.ApiMismatchException;
+import org.sonar.java.model.GeneratedFile;
+import org.sonar.java.model.JProblem;
+import org.sonar.java.model.LineUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaIssue;
+import org.sonar.plugins.java.api.CheckRegistrar;
+import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonarsource.api.sonarlint.SonarLintSide;
+import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 
 @ScannerSide
 @SonarLintSide
@@ -376,7 +374,6 @@ public class SonarComponents {
 
   /**
    * Returns the batch mode size as read from configuration, in Kilo Bytes. If not value can be found, compute dynamically an ideal value.
-   *
    * @return the batch mode size or a default value of -1L.
    */
   public long getBatchModeSizeInKB() {
@@ -406,7 +403,6 @@ public class SonarComponents {
 
   /**
    * Returns an OS-independent key that should identify the module within the project
-   *
    * @return A key representing the module
    */
   public String getModuleKey() {
@@ -456,7 +452,6 @@ public class SonarComponents {
 
 
   public boolean fileCanBeSkipped(InputFile inputFile) {
-    var contentHashCache = new ContentHashCache(context);
     if (inputFile instanceof GeneratedFile) {
       // Generated files should not be skipped as we cannot assess the change status of the source file
       return false;
@@ -481,14 +476,9 @@ public class SonarComponents {
         );
         alreadyLoggedSkipStatus = true;
       }
-      contentHashCache.writeToCache(inputFile);
       return false;
     }
-    if (!canSkipInContext) {
-      contentHashCache.writeToCache(inputFile);
-      return false;
-    }
-    return contentHashCache.hasSameHashCached(inputFile);
+    return canSkipInContext && inputFile.status() == InputFile.Status.SAME;
   }
 
   public InputComponent project() {
