@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -729,44 +728,52 @@ class SonarComponentsTest {
         checkFactory
       )
     );
-    SensorContext contextMock = mock(SensorContext.class);
-    sonarComponents.setSensorContext(contextMock);
-
     InputFile inputFile = new GeneratedFile(Path.of("non-existing-generated-file.java"));
 
     assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
   }
 
   @Test
-  void fileCanBeSkipped_always_returns_false_when_skipUnchangedFiles_is_false() throws ApiMismatchException, IOException {
+  void fileCanBeSkipped_always_returns_false_when_skipUnchangedFiles_is_false() throws ApiMismatchException {
 
     SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
-    SensorContext contextMock = mock(SensorContext.class);
-    sonarComponents.setSensorContext(contextMock);
-
     when(sonarComponents.canSkipUnchangedFiles()).thenReturn(false);
     InputFile inputFile = mock(InputFile.class);
 
     assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+    verify(inputFile, times(0)).status();
   }
 
   @Test
-  void fileCanBeSkipped_returns_false_when_inputFileStatusIsDifferentFromSame() throws ApiMismatchException {
+  void fileCanBeSkipped_always_returns_true_when_skipUnchangedFiles_is_true_and_file_status_is_same() throws ApiMismatchException {
     SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
-    SensorContext contextMock = mock(SensorContext.class);
-    sonarComponents.setSensorContext(contextMock);
-
     when(sonarComponents.canSkipUnchangedFiles()).thenReturn(true);
+
     InputFile inputFile = mock(InputFile.class);
-    when(inputFile.status()).thenReturn(InputFile.Status.CHANGED);
+    when(inputFile.status()).thenReturn(InputFile.Status.SAME);
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isTrue();
+  }
+
+  @Test
+  void fileCanBeSkipped_always_returns_false_when_skipUnchangedFiles_is_true_and_file_status_is_not_same() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    when(sonarComponents.canSkipUnchangedFiles()).thenReturn(true);
+
+    InputFile inputFile = mock(InputFile.class);
+    when(inputFile.status()).thenReturn(InputFile.Status.ADDED);
+
     assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+
+    when(inputFile.status()).thenReturn(InputFile.Status.CHANGED);
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+
   }
 
   @Test
   void fileCanBeSkipped_returns_false_when_canSkipUnchangedFile_isFalse() throws ApiMismatchException {
     SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
-    SensorContext contextMock = mock(SensorContext.class);
-    sonarComponents.setSensorContext(contextMock);
 
     ApiMismatchException apiMismatchException = new ApiMismatchException(new NoSuchMethodError("API version mismatch :-("));
     doThrow(apiMismatchException).when(sonarComponents).canSkipUnchangedFiles();
@@ -796,12 +803,9 @@ class SonarComponentsTest {
 
   @ParameterizedTest
   @MethodSource("fileCanBeSkipped_only_logs_on_first_call_input")
-  void fileCanBeSkipped_only_logs_on_the_first_call(SonarComponents sonarComponents, InputFile inputFile, String logMessage) throws IOException {
+  void fileCanBeSkipped_only_logs_on_the_first_call(SonarComponents sonarComponents, InputFile inputFile, String logMessage) throws ApiMismatchException {
     assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
 
-    SensorContext contextMock = mock(SensorContext.class);
-    sonarComponents.setSensorContext(contextMock);
-    when(inputFile.contents()).thenReturn("");
     sonarComponents.fileCanBeSkipped(inputFile);
     List<LogAndArguments> logs = logTester.getLogs(LoggerLevel.INFO);
     assertThat(logs).hasSize(1);
