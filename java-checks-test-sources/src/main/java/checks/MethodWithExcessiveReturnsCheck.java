@@ -8,19 +8,19 @@ class MethodWithExcessiveReturnsCheck {
    return false;
   }
 
-  boolean foo2() { // Noncompliant [[sc=11;ec=15]] {{Reduce the number of returns of this method 4, down to the maximum allowed 3.}}
+  boolean foo2() { // Noncompliant [[sc=11;ec=15;secondary=12,13,14,15]] {{This method has 4 returns, which is more than the 3 allowed.}}
     if (false) return true;
     if (false) return false;
     if (false) return true;
     return false;
   }
 
-  void foo3() { // Noncompliant {{Reduce the number of returns of this method 4, down to the maximum allowed 3.}}
+  void foo3() { // Noncompliant {{This method has 4 returns, which is more than the 3 allowed.}}
     if (false) return;
     if (false) return;
 
     new MethodWithExcessiveReturnsCheck() {
-      public void f() { // Noncompliant {{Reduce the number of returns of this method 5, down to the maximum allowed 3.}}
+      public void f() { // Noncompliant [[sc=19;ec=20;secondary=24,25,26,27,28]] {{This method has 5 returns, which is more than the 3 allowed.}}
         if (false) return;
         if (false) return;
         if (false) return;
@@ -71,7 +71,7 @@ class MethodWithExcessiveReturnsCheck {
   }
 
   interface I {
-    default void method() { // Noncompliant {{Reduce the number of returns of this method 5, down to the maximum allowed 3.}}
+    default void method() { // Noncompliant {{This method has 5 returns, which is more than the 3 allowed.}}
       if (false) return;
       if (false) return;
       if (false) return;

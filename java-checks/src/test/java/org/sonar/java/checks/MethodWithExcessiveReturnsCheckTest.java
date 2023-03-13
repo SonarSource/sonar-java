@@ -22,15 +22,15 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class MethodWithExcessiveReturnsCheckTest {
 
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/MethodWithExcessiveReturnsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MethodWithExcessiveReturnsCheck.java"))
       .withCheck(new MethodWithExcessiveReturnsCheck())
       .verifyIssues();
   }
@@ -48,7 +48,7 @@ class MethodWithExcessiveReturnsCheckTest {
     MethodWithExcessiveReturnsCheck check = new MethodWithExcessiveReturnsCheck();
     check.max = 4;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/MethodWithExcessiveReturnsCheckCustom.java"))
+      .onFile(mainCodeSourcesPath("checks/MethodWithExcessiveReturnsCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();
   }
