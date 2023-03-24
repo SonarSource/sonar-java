@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
+import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -48,7 +49,8 @@ public class MethodTooBigCheck extends IssuableSubscriptionVisitor {
     MethodTree methodTree = (MethodTree) tree;
     BlockTree block = methodTree.block();
     if (block != null) {
-      int lines = new LinesOfCodeVisitor().linesOfCode(block);
+      var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
+      int lines = metricsComputer.linesOfCode(block);
       if (lines > max) {
         reportIssue(methodTree.simpleName(),
           "This method has " + lines + " lines, which is greater than the " + max + " lines authorized. Split it into smaller methods.");

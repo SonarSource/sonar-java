@@ -24,6 +24,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
+import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SwitchTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -46,10 +47,10 @@ public class SwitchCaseTooBigCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     SwitchTree switchTree = (SwitchTree) tree;
-    LinesOfCodeVisitor locVisitor = new LinesOfCodeVisitor();
+    var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
     switchTree.cases().forEach(
       cgt -> {
-        int lines = cgt.body().stream().mapToInt(locVisitor::linesOfCode).sum();
+        int lines = cgt.body().stream().mapToInt(metricsComputer::linesOfCode).sum();
         if (lines > max) {
           reportIssue(cgt.labels().get(cgt.labels().size() - 1),
             "Reduce this switch case number of lines from " + lines + " to at most " + max + ", for example by extracting code into methods.");
