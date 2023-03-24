@@ -291,6 +291,7 @@ public final class CheckList {
     BooleanLiteralCheck.class,
     BooleanMethodNameCheck.class,
     BooleanMethodReturnCheck.class,
+    BrainMethodCheck.class,
     CORSCheck.class,
     CallOuterPrivateMethodCheck.class,
     CallSuperMethodFromInnerClassCheck.class,

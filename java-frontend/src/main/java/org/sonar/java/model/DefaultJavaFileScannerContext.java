@@ -31,6 +31,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
+import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexScannerContext;
@@ -49,11 +50,12 @@ import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
 import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
-public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContext implements JavaFileScannerContext, RegexScannerContext, FluentReporting {
+public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContext implements JavaFileScannerContext, RegexScannerContext, FluentReporting, MetricsScannerContext {
   private final JavaTree.CompilationUnitTreeImpl tree;
   private final boolean semanticEnabled;
   private final ComplexityVisitor complexityVisitor;
   private final RegexCache regexCache;
+  private final MetricsComputer metricsComputer;
   private final boolean fileParsed;
 
   private List<String> lines = null;
@@ -67,6 +69,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
     this.semanticEnabled = semanticModel != null;
     this.complexityVisitor = new ComplexityVisitor();
     this.regexCache = new RegexCache();
+    this.metricsComputer = new MetricsComputer();
     this.fileParsed = fileParsed;
   }
 
@@ -233,5 +236,10 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   @Override
   public JavaIssueBuilder newIssue() {
     return new InternalJavaIssueBuilder(inputFile, sonarComponents);
+  }
+
+  @Override
+  public MetricsComputer getMetricsComputer() {
+    return metricsComputer;
   }
 }
