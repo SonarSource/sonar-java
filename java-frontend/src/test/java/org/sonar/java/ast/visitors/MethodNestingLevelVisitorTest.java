@@ -50,6 +50,7 @@ class MethodNestingLevelVisitorTest {
         "  Object foo(){" +
         "    if(a) { " +
         "      for(int i=0; i<3; i++) { if(i==2){ return null; } }" +
+        "      for(int i : new int[]{1,2}) { if(i==2){ return null; } }" +
         "      return new Object();   " +
         "    };" +
         "  } " +
@@ -96,5 +97,15 @@ class MethodNestingLevelVisitorTest {
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
     int nesting = new MethodNestingLevelVisitor().getMaxNestingLevel(methodTree);
     assertThat(nesting).isEqualTo(4);
+  }
+  
+  @Test
+  void emptyMethod() throws Exception {
+    CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
+        " abstract Object foo();" +
+        "}");
+    MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
+    int nesting = new MethodNestingLevelVisitor().getMaxNestingLevel(methodTree);
+    assertThat(nesting).isZero();
   }
 }

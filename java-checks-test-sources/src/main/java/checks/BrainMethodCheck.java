@@ -1,15 +1,20 @@
 package checks;
 
+abstract class BrainMethodCheckWithLowerThresholds {
 
-class BrainMethodCheckWithLowerThresholds {
+  interface AnInterface {
+    void shouldBeIgnored();
+  }
+  
+  void empty() {}
 
-  void foo(){ // Noncompliant {{Refactor this brain method to reduce its complexity.}}
+  void foo() { // Noncompliant {{Refactor this brain method to reduce its complexity.}}
     String a = "a";
     String b = "b";
     int x = 0;
     int y = 1;
-    if(a != b) {
-      for(int i = 0; i < x; i++) {
+    if (a != b) {
+      for (int i = 0; i < x; i++) {
         switch (x) {
           case 1: {
             System.out.println("quit");
@@ -18,8 +23,8 @@ class BrainMethodCheckWithLowerThresholds {
             return;
         }
       }
-    }else {
-      for(String s : new String[] {"a"}) {
+    } else {
+      for (String s : new String[] {"a"}) {
         System.out.println(s);
       }
     }
@@ -31,20 +36,22 @@ class BrainMethodCheckWithLowerThresholds {
     String b = "b";
     int x = 0;
     int y = 1;
-    if(a != b) {
-      for(int i = 0; i < x; i++) {
-        if( i > 2) {System.out.println("quit");}
+    if (a != b) {
+      for (int i = 0; i < x; i++) {
+        if (i > 2) {
+          System.out.println("quit");
+        }
       }
     }
   }
-  
+
   void goo() { // Compliant, not breaking nesting threshold
     String a = "a";
     String b = "b";
     int x = 0;
     int y = 1;
-    if(a != b) {
-      for(int i = 0; i < x; i++) {
+    if (a != b) {
+      for (int i = 0; i < x; i++) {
         System.out.println("1");
         System.out.println("2");
         System.out.println("3");
@@ -53,21 +60,21 @@ class BrainMethodCheckWithLowerThresholds {
         System.out.println("6");
         System.out.println("7");
       }
-    }else {
-      for(String s : new String[] {"a"}) {
+    } else {
+      for (String s : new String[] {"a"}) {
         System.out.println(s);
       }
     }
     System.out.println("This method is too long, has too many variables, it is too nested, and it's too complex");
   }
 
-  void zoo(){ // Compliant, not breaking number of variables threshold
+  void zoo() { // Compliant, not breaking number of variables threshold
     System.out.println("no more variable a");
     System.out.println("no more variable b");
     int x = 0;
     int y = 1;
-    if(x < y) {
-      for(int i = 0; i < x; i++) {
+    if (x < y) {
+      for (int i = 0; i < x; i++) {
         switch (x) {
           case 1: {
             System.out.println("quit");
@@ -76,24 +83,24 @@ class BrainMethodCheckWithLowerThresholds {
             return;
         }
       }
-    }else {
-      if(y == 2) {
+    } else {
+      if (y == 2) {
         System.out.println("no more variable s and i");
       }
     }
     System.out.println("This method is too long, has too many variables, it is too nested, and it's too complex");
   }
-  
-  void hoo(){ // Compliant, not breaking cyclomatic complexity
+
+  void hoo() { // Compliant, not breaking cyclomatic complexity
     String a = "a";
     String b = "b";
     int x = 0;
     int y = 1;
-    if(x>y) {
-      if(y<0) {
+    if (x > y) {
+      if (y < 0) {
         try {
           System.out.println("ok");
-        }catch (Exception e) {
+        } catch (Exception e) {
           // TODO: handle exception
         }
       }
@@ -106,5 +113,38 @@ class BrainMethodCheckWithLowerThresholds {
     System.out.println("loc");
     System.out.println("threshold");
   }
-  
+
+  abstract void testAbs();
+
+  @Override
+  public boolean equals(Object obj) {
+    String a = "a";
+    String b = "b";
+    int x = 0;
+    int y = 1;
+    if (a != b) {
+      for (int i = 0; i < x; i++) {
+        switch (x) {
+          case 1: {
+            System.out.println("quit");
+          }
+          default:
+            return true;
+        }
+      }
+    } else {
+      for (String s : new String[] {"a"}) {
+        System.out.println(s);
+      }
+    }
+    System.out.println("Equals/hashCode methods are ignored");
+    return super.equals(obj);
+  }
+
+  @Override
+  public int hashCode() {
+    // TODO Auto-generated method stub
+    return super.hashCode();
+  }
+
 }

@@ -36,9 +36,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public interface MetricsScannerContext {
 
-  public MetricsComputer getMetricsComputer();
+  MetricsComputer getMetricsComputer();
 
-  public class MetricsComputer {
+  class MetricsComputer {
     private Map<Integer, List<Tree>> methodComplexityNodes = new HashMap<>();
     private Map<Integer, CognitiveComplexityVisitor.Result> methodComplexity = new HashMap<>();
     private Map<Integer, Integer> compilationUnityComplexity = new HashMap<>();

@@ -62,7 +62,7 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor {
     MethodTree methodTree = (MethodTree) tree;
 
     var metricsComputer = ((MetricsScannerContext) context).getMetricsComputer();
-    
+
     if (isExcluded(methodTree)) {
       return;
     }
@@ -82,7 +82,7 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isExcluded(MethodTree methodTree) {
-    return methodTree.symbol().isAbstract() || methodTree.block() == null || MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
+    return methodTree.symbol().isAbstract() || MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
   }
 
 }
