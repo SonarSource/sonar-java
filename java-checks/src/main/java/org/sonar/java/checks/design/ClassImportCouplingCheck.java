@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,51 +34,25 @@ import org.sonar.java.checks.helpers.UtilClassUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.ArrayTypeTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeCastTree;
-import org.sonar.plugins.java.api.tree.TypeParameterTree;
-import org.sonar.plugins.java.api.tree.TypeTree;
-import org.sonar.plugins.java.api.tree.UnionTypeTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.plugins.java.api.tree.WildcardTree;
 
 @Rule(key = "S6539")
-public class ClassImportCouplingCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class ClassImportCouplingCheck extends AbstractCouplingChecker {
 
   // TODO change to 20, 3 is for testing purposes
   private static final int COUPLING_THRESHOLD = 3;
-
   @RuleProperty(
     key = "couplingThreshold",
     description = "Maximum number of classes a single class is allowed to depend upon",
     defaultValue = "" + COUPLING_THRESHOLD)
   public int couplingThreshold = COUPLING_THRESHOLD;
   private String packageName;
-  private final Deque<Set<String>> nesting = new LinkedList<>();
-  private Set<String> types;
-  private JavaFileScannerContext context;
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
-  }
 
   @Override
   public void visitClass(ClassTree tree) {
@@ -106,7 +79,7 @@ public class ClassImportCouplingCheck extends BaseTreeVisitor implements JavaFil
       .collect(Collectors.toSet());
 
     checkTypes(tree.superClass());
-    checkTypes((List<? extends Tree>) tree.superInterfaces());
+    checkTypes(tree.superInterfaces());
     super.visitClass(tree);
 
     filteredImports.addAll(types);
@@ -119,97 +92,7 @@ public class ClassImportCouplingCheck extends BaseTreeVisitor implements JavaFil
   }
 
   @Override
-  public void visitVariable(VariableTree tree) {
-    checkTypes(tree.type());
-    super.visitVariable(tree);
-  }
-
-  @Override
-  public void visitCatch(CatchTree tree) {
-    // skip visit catch parameter for backward compatibility
-    scan(tree.block());
-  }
-
-  @Override
-  public void visitTypeCast(TypeCastTree tree) {
-    checkTypes(tree.type());
-    super.visitTypeCast(tree);
-  }
-
-  @Override
-  public void visitMethod(MethodTree tree) {
-    checkTypes(tree.returnType());
-    super.visitMethod(tree);
-  }
-
-  @Override
-  public void visitTypeParameter(TypeParameterTree typeParameter) {
-    checkTypes((List<? extends Tree>) typeParameter.bounds());
-    checkTypes(typeParameter.identifier());
-    super.visitTypeParameter(typeParameter);
-  }
-
-  @Override
-  public void visitUnionType(UnionTypeTree tree) {
-    // can not be visited because of visitCatch excluding exceptions
-    checkTypes((List<? extends Tree>) tree.typeAlternatives());
-    super.visitUnionType(tree);
-  }
-
-  @Override
-  public void visitParameterizedType(ParameterizedTypeTree tree) {
-    checkTypes(tree.type());
-    checkTypes((List<TypeTree>) tree.typeArguments());
-    super.visitParameterizedType(tree);
-  }
-
-  @Override
-  public void visitNewClass(NewClassTree tree) {
-    if (tree.typeArguments() != null) {
-      checkTypes((List<TypeTree>) tree.typeArguments());
-    }
-    if (tree.identifier().is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      scan(tree.enclosingExpression());
-      checkTypes((List<TypeTree>) ((ParameterizedTypeTree) tree.identifier()).typeArguments());
-      scan(tree.typeArguments());
-      scan(tree.arguments());
-      scan(tree.classBody());
-    } else {
-      super.visitNewClass(tree);
-    }
-  }
-
-  @Override
-  public void visitWildcard(WildcardTree tree) {
-    checkTypes(tree.bound());
-    super.visitWildcard(tree);
-  }
-
-  @Override
-  public void visitArrayType(ArrayTypeTree tree) {
-    checkTypes(tree.type());
-    super.visitArrayType(tree);
-  }
-
-  @Override
-  public void visitInstanceOf(InstanceOfTree tree) {
-    checkTypes(tree.type());
-    super.visitInstanceOf(tree);
-  }
-
-  @Override
-  public void visitNewArray(NewArrayTree tree) {
-    checkTypes(tree.type());
-    super.visitNewArray(tree);
-  }
-
-  private void checkTypes(List<? extends Tree> types) {
-    for (Tree type : types) {
-      checkTypes(type);
-    }
-  }
-
-  private void checkTypes(@Nullable Tree type) {
+  public void checkTypes(@Nullable Tree type) {
     if (type == null || types == null) {
       return;
     }

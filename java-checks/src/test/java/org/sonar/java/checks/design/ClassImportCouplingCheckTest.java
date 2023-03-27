@@ -24,13 +24,13 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-public class ClassImportCouplingCheckTest {
+class ClassImportCouplingCheckTest {
 
-    @Test
-    void test() {
-        CheckVerifier.newVerifier()
-                .onFile(mainCodeSourcesPath("checks/design/ClassImportCouplingCheck.java"))
-                .withCheck(new ClassImportCouplingCheck())
-                .verifyIssues();
-    }
+  @Test
+  void test() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/design/ClassImportCouplingCheck.java"))
+      .withCheck(new ClassImportCouplingCheck())
+      .verifyIssues();
+  }
 }

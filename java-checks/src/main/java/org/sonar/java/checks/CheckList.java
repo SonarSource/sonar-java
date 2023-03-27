@@ -19,6 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.java.checks.aws.AwsConsumerBuilderUsageCheck;
 import org.sonar.java.checks.aws.AwsCredentialsShouldBeSetExplicitlyCheck;
 import org.sonar.java.checks.aws.AwsLambdaSyncCallCheck;
@@ -26,6 +31,7 @@ import org.sonar.java.checks.aws.AwsLongTermAccessKeysCheck;
 import org.sonar.java.checks.aws.AwsRegionSetterCheck;
 import org.sonar.java.checks.aws.AwsRegionShouldBeSetExplicitlyCheck;
 import org.sonar.java.checks.aws.AwsReusableResourcesInitializedOnceCheck;
+import org.sonar.java.checks.design.ClassCouplingCheck;
 import org.sonar.java.checks.design.ClassImportCouplingCheck;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
@@ -223,12 +229,6 @@ import org.sonar.java.se.checks.XmlParserLoadsExternalSchemasCheck;
 import org.sonar.java.se.checks.XmlValidatedSignatureCheck;
 import org.sonar.java.se.checks.XxeProcessingCheck;
 import org.sonar.plugins.java.api.JavaCheck;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class CheckList {
 
