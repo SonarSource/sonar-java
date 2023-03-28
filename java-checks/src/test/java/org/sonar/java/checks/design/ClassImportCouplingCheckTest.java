@@ -33,4 +33,20 @@ class ClassImportCouplingCheckTest {
       .withCheck(new ClassImportCouplingCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_utils() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/design/ClassImportCouplingCheckUtils.java"))
+      .withCheck(new ClassImportCouplingCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_utils_inner() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/design/T1.java"))
+      .withCheck(new ClassImportCouplingCheck())
+      .verifyNoIssues();
+  }
 }
