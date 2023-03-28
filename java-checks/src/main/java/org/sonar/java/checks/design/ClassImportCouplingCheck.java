@@ -19,10 +19,8 @@
  */
 package org.sonar.java.checks.design;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +29,7 @@ import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.helpers.UtilClassUtils;
+import org.sonar.java.checks.helpers.ClassPattternsUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -46,7 +44,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S6539")
 public class ClassImportCouplingCheck extends AbstractCouplingChecker {
 
-  // TODO change to 20, 3 is for testing purposes
+  // TODO change to 20, 3 is for testing purposes; and add in description why is 20 for now
   private static final int COUPLING_THRESHOLD = 3;
   @RuleProperty(
     key = "couplingThreshold",
@@ -58,7 +56,7 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
   @Override
   public void visitClass(ClassTree tree) {
     // if class is utility class -> don't report
-    if (UtilClassUtils.isUtilityClass(tree) || UtilClassUtils.isPrivateInnerClass(tree)) {
+    if (ClassPattternsUtils.isUtilityClass(tree) || ClassPattternsUtils.isPrivateInnerClass(tree)) {
       return;
     }
 
@@ -72,11 +70,12 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
     Set<String> imports = compilationUnitTree.imports().stream()
       .map(ImportTree.class::cast)
       .map(ImportTree::qualifiedIdentifier)
-      .map(ClassImportCouplingCheck::helper)
+      .map(ClassImportCouplingCheck::getPackageName)
       .collect(Collectors.toSet());
 
+    String fileProjectName = context.getProject().key();
     Set<String> filteredImports = imports.stream()
-      .filter(i -> !i.startsWith("java."))
+      .filter(i -> i.startsWith(fileProjectName))
       .collect(Collectors.toSet());
 
     checkTypes(tree.superClass());
@@ -102,47 +101,29 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
     if (type.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTreeImpl identifierTree = (IdentifierTreeImpl) type;
       IPackageBinding packageBinding = identifierTree.typeBinding.getPackage();
-      addToTypes(identifierTree, packageBinding);
+      if (packageBinding != null && packageBinding.getName().contains(packageName)) {
+        types.add(packageBinding.getName() + "." + identifierTree.name());
+      }
     } else if (type.is(Tree.Kind.MEMBER_SELECT)) {
-      Deque<String> fullyQualifiedNameComponents = new ArrayDeque<>();
-      ExpressionTree expr = (ExpressionTree) type;
-      while (expr.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-        IdentifierTreeImpl identifierTree = (IdentifierTreeImpl) mse.identifier();
-        String name = identifierTree.binding.getName();
-        if (name.contains(packageName)) {
-          fullyQualifiedNameComponents.push(mse.identifier().name());
-        }
-        expr = mse.expression();
+      String name = getPackageName(type);
+      if (name.contains(packageName)) {
+        types.add(name);
       }
-      if (expr.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTreeImpl identifierTree = (IdentifierTreeImpl) expr;
-        String name = identifierTree.binding.getName();
-        if (name.contains(packageName)) {
-          fullyQualifiedNameComponents.push(identifierTree.name());
-        }
-      }
-      types.add(String.join(".", fullyQualifiedNameComponents));
     }
   }
 
-  private void addToTypes(IdentifierTree type, IPackageBinding packageBinding) {
-    if (packageBinding != null && packageBinding.getName().contains(packageName)) {
-      types.add(type.name());
-    }
-  }
-
-  private static String helper(Tree tree) {
+  private static String getPackageName(Tree tree) {
     List<String> packageNames = new ArrayList<>();
     MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) tree;
-    while (true) {
-      memberSelect.expression();
+
+    while (memberSelect != null) {
       packageNames.add(memberSelect.identifier().name());
-      try {
-        memberSelect = (MemberSelectExpressionTree) memberSelect.expression();
-      } catch (ClassCastException e) {
-        packageNames.add(((IdentifierTree) memberSelect.expression()).name());
-        break;
+      ExpressionTree expressionTree = memberSelect.expression();
+      if (expressionTree instanceof MemberSelectExpressionTree) {
+        memberSelect = (MemberSelectExpressionTree) expressionTree;
+      } else if (expressionTree instanceof IdentifierTree) {
+        packageNames.add(((IdentifierTree) expressionTree).name());
+        memberSelect = null;
       }
     }
     Collections.reverse(packageNames);

@@ -40,7 +40,7 @@ class ClassImportCouplingCheck { // Noncompliant
   private class InnerClass {
   }
 
-  class Tmp<T1> { // Noncompliant
+  class Tmp<T1> {
     void m() {
       try {
       } catch (Exception e) {
