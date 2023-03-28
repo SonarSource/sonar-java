@@ -48,6 +48,9 @@ public abstract class AbstractCouplingChecker extends BaseTreeVisitor implements
   protected Set<String> types;
   protected JavaFileScannerContext context;
 
+  /**
+   * This method adds the fully-qualified class name to a set of types that are being tracked.
+   */
   abstract void checkTypes(@Nullable Tree type);
 
   @Override
