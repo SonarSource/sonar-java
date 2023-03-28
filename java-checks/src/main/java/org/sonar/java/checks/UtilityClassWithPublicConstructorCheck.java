@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.UtilClassUtils;
+import org.sonar.java.checks.helpers.ClassPattternsUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -43,7 +43,7 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (!UtilClassUtils.isUtilityClass(classTree) || UtilClassUtils.isPrivateInnerClass(classTree)) {
+    if (!ClassPattternsUtils.isUtilityClass(classTree) || ClassPattternsUtils.isPrivateInnerClass(classTree)) {
       return;
     }
     boolean hasImplicitPublicConstructor = true;

@@ -26,23 +26,23 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UtilClassUtilsTest {
+class ClassPattternsUtilsTest {
 
   @Test
   void is_private_inner_class() {
-    assertFalse(UtilClassUtils.isPrivateInnerClass(parseClass("class A { public static void main(String[] args){} }")));
-    assertTrue(UtilClassUtils.isPrivateInnerClass(parseInnerClass("class A { public static void main(String[] args){} private class B {}}")));
+    assertFalse(ClassPattternsUtils.isPrivateInnerClass(parseClass("class A { public static void main(String[] args){} }")));
+    assertTrue(ClassPattternsUtils.isPrivateInnerClass(parseInnerClass("class A { public static void main(String[] args){} private class B {}}")));
   }
 
   @Test
   void is_utility_class() {
-    assertFalse(UtilClassUtils.isUtilityClass(parseClass("class A { public static void main(String[] args){} }")));
-    assertTrue(UtilClassUtils.isUtilityClass(parseClass("class A { public static void a(){} private static void b(){}}")));
-    assertFalse(UtilClassUtils.isUtilityClass(parseClass("enum A {}")));
-    assertFalse(UtilClassUtils.isUtilityClass(parseClass("class A { enum B {}}")));
-    assertFalse(UtilClassUtils.isUtilityClass(parseClass("class A { interface B {}}")));
-    assertFalse(UtilClassUtils.isUtilityClass(parseClass("class A { @interface B {}}")));
-    assertFalse(UtilClassUtils.isUtilityClass(parseClass("class A { public static void a(){} private static void b(){} private void c(){}}")));
+    assertFalse(ClassPattternsUtils.isUtilityClass(parseClass("class A { public static void main(String[] args){} }")));
+    assertTrue(ClassPattternsUtils.isUtilityClass(parseClass("class A { public static void a(){} private static void b(){}}")));
+    assertFalse(ClassPattternsUtils.isUtilityClass(parseClass("enum A {}")));
+    assertFalse(ClassPattternsUtils.isUtilityClass(parseClass("class A { enum B {}}")));
+    assertFalse(ClassPattternsUtils.isUtilityClass(parseClass("class A { interface B {}}")));
+    assertFalse(ClassPattternsUtils.isUtilityClass(parseClass("class A { @interface B {}}")));
+    assertFalse(ClassPattternsUtils.isUtilityClass(parseClass("class A { public static void a(){} private static void b(){} private void c(){}}")));
   }
 
   private ClassTree parseClass(String code) {
