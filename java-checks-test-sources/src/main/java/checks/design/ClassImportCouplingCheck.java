@@ -6,7 +6,7 @@ import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Assertions;
 import org.sonar.api.SonarProduct;
 
-class ClassImportCouplingCheck { // Noncompliant
+class ClassImportCouplingCheck { // Noncompliant [[sc=7;ec=31]] {{Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 23 to the maximum authorized 20 or less.}}
 
   List<A> a = new ArrayList<>();
   SonarProduct sonarProduct;

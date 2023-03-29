@@ -85,7 +85,7 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
       filteredImports.addAll(types);
       int size = filteredImports.size();
       if (size > couplingThreshold) {
-        context.reportIssue(this, tree, "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from " +
+        context.reportIssue(this, tree.simpleName(), "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from " +
           size + " to the maximum authorized " + couplingThreshold + " or less.");
       }
       types = nesting.pop();
