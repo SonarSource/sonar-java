@@ -39,7 +39,7 @@ public class ClassPatternsUtils {
   }
 
   public static boolean isUtilityClass(ClassTree classTree) {
-    return hasOnlyStaticMembers(classTree) && !anonymousClass(classTree) && !extendsAnotherClassOrImplementsSerializable(classTree)
+    return !anonymousClass(classTree) && hasOnlyStaticMembers(classTree) && !extendsAnotherClassOrImplementsSerializable(classTree)
       && !containsMainMethod(classTree);
   }
 
