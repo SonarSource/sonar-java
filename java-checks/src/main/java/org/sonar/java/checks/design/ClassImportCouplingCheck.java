@@ -44,18 +44,17 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S6539")
 public class ClassImportCouplingCheck extends AbstractCouplingChecker {
 
-  // TODO change to 20, 3 is for testing purposes; and add in description why is 20 for now
-  private static final int COUPLING_THRESHOLD = 3;
+  private static final int COUPLING_THRESHOLD = 20;
   @RuleProperty(
     key = "couplingThreshold",
-    description = "Maximum number of classes a single class is allowed to depend upon",
+    description = "Maximum number of classes a single class is allowed to depend upon. This value is an experimental value.",
     defaultValue = "" + COUPLING_THRESHOLD)
   public int couplingThreshold = COUPLING_THRESHOLD;
   private String packageName;
 
   @Override
   public void visitClass(ClassTree tree) {
-    // if class is utility class -> don't report
+    // if class is utility or private inner class -> don't report
     if (ClassPattternsUtils.isUtilityClass(tree) || ClassPattternsUtils.isPrivateInnerClass(tree)) {
       return;
     }
