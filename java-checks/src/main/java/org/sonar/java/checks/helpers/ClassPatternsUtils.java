@@ -28,9 +28,9 @@ import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-public class ClassPattternsUtils {
+public class ClassPatternsUtils {
 
-  private ClassPattternsUtils() {
+  private ClassPatternsUtils() {
   }
 
   public static boolean isPrivateInnerClass(ClassTree classTree) {
@@ -66,7 +66,7 @@ public class ClassPattternsUtils {
   }
 
   private static boolean noStaticMember(List<Tree> members) {
-    return members.stream().noneMatch(ClassPattternsUtils::isStatic);
+    return members.stream().noneMatch(ClassPatternsUtils::isStatic);
   }
 
   private static boolean isStatic(Tree member) {

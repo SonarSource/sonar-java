@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.helpers.ClassPattternsUtils;
+import org.sonar.java.checks.helpers.ClassPatternsUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -55,7 +55,7 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
   @Override
   public void visitClass(ClassTree tree) {
     // if class is utility or private inner class -> don't report
-    if (ClassPattternsUtils.isUtilityClass(tree) || ClassPattternsUtils.isPrivateInnerClass(tree)) {
+    if (ClassPatternsUtils.isUtilityClass(tree) || ClassPatternsUtils.isPrivateInnerClass(tree)) {
       return;
     }
 
