@@ -584,6 +584,7 @@ public final class CheckList {
     SimpleStringLiteralForSingleLineStringsCheck.class,
     SingleCharacterAlternationCheck.class,
     SingleCharCharacterClassCheck.class,
+    SingletonUsageCheck.class,
     SpecializedFunctionalInterfacesCheck.class,
     SpringAntMatcherOrderCheck.class,
     SpringAutoConfigurationCheck.class,

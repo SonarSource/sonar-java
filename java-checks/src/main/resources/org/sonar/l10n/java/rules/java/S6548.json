@@ -1,0 +1,15 @@
+{
+  "title": "The Singleton design pattern should be used with care",
+  "type": "CODE_SMELL",
+  "status": "beta",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "0min"
+  },
+  "tags": [],
+  "defaultSeverity": "Info",
+  "ruleSpecification": "RSPEC-6548",
+  "sqKey": "S6548",
+  "scope": "All",
+  "quickfix": "unknown"
+}
