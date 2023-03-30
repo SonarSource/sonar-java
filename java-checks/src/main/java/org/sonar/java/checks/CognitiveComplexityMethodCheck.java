@@ -54,7 +54,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
       return;
     }
     var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
-    CognitiveComplexityVisitor.Result result = metricsComputer.methodComplexity(method);
+    CognitiveComplexityVisitor.Result result = metricsComputer.getMethodComplexity(method);
     int total = result.complexity;
     if (total > max) {
       reportIssue(method.simpleName(),

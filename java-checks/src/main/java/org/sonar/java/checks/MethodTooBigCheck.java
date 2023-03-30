@@ -50,7 +50,7 @@ public class MethodTooBigCheck extends IssuableSubscriptionVisitor {
     BlockTree block = methodTree.block();
     if (block != null) {
       var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
-      int lines = metricsComputer.linesOfCode(block);
+      int lines = metricsComputer.getLinesOfCode(block);
       if (lines > max) {
         reportIssue(methodTree.simpleName(),
           "This method has " + lines + " lines, which is greater than the " + max + " lines authorized. Split it into smaller methods.");

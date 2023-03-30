@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
@@ -46,8 +47,9 @@ public class MethodNestingLevelVisitor extends BaseTreeVisitor {
   public int getMaxNestingLevel(MethodTree tree) {
     maxNestingLevel = 0;
     nestingLevel = 0;
-    if (tree.block() == null)
+    if (tree.block() == null) {
       return maxNestingLevel;
+    }
     scan(tree.block());
     return maxNestingLevel;
   }
@@ -64,8 +66,13 @@ public class MethodNestingLevelVisitor extends BaseTreeVisitor {
   @Override
   public void visitIfStatement(IfStatementTree tree) {
     visit(tree.thenStatement());
-    if (tree.elseStatement() != null) {
-      visit(tree.elseStatement());
+    var elseTree = tree.elseStatement();
+    if (elseTree != null) {
+      if (elseTree.is(Kind.IF_STATEMENT)) {
+        tree.elseStatement().accept(this);
+      } else {
+        visit(tree.elseStatement());
+      }
     }
   }
 
@@ -111,7 +118,7 @@ public class MethodNestingLevelVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    if(tree.classBody() != null) {
+    if (tree.classBody() != null) {
       visit(tree.classBody());
     }
   }

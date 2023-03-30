@@ -52,7 +52,7 @@ public class TooManyLinesOfCodeInFileCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
-    int lines = metricsComputer.linesOfCode(tree);
+    int lines = metricsComputer.getLinesOfCode(tree);
     if (lines > maximum) {
       addIssueOnFile(MessageFormat.format("This file has {0} lines, which is greater than {1} authorized. Split it into smaller files.", lines, maximum));
     }

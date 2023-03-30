@@ -56,7 +56,7 @@ class MetricsComputerTest implements MetricsScannerContext {
     assertThat(mc.getMethodComplexityNodes()).containsKey(methodTree.hashCode());
 
     assertThat(mc.getMethodComplexity()).isEmpty();
-    mc.methodComplexity(methodTree);
+    mc.getMethodComplexity(methodTree);
     assertThat(mc.getMethodComplexity()).containsKey(methodTree.hashCode());
     
     assertThat(mc.getMethodNumberOfAccessedVariables()).isEmpty();
@@ -64,27 +64,27 @@ class MetricsComputerTest implements MetricsScannerContext {
     assertThat(mc.getMethodNumberOfAccessedVariables()).containsKey(methodTree.hashCode());
     
     assertThat(mc.getTreeLinesOfCode()).isEmpty();
-    mc.linesOfCode(methodTree);
+    mc.getLinesOfCode(methodTree);
     assertThat(mc.getTreeLinesOfCode()).containsKey(methodTree.hashCode());
     
     assertThat(mc.getTreeNumberOfStatements()).isEmpty();
-    mc.numberOfStatements(methodTree);
+    mc.getNumberOfStatements(methodTree);
     assertThat(mc.getTreeNumberOfStatements()).containsKey(methodTree.hashCode());
     
     assertThat(mc.getTreeNumberOfCommentedLines()).isEmpty();
-    mc.numberOfCommentedLines(cut);
+    mc.getNumberOfCommentedLines(cut);
     assertThat(mc.getTreeNumberOfCommentedLines()).containsKey(cut.hashCode());
     
     assertThat(mc.getTreeNoSonarLines()).isEmpty();
-    mc.noSonarLines(cut);
+    mc.getNoSonarLines(cut);
     assertThat(mc.getTreeNoSonarLines()).containsKey(cut.hashCode());
     
     assertThat(mc.getCompilationUnityComplexity()).isEmpty();
-    mc.compilationUnitComplexity(cut);
+    mc.getCompilationUnitComplexity(cut);
     assertThat(mc.getCompilationUnityComplexity()).containsKey(cut.hashCode());
     
     assertThat(mc.getMethodNestingLevel()).isEmpty();
-    mc.methodNestingLevel(methodTree);
+    mc.getMethodNestingLevel(methodTree);
     assertThat(mc.getMethodNestingLevel()).containsKey(methodTree.hashCode());
     
   }

@@ -35,10 +35,13 @@ class MethodNestingLevelVisitorTest {
   void anonymousClassHandling() throws Exception {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
       " Object foo(){" +
-      " Runnable runnable = new Runnable() { " +
-      "    @Override " +
-      "    public void run() { if(true){ System.out.println(\"Hi.\"); } }" +
-      "    };" +
+      "   Runnable runnable = new Runnable() { " +
+      "     @Override " +
+      "     public void run() { if(true){ System.out.println(\"Hi.\"); } }" +
+      "     };" +
+      "   abstract class AbsAnonym { " +
+      "     abstract void absVoid(); " +
+      "   } " +
       " } " +
       "}");
     var methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
@@ -50,18 +53,42 @@ class MethodNestingLevelVisitorTest {
     assertThat(anonymousMethodNesting).isEqualTo(1);
   }
 
+  void testt() {
+    abstract class Goo {
+      abstract void goo();
+    }
+  }
+
   @Test
-  void ifHandling() throws Exception {
+  void ifElseHandling() throws Exception {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
       " Object foo(){" +
-      " if(a) { " +
-      "    return new Object(); " +
-      "    };" +
+      "   if(a) { return new Object(); } " +
+      "   else if(b){ return null; } " +
+      "   else { " +
+      "     if(c){ something(); } " +
+      "   } " +
       " } " +
       "}");
     var methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
     int nesting = new MethodNestingLevelVisitor().getMaxNestingLevel(methodTree);
-    assertThat(nesting).isEqualTo(1);
+    assertThat(nesting).isEqualTo(2);
+  }
+  
+  @Test
+  void ifHandling() throws Exception {
+    CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
+      " Object foo(){" +
+      "   if(a) { return new Object(); } " +
+      "   else { " +
+      "     if(c){ something(); } " +
+      "     else{  if(d){ return null; }  }"+
+      "   } " +
+      " } " +
+      "}");
+    var methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
+    int nesting = new MethodNestingLevelVisitor().getMaxNestingLevel(methodTree);
+    assertThat(nesting).isEqualTo(3);
   }
 
   @Test

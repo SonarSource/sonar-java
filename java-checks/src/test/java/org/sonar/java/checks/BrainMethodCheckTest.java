@@ -29,12 +29,20 @@ class BrainMethodCheckTest {
 
   @Test
   void test() {
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/BrainMethodCheck.java"))
+      .withChecks(new BrainMethodCheck())
+      .verifyIssues();
+  }
+  
+  @Test
+  void testLowerThresholds() {
     var check = new BrainMethodCheck();
     check.locThreshold = 14;
     check.noavThreshold = 4;
     check.cyclomaticThreshold = 5;
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/BrainMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/BrainMethodCheckLowerThresholds.java"))
       .withChecks(check)
       .verifyIssues();
   }

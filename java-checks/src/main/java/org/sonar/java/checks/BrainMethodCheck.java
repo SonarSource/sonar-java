@@ -74,8 +74,8 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor {
     }
 
     int cyclomaticComplexity = metricsComputer.getComplexityNodes(methodTree).size();
-    int maxNestingLevel = metricsComputer.methodNestingLevel(methodTree);
-    int linesOfCode = metricsComputer.linesOfCode(methodTree.block());
+    int maxNestingLevel = metricsComputer.getMethodNestingLevel(methodTree);
+    int linesOfCode = metricsComputer.getLinesOfCode(methodTree.block());
     int numberOfAccessedVariables = metricsComputer.getNumberOfAccessedVariables(methodTree);
 
     if (linesOfCode >= locThreshold &&

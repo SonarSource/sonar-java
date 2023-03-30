@@ -53,7 +53,7 @@ public class MetricsComputer {
     return methodComplexityNodes.computeIfAbsent(tree.hashCode(), k -> complexityVisitor.getNodes(tree));
   }
 
-  public CognitiveComplexityVisitor.Result methodComplexity(MethodTree tree) {
+  public CognitiveComplexityVisitor.Result getMethodComplexity(MethodTree tree) {
     return methodComplexity.computeIfAbsent(tree.hashCode(), k -> CognitiveComplexityVisitor.methodComplexity(tree));
   }
 
@@ -65,39 +65,39 @@ public class MetricsComputer {
 
   LinesOfCodeVisitor linesOfCodeVisitor = new LinesOfCodeVisitor();
 
-  public int linesOfCode(Tree tree) {
+  public int getLinesOfCode(Tree tree) {
     return treeLinesOfCode.computeIfAbsent(tree.hashCode(), k -> linesOfCodeVisitor.linesOfCode(tree));
   }
 
   StatementVisitor numberOfStatementsVisitor = new StatementVisitor();
 
-  public int numberOfStatements(Tree tree) {
+  public int getNumberOfStatements(Tree tree) {
     return treeNumberOfStatements.computeIfAbsent(tree.hashCode(), k -> numberOfStatementsVisitor.numberOfStatements(tree));
   }
 
   CommentLinesVisitor commentedLineVisitor = new CommentLinesVisitor();
 
-  public Integer numberOfCommentedLines(CompilationUnitTree tree) {
+  public Integer getNumberOfCommentedLines(CompilationUnitTree tree) {
     return treeNumberOfCommentedLines.computeIfAbsent(tree.hashCode(), k -> {
       commentedLineVisitor.analyzeCommentLines(tree);
       return commentedLineVisitor.commentLinesMetric();
     });
   }
 
-  public Set<Integer> noSonarLines(CompilationUnitTree tree) {
+  public Set<Integer> getNoSonarLines(CompilationUnitTree tree) {
     return treeNoSonarLines.computeIfAbsent(tree.hashCode(), k -> {
       commentedLineVisitor.analyzeCommentLines(tree);
       return commentedLineVisitor.noSonarLines();
     });
   }
 
-  public int compilationUnitComplexity(CompilationUnitTree tree) {
+  public int getCompilationUnitComplexity(CompilationUnitTree tree) {
     return compilationUnityComplexity.computeIfAbsent(tree.hashCode(), k -> CognitiveComplexityVisitor.compilationUnitComplexity(tree));
   }
 
   MethodNestingLevelVisitor methodNestingVisitor = new MethodNestingLevelVisitor();
 
-  public int methodNestingLevel(MethodTree tree) {
+  public int getMethodNestingLevel(MethodTree tree) {
     return methodNestingLevel.computeIfAbsent(tree.hashCode(), k -> methodNestingVisitor.getMaxNestingLevel(tree));
   }
 

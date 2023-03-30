@@ -50,7 +50,7 @@ public class SwitchCaseTooBigCheck extends IssuableSubscriptionVisitor {
     var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
     switchTree.cases().forEach(
       cgt -> {
-        int lines = cgt.body().stream().mapToInt(metricsComputer::linesOfCode).sum();
+        int lines = cgt.body().stream().mapToInt(metricsComputer::getLinesOfCode).sum();
         if (lines > max) {
           reportIssue(cgt.labels().get(cgt.labels().size() - 1),
             "Reduce this switch case number of lines from " + lines + " to at most " + max + ", for example by extracting code into methods.");

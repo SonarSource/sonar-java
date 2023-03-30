@@ -61,7 +61,7 @@ public class Measurer extends SubscriptionVisitor {
     public void scanFile(JavaFileScannerContext context) {
       sonarFile = context.getInputFile();
       var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
-      noSonarFilter.noSonarInFile(sonarFile, metricsComputer.noSonarLines(context.getTree()));
+      noSonarFilter.noSonarInFile(sonarFile, metricsComputer.getNoSonarLines(context.getTree()));
     }
   }
 
@@ -77,7 +77,7 @@ public class Measurer extends SubscriptionVisitor {
   public void scanFile(JavaFileScannerContext context) {
     sonarFile = context.getInputFile();
     var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
-    noSonarFilter.noSonarInFile(sonarFile, metricsComputer.noSonarLines(context.getTree()));
+    noSonarFilter.noSonarInFile(sonarFile, metricsComputer.getNoSonarLines(context.getTree()));
     if(isSonarLintContext()) {
       // No need to compute metrics on SonarLint side, but the no sonar filter is still required
       return;
@@ -91,9 +91,9 @@ public class Measurer extends SubscriptionVisitor {
     saveMetricOnFile(CoreMetrics.CLASSES, classes);
     saveMetricOnFile(CoreMetrics.FUNCTIONS, methods);
     saveMetricOnFile(CoreMetrics.COMPLEXITY, metricsComputer.getComplexityNodes(context.getTree()).size());
-    saveMetricOnFile(CoreMetrics.COMMENT_LINES, metricsComputer.numberOfCommentedLines(context.getTree()));
-    saveMetricOnFile(CoreMetrics.STATEMENTS, metricsComputer.numberOfStatements(context.getTree()));
-    saveMetricOnFile(CoreMetrics.NCLOC, metricsComputer.linesOfCode(context.getTree()));
+    saveMetricOnFile(CoreMetrics.COMMENT_LINES, metricsComputer.getNumberOfCommentedLines(context.getTree()));
+    saveMetricOnFile(CoreMetrics.STATEMENTS, metricsComputer.getNumberOfStatements(context.getTree()));
+    saveMetricOnFile(CoreMetrics.NCLOC, metricsComputer.getLinesOfCode(context.getTree()));
 
     saveMetricOnFile(CoreMetrics.COGNITIVE_COMPLEXITY, CognitiveComplexityVisitor.compilationUnitComplexity(context.getTree()));
   }

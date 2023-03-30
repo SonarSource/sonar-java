@@ -58,7 +58,7 @@ public class InnerClassTooManyLinesCheck extends IssuableSubscriptionVisitor {
     if (ownerType != null && ownerType.isClass() && owner.owner().isPackageSymbol()) {
       // raise only one issue for the first level of nesting when multiple nesting
       var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
-      int lines = metricsComputer.linesOfCode(node);
+      int lines = metricsComputer.getLinesOfCode(node);
       if (lines > max) {
         reportIssue(ExpressionsHelper.reportOnClassTree(node), "Reduce this class from " + lines +
           " lines to the maximum allowed " + max + " or externalize it in a public class.");
