@@ -19,12 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
@@ -32,58 +34,73 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1142")
 public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor {
+
+  private static final String ISSUE_MESSAGE = "This method has %d returns, which is more than the %d allowed.";
 
   private static final int DEFAULT_MAX = 3;
 
   @RuleProperty(description = "Maximum allowed return statements per method", defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private final Map<Tree, Integer> returnStatementCounter = new HashMap<>();
-  private final Deque<Tree> methods = new LinkedList<>();
+  private final Map<Tree, List<Tree>> returnStatements = new HashMap<>();
+  private final Deque<Tree> methodsOrLambdas = new LinkedList<>();
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    returnStatementCounter.clear();
+    returnStatements.clear();
+    methodsOrLambdas.clear();
   }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.RETURN_STATEMENT, Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
+    return List.of(Tree.Kind.RETURN_STATEMENT, Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.RETURN_STATEMENT)) {
-      returnStatementCounter.compute(methods.peek(), (k, v) -> (v == null) ? 1 : (v + 1));
+      returnStatements.computeIfAbsent(methodsOrLambdas.peek(), k -> new LinkedList<>())
+        .add(((ReturnStatementTree) tree).returnKeyword());
     } else {
-      methods.push(tree);
+      methodsOrLambdas.push(tree);
     }
   }
 
   @Override
   public void leaveNode(Tree tree) {
-    Tree reportTree = null;
-    if (tree.is(Tree.Kind.METHOD)) {
-      MethodTree method = (MethodTree) tree;
-      if (MethodTreeUtils.isEqualsMethod(method)) {
-        methods.pop();
-      } else {
-        reportTree = method.simpleName();
-      }
-
-    } else if (tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
-      reportTree = ((LambdaExpressionTree) tree).arrowToken();
+    if (!tree.is(Tree.Kind.RETURN_STATEMENT)) {
+      reportTree(tree).ifPresent(reportTree -> report(tree, reportTree));
+      returnStatements.remove(tree);
+      methodsOrLambdas.pop();
     }
-    if (reportTree != null) {
-      int count = returnStatementCounter.getOrDefault(tree, 0);
-      if (count > max) {
-        reportIssue(reportTree, "Reduce the number of returns of this method " + count + ", down to the maximum allowed " + max + ".");
-      }
-      methods.pop();
+  }
+
+  private static Optional<Tree> reportTree(Tree methodOrLambda) {
+    if (methodOrLambda.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      return Optional.of(((LambdaExpressionTree) methodOrLambda).arrowToken());
+    }
+    MethodTree method = (MethodTree) methodOrLambda;
+    if (!MethodTreeUtils.isEqualsMethod(method)) {
+      return Optional.of(method.simpleName());
+    }
+    // equals can have many returns and it's OK
+    return Optional.empty();
+  }
+
+  private void report(Tree currentTree, Tree reportTree) {
+    List<Tree> returns = returnStatements.getOrDefault(currentTree, Collections.emptyList());
+    int count = returns.size();
+    if (count > max) {
+      String message = String.format(ISSUE_MESSAGE, count, max);
+      List<JavaFileScannerContext.Location> secondaries = returns.stream()
+        .map(token -> new JavaFileScannerContext.Location("return", token))
+        .collect(Collectors.toList());
+      reportIssue(reportTree, message, secondaries, null);
     }
   }
 }

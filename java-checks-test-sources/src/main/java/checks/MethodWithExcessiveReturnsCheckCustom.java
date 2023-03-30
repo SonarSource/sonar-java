@@ -20,7 +20,7 @@ class MethodWithExcessiveReturnsCheckCustom {
     if (false) return;
 
     new MethodWithExcessiveReturnsCheckCustom() {
-      public void f() { // Noncompliant {{Reduce the number of returns of this method 5, down to the maximum allowed 4.}}
+      public void f() { // Noncompliant {{This method has 5 returns, which is more than the 4 allowed.}}
         if (false) return;
         if (false) return;
         if (false) return;
@@ -46,7 +46,7 @@ class MethodWithExcessiveReturnsCheckCustom {
       if(false) return o2;
       return o1;
     });
-    bar.sort((o1, o2)-> { // Noncompliant [[sc=22;ec=24]] {{Reduce the number of returns of this method 6, down to the maximum allowed 4.}}
+    bar.sort((o1, o2)-> { // Noncompliant [[sc=22;ec=24;secondary=50,51,52,53,54,55]]]] {{This method has 6 returns, which is more than the 4 allowed.}}
       if(false) return o2;
       if(false) return o1;
       if(false) return o2;
@@ -58,7 +58,7 @@ class MethodWithExcessiveReturnsCheckCustom {
   }
 
   interface I {
-    default void method(boolean a) { // Noncompliant {{Reduce the number of returns of this method 5, down to the maximum allowed 4.}}
+    default void method(boolean a) { // Noncompliant {{This method has 5 returns, which is more than the 4 allowed.}}
       if(a) return;
       if(a) return;
       if(a) return;
