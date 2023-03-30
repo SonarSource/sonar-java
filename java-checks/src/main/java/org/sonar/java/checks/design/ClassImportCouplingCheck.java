@@ -71,7 +71,7 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
       imports = compilationUnitTree.imports().stream()
         .map(ImportTree.class::cast)
         .map(ImportTree::qualifiedIdentifier)
-        .map(i -> getPackageName((MemberSelectExpressionTree) i))
+        .map(i -> getFullyQuallifiedName((MemberSelectExpressionTree) i))
         .collect(Collectors.toSet());
 
       String fileProjectName = context.getProject().key();
@@ -108,14 +108,14 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
       }
     } else if (type.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) type;
-      String name = getPackageName(memberSelect);
+      String name = getFullyQuallifiedName(memberSelect);
       if (name.contains(packageName)) {
         types.add(name);
       }
     }
   }
 
-  private String getPackageName(MemberSelectExpressionTree memberSelect) {
+  private static String getFullyQuallifiedName(MemberSelectExpressionTree memberSelect) {
     List<String> packageNames = new ArrayList<>();
     while (memberSelect != null) {
       packageNames.add(memberSelect.identifier().name());
