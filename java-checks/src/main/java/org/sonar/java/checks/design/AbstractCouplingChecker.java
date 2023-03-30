@@ -135,7 +135,7 @@ public abstract class AbstractCouplingChecker extends BaseTreeVisitor implements
     super.visitNewArray(tree);
   }
 
- protected void checkTypes(List<? extends Tree> trees) {
+  protected void checkTypes(List<? extends Tree> trees) {
     for (Tree type : trees) {
       checkTypes(type, types);
     }
