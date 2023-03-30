@@ -30,7 +30,7 @@ public class NumberOfAccessedVariablesVisitor extends BaseTreeVisitor {
   public void visitVariable(VariableTree tree) {
     numberOfAccessedVariables++;
   }
-  
+
   public int getNumberOfAccessedVariables(MethodTree tree) {
     numberOfAccessedVariables = 0;
     scan(tree);

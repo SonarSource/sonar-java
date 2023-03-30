@@ -42,14 +42,29 @@ class NumberOfAccessedVariablesVisitorTest {
   @Test
   void threeVariables() throws Exception {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
-      " private Object foo(String c){"
-      + " String a = null;  "
-      + " for(int x = 0; x < 2; x++) {}  "
+      " private Object foo(String v1){"
+      + " String v2 = null;  "
+      + " for(int v3 = 0; v3 < 2; v3++) {}  "
       + "}" +
       "}");
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
     int numberOfVariables = new NumberOfAccessedVariablesVisitor().getNumberOfAccessedVariables(methodTree);
     assertThat(numberOfVariables).isEqualTo(3);
+  }
+
+  @Test
+  void multipleAccessesOnSameVariableDoNotCount() throws Exception {
+    CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
+      " private Object foo(String v1){"
+      + " String v2 = null; "
+      + " v2 = v1; "
+      + " v1 = \"another string\"; "
+      + " v2 = null; "
+      + "}" +
+      "}");
+    MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
+    int numberOfVariables = new NumberOfAccessedVariablesVisitor().getNumberOfAccessedVariables(methodTree);
+    assertThat(numberOfVariables).isEqualTo(2);
   }
 
 }

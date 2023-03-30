@@ -19,8 +19,6 @@
  */
 package org.sonar.java.metrics;
 
-import java.lang.reflect.Field;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -38,7 +36,6 @@ class MetricsComputerTest implements MetricsScannerContext {
     return mc;
   }
 
-  @SuppressWarnings({"unused", "unchecked"})
   @Test
   void testMetricsPresence() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
     CompilationUnitTree cut = JParserTestUtils.parse(
@@ -51,49 +48,45 @@ class MetricsComputerTest implements MetricsScannerContext {
         "    };" +
         "  } " +
         "}");
+    
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
-    mc.getComplexityNodes(methodTree).size();
-    var complexityNodes = (Map<Integer, ?>) getValue("methodComplexityNodes");
-    assertThat(complexityNodes).containsKey(methodTree.hashCode());
-    
-    mc.methodComplexity(methodTree);
-    var methodComplexity = (Map<Integer, ?>) getValue("methodComplexity");
-    assertThat(methodComplexity).containsKey(methodTree.hashCode());
-    
-    mc.getNumberOfAccessedVariables(methodTree);
-    var methodNumberOfAccessedVariables = (Map<Integer, ?>) getValue("methodNumberOfAccessedVariables");
-    assertThat(methodNumberOfAccessedVariables).containsKey(methodTree.hashCode());
-    
-    mc.linesOfCode(methodTree);
-    var treeLinesOfCode = (Map<Integer, ?>) getValue("treeLinesOfCode");
-    assertThat(treeLinesOfCode).containsKey(methodTree.hashCode());
-    
-    mc.numberOfStatements(methodTree);
-    var treeNumberOfStatements = (Map<Integer, ?>) getValue("treeNumberOfStatements");
-    assertThat(treeNumberOfStatements).containsKey(methodTree.hashCode());
-    
-    mc.numberOfCommentedLines(cut);
-    var treeNumberOfCommentedLines = (Map<Integer, ?>) getValue("treeNumberOfCommentedLines");
-    assertThat(treeNumberOfCommentedLines).containsKey(cut.hashCode());
-    
-    mc.noSonarLines(cut);
-    var treeNoSonarLines = (Map<Integer, ?>) getValue("treeNoSonarLines");
-    assertThat(treeNoSonarLines).containsKey(cut.hashCode());
-    
-    mc.compilationUnitComplexity(cut);
-    var compilationUnityComplexity = (Map<Integer, ?>) getValue("compilationUnityComplexity");
-    assertThat(compilationUnityComplexity).containsKey(cut.hashCode());
-    
-    mc.methodNestingLevel(methodTree);
-    var methodNestingLevel = (Map<Integer, ?>) getValue("methodNestingLevel");
-    assertThat(methodNestingLevel).containsKey(methodTree.hashCode());
-    
-  }
 
-  Object getValue(String fname) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-    Field field = mc.getClass().getDeclaredField(fname);
-    field.setAccessible(true);
-    return field.get(mc);
+    assertThat(mc.getMethodComplexityNodes()).isEmpty();
+    mc.getComplexityNodes(methodTree).size();
+    assertThat(mc.getMethodComplexityNodes()).containsKey(methodTree.hashCode());
+
+    assertThat(mc.getMethodComplexity()).isEmpty();
+    mc.methodComplexity(methodTree);
+    assertThat(mc.getMethodComplexity()).containsKey(methodTree.hashCode());
+    
+    assertThat(mc.getMethodNumberOfAccessedVariables()).isEmpty();
+    mc.getNumberOfAccessedVariables(methodTree);
+    assertThat(mc.getMethodNumberOfAccessedVariables()).containsKey(methodTree.hashCode());
+    
+    assertThat(mc.getTreeLinesOfCode()).isEmpty();
+    mc.linesOfCode(methodTree);
+    assertThat(mc.getTreeLinesOfCode()).containsKey(methodTree.hashCode());
+    
+    assertThat(mc.getTreeNumberOfStatements()).isEmpty();
+    mc.numberOfStatements(methodTree);
+    assertThat(mc.getTreeNumberOfStatements()).containsKey(methodTree.hashCode());
+    
+    assertThat(mc.getTreeNumberOfCommentedLines()).isEmpty();
+    mc.numberOfCommentedLines(cut);
+    assertThat(mc.getTreeNumberOfCommentedLines()).containsKey(cut.hashCode());
+    
+    assertThat(mc.getTreeNoSonarLines()).isEmpty();
+    mc.noSonarLines(cut);
+    assertThat(mc.getTreeNoSonarLines()).containsKey(cut.hashCode());
+    
+    assertThat(mc.getCompilationUnityComplexity()).isEmpty();
+    mc.compilationUnitComplexity(cut);
+    assertThat(mc.getCompilationUnityComplexity()).containsKey(cut.hashCode());
+    
+    assertThat(mc.getMethodNestingLevel()).isEmpty();
+    mc.methodNestingLevel(methodTree);
+    assertThat(mc.getMethodNestingLevel()).containsKey(methodTree.hashCode());
+    
   }
   
 }

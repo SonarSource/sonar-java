@@ -31,6 +31,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
+import org.sonar.java.metrics.MetricsComputer;
 import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;

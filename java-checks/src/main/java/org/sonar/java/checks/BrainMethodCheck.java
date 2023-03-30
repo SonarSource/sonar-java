@@ -34,10 +34,16 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor {
 
   private static final String ISSUE_MESSAGE = "Refactor this brain method to reduce its complexity.";
 
-  // this should be equal to HIGH/2, where HIGH is the statistical high threshold for LOC in classes
-  private static final int DEFAULT_LOC_THRESHOLD = 59;
-  private static final int DEFAULT_CYCLO_THRESHOLD = 4;
+  // these default property values are derived from statistics coming from code of almost a hundred projects (Java, C++)
+  // "Object-oriented metrics in practice" https://link.springer.com/book/10.1007/3-540-39538-5
+
+  // LOC high threshold for a method, is equal to half the high LOC threshold for classes (130)
+  private static final int DEFAULT_LOC_THRESHOLD = 65;
+  // High cyclomatic complexity is defined as a ratio of 0.24 per LOC, so DEFAULT_LOC_THRESHOLD * 0.24 = 15 rounded down
+  private static final int DEFAULT_CYCLO_THRESHOLD = 15;
+  // Deep nesting is defined when nesting level lies within the range 2-5, we picked 3 as default
   private static final int DEFAULT_NESTING_THRESHOLD = 3;
+  // Defined as a human short-term memory numeric limit of variables that can be kept in mind
   private static final int DEFAULT_VARIABLES_THRESHOLD = 7;
 
   @RuleProperty(key = "locThreshold", description = "The maximum number of LOC authorized.", defaultValue = "" + DEFAULT_LOC_THRESHOLD)
@@ -66,23 +72,23 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor {
     if (isExcluded(methodTree)) {
       return;
     }
-    List<Tree> complexityList = metricsComputer.getComplexityNodes(methodTree);
-    int cyclomaticComplexity = complexityList.size();
 
+    int cyclomaticComplexity = metricsComputer.getComplexityNodes(methodTree).size();
     int maxNestingLevel = metricsComputer.methodNestingLevel(methodTree);
-
     int linesOfCode = metricsComputer.linesOfCode(methodTree.block());
-
     int numberOfAccessedVariables = metricsComputer.getNumberOfAccessedVariables(methodTree);
 
-    if (linesOfCode > locThreshold && cyclomaticComplexity >= cyclomaticThreshold && maxNestingLevel >= nestingThreshold && numberOfAccessedVariables >= noavThreshold) {
+    if (linesOfCode >= locThreshold &&
+      cyclomaticComplexity >= cyclomaticThreshold &&
+      maxNestingLevel >= nestingThreshold &&
+      numberOfAccessedVariables >= noavThreshold) {
       reportIssue(methodTree, ISSUE_MESSAGE);
     }
 
   }
 
   private static boolean isExcluded(MethodTree methodTree) {
-    return methodTree.symbol().isAbstract() || MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
+    return methodTree.symbol().isAbstract() || methodTree.block() == null || MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
   }
 
 }

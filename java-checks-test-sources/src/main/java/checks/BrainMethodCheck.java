@@ -5,10 +5,17 @@ abstract class BrainMethodCheckWithLowerThresholds {
   interface AnInterface {
     void shouldBeIgnored();
   }
-  
-  void empty() {}
 
-  void foo() { // Noncompliant {{Refactor this brain method to reduce its complexity.}}
+  void empty() {
+  }
+
+  public static native void alert(String msg) /* not JSNI comment */ /*-{
+  for (i=0;i<=5;i++) {
+  $wnd.alert(msg);
+}
+}-*/;
+
+  void foo() { // Noncompliant [[sl=0;sc=3;el=+21;ec=4]] {{Refactor this brain method to reduce its complexity.}}
     String a = "a";
     String b = "b";
     int x = 0;
@@ -66,6 +73,7 @@ abstract class BrainMethodCheckWithLowerThresholds {
       }
     }
     System.out.println("This method is too long, has too many variables, it is too nested, and it's too complex");
+
   }
 
   void zoo() { // Compliant, not breaking number of variables threshold
@@ -143,7 +151,6 @@ abstract class BrainMethodCheckWithLowerThresholds {
 
   @Override
   public int hashCode() {
-    // TODO Auto-generated method stub
     return super.hashCode();
   }
 
