@@ -19,23 +19,20 @@
  */
 package org.sonar.java.checks.design;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ClassPatternsUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -52,6 +49,13 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
   private String packageName;
   private Set<String> imports;
   private Set<String> filteredImports;
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
+    imports = null;
+    filteredImports = null;
+  }
 
   @Override
   public void visitClass(ClassTree tree) {
@@ -71,7 +75,7 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
       imports = compilationUnitTree.imports().stream()
         .map(ImportTree.class::cast)
         .map(ImportTree::qualifiedIdentifier)
-        .map(i -> getFullyQuallifiedName((MemberSelectExpressionTree) i))
+        .map(i -> ExpressionsHelper.concatenate(((MemberSelectExpressionTree) i)))
         .collect(Collectors.toSet());
 
       String fileProjectName = context.getProject().key();
@@ -80,8 +84,8 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
         .collect(Collectors.toSet());
     }
 
-    checkTypes(tree.superClass());
-    checkTypes(tree.superInterfaces());
+    checkTypes(tree.superClass(), types);
+    checkTypes(tree.superInterfaces(), types);
     super.visitClass(tree);
 
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
@@ -96,7 +100,7 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
   }
 
   @Override
-  public void checkTypes(@Nullable Tree type) {
+  public void checkTypes(@Nullable Tree type, Set<String> types) {
     if (type == null || types == null) {
       return;
     }
@@ -108,29 +112,11 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
       }
     } else if (type.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) type;
-      String name = getFullyQuallifiedName(memberSelect);
+      String name = ExpressionsHelper.concatenate(memberSelect);
       if (name.contains(packageName)) {
         types.add(name);
       }
     }
-  }
-
-  private static String getFullyQuallifiedName(MemberSelectExpressionTree memberSelect) {
-    List<String> packageNames = new ArrayList<>();
-    while (memberSelect != null) {
-      packageNames.add(memberSelect.identifier().name());
-      ExpressionTree expressionTree = memberSelect.expression();
-      if (expressionTree instanceof MemberSelectExpressionTree) {
-        memberSelect = (MemberSelectExpressionTree) expressionTree;
-      } else if (expressionTree instanceof IdentifierTree) {
-        packageNames.add(((IdentifierTree) expressionTree).name());
-        memberSelect = null;
-      } else {
-        memberSelect = null;
-      }
-    }
-    Collections.reverse(packageNames);
-    return String.join(".", packageNames);
   }
 
 }

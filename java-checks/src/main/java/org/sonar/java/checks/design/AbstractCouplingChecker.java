@@ -37,7 +37,6 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
-import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
@@ -51,7 +50,7 @@ public abstract class AbstractCouplingChecker extends BaseTreeVisitor implements
   /**
    * Implementations of this method should add the fully-qualified name of the type to the set {@link AbstractCouplingChecker#types}.
    */
-  abstract void checkTypes(@Nullable Tree type);
+  abstract void checkTypes(@Nullable Tree type, Set<String> types);
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -61,7 +60,7 @@ public abstract class AbstractCouplingChecker extends BaseTreeVisitor implements
 
   @Override
   public void visitVariable(VariableTree tree) {
-    checkTypes(tree.type());
+    checkTypes(tree.type(), types);
     super.visitVariable(tree);
   }
 
@@ -73,45 +72,45 @@ public abstract class AbstractCouplingChecker extends BaseTreeVisitor implements
 
   @Override
   public void visitTypeCast(TypeCastTree tree) {
-    checkTypes(tree.type());
+    checkTypes(tree.type(), types);
     super.visitTypeCast(tree);
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
-    checkTypes(tree.returnType());
+    checkTypes(tree.returnType(), types);
     super.visitMethod(tree);
   }
 
   @Override
   public void visitTypeParameter(TypeParameterTree typeParameter) {
-    checkTypes((List<? extends Tree>) typeParameter.bounds());
-    checkTypes(typeParameter.identifier());
+    checkTypes(typeParameter.bounds());
+    checkTypes(typeParameter.identifier(), types);
     super.visitTypeParameter(typeParameter);
   }
 
   @Override
   public void visitUnionType(UnionTypeTree tree) {
     // can not be visited because of visitCatch excluding exceptions
-    checkTypes((List<? extends Tree>) tree.typeAlternatives());
+    checkTypes(tree.typeAlternatives());
     super.visitUnionType(tree);
   }
 
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
-    checkTypes(tree.type());
-    checkTypes((List<TypeTree>) tree.typeArguments());
+    checkTypes(tree.type(), types);
+    checkTypes(tree.typeArguments());
     super.visitParameterizedType(tree);
   }
 
   @Override
   public void visitNewClass(NewClassTree tree) {
     if (tree.typeArguments() != null) {
-      checkTypes((List<TypeTree>) tree.typeArguments());
+      checkTypes(tree.typeArguments());
     }
     if (tree.identifier().is(Tree.Kind.PARAMETERIZED_TYPE)) {
       scan(tree.enclosingExpression());
-      checkTypes((List<TypeTree>) ((ParameterizedTypeTree) tree.identifier()).typeArguments());
+      checkTypes(((ParameterizedTypeTree) tree.identifier()).typeArguments());
       scan(tree.typeArguments());
       scan(tree.arguments());
       scan(tree.classBody());
@@ -122,31 +121,31 @@ public abstract class AbstractCouplingChecker extends BaseTreeVisitor implements
 
   @Override
   public void visitWildcard(WildcardTree tree) {
-    checkTypes(tree.bound());
+    checkTypes(tree.bound(), types);
     super.visitWildcard(tree);
   }
 
   @Override
   public void visitArrayType(ArrayTypeTree tree) {
-    checkTypes(tree.type());
+    checkTypes(tree.type(), types);
     super.visitArrayType(tree);
   }
 
   @Override
   public void visitInstanceOf(InstanceOfTree tree) {
-    checkTypes(tree.type());
+    checkTypes(tree.type(), types);
     super.visitInstanceOf(tree);
   }
 
   @Override
   public void visitNewArray(NewArrayTree tree) {
-    checkTypes(tree.type());
+    checkTypes(tree.type(), types);
     super.visitNewArray(tree);
   }
 
-  private void checkTypes(List<? extends Tree> types) {
-    for (Tree type : types) {
-      checkTypes(type);
+  private void checkTypes(List<? extends Tree> trees) {
+    for (Tree type : trees) {
+      checkTypes(type, types);
     }
   }
 

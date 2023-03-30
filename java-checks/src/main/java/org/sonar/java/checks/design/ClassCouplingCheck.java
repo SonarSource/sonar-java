@@ -19,14 +19,13 @@
  */
 package org.sonar.java.checks.design;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -48,8 +47,8 @@ public class ClassCouplingCheck extends AbstractCouplingChecker {
       nesting.push(types);
       types = new HashSet<>();
     }
-    checkTypes(tree.superClass());
-    checkTypes(tree.superInterfaces());
+    checkTypes(tree.superClass(), types);
+    checkTypes(tree.superInterfaces(), types);
     super.visitClass(tree);
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
       if (types.size() > max) {
@@ -64,24 +63,16 @@ public class ClassCouplingCheck extends AbstractCouplingChecker {
   }
 
   @Override
-  public void checkTypes(@Nullable Tree type) {
+  public void checkTypes(@Nullable Tree type, Set<String> types) {
     if (type == null || types == null) {
       return;
     }
     if (type.is(Tree.Kind.IDENTIFIER)) {
       types.add(((IdentifierTree) type).name());
     } else if (type.is(Tree.Kind.MEMBER_SELECT)) {
-      Deque<String> fullyQualifiedNameComponents = new ArrayDeque<>();
-      ExpressionTree expr = (ExpressionTree) type;
-      while (expr.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-        fullyQualifiedNameComponents.push(mse.identifier().name());
-        expr = mse.expression();
-      }
-      if (expr.is(Tree.Kind.IDENTIFIER)) {
-        fullyQualifiedNameComponents.push(((IdentifierTree) expr).name());
-      }
-      types.add(String.join(".", fullyQualifiedNameComponents));
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) type;
+      String concatenated = ExpressionsHelper.concatenate(mse);
+      types.add(concatenated);
     }
   }
 }
