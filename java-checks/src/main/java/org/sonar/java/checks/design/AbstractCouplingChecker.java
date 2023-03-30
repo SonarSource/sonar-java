@@ -37,7 +37,6 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
-import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
@@ -90,13 +89,6 @@ public abstract class AbstractCouplingChecker extends BaseTreeVisitor implements
   }
 
   @Override
-  public void visitUnionType(UnionTypeTree tree) {
-    // can not be visited because of visitCatch excluding exceptions
-    checkTypes(tree.typeAlternatives());
-    super.visitUnionType(tree);
-  }
-
-  @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
     checkTypes(tree.type(), types);
     checkTypes(tree.typeArguments());
@@ -143,7 +135,7 @@ public abstract class AbstractCouplingChecker extends BaseTreeVisitor implements
     super.visitNewArray(tree);
   }
 
-  private void checkTypes(List<? extends Tree> trees) {
+ protected void checkTypes(List<? extends Tree> trees) {
     for (Tree type : trees) {
       checkTypes(type, types);
     }

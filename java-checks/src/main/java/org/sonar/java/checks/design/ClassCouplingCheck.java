@@ -48,7 +48,7 @@ public class ClassCouplingCheck extends AbstractCouplingChecker {
       types = new HashSet<>();
     }
     checkTypes(tree.superClass(), types);
-    checkTypes(tree.superInterfaces(), types);
+    checkTypes(tree.superInterfaces());
     super.visitClass(tree);
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
       if (types.size() > max) {

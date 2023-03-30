@@ -85,7 +85,7 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
     }
 
     checkTypes(tree.superClass(), types);
-    checkTypes(tree.superInterfaces(), types);
+    checkTypes(tree.superInterfaces());
     super.visitClass(tree);
 
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
