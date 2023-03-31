@@ -1,0 +1,155 @@
+<p>The Singleton design pattern is a creational pattern. It ensures that only one instance of a class is created and provides a global point of access
+to it. In Java, there are several ways to implement a Singleton, and the debate about the best approach has yet to be settled.</p>
+<p>This rule marks all classes that are considered as Singletons, regardless of how they are implemented. This helps developers identifying where in
+the code Singletons are used. Singletons should be reviewed to confirm whether or not a Singleton is truly necessary and whether the selected
+implementation is the most suitable for the context.</p>
+<p>Every Singleton implementation has its advantages and disadvantages. This rule exists to bring attention to them, so that informed decisions can be
+made.</p>
+<h2>Why is this an issue?</h2>
+<p>While the Singleton pattern can be useful in certain situations, overusing it can have several drawbacks:</p>
+<ul>
+  <li> Tight coupling: The Singleton pattern can create tight coupling between the Singleton class and other classes that use it, which can make the
+  code difficult to maintain and modify. </li>
+  <li> Global state: The Singleton pattern can create global state, which can make it difficult to manage the state of the application and can lead to
+  unexpected behavior. </li>
+  <li> Testing: The Singleton pattern can make it difficult to test classes that depend on the Singleton, as the Singleton cannot be easily
+  substituted with a mock object. </li>
+  <li> Scalability: The Singleton pattern can make it difficult to scale an application, as it can create a bottleneck if multiple threads try to
+  access the Singleton concurrently. </li>
+  <li> Dependency injection: The Singleton pattern can make it difficult to use dependency injection frameworks, as the Singleton instance is usually
+  created statically. </li>
+</ul>
+<p>In general, the Singleton pattern should be used sparingly and only in situations where it provides a clear benefit over other patterns or
+approaches. It is important to consider the drawbacks and tradeoffs of using the Singleton pattern before incorporating it into an application.</p>
+<h3>Public Static Field Implementation</h3>
+<pre>
+public class PublicStaticSingleton {
+
+    public static final PublicStaticSingleton INSTANCE = new PublicStaticSingleton();
+
+    private PublicStaticSingleton() {}
+}
+</pre>
+<p><strong>Advantage</strong>:</p>
+<p>This implementation is thread-safe.</p>
+<p><strong>Disadvantage</strong>:</p>
+<p>This implementation does not allow lazy initialization: the constructor runs as soon as the class is initialized.</p>
+<h3>Eager Initialization Implementation</h3>
+<pre>
+public class EagerInitializedSingleton {
+
+    private static final EagerInitializedSingleton instance = new EagerInitializedSingleton();
+
+    private EagerInitializedSingleton() {}
+
+    public static EagerInitializedSingleton getInstance() {
+        return instance;
+    }
+}
+</pre>
+<p><strong>Advantage</strong>:</p>
+<p>This implementation is thread-safe, as the instance variable is initialized when the class is loaded.</p>
+<p><strong>Disadvantages</strong>:</p>
+<p>The instance is created even if it’s never used, which can be wasteful in terms of memory usage. However, if the Singleton is expected to be used
+frequently or is not too memory-intensive, Eager Initialization can be a good choice.</p>
+<p>This implementation doesn’t provide any options for exception handling.</p>
+<h3>Static Block Initialization Implementation</h3>
+<pre>
+public class StaticBlockSingleton {
+
+    private static StaticBlockSingleton instance;
+
+    private StaticBlockSingleton(){}
+
+    static {
+        try {
+            instance = new StaticBlockSingleton();
+        } catch (Exception e) {
+            throw new RuntimeException("Exception while creating singleton instance");
+        }
+    }
+
+    public static StaticBlockSingleton getInstance() {
+        return instance;
+    }
+}
+</pre>
+<p><strong>Advantage</strong>:</p>
+<p>Compared to the Eager Initialization, this implementation provides options for exception handling.</p>
+<p><strong>Disadvantage</strong>:</p>
+<p>The instance is created even if it’s never used, like for the Eager Initialization implementation.</p>
+<h3>Lazy Initialization Implementation</h3>
+<pre>
+public class LazyInitializedSingleton {
+
+    private static LazyInitializedSingleton instance;
+
+    private LazyInitializedSingleton(){}
+
+    public static LazyInitializedSingleton getInstance() {
+        if (instance == null) {
+            instance = new LazyInitializedSingleton();
+        }
+        return instance;
+    }
+}
+</pre>
+<p><strong>Advantage</strong>:</p>
+<p>This implementation works fine in the case of the single-threaded environment.</p>
+<p><strong>Disadvantage</strong>:</p>
+<p>This implementation is not thread-safe if multiple threads are at the same time in the <code>if</code> condition.</p>
+<h3>Thread Safe Implementation</h3>
+<pre>
+public class ThreadSafeSingleton {
+
+    private static ThreadSafeSingleton instance;
+
+    private ThreadSafeSingleton(){}
+
+    public static synchronized ThreadSafeSingleton getInstance() {
+        if (instance == null) {
+            instance = new ThreadSafeSingleton();
+        }
+        return instance;
+    }
+}
+</pre>
+<p><strong>Advantage</strong>:</p>
+<p>This implementation is thread-safe.</p>
+<p><strong>Disadvantage</strong>:</p>
+<p>It reduces the performance because of the cost associated with the synchronized method. To avoid this extra overhead every time, double-checked
+locking principle should be used.</p>
+<h3>Bill Pugh Implementation</h3>
+<pre>
+public class BillPughSingleton {
+
+    private BillPughSingleton(){}
+
+    private static class SingletonHelper {
+        private static final BillPughSingleton INSTANCE = new BillPughSingleton();
+    }
+
+    public static BillPughSingleton getInstance() {
+        return SingletonHelper.INSTANCE;
+    }
+}
+</pre>
+<p><strong>Advantages</strong>:</p>
+<p>The instance is created only at the first call of the <code>getInstance()</code> method.</p>
+<p>This implementation is thread-safe.</p>
+<h3>Enum Implementation</h3>
+<pre>
+public enum EnumSingleton {
+
+    INSTANCE;
+
+    private EnumSingleton() {
+        // Initialization code here...
+    }
+}
+</pre>
+<p><strong>Advantages</strong>:</p>
+<p>This implementation is thread-safe by default because the initialization of an Enum value is guaranteed to be thread-safe and atomic.</p>
+<p>The Enum Singleton implementation allows for lazy initialization while also providing thread-safety guarantees.</p>
+<h2>How to fix it</h2>
+
