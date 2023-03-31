@@ -21,84 +21,134 @@ made.</p>
 </ul>
 <p>In general, the Singleton pattern should be used sparingly and only in situations where it provides a clear benefit over other patterns or
 approaches. It is important to consider the drawbacks and tradeoffs of using the Singleton pattern before incorporating it into an application.</p>
-<h2>How to fix it in Eager Initialization</h2>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
+<h3>Public Static Field Implementation</h3>
 <pre>
-FIXME
+public class PublicStaticSingleton {
+
+    public static final PublicStaticSingleton INSTANCE = new PublicStaticSingleton();
+
+    private PublicStaticSingleton() {}
+}
 </pre>
-<h4>Compliant solution</h4>
+<p><strong>Advantage</strong>:</p>
+<p>This implementation is thread-safe.</p>
+<p><strong>Disadvantage</strong>:</p>
+<p>This implementation does not allow lazy initialization: the constructor runs as soon as the class is initialized.</p>
+<h3>Eager Initialization Implementation</h3>
 <pre>
-FIXME
+public class EagerInitializedSingleton {
+
+    private static final EagerInitializedSingleton instance = new EagerInitializedSingleton();
+
+    private EagerInitializedSingleton() {}
+
+    public static EagerInitializedSingleton getInstance() {
+        return instance;
+    }
+}
 </pre>
-<h2>How to fix it in Static Block Initialization</h2>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
+<p><strong>Advantage</strong>:</p>
+<p>This implementation is thread-safe, as the instance variable is initialized when the class is loaded.</p>
+<p><strong>Disadvantages</strong>:</p>
+<p>The instance is created even if it’s never used, which can be wasteful in terms of memory usage. However, if the Singleton is expected to be used
+frequently or is not too memory-intensive, Eager Initialization can be a good choice.</p>
+<p>This implementation doesn’t provide any options for exception handling.</p>
+<h3>Static Block Initialization Implementation</h3>
 <pre>
-FIXME
+public class StaticBlockSingleton {
+
+    private static StaticBlockSingleton instance;
+
+    private StaticBlockSingleton(){}
+
+    static {
+        try {
+            instance = new StaticBlockSingleton();
+        } catch (Exception e) {
+            throw new RuntimeException("Exception while creating singleton instance");
+        }
+    }
+
+    public static StaticBlockSingleton getInstance() {
+        return instance;
+    }
+}
 </pre>
-<h4>Compliant solution</h4>
+<p><strong>Advantage</strong>:</p>
+<p>Compared to the Eager Initialization, this implementation provides options for exception handling.</p>
+<p><strong>Disadvantage</strong>:</p>
+<p>The instance is created even if it’s never used, like for the Eager Initialization implementation.</p>
+<h3>Lazy Initialization Implementation</h3>
 <pre>
-FIXME
+public class LazyInitializedSingleton {
+
+    private static LazyInitializedSingleton instance;
+
+    private LazyInitializedSingleton(){}
+
+    public static LazyInitializedSingleton getInstance() {
+        if (instance == null) {
+            instance = new LazyInitializedSingleton();
+        }
+        return instance;
+    }
+}
 </pre>
-<h2>How to fix it in Lazy Initialization</h2>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
+<p><strong>Advantage</strong>:</p>
+<p>This implementation works fine in the case of the single-threaded environment.</p>
+<p><strong>Disadvantage</strong>:</p>
+<p>This implementation is not thread-safe if multiple threads are at the same time in the <code>if</code> condition.</p>
+<h3>Thread Safe Implementation</h3>
 <pre>
-FIXME
+public class ThreadSafeSingleton {
+
+    private static ThreadSafeSingleton instance;
+
+    private ThreadSafeSingleton(){}
+
+    public static synchronized ThreadSafeSingleton getInstance() {
+        if (instance == null) {
+            instance = new ThreadSafeSingleton();
+        }
+        return instance;
+    }
+}
 </pre>
-<h4>Compliant solution</h4>
+<p><strong>Advantage</strong>:</p>
+<p>This implementation is thread-safe.</p>
+<p><strong>Disadvantage</strong>:</p>
+<p>It reduces the performance because of the cost associated with the synchronized method. To avoid this extra overhead every time, double-checked
+locking principle should be used.</p>
+<h3>Bill Pugh Implementation</h3>
 <pre>
-FIXME
+public class BillPughSingleton {
+
+    private BillPughSingleton(){}
+
+    private static class SingletonHelper {
+        private static final BillPughSingleton INSTANCE = new BillPughSingleton();
+    }
+
+    public static BillPughSingleton getInstance() {
+        return SingletonHelper.INSTANCE;
+    }
+}
 </pre>
-<h2>How to fix it in Thread Safe Singleton</h2>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
+<p><strong>Advantages</strong>:</p>
+<p>The instance is created only at the first call of the <code>getInstance()</code> method.</p>
+<p>This implementation is thread-safe.</p>
+<h3>Enum Implementation</h3>
 <pre>
-FIXME
+public enum EnumSingleton {
+
+    INSTANCE;
+
+    private EnumSingleton() {
+        // Initialization code here...
+    }
+}
 </pre>
-<h4>Compliant solution</h4>
-<pre>
-FIXME
-</pre>
-<h2>How to fix it in Bill Pugh Singleton Implementation</h2>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
-<pre>
-FIXME
-</pre>
-<h4>Compliant solution</h4>
-<pre>
-FIXME
-</pre>
-<h2>How to fix it in Using Reflection to destroy Singleton Pattern</h2>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
-<pre>
-FIXME
-</pre>
-<h4>Compliant solution</h4>
-<pre>
-FIXME
-</pre>
-<h2>How to fix it in Enum Singleton</h2>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
-<pre>
-FIXME
-</pre>
-<h4>Compliant solution</h4>
-<pre>
-FIXME
-</pre>
-<h2>How to fix it in Serialization and Singleton</h2>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
-<pre>
-FIXME
-</pre>
-<h4>Compliant solution</h4>
-<pre>
-FIXME
-</pre>
+<p><strong>Advantages</strong>:</p>
+<p>This implementation is thread-safe by default because the initialization of an Enum value is guaranteed to be thread-safe and atomic.</p>
+<p>The Enum Singleton implementation allows for lazy initialization while also providing thread-safety guarantees.</p>
 
