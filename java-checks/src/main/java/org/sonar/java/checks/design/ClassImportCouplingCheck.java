@@ -73,6 +73,7 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
 
     if (imports == null) {
       imports = compilationUnitTree.imports().stream()
+        .filter(i -> !i.is(Tree.Kind.EMPTY_STATEMENT))
         .map(ImportTree.class::cast)
         .map(ImportTree::qualifiedIdentifier)
         .map(i -> ExpressionsHelper.concatenate(((MemberSelectExpressionTree) i)))
