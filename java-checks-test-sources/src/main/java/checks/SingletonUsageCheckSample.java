@@ -15,6 +15,10 @@ public class SingletonUsageCheckSample {
     public static EagerInitializedSingleton getInstance() {
       return instance;
     }
+
+    public boolean foo() {
+      return false;
+    }
   }
 
   public static class StaticBlockSingleton { // Noncompliant
@@ -35,6 +39,10 @@ public class SingletonUsageCheckSample {
     public static StaticBlockSingleton getInstance() {
       return instance;
     }
+
+    public boolean foo() {
+      return false;
+    }
   }
 
   public static class LazyInitializedSingleton { // Noncompliant
@@ -48,6 +56,10 @@ public class SingletonUsageCheckSample {
         instance = new LazyInitializedSingleton();
       }
       return instance;
+    }
+
+    public boolean foo() {
+      return false;
     }
   }
 
@@ -65,6 +77,9 @@ public class SingletonUsageCheckSample {
       return instance;
     }
 
+    public boolean foo() {
+      return false;
+    }
   }
 
   public static class BillPughSingleton { // Noncompliant
@@ -78,6 +93,10 @@ public class SingletonUsageCheckSample {
     public static BillPughSingleton getInstance() {
       return SingletonHelper.INSTANCE;
     }
+
+    public boolean foo() {
+      return false;
+    }
   }
 
   public enum EnumSingleton { // Noncompliant
@@ -86,6 +105,10 @@ public class SingletonUsageCheckSample {
 
     public static void doSomething() {
       // do something
+    }
+
+    public boolean foo() {
+      return false;
     }
   }
 

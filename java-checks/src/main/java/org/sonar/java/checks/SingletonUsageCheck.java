@@ -54,7 +54,7 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
 
   private void visitEnum(ClassTree classTree) {
     var enumConstants = classTree.members().stream().filter(member -> member.is(Tree.Kind.ENUM_CONSTANT)).collect(Collectors.toList());
-    if (enumConstants.size() == 1) {
+    if (enumConstants.size() == 1 && hasNonPrivateInstanceMethodsOrFields(classTree)) {
       reportIssue(classTree.simpleName(), "Enum singleton pattern detected",
         Collections.singletonList(new JavaFileScannerContext.Location("Single enum", enumConstants.get(0))), null);
     }
@@ -69,7 +69,7 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
 
     VariableTree singletonField = null;
     ClassTree singletonClass = null;
-    for (var member: classTree.members()) {
+    for (var member : classTree.members()) {
       if (!(member.is(Tree.Kind.VARIABLE))) continue;
 
       final var varTree = (VariableTree) member;
@@ -85,7 +85,7 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
         continue;
       }
 
-      if(isEffectivelyFinal(fieldSymbol)) {
+      if (isEffectivelyFinal(fieldSymbol)) {
         if (singletonField != null) {
           return;
         } else {
@@ -96,15 +96,17 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
 
     if (singletonField == null) return;
 
-    var allConstructors = classTree.members().stream()
+    var allConstructors = singletonClass.members().stream()
       .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
       .map(MethodTree.class::cast)
       .collect(Collectors.toList());
 
-    if (allConstructors.size() <= 1 && allConstructors.stream().allMatch(constructor -> constructor.symbol().isPrivate())) {
-      var writeUsage = ExpressionsHelper.getSingleWriteUsage(singletonField.symbol());
+    if (allConstructors.size() <= 1 &&
+      allConstructors.stream().allMatch(constructor -> constructor.symbol().isPrivate() && constructor.parameters().isEmpty()) &&
+      hasNonPrivateInstanceMethodsOrFields(singletonClass)) {
+
       var flows = new ArrayList<JavaFileScannerContext.Location>();
-      flows.add(new JavaFileScannerContext.Location("Singleton field", writeUsage));
+      flows.add(new JavaFileScannerContext.Location("Singleton field", singletonField.simpleName()));
       if (singletonClass != classTree) {
         flows.add(new JavaFileScannerContext.Location("Singleton helper", classTree.simpleName()));
       }
@@ -116,5 +118,20 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
   private static boolean isEffectivelyFinal(Symbol symbol) {
     return symbol.isFinal() ||
       (symbol.isPrivate() && ExpressionsHelper.getSingleWriteUsage(symbol) != null);
+  }
+
+  private static boolean hasNonPrivateInstanceMethodsOrFields(ClassTree classTree) {
+    return classTree.members().stream().anyMatch(member -> {
+      boolean isPrivateOrStatic = true;
+      if (member.is(Tree.Kind.METHOD)) {
+        var symbol = ((MethodTree) member).symbol();
+        return !symbol.isPrivate() && !symbol.isStatic();
+      } else if (member.is(Tree.Kind.VARIABLE)) {
+        var symbol = ((VariableTree) member).symbol();
+        return !symbol.isPrivate() && !symbol.isStatic();
+      } else {
+        return false;
+      }
+    });
   }
 }
