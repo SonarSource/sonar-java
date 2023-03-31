@@ -1,0 +1,12 @@
+{
+  'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+    96,
+    4571,
+    4683,
+    4729,
+    4824,
+  ],
+  'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
+    85,
+  ],
+}
