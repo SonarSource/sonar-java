@@ -35,6 +35,7 @@ import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.ast.visitors.StatementVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -59,7 +60,8 @@ public class Measurer extends SubscriptionVisitor {
     @Override
     public void scanFile(JavaFileScannerContext context) {
       sonarFile = context.getInputFile();
-      createCommentLineVisitorAndFindNoSonar(context);
+      var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
+      noSonarFilter.noSonarInFile(sonarFile, metricsComputer.getNoSonarLines(context.getTree()));
     }
   }
 
@@ -74,7 +76,8 @@ public class Measurer extends SubscriptionVisitor {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     sonarFile = context.getInputFile();
-    CommentLinesVisitor commentLinesVisitor = createCommentLineVisitorAndFindNoSonar(context);
+    var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
+    noSonarFilter.noSonarInFile(sonarFile, metricsComputer.getNoSonarLines(context.getTree()));
     if(isSonarLintContext()) {
       // No need to compute metrics on SonarLint side, but the no sonar filter is still required
       return;
@@ -85,26 +88,18 @@ public class Measurer extends SubscriptionVisitor {
     super.setContext(context);
     scanTree(context.getTree());
     //leave file.
-    int fileComplexity = context.getComplexityNodes(context.getTree()).size();
     saveMetricOnFile(CoreMetrics.CLASSES, classes);
     saveMetricOnFile(CoreMetrics.FUNCTIONS, methods);
-    saveMetricOnFile(CoreMetrics.COMPLEXITY, fileComplexity);
-    saveMetricOnFile(CoreMetrics.COMMENT_LINES, commentLinesVisitor.commentLinesMetric());
-    saveMetricOnFile(CoreMetrics.STATEMENTS, new StatementVisitor().numberOfStatements(context.getTree()));
-    saveMetricOnFile(CoreMetrics.NCLOC, new LinesOfCodeVisitor().linesOfCode(context.getTree()));
+    saveMetricOnFile(CoreMetrics.COMPLEXITY, metricsComputer.getComplexityNodes(context.getTree()).size());
+    saveMetricOnFile(CoreMetrics.COMMENT_LINES, metricsComputer.getNumberOfCommentedLines(context.getTree()));
+    saveMetricOnFile(CoreMetrics.STATEMENTS, metricsComputer.getNumberOfStatements(context.getTree()));
+    saveMetricOnFile(CoreMetrics.NCLOC, metricsComputer.getLinesOfCode(context.getTree()));
 
     saveMetricOnFile(CoreMetrics.COGNITIVE_COMPLEXITY, CognitiveComplexityVisitor.compilationUnitComplexity(context.getTree()));
   }
 
   private boolean isSonarLintContext() {
     return sensorContext.runtime().getProduct() == SonarProduct.SONARLINT;
-  }
-
-  private CommentLinesVisitor createCommentLineVisitorAndFindNoSonar(JavaFileScannerContext context) {
-    CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
-    commentLinesVisitor.analyzeCommentLines(context.getTree());
-    noSonarFilter.noSonarInFile(sonarFile, commentLinesVisitor.noSonarLines());
-    return commentLinesVisitor;
   }
 
   @Override

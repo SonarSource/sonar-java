@@ -23,6 +23,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -52,7 +53,8 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     if (isExcluded(method)) {
       return;
     }
-    CognitiveComplexityVisitor.Result result = CognitiveComplexityVisitor.methodComplexity(method);
+    var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
+    CognitiveComplexityVisitor.Result result = metricsComputer.getMethodComplexity(method);
     int total = result.complexity;
     if (total > max) {
       reportIssue(method.simpleName(),
