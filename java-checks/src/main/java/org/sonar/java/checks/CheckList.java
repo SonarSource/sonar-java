@@ -31,6 +31,8 @@ import org.sonar.java.checks.aws.AwsLongTermAccessKeysCheck;
 import org.sonar.java.checks.aws.AwsRegionSetterCheck;
 import org.sonar.java.checks.aws.AwsRegionShouldBeSetExplicitlyCheck;
 import org.sonar.java.checks.aws.AwsReusableResourcesInitializedOnceCheck;
+import org.sonar.java.checks.design.ClassCouplingCheck;
+import org.sonar.java.checks.design.ClassImportCouplingCheck;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -91,7 +93,6 @@ import org.sonar.java.checks.security.AuthorizationsStrongDecisionsCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.ClearTextProtocolCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
-import org.sonar.java.checks.security.HardCodedCredentialsShouldNotBeUsedCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
@@ -101,6 +102,7 @@ import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.EncryptionAlgorithmCheck;
 import org.sonar.java.checks.security.ExcessiveContentRequestCheck;
 import org.sonar.java.checks.security.FilePermissionsCheck;
+import org.sonar.java.checks.security.HardCodedCredentialsShouldNotBeUsedCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.JWTWithStrongCipherCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
@@ -308,6 +310,7 @@ public final class CheckList {
     ChildClassShadowFieldCheck.class,
     CipherBlockChainingCheck.class,
     ClassComparedByNameCheck.class,
+    ClassImportCouplingCheck.class,
     ClassFieldCountCheck.class,
     ClassNamedLikeExceptionCheck.class,
     ClassWithOnlyStaticMethodsInstantiationCheck.class,

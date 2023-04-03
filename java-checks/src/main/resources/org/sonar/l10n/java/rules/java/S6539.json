@@ -1,0 +1,18 @@
+{
+  "title": "Class depends on an excessive number of classes",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1d"
+  },
+  "tags": [
+    "architecture",
+    "design"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-6539",
+  "sqKey": "S6539",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
