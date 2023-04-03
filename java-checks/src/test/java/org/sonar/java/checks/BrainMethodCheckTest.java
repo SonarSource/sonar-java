@@ -27,24 +27,52 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BrainMethodCheckTest {
 
+  private static final String highComplexityFilePath = mainCodeSourcesPath("checks/BrainMethodCheck.java");
+  private static final String lowComplexityFilePath = mainCodeSourcesPath("checks/BrainMethodCheckLowerThresholds.java");
+
   @Test
-  void test() {
+  void testHighComplexityFileWithDefaultThresholds() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/BrainMethodCheck.java"))
+      .onFile(highComplexityFilePath)
       .withChecks(new BrainMethodCheck())
       .verifyIssues();
   }
-  
+
   @Test
-  void testLowerThresholds() {
+  void testHighComplexityFileWithHigherThresholds() {
     var check = new BrainMethodCheck();
+
+    check.locThreshold = 120;
+    check.noavThreshold = 36;
+    check.nestingThreshold = 8;
+    check.cyclomaticThreshold = 45;
+
+    InternalCheckVerifier.newInstance()
+      .onFile(highComplexityFilePath)
+      .withChecks(check)
+      .verifyNoIssues();
+  }
+
+  @Test
+  void testLowComplexityFileWithDefaultThresholds() {
+    InternalCheckVerifier.newInstance()
+      .onFile(lowComplexityFilePath)
+      .withChecks(new BrainMethodCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void testLowComplexityFileWithLowerThresholds() {
+    var check = new BrainMethodCheck();
+
     check.locThreshold = 14;
     check.noavThreshold = 4;
     check.cyclomaticThreshold = 5;
+
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/BrainMethodCheckLowerThresholds.java"))
+      .onFile(lowComplexityFilePath)
       .withChecks(check)
       .verifyIssues();
   }
-  
+
 }
