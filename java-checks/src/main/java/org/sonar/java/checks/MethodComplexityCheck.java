@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -55,7 +56,8 @@ public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
     if (isExcluded(methodTree)) {
       return;
     }
-    List<Tree> complexity = context.getComplexityNodes(methodTree);
+    var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
+    List<Tree> complexity = metricsComputer.getComplexityNodes(methodTree);
     int size = complexity.size();
     if (size > max) {
       List<JavaFileScannerContext.Location> flow = new ArrayList<>();
