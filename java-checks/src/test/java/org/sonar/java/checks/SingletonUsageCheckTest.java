@@ -23,33 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
-class MethodWithExcessiveReturnsCheckTest {
-
-  @Test
-  void detected() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MethodWithExcessiveReturnsCheck.java"))
-      .withCheck(new MethodWithExcessiveReturnsCheck())
-      .verifyIssues();
-  }
+class SingletonUsageCheckTest {
 
   @Test
-  void detectedNonCompiling() {
+  void test() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/MethodWithExcessiveReturnsCheck.java"))
-      .withCheck(new MethodWithExcessiveReturnsCheck())
-      .verifyIssues();
-  }
-
-  @Test
-  void custom() {
-    MethodWithExcessiveReturnsCheck check = new MethodWithExcessiveReturnsCheck();
-    check.max = 4;
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MethodWithExcessiveReturnsCheckCustom.java"))
-      .withCheck(check)
+      .onFile(mainCodeSourcesPath("checks/SingletonUsageCheckSample.java"))
+      .withCheck(new SingletonUsageCheck())
       .verifyIssues();
   }
 
