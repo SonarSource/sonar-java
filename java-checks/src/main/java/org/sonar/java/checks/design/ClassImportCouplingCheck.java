@@ -33,6 +33,7 @@ import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -76,7 +77,7 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
         .filter(i -> !i.is(Tree.Kind.EMPTY_STATEMENT))
         .map(ImportTree.class::cast)
         .map(ImportTree::qualifiedIdentifier)
-        .map(i -> ExpressionsHelper.concatenate(((MemberSelectExpressionTree) i)))
+        .map(i -> ExpressionsHelper.concatenate(((ExpressionTree) i)))
         .collect(Collectors.toSet());
 
       String fileProjectName = context.getProject().key();
