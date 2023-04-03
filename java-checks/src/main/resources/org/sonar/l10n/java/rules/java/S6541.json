@@ -1,0 +1,15 @@
+{
+  "title": "Methods should not perform too many tasks (Brain method)",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6541",
+  "sqKey": "S6541",
+  "scope": "All",
+  "quickfix": "unknown"
+}

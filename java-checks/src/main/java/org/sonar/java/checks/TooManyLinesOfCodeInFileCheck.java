@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
+import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -50,7 +51,8 @@ public class TooManyLinesOfCodeInFileCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    int lines = new LinesOfCodeVisitor().linesOfCode(tree);
+    var metricsComputer = ((MetricsScannerContext)context).getMetricsComputer();
+    int lines = metricsComputer.getLinesOfCode(tree);
     if (lines > maximum) {
       addIssueOnFile(MessageFormat.format("This file has {0} lines, which is greater than {1} authorized. Split it into smaller files.", lines, maximum));
     }
