@@ -1,0 +1,45 @@
+<p>When two or more components or classes are heavily dependent on each other, it is said that the class is tightly coupled. This makes modifying or
+maintaining one class difficult without affecting the others.</p>
+<h2>Why is this an issue?</h2>
+<p>This results in a rigid and inflexible design that can lead to issues such as code duplication, poor scalability, and reduced code reusability.</p>
+<h2>How to fix it</h2>
+<p>To avoid tight coupling in Java, it’s important to follow good design principles such as SOLID, dependency injection, and loose coupling. This can
+help make the code more modular, flexible, and easier to maintain and modify over time.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre>
+class Subject {
+    Topic t = new Topic();
+    public void startReading() {
+        t.understand();
+    }
+}
+class Topic {
+    public void understand() {
+        System.out.println("Understand");
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre>
+public interface Topic {
+    void understand();
+}
+class Topic1 implements Topic {
+    public void understand() {
+        System.out.println("Understand 1");
+    }
+}
+class Topic2 implements Topic {
+    public void understand() {
+        System.out.println("Understand 2");
+    }
+}
+public class Subject {
+    public static void main(String[] args) {
+        Topic t = new Topic1();
+        t.understand();
+    }
+}
+</pre>
+
