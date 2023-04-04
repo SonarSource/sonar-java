@@ -14,7 +14,8 @@ help make the code more modular, flexible, and easier to maintain and modify ove
 (SRP) and break down the class into smaller, more focused classes. This will help to reduce the number of dependencies that the class has. Using
 interfaces and abstractions can contribute to reducing the dependencies between classes.</p>
 <h3>Code examples</h3>
-<h4>Noncompliant code example with a threshold of 5:</h4>
+<h4>Noncompliant code example</h4>
+<p>With a threshold of 5:</p>
 <pre>
 class Foo { // class Foo depends on too many classes: T1, T2, T3, T4, T5, T6 and T7
   T1 t1;
@@ -34,3 +35,4 @@ public class Bar {
     T9 a9;
 }
 </pre>
+
