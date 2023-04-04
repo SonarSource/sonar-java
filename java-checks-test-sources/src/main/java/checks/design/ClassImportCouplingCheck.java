@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.sonar.api.SonarProduct;
 ;
 
-class ClassImportCouplingCheck { // Noncompliant [[sc=7;ec=31]] {{Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 23 to the maximum authorized 20 or less.}}
+class ClassImportCouplingCheck { // Noncompliant [[sc=7;ec=31;secondary=15, 17, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 40, 40, 41, 48, 57, 74, 74]] {{Split this “Monster Class” into smaller and more specialized ones to reduce its dependencies on other classes from 23 to the maximum authorized 20 or less.}}
 
   List<A> a = new ArrayList<>();
   SonarProduct sonarProduct;
