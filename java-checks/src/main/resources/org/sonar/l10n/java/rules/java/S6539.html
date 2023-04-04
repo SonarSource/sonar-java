@@ -1,45 +1,37 @@
-<p>When two or more components or classes are heavily dependent on each other, it is said that the class is tightly coupled. This makes modifying or
-maintaining one class difficult without affecting the others.</p>
+<p>When two or more components or classes are heavily dependent on each other, it can indicate that the class has too many responsibilities or that
+the class is tightly coupled. This can lead to a lack of modularity, making modifying or maintaining one class difficult without affecting the
+others.</p>
 <h2>Why is this an issue?</h2>
 <p>This results in a rigid and inflexible design that can lead to issues such as code duplication, poor scalability, and reduced code reusability.</p>
+<p>Having a class that depends on too many other classes makes it harder to test in isolation. When a class has many dependencies, it becomes more
+difficult to write unit tests that isolate the behavior of that class from its dependencies, leading to tests that are more complex and brittle.</p>
+<p>Overall, having a class that depends on an excessive number of other classes can make the codebase more complex, harder to understand, harder to
+maintain, harder to test, and more prone to errors and bugs. By reducing the number of dependencies between classes and adhering to good software
+design principles, developers can create more modular, maintainable, and testable code.</p>
 <h2>How to fix it</h2>
-<p>To avoid tight coupling in Java, it’s important to follow good design principles such as SOLID, dependency injection, and loose coupling. This can
-help make the code more modular, flexible, and easier to maintain and modify over time.</p>
+<p>To avoid tight coupling in Java, it is important to follow good design principles such as SOLID, dependency injection, and loose coupling. This can
+help make the code more modular, flexible, and easier to maintain and modify over time. One approach is to apply the Single Responsibility Principle
+(SRP) and break down the class into smaller, more focused classes. This will help to reduce the number of dependencies that the class has. Using
+interfaces and abstractions can contribute to reducing the dependencies between classes.</p>
 <h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
+<h4>Noncompliant code example with a threshold of 5:</h4>
 <pre>
-class Subject {
-    Topic t = new Topic();
-    public void startReading() {
-        t.understand();
-    }
-}
-class Topic {
-    public void understand() {
-        System.out.println("Understand");
-    }
+class Foo { // class Foo depends on too many classes: T1, T2, T3, T4, T5, T6 and T7
+  T1 t1;
+  T2 t2;
+  T3 t3;
+
+  public T4 compute(T5 a, T6 b) {
+    T7 result = a.getResult(b);
+    return (T4) result;
+  }
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre>
-public interface Topic {
-    void understand();
-}
-class Topic1 implements Topic {
-    public void understand() {
-        System.out.println("Understand 1");
-    }
-}
-class Topic2 implements Topic {
-    public void understand() {
-        System.out.println("Understand 2");
-    }
-}
-public class Subject {
-    public static void main(String[] args) {
-        Topic t = new Topic1();
-        t.understand();
-    }
+public class Bar {
+    T8 a8;
+    T9 a9;
 }
 </pre>
 
