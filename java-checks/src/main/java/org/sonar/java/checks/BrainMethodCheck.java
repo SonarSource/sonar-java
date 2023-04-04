@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S6541")
 public class BrainMethodCheck extends IssuableSubscriptionVisitor {
 
-  private static final String ISSUE_MESSAGE = "Refactor this brain method to reduce its complexity.";
+  private static final String ISSUE_MESSAGE = "A \"Brain Method\" was detected. Refactor it to reduce its responsibilities: LOC=%d, cyclo=%d, nesting=%d, NOAV=%d.";
 
   // these default property values are derived from statistics coming from code of almost a hundred projects (Java, C++)
   // "Object-oriented metrics in practice" https://link.springer.com/book/10.1007/3-540-39538-5
@@ -46,7 +46,7 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor {
   // Defined as a human short-term memory numeric limit of variables that can be kept in mind
   private static final int DEFAULT_VARIABLES_THRESHOLD = 7;
 
-  @RuleProperty(key = "locThreshold", description = "The maximum number of LOC authorized.", defaultValue = "" + DEFAULT_LOC_THRESHOLD)
+  @RuleProperty(key = "locThreshold", description = "The maximum number of LOC allowed.", defaultValue = "" + DEFAULT_LOC_THRESHOLD)
   public int locThreshold = DEFAULT_LOC_THRESHOLD;
 
   @RuleProperty(key = "cyclomaticThreshold", description = "The maximum cyclomatic complexity allowed.", defaultValue = "" + DEFAULT_CYCLO_THRESHOLD)
@@ -55,7 +55,7 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor {
   @RuleProperty(key = "nestingThreshold", description = "The maximum nesting level allowed.", defaultValue = "" + DEFAULT_NESTING_THRESHOLD)
   public int nestingThreshold = DEFAULT_NESTING_THRESHOLD;
 
-  @RuleProperty(key = "noavThreshold", description = "The maximum number of accessed variables authorized.", defaultValue = "" + DEFAULT_VARIABLES_THRESHOLD)
+  @RuleProperty(key = "noavThreshold", description = "The maximum number of accessed variables allowed.", defaultValue = "" + DEFAULT_VARIABLES_THRESHOLD)
   public int noavThreshold = DEFAULT_VARIABLES_THRESHOLD;
 
   @Override
@@ -82,7 +82,7 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor {
       cyclomaticComplexity >= cyclomaticThreshold &&
       maxNestingLevel >= nestingThreshold &&
       numberOfAccessedVariables >= noavThreshold) {
-      reportIssue(methodTree, ISSUE_MESSAGE);
+      reportIssue(methodTree.simpleName(), String.format(ISSUE_MESSAGE, linesOfCode, cyclomaticComplexity, maxNestingLevel, numberOfAccessedVariables));
     }
 
   }
