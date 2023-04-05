@@ -150,4 +150,39 @@ public class SingletonUsageCheckSample {
       return sides;
     }
   }
+
+  public static class TooManyConstructors { // Compliant
+    public static final TooManyConstructors INSTANCE = new TooManyConstructors();
+    private int field;
+
+    private TooManyConstructors() {
+      field = 42;
+    }
+
+    private TooManyConstructors(int value) {
+      field = value;
+    }
+  }
+
+  public static class SinglePrivateConstructorWithParameter { // Compliant
+    public static final SinglePrivateConstructorWithParameter INSTANCE = new SinglePrivateConstructorWithParameter(42);
+    private int field;
+
+    private SinglePrivateConstructorWithParameter(int value) {
+      field = value;
+    }
+
+    public int value() {
+      return field;
+    }
+  }
+
+  public static class LackNonPublicFieldOrInstanceMethod { // Compliant
+    public static final LackNonPublicFieldOrInstanceMethod INSTANCE = new LackNonPublicFieldOrInstanceMethod();
+    private int field;
+
+    private LackNonPublicFieldOrInstanceMethod() {
+      field = 42;
+    }
+  }
 }
