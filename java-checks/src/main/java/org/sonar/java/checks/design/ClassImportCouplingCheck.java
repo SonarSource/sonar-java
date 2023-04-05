@@ -20,6 +20,7 @@
 package org.sonar.java.checks.design;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -48,14 +49,14 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
     defaultValue = "" + COUPLING_THRESHOLD)
   public int couplingThreshold = COUPLING_THRESHOLD;
   private String packageName;
-  private Set<String> imports;
-  private Set<String> filteredImports;
+  private Set<Tree> imports;
+  private Set<Tree> secondaryLocations;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     super.scanFile(context);
     imports = null;
-    filteredImports = null;
+    secondaryLocations = null;
   }
 
   @Override
@@ -73,17 +74,17 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
     packageName = JavaTree.PackageDeclarationTreeImpl.packageNameAsString(compilationUnitTree.packageDeclaration());
 
     if (imports == null) {
+      String fileProjectName = context.getProject().key();
+
       imports = compilationUnitTree.imports().stream()
         .filter(i -> !i.is(Tree.Kind.EMPTY_STATEMENT))
         .map(ImportTree.class::cast)
         .map(ImportTree::qualifiedIdentifier)
-        .map(i -> ExpressionsHelper.concatenate(((ExpressionTree) i)))
+        .filter(i -> ExpressionsHelper.concatenate(((ExpressionTree) i)).startsWith(fileProjectName))
         .collect(Collectors.toSet());
 
-      String fileProjectName = context.getProject().key();
-      filteredImports = imports.stream()
-        .filter(i -> i.startsWith(fileProjectName))
-        .collect(Collectors.toSet());
+      secondaryLocations = new HashSet<>();
+      secondaryLocations.addAll(imports);
     }
 
     checkTypes(tree.superClass(), types);
@@ -91,15 +92,20 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
     super.visitClass(tree);
 
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
-      filteredImports.addAll(types);
-      int size = filteredImports.size();
+      int size = imports.size() + types.size();
       if (size > couplingThreshold) {
         context.reportIssue(this, tree.simpleName(), "Split this “Monster Class” into smaller and more specialized ones " +
           "to reduce its dependencies on other classes from " + size +
-          " to the maximum authorized " + couplingThreshold + " or less.");
+          " to the maximum authorized " + couplingThreshold + " or less.", getSecondaryLocations(), null);
       }
       types = nesting.pop();
     }
+  }
+
+  private List<JavaFileScannerContext.Location> getSecondaryLocations() {
+    return secondaryLocations.stream()
+      .map(element -> new JavaFileScannerContext.Location("Duplication", element))
+      .collect(Collectors.toList());
   }
 
   @Override
@@ -112,12 +118,14 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
       String fullyQualifiedName = identifierTree.symbolType().fullyQualifiedName();
       if (fullyQualifiedName.contains(packageName)) {
         types.add(fullyQualifiedName);
+        secondaryLocations.add(type);
       }
     } else if (type.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) type;
       String name = ExpressionsHelper.concatenate(memberSelect);
       if (name.contains(packageName)) {
         types.add(name);
+        secondaryLocations.add(type);
       }
     }
   }
