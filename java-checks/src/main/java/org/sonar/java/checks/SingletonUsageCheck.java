@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -117,6 +118,10 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
       flows.add(new JavaFileScannerContext.Location("Singleton field", singletonField.simpleName()));
       if (singletonClass != classTree) {
         flows.add(new JavaFileScannerContext.Location("Singleton helper", classTree.simpleName()));
+      }
+      if (!allConstructors.isEmpty()) {
+        IdentifierTree methodName = allConstructors.get(0).simpleName();
+        flows.add(new JavaFileScannerContext.Location("Private constructor", methodName));
       }
 
       reportIssue(singletonClass.simpleName(), MESSAGE, flows, null);

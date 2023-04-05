@@ -5,7 +5,7 @@ import java.io.Serial;
 // TODO: check code snippet license
 public class SingletonUsageCheckSample {
 
-  public static class EagerInitializedSingleton { // Noncompliant [[sc=23;ec=48;secondary=+2]] {{A Singleton implementation was detected. Make sure the use of the Singleton pattern is required and the implementation is the right one for the context.}}
+  public static class EagerInitializedSingleton { // Noncompliant [[sc=23;ec=48;secondary=+2,+5]] {{A Singleton implementation was detected. Make sure the use of the Singleton pattern is required and the implementation is the right one for the context.}}
 
     private static final EagerInitializedSingleton instance = new EagerInitializedSingleton();
 
