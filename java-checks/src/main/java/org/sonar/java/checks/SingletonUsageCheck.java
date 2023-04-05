@@ -143,7 +143,6 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
 
   private static boolean hasNonPrivateInstanceMethodsOrFields(ClassTree classTree) {
     return classTree.members().stream().anyMatch(member -> {
-      boolean isPrivateOrStatic = true;
       if (member.is(Tree.Kind.METHOD)) {
         var symbol = ((MethodTree) member).symbol();
         return !symbol.isPrivate() && !symbol.isStatic();
