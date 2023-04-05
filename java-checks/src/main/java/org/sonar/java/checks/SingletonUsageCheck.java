@@ -19,11 +19,14 @@
  */
 package org.sonar.java.checks;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -71,40 +74,12 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
   }
 
   private void visitClass(ClassTree classTree) {
-    ClassTree wrappingClass = null;
-    final var parent = classTree.parent();
-    if (parent != null && parent.is(Tree.Kind.CLASS)) {
-      wrappingClass = (ClassTree) parent;
-    }
+    var classAndInstance = collectClassAndField(classTree);
 
-    VariableTree singletonField = null;
-    ClassTree singletonClass = null;
-    for (var member : classTree.members()) {
-      if (!(member.is(Tree.Kind.VARIABLE))) continue;
+    if (classAndInstance == null) return;
 
-      final var varTree = (VariableTree) member;
-      final var fieldSymbol = varTree.symbol();
-
-      if (!fieldSymbol.isStatic()) continue;
-
-      if (fieldSymbol.type().equals(classTree.symbol().type())) {
-        singletonClass = classTree;
-      } else if (wrappingClass != null && fieldSymbol.type().equals(wrappingClass.symbol().type())) {
-        singletonClass = wrappingClass;
-      } else {
-        continue;
-      }
-
-      if (isEffectivelyFinal(fieldSymbol)) {
-        if (singletonField != null) {
-          return;
-        } else {
-          singletonField = varTree;
-        }
-      }
-    }
-
-    if (singletonField == null) return;
+    ClassTree singletonClass = classAndInstance.getKey();
+    VariableTree singletonField = classAndInstance.getValue();
 
     var allConstructors = singletonClass.members().stream()
       .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
@@ -124,12 +99,48 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
         IdentifierTree methodName = allConstructors.get(0).simpleName();
         flows.add(new JavaFileScannerContext.Location("Private constructor", methodName));
       }
-      extractAssignments(singletonField).forEach(assignment -> {
-        flows.add(new JavaFileScannerContext.Location("Value assignment", assignment));
-      });
+      extractAssignments(singletonField).forEach(assignment -> flows.add(new JavaFileScannerContext.Location("Value assignment", assignment)));
 
       reportIssue(singletonClass.simpleName(), MESSAGE, flows, null);
     }
+  }
+
+  @CheckForNull
+  private static Map.Entry<ClassTree, VariableTree> collectClassAndField(ClassTree classTree) {
+    ClassTree wrappingClass = null;
+    final var parent = classTree.parent();
+    if (parent != null && parent.is(Tree.Kind.CLASS)) {
+      wrappingClass = (ClassTree) parent;
+    }
+
+    VariableTree singletonField = null;
+    ClassTree singletonClass = null;
+    List<VariableTree> staticFields = collectStaticFields(classTree);
+    for (var field : staticFields) {
+      if (singletonField != null) return null;
+
+      final var fieldSymbol = field.symbol();
+      if (fieldSymbol.type().equals(classTree.symbol().type())) {
+        singletonClass = classTree;
+      } else if (wrappingClass != null && fieldSymbol.type().equals(wrappingClass.symbol().type())) {
+        singletonClass = wrappingClass;
+      } else {
+        continue;
+      }
+
+      if (isEffectivelyFinal(fieldSymbol)) {
+        singletonField = field;
+      }
+    }
+    if (singletonField == null) return null;
+    return new AbstractMap.SimpleEntry<>(singletonClass, singletonField);
+  }
+
+  private static List<VariableTree> collectStaticFields(ClassTree classTree) {
+    return classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.VARIABLE) && ((VariableTree) member).symbol().isStatic())
+      .map(VariableTree.class::cast)
+      .collect(Collectors.toList());
   }
 
   private static boolean isEffectivelyFinal(Symbol symbol) {
@@ -157,10 +168,9 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
 
   private static List<AssignmentExpressionTree> extractAssignments(VariableTree variable) {
     return variable.symbol().usages().stream()
-      .map(identifier -> identifier.parent())
+      .map(Tree::parent)
       .filter(usage -> usage.is(Tree.Kind.ASSIGNMENT))
       .map(AssignmentExpressionTree.class::cast)
-      .filter(assignment -> assignment.expression().kind() != Tree.Kind.NULL_LITERAL)
       .collect(Collectors.toList());
   }
 }
