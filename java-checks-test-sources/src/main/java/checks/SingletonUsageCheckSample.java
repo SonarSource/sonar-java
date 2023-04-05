@@ -99,7 +99,7 @@ public class SingletonUsageCheckSample {
     }
   }
 
-  public enum EnumSingleton { // Noncompliant {{An Enum-based Singleton implementation was detected. Make sure the use of the Singleton pattern is required and an Enum-based implementation is the right one for the context.}}
+  public enum EnumSingleton { // Noncompliant [[sc=15;ec=28]] {{An Enum-based Singleton implementation was detected. Make sure the use of the Singleton pattern is required and an Enum-based implementation is the right one for the context.}}
 
     INSTANCE;
 
@@ -133,4 +133,21 @@ public class SingletonUsageCheckSample {
 
   }
 
+  interface WithSides {
+    int sides();
+  }
+
+  enum Shape implements WithSides { // Compliant because single enum constants are not singletons
+    TRIANGLE(3),;
+    private int sides;
+
+    Shape(int sides) {
+      this.sides = sides;
+    }
+
+    @Override
+    public int sides() {
+      return sides;
+    }
+  }
 }

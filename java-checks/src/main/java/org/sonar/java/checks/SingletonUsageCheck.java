@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -58,9 +59,12 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
 
   private void visitEnum(ClassTree classTree) {
     var enumConstants = classTree.members().stream().filter(member -> member.is(Tree.Kind.ENUM_CONSTANT)).collect(Collectors.toList());
-    if (enumConstants.size() == 1 && hasNonPrivateInstanceMethodsOrFields(classTree)) {
-      reportIssue(classTree.simpleName(), MESSAGE_FOR_ENUMS,
-        Collections.singletonList(new JavaFileScannerContext.Location("Single enum", enumConstants.get(0))), null);
+    if (enumConstants.size() == 1) {
+      EnumConstantTree constant = (EnumConstantTree) enumConstants.get(0);
+      if (isInitializedWithParameterFreeConstructor(constant) && hasNonPrivateInstanceMethodsOrFields(classTree)) {
+        reportIssue(classTree.simpleName(), MESSAGE_FOR_ENUMS,
+          Collections.singletonList(new JavaFileScannerContext.Location("Single enum", constant)), null);
+      }
     }
   }
 
@@ -122,6 +126,10 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
   private static boolean isEffectivelyFinal(Symbol symbol) {
     return symbol.isFinal() ||
       (symbol.isPrivate() && ExpressionsHelper.getSingleWriteUsage(symbol) != null);
+  }
+
+  private static boolean isInitializedWithParameterFreeConstructor(EnumConstantTree constant) {
+    return constant.initializer().methodSymbol().parameterTypes().isEmpty();
   }
 
   private static boolean hasNonPrivateInstanceMethodsOrFields(ClassTree classTree) {
