@@ -29,6 +29,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -123,6 +124,9 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
         IdentifierTree methodName = allConstructors.get(0).simpleName();
         flows.add(new JavaFileScannerContext.Location("Private constructor", methodName));
       }
+      extractAssignments(singletonField).forEach(assignment -> {
+        flows.add(new JavaFileScannerContext.Location("Value assignment", assignment));
+      });
 
       reportIssue(singletonClass.simpleName(), MESSAGE, flows, null);
     }
@@ -150,5 +154,14 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
         return false;
       }
     });
+  }
+
+  private static List<AssignmentExpressionTree> extractAssignments(VariableTree variable) {
+    return variable.symbol().usages().stream()
+      .map(identifier -> identifier.parent())
+      .filter(usage -> usage.is(Tree.Kind.ASSIGNMENT))
+      .map(AssignmentExpressionTree.class::cast)
+      .filter(assignment -> assignment.expression().kind() != Tree.Kind.NULL_LITERAL)
+      .collect(Collectors.toList());
   }
 }

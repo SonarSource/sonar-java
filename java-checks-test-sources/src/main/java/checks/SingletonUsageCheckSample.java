@@ -21,7 +21,7 @@ public class SingletonUsageCheckSample {
     }
   }
 
-  public static class StaticBlockSingleton { // Noncompliant
+  public static class StaticBlockSingleton { // Noncompliant [[sc=23;ec=43;secondary=+2,+4,+9]]
 
     private static StaticBlockSingleton instance;
 
