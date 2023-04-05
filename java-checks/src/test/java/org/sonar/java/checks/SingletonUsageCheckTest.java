@@ -33,5 +33,4 @@ class SingletonUsageCheckTest {
       .withCheck(new SingletonUsageCheck())
       .verifyIssues();
   }
-
 }
