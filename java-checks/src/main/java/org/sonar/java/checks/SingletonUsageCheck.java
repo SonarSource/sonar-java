@@ -36,6 +36,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6548")
 public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
+  private static final String MESSAGE = "A Singleton implementation was detected." + " " +
+    "Make sure the use of the Singleton pattern is required and the implementation is the right one for the context.";
+  private static final String MESSAGE_FOR_ENUMS = "An Enum-based Singleton implementation was detected." + " " +
+    "Make sure the use of the Singleton pattern is required and an Enum-based implementation is the right one for the context.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -55,7 +59,7 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
   private void visitEnum(ClassTree classTree) {
     var enumConstants = classTree.members().stream().filter(member -> member.is(Tree.Kind.ENUM_CONSTANT)).collect(Collectors.toList());
     if (enumConstants.size() == 1 && hasNonPrivateInstanceMethodsOrFields(classTree)) {
-      reportIssue(classTree.simpleName(), "Enum singleton pattern detected",
+      reportIssue(classTree.simpleName(), MESSAGE_FOR_ENUMS,
         Collections.singletonList(new JavaFileScannerContext.Location("Single enum", enumConstants.get(0))), null);
     }
   }
@@ -111,7 +115,7 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
         flows.add(new JavaFileScannerContext.Location("Singleton helper", classTree.simpleName()));
       }
 
-      reportIssue(singletonClass.simpleName(), "This looks like a singleton class", flows, null);
+      reportIssue(singletonClass.simpleName(), MESSAGE, flows, null);
     }
   }
 
