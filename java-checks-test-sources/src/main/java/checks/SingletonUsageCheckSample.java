@@ -165,6 +165,30 @@ public class SingletonUsageCheckSample {
     }
   }
 
+  enum EnumWithPrivateInstanceMethodAndFields { // Compliant there are non-private fields or methods
+    INSTANCE();
+    private int value;
+    private EnumWithPrivateInstanceMethodAndFields() {
+      value = 42;
+    }
+
+    private int increment() {
+      return value++;
+    }
+  }
+
+  static class ClassWithPrivateInstanceMethodAndFields { // Compliant there are non-private fields or methods
+    public static final ClassWithPrivateInstanceMethodAndFields INSTANCE = new ClassWithPrivateInstanceMethodAndFields();
+    private int value;
+    private ClassWithPrivateInstanceMethodAndFields() {
+      value = 42;
+    }
+
+    private int increment() {
+      return value++;
+    }
+  }
+
   public static class TooManyConstructors { // Compliant
     public static final TooManyConstructors INSTANCE = new TooManyConstructors();
     private int field;

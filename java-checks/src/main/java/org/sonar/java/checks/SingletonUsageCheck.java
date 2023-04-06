@@ -68,7 +68,8 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
     var enumConstants = classTree.members().stream().filter(member -> member.is(Tree.Kind.ENUM_CONSTANT)).collect(Collectors.toList());
     if (enumConstants.size() == 1) {
       EnumConstantTree constant = (EnumConstantTree) enumConstants.get(0);
-      if (isInitializedWithParameterFreeConstructor(constant) && hasNonPrivateInstanceMethodsOrFields(classTree)) {
+      if (isInitializedWithParameterFreeConstructor(constant) &&
+        hasNonPrivateInstanceMethodsOrFields(classTree)) {
         reportIssue(classTree.simpleName(), MESSAGE_FOR_ENUMS,
           Collections.singletonList(new JavaFileScannerContext.Location("Single enum", constant)), null);
       }
