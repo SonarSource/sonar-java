@@ -117,7 +117,7 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
     ClassTree singletonClass = null;
     List<VariableTree> staticFields = collectStaticFields(classTree);
     for (var field : staticFields) {
-      if (singletonField != null) return null;
+      if (singletonField != null) return new AbstractMap.SimpleEntry<>(singletonClass, singletonField);
 
       final var fieldSymbol = field.symbol();
       if (fieldSymbol.type().equals(classTree.symbol().type())) {

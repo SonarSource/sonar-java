@@ -34,4 +34,12 @@ class SingletonUsageCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_ruling() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/Equivalence.java"))
+      .withCheck(new SingletonUsageCheck())
+      .verifyIssues();
+  }
+
 }

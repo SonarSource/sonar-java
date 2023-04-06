@@ -133,6 +133,38 @@ public class SingletonUsageCheckSample {
 
   }
 
+  public abstract class Equivalence<T> {
+
+    protected boolean doEquivalent(T a, T b) {
+      return a.equals(b);
+    }
+
+    protected int doHash(T o) {
+      return o.hashCode();
+    }
+
+    static final class Equals extends checks.Equivalence<Object> { // Noncompliant
+
+      static final checks.Equivalence.Equals INSTANCE = new checks.Equivalence.Equals();
+
+      @Override
+      protected boolean doEquivalent(Object a, Object b) {
+        return a.equals(b);
+      }
+
+      @Override
+      protected int doHash(Object o) {
+        return o.hashCode();
+      }
+
+      private Object readResolve() {
+        return INSTANCE;
+      }
+
+      private static final long serialVersionUID = 1;
+    }
+  }
+
   interface WithSides {
     int sides();
   }
