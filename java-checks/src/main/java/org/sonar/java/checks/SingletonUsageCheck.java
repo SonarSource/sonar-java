@@ -97,10 +97,10 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
       if (singletonClass != classTree) {
         flows.add(new JavaFileScannerContext.Location("Singleton helper", classTree.simpleName()));
       }
-      if (!allConstructors.isEmpty()) {
+      allConstructors.forEach(constructor -> {
         IdentifierTree methodName = allConstructors.get(0).simpleName();
         flows.add(new JavaFileScannerContext.Location("Private constructor", methodName));
-      }
+      });
       extractAssignments(singletonField).forEach(assignment -> flows.add(new JavaFileScannerContext.Location("Value assignment", assignment)));
 
       reportIssue(singletonClass.simpleName(), MESSAGE, flows, null);
@@ -120,14 +120,12 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
 
     var field = staticFields.get(0);
 
-    ClassTree singletonClass = null;
     final var fieldSymbol = field.symbol();
+    ClassTree singletonClass = null;
     if (fieldSymbol.type().equals(classTree.symbol().type())) {
       singletonClass = classTree;
-    } else if (wrappingClass != null && fieldSymbol.type().equals(wrappingClass.symbol().type())) {
-      singletonClass = wrappingClass;
     } else {
-      return null;
+      singletonClass = wrappingClass;
     }
 
     if (!isEffectivelyFinal(fieldSymbol)) return null;

@@ -213,4 +213,26 @@ public class SingletonUsageCheckSample {
       return value;
     }
   }
+
+  public static class MultipleReassignmentsPossible { // Compliant
+    private static MultipleReassignmentsPossible INSTANCE = new MultipleReassignmentsPossible();
+    private int value;
+
+    private MultipleReassignmentsPossible() {
+      value = 0;
+    }
+
+    public int increment() {
+      return value++;
+    }
+
+    public int getValue() {
+      return value;
+    }
+
+    public MultipleReassignmentsPossible reset() {
+      INSTANCE = new MultipleReassignmentsPossible();
+      return INSTANCE;
+    }
+  }
 }
