@@ -147,6 +147,21 @@ public class SingletonUsageCheckSample {
     }
   }
 
+  enum MoreThanOneConstant {
+    ONE(),
+    THE_SAME();
+
+    private int value;
+
+    private MoreThanOneConstant() {
+      value = 42;
+    }
+
+    public int getValue() {
+      return value;
+    }
+  }
+
   interface WithSides {
     int sides();
   }
