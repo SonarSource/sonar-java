@@ -133,7 +133,7 @@ public class SingletonUsageCheckSample {
 
   }
 
-  public abstract class Equivalence<T> {
+  public static abstract class Equivalence<T> {
 
     protected boolean doEquivalent(T a, T b) {
       return a.equals(b);
@@ -143,9 +143,9 @@ public class SingletonUsageCheckSample {
       return o.hashCode();
     }
 
-    static final class Equals extends checks.Equivalence<Object> { // Noncompliant
+    static final class Equals extends Equivalence<Object> { // Compliant FN
 
-      static final checks.Equivalence.Equals INSTANCE = new checks.Equivalence.Equals();
+      static final Equals INSTANCE = new Equals();
 
       @Override
       protected boolean doEquivalent(Object a, Object b) {
@@ -215,6 +215,20 @@ public class SingletonUsageCheckSample {
 
     private LackNonPublicFieldOrInstanceMethod() {
       field = 42;
+    }
+  }
+
+  public static class Numbers { // Compliant because there are multiple instances and not a singleton
+    public static final Numbers ONE = new Numbers();
+    public static final Numbers POSITIVE_ONE = new Numbers();
+    private int value;
+
+    private Numbers() {
+      this.value = 1;
+    }
+
+    public int getValue() {
+      return value;
     }
   }
 }

@@ -113,27 +113,24 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
       wrappingClass = (ClassTree) parent;
     }
 
-    VariableTree singletonField = null;
-    ClassTree singletonClass = null;
     List<VariableTree> staticFields = collectStaticFields(classTree);
-    for (var field : staticFields) {
-      if (singletonField != null) return new AbstractMap.SimpleEntry<>(singletonClass, singletonField);
+    if (staticFields.size() != 1) return null;
 
-      final var fieldSymbol = field.symbol();
-      if (fieldSymbol.type().equals(classTree.symbol().type())) {
-        singletonClass = classTree;
-      } else if (wrappingClass != null && fieldSymbol.type().equals(wrappingClass.symbol().type())) {
-        singletonClass = wrappingClass;
-      } else {
-        continue;
-      }
+    var field = staticFields.get(0);
 
-      if (isEffectivelyFinal(fieldSymbol)) {
-        singletonField = field;
-      }
+    ClassTree singletonClass = null;
+    final var fieldSymbol = field.symbol();
+    if (fieldSymbol.type().equals(classTree.symbol().type())) {
+      singletonClass = classTree;
+    } else if (wrappingClass != null && fieldSymbol.type().equals(wrappingClass.symbol().type())) {
+      singletonClass = wrappingClass;
+    } else {
+      return null;
     }
-    if (singletonField == null) return null;
-    return new AbstractMap.SimpleEntry<>(singletonClass, singletonField);
+
+    if (!isEffectivelyFinal(fieldSymbol)) return null;
+
+    return new AbstractMap.SimpleEntry<>(singletonClass, field);
   }
 
   private static List<VariableTree> collectStaticFields(ClassTree classTree) {
