@@ -147,6 +147,19 @@ public class SingletonUsageCheckSample {
     }
   }
 
+  public static class PublicConstructorWithParameters { // Compliant the constructor is public and takes parameters
+    public static final PublicConstructorWithParameters INSTANCE = new PublicConstructorWithParameters(42);
+    private int value;
+
+    public PublicConstructorWithParameters(int value) {
+      this.value = value;
+    }
+
+    public int getValue() {
+      return value;
+    }
+  }
+
   enum MoreThanOneConstant {
     ONE(),
     THE_SAME();
