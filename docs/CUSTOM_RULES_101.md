@@ -1,9 +1,9 @@
 Writing Custom Java Rules 101
 ==========
 
-You are using SonarQube and its Java Analyzer to analyze your projects, but there aren't rules that allow you to target some of your company's specific needs? Then your logical choice may be to implement your own set of custom Java rules.
+귀하는 SonarQube와 해당 Java Analyzer를 사용하여 프로젝트를 분석하고 있지만, 귀사의 특정 요구사항 중 일부를 대상으로 지정할 수 있는 규칙이 없습니까? 그런 다음 사용자 정의 Java 규칙 집합을 구현하는 것이 논리적으로 선택할 수 있습니다.
 
-This document is an introduction to custom rule writing for the SonarQube Java Analyzer. It will cover all the main concepts of static analysis required to understand and develop effective rules, relying on the API provided by the SonarSource Analyzer for Java.
+이 문서는 SonarQube Java Analyzer에 대한 사용자 정의 규칙 작성에 대한 소개입니다. Java용 SonarSource Analyzer에서 제공하는 API에 의존하여 효과적인 규칙을 이해하고 개발하는 데 필요한 정적 분석의 모든 주요 개념을 다룹니다.
 
 ## Content
 
@@ -28,36 +28,36 @@ This document is an introduction to custom rule writing for the SonarQube Java A
   * [How to test the Source Version in a rule](#how-to-test-the-source-version-in-a-rule)
 * [References](#references)
 
-## Getting started
+## 시작하기
 
-The rules you are going to develop will be delivered using a dedicated, custom plugin, relying on the **SonarSource Analyzer for Java API**. In order to start working efficiently, we provide a template maven project, that you will fill in while following this tutorial.
+개발하려는 규칙은 **Java API용 SonarSource Analyzer**에 의존하는 전용 맞춤형 플러그인을 사용하여 제공됩니다. 효율적인 작업을 시작하기 위해 본 자습서에 따라 작성할 템플릿 메이븐 프로젝트를 제공합니다.
 
-Grab the template project by cloning this repository (https://github.com/SonarSource/sonar-java) and then importing in your IDE the sub-module [java-custom-rules-examples](https://github.com/SonarSource/sonar-java/tree/master/docs/java-custom-rules-example).
-This project already contains examples of custom rules. Our goal will be to add an extra rule!
+이 저장소(https://github.com/SonarSource/sonar-java) 를 복제한 다음 IDE에서 [sub-custom-details-details](https://github.com/SonarSource/sonar-java/tree/master/docs/java-custom-rules-example) )를 가져와 템플릿 프로젝트를 가져옵니다.
+이 프로젝트에는 이미 사용자 지정 규칙의 예가 포함되어 있습니다. 우리의 목표는 규칙을 추가하는 것입니다!
 
-### Looking at the POM
+### POM을 보고 있습니다
 
-A custom plugin is a Maven project, and before diving into code, it is important to notice a few relevant lines related to the configuration of your soon-to-be-released custom plugin. The root of a Maven project is a file named `pom.xml`.
+사용자 지정 플러그인은 Maven 프로젝트이며 코드로 넘어가기 전에 곧 출시될 사용자 지정 플러그인의 구성과 관련된 몇 가지 관련된 행을 확인하는 것이 중요합니다. 메이븐 프로젝트의 루트는 pom.xml 파일입니다.
 
-In our case, we have 3 of them:
-* `pom.xml`: use a snapshot version of the Java Analyzer
-* `pom_SQ_8_9_LTS.xml`: self-contained `pom` file, configured with dependencies matching SonarQube `8.9 LTS` requirements
+우리의 경우, 그 중 3가지가 있습니다:
+* 'pom.xml': Java Analyzer의 스냅샷 버전 사용
+* "pom_SQ_8_9_LTS.xml": SonarQube "8.9 LTS" 요구 사항과 일치하는 종속성으로 구성된 자체 포함 "pom" 파일
 
-These 3 `pom`s correspond different use-cases, depending on which instance of SonarQube you will target with your custom-rules plugin. In this tutorial, **we will only use the file named `pom_SQ_8_9_LTS.xml`**, as it is completely independent from the build of the Java Analyzer, is self-contained, and will target the latest release of SonarQube.
+이들 3가지 '폼'은 사용자 지정 규칙 플러그인으로 대상으로 삼을 소나큐베의 인스턴스에 따라 다양한 사용 사례에 해당합니다. 이 튜토리얼에서는 **'pom_'이라는 이름의 파일만 사용합니다SQ_8_9_LTS.xml'**는 Java Analyzer의 빌드와 완전히 독립적이기 때문에 자체 포함되어 있으며 SonarQube의 최신 릴리스를 대상으로 합니다.
 
-Let's start by building the custom-plugin template by using the following command:
-
-```
-mvn clean install -f pom_SQ_8_9_LTS.xml
-```
-
-Note that you can also decide to **delete** the original pom.xml file (**NOT RECOMMENDED**), and then rename `pom_SQ_8_9_LTS.xml` into `pom.xml`. You would then be able to use the very simple command:
+먼저 다음 명령을 사용하여 사용자 지정 플러그인 템플릿을 작성합니다:
 
 ```
-mvn clean install
+mvn 새로 설치 -f pom_SQ_8_9_LTS.xml
 ```
 
-Looking inside the `pom`, you will see that both versions of SonarQube and the Java Analyzer are hard-coded. This is because SonarSource's analyzers are directly embedded in the various SonarQube versions and are shipped together. For instance, SonarQube `7.9` (previous LTS) is shipped with the version `6.3.2.22818` of the Java Analyzer, while SonarQube `8.9` (LTS) is shipped with a much more recent version `6.15.1.26025` of the Java Analyzer. **These versions can not be changed**.
+원본 pom.xml 파일을 **삭제**(**NOT RECUMED**)한 다음 'pom_'의 이름을 변경할 수도 있습니다SQ_8_9_LTS.xml을 'pom.xml'로 변환합니다. 그러면 매우 간단한 명령을 사용할 수 있습니다:
+
+```
+mvn 새로 설치
+```
+
+pom 내부를 보면 SonarQube와 Java Analyzer의 두 버전이 모두 하드 코딩되어 있습니다. SonarSource의 분석기가 다양한 SonarQube 버전에 직접 내장되어 함께 배송되기 때문입니다. 예를 들어, SonarQube "7.9"(이전 LTS)는 Java Analyzer의 "6.3.2.22818" 버전과 함께 제공되고 SonarQube "8.9"(LTS)는 Java Analyzer의 훨씬 최신 버전인 "6.15.1.26025"와 함께 제공됩니다. **이러한 버전은 변경할 수 없습니다**.
 
 ```xml
 <properties>
