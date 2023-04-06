@@ -27,11 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
@@ -113,7 +115,7 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
       wrappingClass = (ClassTree) parent;
     }
 
-    List<VariableTree> staticFields = collectStaticFields(classTree);
+    List<VariableTree> staticFields = collectStaticFields(classTree, wrappingClass);
     if (staticFields.size() != 1) return null;
 
     var field = staticFields.get(0);
@@ -133,11 +135,16 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
     return new AbstractMap.SimpleEntry<>(singletonClass, field);
   }
 
-  private static List<VariableTree> collectStaticFields(ClassTree classTree) {
+  private static List<VariableTree> collectStaticFields(ClassTree classTree, @Nullable ClassTree wrappingClass) {
+    Type type = classTree.symbol().type();
+    Type wrappingType = wrappingClass != null ? wrappingClass.symbol().type() : null;
     return classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.VARIABLE) && ((VariableTree) member).symbol().isStatic())
       .map(VariableTree.class::cast)
-      .collect(Collectors.toList());
+      .filter(field -> {
+        Type fieldType = field.symbol().type();
+        return fieldType.equals(type) || (wrappingType != null && fieldType.equals(wrappingType));
+      }).collect(Collectors.toList());
   }
 
   private static boolean isEffectivelyFinal(Symbol symbol) {

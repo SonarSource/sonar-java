@@ -133,35 +133,17 @@ public class SingletonUsageCheckSample {
 
   }
 
-  public static abstract class Equivalence<T> {
+  public static class MultipleStaticFieldsOfDifferentTypesDoNotPreventDetection { // Noncompliant
+    public static final MultipleStaticFieldsOfDifferentTypesDoNotPreventDetection ONE = new MultipleStaticFieldsOfDifferentTypesDoNotPreventDetection();
+    public static final String MESSAGE = "Hello, World!";
+    private int value;
 
-    protected boolean doEquivalent(T a, T b) {
-      return a.equals(b);
+    private MultipleStaticFieldsOfDifferentTypesDoNotPreventDetection() {
+      this.value = 1;
     }
 
-    protected int doHash(T o) {
-      return o.hashCode();
-    }
-
-    static final class Equals extends Equivalence<Object> { // Compliant FN
-
-      static final Equals INSTANCE = new Equals();
-
-      @Override
-      protected boolean doEquivalent(Object a, Object b) {
-        return a.equals(b);
-      }
-
-      @Override
-      protected int doHash(Object o) {
-        return o.hashCode();
-      }
-
-      private Object readResolve() {
-        return INSTANCE;
-      }
-
-      private static final long serialVersionUID = 1;
+    public int getValue() {
+      return value;
     }
   }
 
@@ -218,7 +200,7 @@ public class SingletonUsageCheckSample {
     }
   }
 
-  public static class Numbers { // Compliant because there are multiple instances and not a singleton
+  public static class Numbers { // Compliant because there are multiple constant instances of the same type and not a singleton
     public static final Numbers ONE = new Numbers();
     public static final Numbers POSITIVE_ONE = new Numbers();
     private int value;
