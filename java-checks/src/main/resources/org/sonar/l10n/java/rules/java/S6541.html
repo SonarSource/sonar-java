@@ -1,18 +1,18 @@
-<p>Methods should not perform too many tasks (Brain method).</p>
+<p>Methods should not perform too many tasks (Brain Method).</p>
 <h2>Why is this an issue?</h2>
-<p>This issue is often referred as 'Brain method' anti-pattern. <a href="https://link.springer.com/book/10.1007/3-540-39538-5">Defined here</a> <br> A
-brain method is a method that tends to centralize its owner class logic and generally performs too many operations. This can include checking too many
-conditions, using lots of variables, and ultimately making it difficult to understand, maintain and reuse.<br> It is characterized by high LOC number,
-high cyclomatic and cognitive complexity, and a large number of variables being used.</p>
+<p>This issue is raised when Sonar considers that a method is a 'Brain Method'. <br> A Brain Method is a method that tends to centralize its owner
+class logic and generally performs too many operations. This can include checking too many conditions, using lots of variables, and ultimately making
+it difficult to understand, maintain and reuse.<br> It is characterized by high LOC number, high cyclomatic and cognitive complexity, and a large
+number of variables being used.</p>
 <h3>What is the potential impact?</h3>
-<p>Brain methods are often hard to cover with tests, because of their deep nesting, and they are error-prone, because of the many local variables they
+<p>Brain Methods are often hard to cover with tests, because of their deep nesting, and they are error-prone, because of the many local variables they
 usually introduce. Such methods will be very hard to read and understand for anyone outside who created them, and therefore hard to maintain and fix
 if bugs get spotted.<br> They also enable code duplication since the method itself can hardly be reused anywhere else.</p>
 <h2>How to fix it</h2>
 <p>The common approach is to identify fragments of the method’s code that deal with a specific responsibility and extract them to a new method. This
 will make each method more readable, easy to understand and maintain, easier to test, and more prone to be reused.<br> In this paper, the authors
 describe a systematic procedure to refactor this type of code smell: <a href="https://dl.acm.org/doi/10.1145/3191314">"Assessing the Refactoring of
-Brain Methods"</a></p>
+Brain Methods"</a>.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre>
@@ -22,50 +22,50 @@ void farmDailyRoutine() {
     WaterContainer waterContainer = new WaterContainer();
     List&lt;Bottle&gt; bottles = new ArrayList&lt;&gt;();
     for(int i = 0; i &lt; 10; i++) {
-      var bottle = new Bottle();
-      bottle.addWater(10L);
-      bottle.putCap();
-      bottle.shake(2);
-      bottles.add(bottle);
+        var bottle = new Bottle();
+        bottle.addWater(10L);
+        bottle.putCap();
+        bottle.shake(2);
+        bottles.add(bottle);
     }
     waterContainer.store(bottles);
 
     Truck t1 = new Truck(Truck.Type.TRANSPORT);
     t1.load(waterContainer);
     if(Weather.current != Weather.RAINY) {
-      WaterContainer extraWaterContainer = new WaterContainer();
-      List&lt;Bottle&gt; extraBottles = new ArrayList&lt;&gt;();
-      if(southEastCrops.isDry()) {
-        for(LandSlot ls : southEastCrops.lands()) {
-          Bottle b = new Bottle();
-          b.addWater(10L);
-          b.putCap();
-          extraBottles.add(b);
+        WaterContainer extraWaterContainer = new WaterContainer();
+        List&lt;Bottle&gt; extraBottles = new ArrayList&lt;&gt;();
+        if(southEastCrops.isDry()) {
+            for(LandSlot ls : southEastCrops.lands()) {
+                Bottle b = new Bottle();
+                b.addWater(10L);
+                b.putCap();
+                extraBottles.add(b);
+            }
+        } else {
+            extraBottles.add(new Bottle());
         }
-      }else {
-        extraBottles.add(new Bottle());
-      }
-      if(eastCrops.isDry()) {
-        for(LandSlot ls : southEastCrops.lands()) {
-          Bottle b = new Bottle();
-          b.addWater(10L);
-          b.putCap();
-          extraBottles.add(b);
+        if(eastCrops.isDry()) {
+            for(LandSlot ls : southEastCrops.lands()) {
+                Bottle b = new Bottle();
+                b.addWater(10L);
+                b.putCap();
+                extraBottles.add(b);
+            }
+        } else {
+            extraBottles.add(new Bottle());
         }
-      }else {
-        extraBottles.add(new Bottle());
-      }
-      extraWaterContainer.store(extraBottles);
-      t1.load(extraWaterContainer);
-    }else {
-      WaterContainer extraWaterContainer = WaterSource.clone(waterContainer);
-      t1.load(extraWaterContainer)
+        extraWaterContainer.store(extraBottles);
+        t1.load(extraWaterContainer);
+    } else {
+        WaterContainer extraWaterContainer = WaterSource.clone(waterContainer);
+        t1.load(extraWaterContainer)
     }
-  }
+}
 </pre>
 <h4>Compliant solution</h4>
 <pre>
-void farmDailyRoutine() {
+void farmDailyRoutine() { // Compliant: Simpler method, making use of extracted and distributed logic
     Crops southEastCrops = getCrops(1, -1);
     Crops eastCrops = getCrops(1, 0);
     WaterContainer waterContainer = new WaterContainer();
@@ -75,37 +75,37 @@ void farmDailyRoutine() {
     Truck t1 = new Truck(Truck.Type.TRANSPORT);
     t1.load(waterContainer);
     if(Weather.current != Weather.RAINY) {
-      WaterContainer extraWaterContainer = new WaterContainer();
-      fillContainerForCrops(extraWaterContainer, southEastCrops);
-      fillContainerForCrops(extraWaterContainer, eastCrops);
-      t1.load(extraWaterContainer);
-    }else {
-      WaterContainer extraWaterContainer = WaterSource.clone(waterContainer);
-      t1.load(extraWaterContainer)
+        WaterContainer extraWaterContainer = new WaterContainer();
+        fillContainerForCrops(extraWaterContainer, southEastCrops);
+        fillContainerForCrops(extraWaterContainer, eastCrops);
+        t1.load(extraWaterContainer);
+    } else {
+        WaterContainer extraWaterContainer = WaterSource.clone(waterContainer);
+        t1.load(extraWaterContainer)
     }
-  }
+}
 
-  private fillContainerForCrops(WaterContainer wc, Crops crops) {
+private fillContainerForCrops(WaterContainer wc, Crops crops) { // Compliant: extracted readable and reusable method
     if(crops.isDry()) {
-      wc.store(getWaterBottles(crops.lands().size(), 10L, false));
-    }else {
-      wc.store(Collections.singleton(new Bottle()));
+        wc.store(getWaterBottles(crops.lands().size(), 10L, false));
+    } else {
+        wc.store(Collections.singleton(new Bottle()));
     }
-  }
+}
 
-  private List&lt;Bottle&gt; getWaterBottles(int qt, long liquid, boolean shake){
+private List&lt;Bottle&gt; getWaterBottles(int qt, long liquid, boolean shake){ // Compliant: extracted readable and reusable method
     List&lt;Bottle&gt; bottles = new ArrayList&lt;&gt;();
     for(int i = 0; i &lt; qt; i++) {
-      Bottle b = new Bottle();
-      b.addWater(liquid);
-      b.putCap();
-      if(shake) {
-        b.shake();
-      }
-      bottles.add(b);
+        Bottle b = new Bottle();
+        b.addWater(liquid);
+        b.putCap();
+        if(shake) {
+            b.shake();
+        }
+        bottles.add(b);
     }
     return bottles;
-  }
+}
 </pre>
 <h3>How does this work?</h3>
 <p>In this case, the method <code>farmDailyRoutine</code> was taking care of performing many different tasks, with nested conditions and loops, it was
@@ -113,11 +113,11 @@ long and had plenty of local variables. By separating its logic into multiple si
 duplicated code and each of the new methods is now readable and easy to understand. They are now also easier to cover with tests, and many other parts
 of the owner class could benefit from using these methods.</p>
 <h2>Resources</h2>
-<h3>Articles &amp; blog posts<br></h3>
+<h3>Articles &amp; blog posts</h3>
 <ul>
   <li> <a href="https://link.springer.com/book/10.1007/3-540-39538-5">"Object-Oriented Metrics in Practice: Using Software Metrics to Characterize,
   Evaluate, and Improve the Design of Object-Oriented Systems"</a> by M. Lanza, R. Marinescu <br> </li>
   <li> <a href="https://dl.acm.org/doi/10.1145/3191314">"Assessing the Refactoring of Brain Methods"</a> by S. Vidal, I. Berra, S. Zulliani, C.
-  MArcos, J. A. Diaz Pace <br> </li>
+  Marcos, J. A. Diaz Pace <br> </li>
 </ul>
 
