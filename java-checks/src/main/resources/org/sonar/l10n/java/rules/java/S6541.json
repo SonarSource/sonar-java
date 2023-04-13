@@ -3,18 +3,16 @@
   "type": "CODE_SMELL",
   "status": "beta",
   "remediation": {
-    "func": "Linear with offset",
-    "linearDesc": "per BRAIN_SCORE point over the threshold",
-    "linearOffset": "0min",
-    "linearFactor": "0min"
+    "func": "Constant\/Issue",
+    "constantCost": "0min"
   },
   "tags": [
     "architecture",
     "design"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Info",
   "ruleSpecification": "RSPEC-6541",
   "sqKey": "S6541",
   "scope": "All",
-  "quickfix": "unknown"
+  "quickfix": "infeasible"
 }

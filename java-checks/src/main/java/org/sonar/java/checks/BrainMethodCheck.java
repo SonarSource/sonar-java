@@ -19,18 +19,24 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.metrics.MetricsScannerContext;
+import org.sonar.java.model.DefaultModuleScannerContext;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6541")
-public class BrainMethodCheck extends IssuableSubscriptionVisitor {
+public class BrainMethodCheck extends IssuableSubscriptionVisitor implements EndOfAnalysis {
 
   private static final String ISSUE_MESSAGE = "A \"Brain Method\" was detected. Refactor it to reduce at least one of the following metrics: "
     + "LOC from %d to %d, Complexity from %d to %d, Nesting Level from %d to %d, Number of Variables from %d to %d.";
@@ -64,6 +70,10 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor {
     return Arrays.asList(Tree.Kind.METHOD);
   }
 
+  @VisibleForTesting
+  int numberOfIssuesToReport = 10;
+  private final List<IssueFound> issuesFound = new ArrayList<>();
+
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
@@ -83,18 +93,50 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor {
       cyclomaticComplexity >= cyclomaticThreshold &&
       maxNestingLevel >= nestingThreshold &&
       numberOfAccessedVariables >= noavThreshold) {
-      reportIssue(methodTree.simpleName(), String.format(ISSUE_MESSAGE, 
-        linesOfCode, locThreshold - 1, 
+
+      int brainScore = numberOfAccessedVariables + cyclomaticComplexity + maxNestingLevel * linesOfCode;
+      String issueMessage = String.format(ISSUE_MESSAGE,
+        linesOfCode, locThreshold - 1,
         cyclomaticComplexity, cyclomaticThreshold - 1,
-        maxNestingLevel, nestingThreshold - 1, 
-        numberOfAccessedVariables, noavThreshold - 1
-        ));
+        maxNestingLevel, nestingThreshold - 1,
+        numberOfAccessedVariables, noavThreshold - 1);
+
+      AnalyzerMessage analyzerMessage = new AnalyzerMessage(this, context.getInputFile(),
+        AnalyzerMessage.textSpanFor(methodTree.simpleName()), issueMessage, 0);
+      issuesFound.add(new IssueFound(brainScore, analyzerMessage));
     }
 
   }
 
   private static boolean isExcluded(MethodTree methodTree) {
     return methodTree.symbol().isAbstract() || methodTree.block() == null || MethodTreeUtils.isEqualsMethod(methodTree) || MethodTreeUtils.isHashCodeMethod(methodTree);
+  }
+
+  @Override
+  public void endOfAnalysis(ModuleScannerContext context) {
+    if (issuesFound.size() > numberOfIssuesToReport) {
+      numberOfIssuesToReport += issuesFound.size() / 10;
+      issuesFound.sort((a, b) -> b.brainScore - a.brainScore);
+    } else {
+      numberOfIssuesToReport = issuesFound.size();
+    }
+    var defaultContext = (DefaultModuleScannerContext) context;
+    for (int i = 0; i < numberOfIssuesToReport; i++) {
+      IssueFound issueFound = issuesFound.get(i);
+      defaultContext.reportIssue(issueFound.analyzerMessage);
+    }
+  }
+
+  private static class IssueFound {
+
+    int brainScore;
+    AnalyzerMessage analyzerMessage;
+
+    public IssueFound(int brainScore, AnalyzerMessage analyzerMessage) {
+      this.brainScore = brainScore;
+      this.analyzerMessage = analyzerMessage;
+    }
+
   }
 
 }
