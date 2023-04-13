@@ -1,18 +1,25 @@
-<p>When two or more components or classes are heavily dependent on each other, it can indicate that the class has too many responsibilities or that
-the class is tightly coupled. This can lead to a lack of modularity, making modifying or maintaining one class difficult without affecting the
-others.</p>
+<p>"Monster Class" is a class that implements too many functionalities that are not well organized, or cohesive. Monster Classes are not created
+intentionally, but rather they often arise over time as a result of poor software design or a lack of attention to good programming practices such as
+modularization and encapsulation. As a software evolves and new requirements are added, it can be tempting to add new functionality to existing
+classes rather than creating new classes to handle the new functionality. This leads to classes becoming bloated and difficult to understand and
+maintain, ultimately resulting in a Monster Class.</p>
+<p>Here are the characteristics of a Monster Class:</p>
+<ul>
+  <li> High number of instance variables and methods </li>
+  <li> Variables and methods that are not related to each other (low cohesion and high coupling) </li>
+  <li> Too many responsibilities, violating the Single Responsibility Principle (aka SRP) </li>
+  <li> Difficult to test, leading to poor test coverage and a higher risk of defects </li>
+</ul>
 <h2>Why is this an issue?</h2>
-<p>This results in a rigid and inflexible design that can lead to issues such as code duplication, poor scalability, and reduced code reusability.</p>
-<p>Having a class that depends on too many other classes makes it harder to test in isolation. When a class has many dependencies, it becomes more
-difficult to write unit tests that isolate the behavior of that class from its dependencies, leading to tests that are more complex and brittle.</p>
-<p>Overall, having a class that depends on an excessive number of other classes can make the codebase more complex, harder to understand, harder to
-maintain, harder to test, and more prone to errors and bugs. By reducing the number of dependencies between classes and adhering to good software
-design principles, developers can create more modular, maintainable, and testable code.</p>
+<p>Monster Classes become monolithic entities, with numerous responsibilities and functionalities packed into a single class. This is problematic
+because it violates the Single Responsibility Principle, which states that a class should have only one reason to change.</p>
+<p>When a class has too many responsibilities and functionalities, it becomes difficult to maintain. Changes to one part of the class can
+unintentionally affect other parts, leading to bugs. Additionally, it can be difficult to test the class, as there may be many different interactions
+between different parts of the class that need to be considered.</p>
 <h2>How to fix it</h2>
-<p>To avoid tight coupling in Java, it is important to follow good design principles such as SOLID, dependency injection, and loose coupling. This can
-help make the code more modular, flexible, and easier to maintain and modify over time. One approach is to apply the Single Responsibility Principle
-(SRP) and break down the class into smaller, more focused classes. This will help to reduce the number of dependencies that the class has. Using
-interfaces and abstractions can contribute to reducing the dependencies between classes.</p>
+<p>There is no magical recipe. Monster Classes should be refactored and broken into smaller, more focused classes, each one with a single
+responsibility. When a class has only one responsibility, it is easier to reason about its behavior and to make changes to it without affecting other
+parts of the code.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <p>With a threshold of 5:</p>
@@ -35,4 +42,11 @@ public class Bar {
     T9 a9;
 }
 </pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html">Single Responsibility Principle (aka SRP)</a>
+  </li>
+  <li> <a href="https://en.wikipedia.org/wiki/SOLID">SOLID</a> </li>
+</ul>
 
