@@ -4,7 +4,7 @@
   "status": "beta",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "1d"
+    "constantCost": "0min"
   },
   "tags": [
     "architecture",
