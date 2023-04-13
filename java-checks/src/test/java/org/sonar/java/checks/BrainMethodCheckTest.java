@@ -29,6 +29,7 @@ class BrainMethodCheckTest {
 
   private static final String highComplexityFilePath = mainCodeSourcesPath("checks/BrainMethodCheck.java");
   private static final String lowComplexityFilePath = mainCodeSourcesPath("checks/BrainMethodCheckLowerThresholds.java");
+  private static final String subsetFilePath = mainCodeSourcesPath("checks/BrainMethodCheckSubsetOfIssues.java");
 
   @Test
   void testHighComplexityFileWithDefaultThresholds() {
@@ -71,6 +72,23 @@ class BrainMethodCheckTest {
 
     InternalCheckVerifier.newInstance()
       .onFile(lowComplexityFilePath)
+      .withChecks(check)
+      .verifyIssues();
+  }
+  
+  @Test
+  void testSubsetOfIssuesWithLowerThresholds() {
+    var check = new BrainMethodCheck();
+
+    check.locThreshold = 4;
+    check.noavThreshold = 2;
+    check.cyclomaticThreshold = 1;
+    check.nestingThreshold = 1;
+
+    check.numberOfIssuesToReport = 1;
+    
+    InternalCheckVerifier.newInstance()
+      .onFile(subsetFilePath)
       .withChecks(check)
       .verifyIssues();
   }
