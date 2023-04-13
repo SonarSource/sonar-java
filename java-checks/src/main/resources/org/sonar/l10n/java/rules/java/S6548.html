@@ -21,7 +21,8 @@ made.</p>
 </ul>
 <p>In general, the Singleton pattern should be used sparingly and only in situations where it provides a clear benefit over other patterns or
 approaches. It is important to consider the drawbacks and tradeoffs of using the Singleton pattern before incorporating it into an application.</p>
-<h3>Public Static Field Implementation</h3>
+<h3>What is the potential impact?</h3>
+<h4>Public Static Field Implementation</h4>
 <pre>
 public class PublicStaticSingleton {
 
@@ -34,7 +35,7 @@ public class PublicStaticSingleton {
 <p>This implementation is thread-safe.</p>
 <p><strong>Disadvantage</strong>:</p>
 <p>This implementation does not allow lazy initialization: the constructor runs as soon as the class is initialized.</p>
-<h3>Eager Initialization Implementation</h3>
+<h4>Eager Initialization Implementation</h4>
 <pre>
 public class EagerInitializedSingleton {
 
@@ -53,7 +54,7 @@ public class EagerInitializedSingleton {
 <p>The instance is created even if it’s never used, which can be wasteful in terms of memory usage. However, if the Singleton is expected to be used
 frequently or is not too memory-intensive, Eager Initialization can be a good choice.</p>
 <p>This implementation doesn’t provide any options for exception handling.</p>
-<h3>Static Block Initialization Implementation</h3>
+<h4>Static Block Initialization Implementation</h4>
 <pre>
 public class StaticBlockSingleton {
 
@@ -78,7 +79,7 @@ public class StaticBlockSingleton {
 <p>Compared to the Eager Initialization, this implementation provides options for exception handling.</p>
 <p><strong>Disadvantage</strong>:</p>
 <p>The instance is created even if it’s never used, like for the Eager Initialization implementation.</p>
-<h3>Lazy Initialization Implementation</h3>
+<h4>Lazy Initialization Implementation</h4>
 <pre>
 public class LazyInitializedSingleton {
 
@@ -98,7 +99,7 @@ public class LazyInitializedSingleton {
 <p>This implementation works fine in the case of the single-threaded environment.</p>
 <p><strong>Disadvantage</strong>:</p>
 <p>This implementation is not thread-safe if multiple threads are at the same time in the <code>if</code> condition.</p>
-<h3>Thread Safe Implementation</h3>
+<h4>Thread Safe Implementation</h4>
 <pre>
 public class ThreadSafeSingleton {
 
@@ -119,7 +120,7 @@ public class ThreadSafeSingleton {
 <p><strong>Disadvantage</strong>:</p>
 <p>It reduces the performance because of the cost associated with the synchronized method. To avoid this extra overhead every time, double-checked
 locking principle should be used.</p>
-<h3>Bill Pugh Implementation</h3>
+<h4>Bill Pugh Implementation</h4>
 <pre>
 public class BillPughSingleton {
 
@@ -137,7 +138,7 @@ public class BillPughSingleton {
 <p><strong>Advantages</strong>:</p>
 <p>The instance is created only at the first call of the <code>getInstance()</code> method.</p>
 <p>This implementation is thread-safe.</p>
-<h3>Enum Implementation</h3>
+<h4>Enum Implementation</h4>
 <pre>
 public enum EnumSingleton {
 

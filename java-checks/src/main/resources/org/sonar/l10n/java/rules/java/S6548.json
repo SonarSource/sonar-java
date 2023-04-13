@@ -6,7 +6,10 @@
     "func": "Constant\/Issue",
     "constantCost": "0min"
   },
-  "tags": [],
+  "tags": [
+    "architecture",
+    "design"
+  ],
   "defaultSeverity": "Info",
   "ruleSpecification": "RSPEC-6548",
   "sqKey": "S6548",
