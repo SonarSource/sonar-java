@@ -49,7 +49,7 @@ public abstract class AbstractCouplingChecker extends BaseTreeVisitor implements
   /**
    * Implementations of this method should add the fully-qualified name of the type to the set {@link AbstractCouplingChecker#types}.
    */
-  abstract void checkTypes(@Nullable Tree type, Set<String> types);
+  abstract void checkTypes(@Nullable Tree type, @Nullable Set<String> types);
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
