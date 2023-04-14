@@ -8,8 +8,7 @@
   },
   "tags": [
     "cwe",
-    "cert",
-    "owasp-a2"
+    "cert"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2068",

@@ -9,9 +9,7 @@
   "tags": [
     "cwe",
     "spring",
-    "privacy",
-    "sans-top25-porous",
-    "owasp-a3"
+    "privacy"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2092",

@@ -11,8 +11,7 @@
     "error-handling",
     "spring",
     "debug",
-    "user-experience",
-    "owasp-a3"
+    "user-experience"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-4507",

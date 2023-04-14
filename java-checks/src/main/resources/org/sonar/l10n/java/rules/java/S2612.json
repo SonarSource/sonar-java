@@ -8,9 +8,7 @@
   },
   "tags": [
     "cwe",
-    "cert",
-    "sans-top25-porous",
-    "owasp-a5"
+    "cert"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2612",

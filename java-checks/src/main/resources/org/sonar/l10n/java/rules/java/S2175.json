@@ -1,5 +1,4 @@
 {
-  "title": "Inappropriate \"Collection\" calls should not be made",
   "type": "BUG",
   "status": "ready",
   "remediation": {
@@ -18,5 +17,6 @@
       "EXP04-J."
     ]
   },
-  "quickfix": "unknown"
+  "quickfix": "unknown",
+  "title": "Inappropriate \"Collection\" calls should not be made"
 }

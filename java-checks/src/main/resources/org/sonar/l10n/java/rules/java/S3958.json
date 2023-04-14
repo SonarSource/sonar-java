@@ -1,5 +1,4 @@
 {
-  "title": "Intermediate Stream methods should not be left unused",
   "type": "BUG",
   "status": "ready",
   "remediation": {
@@ -13,5 +12,6 @@
   "ruleSpecification": "RSPEC-3958",
   "sqKey": "S3958",
   "scope": "All",
-  "quickfix": "unknown"
+  "quickfix": "unknown",
+  "title": "Intermediate Stream methods should not be left unused"
 }

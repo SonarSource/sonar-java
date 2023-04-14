@@ -8,8 +8,6 @@
   },
   "tags": [
     "cwe",
-    "owasp-a6",
-    "owasp-a7",
     "android"
   ],
   "defaultSeverity": "Major",

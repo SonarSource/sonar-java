@@ -10,9 +10,7 @@
     "cwe",
     "privacy",
     "cert",
-    "owasp-a6",
-    "ssl",
-    "owasp-a3"
+    "ssl"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4830",

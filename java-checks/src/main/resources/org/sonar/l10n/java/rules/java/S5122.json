@@ -4,9 +4,7 @@
   "status": "ready",
   "tags": [
     "cwe",
-    "spring",
-    "owasp-a6",
-    "sans-top25-porous"
+    "spring"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-5122",

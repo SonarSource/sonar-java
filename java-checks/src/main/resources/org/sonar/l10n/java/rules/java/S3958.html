@@ -1,6 +1,6 @@
 <p>There are two types of stream operations: intermediate operations, which return another stream, and terminal operations, which return something
 other than a stream. Intermediate operations are lazy, meaning they aren’t actually executed until and unless a terminal stream operation is performed
-on their results. Consequently if the result of an intermediate stream operation is not fed to a terminal operation, it serves no purpose, which is
+on their results. Consequently, if the result of an intermediate stream operation is not fed to a terminal operation, it serves no purpose, which is
 almost certainly an error.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

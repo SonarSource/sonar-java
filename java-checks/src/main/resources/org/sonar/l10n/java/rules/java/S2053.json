@@ -7,9 +7,7 @@
     "constantCost": "30min"
   },
   "tags": [
-    "cwe",
-    "sans-top25-porous",
-    "owasp-a3"
+    "cwe"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2053",
