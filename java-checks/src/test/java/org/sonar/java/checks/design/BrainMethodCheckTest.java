@@ -18,7 +18,7 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.sonar.java.checks;
+package org.sonar.java.checks.design;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
