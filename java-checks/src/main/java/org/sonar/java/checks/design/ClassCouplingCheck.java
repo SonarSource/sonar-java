@@ -63,7 +63,7 @@ public class ClassCouplingCheck extends AbstractCouplingChecker {
   }
 
   @Override
-  public void checkTypes(@Nullable Tree type, Set<String> types) {
+  public void checkTypes(@Nullable Tree type, @Nullable Set<String> types) {
     if (type == null || types == null) {
       return;
     }
