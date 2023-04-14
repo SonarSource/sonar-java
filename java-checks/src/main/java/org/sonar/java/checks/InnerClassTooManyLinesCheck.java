@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
