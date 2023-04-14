@@ -4,8 +4,6 @@
   "status": "ready",
   "tags": [
     "cwe",
-    "owasp-m1",
-    "sans-top25-insecure",
     "android"
   ],
   "defaultSeverity": "Critical",

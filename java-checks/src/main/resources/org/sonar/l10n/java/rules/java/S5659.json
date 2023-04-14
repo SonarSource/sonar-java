@@ -9,8 +9,7 @@
   "tags": [
     "cwe",
     "privacy",
-    "cert",
-    "owasp-a3"
+    "cert"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5659",

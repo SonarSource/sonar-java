@@ -8,9 +8,7 @@
   },
   "tags": [
     "cwe",
-    "sans-top25-insecure",
-    "privacy",
-    "owasp-a7"
+    "privacy"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-3330",

@@ -9,8 +9,7 @@
   "tags": [
     "cwe",
     "error-handling",
-    "cert",
-    "owasp-a3"
+    "cert"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1989",

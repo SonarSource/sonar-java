@@ -7,9 +7,7 @@
     "constantCost": "45min"
   },
   "tags": [
-    "cwe",
-    "owasp-a2",
-    "owasp-a3"
+    "cwe"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2115",

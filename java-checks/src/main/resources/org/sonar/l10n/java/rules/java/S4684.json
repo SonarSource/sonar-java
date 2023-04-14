@@ -8,8 +8,7 @@
   },
   "tags": [
     "cwe",
-    "spring",
-    "owasp-a5"
+    "spring"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4684",

@@ -8,8 +8,7 @@
   },
   "tags": [
     "bad-practice",
-    "cert",
-    "owasp-a3"
+    "cert"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-106",

@@ -4,8 +4,7 @@
   "status": "ready",
   "tags": [
     "cwe",
-    "android",
-    "owasp-m1"
+    "android"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5320",

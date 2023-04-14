@@ -4,10 +4,7 @@
   "status": "ready",
   "tags": [
     "cwe",
-    "sans-top25-risky",
-    "android",
-    "sans-top25-porous",
-    "owasp-m2"
+    "android"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5324",

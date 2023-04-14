@@ -8,8 +8,7 @@
   },
   "tags": [
     "cwe",
-    "spring",
-    "owasp-a2"
+    "spring"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-5804",
