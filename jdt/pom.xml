@@ -16,7 +16,7 @@
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>org.eclipse.jdt.core</artifactId>
-        <version>3.32.0</version>
+        <version>3.33.0</version>
         <exclusions>
           <exclusion>
             <groupId>org.eclipse.platform</groupId>
@@ -39,7 +39,7 @@
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.core.resources</artifactId>
-        <version>3.18.100</version>
+        <version>3.18.200</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
@@ -48,23 +48,8 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
-        <artifactId>org.eclipse.osgi</artifactId>
-        <version>3.18.200</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.platform</groupId>
-        <artifactId>org.eclipse.equinox.common</artifactId>
-        <version>3.17.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.core.jobs</artifactId>
-        <version>3.13.200</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.platform</groupId>
-        <artifactId>org.eclipse.equinox.preferences</artifactId>
-        <version>3.10.100</version>
+        <version>3.13.300</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>

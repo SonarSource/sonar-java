@@ -119,6 +119,11 @@ public class JavaVersionImpl implements JavaVersion {
     return JAVA_18 <= javaVersion;
   }
 
+  @Override
+  public boolean isJava19Compatible() {
+    return JAVA_19 <= javaVersion;
+  }
+
   private boolean notSetOrAtLeast(int requiredJavaVersion) {
     return isNotSet() || requiredJavaVersion <= javaVersion;
   }

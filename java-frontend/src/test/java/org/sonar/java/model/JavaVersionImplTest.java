@@ -46,6 +46,7 @@ class JavaVersionImplTest {
     assertThat(version.isJava16Compatible()).isFalse();
     assertThat(version.isJava17Compatible()).isFalse();
     assertThat(version.isJava18Compatible()).isFalse();
+    assertThat(version.isJava19Compatible()).isFalse();
     assertThat(version.asInt()).isEqualTo(-1);
   }
 
@@ -66,6 +67,7 @@ class JavaVersionImplTest {
     assertThat(version.isJava16Compatible()).isEqualTo(javaVersionAsInt >= 16);
     assertThat(version.isJava17Compatible()).isEqualTo(javaVersionAsInt >= 17);
     assertThat(version.isJava18Compatible()).isEqualTo(javaVersionAsInt >= 18);
+    assertThat(version.isJava19Compatible()).isEqualTo(javaVersionAsInt >= 19);
     assertThat(version.asInt()).isEqualTo(javaVersionAsInt);
   }
 
