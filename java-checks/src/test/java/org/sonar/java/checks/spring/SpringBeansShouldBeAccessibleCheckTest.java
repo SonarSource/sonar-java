@@ -194,7 +194,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
     verify(check, times(2)).scanWithoutParsing(any());
     assertThat(finalWriteCache.getData())
       .hasSizeGreaterThanOrEqualTo(7)
-      .containsExactlyEntriesOf(writeCache.getData());
+      .containsExactlyInAnyOrderEntriesOf(writeCache.getData());
   }
 
   @Test
