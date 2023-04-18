@@ -26,12 +26,14 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,6 +81,23 @@ class InstanceOfTreeImplTest {
       .isNotNull();
     // should be null
     assertThat(piot.variable()).isNotNull();
+  }
+
+  @Test
+  void test_PatternInstanceOfTree_not_TypePattern_without_variable() {
+    InstanceOfTreeImpl ioti = instanceOf("o instanceof Rectangle(int a, var b)");
+    assertThat(ioti).is(Tree.Kind.INSTANCE_OF);
+
+    InstanceOfTree iot = ioti;
+    assertThat(iot.expression()).isNotNull();
+    assertThat(iot.instanceofKeyword()).isNotNull();
+    TypeTree type = iot.type();
+    assertThat(type)
+      // FIXME bug in ecj (java 19 support): only supports Identifer. should be RecordPattern
+      .is(Tree.Kind.IDENTIFIER)
+      .isNotNull();
+    // Should not be an identifier but a pattern deconstructor
+    assertThat(((IdentifierTree) type)).hasName("Rectangle");
   }
 
   @Test

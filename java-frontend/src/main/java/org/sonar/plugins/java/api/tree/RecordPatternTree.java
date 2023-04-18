@@ -37,7 +37,7 @@ import org.sonar.java.annotations.Beta;
  * @deprecated Preview Feature
  */
 @Beta
-@Deprecated(since = "7.16", forRemoval = false)
+@Deprecated(since = "7.19", forRemoval = false)
 public interface RecordPatternTree extends PatternTree {
   TypeTree type();
 

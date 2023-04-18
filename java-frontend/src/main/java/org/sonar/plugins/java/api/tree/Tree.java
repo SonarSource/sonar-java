@@ -747,7 +747,7 @@ public interface Tree {
      * @since Java 19
      * @deprecated Preview feature
      */
-    @Deprecated(since = "7.16", forRemoval = false)
+    @Deprecated(since = "7.19", forRemoval = false)
     RECORD_PATTERN(RecordPatternTree.class),
     /**
      *An implementation-reserved node.

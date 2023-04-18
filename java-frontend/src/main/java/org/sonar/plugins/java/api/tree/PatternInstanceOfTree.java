@@ -41,11 +41,11 @@ public interface PatternInstanceOfTree extends ExpressionTree {
   SyntaxToken instanceofKeyword();
 
   /**
-   * @since 7.16
+   * @since 7.19
    * @deprecated Use {@link PatternInstanceOfTree#pattern()}
    * @return null for all patterns that are not {@link TypePatternTree}.
    */
-  @Deprecated(since = "7.16", forRemoval = true)
+  @Deprecated(since = "7.19", forRemoval = true)
   @CheckForNull
   VariableTree variable();
 
