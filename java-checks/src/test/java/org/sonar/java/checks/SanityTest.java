@@ -52,7 +52,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.JParserConfig;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -132,7 +132,7 @@ class SanityTest {
       .filter(SanityTest::isTypeResolutionError)
       .collect(Collectors.toList());
 
-    assertThat(errorLogs).hasSize(26);
+    assertThat(errorLogs).hasSize(28);
 
     List<LogAndArguments> remainingErrors = new ArrayList<>(errorLogs);
     remainingErrors.removeAll(parsingErrors);
@@ -163,7 +163,7 @@ class SanityTest {
         "play.mvc.Http$CookieBuilder");
 
     assertThat(parsingErrors)
-      .hasSize(10)
+      .hasSize(8)
       .map(LogAndArguments::getFormattedMsg)
       .allMatch(log ->
       // ECJ error message
@@ -171,10 +171,7 @@ class SanityTest {
         // analyzer error message mentioning the file
         || log.contains("KeywordAsIdentifierCheck")
         || log.contains("EmptyStatementsInImportsBug")
-        || log.contains("RestrictedIdentifiersUsageCheck")
-        // jdk 19 preview feature
-        || log.contains("SwitchWithPatterns"));
-
+        || log.contains("RestrictedIdentifiersUsageCheck"));
   }
 
   private static boolean isParseError(LogAndArguments log) {
@@ -250,7 +247,7 @@ class SanityTest {
 
   private static List<SanityCheckException> scanFiles(File moduleBaseDir, List<InputFile> inputFiles, List<JavaCheck> checks, List<File> classpath) {
     SonarComponents sonarComponents = sonarComponents(moduleBaseDir, inputFiles);
-    JavaVersion javaVersion = new JavaVersionImpl(/* explicitly not set the version so preview features are not enabled */);
+    JavaVersion javaVersion = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(checks, classpath, sonarComponents, javaVersion);
     List<SanityCheckException> exceptions = new ArrayList<>();
     for (InputFile inputFile : inputFiles) {
