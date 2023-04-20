@@ -179,7 +179,7 @@ public class AutoScanTest {
     assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs);
     assertThat(newTotal).isEqualTo(knownTotal);
     assertThat(rulesCausingFPs).hasSize(7);
-    assertThat(rulesNotReporting).hasSize(6);
+    assertThat(rulesNotReporting).hasSize(7);
     assertThat(rulesSilenced).hasSize(67);
 
     /**

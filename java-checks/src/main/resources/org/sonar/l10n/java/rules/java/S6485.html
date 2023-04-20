@@ -1,0 +1,53 @@
+<p>Hash-based collections with known capacity should be initialized with the proper related static method.</p>
+<h2>Why is this an issue?</h2>
+<p>When creating an instance of HashMap or HashSet, the developer can pick a constructor with known capacity. However, the requested capacity is not
+fully allocated by default. Indeed, when the collection reaches the load factor of the collection (default: 0.75), the collection is resized on the
+fly, leading to unexpected performance issues.</p>
+<h2>How to fix it</h2>
+<p>As of Java 19, hash-based collections provide a static method that allocates the requested capacity at construction time.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre>
+private static final int KNOWN_CAPACITY = 1_000_000;
+
+public static Map&lt;String, Integer&gt; buildAMap() {
+    return new HashMap&lt;&gt;(KNOWN_CAPACITY); // Noncompliant
+}
+
+public static Set&lt;String&gt; buildASet() {
+    return new HashSet&lt;&gt;(KNOWN_CAPACITY); // Noncompliant
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre>
+private static final int KNOWN_CAPACITY = 1_000_000;
+
+public static Map&lt;String, Integer&gt; buildABetterMap() {
+    return HashMap.newHashMap(KNOWN_CAPACITY);
+}
+
+public static Set&lt;String&gt; buildABetterSet() {
+    return HashSet.newHashSet(KNOWN_CAPACITY);
+}
+
+public static Set&lt;String&gt; buildABetterSet(float customLoadFactor) {
+    return new HashSet&lt;&gt;(KNOWN_CAPACITY, customLoadFactor);
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/HashMap.html#newHashMap(int">https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/HashMap.html#newHashMap(int</a>) </li>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/HashSet.html#newHashSet(int">https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/HashSet.html#newHashSet(int</a>) </li>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/LinkedHashMap.html#newLinkedHashMap(int">https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/LinkedHashMap.html#newLinkedHashMap(int</a>) </li>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/LinkedHashSet.html#newLinkedHashSet(int">https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/LinkedHashSet.html#newLinkedHashSet(int</a>) </li>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/WeakHashMap.html#newWeakHashMap(int">https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/WeakHashMap.html#newWeakHashMap(int</a>) </li>
+</ul>
+<p>Message:<br> Replace this call to the constructor with the better suited static method.</p>
+<p>Highlighting:<br> The infringing constructor call.</p>
+
