@@ -1,0 +1,17 @@
+{
+  "title": "Hash-based collections with known capacity should be initialized with the proper related static method.",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "performance"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6485",
+  "sqKey": "S6485",
+  "scope": "All",
+  "quickfix": "targeted"
+}
