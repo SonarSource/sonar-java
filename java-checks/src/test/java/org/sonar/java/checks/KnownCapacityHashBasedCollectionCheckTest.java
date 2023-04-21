@@ -24,29 +24,32 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class KnownCapacityHashMapsCheckTest {
+class KnownCapacityHashBasedCollectionCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/KnownCapacityHashMapsCheckSample.java"))
-      .withCheck(new KnownCapacityHashMapsCheck())
+      .onFile(mainCodeSourcesPath("checks/KnownCapacityHashBasedCollectionCheckSample.java"))
+      .withCheck(new KnownCapacityHashBasedCollectionCheck())
       .withJavaVersion(19)
       .verifyIssues();
   }
-  
+
   @Test
   void testNoIssuesOnEarlierJavaVersions() {
+
+    var check = new KnownCapacityHashBasedCollectionCheck();
+
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/KnownCapacityHashMapsCheckSample.java"))
-      .withCheck(new KnownCapacityHashMapsCheck())
+      .onFile(mainCodeSourcesPath("checks/KnownCapacityHashBasedCollectionCheckSample.java"))
+      .withCheck(check)
       .withJavaVersion(18)
       .verifyNoIssues();
-    
+
     CheckVerifier.newVerifier()
-    .onFile(mainCodeSourcesPath("checks/KnownCapacityHashMapsCheckSample.java"))
-    .withCheck(new KnownCapacityHashMapsCheck())
-    .verifyNoIssues();
+      .onFile(mainCodeSourcesPath("checks/KnownCapacityHashBasedCollectionCheckSample.java"))
+      .withCheck(check)
+      .verifyNoIssues();
   }
-  
+
 }
