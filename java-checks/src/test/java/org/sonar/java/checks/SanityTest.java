@@ -163,7 +163,7 @@ class SanityTest {
         "play.mvc.Http$CookieBuilder");
 
     assertThat(parsingErrors)
-      .hasSize(8)
+      .hasSize(12)
       .map(LogAndArguments::getFormattedMsg)
       .allMatch(log ->
       // ECJ error message
@@ -171,7 +171,13 @@ class SanityTest {
         // analyzer error message mentioning the file
         || log.contains("KeywordAsIdentifierCheck")
         || log.contains("EmptyStatementsInImportsBug")
-        || log.contains("RestrictedIdentifiersUsageCheck"));
+        || log.contains("RestrictedIdentifiersUsageCheck")
+        // Activating java 19 preview features helps to parse files containing the new switch pattern expression.
+        // But now we are not able to parse the two following files that contains method body starting with a
+        // "when(...)" method call having one argument.
+        || log.contains("MockingAllMethodsCheck")
+        || log.contains("MockitoArgumentMatchersUsedOnAllParameters")
+      );
   }
 
   private static boolean isParseError(LogAndArguments log) {
