@@ -455,7 +455,7 @@ public final class CheckList {
     JacksonDeserializationCheck.class,
     JdbcDriverExplicitLoadingCheck.class,
     KeySetInsteadOfEntrySetCheck.class,
-    KnownCapacityHashMapsCheck.class,
+    KnownCapacityHashBasedCollectionCheck.class,
     LDAPAuthenticatedConnectionCheck.class,
     LDAPDeserializationCheck.class,
     LabelsShouldNotBeUsedCheck.class,
