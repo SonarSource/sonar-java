@@ -113,7 +113,7 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 15);
+    testIssueCreation(InputFile.Type.MAIN, 16);
   }
 
   @Test
@@ -334,7 +334,18 @@ class JavaSensorTest {
     assertThat(defaultPerformanceFile).exists();
     assertThat(new String(Files.readAllBytes(defaultPerformanceFile), UTF_8)).contains("\"JavaSensor\"");
   }
-
+  
+  @Test
+  void test_java_version_construction_logs() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.source", "17");
+    settings.setProperty("sonar.java.enablePreview", "False");
+    Path workDir = tmp.newFolder().toPath();
+    executeJavaSensorForPerformanceMeasure(settings, workDir);
+    String infoLogs = String.join("\n", logTester.logs(LoggerLevel.INFO));
+    assertThat(infoLogs).contains("Configured Java source version (sonar.java.source): 17" );
+  }
+  
   @Test
   void do_not_filter_checks_when_no_autoscan() throws IOException {
     MapSettings settings = new MapSettings();

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.api.Plugin;
+import org.sonar.api.PropertyType;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
@@ -38,6 +39,7 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.surefire.SurefireExtensions;
 
 public class JavaPlugin implements Plugin {
@@ -76,12 +78,21 @@ public class JavaPlugin implements Plugin {
       JavaRulesDefinition.class,
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
+      PropertyDefinition.builder(JavaVersion.ENABLE_PREVIEW)
+      .name("Enable JDK's latest preview feature")
+      .description("Allow to enable JDK's preview features for analysis. Only the Java's latest supported version preview features are supported.")
+      .category(JavaConstants.JAVA_CATEGORY)
+      .subCategory("Language")
+      .onQualifiers(Qualifiers.PROJECT)
+      .type(PropertyType.BOOLEAN)
+      .defaultValue("False")
+      .build(),
       JavaSensor.class,
       PostAnalysisIssueFilter.class
     ));
 
     list.add(AnalysisWarningsWrapper.class);
-
+    
     context.addExtensions(Collections.unmodifiableList(list));
   }
 

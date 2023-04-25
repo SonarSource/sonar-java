@@ -19,6 +19,8 @@
  */
 package org.sonar.java.model;
 
+import java.util.Locale;
+import java.util.Map;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -42,22 +44,42 @@ public class JavaVersionImpl implements JavaVersion {
   public static final int MAX_SUPPORTED = JAVA_19;
 
   private final int javaVersion;
+  private final boolean previewFeaturesEnabled;
 
   public JavaVersionImpl() {
     this.javaVersion = -1;
+    this.previewFeaturesEnabled = false;
   }
 
   public JavaVersionImpl(int javaVersion) {
     this.javaVersion = javaVersion;
+    this.previewFeaturesEnabled = false;
+  }
+
+  public JavaVersionImpl(int javaVersion, boolean previewFeaturesEnabled) {
+    this.javaVersion = javaVersion;
+    this.previewFeaturesEnabled = previewFeaturesEnabled;
   }
 
   public static JavaVersion fromString(String javaVersion) {
     try {
-      String cleanedVersion = javaVersion.startsWith("1.") ? javaVersion.substring(2) : javaVersion;
-      int versionAsInt = Integer.parseInt(cleanedVersion);
+      int versionAsInt = convertJavaVersionString(javaVersion);
       return new JavaVersionImpl(versionAsInt);
     } catch (NumberFormatException e) {
       LOG.warn("Invalid java version (got \"" + javaVersion + "\"). "
+        + "The version will be ignored. Accepted formats are \"1.X\", or simply \"X\" "
+        + "(for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)");
+      return new JavaVersionImpl();
+    }
+  }
+
+  public static JavaVersion fromMap(Map<String, String> properties) {
+    boolean previewFeaturesFlag = convertBooleanString(properties.getOrDefault(JavaVersion.ENABLE_PREVIEW, ""));
+    try {
+      int versionAsInt = convertJavaVersionString(properties.getOrDefault(JavaVersion.SOURCE_VERSION, ""));
+      return new JavaVersionImpl(versionAsInt, previewFeaturesFlag);
+    } catch (NumberFormatException e) {
+      LOG.warn("Invalid java version (got \"" + properties.get(JavaVersion.SOURCE_VERSION) + "\"). "
         + "The version will be ignored. Accepted formats are \"1.X\", or simply \"X\" "
         + "(for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)");
       return new JavaVersionImpl();
@@ -174,4 +196,19 @@ public class JavaVersionImpl implements JavaVersion {
   public String toString() {
     return isNotSet() ? "none" : Integer.toString(javaVersion);
   }
+
+  @Override
+  public boolean arePreviewFeaturesEnabled() {
+    return previewFeaturesEnabled;
+  }
+
+  private static boolean convertBooleanString(String booleanString) {
+    return Boolean.parseBoolean(booleanString.trim().toLowerCase(Locale.ROOT));
+  }
+
+  private static int convertJavaVersionString(String javaVersion) {
+    String cleanedVersion = javaVersion.startsWith("1.") ? javaVersion.substring(2) : javaVersion;
+    return Integer.parseInt(cleanedVersion);
+  }
+
 }

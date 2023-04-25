@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,11 +35,13 @@ class JParserConfigTest {
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(16))).isFalse();
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(17))).isFalse();
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(18))).isFalse();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(19))).isTrue();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(20))).isTrue();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(42))).isTrue();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(19))).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(20))).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(42))).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(42, true))).isTrue();
 
     assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromString("1.8"))).isFalse();
+    assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromMap(Map.of(JavaVersionImpl.SOURCE_VERSION, "1.8", JavaVersionImpl.ENABLE_PREVIEW, "True") ))).isTrue();
   }
 
 }

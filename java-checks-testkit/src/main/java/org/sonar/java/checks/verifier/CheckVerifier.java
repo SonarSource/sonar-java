@@ -114,6 +114,8 @@ public interface CheckVerifier {
   /**
    * Defines the java version syntax to be used for the verification. Usually used when the code of the
    * test files target explicitly a given version (eg. java 7), where a particular syntax/API has been introduced.
+   * Preview features for the specified java version will be disabled by default, use {@link CheckVerifier#withJavaVersion(int, boolean)} 
+   * to enable or disable preview features associated with the specified java version.
    *
    * @param javaVersionAsInt defines the java language syntax version to be considered during verification, provided as an integer.
    * For instance, for Java 1.7, use '7'. For Java 12, simply '12'.
@@ -121,6 +123,19 @@ public interface CheckVerifier {
    * @return the verifier configured to consider the provided test file(s) as following the syntax of the given java version
    */
   CheckVerifier withJavaVersion(int javaVersionAsInt);
+  
+  /**
+   * Defines the java version syntax to be used for the verification. Usually used when the code of the
+   * test files target explicitly a given version (eg. java 7), where a particular syntax/API has been introduced.
+   *
+   * @param javaVersionAsInt defines the java language syntax version to be considered during verification, provided as an integer.
+   * For instance, for Java 1.7, use '7'. For Java 12, simply '12'.
+   * 
+   * @param enablePreviewFeatures defines if preview features from the specified java version should be enabled or not
+   *
+   * @return the verifier configured to consider the provided test file(s) as following the syntax of the given java version
+   */
+  CheckVerifier withJavaVersion(int javaVersionAsInt, boolean enablePreviewFeatures);
 
   /**
    * Defines the whether the current file is analyzer in an android context.
