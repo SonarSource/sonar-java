@@ -32,6 +32,16 @@ container_definition: &CONTAINER_DEFINITION
 win_vm_definition: &WINDOWS_VM_DEFINITION
   ec2_instance:
     experimental: true # see https://github.com/cirruslabs/cirrus-ci-docs/issues/1051
+    image: base-windows-jdk20-v*
+    platform: windows
+    region: eu-central-1
+    disk: 128
+    type: c5.4xlarge
+    subnet_id: ${CIRRUS_AWS_SUBNET}
+
+win_vm_definition_17: &WINDOWS_VM_DEFINITION_17
+  ec2_instance:
+    experimental: true # see https://github.com/cirruslabs/cirrus-ci-docs/issues/1051
     image: base-windows-jdk17-v*
     platform: windows
     region: eu-central-1
@@ -132,7 +142,7 @@ sanity_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j19-latest
     cpu: 4
     memory: 2G
   maven_cache:
@@ -168,7 +178,7 @@ ruling_win_task:
   depends_on:
     - build
   <<: *ONLY_SONARSOURCE_QA
-  <<: *WINDOWS_VM_DEFINITION
+  <<: *WINDOWS_VM_DEFINITION_17
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   ruling_script:
