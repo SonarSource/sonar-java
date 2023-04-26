@@ -72,6 +72,7 @@ class InternalCheckVerifierTest {
   private static final String TEST_FILE_WITH_QUICK_FIX_ON_MULTIPLE_LINE = "src/test/files/testing/IssueWithQuickFixMultipleLine.java";
   private static final String TEST_FILE_WITH_TWO_QUICK_FIX = "src/test/files/testing/IssueWithTwoQuickFixes.java";
   private static final String TEST_FILE_WITH_NO_EXPECTED = "src/test/files/testing/IssueWithNoQuickFixExpected.java";
+  private static final String TEST_FILE_WITH_PREVIEW_FEATURES = "src/test/files/testing/NeedJava19PreviewFeaturesEnabled.java";
   private static final JavaFileScanner FAILING_CHECK = new FailingCheck();
   private static final JavaFileScanner NO_EFFECT_CHECK = new NoEffectCheck();
   private static final JavaFileScanner FILE_LINE_ISSUE_CHECK = new FileLineIssueCheck();
@@ -183,6 +184,38 @@ class InternalCheckVerifierTest {
         .isInstanceOf(AssertionError.class)
         .hasMessage("Do not set java version multiple times!");
     }
+    
+    @Test
+    void preview_features_disabled_by_default() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .withCheck(NO_EFFECT_CHECK)
+        .withJavaVersion(19)
+        .onFile(TEST_FILE_WITH_PREVIEW_FEATURES)
+        .verifyNoIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("Should not fail analysis (Parse error at line");
+
+      Throwable e2 = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .withCheck(NO_EFFECT_CHECK)
+        .withJavaVersion(19, false)
+        .onFile(TEST_FILE_WITH_PREVIEW_FEATURES)
+        .verifyNoIssues());
+
+      assertThat(e2)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("Should not fail analysis (Parse error at line");
+
+      Throwable noExceptionThrown = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .withCheck(NO_EFFECT_CHECK)
+        .withJavaVersion(19, true)
+        .onFile(TEST_FILE_WITH_PREVIEW_FEATURES)
+        .verifyNoIssues());
+
+      assertThat(noExceptionThrown).isNull();
+    }
+
 
     @Test
     void setting_multiple_times_one_files_fails() {

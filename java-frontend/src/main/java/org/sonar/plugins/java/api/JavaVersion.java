@@ -32,6 +32,11 @@ public interface JavaVersion {
    * Key of the java version used for sources
    */
   String SOURCE_VERSION = "sonar.java.source";
+  
+  /**
+   * Flag to enable java preview features
+   */
+  String ENABLE_PREVIEW = "sonar.java.enablePreview";
 
   /**
    * Test if java version of the project is not set or greater than or equal to 6.
@@ -164,5 +169,10 @@ public interface JavaVersion {
    * @return an int representing the effective java version
    */
   String effectiveJavaVersionAsString();
-
+  
+  /**
+   * Returns wether preview features are enabled or not (false by default)
+   * @return true if enabled, false otherwise
+   */
+  boolean arePreviewFeaturesEnabled(); 
 }

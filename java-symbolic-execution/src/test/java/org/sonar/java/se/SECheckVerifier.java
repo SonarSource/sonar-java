@@ -83,7 +83,12 @@ public class SECheckVerifier implements CheckVerifier {
 
   @Override
   public CheckVerifier withJavaVersion(int javaVersionAsInt) {
-    checkVerifier.withJavaVersion(javaVersionAsInt);
+    return withJavaVersion(javaVersionAsInt, false);
+  }
+  
+  @Override
+  public CheckVerifier withJavaVersion(int javaVersionAsInt, boolean enablePreviewFeatures) {
+    checkVerifier.withJavaVersion(javaVersionAsInt, enablePreviewFeatures);
     return this;
   }
 

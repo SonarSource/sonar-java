@@ -156,6 +156,13 @@ public class InternalCheckVerifier implements CheckVerifier {
     javaVersion = new JavaVersionImpl(javaVersionAsInt);
     return this;
   }
+  
+  @Override
+  public InternalCheckVerifier withJavaVersion(int javaVersionAsInt, boolean enablePreviewFeatures) {
+    requiresNull(javaVersion, "java version");
+    javaVersion = new JavaVersionImpl(javaVersionAsInt, enablePreviewFeatures);
+    return this;
+  }
 
   @Override
   public CheckVerifier withinAndroidContext(boolean inAndroidContext) {

@@ -595,27 +595,15 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_preview_feature_in_max_supported_version_do_not_log_message() throws IOException {
-    // When the actual version match the maximum supported version (currently 19), the preview features flag is
-    // enabled in the parser config and we made sure to be able to parse preview features, no need to log anything.
+  void test_preview_feature_in_max_supported_version_not_enabled_by_default() throws IOException {
+    // When the actual version match the maximum supported version (currently 19), we do not enable the preview features flag 
+    // by default anymore, and we should expect issues parsing preview feature syntax
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "19"),
       SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());
-    assertThat(allLogs).doesNotContain("Unresolved imports/types", "Use of preview features");
-  }
-
-  @Test
-  void test_preview_feature_in_version_greater_than_maximum_do_not_log_message() throws IOException {
-    // It can happen that a new version of Java is used, that we do not officially support. In this case
-    // we still enable the flag to optimize our chances to correctly parse the code.
-    logTester.setLevel(LoggerLevel.DEBUG);
-    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "42"),
-      SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
-    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
-    String allLogs = String.join("\n", logTester.logs());
-    assertThat(allLogs).doesNotContain("Unresolved imports/types", "Use of preview features");
+    assertThat(allLogs).contains("Use of preview features");
   }
 
   @Test
