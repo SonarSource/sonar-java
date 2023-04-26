@@ -39,7 +39,6 @@ import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
-import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -73,7 +72,7 @@ class InternalCheckVerifierTest {
   private static final String TEST_FILE_WITH_QUICK_FIX_ON_MULTIPLE_LINE = "src/test/files/testing/IssueWithQuickFixMultipleLine.java";
   private static final String TEST_FILE_WITH_TWO_QUICK_FIX = "src/test/files/testing/IssueWithTwoQuickFixes.java";
   private static final String TEST_FILE_WITH_NO_EXPECTED = "src/test/files/testing/IssueWithNoQuickFixExpected.java";
-  private static final String TEST_FILE_WITH_PREVIEW_FEATURES = "src/test/files/testing/SwitchPatternMatching.java";
+  private static final String TEST_FILE_WITH_PREVIEW_FEATURES = "src/test/files/testing/NeedJava19PreviewFeaturesEnabled.java";
   private static final JavaFileScanner FAILING_CHECK = new FailingCheck();
   private static final JavaFileScanner NO_EFFECT_CHECK = new NoEffectCheck();
   private static final JavaFileScanner FILE_LINE_ISSUE_CHECK = new FileLineIssueCheck();

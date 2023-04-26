@@ -1,4 +1,4 @@
-public class SwitchPatternMatching {
+public class NeedJava19PreviewFeaturesEnabled {
   static class A {
   }
 

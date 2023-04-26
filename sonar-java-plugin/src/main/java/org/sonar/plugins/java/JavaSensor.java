@@ -187,11 +187,11 @@ public class JavaSensor implements Sensor {
   private JavaVersion getJavaVersion() {
     Map<String, String> javaVersionProperties = Map.of(
       JavaVersion.ENABLE_PREVIEW, settings.get(JavaVersion.ENABLE_PREVIEW).orElseGet(() -> ""),
-      JavaVersion.SOURCE_VERSION, settings.get(JavaVersion.SOURCE_VERSION).orElseGet(() -> "")
-      );
+      JavaVersion.SOURCE_VERSION, settings.get(JavaVersion.SOURCE_VERSION).orElseGet(() -> ""));
+    
     JavaVersion javaVersion = JavaVersionImpl.fromMap(javaVersionProperties);
-    LOG.info("Configured Java source version (" + JavaVersion.SOURCE_VERSION + "): " + javaVersion.asInt() 
-      + ", preview features enabled ("+ JavaVersion.ENABLE_PREVIEW +"): "+javaVersion.arePreviewFeaturesEnabled());
+    LOG.info("Configured Java source version (" + JavaVersion.SOURCE_VERSION + "): " + javaVersion.asInt()
+      + ", preview features enabled (" + JavaVersion.ENABLE_PREVIEW + "): " + javaVersion.arePreviewFeaturesEnabled());
     return javaVersion;
   }
 

@@ -79,20 +79,18 @@ public class JavaPlugin implements Plugin {
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
       PropertyDefinition.builder(JavaVersion.ENABLE_PREVIEW)
-      .name("Enable JDK's latest preview feature")
-      .description("Allow to enable JDK's preview features for analysis. Only the Java's latest supported version preview features are supported.")
-      .category(JavaConstants.JAVA_CATEGORY)
-      .subCategory("Language")
-      .onQualifiers(Qualifiers.PROJECT)
-      .type(PropertyType.BOOLEAN)
-      .defaultValue("False")
-      .build(),
+        .name("Enable JDK's latest preview feature")
+        .description("Allow to enable JDK's preview features for analysis. Only the Java's latest supported version preview features are supported.")
+        .category(JavaConstants.JAVA_CATEGORY)
+        .subCategory("Language")
+        .onQualifiers(Qualifiers.PROJECT)
+        .type(PropertyType.BOOLEAN)
+        .defaultValue("False")
+        .build(),
       JavaSensor.class,
-      PostAnalysisIssueFilter.class
-    ));
+      PostAnalysisIssueFilter.class));
 
     list.add(AnalysisWarningsWrapper.class);
-    
     context.addExtensions(Collections.unmodifiableList(list));
   }
 
