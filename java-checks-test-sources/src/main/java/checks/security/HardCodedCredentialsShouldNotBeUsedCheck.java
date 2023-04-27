@@ -1,9 +1,11 @@
 package checks.security;
 
-
 import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
 import com.google.api.client.json.Json;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.TextCodec;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -14,6 +16,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Base64;
 import java.util.Locale;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -53,15 +56,15 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
-    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=39]]
-    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=31]]
+    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=-17]]
+    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=-26]]
     String plainTextSecret = new String("BOOM");
     request.login("user", plainTextSecret); // Noncompliant
     request.login("user", new String("secret")); // Noncompliant
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, 0, 7)); // Noncompliant
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, encoding)); // Noncompliant
     String conditionalButPredictable = condition ? FINAL_SECRET_STRING : plainTextSecret;
-    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=31,-6,-1]]
+    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=-33,-6,-1]]
     request.login("user", Json.MEDIA_TYPE); // Noncompliant [[sc=27;ec=42]]
     String concatenatedPassword = "abc" + true + ":" + 12 + ":" + 43L + ":" + 'a' + ":" + 0.2f + ":" + 0.2d;
     request.login("user", concatenatedPassword); // Noncompliant [[sc=27;ec=47;secondary=-1]]
@@ -115,6 +118,34 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
       String variableWithNullOwner = "abc";
       new Pbkdf2PasswordEncoder(variableWithNullOwner); // Noncompliant
     };
+
+    byte[] secretBytes = FINAL_SECRET_STRING.getBytes("UTF-8");
+
+    Jwts.builder()
+      .signWith(SignatureAlgorithm.HS256, secretBytes); // Noncompliant
+
+    Jwts.builder()
+      .signWith(SignatureAlgorithm.HS256, FINAL_SECRET_STRING); // Noncompliant
+
+    Jwts.builder()
+      .signWith(SignatureAlgorithm.HS256, TextCodec.BASE64.encode(FINAL_SECRET_STRING)); // Noncompliant
+
+    Jwts.builder()
+      .signWith(SignatureAlgorithm.HS256,TextCodec.BASE64.encode(secretBytes)); // Noncompliant
+
+    String jwtsKey = Base64.getEncoder().encodeToString(secretBytes);
+    Jwts.parser()
+      .setSigningKey(jwtsKey) // Noncompliant
+      .parseClaimsJws("01234567890123456789");
+
+    Jwts.parser()
+      .setSigningKey(FINAL_SECRET_STRING.getBytes(Charset.defaultCharset())) // Noncompliant
+      .parseClaimsJws("01234567890123456789");
+
+    Jwts.parser()
+      .setSigningKey(Base64.getEncoder().encode(secretBytes)) // Noncompliant
+      .parseClaimsJws("01234567890123456789");
+
   }
 
   public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter, CharSequence charSequenceParameter, char character)
