@@ -77,6 +77,12 @@
       <artifactId>commons-lang3</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>1.22</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
