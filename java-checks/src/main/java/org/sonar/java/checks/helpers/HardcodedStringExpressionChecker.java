@@ -88,8 +88,22 @@ public class HardcodedStringExpressionChecker {
   private static final MethodMatchers STRING_VALUE_OF = MethodMatchers.create()
     .ofTypes(JAVA_LANG_STRING)
     .names("valueOf")
-    .withAnyParameters()
+    .addParametersMatcher(MethodMatchers.ANY)
     .build();
+
+  private static final MethodMatchers ENCODERS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("io.jsonwebtoken.impl.TextCodec")
+      .names("encode")
+      .addParametersMatcher("byte[]")
+      .addParametersMatcher(JAVA_LANG_STRING)
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.util.Base64$Encoder")
+      .names("encode", "encodeToString")
+      .addParametersMatcher("byte[]")
+      .addParametersMatcher(JAVA_LANG_STRING)
+      .build());
 
   public static boolean isExpressionDerivedFromPlainText(ExpressionTree expression, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
@@ -191,7 +205,7 @@ public class HardcodedStringExpressionChecker {
   private static boolean isDerivedFromPlainText(MethodInvocationTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
     Set<Symbol> visited) {
 
-    if (STRING_VALUE_OF.matches(invocation)) {
+    if (STRING_VALUE_OF.matches(invocation) || ENCODERS.matches(invocation)) {
       return isExpressionDerivedFromPlainText(invocation.arguments().get(0), secondaryLocations, visited);
     }
 

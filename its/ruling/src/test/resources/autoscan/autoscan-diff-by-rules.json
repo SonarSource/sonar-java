@@ -2870,7 +2870,7 @@
   {
     "ruleKey": "S6437",
     "hasTruePositives": true,
-    "falseNegatives": 33,
+    "falseNegatives": 56,
     "falsePositives": 0
   },
   {
