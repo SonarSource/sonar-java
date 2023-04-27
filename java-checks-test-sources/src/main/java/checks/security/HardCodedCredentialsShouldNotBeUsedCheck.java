@@ -38,7 +38,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
   private static char[] secretCharArrayField = new char[]{0xC, 0xA, 0xF, 0xE};
   private static CharSequence secretCharSequenceField = "Hello, World!".subSequence(0, 12);
 
-  public static void nonCompliant(byte[] message, boolean condition, Charset encoding) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+  public static void nonCompliant(byte[] message, boolean condition, Charset encoding, SignatureAlgorithm paremSignatureAlgorithm) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
     String effectivelyConstantString = "s3cr37";
     byte[] key = effectivelyConstantString.getBytes();
 
@@ -125,6 +125,9 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
       .signWith(SignatureAlgorithm.HS256, secretBytes); // Noncompliant
 
     Jwts.builder()
+      .signWith(paremSignatureAlgorithm, secretBytes); // Noncompliant
+
+    Jwts.builder()
       .signWith(SignatureAlgorithm.HS256, FINAL_SECRET_STRING); // Noncompliant
 
     Jwts.builder()
@@ -202,6 +205,13 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     StringBuilder nonConstantStringBuilder = new StringBuilder(3);
     nonConstantStringBuilder.append(secretParameter);
     Encryptors.delux(nonConstantStringBuilder, "salt"); // compliant
+
+    Jwts.builder()
+      .signWith(SignatureAlgorithm.HS256, secretParameter); // Compliant
+
+    Jwts.parser()
+      .setSigningKey(secretParameter) // Compliant
+      .parseClaimsJws("01234567890123456789");
   }
 
   public static void compliantAzure(SecretClient secretClient, String secretName, byte[] message) {
