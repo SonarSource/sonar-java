@@ -51,6 +51,8 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.comment.Comment;
+import org.sonar.api.batch.sensor.comment.NewComment;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.config.Configuration;
@@ -68,10 +70,13 @@ import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaComment;
 import org.sonar.java.reporting.JavaIssue;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonar.plugins.java.api.location.Range;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 
@@ -120,8 +125,8 @@ public class SonarComponents {
   private boolean alreadyLoggedSkipStatus = false;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
-                         CheckFactory checkFactory) {
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
+    CheckFactory checkFactory) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null);
   }
 
@@ -129,8 +134,8 @@ public class SonarComponents {
    * Will be called in SonarLint context when custom rules are present
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable CheckRegistrar[] checkRegistrars) {
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+    @Nullable CheckRegistrar[] checkRegistrars) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, checkRegistrars, null);
   }
 
@@ -138,8 +143,8 @@ public class SonarComponents {
    * Will be called in SonarScanner context when no custom rules is present
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable ProjectDefinition projectDefinition) {
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+    @Nullable ProjectDefinition projectDefinition) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, projectDefinition);
   }
 
@@ -147,8 +152,8 @@ public class SonarComponents {
    * ProjectDefinition class is not available in SonarLint context, so this constructor will never be called when using SonarLint
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable CheckRegistrar[] checkRegistrars, @Nullable ProjectDefinition projectDefinition) {
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+    @Nullable CheckRegistrar[] checkRegistrars, @Nullable ProjectDefinition projectDefinition) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
@@ -172,9 +177,7 @@ public class SonarComponents {
   }
 
   private static List<Class<? extends JavaCheck>> getChecks(@Nullable Iterable<Class<? extends JavaCheck>> iterable) {
-    return iterable != null ?
-      StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.toList()) :
-      Collections.emptyList();
+    return iterable != null ? StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.toList()) : Collections.emptyList();
   }
 
   public void setSensorContext(SensorContext context) {
@@ -274,6 +277,25 @@ public class SonarComponents {
       .map(sonarChecks -> sonarChecks.ruleKey(check))
       .filter(Objects::nonNull)
       .findFirst();
+  }
+
+  public void captureComment(JavaComment javaComment) {
+    NewComment newComment = context.newComment();
+
+    SyntaxTrivia syntaxTrivia = javaComment.getSyntaxTrivia();
+    Range range = syntaxTrivia.range();
+    int startLine = range.start().line();
+    int startLineOffset = range.start().column();
+    int endLine = range.end().line();
+    int endLineOffset = range.end().column();
+
+    InputFile inputFile = javaComment.getInputFile();
+    newComment.at(newComment.newCommentLocation()
+      .on(inputFile)
+      .at(inputFile.newRange(startLine, startLineOffset - 1, endLine, endLineOffset - 1)))
+      .setType(syntaxTrivia.isBlock() ? Comment.Type.BLOCK : Comment.Type.LINE)
+      .setLines(LineUtils.splitLines(syntaxTrivia.comment()))
+      .save();
   }
 
   public void addIssue(InputComponent inputComponent, JavaCheck check, int line, String message, @Nullable Integer cost) {
@@ -450,7 +472,6 @@ public class SonarComponents {
     }
   }
 
-
   public boolean fileCanBeSkipped(InputFile inputFile) {
     if (inputFile instanceof GeneratedFile) {
       // Generated files should not be skipped as we cannot assess the change status of the source file
@@ -472,8 +493,7 @@ public class SonarComponents {
       if (!alreadyLoggedSkipStatus) {
         LOG.info(
           "Cannot determine whether the context allows skipping unchanged files: canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}",
-          e.getCause().getMessage()
-        );
+          e.getCause().getMessage());
         alreadyLoggedSkipStatus = true;
       }
       return false;
@@ -510,15 +530,13 @@ public class SonarComponents {
         .filter(m -> m.type() == JProblem.Type.UNDEFINED_TYPE),
       maxLines,
       "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.",
-      "Unresolved imports/types:"
-    );
+      "Unresolved imports/types:");
     logParserMessages(
       undefinedTypes.stream()
         .filter(m -> m.type() == JProblem.Type.PREVIEW_FEATURE_USED),
       maxLines,
       "Use of preview features have been detected during analysis. Enable DEBUG mode to see them.",
-      "Use of preview features:"
-    );
+      "Use of preview features:");
   }
 
   private static void logParserMessages(Stream<JProblem> messages, int maxLines, String warningMessage, String debugMessage) {

@@ -49,4 +49,6 @@ public interface SyntaxTrivia extends Tree {
 
   Range range();
 
+  boolean isBlock();
+
 }

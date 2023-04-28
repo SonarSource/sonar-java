@@ -34,11 +34,19 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   @Nonnull
   private final Range range;
 
+  private final boolean block;
+
   public InternalSyntaxTrivia(String comment, int line, int columnOffset) {
     this.comment = comment;
-    range = comment.startsWith("/*")
+    this.block = comment.startsWith("/*");
+    range = block
       ? Range.at(InternalPosition.atOffset(line, columnOffset), comment)
       : Range.at(InternalPosition.atOffset(line, columnOffset), comment.length());
+  }
+
+  @Override
+  public boolean isBlock() {
+    return this.block;
   }
 
   @Override

@@ -34,6 +34,7 @@ import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.Sema;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
+import org.sonar.java.reporting.JavaComment;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -46,6 +47,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
 
   private final Set<AnalyzerMessage> issues = new LinkedHashSet<>();
   private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
+  private final Set<JavaComment> comments = new LinkedHashSet<>();
 
   public JavaFileScannerContextForTests(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                         @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
@@ -140,5 +142,10 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
   @Override
   public FluentReporting.JavaIssueBuilder newIssue() {
     return new JavaIssueBuilderForTests(getInputFile(), issues, quickFixes);
+  }
+
+  @Override
+  public void captureComment(JavaComment javaComment) {
+    this.comments.add(javaComment);
   }
 }

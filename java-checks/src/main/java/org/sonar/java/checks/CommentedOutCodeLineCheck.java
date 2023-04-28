@@ -28,6 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaComment;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -58,10 +59,12 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
+    DefaultJavaFileScannerContext scannerContext = (DefaultJavaFileScannerContext) this.context;
     List<AnalyzerMessage> issues = new ArrayList<>();
     AnalyzerMessage previousRelatedIssue = null;
     int previousCommentLine = -1;
     for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
+      scannerContext.captureComment(new JavaComment(context.getInputFile(), syntaxTrivia));
       int currentCommentLine = LineUtils.startLine(syntaxTrivia);
       if (currentCommentLine != previousCommentLine + 1 &&
         currentCommentLine != previousCommentLine) {
@@ -72,7 +75,6 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
         previousCommentLine = currentCommentLine;
       }
     }
-    DefaultJavaFileScannerContext scannerContext = (DefaultJavaFileScannerContext) this.context;
     issues.forEach(scannerContext::reportIssue);
   }
 

@@ -29,6 +29,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.batch.sensor.code.NewSignificantCode;
+import org.sonar.api.batch.sensor.comment.NewComment;
 import org.sonar.api.batch.sensor.coverage.NewCoverage;
 import org.sonar.api.batch.sensor.cpd.NewCpdTokens;
 import org.sonar.api.batch.sensor.error.NewAnalysisError;
@@ -173,6 +174,11 @@ public class InternalSensorContext extends InternalMockedSonarAPI implements Sen
   @Override
   public NewIssue newIssue() {
     throw notSupportedException("newIssue()");
+  }
+
+  @Override
+  public NewComment newComment() {
+    throw notSupportedException("newComment()");
   }
 
   @Override
