@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import java.util.Locale;
-import java.util.Map;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -47,13 +46,11 @@ public class JavaVersionImpl implements JavaVersion {
   private final boolean previewFeaturesEnabled;
 
   public JavaVersionImpl() {
-    this.javaVersion = -1;
-    this.previewFeaturesEnabled = false;
+    this(-1, false);
   }
 
   public JavaVersionImpl(int javaVersion) {
-    this.javaVersion = javaVersion;
-    this.previewFeaturesEnabled = false;
+    this(javaVersion, false);
   }
 
   public JavaVersionImpl(int javaVersion, boolean previewFeaturesEnabled) {
@@ -73,13 +70,13 @@ public class JavaVersionImpl implements JavaVersion {
     }
   }
 
-  public static JavaVersion fromMap(Map<String, String> properties) {
-    boolean previewFeaturesFlag = convertBooleanString(properties.getOrDefault(JavaVersion.ENABLE_PREVIEW, ""));
+  public static JavaVersion fromStrings(String javaVersion, String previewFeaturesFlag) {
+    boolean previewFeaturesEnabled = convertBooleanString(previewFeaturesFlag);
     try {
-      int versionAsInt = convertJavaVersionString(properties.getOrDefault(JavaVersion.SOURCE_VERSION, ""));
-      return new JavaVersionImpl(versionAsInt, previewFeaturesFlag);
+      int versionAsInt = convertJavaVersionString(javaVersion);
+      return new JavaVersionImpl(versionAsInt, previewFeaturesEnabled);
     } catch (NumberFormatException e) {
-      LOG.warn("Invalid java version (got \"" + properties.get(JavaVersion.SOURCE_VERSION) + "\"). "
+      LOG.warn("Invalid java version (got \"" + javaVersion + "\"). "
         + "The version will be ignored. Accepted formats are \"1.X\", or simply \"X\" "
         + "(for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)");
       return new JavaVersionImpl();

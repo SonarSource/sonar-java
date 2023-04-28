@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
@@ -185,11 +184,10 @@ public class JavaSensor implements Sensor {
   }
 
   private JavaVersion getJavaVersion() {
-    Map<String, String> javaVersionProperties = Map.of(
-      JavaVersion.ENABLE_PREVIEW, settings.get(JavaVersion.ENABLE_PREVIEW).orElseGet(() -> ""),
-      JavaVersion.SOURCE_VERSION, settings.get(JavaVersion.SOURCE_VERSION).orElseGet(() -> ""));
-    
-    JavaVersion javaVersion = JavaVersionImpl.fromMap(javaVersionProperties);
+    String javaVersionAsString = settings.get(JavaVersion.SOURCE_VERSION).orElseGet(() -> "");
+    String enablePreviewAsString = settings.get(JavaVersion.ENABLE_PREVIEW).orElseGet(() -> "");
+
+    JavaVersion javaVersion = JavaVersionImpl.fromStrings(javaVersionAsString, enablePreviewAsString);
     LOG.info("Configured Java source version (" + JavaVersion.SOURCE_VERSION + "): " + javaVersion.asInt()
       + ", preview features enabled (" + JavaVersion.ENABLE_PREVIEW + "): " + javaVersion.arePreviewFeaturesEnabled());
     return javaVersion;
