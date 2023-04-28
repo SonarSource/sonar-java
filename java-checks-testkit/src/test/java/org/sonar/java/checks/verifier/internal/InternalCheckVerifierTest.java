@@ -192,7 +192,7 @@ class InternalCheckVerifierTest {
       final CheckVerifier verifier = InternalCheckVerifier.newInstance();
       assertThatThrownBy(() ->  verifier.withJavaVersion(7, true))
         .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Preview feature can only be enabled for the latest supported Java version (" + JavaVersionImpl.MAX_SUPPORTED + ")");
+        .hasMessage("Preview features can only be enabled for the latest supported Java version (" + JavaVersionImpl.MAX_SUPPORTED + ")");
     }
     
     @Test

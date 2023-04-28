@@ -161,7 +161,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     requiresNull(javaVersion, "java version");
     if (enablePreviewFeatures && javaVersionAsInt < JavaVersionImpl.MAX_SUPPORTED) {
       var message = String.format(
-        "Preview feature can only be enabled for the latest supported Java version (%d)",
+        "Preview features can only be enabled for the latest supported Java version (%d)",
         JavaVersionImpl.MAX_SUPPORTED
       );
       throw new IllegalArgumentException(message);
