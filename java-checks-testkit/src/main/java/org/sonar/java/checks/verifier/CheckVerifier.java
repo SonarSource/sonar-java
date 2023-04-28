@@ -134,6 +134,8 @@ public interface CheckVerifier {
    * @param enablePreviewFeatures defines if preview features from the specified java version should be enabled or not
    *
    * @return the verifier configured to consider the provided test file(s) as following the syntax of the given java version
+   *
+   * @throws IllegalArgumentException If the enablePreviewFeatures parameter is set to true but javaVersionAsInt is not the latest supported version
    */
   CheckVerifier withJavaVersion(int javaVersionAsInt, boolean enablePreviewFeatures);
 

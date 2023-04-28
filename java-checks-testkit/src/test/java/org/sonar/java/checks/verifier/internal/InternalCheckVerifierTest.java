@@ -39,6 +39,8 @@ import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
+import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -183,6 +185,14 @@ class InternalCheckVerifierTest {
       assertThat(e)
         .isInstanceOf(AssertionError.class)
         .hasMessage("Do not set java version multiple times!");
+    }
+
+    @Test
+    void preview_features_can_only_be_enabled_for_the_latest_java_version() {
+      final CheckVerifier verifier = InternalCheckVerifier.newInstance();
+      assertThatThrownBy(() ->  verifier.withJavaVersion(7, true))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Preview feature can only be enabled for the latest supported Java version (" + JavaVersionImpl.MAX_SUPPORTED + ")");
     }
     
     @Test

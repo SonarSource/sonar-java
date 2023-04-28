@@ -153,13 +153,19 @@ public class InternalCheckVerifier implements CheckVerifier {
   @Override
   public InternalCheckVerifier withJavaVersion(int javaVersionAsInt) {
     requiresNull(javaVersion, "java version");
-    javaVersion = new JavaVersionImpl(javaVersionAsInt);
-    return this;
+    return withJavaVersion(javaVersionAsInt, false);
   }
   
   @Override
   public InternalCheckVerifier withJavaVersion(int javaVersionAsInt, boolean enablePreviewFeatures) {
     requiresNull(javaVersion, "java version");
+    if (enablePreviewFeatures && javaVersionAsInt < JavaVersionImpl.MAX_SUPPORTED) {
+      var message = String.format(
+        "Preview feature can only be enabled for the latest supported Java version (%d)",
+        JavaVersionImpl.MAX_SUPPORTED
+      );
+      throw new IllegalArgumentException(message);
+    }
     javaVersion = new JavaVersionImpl(javaVersionAsInt, enablePreviewFeatures);
     return this;
   }

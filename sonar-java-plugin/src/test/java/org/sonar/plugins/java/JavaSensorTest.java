@@ -65,6 +65,7 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -113,7 +114,7 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 16);
+    testIssueCreation(InputFile.Type.MAIN, 17);
   }
 
   @Test
@@ -133,7 +134,7 @@ class JavaSensorTest {
 
     jss.execute(context);
     // argument 120 refers to the comment on line #120 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(120));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(121));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
@@ -334,16 +335,35 @@ class JavaSensorTest {
     assertThat(defaultPerformanceFile).exists();
     assertThat(new String(Files.readAllBytes(defaultPerformanceFile), UTF_8)).contains("\"JavaSensor\"");
   }
-  
+
   @Test
-  void test_java_version_construction_logs() throws IOException {
+  void test_java_version_automatically_accepts_enablePreview_flag_when_maximum_version() throws IOException {
     MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.source", "17");
-    settings.setProperty("sonar.java.enablePreview", "False");
+    settings.setProperty("sonar.java.source", JavaVersionImpl.MAX_SUPPORTED);
+    settings.setProperty("sonar.java.enablePreview", "True");
     Path workDir = tmp.newFolder().toPath();
     executeJavaSensorForPerformanceMeasure(settings, workDir);
-    String infoLogs = String.join("\n", logTester.logs(LoggerLevel.INFO));
-    assertThat(infoLogs).contains("Configured Java source version (sonar.java.source): 17" );
+    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+    List<String> infoLogs = logTester.logs(LoggerLevel.INFO);
+    assertThat(infoLogs).contains("Configured Java source version (sonar.java.source): " + JavaVersionImpl.MAX_SUPPORTED +
+      ", preview features enabled (sonar.java.enablePreview): true");
+  }
+
+  @Test
+  void test_java_version_automatically_disables_enablePreview_flag_when_version_is_less_than_maximum_version() throws IOException {
+    MapSettings settings = new MapSettings();
+    int version = JavaVersionImpl.MAX_SUPPORTED - 1;
+    settings.setProperty("sonar.java.source", version);
+    settings.setProperty("sonar.java.enablePreview", "True");
+    Path workDir = tmp.newFolder().toPath();
+    executeJavaSensorForPerformanceMeasure(settings, workDir);
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(
+      "sonar.java.enabled is set but will be discarded as the Java version is less than the max supported version ( " +
+        version + " < " + JavaVersionImpl.MAX_SUPPORTED + ")"
+    );
+    List<String> infoLogs = logTester.logs(LoggerLevel.INFO);
+    assertThat(infoLogs).contains("Configured Java source version (sonar.java.source): " + version +
+      ", preview features enabled (sonar.java.enablePreview): false");
   }
   
   @Test
