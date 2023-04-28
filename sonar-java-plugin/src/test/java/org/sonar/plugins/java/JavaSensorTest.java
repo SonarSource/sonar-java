@@ -114,7 +114,7 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 17);
+    testIssueCreation(InputFile.Type.MAIN, 18);
   }
 
   @Test
@@ -358,12 +358,26 @@ class JavaSensorTest {
     Path workDir = tmp.newFolder().toPath();
     executeJavaSensorForPerformanceMeasure(settings, workDir);
     assertThat(logTester.logs(LoggerLevel.WARN)).contains(
-      "sonar.java.enabled is set but will be discarded as the Java version is less than the max supported version ( " +
+      "sonar.java.enablePreview is set but will be discarded as the Java version is less than the max supported version (" +
         version + " < " + JavaVersionImpl.MAX_SUPPORTED + ")"
     );
     List<String> infoLogs = logTester.logs(LoggerLevel.INFO);
     assertThat(infoLogs).contains("Configured Java source version (sonar.java.source): " + version +
       ", preview features enabled (sonar.java.enablePreview): false");
+  }
+
+  @Test
+  void getJavaVersion_does_not_try_to_check_consistency_when_sonar_java_source_is_not_set() throws IOException {
+    // We set the sonar.java.enablePreview flag to true but it will be ignored because there is no sonar.java.source
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.enablePreview", "true");
+    Path workDir = tmp.newFolder().toPath();
+    executeJavaSensorForPerformanceMeasure(settings, workDir);
+    assertThat(logTester.logs(LoggerLevel.WARN)).noneMatch(
+      log -> log.startsWith("sonar.java.enablePreview is set but will be discarded as the Java version is less than the max supported version")
+    );
+    List<String> infoLogs = logTester.logs(LoggerLevel.INFO);
+    assertThat(infoLogs).noneMatch(log -> log.startsWith("Configured Java source version (sonar.java.source):"));
   }
   
   @Test
