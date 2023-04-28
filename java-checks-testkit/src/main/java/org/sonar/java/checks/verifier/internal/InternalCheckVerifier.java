@@ -159,9 +159,10 @@ public class InternalCheckVerifier implements CheckVerifier {
   @Override
   public InternalCheckVerifier withJavaVersion(int javaVersionAsInt, boolean enablePreviewFeatures) {
     requiresNull(javaVersion, "java version");
-    if (enablePreviewFeatures && javaVersionAsInt < JavaVersionImpl.MAX_SUPPORTED) {
+    if (enablePreviewFeatures && javaVersionAsInt != JavaVersionImpl.MAX_SUPPORTED) {
       var message = String.format(
-        "Preview features can only be enabled for the latest supported Java version (%d)",
+        "Preview features can only be enabled when the version == latest supported Java version (%d != %d)",
+        javaVersionAsInt,
         JavaVersionImpl.MAX_SUPPORTED
       );
       throw new IllegalArgumentException(message);
