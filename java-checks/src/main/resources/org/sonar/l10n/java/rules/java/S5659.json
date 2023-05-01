@@ -8,8 +8,7 @@
   },
   "tags": [
     "cwe",
-    "privacy",
-    "cert"
+    "privacy"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5659",
