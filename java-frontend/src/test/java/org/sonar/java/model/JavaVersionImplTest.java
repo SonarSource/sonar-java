@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -145,31 +144,31 @@ class JavaVersionImplTest {
   @Test
   void test_fromMap() {
     JavaVersion version;
-    version = JavaVersionImpl.fromMap(Map.of(JavaVersion.ENABLE_PREVIEW, "False", JavaVersion.SOURCE_VERSION, "17"));
+    version = JavaVersionImpl.fromStrings("17", "False");
     assertThat(version.isSet()).isTrue();
     assertThat(version.isNotSet()).isFalse();
     assertThat(version.asInt()).isEqualTo(17);
     assertThat(version.arePreviewFeaturesEnabled()).isFalse();
-    
-    version = JavaVersionImpl.fromMap(Map.of(JavaVersion.ENABLE_PREVIEW, "True", JavaVersion.SOURCE_VERSION, "17"));
+
+    version = JavaVersionImpl.fromStrings("17", "True");
     assertThat(version.isSet()).isTrue();
     assertThat(version.isNotSet()).isFalse();
     assertThat(version.asInt()).isEqualTo(17);
     assertThat(version.arePreviewFeaturesEnabled()).isTrue();
-    
-    version = JavaVersionImpl.fromMap(Map.of(JavaVersion.ENABLE_PREVIEW, "True", JavaVersion.SOURCE_VERSION, ""));
+
+    version = JavaVersionImpl.fromStrings("", "True");
     assertThat(version.isSet()).isFalse();
     assertThat(version.isNotSet()).isTrue();
     assertThat(version.asInt()).isEqualTo(-1);
     assertThat(version.arePreviewFeaturesEnabled()).isFalse();
     
-    version = JavaVersionImpl.fromMap(Map.of(JavaVersion.ENABLE_PREVIEW, "True"));
+    version = JavaVersionImpl.fromStrings("", "True");
     assertThat(version.isSet()).isFalse();
     assertThat(version.isNotSet()).isTrue();
     assertThat(version.asInt()).isEqualTo(-1);
     assertThat(version.arePreviewFeaturesEnabled()).isFalse();
     
-    version = JavaVersionImpl.fromMap(Map.of());
+    version = JavaVersionImpl.fromStrings("", "");
     assertThat(version.isSet()).isFalse();
     assertThat(version.isNotSet()).isTrue();
     assertThat(version.asInt()).isEqualTo(-1);

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
@@ -185,11 +184,18 @@ public class JavaSensor implements Sensor {
   }
 
   private JavaVersion getJavaVersion() {
-    Map<String, String> javaVersionProperties = Map.of(
-      JavaVersion.ENABLE_PREVIEW, settings.get(JavaVersion.ENABLE_PREVIEW).orElseGet(() -> ""),
-      JavaVersion.SOURCE_VERSION, settings.get(JavaVersion.SOURCE_VERSION).orElseGet(() -> ""));
-    
-    JavaVersion javaVersion = JavaVersionImpl.fromMap(javaVersionProperties);
+    Optional<String> javaVersionAsString = settings.get(JavaVersion.SOURCE_VERSION);
+    if (!javaVersionAsString.isPresent()) {
+      return new JavaVersionImpl();
+    }
+    String enablePreviewAsString = settings.get(JavaVersion.ENABLE_PREVIEW).orElse("false");
+
+    JavaVersion javaVersion = JavaVersionImpl.fromStrings(javaVersionAsString.get(), enablePreviewAsString);
+    if (javaVersion.arePreviewFeaturesEnabled() && javaVersion.asInt() < JavaVersionImpl.MAX_SUPPORTED) {
+      LOG.warn("sonar.java.enablePreview is set but will be discarded as the Java version is less than the max supported version (" +
+        javaVersion.asInt() + " < " + JavaVersionImpl.MAX_SUPPORTED + ")");
+      javaVersion = new JavaVersionImpl(javaVersion.asInt(), false);
+    }
     LOG.info("Configured Java source version (" + JavaVersion.SOURCE_VERSION + "): " + javaVersion.asInt()
       + ", preview features enabled (" + JavaVersion.ENABLE_PREVIEW + "): " + javaVersion.arePreviewFeaturesEnabled());
     return javaVersion;
