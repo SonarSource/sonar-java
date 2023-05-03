@@ -142,4 +142,28 @@ public class CommentedCode {
     method("");
   }
   // C++
+
+  // Noncompliant@+2
+  /* This is a comment, but next line is a commented-out code */
+  // for (Visitor visitor : visitors) {
+  /*   continue; */
+  // }
+
+  // Noncompliant@+2 [[secondary=155,156,158,159,160]]
+  /* This is a comment, but next line is a commented-out code
+   for (Visitor visitor : visitors) {
+     continue;
+   }
+
+   for (Visitor visitor : visitors) {
+     continue;
+   }
+  */
+
+  // Noncompliant@+3
+  // Noncompliant@+4
+  /* Oh! donut!
+     for (Visitor visitor : visitors) {
+       continue; */
+  // }
 }
