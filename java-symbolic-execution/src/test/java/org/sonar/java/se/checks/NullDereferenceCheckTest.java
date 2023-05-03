@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
@@ -26,6 +27,23 @@ import org.sonar.java.se.utils.SETestUtils;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class NullDereferenceCheckTest {
+
+  @Test
+  void test_unboxing() {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/PrimitiveUnboxing.java"))
+      .withCheck(new NullDereferenceCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_unboxing_without_binaries() {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/PrimitiveUnboxing.java"))
+      .withClassPath(Collections.emptyList())
+      .withCheck(new NullDereferenceCheck())
+      .verifyIssues();
+  }
 
   @Test
   void test() {
