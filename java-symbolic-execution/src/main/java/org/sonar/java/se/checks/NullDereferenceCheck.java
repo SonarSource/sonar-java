@@ -26,6 +26,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -42,15 +43,23 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 
@@ -63,6 +72,17 @@ public class NullDereferenceCheck extends SECheck {
   private static final String JAVA_LANG_NPE = "java.lang.NullPointerException";
   private static final MethodMatchers OPTIONAL_OR_ELSE_GET_MATCHER = MethodMatchers.create().ofTypes("java.util.Optional").names("orElseGet")
     .addParametersMatcher("java.util.function.Supplier").build();
+
+  private static final Set<String> BOXED_TYPES = Set.of(
+    "java.lang.Boolean",
+    "java.lang.Byte",
+    "java.lang.Character",
+    "java.lang.Float",
+    "java.lang.Double",
+    "java.lang.Integer",
+    "java.lang.Long",
+    "java.lang.Short"
+  );
 
   private static class NullDereferenceIssue {
     final ExplodedGraph.Node node;
@@ -120,11 +140,163 @@ public class NullDereferenceCheck extends SECheck {
         return checkMemberSelect(context, (MemberSelectExpressionTree) syntaxNode, peekValue);
       case SYNCHRONIZED_STATEMENT:
         return checkConstraint(context, syntaxNode, peekValue);
+      case VARIABLE:
+        var variableTree = (VariableTree) syntaxNode;
+        extractUnboxingExpression(variableTree).ifPresent(expression ->
+          checkConstraint(context, expression, peekValue)
+        );
+        break;
+      case YIELD_STATEMENT:
+        inspectYieldStatement(context, (YieldStatementTree) syntaxNode, peekValue);
+        break;
+      case RETURN_STATEMENT:
+        inspectReturnStatement(context, (ReturnStatementTree) syntaxNode, peekValue);
+        break;
       default:
-        // ignore
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          inspectAssignment(context, (AssignmentExpressionTree) syntaxNode, peekValue);
+        } else if (syntaxNode instanceof BinaryExpressionTree) {
+          inspectBinaryExpression(context, (BinaryExpressionTree) syntaxNode, peekValue);
+        } else if (syntaxNode instanceof UnaryExpressionTree) {
+          var unaryOperation = (UnaryExpressionTree) syntaxNode;
+          extractUnboxingExpression(unaryOperation).ifPresent(expression ->
+            checkConstraint(context, expression, peekValue)
+          );
+        }
     }
     return context.getState();
   }
+
+  private void inspectYieldStatement(CheckerContext context, YieldStatementTree yieldStatementTree, SymbolicValue peekValue) {
+    inspectReturnExpression(context, yieldStatementTree.expression(), peekValue);
+  }
+
+  private void inspectReturnStatement(CheckerContext context, ReturnStatementTree returnExpression, SymbolicValue peekValue) {
+    ExpressionTree expression = returnExpression.expression();
+    if (expression != null) {
+      inspectReturnExpression(context, expression, peekValue);
+    }
+  }
+
+  private void inspectReturnExpression(CheckerContext context, ExpressionTree returnedExpression, SymbolicValue peekValue) {
+    if (!BOXED_TYPES.contains(returnedExpression.symbolType().fullyQualifiedName())) {
+      return;
+    }
+    getParentScope(returnedExpression).ifPresent(tree -> {
+      Type type;
+      if (tree.is(Tree.Kind.METHOD)) {
+        type = ((MethodTree) tree).returnType().symbolType();
+      } else {
+        type = ((SwitchExpressionTree) tree).symbolType();
+      }
+      if (type.isPrimitive()) {
+        if (returnedExpression.is(Tree.Kind.IDENTIFIER)) {
+          Symbol symbol = ((IdentifierTree) returnedExpression).symbol();
+          checkConstraint(context, returnedExpression, context.getState().getValue(symbol));
+        } else {
+          checkConstraint(context, returnedExpression, peekValue);
+        }
+      }
+    });
+  }
+
+  private static Optional<Tree> getParentScope(Tree tree) {
+    Tree parent = tree;
+    do {
+      parent = parent.parent();
+    } while (parent != null && !parent.is(Tree.Kind.METHOD, Tree.Kind.SWITCH_EXPRESSION));
+    return Optional.ofNullable(parent);
+  }
+
+  private void inspectAssignment(CheckerContext context, AssignmentExpressionTree syntaxNode, SymbolicValue peekValue) {
+    var assignment = syntaxNode;
+    extractUnboxingExpression(assignment).ifPresent(expression -> {
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        Symbol symbol = ((IdentifierTree) expression).symbol();
+        checkConstraint(context, expression, context.getState().getValue(symbol));
+      } else {
+        checkConstraint(context, expression, peekValue);
+      }
+    });
+  }
+
+  private void inspectBinaryExpression(CheckerContext context, BinaryExpressionTree syntaxNode, SymbolicValue peekValue) {
+    var binaryOperation = syntaxNode;
+    extractUnboxingExpression(binaryOperation).ifPresent(expression -> {
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        Symbol symbol = ((IdentifierTree) expression).symbol();
+        checkConstraint(context, expression, context.getState().getValue(symbol));
+      } else {
+        checkConstraint(context, expression, peekValue);
+      }
+    });
+  }
+
+  private static Optional<ExpressionTree> extractUnboxingExpression(VariableTree variableTree) {
+    Type receivingType = variableTree.symbol().type();
+    if (!receivingType.isPrimitive()) {
+      return Optional.empty();
+    }
+    ExpressionTree initializer = variableTree.initializer();
+    if (initializer == null) {
+      return Optional.empty();
+    }
+
+    Type type = initializer.symbolType();
+    if (type.isPrimitive()) {
+      return Optional.empty();
+    }
+    return Optional.of(initializer);
+  }
+
+  private static Optional<ExpressionTree> extractUnboxingExpression(AssignmentExpressionTree assignmentTree) {
+    Optional<ExpressionTree> boxedOperand = selectBoxedTypeExpression(
+      assignmentTree.variable(),
+      assignmentTree.expression()
+    );
+    // If the assignment simply overwrites the boxed operand using a primitive, then there will be no unboxing and we can return empty
+    if (assignmentTree.kind().equals(Tree.Kind.ASSIGNMENT) &&
+      boxedOperand.isPresent() &&
+      boxedOperand.get().equals(assignmentTree.variable())) {
+      return Optional.empty();
+    }
+    return boxedOperand;
+  }
+
+  private static Optional<ExpressionTree> extractUnboxingExpression(BinaryExpressionTree expressionTree) {
+    return selectBoxedTypeExpression(
+      expressionTree.leftOperand(),
+      expressionTree.rightOperand()
+    );
+  }
+
+  private static Optional<ExpressionTree> selectBoxedTypeExpression(ExpressionTree left, ExpressionTree right) {
+    var leftType = left.symbolType();
+    var rightType = right.symbolType();
+    if (left.is(Tree.Kind.NULL_LITERAL) || right.is(Tree.Kind.NULL_LITERAL) ||
+      (leftType.isPrimitive() && rightType.isPrimitive()) ||
+      (!leftType.isPrimitive() && !rightType.isPrimitive())) {
+      return Optional.empty();
+    }
+    if (leftType.isPrimitive() && BOXED_TYPES.contains(rightType.fullyQualifiedName())) {
+      return Optional.of(right);
+    }
+    // If we reached this far, then the expression on the right must be a primitive
+    if (BOXED_TYPES.contains(leftType.fullyQualifiedName())) {
+      return Optional.of(left);
+    }
+    return Optional.empty();
+  }
+
+  private static Optional<ExpressionTree> extractUnboxingExpression(UnaryExpressionTree tree) {
+    ExpressionTree expression = tree.expression();
+    Type type = expression.symbolType();
+    if (BOXED_TYPES.contains(type.fullyQualifiedName())) {
+      return Optional.of(expression);
+    }
+    return Optional.empty();
+  }
+
 
   private ProgramState checkMemberSelect(CheckerContext context, MemberSelectExpressionTree mse, SymbolicValue currentVal) {
     if ("class".equals(mse.identifier().name())) {
@@ -162,7 +334,7 @@ public class NullDereferenceCheck extends SECheck {
   private void reportIssue(SymbolicValue currentVal, Tree syntaxNode, ExplodedGraph.Node node) {
     String message = "A \"NullPointerException\" could be thrown; ";
     if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)
-        && ((MemberSelectExpressionTree) syntaxNode).expression().is(Tree.Kind.METHOD_INVOCATION)) {
+      && ((MemberSelectExpressionTree) syntaxNode).expression().is(Tree.Kind.METHOD_INVOCATION)) {
       message += "\"" + SyntaxTreeNameFinder.getName(syntaxNode) + "()\" can return null.";
     } else {
       message += "\"" + SyntaxTreeNameFinder.getName(syntaxNode) + "\" is nullable here.";
