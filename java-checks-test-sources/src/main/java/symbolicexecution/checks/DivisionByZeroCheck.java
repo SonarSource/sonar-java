@@ -5,6 +5,44 @@ import java.math.BigInteger;
 import java.math.MathContext;
 
 class DivisionByZeroCheck {
+
+  int getLengthOfMap() {
+    int x = org.apache.commons.collections4.MapUtils.size(null);
+    return 1 / x; // Noncompliant
+  }
+
+  int getLengthOfIterator() {
+    int x = org.apache.commons.collections4.IteratorUtils.size(null);
+    return 1 / x; // Noncompliant
+  }
+
+  int getLengthOfCollection() {
+    int x = org.apache.commons.collections4.CollectionUtils.size(null);
+    return 1 / x; // Noncompliant
+  }
+
+  int getLengthOfNull() {
+    int x = org.apache.commons.lang.ArrayUtils.getLength(null);
+    return 1 / x; // Noncompliant
+  }
+
+  int getLengthOfIntArray() {
+    int[] arr = null;
+    int x = org.apache.commons.lang.ArrayUtils.getLength(arr);
+    return 1 / x; // Noncompliant
+  }
+
+  int getStringLength() {
+    int x = org.apache.commons.lang.StringUtils.length(null);
+    return 1 / x; // Noncompliant
+  }
+
+  int getStringLength3() {
+    StringBuffer sb = null;
+    int x = org.apache.commons.lang3.StringUtils.length(sb);
+    return 1 / x; // Noncompliant
+  }
+
   void foo(int r) {
     int z1 = 0; // flow@foo {{Implies 'z1' is zero.}}
     int z2 = z1; // flow@foo {{Implies 'z2' has the same value as 'z1'.}}

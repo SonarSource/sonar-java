@@ -277,7 +277,7 @@ class MethodBehaviorJsonAdapterTest {
     assertThat(e)
       .hasRootCauseInstanceOf(IllegalStateException.class)
       .hasMessage(
-        "java.lang.IllegalStateException: Unsupported constraint \"SQUARE\". Only \"TRUE\", \"FALSE\", \"NULL\", and \"NOT_NULL\" are supported.");
+        "java.lang.IllegalStateException: Unsupported constraint \"SQUARE\". Only \"TRUE\", \"FALSE\", \"NULL\", \"NOT_NULL\", \"ZERO\" and \"NON_ZERO\" are supported.");
   }
 
   @Test

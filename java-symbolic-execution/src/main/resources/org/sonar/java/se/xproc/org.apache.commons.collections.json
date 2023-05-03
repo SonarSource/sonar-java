@@ -1,5 +1,86 @@
 [
   {
+    "signature": "org.apache.commons.collections4.MapUtils#size(Ljava/util/Map;)I",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "ZERO"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.collections4.IteratorUtils#size(Ljava/util/Iterator;)I",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "ZERO"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.collections4.CollectionUtils#size(Ljava/lang/Object;)I",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "ZERO"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
     "signature": "org.apache.commons.collections.CollectionUtils#isEmpty(Ljava/util/Collection;)Z",
     "varArgs": false,
     "declaredExceptions": [],

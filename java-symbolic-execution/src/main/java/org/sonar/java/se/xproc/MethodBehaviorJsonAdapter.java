@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
@@ -124,8 +125,13 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
         case "FALSE":
           constraint = BooleanConstraint.valueOf(constraintAsString);
           break;
+        case "ZERO":
+        case "NON_ZERO":
+          constraint = ZeroConstraint.valueOf(constraintAsString);
+          break;
         default:
-          String msg = String.format("Unsupported constraint \"%s\". Only \"TRUE\", \"FALSE\", \"NULL\", and \"NOT_NULL\" are supported.", constraintAsString);
+          String msg = String.format("Unsupported constraint \"%s\". Only \"TRUE\", \"FALSE\", \"NULL\","
+            + " \"NOT_NULL\", \"ZERO\" and \"NON_ZERO\" are supported.", constraintAsString);
           throw new IllegalStateException(msg);
       }
       constraintsByDomain = constraintsByDomain.put(constraint);

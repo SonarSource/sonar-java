@@ -178,7 +178,7 @@
                 <artifactItem>
                   <groupId>org.apache.commons</groupId>
                   <artifactId>commons-collections4</artifactId>
-                  <version>4.1</version>
+                  <version>4.4</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.apache.logging.log4j</groupId>

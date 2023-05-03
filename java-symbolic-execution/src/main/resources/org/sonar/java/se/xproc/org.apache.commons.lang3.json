@@ -1,5 +1,32 @@
 [
   {
+    "signature": "org.apache.commons.lang3.StringUtils#length(Ljava/lang/CharSequence;)I",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "ZERO"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
     "signature": "org.apache.commons.lang3.StringUtils#isEmpty(Ljava/lang/CharSequence;)Z",
     "varArgs": false,
     "declaredExceptions": [],

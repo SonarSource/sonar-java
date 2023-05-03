@@ -1,5 +1,59 @@
 [
   {
+    "signature": "org.apache.commons.lang.StringUtils#length(Ljava/lang/String;)I",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "ZERO"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang.ArrayUtils#getLength(Ljava/lang/Object;)I",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "ZERO"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
     "signature": "org.apache.commons.lang.Validate#notEmpty(Ljava/util/Collection;)V",
     "varArgs": false,
     "declaredExceptions": [],
