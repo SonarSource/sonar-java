@@ -7,8 +7,9 @@ import java.math.MathContext;
 class DivisionByZeroCheck {
 
   int getLengthOfMap() {
-    int x = org.apache.commons.collections4.MapUtils.size(null);
-    return 1 / x; // Noncompliant
+    int x = org.apache.commons.collections4.MapUtils.size(null); // flow@behavior {{'size()' can return zero.}} flow@behavior {{Implies 'x' can be zero.}} 
+    int a = x; // flow@behavior {{Implies 'a' has the same value as 'x'.}}
+    return 1 / a; // Noncompliant [[flows=behavior]] {{Make sure "a" can't be zero before doing this division.}} flow@behavior {{Division by zero.}}
   }
 
   int getLengthOfIterator() {
