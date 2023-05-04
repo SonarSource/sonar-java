@@ -1688,7 +1688,7 @@
   {
     "ruleKey": "S3518",
     "hasTruePositives": true,
-    "falseNegatives": 0,
+    "falseNegatives": 7,
     "falsePositives": 0
   },
   {
