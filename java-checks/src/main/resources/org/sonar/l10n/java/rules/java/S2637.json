@@ -8,7 +8,8 @@
   },
   "tags": [
     "cwe",
-    "cert"
+    "cert",
+    "symbolic-execution"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2637",

@@ -11,7 +11,8 @@
     "cert",
     "unused",
     "suspicious",
-    "pitfall"
+    "pitfall",
+    "symbolic-execution"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2583",

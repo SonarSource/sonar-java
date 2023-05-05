@@ -114,7 +114,7 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 18);
+    testIssueCreation(InputFile.Type.MAIN, 19);
   }
 
   @Test
@@ -276,6 +276,15 @@ class JavaSensorTest {
         "MagicNumberCheck",
         "ParameterReassignedToCheck"
       );
+  }
+  
+  @Test
+  void info_log_when_no_SE_rules_enabled() throws IOException {
+    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.INFO);
+    assertJasperIsInvoked(new MapSettings());
+    String debugLogs = String.join("\n", logTester.logs(LoggerLevel.INFO));
+    assertThat(debugLogs).contains("No rules with 'symbolic-execution' tag were enabled,"
+      + " the Symbolic Execution Engine will not run during the analysis.");
   }
 
   @Test

@@ -7,7 +7,8 @@
     "constantCost": "15min"
   },
   "tags": [
-    "cert"
+    "cert",
+    "symbolic-execution"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2189",

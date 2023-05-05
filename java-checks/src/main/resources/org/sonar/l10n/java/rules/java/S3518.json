@@ -9,7 +9,8 @@
   "tags": [
     "cwe",
     "denial-of-service",
-    "cert"
+    "cert",
+    "symbolic-execution"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-3518",
