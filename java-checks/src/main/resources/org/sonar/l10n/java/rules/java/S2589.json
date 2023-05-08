@@ -7,6 +7,9 @@
     "constantCost": "10min"
   },
   "tags": [
+    "cwe",
+    "suspicious",
+    "redundant",
     "symbolic-execution"
   ],
   "defaultSeverity": "Major",

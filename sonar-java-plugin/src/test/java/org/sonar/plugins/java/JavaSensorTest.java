@@ -277,13 +277,11 @@ class JavaSensorTest {
         "ParameterReassignedToCheck"
       );
   }
-  
+
   @Test
   void info_log_when_no_SE_rules_enabled() throws IOException {
-    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.INFO);
     assertJasperIsInvoked(new MapSettings());
-    String debugLogs = String.join("\n", logTester.logs(LoggerLevel.INFO));
-    assertThat(debugLogs).contains("No rules with 'symbolic-execution' tag were enabled,"
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("No rules with 'symbolic-execution' tag were enabled,"
       + " the Symbolic Execution Engine will not run during the analysis.");
   }
 
