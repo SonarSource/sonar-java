@@ -19,7 +19,7 @@ class A {
   }
 
   void nully() {
-    null.toString(); // Noncompliant
+    ((Object) null).toString(); // Noncompliant
   }
 
 }

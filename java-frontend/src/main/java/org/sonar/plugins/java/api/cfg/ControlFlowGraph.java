@@ -34,6 +34,8 @@ public interface ControlFlowGraph {
 
   Block exitBlock();
 
+  boolean hasCompleteSemantic();
+
   interface Block {
     int id();
 

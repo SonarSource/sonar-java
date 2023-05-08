@@ -27,6 +27,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -47,6 +50,9 @@ import static org.sonar.java.cfg.CFGTestUtils.buildCFG;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.*;
 
 class CFGTest {
+
+  @RegisterExtension
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   static CFGChecker checker(BlockChecker... checkers) {
     return new CFGChecker(checkers);
@@ -3034,6 +3040,56 @@ class CFGTest {
         element(METHOD_INVOCATION)).successors(0).exceptions(0)
     );
     cfgChecker.check(cfg);
+  }
+
+  @Test
+  void test_semantic_completeness() {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
+    assertThat(buildCFG("void foo() { bar(); }              ").hasCompleteSemantic()).isFalse();
+    assertThat(buildCFG("void foo() { bar(); } void bar() {}").hasCompleteSemantic()).isTrue();
+    assertThat(buildCFG("int foo(int arg) { return unknown; }").hasCompleteSemantic()).isFalse();
+
+    assertThat(buildCFG("int foo(int arg) { return arg;     }").hasCompleteSemantic()).isTrue();
+
+    assertThat(buildCFG("void foo(boolean condition) { if (unknown)   {} }").hasCompleteSemantic()).isFalse();
+    assertThat(buildCFG("void foo(boolean condition) { if (condition) {} }").hasCompleteSemantic()).isTrue();
+
+    assertThat(buildCFG("Unknown foo() { return null; }").hasCompleteSemantic()).isFalse();
+    assertThat(buildCFG("Object  foo() { return null; }").hasCompleteSemantic()).isTrue();
+
+    assertThat(buildCFG("void foo(Unknown arg) { }").hasCompleteSemantic()).isFalse();
+    assertThat(buildCFG("void foo(Object  arg) { }").hasCompleteSemantic()).isTrue();
+
+    assertThat(buildCFG("void foo(String arg) { arg.unknown();  }").hasCompleteSemantic()).isFalse();
+    assertThat(buildCFG("void foo(String arg) { arg.toString(); }").hasCompleteSemantic()).isTrue();
+
+    assertThat(buildCFG("void foo() { Unknown x; }").hasCompleteSemantic()).isFalse();
+    assertThat(buildCFG("void foo() { Object  x; }").hasCompleteSemantic()).isTrue();
+
+    assertThat(buildCFG("void foo() { java.util.List<Unknown> x; }").hasCompleteSemantic()).isFalse();
+    assertThat(buildCFG("void foo() { java.util.List<Object>  x; }").hasCompleteSemantic()).isTrue();
+
+    assertThat(buildCFG("void foo(Unknown... args) { for(Object  arg : args) { } }").hasCompleteSemantic()).isFalse();
+    assertThat(buildCFG("void foo(Object...  args) { for(Unknown arg : args) { } }").hasCompleteSemantic()).isFalse();
+    assertThat(buildCFG("void foo(Object...  args) { for(Object  arg : args) { } }").hasCompleteSemantic()).isTrue();
+
+    assertThat(buildCFG("void foo() { Runnable ignoredLambda = () -> { Unknown x; }; }").hasCompleteSemantic()).isTrue();
+  }
+
+  @Test
+  void test_semantic_check_logs() {
+    logTester.setLevel(LoggerLevel.DEBUG);
+
+    logTester.clear();
+    assertThat(buildCFG("int foo(int arg) { return unknown; }").hasCompleteSemantic()).isFalse();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactly(
+      "Incomplete Semantic on A#foo line 1 col 37 IdentifierTree"
+    );
+
+    logTester.clear();
+    assertThat(buildCFG("int foo(int arg) { return arg; }").hasCompleteSemantic()).isTrue();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
   }
 
   private void build_partial_cfg(String breakOrContinue) {

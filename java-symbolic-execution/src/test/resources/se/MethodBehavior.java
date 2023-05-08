@@ -26,7 +26,7 @@ abstract class MethodBehavior {
 
   private native int nativeMethod();
 
-  public void publicMethod() {
+  public void publicMethod(boolean a) {
     boolean result = false;
     if(a) {
       result = bar(a);

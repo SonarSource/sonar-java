@@ -1,3 +1,7 @@
+import java.io.File;
+import java.util.Arrays;
+import java.util.function.UnaryOperator;
+
 class A0 {
   Object a;
   Object b;
@@ -87,14 +91,17 @@ class A0 {
 
   }
 
-  void lambdas() {
+  void lambdas(Object y) {
     foo(a -> a, x -> y);
+  }
+
+  private void foo(UnaryOperator<Object> arg1, UnaryOperator<Object> arg2) {
   }
 
   boolean booleanField;
   Object objectField1;
   Object objectField2;
-  boolean equals(Object obj) {
+  public boolean equals(Object obj) {
     if (obj == this) {
       return true;
     }
@@ -141,6 +148,9 @@ class DefaultValues {
       }
     }
   }
+  void manyStatementsLater() {}
+  void inTheGalaxyFarFarAway() {}
+  void variablesAreInitialized() {}
 }
 
 abstract class TestingOptionals {

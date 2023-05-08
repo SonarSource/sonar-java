@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
+import java.util.Collections;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -292,6 +293,12 @@ class NullPointerTest {
 
   }
 
+  void potentiallyRaiseException() {
+    if (Math.random() < 0.5d) {
+      throw new RuntimeException("Boom!");
+    }
+  }
+
   public void testLogicalAnd(String str, Object object) {
     if (object != null && object.hashCode() == 0) ; // Compliant
     if (object != null && object.hashCode() != 0 && object.hashCode() != 0) ; // Compliant
@@ -361,7 +368,7 @@ class NullPointerTest {
     Object value;
     Set<Object> set = null;
     Entry head = null;
-    for(Object entry : set.values()) { // Noncompliant {{A "NullPointerException" could be thrown; "set" is nullable here.}}
+    for(Object entry : set.toArray()) { // Noncompliant {{A "NullPointerException" could be thrown; "set" is nullable here.}}
       //all potential npe after this one are not raised as symbolic execution is cut.
       head.hashCode();
       value = null;
@@ -369,6 +376,13 @@ class NullPointerTest {
     }
     head.hashCode();
     value.hashCode();
+  }
+
+  class Entry {
+  }
+
+  static List<String> collectFoos() {
+    return Collections.emptyList();
   }
 
   public void testForEachLoopGood() {
@@ -382,7 +396,7 @@ class NullPointerTest {
     boolean[] foos = collectFoos();
     for (boolean foo : foos) {
       if (foo) {
-        println("true");
+        System.out.println("true");
       }
     }
   }
@@ -406,11 +420,14 @@ class NullPointerTest {
     a.toString();
   }
   protected Constructor constructor = null;
+  protected Object[] constructorValues = {};
   public Object newInstanceBis() throws IllegalAccessException, InstantiationException {
     if (constructor == null) {
       this.setDynaBeanClass();
     }
     return ((DynaBean) constructor.newInstance(constructorValues));
+  }
+  void setDynaBeanClass() {
   }
 
   public void testWhileLoop1() {
@@ -511,6 +528,9 @@ class NullPointerTest {
     }
     object1.hashCode(); // Compliant not executed because loop is always executed at least once and raising NPE
   }
+
+  boolean condition = Math.random() < 0.5d;
+
   public void testComplexLoop2(@Nullable Object nullableObject) {
     Object object2 = null, object21 = null, object22 = null;
     int i = 0;
@@ -631,13 +651,24 @@ class NullPointerTest {
     }
   }
 
-    void while_loop() {
+  boolean isCancelled() {
+    return Math.random() < 0.5d;
+  }
+
+  void while_loop() {
     Object currentParent = new Object();
     while (currentParent != null) {
       printState();
       currentParent.toString();
       currentParent = null;
     }
+  }
+
+  void printState() {
+  }
+
+  Object getValue() {
+    return new Object();
   }
 
   @Override
@@ -650,7 +681,7 @@ class NullPointerTest {
   }
 
   private void equalsToCheckForNull(Integer a) {
-    Objeect b = checkForNullMethod();
+    Object b = checkForNullMethod();
     if (a.equals(b)) {
       System.out.println("Found!");
     }
@@ -683,6 +714,10 @@ class NullPointerTest {
       throw ex; // Noncompliant {{A "NullPointerException" could be thrown; "ex" is nullable here.}}
     }
     return result;
+  }
+
+  Object parseObject(Object arg) {
+    return arg.toString();
   }
 
   private void bar(@Nullable Object v) {
@@ -733,6 +768,10 @@ class MyClass {
           "threadName");
         return null;
       });
+  }
+
+  Object getValue() {
+    return new Object();
   }
 
   boolean isLike(String s) {

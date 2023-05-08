@@ -19,7 +19,7 @@ public class ObjectsNullCheck {
     if (Objects.nonNull(x)) {
       x.toString(); // Compliant: x was checked for non null
     } else {
-      x.logNull(); // Noncompliant {{A "NullPointerException" could be thrown; "x" is nullable here.}}
+      x.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "x" is nullable here.}}
     }
   }
 
@@ -30,6 +30,9 @@ public class ObjectsNullCheck {
     } else {
       x.toString(); // Compliant: x was checked for non null
     }
+  }
+
+  void log(Object arg) {
   }
 
   public void testRequireNull(Supplier<String> supplier) {

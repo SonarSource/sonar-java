@@ -1,16 +1,17 @@
 import org.apache.commons.io.IOUtils;
 
-import javax.annotation.Nonnull;
+import java.io.*;
+import java.nio.file.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import java.io.*;
-import java.nio.file.*;
 import java.util.Formatter;
-import java.util.jar.JarFile;
+import java.util.List;
 import java.util.Properties;
-
+import java.util.function.Consumer;
+import java.util.jar.JarFile;
+import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
@@ -72,6 +73,10 @@ public class A {
       stream = new FileInputStream("WhileFile"+i); // Noncompliant {{Use try-with-resources or close this "FileInputStream" in a "finally" clause.}}
     }
     stream.close();
+  }
+
+  boolean needsMore() {
+    return Math.random() < 0.5d;
   }
 
   public void correctHandling() {
@@ -189,15 +194,14 @@ public class A {
   }
 
   public void closeTertiary2(String fileName) throws IOException {
-    // If getBufferedInputStream() fails, there is not way to close fileIn
-    InputStream fileIn = new FileInputStream(fileName); // Noncompliant
-    BufferedInputStream bufferIn = getBufferedInputStream();
-    Reader reader = new InputStreamReader(bufferIn, "UTF-16"); // Noncompliant {{Use try-with-resources or close this "InputStreamReader" in a "finally" clause.}}
+    InputStream fileIn = new FileInputStream(fileName); // false-negative
+    BufferedInputStream bufferIn = getBufferedInputStream(fileIn);
+    Reader reader = new InputStreamReader(bufferIn, "UTF-16");
     reader.read(); // can fail
     reader.close();
   }
 
-  private BufferedInputStream getBufferedInputStream() {
+  InputStream getBufferedInputStream(InputStream fileIn) {
     return new BufferedInputStream(fileIn);
   }
 
@@ -226,6 +230,9 @@ public class A {
     dispatch(stream);
   }
 
+  void dispatch(FileInputStream stream) {
+  }
+
   public InputStream methodReturned(List<Object> objects) {
     FileInputStream stream = new FileInputStream("myFile"); // Compliant since resource is returned (and can be closed elsewhere)
     return stream;
@@ -233,6 +240,10 @@ public class A {
   
   public int delegateCreatedStream(String fileName) {
     return process(new JarFile(fileName));    // Compliant since JAR file could be closed in method process
+  }
+
+  int process(JarFile file) {
+    return file.hashCode();
   }
   
   private InputStream instantiatedStream;
@@ -242,7 +253,7 @@ public class A {
   }
   
   public void wrappedAccess(InputStream stream) {
-    Reader reader = InputStreamReader(stream);  // Compliant since stream can be closed elsewhere, and thus reader
+    Reader reader = new InputStreamReader(stream);  // Compliant since stream can be closed elsewhere, and thus reader
     reader.read();
   }
   
@@ -251,13 +262,27 @@ public class A {
   }
 
   public void readDelegate(Delegate delegate) {
-    Reader reader = InputStreamReader(delegate.stream());  // Compliant since obtained stream can be closed elsewhere, and thus reader
+    Reader reader = new InputStreamReader(delegate.stream());  // Compliant since obtained stream can be closed elsewhere, and thus reader
     reader.read();
+  }
+
+  class Delegate {
+    InputStream stream() {
+      return new FileInputStream("foo.txt");
+    }
+    OutputStream outputStream() {
+      return new FileOutputStream("foo.txt");
+    }
+  }
+  class Payload {
+    Stream<Object> rawContent() {
+      return Stream.of(new Object());
+    }
   }
 
   private Delegate response;
   protected void writeEventStream(Payload payload) throws IOException {
-    PrintStream printStream = new PrintStream(response.outputStream()); // Noncompliant
+    PrintStream printStream = new PrintStream(response.outputStream()); // false-negative
 
     try (Stream<?> stream = (Stream<?>) payload.rawContent()) {
       stream.forEach(item -> {
@@ -282,6 +307,10 @@ public class A {
     }
   }
 
+  void closeJar(JarFile jar) {
+    jar.close();
+  }
+
   public void getDirectivesFromFile(File aFile) {
     BufferedReader reader = null;
     try {
@@ -293,17 +322,42 @@ public class A {
   }
   
   public InputStream getStreamAsNewInstanceArgument(@Nonnull String obj) throws IOException {
-    String key = getKey(Obj);
+    String key = getKey(obj);
     try {
       lock();
       Path path = getCacheCopy(key);
       if (path == null) {
-        return ull;
+        return null;
       }
       return new DeleteFileOnCloseInputStream(new FileInputStream(path.toFile()), path);
     } finally {
       unlock();
     }
+  }
+
+  void lock() {
+  }
+
+  String getKey(String obj) {
+    return obj.toString();
+  }
+
+  Path getCacheCopy(String key) {
+    return Paths.get(key);
+  }
+
+  class DeleteFileOnCloseInputStream extends ObjectInputStream {
+    Path path;
+    DeleteFileOnCloseInputStream(InputStream in, Path path) {
+      super(in);
+      this.path = path;
+    }
+    public void close() {
+      Files.delete(path);
+    }
+  }
+
+  void unlock() {
   }
 
   public void checkPath(String fileName) throws IOException {
@@ -332,18 +386,18 @@ public class A {
     writer.close();
   }
 
-  public void methodDispatch(List<Object> objects) {
+  public void methodDispatch2(List<Object> objects) {
     FileInputStream stream = new FileInputStream("myFile"); // Compliant since can be closed in method call
     dispatch(stream);
   }
 
-  public InputStream methodReturned(List<Object> objects) {
+  public InputStream methodReturned2(List<Object> objects) {
     FileInputStream stream = new FileInputStream("myFile"); // Compliant since resource is returned (and can be closed elsewhere)
     return stream;
   }
 
   public void doWhile() {
-    j = 0;
+    int j = 0;
     FileInputStream fis = null;
     do {
       fis = new FileInputStream(""); // Noncompliant {{Use try-with-resources or close this "FileInputStream" in a "finally" clause.}}
@@ -361,6 +415,9 @@ public class A {
     }
     is.close();
   }
+
+  enum ABC { A, B, C }
+  ABC enumValue;
 
   void switchMultipleOpen() {
     Writer w7;
@@ -381,7 +438,7 @@ public class A {
       // ...
     }
   }
-  void  foo() {
+  void  foo(String fileName) {
     try {
       java.util.zip.ZipFile file = new java.util.zip.ZipFile(fileName);
       try {
@@ -414,6 +471,14 @@ public class A {
       Foo.close(is);
     }
   }
+  class Foo {
+    static void close(InputStream is) {
+      is.close();
+    }
+    static void closeQuietly(InputStream is) {
+      is.close();
+    }
+  }
 
   public void methodNamedCloseQuietly() throws FileNotFoundException {
     FileInputStream is = new FileInputStream("/tmp/foo"); // Noncompliant
@@ -424,7 +489,7 @@ public class A {
     }
   }
 
-  public void methodNamedCloseQuietly() throws FileNotFoundException {
+  public void methodNamedCloseQuietly2() throws FileNotFoundException {
     FileInputStream is = new FileInputStream("/tmp/foo"); // Compliant - used as parameter of closeQuietly method
     try {
     } finally {
@@ -487,7 +552,7 @@ class MyCloseable implements Closeable {
 
 class B {
   static <T> T getNullableResource(T param){
-    return unknownMethod();
+    return (T) param.clone();
   }
 }
 
@@ -508,8 +573,8 @@ class Trans {
     FileOutputStream fos = null;
 
     try {
-      fis = new FileInputStream();
-      fos = new FileOutputStream();
+      fis = new FileInputStream("/path");
+      fos = new FileOutputStream("/path");
     } catch (IOException e) {
       // empty catch block
     } finally {
@@ -556,6 +621,12 @@ abstract class Utils {
   abstract OutputStream newOutputStream();
 }
 class nestedFinally {
+  class Logger {
+    void error(String message, Object... args) {
+    }
+  }
+  static Logger LOG = new Logger();
+
   void foo() {
     try {
       FileInputStream fis = null;

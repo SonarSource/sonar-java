@@ -1,19 +1,22 @@
 abstract class A {
 
+  boolean cond = Math.random() < 0.5d;
+
+
   // yield [arg -> true] has two flows
-  private void one_yield_two_flows(boolean arg) {  // flow@xproc1 [[order=2]] {{Implies 'arg' has the same value as 'a'.}} flow@xproc2 [[order=2]] {{Implies 'arg' has the same value as 'a'.}}
+  private void one_yield_two_flows(boolean arg) {  // flow@xproc1 [[order=2]] {{Implies 'arg' has the same value as 'a'.}}
     if (cond) {
       if (arg) return;  // flow@xproc1 [[order=3]] {{Implies 'arg' is true.}}
     } else {
-      if (arg) return;  // flow@xproc2 [[order=3]] {{Implies 'arg' is true.}}
+      if (arg) return;
     }
     throw new RuntimeException();
   }
 
   void test(boolean a) {
-    one_yield_two_flows(a); // flow@xproc1 [[order=1]] {{'a' is passed to 'one_yield_two_flows()'.}} flow@xproc1 [[order=4]] {{Implies 'a' is true.}} flow@xproc2 [[order=1]] {{'a' is passed to 'one_yield_two_flows()'.}} flow@xproc2 [[order=4]] {{Implies 'a' is true.}}
-    // Noncompliant@+1 [[flows=xproc1,xproc2]]
-    if (a) { // flow@xproc1 [[order=5]] {{Expression is always true.}} flow@xproc2 [[order=5]] {{Expression is always true.}}
+    one_yield_two_flows(a); // flow@xproc1 [[order=1]] {{'a' is passed to 'one_yield_two_flows()'.}} flow@xproc1 [[order=4]] {{Implies 'a' is true.}}
+    // Noncompliant@+1 [[flows=xproc1]]
+    if (a) { // flow@xproc1 [[order=5]] {{Expression is always true.}}
     }
   }
 

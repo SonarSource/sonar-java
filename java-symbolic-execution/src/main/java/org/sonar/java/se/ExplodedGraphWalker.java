@@ -226,6 +226,9 @@ public class ExplodedGraphWalker {
     CFG cfg = (CFG) tree.cfg();
     exitBlock = cfg.exitBlock();
     cfgDuration.stop();
+    if (!cfg.hasCompleteSemantic()) {
+      return;
+    }
 
     checkerDispatcher.init(tree, cfg);
 

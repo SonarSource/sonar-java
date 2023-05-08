@@ -108,13 +108,13 @@ abstract class A {
 
   private Object test_unknown_exception() throws ExA {
     try {
-      return unknown_method(); // flow@unknown {{Exception is thrown.}}
-    } catch (UnknownException ex) { // flow@unknown {{Exception is caught.}}
+      return unknown_method();
+    } catch (UnknownException ex) {
       return null;
     }
   }
 
   private void test_unknown() throws ExA {
-    test_unknown_exception().toString(); // Noncompliant [[flows=unknown]] flow@unknown {{'test_unknown_exception()' can return null.}} flow@unknown {{Result of 'test_unknown_exception()' is dereferenced.}}
+    test_unknown_exception().toString(); // Compliant unknown identifiers in test_unknown_exception
   }
 }
