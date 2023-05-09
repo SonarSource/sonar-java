@@ -6,7 +6,8 @@
     "constantCost": "10min"
   },
   "tags": [
-    "java8"
+    "java8",
+    "symbolic-execution"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-3958",

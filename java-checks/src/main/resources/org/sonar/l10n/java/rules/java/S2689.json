@@ -7,7 +7,8 @@
     "constantCost": "1h"
   },
   "tags": [
-    "serialization"
+    "serialization",
+    "symbolic-execution"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2689",

@@ -7,7 +7,8 @@
     "constantCost": "0min"
   },
   "tags": [
-    "denial-of-service"
+    "denial-of-service",
+    "symbolic-execution"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-3546",

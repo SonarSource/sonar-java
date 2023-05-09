@@ -10,7 +10,8 @@
     "cwe",
     "leak",
     "denial-of-service",
-    "cert"
+    "cert",
+    "symbolic-execution"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2095",

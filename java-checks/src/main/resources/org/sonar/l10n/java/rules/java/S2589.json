@@ -9,7 +9,8 @@
   "tags": [
     "cwe",
     "suspicious",
-    "redundant"
+    "redundant",
+    "symbolic-execution"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2589",

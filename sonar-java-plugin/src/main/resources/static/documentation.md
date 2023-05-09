@@ -126,6 +126,9 @@ or if you use Gradle
 
 where `src/main/webapp` is the directory which contains `.jsp` or Thymeleaf's `.html` files. 
 
+## Implementation Related Rule Tags
+* <!-- sonarcloud -->[`symbolic-execution`](https://rules.sonarsource.com/java/tag/symbolic-execution)<!-- /sonarcloud --><!-- sonarqube -->[`symbolic-execution`](/#sonarqube#/coding_rules?tags=symbolic-execution)<!-- /sonarqube -->: This tag is for rules that reason about the state of the program using data flow analysis. They usually work together to find path-sensitive bugs and vulnerabilities. As soon as an issue is raised, the symbolic execution (SE) analysis of the current path will stop. For that reason, it is not recommended to evaluate these rules independently of each other as it can give a false sense of undetected issues. It is important to keep in mind that SE can never achieve perfection, so we are always working on improving these rules.  Finally, note that the Java rules relying on the SE engine operate cross-procedurally in certain circumstances. In particular, all non-overridable methods defined in the same file as the method under analysis and called from within the method's body, will be explored and learned from. Behaviors of overridable methods will be approximated.
+
 ## Related Pages
 
 * [Test Coverage & Execution](/analysis/coverage/) (JaCoCo, Surefire)

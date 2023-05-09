@@ -155,6 +155,8 @@ public class JavaSensor implements Sensor {
       .map(SECheck.class::cast)
       .collect(Collectors.toList());
     if (seChecks.isEmpty()) {
+      LOG.info("No rules with 'symbolic-execution' tag were enabled,"
+        + " the Symbolic Execution Engine will not run during the analysis.");
       return checks.toArray(new JavaCheck[0]);
     }
     List<JavaCheck> newList = new ArrayList<>(checks);
