@@ -87,6 +87,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
@@ -135,13 +136,11 @@ public class CFG implements ControlFlowGraph {
   private Map<String, Block> labelsBreakTarget = new HashMap<>();
   private Map<String, Block> labelsContinueTarget = new HashMap<>();
 
-  private CFG(List<? extends Tree> trees, @Nullable Symbol.MethodSymbol symbol, boolean ignoreBreakAndContinue) {
-    Tree location = symbol != null ? symbol.declaration() : null;
-    if (location == null && !trees.isEmpty()) {
-      location = trees.get(0);
+  private CFG(List<? extends Tree> trees, @Nullable MethodTree tree, boolean ignoreBreakAndContinue) {
+    if (tree != null) {
+      methodSymbol = tree.symbol();
+      checkSymbolSemantic(methodSymbol, "method definition", tree.simpleName().identifierToken());
     }
-    checkMethodSymbolSemantic(symbol, location, "MethodTree");
-    methodSymbol = symbol;
     this.ignoreBreakAndContinue = ignoreBreakAndContinue;
     exitBlocks.add(createBlock());
     currentBlock = createBlock(exitBlock());
@@ -158,50 +157,45 @@ public class CFG implements ControlFlowGraph {
     return hasCompleteSemantic;
   }
 
-  private void checkMethodSymbolSemantic(@Nullable Symbol.MethodSymbol methodSymbol, @Nullable Tree location, String locationDescription) {
-    checkSymbolSemantic(methodSymbol, location, locationDescription);
-    if (methodSymbol != null && !methodSymbol.isUnknown()) {
-      checkSymbolSemantic(methodSymbol.returnType(), location, "MethodSymbol return type");
-      methodSymbol.parameterTypes().forEach(param -> checkTypeSemantic(param, location, "MethodSymbol parameters"));
+  private void checkIdentifierSemantic(IdentifierTree tree) {
+    checkSymbolSemantic(tree.symbol(), "unknown identifier", tree.identifierToken());
+  }
+
+  private void checkSymbolSemantic(@Nullable Symbol symbol, String reason, @Nullable SyntaxToken location) {
+    if (symbol != null) {
+      if (symbol.isUnknown()) {
+        markSemanticAsIncomplete(reason, location);
+      } else if (symbol instanceof Symbol.MethodSymbol) {
+        Symbol.MethodSymbol method = (Symbol.MethodSymbol) symbol;
+        if (method.returnType().isUnknown()) {
+          markSemanticAsIncomplete("unknown return type", location);
+        } else if (method.parameterTypes().stream().anyMatch(Type::isUnknown)) {
+          markSemanticAsIncomplete("unknown parameter type", location);
+        }
+      }
     }
   }
 
-  private void checkSymbolSemantic(@Nullable Symbol symbol, @Nullable Tree location, String locationDescription) {
-    if (symbol != null && symbol.isUnknown()) {
-      markSemanticAsIncomplete(location, locationDescription);
-    }
-  }
-
-  private Type checkTypeSemantic(Type type, @Nullable Tree location, String locationDescription) {
+  private Type checkTypeSemantic(Type type, String reason, @Nullable SyntaxToken location) {
     if (type.isUnknown()) {
-      markSemanticAsIncomplete(location, locationDescription);
+      markSemanticAsIncomplete(reason, location);
     }
     return type;
   }
 
-  private void markSemanticAsIncomplete(@Nullable Tree location, String locationDescription) {
-    hasCompleteSemantic = false;
-    if (LOG.isDebugEnabled()) {
-      StringBuilder logMessage = new StringBuilder();
-      logMessage.append("Incomplete Semantic on ");
-      if (methodSymbol != null) {
-        Symbol owner = methodSymbol.owner();
-        if (owner != null) {
-          logMessage.append(owner.name());
+  private void markSemanticAsIncomplete(String reason, @Nullable SyntaxToken location) {
+    if (hasCompleteSemantic) {
+      hasCompleteSemantic = false;
+      if (LOG.isDebugEnabled()) {
+        StringBuilder logMessage = new StringBuilder();
+        logMessage.append("Incomplete Semantic, ").append(reason);
+        if (location != null) {
+          logMessage.append(" '").append(location.text()).append("'");
+          Position position = location.range().start();
+          logMessage.append(" line ").append(position.line()).append(" col ").append(position.column());
         }
-        logMessage.append("#").append(methodSymbol.name());
+        LOG.debug(logMessage.toString());
       }
-      Tree effectiveLocation = location;
-      if (effectiveLocation == null && methodSymbol != null) {
-        effectiveLocation = methodSymbol.declaration();
-      }
-      SyntaxToken firstToken = effectiveLocation != null ? effectiveLocation.firstToken() : null;
-      if (firstToken != null) {
-        Position position = firstToken.range().start();
-        logMessage.append(" line ").append(position.line()).append(" col ").append(position.column());
-      }
-      logMessage.append(" ").append(locationDescription);
-      LOG.debug(logMessage.toString());
     }
   }
 
@@ -504,7 +498,7 @@ public class CFG implements ControlFlowGraph {
   public static CFG build(MethodTree tree) {
     BlockTree block = tree.block();
     Preconditions.checkArgument(block != null, "Cannot build CFG for method with no body.");
-    return new CFG(block.body(), tree.symbol(), false);
+    return new CFG(block.body(), tree, false);
   }
 
   private void build(ListTree<? extends Tree> trees) {
@@ -679,7 +673,7 @@ public class CFG implements ControlFlowGraph {
         currentBlock.elements.add(tree);
         break;
       case IDENTIFIER:
-        checkSymbolSemantic(((IdentifierTree) tree).symbol(), tree, "IdentifierTree");
+        checkIdentifierSemantic((IdentifierTree) tree);
         currentBlock.elements.add(tree);
         break;
       case NULL_PATTERN:
@@ -703,16 +697,16 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildMethodInvocation(MethodInvocationTree mit) {
-    ExpressionTree methodSelect = mit.methodSelect();
-    checkMethodSymbolSemantic(mit.methodSymbol(), methodSelect, "MethodInvocationTree");
-    handleExceptionalPaths(mit.methodSymbol(), methodSelect);
+    SyntaxToken location = mit.methodSelect().lastToken();
+    checkSymbolSemantic(mit.methodSymbol(), "method invocation", location);
+    handleExceptionalPaths(mit.methodSymbol(), location);
     currentBlock.elements.add(mit);
     build(mit.arguments());
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
+    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) mit.methodSelect();
       build(memberSelect.expression());
     } else {
-      build(methodSelect);
+      build(mit.methodSelect());
     }
   }
 
@@ -755,7 +749,7 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildVariable(VariableTree tree) {
-    checkTypeSemantic(tree.type().symbolType(), tree.type(), "TypeTree");
+    checkTypeSemantic(tree.type().symbolType(), "unknown variable type", tree.type().firstToken());
     currentBlock.elements.add(tree);
     ExpressionTree initializer = tree.initializer();
     if (initializer != null) {
@@ -1069,7 +1063,8 @@ public class CFG implements ControlFlowGraph {
       buildVariable(catchTree.parameter());
       currentBlock.isCatchBlock = true;
       enclosedByCatch.pop();
-      tryStatement.addCatch(checkTypeSemantic(catchTree.parameter().type().symbolType(), catchTree.parameter().type(), "TypeTree"), currentBlock);
+      TypeTree type = catchTree.parameter().type();
+      tryStatement.addCatch(checkTypeSemantic(type.symbolType(), "catch parameter type", type.firstToken()), currentBlock);
     }
     currentBlock = beforeFinally;
     build(tryStatementTree.block());
@@ -1090,7 +1085,7 @@ public class CFG implements ControlFlowGraph {
     TryStatement enclosingTryCatch = enclosingTry.peek();
     if(enclosingTryCatch != null){
       jumpTo = enclosingTryCatch.catches.keySet().stream()
-        .filter(t -> checkTypeSemantic(throwStatementTree.expression().symbolType(), throwStatementTree.expression(), "ThrowStatementTree.expression()").isSubtypeOf(t))
+        .filter(t -> checkTypeSemantic(throwStatementTree.expression().symbolType(), "thrown expression", throwStatementTree.expression().firstToken()).isSubtypeOf(t))
         .findFirst()
         .map(t -> enclosingTryCatch.catches.get(t))
         .orElse(exitBlock());
@@ -1126,8 +1121,9 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildNewClass(NewClassTree tree) {
-    checkMethodSymbolSemantic(tree.methodSymbol(), tree, "NewClassTree");
-    handleExceptionalPaths(tree.methodSymbol(), tree);
+    SyntaxToken location = tree.identifier().lastToken();
+    checkSymbolSemantic(tree.methodSymbol(), "new class", location);
+    handleExceptionalPaths(tree.methodSymbol(), location);
     currentBlock.elements.add(tree);
     build(tree.arguments());
     ExpressionTree enclosingExpression = tree.enclosingExpression();
@@ -1136,7 +1132,7 @@ public class CFG implements ControlFlowGraph {
     }
   }
 
-  private void handleExceptionalPaths(Symbol.MethodSymbol symbol, @Nullable Tree location) {
+  private void handleExceptionalPaths(Symbol.MethodSymbol symbol, @Nullable SyntaxToken location) {
     TryStatement pop = enclosingTry.pop();
     TryStatement tryStatement;
     Block exceptionPredecessor = currentBlock;
@@ -1156,7 +1152,7 @@ public class CFG implements ControlFlowGraph {
     if (!symbol.isUnknown()) {
       List<Type> thrownTypes = symbol.thrownTypes();
       thrownTypes.forEach(thrownType -> {
-        checkTypeSemantic(thrownType, location, "thrown types");
+        checkTypeSemantic(thrownType, "thrown types", location);
         for (Type caughtType : tryStatement.catches.keySet()) {
           if (thrownType.isSubtypeOf(caughtType) ||
             caughtType.isSubtypeOf(thrownType) ||
@@ -1267,7 +1263,6 @@ public class CFG implements ControlFlowGraph {
   }
 
   public void setMethodSymbol(Symbol.MethodSymbol methodSymbol) {
-    checkMethodSymbolSemantic(methodSymbol, methodSymbol.declaration(), "MethodTree");
     this.methodSymbol = methodSymbol;
   }
 

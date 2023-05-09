@@ -47,6 +47,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.java.cfg.CFGTestUtils.buildCFG;
+import static org.sonar.java.cfg.CFGTestUtils.buildCFGFromLambda;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.*;
 
 class CFGTest {
@@ -3044,52 +3045,52 @@ class CFGTest {
 
   @Test
   void test_semantic_completeness() {
-    logTester.setLevel(LoggerLevel.DEBUG);
+    assertCompleteSemantic("void foo() { bar(); } void bar() {}", true);
+    assertCompleteSemantic("void foo() { bar(); }", false, "Incomplete Semantic, method invocation 'bar' line 1 col 24");
 
-    assertThat(buildCFG("void foo() { bar(); }              ").hasCompleteSemantic()).isFalse();
-    assertThat(buildCFG("void foo() { bar(); } void bar() {}").hasCompleteSemantic()).isTrue();
-    assertThat(buildCFG("int foo(int arg) { return unknown; }").hasCompleteSemantic()).isFalse();
+    assertCompleteSemantic("int foo(int arg) { return arg;     }", true);
+    assertCompleteSemantic("int foo(int arg) { return unknown; }", false, "Incomplete Semantic, unknown identifier 'unknown' line 1 col 37");
 
-    assertThat(buildCFG("int foo(int arg) { return arg;     }").hasCompleteSemantic()).isTrue();
 
-    assertThat(buildCFG("void foo(boolean condition) { if (unknown)   {} }").hasCompleteSemantic()).isFalse();
-    assertThat(buildCFG("void foo(boolean condition) { if (condition) {} }").hasCompleteSemantic()).isTrue();
+    assertCompleteSemantic("void foo(boolean condition) { if (condition) {} }", true);
+    assertCompleteSemantic("void foo(boolean condition) { if (unknown)   {} }", false, "Incomplete Semantic, unknown identifier 'unknown' line 1 col 45");
 
-    assertThat(buildCFG("Unknown foo() { return null; }").hasCompleteSemantic()).isFalse();
-    assertThat(buildCFG("Object  foo() { return null; }").hasCompleteSemantic()).isTrue();
+    assertCompleteSemantic("Object  foo() { return null; }", true);
+    assertCompleteSemantic("Unknown foo() { return null; }", false, "Incomplete Semantic, unknown return type 'foo' line 1 col 19");
 
-    assertThat(buildCFG("void foo(Unknown arg) { }").hasCompleteSemantic()).isFalse();
-    assertThat(buildCFG("void foo(Object  arg) { }").hasCompleteSemantic()).isTrue();
+    assertCompleteSemantic("void foo(Object  arg) { }", true);
+    assertCompleteSemantic("void foo(Unknown arg) { }", false, "Incomplete Semantic, unknown parameter type 'foo' line 1 col 16");
 
-    assertThat(buildCFG("void foo(String arg) { arg.unknown();  }").hasCompleteSemantic()).isFalse();
-    assertThat(buildCFG("void foo(String arg) { arg.toString(); }").hasCompleteSemantic()).isTrue();
+    assertCompleteSemantic("void foo(String arg) { arg.toString(); }", true);
+    assertCompleteSemantic("void foo(String arg) { arg.unknown();  }", false, "Incomplete Semantic, method invocation 'unknown' line 1 col 38");
 
-    assertThat(buildCFG("void foo() { Unknown x; }").hasCompleteSemantic()).isFalse();
-    assertThat(buildCFG("void foo() { Object  x; }").hasCompleteSemantic()).isTrue();
+    assertCompleteSemantic("void foo() { Object  x; }", true);
+    assertCompleteSemantic("void foo() { Unknown x; }", false, "Incomplete Semantic, unknown variable type 'Unknown' line 1 col 24");
 
-    assertThat(buildCFG("void foo() { java.util.List<Unknown> x; }").hasCompleteSemantic()).isFalse();
-    assertThat(buildCFG("void foo() { java.util.List<Object>  x; }").hasCompleteSemantic()).isTrue();
+    assertCompleteSemantic("void foo() { java.util.List<Object>  x; }", true);
+    assertCompleteSemantic("void foo() { java.util.List<Unknown> x; }", false, "Incomplete Semantic, unknown variable type 'java' line 1 col 24");
 
-    assertThat(buildCFG("void foo(Unknown... args) { for(Object  arg : args) { } }").hasCompleteSemantic()).isFalse();
-    assertThat(buildCFG("void foo(Object...  args) { for(Unknown arg : args) { } }").hasCompleteSemantic()).isFalse();
-    assertThat(buildCFG("void foo(Object...  args) { for(Object  arg : args) { } }").hasCompleteSemantic()).isTrue();
+    assertCompleteSemantic("void foo(Object...  args) { for(Object  arg : args) { } }", true);
+    assertCompleteSemantic("void foo(Unknown... args) { for(Object  arg : args) { } }", false, "Incomplete Semantic, unknown parameter type 'foo' line 1 col 16");
+    assertCompleteSemantic("void foo(Object...  args) { for(Unknown arg : args) { } }", false, "Incomplete Semantic, unknown variable type 'Unknown' line 1 col 43");
 
-    assertThat(buildCFG("void foo() { Runnable ignoredLambda = () -> { Unknown x; }; }").hasCompleteSemantic()).isTrue();
+    assertCompleteSemantic("void foo() { Runnable ignoredLambdaContent = () -> { Unknown x; };  }", true);
+    assertCompleteSemantic("void foo() { class IgnoredNestedClass { void foo() { Unknown x; } } }", true);
   }
 
+
   @Test
-  void test_semantic_check_logs() {
+  void test_semantic_completeness_inside_lambda() {
+    assertThat(buildCFGFromLambda("I i = () -> { return; };").hasCompleteSemantic()).isTrue();
+    assertThat(buildCFGFromLambda("I i = () -> { foo(); }; ").hasCompleteSemantic()).isFalse();
+  }
+
+  void assertCompleteSemantic(String code, boolean hasCompleteSemantic, String... debugLogs) {
     logTester.setLevel(LoggerLevel.DEBUG);
-
     logTester.clear();
-    assertThat(buildCFG("int foo(int arg) { return unknown; }").hasCompleteSemantic()).isFalse();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactly(
-      "Incomplete Semantic on A#foo line 1 col 37 IdentifierTree"
-    );
-
-    logTester.clear();
-    assertThat(buildCFG("int foo(int arg) { return arg; }").hasCompleteSemantic()).isTrue();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
+    CFG cfg = buildCFG(code);
+    assertThat(cfg.hasCompleteSemantic()).isEqualTo(hasCompleteSemantic);
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactly(debugLogs);
   }
 
   private void build_partial_cfg(String breakOrContinue) {
