@@ -244,14 +244,10 @@ public class ExplodedGraphWalker {
     endOfExecutionPath = new LinkedHashSet<>();
     programState = ProgramState.EMPTY_STATE;
     steps = 0;
-    for (ProgramState startingState : startingStates(tree, programState)) {
-      enqueue(new ProgramPoint(cfg.entryBlock()), startingState);
-    }
+    enqueueStartingStates(tree, cfg);
     while (!workList.isEmpty()) {
       steps++;
-      if (steps > maxSteps()) {
-        throwMaxSteps(tree);
-      }
+      throwExceptionIfMaxStepsHasBeenReached(tree);
       // LIFO:
       setNode(workList.removeFirst());
       CFG.Block block = (CFG.Block) programPosition.block;
@@ -300,6 +296,12 @@ public class ExplodedGraphWalker {
     constraintManager = null;
   }
 
+  private void enqueueStartingStates(MethodTree tree, CFG cfg) {
+    for (ProgramState startingState : startingStates(tree, programState)) {
+      enqueue(new ProgramPoint(cfg.entryBlock()), startingState);
+    }
+  }
+
   private void throwTooManyTransitiveRelationsException(MethodTree tree, RelationalSymbolicValue.TransitiveRelationExceededException e) {
     String message = String.format("reached maximum number of transitive relations generated for method %s in class %s",
       tree.simpleName().name(), tree.symbol().owner().name());
@@ -316,12 +318,14 @@ public class ExplodedGraphWalker {
     throw cause;
   }
 
-  private void throwMaxSteps(MethodTree tree) {
-    String message = String.format("reached limit of %d steps for method %s#%d in class %s",
-      maxSteps(), tree.simpleName().name(), LineUtils.startLine(tree.simpleName()), tree.symbol().owner().name());
-    MaximumStepsReachedException cause = new MaximumStepsReachedException(message);
-    interrupted(cause);
-    throw cause;
+  private void throwExceptionIfMaxStepsHasBeenReached(MethodTree tree) {
+    if (steps > maxSteps()) {
+      String message = String.format("reached limit of %d steps for method %s#%d in class %s",
+        maxSteps(), tree.simpleName().name(), LineUtils.startLine(tree.simpleName()), tree.symbol().owner().name());
+      MaximumStepsReachedException cause = new MaximumStepsReachedException(message);
+      interrupted(cause);
+      throw cause;
+    }
   }
 
   private void interrupted(Exception cause) {
