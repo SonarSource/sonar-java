@@ -7,6 +7,10 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 class A {
+  @CheckForNull
+  public static Object[] checkForNullField = null;
+  private static String relativePath = "";
+
  public void testCheckNotNull2(@CheckForNull Object parameter) {
     long remainingNanos = 0;
     final long endNanos = remainingNanos > 0 ? System.nanoTime() + remainingNanos : 0; // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
@@ -67,6 +71,13 @@ class A {
     printState();
   }
 
+  private static boolean bar() {
+    return Math.random() > 05d;
+  }
+
+  private static void printState() {
+  }
+
   public void continue_foreach(boolean a, boolean b, Map<String, String> map) {
     for (String prop : map.keySet()) {
       if (b) {
@@ -91,8 +102,8 @@ class A {
     return (!bool && a) || (bool && b);
   }
 
-  private static void zip(Object dir, String s) throws IOException {
-    for (String n : dir.list(barqix() ? "**" : "")) {
+  private static void zip(List<String> dir, String s) throws IOException {
+    for (String n : dir.subList(bar() ? 0 : 1, dir.size())) {
       if (s.isEmpty()) {
         relativePath = n;
       }
@@ -121,18 +132,23 @@ class A {
     object2.toString(); // not accessible with null value
   }
 
-  void assignUnknownSymbol() {
-    unknown |= false;
+  Object potentiallyRaiseException()  {
+    if (bar()) {
+      throw new RuntimeException();
+    }
+    return new Object();
   }
-  
+
   void testDoWhile() {
     Object check = null;
     do {
-      
+
     } while (check == null);  // Noncompliant
   }
 
   public void exitPathWithBranch(boolean fooCalled) {
+    class Bar {
+    }
     Object bar;
     try {
       bar = new Bar();
@@ -195,7 +211,9 @@ final class B {
 }
 
 final class C {
-  private void bar(Object u) {
+  private static String NOT_FOUND_FORMAT = "%s, %s";
+
+  private String bar(Object u) {
     badRequestIfNullResult(u, "", "");
     return u.toString();
   }

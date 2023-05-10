@@ -1,3 +1,5 @@
+import com.google.common.base.CaseFormat;
+
 class A {
   String convert(CaseFormat format, String s) {
     // deal with camel conversion
@@ -18,5 +20,13 @@ class A {
     return (i == 0)
       ? format.normalizeFirstWord(s)
       : out.append(format.normalizeWord(s.substring(i))).toString();
+  }
+
+  String wordSeparator = ",";
+  WordBoundary wordBoundary = new WordBoundary();
+  class WordBoundary {
+    int indexIn(String s, int j) {
+      return (int) (Math.random() * 100);
+    }
   }
 }

@@ -38,11 +38,10 @@ public class ConditionAlwaysTrueOrFalseCheckReporting {
   void reporting() {
     boolean a = true;
     boolean b = true;
-    if (unknown() && a // Noncompliant [[sc=22;ec=23]]
-      && b) { // Noncompliant [[sc=10;ec=11]]
+    if (unknown() && a && b) {  // Compliant, method contains unknown symbols
     }
 
-    if (unknown() && a) { // Noncompliant [[sc=22;ec=23]]
+    if (unknown() && a) {  // Compliant, method contains unknown symbols
     }
   }
 

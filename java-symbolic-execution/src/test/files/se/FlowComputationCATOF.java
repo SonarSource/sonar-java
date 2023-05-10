@@ -27,6 +27,9 @@ class A {
     }
   }
 
+  void log(Object arg) {
+  }
+
   public void catof2b() {
     Object foo = getNull(); // flow@catof2b {{'getNull()' returns null.}}  flow@catof2b {{Implies 'foo' is null.}}
     if (foo == null) {  // Noncompliant [[flows=catof2b]] {{Change this condition so that it does not always evaluate to "true"}} flow@catof2b {{Expression is always true.}}

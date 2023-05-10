@@ -33,10 +33,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.Preconditions;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -78,11 +81,13 @@ import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
@@ -91,10 +96,13 @@ import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class CFG implements ControlFlowGraph {
 
+  private static final Logger LOG = Loggers.get(CFG.class);
+
   private final boolean ignoreBreakAndContinue;
   @Nullable
   private Symbol.MethodSymbol methodSymbol;
   private Block currentBlock;
+  private boolean hasCompleteSemantic = true;
 
   /**
    * List of all blocks in order they were created.
@@ -128,8 +136,11 @@ public class CFG implements ControlFlowGraph {
   private Map<String, Block> labelsBreakTarget = new HashMap<>();
   private Map<String, Block> labelsContinueTarget = new HashMap<>();
 
-  private CFG(List<? extends Tree> trees, @Nullable Symbol.MethodSymbol symbol, boolean ignoreBreakAndContinue) {
-    methodSymbol = symbol;
+  private CFG(List<? extends Tree> trees, @Nullable MethodTree tree, boolean ignoreBreakAndContinue) {
+    if (tree != null) {
+      methodSymbol = tree.symbol();
+      checkSymbolSemantic(methodSymbol, "method definition", tree.simpleName().identifierToken());
+    }
     this.ignoreBreakAndContinue = ignoreBreakAndContinue;
     exitBlocks.add(createBlock());
     currentBlock = createBlock(exitBlock());
@@ -139,6 +150,53 @@ public class CFG implements ControlFlowGraph {
     build(trees);
     prune();
     computePredecessors(blocks);
+  }
+
+  @Override
+  public boolean hasCompleteSemantic() {
+    return hasCompleteSemantic;
+  }
+
+  private void checkIdentifierSemantic(IdentifierTree tree) {
+    checkSymbolSemantic(tree.symbol(), "unknown identifier", tree.identifierToken());
+  }
+
+  private void checkSymbolSemantic(@Nullable Symbol symbol, String reason, @Nullable SyntaxToken location) {
+    if (symbol != null) {
+      if (symbol.isUnknown()) {
+        markSemanticAsIncomplete(reason, location);
+      } else if (symbol instanceof Symbol.MethodSymbol) {
+        Symbol.MethodSymbol method = (Symbol.MethodSymbol) symbol;
+        if (method.returnType().isUnknown()) {
+          markSemanticAsIncomplete("unknown return type", location);
+        } else if (method.parameterTypes().stream().anyMatch(Type::isUnknown)) {
+          markSemanticAsIncomplete("unknown parameter type", location);
+        }
+      }
+    }
+  }
+
+  private Type checkTypeSemantic(Type type, String reason, @Nullable SyntaxToken location) {
+    if (type.isUnknown()) {
+      markSemanticAsIncomplete(reason, location);
+    }
+    return type;
+  }
+
+  private void markSemanticAsIncomplete(String reason, @Nullable SyntaxToken location) {
+    if (hasCompleteSemantic) {
+      hasCompleteSemantic = false;
+      if (LOG.isDebugEnabled()) {
+        StringBuilder logMessage = new StringBuilder();
+        logMessage.append("Incomplete Semantic, ").append(reason);
+        if (location != null) {
+          logMessage.append(" '").append(location.text()).append("'");
+          Position position = location.range().start();
+          logMessage.append(" line ").append(position.line()).append(" col ").append(position.column());
+        }
+        LOG.debug(logMessage.toString());
+      }
+    }
   }
 
   @Override
@@ -440,7 +498,7 @@ public class CFG implements ControlFlowGraph {
   public static CFG build(MethodTree tree) {
     BlockTree block = tree.block();
     Preconditions.checkArgument(block != null, "Cannot build CFG for method with no body.");
-    return new CFG(block.body(), tree.symbol(), false);
+    return new CFG(block.body(), tree, false);
   }
 
   private void build(ListTree<? extends Tree> trees) {
@@ -603,7 +661,6 @@ public class CFG implements ControlFlowGraph {
       case METHOD_REFERENCE:
       case LAMBDA_EXPRESSION:
         // simple instructions
-      case IDENTIFIER:
       case INT_LITERAL:
       case LONG_LITERAL:
       case DOUBLE_LITERAL:
@@ -613,6 +670,10 @@ public class CFG implements ControlFlowGraph {
       case TEXT_BLOCK:
       case BOOLEAN_LITERAL:
       case NULL_LITERAL:
+        currentBlock.elements.add(tree);
+        break;
+      case IDENTIFIER:
+        checkIdentifierSemantic((IdentifierTree) tree);
         currentBlock.elements.add(tree);
         break;
       case NULL_PATTERN:
@@ -636,7 +697,9 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildMethodInvocation(MethodInvocationTree mit) {
-    handleExceptionalPaths(mit.methodSymbol());
+    SyntaxToken location = mit.methodSelect().lastToken();
+    checkSymbolSemantic(mit.methodSymbol(), "method invocation", location);
+    handleExceptionalPaths(mit.methodSymbol(), location);
     currentBlock.elements.add(mit);
     build(mit.arguments());
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
@@ -686,6 +749,7 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildVariable(VariableTree tree) {
+    checkTypeSemantic(tree.type().symbolType(), "unknown variable type", tree.type().firstToken());
     currentBlock.elements.add(tree);
     ExpressionTree initializer = tree.initializer();
     if (initializer != null) {
@@ -999,7 +1063,8 @@ public class CFG implements ControlFlowGraph {
       buildVariable(catchTree.parameter());
       currentBlock.isCatchBlock = true;
       enclosedByCatch.pop();
-      tryStatement.addCatch(catchTree.parameter().type().symbolType(), currentBlock);
+      TypeTree type = catchTree.parameter().type();
+      tryStatement.addCatch(checkTypeSemantic(type.symbolType(), "catch parameter type", type.firstToken()), currentBlock);
     }
     currentBlock = beforeFinally;
     build(tryStatementTree.block());
@@ -1020,7 +1085,7 @@ public class CFG implements ControlFlowGraph {
     TryStatement enclosingTryCatch = enclosingTry.peek();
     if(enclosingTryCatch != null){
       jumpTo = enclosingTryCatch.catches.keySet().stream()
-        .filter(t -> throwStatementTree.expression().symbolType().isSubtypeOf(t))
+        .filter(t -> checkTypeSemantic(throwStatementTree.expression().symbolType(), "thrown expression", throwStatementTree.expression().firstToken()).isSubtypeOf(t))
         .findFirst()
         .map(t -> enclosingTryCatch.catches.get(t))
         .orElse(exitBlock());
@@ -1056,7 +1121,9 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildNewClass(NewClassTree tree) {
-    handleExceptionalPaths(tree.methodSymbol());
+    SyntaxToken location = tree.identifier().lastToken();
+    checkSymbolSemantic(tree.methodSymbol(), "new class", location);
+    handleExceptionalPaths(tree.methodSymbol(), location);
     currentBlock.elements.add(tree);
     build(tree.arguments());
     ExpressionTree enclosingExpression = tree.enclosingExpression();
@@ -1065,7 +1132,7 @@ public class CFG implements ControlFlowGraph {
     }
   }
 
-  private void handleExceptionalPaths(Symbol.MethodSymbol symbol) {
+  private void handleExceptionalPaths(Symbol.MethodSymbol symbol, @Nullable SyntaxToken location) {
     TryStatement pop = enclosingTry.pop();
     TryStatement tryStatement;
     Block exceptionPredecessor = currentBlock;
@@ -1085,6 +1152,7 @@ public class CFG implements ControlFlowGraph {
     if (!symbol.isUnknown()) {
       List<Type> thrownTypes = symbol.thrownTypes();
       thrownTypes.forEach(thrownType -> {
+        checkTypeSemantic(thrownType, "thrown types", location);
         for (Type caughtType : tryStatement.catches.keySet()) {
           if (thrownType.isSubtypeOf(caughtType) ||
             caughtType.isSubtypeOf(thrownType) ||

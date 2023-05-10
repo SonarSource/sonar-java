@@ -27,6 +27,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -44,9 +47,13 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.java.cfg.CFGTestUtils.buildCFG;
+import static org.sonar.java.cfg.CFGTestUtils.buildCFGFromLambda;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.*;
 
 class CFGTest {
+
+  @RegisterExtension
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   static CFGChecker checker(BlockChecker... checkers) {
     return new CFGChecker(checkers);
@@ -3034,6 +3041,56 @@ class CFGTest {
         element(METHOD_INVOCATION)).successors(0).exceptions(0)
     );
     cfgChecker.check(cfg);
+  }
+
+  @Test
+  void test_semantic_completeness() {
+    assertCompleteSemantic("void foo() { bar(); } void bar() {}", true);
+    assertCompleteSemantic("void foo() { bar(); }", false, "Incomplete Semantic, method invocation 'bar' line 1 col 24");
+
+    assertCompleteSemantic("int foo(int arg) { return arg;     }", true);
+    assertCompleteSemantic("int foo(int arg) { return unknown; }", false, "Incomplete Semantic, unknown identifier 'unknown' line 1 col 37");
+
+
+    assertCompleteSemantic("void foo(boolean condition) { if (condition) {} }", true);
+    assertCompleteSemantic("void foo(boolean condition) { if (unknown)   {} }", false, "Incomplete Semantic, unknown identifier 'unknown' line 1 col 45");
+
+    assertCompleteSemantic("Object  foo() { return null; }", true);
+    assertCompleteSemantic("Unknown foo() { return null; }", false, "Incomplete Semantic, unknown return type 'foo' line 1 col 19");
+
+    assertCompleteSemantic("void foo(Object  arg) { }", true);
+    assertCompleteSemantic("void foo(Unknown arg) { }", false, "Incomplete Semantic, unknown parameter type 'foo' line 1 col 16");
+
+    assertCompleteSemantic("void foo(String arg) { arg.toString(); }", true);
+    assertCompleteSemantic("void foo(String arg) { arg.unknown();  }", false, "Incomplete Semantic, method invocation 'unknown' line 1 col 38");
+
+    assertCompleteSemantic("void foo() { Object  x; }", true);
+    assertCompleteSemantic("void foo() { Unknown x; }", false, "Incomplete Semantic, unknown variable type 'Unknown' line 1 col 24");
+
+    assertCompleteSemantic("void foo() { java.util.List<Object>  x; }", true);
+    assertCompleteSemantic("void foo() { java.util.List<Unknown> x; }", false, "Incomplete Semantic, unknown variable type 'java' line 1 col 24");
+
+    assertCompleteSemantic("void foo(Object...  args) { for(Object  arg : args) { } }", true);
+    assertCompleteSemantic("void foo(Unknown... args) { for(Object  arg : args) { } }", false, "Incomplete Semantic, unknown parameter type 'foo' line 1 col 16");
+    assertCompleteSemantic("void foo(Object...  args) { for(Unknown arg : args) { } }", false, "Incomplete Semantic, unknown variable type 'Unknown' line 1 col 43");
+
+    assertCompleteSemantic("void foo() { Runnable ignoredLambdaContent = () -> { Unknown x; };  }", true);
+    assertCompleteSemantic("void foo() { class IgnoredNestedClass { void foo() { Unknown x; } } }", true);
+  }
+
+
+  @Test
+  void test_semantic_completeness_inside_lambda() {
+    assertThat(buildCFGFromLambda("I i = () -> { return; };").hasCompleteSemantic()).isTrue();
+    assertThat(buildCFGFromLambda("I i = () -> { foo(); }; ").hasCompleteSemantic()).isFalse();
+  }
+
+  void assertCompleteSemantic(String code, boolean hasCompleteSemantic, String... debugLogs) {
+    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.clear();
+    CFG cfg = buildCFG(code);
+    assertThat(cfg.hasCompleteSemantic()).isEqualTo(hasCompleteSemantic);
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactly(debugLogs);
   }
 
   private void build_partial_cfg(String breakOrContinue) {

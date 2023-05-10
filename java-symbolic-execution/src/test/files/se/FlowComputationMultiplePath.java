@@ -1,5 +1,8 @@
 abstract class A {
 
+  boolean cond = Math.random() < 0.5d;
+  boolean cond2 = Math.random() < 0.5d;
+
   void f() {
     Object a;
     Object b = null; // flow@path2 {{Implies 'b' is null.}}
@@ -20,7 +23,7 @@ abstract class A {
       a = b; // flow@p1 {{Implies 'a' has the same value as 'b'.}}
     }
     Object c;
-    if (cond) {
+    if (cond2) {
       c = null;  // flow@p3 {{Implies 'c' is null.}}
     } else {
       c = a; // flow@p1,p2 {{Implies 'c' has the same value as 'a'.}}

@@ -103,7 +103,7 @@ class C_varArgs {
   }
 
   void coa5(Object o) {
-    format("helloworld", C.NONE); // Compliant
+    format("helloworld", C_varArgs.NONE); // Compliant
   }
 
   void coa6(Object o) {

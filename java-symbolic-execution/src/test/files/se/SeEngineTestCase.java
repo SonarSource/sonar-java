@@ -13,4 +13,6 @@ class A {
     }
   }
 
+  private static void printState() {
+  }
 }

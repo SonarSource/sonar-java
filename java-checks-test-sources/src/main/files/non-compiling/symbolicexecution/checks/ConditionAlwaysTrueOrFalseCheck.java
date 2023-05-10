@@ -27,11 +27,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.WeakHashMap;
 import java.util.logging.*;
-import sun.awt.AppContext;
-import sun.awt.DebugHelper;
-import sun.awt.HeadlessToolkit;
-import sun.awt.SunToolkit;
-import sun.awt.CausedFocusEvent;
 import static java.lang.Boolean.TRUE;
 
 import javax.annotation.CheckForNull;
@@ -116,7 +111,7 @@ class Class extends SuperClass {
     while (param && true) { // Noncompliant [[sc=21;ec=25]] {{Remove this expression which always evaluates to "true"}}
       break;
     }
-    do{}while (parameter1 && false); // Noncompliant [[sc=30;ec=35]] {{Remove this expression which always evaluates to "false"}}
+    do{}while (param && false); // Noncompliant [[sc=25;ec=30]] {{Remove this expression which always evaluates to "false"}}
   }
 
   public void bitwise_and(boolean parameter1, boolean parameter2) {
@@ -441,7 +436,7 @@ class Class extends SuperClass {
   }
 
   public void statement_switch(boolean condition) {
-    switch (expression) {
+    switch (condition) {
       case 1:
       case 2:
       case 3:
@@ -901,8 +896,9 @@ class Class extends SuperClass {
   }
 
   public void test_instance_fields8(boolean local, boolean local1, boolean local2) {
+    var instanceVariable = new Object();
     if (field && field1 == field2 && local && local1 == local2) {
-      instanceVariable.otherMethod();
+      instanceVariable.toString();
       if (field) { // Noncompliant
       }
       if (field1 == field2) { // Noncompliant
@@ -915,9 +911,9 @@ class Class extends SuperClass {
   }
 
   public void test_instance_fields9(boolean local, boolean local1, boolean local2) {
-
+    var instanceVariable = new Object();
     if (field && field1 == field2 && local && local1 == local2) {
-      if (instanceVariable.otherMethod()) {
+      if (instanceVariable.equals(new Object())) {
         if (field) { // Noncompliant
         }
         if (field1 == field2) { // Noncompliant
@@ -1124,6 +1120,9 @@ class Class extends SuperClass {
     }
   }
 
+  void foo() {
+  }
+
   public void try_finally() {
     boolean a = false;
     boolean b = false;
@@ -1174,12 +1173,13 @@ class Class extends SuperClass {
     }
   }
 
+  boolean result = false;
   public void ternary2(boolean condition) {
     result = false ? true : condition; // Noncompliant
     if (result) { // Compliant
     }
     result = false ? condition : true; // Noncompliant
-    if (result) { //false negative : evaluate conditional Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (result) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
     }
 
     if (condition ? true : false) { // Compliant
@@ -1239,6 +1239,8 @@ class Class extends SuperClass {
       raiseError();
     }
   }
+
+  void raiseError() { throw new RuntimeException("Boom!"); }
 }
 
 class SuperClass {
@@ -1285,6 +1287,8 @@ class SuperClass {
     }
     return false;
   }
+  class Mutex {
+  }
 
   private boolean initialized;
   public boolean doubleBooleanMutexCondition() {
@@ -1308,7 +1312,7 @@ class SuperClass {
 
   @CheckForNull
   private Object nullableMethod() {
-    return new Class1().method();
+    return new Object().toString();
   }
 
   private void annotationWithNullableAndNonnullReturn() {
@@ -1332,6 +1336,13 @@ class SuperClass {
     Object o = reusable ? entry : new Object(); // compliant both path are explored.
     return;
   }
+  class Entry {
+    boolean isReusable() {
+      return Math.random() < 0.5d;
+    }
+  }
+  void printState() {
+  }
 
   private void castNumbers(long n, long m) {
     long product = n * m;
@@ -1339,6 +1350,8 @@ class SuperClass {
     if (product == truncatedProduct) {
       handleProper(truncatedProduct);
     }
+  }
+  void handleProper(int prop) {
   }
 
   private void orEqualAssignement(boolean a) {
@@ -1361,6 +1374,8 @@ class SuperClass {
         log("b2 false");
       }
     }
+  }
+  void log(String message) {
   }
 
   public void booleanObjectAssignment() {
@@ -1487,6 +1502,23 @@ class SuperClass {
       }
     }
   }
+  class RuleDto {
+    static final Object DISABLED_CHARACTERISTIC_ID = new Object();
+    Object subCharacteristicId;
+    Object defaultSubCharacteristicId;
+    Integer getSubCharacteristicId() {
+      return Integer.valueOf(42);
+    }
+    Integer getDefaultSubCharacteristicId() {
+      return Integer.valueOf(0);
+    }
+    void setSubCharacteristicId(Object value) {
+      subCharacteristicId = value;
+    }
+    void setDefaultSubCharacteristicId(Object value) {
+      defaultSubCharacteristicId = value;
+    }
+  }
 
   public void equalsAfterEqual(Object a, Object b) {
     // Same as expression in method tests
@@ -1506,7 +1538,7 @@ class SuperClass {
     }
   }
 
-  void SONARJAVA_1485(boolean condition) {
+  void SONARJAVA_1485(boolean condition, List<Foo> foos) {
     boolean still = false;
     for (Foo foo : foos) {
       for (Foo foo2 : foos) {
@@ -1517,6 +1549,8 @@ class SuperClass {
     }
     if (still) {
     }
+  }
+  class Foo {
   }
 
   public void incrementChange(int n, int m) {
@@ -1711,7 +1745,7 @@ class UtilObjects {
   }
 }
 
-class VolatileFields {
+class VolatileFields implements Runnable {
   private volatile boolean volatileField = false;
 
   void bar() {
@@ -1774,9 +1808,10 @@ class VolatileFields {
   }
 
   public void reschedule() {
+    java.util.concurrent.ScheduledExecutorService executor = java.util.concurrent.Executors.newSingleThreadScheduledExecutor();
     Throwable scheduleFailure = null;
     try {
-      executor.schedule(this, schedule.delay, schedule.unit);
+      executor.schedule(this, 1, java.util.concurrent.TimeUnit.SECONDS);
     } catch (java.lang.Throwable e) {
       scheduleFailure = e;
     } finally {
@@ -1784,6 +1819,8 @@ class VolatileFields {
     }
     if (scheduleFailure != null) {
     }
+  }
+  public void run() {
   }
 }
 
@@ -1799,6 +1836,37 @@ class UsingLong {
   }
 }
 class KeyboardFocusManager {
+
+  Object heavyweightRequests = new Object();
+  Object currentLightweightRequests = Math.random() < 0.5d ? new Component() : null;
+
+  static KeyboardFocusManager getCurrentKeyboardFocusManager() {
+    return new KeyboardFocusManager();
+  }
+
+  class Component {
+    AppContext appContext;
+  }
+
+  class LightweightFocusRequest {
+  }
+
+  Component getGlobalFocusOwner() {
+    return Math.random() < 0.5d ? new Component() : null;
+  }
+
+  class AppContext {
+    public static AppContext getAppContext() {
+      return new AppContext();
+    }
+  }
+
+  class Cause {
+  }
+  class CausedFocusEvent {
+    CausedFocusEvent(Component source, int id, boolean temporary, Component opposite, Cause cause) {
+    }
+  }
 
   // This huge method requires more than 10_000 steps to be analyzed after introduction of try catch flow modelization.
   static void processCurrentLightweightRequests() {
@@ -1876,6 +1944,9 @@ class KeyboardFocusManager {
     }
 
   }
+  static Throwable dispatchAndCatchException(Throwable ex, Component owner, FocusEvent event) {
+    return Math.random() < 0.5d ? new RuntimeException() : new AssertionError();
+  }
 }
 
 class MyConstantsTestClass {
@@ -1911,9 +1982,9 @@ class MyConstantsTestClass {
 }
 
 class Squid2583 {
-    private final transient ByteArrayOutputStream trasientBaos = new ByteArrayOutputStream();
+    private final transient java.io.ByteArrayOutputStream trasientBaos = new java.io.ByteArrayOutputStream();
 
-    private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    private final java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 
     public void raiseIssue() {
         if (trasientBaos != null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}

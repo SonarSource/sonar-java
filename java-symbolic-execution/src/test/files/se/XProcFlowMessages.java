@@ -111,6 +111,8 @@ abstract class D {
 
 class ZeroConstraint {
 
+  boolean b = Math.random() < 0.5d;
+
   private int maybeZero() {
     if (b) {
       return 0;

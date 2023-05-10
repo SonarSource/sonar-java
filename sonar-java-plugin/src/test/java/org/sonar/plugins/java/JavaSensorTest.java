@@ -430,9 +430,7 @@ class JavaSensorTest {
       // main check in SonarWay, not supported by autoscan (CombineCatchCheck)
       "java:S2147",
       // not in SonarWay (FileHeaderCheck)
-      "java:S1451",
-      // SE check (BooleanGratuitousExpressionsCheck)
-      "java:S2589"
+      "java:S1451"
     );
   }
 

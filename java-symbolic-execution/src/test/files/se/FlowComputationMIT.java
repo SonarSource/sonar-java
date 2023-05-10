@@ -49,6 +49,8 @@ class A {
     return null;  // _flow@return  FIXME if result SV == SV_0 there is not flow in the yield
   }
 
+  boolean cond = Math.random() < 0.5d;
+
   private Object sundayIsAGoodDay() {
     if (cond) {
       return getNull(); // flow@return {{'getNull()' returns null.}}

@@ -1,5 +1,6 @@
 class A {
 
+  boolean cond = Math.random() < 0.5d;
   private void f() {
     Object a = null;
     if (cond) a.toString(); // Noncompliant
