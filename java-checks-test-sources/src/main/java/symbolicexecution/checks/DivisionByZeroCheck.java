@@ -3,8 +3,24 @@ package symbolicexecution.checks;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.util.Random;
 
 class DivisionByZeroCheck {
+  
+  static final int nonZero = 1;
+  static final int c = 0;
+  static int nonConst = 0;
+  static final int res = randomInt();
+  void foo() {
+    int d = 1 / nonZero;
+    int a = 1 / c; // Noncompliant
+    int b = 1 / nonConst;
+    int c = 1 / res;
+  }
+  
+  static int randomInt() {
+    return new Random().nextInt();
+  }
 
   int getLengthOfMap() {
     int x = org.apache.commons.collections4.MapUtils.size(null); // flow@behavior {{'size()' can return zero.}} flow@behavior {{Implies 'x' can be zero.}} 

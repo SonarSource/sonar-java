@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.se.CheckerContext;
@@ -37,7 +38,6 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -159,18 +159,16 @@ public class MinMaxRangeCheck extends SECheck {
     }
   }
 
-  private static ProgramState handleNumericalConstant(CheckerContext context, IdentifierTree syntaxNode) {
-    ProgramState programState = context.getState();
-    Symbol identifier = syntaxNode.symbol();
-    if (!isNumericalConstant(identifier)) {
-      return programState;
-    }
+  @VisibleForTesting
+  public static ProgramState handleNumericalConstant(CheckerContext context, IdentifierTree syntaxNode) {
+    var programState = context.getState();
+    var identifier = syntaxNode.symbol();
     SymbolicValue constant = programState.getValue(identifier);
     if (constant == null) {
       return programState;
     }
     NumericalConstraint numericalConstraint = programState.getConstraint(constant, NumericalConstraint.class);
-    if (numericalConstraint == null) {
+    if (numericalConstraint == null && identifier instanceof Symbol.VariableSymbol) {
       return JUtils.constantValue(((Symbol.VariableSymbol) identifier))
         .filter(Number.class::isInstance)
         .map(Number.class::cast)
@@ -266,19 +264,6 @@ public class MinMaxRangeCheck extends SECheck {
       value = -1.0 * value.doubleValue();
     }
     return programState.addConstraint(programState.peekValue(), new NumericalConstraint(value));
-  }
-
-  private static boolean isNumericalConstant(@Nullable Symbol symbol) {
-    return symbol != null && isConstant(symbol) && isNumericalPrimitive(symbol);
-  }
-
-  private static boolean isNumericalPrimitive(Symbol symbol) {
-    Type type = symbol.type();
-    return type.isPrimitive() && type.isNumerical();
-  }
-
-  private static boolean isConstant(Symbol symbol) {
-    return symbol.isVariableSymbol() && symbol.isStatic() && symbol.isFinal();
   }
 
 }
