@@ -113,7 +113,7 @@ public class CheckerDispatcher implements CheckerContext {
     } else {
       CFG.Block block = (CFG.Block) explodedGraphWalker.programPosition.block;
       if (explodedGraphWalker.programPosition.i < block.elements().size()) {
-        explodedGraphWalker.clearStack(block.elements().get(explodedGraphWalker.programPosition.i));
+        explodedGraphWalker.cleanupStack(block.elements().get(explodedGraphWalker.programPosition.i));
       }
       explodedGraphWalker.enqueue(
         explodedGraphWalker.programPosition.next(),

@@ -132,10 +132,13 @@ public class ProgramState {
       .put(SymbolicValue.FALSE_LITERAL, ConstraintsByDomain.empty().put(BooleanConstraint.FALSE).put(ObjectConstraint.NOT_NULL)),
         PCollections.emptyMap(),
     PCollections.emptyStack(),
+    null,
     null);
 
   private final PMap<ProgramPoint, Integer> visitedPoints;
   private final PStack<SymbolicValueSymbol> stack;
+  @Nullable
+  private SymbolicValue.ExceptionalSymbolicValue entryException;
   private final PMap<SymbolicValue, Integer> references;
   private SymbolicValue exitSymbolicValue;
   final PMap<Symbol, SymbolicValue> values;
@@ -144,7 +147,8 @@ public class ProgramState {
 
   private ProgramState(PMap<Symbol, SymbolicValue> values,PMap<Integer, SymbolicValue> valuesByIndex, PMap<SymbolicValue, Integer> references,
                        PMap<SymbolicValue, ConstraintsByDomain> constraints, PMap<ProgramPoint, Integer> visitedPoints,
-                       PStack<SymbolicValueSymbol> stack, SymbolicValue exitSymbolicValue) {
+                       PStack<SymbolicValueSymbol> stack, SymbolicValue exitSymbolicValue,
+                       @Nullable SymbolicValue.ExceptionalSymbolicValue entryException) {
     this.values = values;
     this.valuesByIndex = valuesByIndex;
     this.references = references;
@@ -152,12 +156,14 @@ public class ProgramState {
     this.visitedPoints = visitedPoints;
     this.stack = stack;
     this.exitSymbolicValue = exitSymbolicValue;
+    this.entryException = entryException;
     constraintSize = 3;
   }
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
                        PMap<SymbolicValue, ConstraintsByDomain> constraints, PMap<ProgramPoint, Integer> visitedPoints,
-                       PStack<SymbolicValueSymbol> stack, SymbolicValue exitSymbolicValue) {
+                       PStack<SymbolicValueSymbol> stack, SymbolicValue exitSymbolicValue,
+                       @Nullable SymbolicValue.ExceptionalSymbolicValue entryException) {
     this.values = values;
     this.valuesByIndex = PCollections.emptyMap();
     this.references = references;
@@ -165,6 +171,7 @@ public class ProgramState {
     this.visitedPoints = visitedPoints;
     this.stack = stack;
     this.exitSymbolicValue = exitSymbolicValue;
+    this.entryException = entryException;
     constraintSize = 3;
   }
 
@@ -177,6 +184,7 @@ public class ProgramState {
     visitedPoints = ps.visitedPoints;
     exitSymbolicValue = ps.exitSymbolicValue;
     stack = newStack;
+    entryException = ps.entryException;
   }
 
   private ProgramState(ProgramState ps, PMap<SymbolicValue, ConstraintsByDomain> newConstraints) {
@@ -187,7 +195,17 @@ public class ProgramState {
     constraintSize = ps.constraintSize + 1;
     visitedPoints = ps.visitedPoints;
     exitSymbolicValue = ps.exitSymbolicValue;
-    this.stack = ps.stack;
+    stack = ps.stack;
+    entryException = ps.entryException;
+  }
+
+  public ProgramState withEntryException(@Nullable SymbolicValue.ExceptionalSymbolicValue exception) {
+    return new ProgramState(values, valuesByIndex, references, constraints, visitedPoints, stack, exitSymbolicValue, exception);
+  }
+
+  @CheckForNull
+  public SymbolicValue.ExceptionalSymbolicValue getEntryException() {
+    return entryException;
   }
 
   public ProgramState stackValue(SymbolicValue sv) {
@@ -347,7 +365,7 @@ public class ProgramState {
       }
       newReferences = increaseReference(newReferences, value);
       PMap<Symbol, SymbolicValue> newValues = values.put(symbol, value);
-      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue);
+      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue, entryException);
     }
     return this;
   }
@@ -408,7 +426,7 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     values.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue
+    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue, entryException
     )
       : this;
   }
@@ -440,7 +458,7 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     constraints.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(values, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue
+    return cleanAction.newProgramState ? new ProgramState(values, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue, entryException
     ) : this;
   }
 
@@ -472,7 +490,7 @@ public class ProgramState {
   }
 
   public ProgramState visitedPoint(ProgramPoint programPoint, int nbOfVisit) {
-    return new ProgramState(values, valuesByIndex, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue);
+    return new ProgramState(values, valuesByIndex, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue, entryException);
   }
 
   @Nullable

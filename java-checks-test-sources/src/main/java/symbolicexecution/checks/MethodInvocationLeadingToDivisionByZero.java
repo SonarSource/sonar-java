@@ -88,5 +88,19 @@ class MethodInvocationLeadingToDivisionByZero {
     return i / j;
   }
 
-  static class MyCheckedException extends Exception { }
+  static class MyCheckedException extends Exception {
+  }
+
+  String test(Integer v) {
+    String x = "";
+    x += switch (v) { // Compliant - no division by zero but this shouldn't cause the check to crash
+      case 2 -> {
+        new StringBuilder();
+        yield "";
+      }
+      default -> "default";
+    };
+
+    return x;
+  }
 }
