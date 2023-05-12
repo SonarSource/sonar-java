@@ -473,14 +473,15 @@ public class ExplodedGraphWalker {
         case THROW_STATEMENT:
           ProgramState.Pop unstack = programState.unstackValue(1);
           SymbolicValue sv = unstack.values.get(0);
+          SymbolicValue.ExceptionalSymbolicValue exceptionalSV;
           if (sv instanceof SymbolicValue.CaughtExceptionSymbolicValue) {
             // retrowing the exception from a catch block
-            sv = ((SymbolicValue.CaughtExceptionSymbolicValue) sv).exception();
+            exceptionalSV = ((SymbolicValue.CaughtExceptionSymbolicValue) sv).exception();
           } else {
-            sv = constraintManager.createExceptionalSymbolicValue(((ThrowStatementTree) terminator).expression().symbolType());
+            exceptionalSV = constraintManager.createExceptionalSymbolicValue(((ThrowStatementTree) terminator).expression().symbolType());
           }
-          programState = unstack.state.stackValue(sv);
-          programState.storeExitValue();
+          programState = unstack.state.withEntryException(exceptionalSV);
+          programState.storeExitValue(exceptionalSV);
           break;
         default:
           // do nothing by default.
@@ -908,11 +909,7 @@ public class ExplodedGraphWalker {
         .orElse(exitBlock);
       enqueue(new ProgramPoint(methodExit), ps, true, methodYield);
     } else {
-      var exception = ps.peekValue();
-      if (!(exception instanceof SymbolicValue.ExceptionalSymbolicValue)) {
-        throw new IllegalStateException("Only exceptional values expected on top of stack here.");
-      }
-      var stateWithoutException = ps.unstackValue(1).state.withEntryException((SymbolicValue.ExceptionalSymbolicValue) exception);
+      var stateWithoutException = ps.unstackValue(1).state.withEntryException(exceptionSV);
       otherBlocks.forEach(b -> enqueue(new ProgramPoint(b), stateWithoutException, true, methodYield));
     }
   }

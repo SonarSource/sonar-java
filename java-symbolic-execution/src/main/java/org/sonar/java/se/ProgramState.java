@@ -426,8 +426,9 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     values.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue, entryException
-    )
+    return cleanAction.newProgramState ?
+      new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack,
+        exitSymbolicValue, entryException)
       : this;
   }
 
@@ -533,7 +534,11 @@ public class ProgramState {
   }
 
   public void storeExitValue() {
-    this.exitSymbolicValue = peekValue();
+    storeExitValue(peekValue());
+  }
+
+  public void storeExitValue(SymbolicValue exitSymbolicValue) {
+    this.exitSymbolicValue = exitSymbolicValue;
   }
 
   @CheckForNull
