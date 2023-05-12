@@ -20,17 +20,9 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.se.CheckerDispatcher;
-import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class MinMaxRangeCheckTest {
@@ -42,15 +34,5 @@ class MinMaxRangeCheckTest {
       .withCheck(new MinMaxRangeCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
-  }
-
-  @Test
-  void test_missing_semantics() {
-    var identifier = mock(IdentifierTree.class);
-    var checkerDispatcher = mock(CheckerDispatcher.class);
-    var mockedPS = mock(ProgramState.class);
-    when(mockedPS.getValue(any(Symbol.class))).thenReturn(null);
-    when(checkerDispatcher.getState()).thenReturn(mockedPS);
-    assertEquals(MinMaxRangeCheck.handleNumericalConstant(checkerDispatcher, identifier), mockedPS);
   }
 }
