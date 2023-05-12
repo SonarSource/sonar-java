@@ -537,7 +537,7 @@ public class ProgramState {
     storeExitValue(peekValue());
   }
 
-  public void storeExitValue(SymbolicValue exitSymbolicValue) {
+  public void storeExitValue(@Nullable SymbolicValue exitSymbolicValue) {
     this.exitSymbolicValue = exitSymbolicValue;
   }
 

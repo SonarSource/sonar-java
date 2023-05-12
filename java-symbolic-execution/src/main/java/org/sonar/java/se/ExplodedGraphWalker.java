@@ -480,8 +480,8 @@ public class ExplodedGraphWalker {
           } else {
             exceptionalSV = constraintManager.createExceptionalSymbolicValue(((ThrowStatementTree) terminator).expression().symbolType());
           }
-          programState = unstack.state.withEntryException(exceptionalSV);
-          programState.storeExitValue(exceptionalSV);
+          programState = unstack.state.stackValue(exceptionalSV);
+          programState.storeExitValue();
           break;
         default:
           // do nothing by default.
