@@ -473,13 +473,14 @@ public class ExplodedGraphWalker {
         case THROW_STATEMENT:
           ProgramState.Pop unstack = programState.unstackValue(1);
           SymbolicValue sv = unstack.values.get(0);
+          SymbolicValue.ExceptionalSymbolicValue exceptionalSV;
           if (sv instanceof SymbolicValue.CaughtExceptionSymbolicValue) {
             // retrowing the exception from a catch block
-            sv = ((SymbolicValue.CaughtExceptionSymbolicValue) sv).exception();
+            exceptionalSV = ((SymbolicValue.CaughtExceptionSymbolicValue) sv).exception();
           } else {
-            sv = constraintManager.createExceptionalSymbolicValue(((ThrowStatementTree) terminator).expression().symbolType());
+            exceptionalSV = constraintManager.createExceptionalSymbolicValue(((ThrowStatementTree) terminator).expression().symbolType());
           }
-          programState = unstack.state.stackValue(sv);
+          programState = unstack.state.stackValue(exceptionalSV);
           programState.storeExitValue();
           break;
         default:
@@ -768,7 +769,6 @@ public class ExplodedGraphWalker {
     }
 
     checkerDispatcher.executeCheckPostStatement(tree);
-    clearStack(tree);
   }
 
   private void executeAssertStatement(Tree tree) {
@@ -830,7 +830,7 @@ public class ExplodedGraphWalker {
       // Enqueue happy paths
       programState = handleSpecialMethods(programState.stackValue(resultValue), mit);
       checkerDispatcher.executeCheckPostStatement(mit);
-      clearStack(mit);
+      cleanupStack(mit);
     }
   }
 
@@ -839,7 +839,6 @@ public class ExplodedGraphWalker {
     checkerDispatcher.methodYield = methodYield;
     checkerDispatcher.addTransition(programState);
     checkerDispatcher.methodYield = null;
-    clearStack(mit);
   }
 
   private ProgramState handleSpecialMethods(ProgramState ps, MethodInvocationTree mit) {
@@ -910,7 +909,8 @@ public class ExplodedGraphWalker {
         .orElse(exitBlock);
       enqueue(new ProgramPoint(methodExit), ps, true, methodYield);
     } else {
-      otherBlocks.forEach(b -> enqueue(new ProgramPoint(b), ps, true, methodYield));
+      var stateWithoutException = ps.unstackValue(1).state.withEntryException(exceptionSV);
+      otherBlocks.forEach(b -> enqueue(new ProgramPoint(b), stateWithoutException, true, methodYield));
     }
   }
 
@@ -1171,9 +1171,13 @@ public class ExplodedGraphWalker {
     }
   }
 
-  public void clearStack(Tree tree) {
+  public void cleanupStack(Tree tree) {
     if (tree.parent().is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      programState = programState.clearStack();
+      programState = programState.unstackValue(1).state;
+
+      // We set the entry exception to null as a workaround such that flow computations don't report on irrelevant nodes. We should
+      // have a look at improving the flow computations to be able to remove this.
+      programState = programState.withEntryException(null);
     }
   }
 

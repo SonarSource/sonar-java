@@ -341,10 +341,13 @@ public class FlowComputation {
     }
 
     private Optional<JavaFileScannerContext.Location> flowFromThrownException(ExplodedGraph.Edge edge) {
-      SymbolicValue peekValue = edge.child.programState.peekValue();
-      if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
+      SymbolicValue exception = edge.child.programState.getEntryException();
+      if (exception == null) {
+        exception = edge.child.programState.peekValue();
+      }
+      if (exception instanceof SymbolicValue.ExceptionalSymbolicValue) {
         if (isMethodInvocationNode(edge.parent)) {
-          Type type = ((SymbolicValue.ExceptionalSymbolicValue) peekValue).exceptionType();
+          Type type = ((SymbolicValue.ExceptionalSymbolicValue) exception).exceptionType();
           String msg = String.format("%s is thrown.", exceptionName(type));
           return Optional.of(location(edge.parent, msg));
         } else if (isDivByZeroExceptionalYield(edge)) {

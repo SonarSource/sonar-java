@@ -108,7 +108,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
     SECheckVerifier.newVerifier()
       .withCustomIssueVerifier(issues -> {
         assertThat(issues).hasSize(2);
-        assertThat(issues.iterator().next().flows).hasSize(20);
+        assertThat(issues).allMatch(issue -> issue.flows.size() == 20);
       })
       .onFile(testSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheckMaxReturnedFlows.java"))
       .withChecks(new BooleanGratuitousExpressionsCheck())

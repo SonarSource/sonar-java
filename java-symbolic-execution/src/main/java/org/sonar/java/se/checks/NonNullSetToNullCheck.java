@@ -123,7 +123,7 @@ public class NonNullSetToNullCheck extends SECheck {
   }
 
   private static boolean exitingWithException(CheckerContext context) {
-    return context.getState().peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue;
+    return context.getState().getEntryException() != null || context.getState().peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue;
   }
 
   private static boolean isDefaultConstructorForJpa(MethodTree methodTree) {
