@@ -155,7 +155,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     }
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expression;
-      if (identifierTree.symbol().isPrivate() && !isOnlyAssignedImmutableVariable((Symbol.VariableSymbol) identifierTree.symbol())) {
+      if (!isOnlyAssignedImmutableVariable((Symbol.VariableSymbol) identifierTree.symbol())) {
         context.reportIssue(this, identifierTree, "Return a copy of \"" + identifierTree.name() + "\".");
       }
     }
