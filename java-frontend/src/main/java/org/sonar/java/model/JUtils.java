@@ -128,8 +128,7 @@ public final class JUtils {
   }
 
   public static Optional<Object> constantValue(Symbol.VariableSymbol symbol) {
-    boolean hasFinalSymbol = symbol.isFinal() && symbol.isStatic() && symbol instanceof JVariableSymbol;
-    if (!hasFinalSymbol && !isEffectivelyFinal(symbol)) {
+    if (!symbol.isFinal() || !symbol.isStatic() || !(symbol instanceof JVariableSymbol)) {
       return Optional.empty();
     }
     Object c = ((IVariableBinding) ((JVariableSymbol) symbol).binding).getConstantValue();
