@@ -34,12 +34,6 @@ import javax.annotation.Nullable;
 
 class Class extends SuperClass {
 
-  static final int constant = 0;
-  static void alwaysTrue() {
-    //Fixed, now ZERO constraint correctly applies to identifiers out of method scope
-    if(constant == 0) { System.out.println("Always true"); } // Noncompliant
-  }
-
   private static class Class1 {
     Object field;
 

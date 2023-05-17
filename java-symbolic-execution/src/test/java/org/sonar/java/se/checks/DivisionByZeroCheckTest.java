@@ -21,7 +21,6 @@ package org.sonar.java.se.checks;
 
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.se.CheckerDispatcher;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -29,16 +28,11 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValueTestUtil;
 import org.sonar.java.se.utils.SETestUtils;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.NON_ZERO;
 import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.ZERO;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
@@ -55,6 +49,15 @@ class DivisionByZeroCheckTest {
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
+  }
+  
+  @Test
+  void test_noncompiling() {
+    SECheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/DivisionByZeroCheck.java"))
+      .withCheck(new DivisionByZeroCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
@@ -90,15 +93,5 @@ class DivisionByZeroCheckTest {
     ps = ListUtils.getOnlyElement(rel.setConstraint(ps, BooleanConstraint.TRUE));
     return ps.getConstraint(b, DivisionByZeroCheck.ZeroConstraint.class);
   }
-
-  @Test
-  void test_missing_semantics() {
-    var check = new DivisionByZeroCheck();
-    var identifier = mock(IdentifierTree.class);
-    var checkerDispatcher = mock(CheckerDispatcher.class);
-    var mockedPS = mock(ProgramState.class);
-    when(mockedPS.getValue(any(Symbol.class))).thenReturn(null);
-    when(checkerDispatcher.getState()).thenReturn(mockedPS);
-    assertEquals(check.checkPostStatement(checkerDispatcher, identifier), mockedPS);
-  }
+  
 }

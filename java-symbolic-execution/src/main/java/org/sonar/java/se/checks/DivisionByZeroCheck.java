@@ -386,19 +386,19 @@ public class DivisionByZeroCheck extends SECheck {
     @Override
     public void visitIdentifier(IdentifierTree identifier) {
       var symbol = identifier.symbol();
-      if(!(symbol instanceof Symbol.VariableSymbol)) {
+      if (!(symbol instanceof Symbol.VariableSymbol)) {
         return;
       }
       SymbolicValue sv = programState.getValue(symbol);
       Number num = JUtils.constantValue(((Symbol.VariableSymbol) symbol))
         .filter(Number.class::isInstance)
         .map(Number.class::cast).orElse(null);
-      if(sv == null || num == null) {
+      if (sv == null || num == null) {
         return;
       }
-      if(num.intValue() == 0) {
+      if (num.intValue() == 0) {
         addZeroConstraint(sv, ZeroConstraint.ZERO);
-      }else {
+      } else {
         addZeroConstraint(sv, ZeroConstraint.NON_ZERO);
       }
     }
