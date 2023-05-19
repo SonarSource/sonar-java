@@ -179,6 +179,14 @@ class ConditionAlwaysTrueOrFalseCheckTest {
       .withChecks(new ConditionalUnreachableCodeCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
-
   }
+
+  @Test
+  void test_constant_values() {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseForConstantValues.java"))
+      .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }  
 }

@@ -31,7 +31,8 @@ import org.sonar.java.se.utils.SETestUtils;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.NON_ZERO;
 import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.ZERO;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
@@ -44,16 +45,25 @@ class DivisionByZeroCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/DivisionByZeroCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/DivisionByZeroCheck.java"))
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
+  }
+  
+  @Test
+  void test_noncompiling() {
+    SECheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/DivisionByZeroCheck.java"))
+      .withCheck(new DivisionByZeroCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   void invocation_leading_to_ArithmeticException() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/MethodInvocationLeadingToDivisionByZero.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/MethodInvocationLeadingToDivisionByZero.java"))
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -83,4 +93,5 @@ class DivisionByZeroCheckTest {
     ps = ListUtils.getOnlyElement(rel.setConstraint(ps, BooleanConstraint.TRUE));
     return ps.getConstraint(b, DivisionByZeroCheck.ZeroConstraint.class);
   }
+  
 }

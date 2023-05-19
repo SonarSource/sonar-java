@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
@@ -380,6 +381,26 @@ public class DivisionByZeroCheck extends SECheck {
     PostStatementVisitor(CheckerContext context, Map<String, Boolean> zeroValuesCache) {
       super(context.getState());
       this.zeroValuesCache = zeroValuesCache;
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree identifier) {
+      var symbol = identifier.symbol();
+      if (!(symbol instanceof Symbol.VariableSymbol)) {
+        return;
+      }
+      SymbolicValue sv = programState.getValue(symbol);
+      Number num = JUtils.constantValue(((Symbol.VariableSymbol) symbol))
+        .filter(Number.class::isInstance)
+        .map(Number.class::cast).orElse(null);
+      if (sv == null || num == null) {
+        return;
+      }
+      if (num.intValue() == 0) {
+        addZeroConstraint(sv, ZeroConstraint.ZERO);
+      } else {
+        addZeroConstraint(sv, ZeroConstraint.NON_ZERO);
+      }
     }
 
     @Override
