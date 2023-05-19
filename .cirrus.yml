@@ -163,6 +163,9 @@ ruling_task:
     - cd its/ruling
     - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
+  on_failure:
+    actual_artifacts:
+      path: "${CIRRUS_WORKING_DIR}/its/ruling/target/actual/**/*"
 
 ruling_win_task:
   depends_on:
@@ -179,6 +182,9 @@ ruling_win_task:
     - cd its/ruling
     - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
+  on_failure:
+    actual_artifacts:
+      path: "${CIRRUS_WORKING_DIR}/its/ruling/target/actual/**/*"
 
 promote_task:
   depends_on:
