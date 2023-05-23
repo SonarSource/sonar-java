@@ -601,7 +601,7 @@ public class ExplodedGraphWalker {
     ProgramPoint falseBlockProgramPoint = new ProgramPoint(programPosition.falseBlock());
     for (ProgramState state : pair.a) {
       ProgramState ps = state;
-      if (condition.parent().is(Tree.Kind.CONDITIONAL_AND) && !isPartOfConditionalExpressionCondition(condition)) {
+      if (condition.parent().is(Tree.Kind.CONDITIONAL_AND) && !isConditionBranchingExpressionOrStatement(condition)) {
         // push a FALSE value on the top of the stack to enforce the choice of the branch,
         // as non-reachable symbolic values won't get a TRUE/FALSE constraint when assuming dual
         ps = state.stackValue(SymbolicValue.FALSE_LITERAL);
@@ -615,7 +615,7 @@ public class ExplodedGraphWalker {
     ProgramPoint trueBlockProgramPoint = new ProgramPoint(programPosition.trueBlock());
     for (ProgramState state : pair.b) {
       ProgramState ps = state;
-      if (condition.parent().is(Tree.Kind.CONDITIONAL_OR) && !isPartOfConditionalExpressionCondition(condition)) {
+      if (condition.parent().is(Tree.Kind.CONDITIONAL_OR) && !isConditionBranchingExpressionOrStatement(condition)) {
         // push a TRUE value on the top of the stack to enforce the choice of the branch,
         // as non-reachable symbolic values won't get a TRUE/FALSE constraint when assuming dual
         ps = state.stackValue(SymbolicValue.TRUE_LITERAL);
@@ -628,14 +628,28 @@ public class ExplodedGraphWalker {
     }
   }
 
-  private static boolean isPartOfConditionalExpressionCondition(Tree tree) {
+  private static boolean isConditionBranchingExpressionOrStatement(Tree tree) {
     Tree current;
     Tree parent = tree;
     do {
       current = parent;
       parent = parent.parent();
     } while (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR));
-    return parent.is(Tree.Kind.CONDITIONAL_EXPRESSION) && current.equals(((ConditionalExpressionTree) parent).condition());
+
+    switch (parent.kind()) {
+      case CONDITIONAL_EXPRESSION:
+        return current.equals(((ConditionalExpressionTree) parent).condition());
+      case IF_STATEMENT:
+        return current.equals(((IfStatementTree) parent).condition());
+      case WHILE_STATEMENT:
+        return current.equals(((WhileStatementTree) parent).condition());
+      case FOR_STATEMENT:
+        return current.equals(((ForStatementTree) parent).condition());
+      case DO_STATEMENT:
+        return current.equals(((DoWhileStatementTree) parent).condition());
+      default:
+        return false;
+    }
   }
 
   private void visit(Tree tree, @Nullable Tree terminator) {
