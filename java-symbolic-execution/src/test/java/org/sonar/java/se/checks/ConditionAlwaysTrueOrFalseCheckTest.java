@@ -127,6 +127,16 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
+  void ensure_branching_statements_dont_cause_exception() {
+    // Checks flow iterating through the correct parent
+    SECheckVerifier.newVerifier()
+      .onFile(testSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseNoExceptionOnBranchingStatementsLogicalAndOrTestCase.java"))
+      .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
+  @Test
   void test_transitivity() {
     SECheckVerifier.newVerifier()
       .onFile(testSourcesPath("symbolicexecution/checks/Transitivity.java"))
