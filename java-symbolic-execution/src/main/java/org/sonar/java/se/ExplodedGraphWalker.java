@@ -1187,7 +1187,8 @@ public class ExplodedGraphWalker {
       programState = unstackMSE.state;
     }
 
-    if (ExpressionUtils.isSelectOnThisOrSuper(mse)) {
+    Symbol symbol = mse.identifier().symbol();
+    if (ExpressionUtils.isSelectOnThisOrSuper(mse) || (symbol.isStatic() && symbol.isFinal())) {
       executeIdentifier(mse.identifier());
     } else {
       SymbolicValue mseValue = constraintManager.createSymbolicValue(mse);

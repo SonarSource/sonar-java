@@ -46,6 +46,14 @@ class NullDereferenceCheckTest {
   }
 
   @Test
+  void test_constants_in_loop() {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullDereferenceCheck_constants_in_loop.java"))
+      .withCheck(new NullDereferenceCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void test() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/NullDereferenceCheck.java")
