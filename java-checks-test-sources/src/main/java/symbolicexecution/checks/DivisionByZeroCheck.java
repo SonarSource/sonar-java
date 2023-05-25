@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Random;
 
+@SuppressWarnings("java:S139")
 class DivisionByZeroCheck {
 
   void flow_through_binary_expression_keep_track_of_the_inceptive_symbol(boolean condition, int unknownInt) {
@@ -22,6 +23,43 @@ class DivisionByZeroCheck {
     int divisor = // flow@inceptive_symbol [[order=7]] {{Implies 'divisor' has the same value as 'divisorAncestor1'.}}
       0 - divisorAncestor1;
     int willRaiseHere = 10 / divisor; // Noncompliant [[sc=30;ec=37;flows=inceptive_symbol]] flow@inceptive_symbol [[order=8]] {{Division by zero.}}
+  }
+
+  int flow_on_divide_assignment(boolean condition, int unknownInt) {
+    int dividend = condition ? 0 : 1;
+    dividend /= unknownInt; // missing flow, limitation in the DIVIDE_ASSIGNMENT dividend tracking
+    return 10 / dividend; // Noncompliant [[sc=17;ec=25;secondary=]] {{Make sure "dividend" can't be zero before doing this division.}}
+  }
+
+  int flow_on_multiply_assignment_left_factor(boolean condition, int unknownInt) {
+    int leftFactor = condition ? 0 : 1;
+    leftFactor *= unknownInt; // missing flow, limitation in the MULTIPLY_ASSIGNMENT leftFactor tracking
+    return 10 / leftFactor; // Noncompliant [[sc=17;ec=27;secondary=]] {{Make sure "leftFactor" can't be zero before doing this division.}}
+  }
+
+  int flow_on_multiply_assignment_right_factor(boolean condition, int unknownInt) {
+    int leftFactor = unknownInt;
+    int rightFactor = condition ? 0 : 1;
+    leftFactor *= rightFactor; // missing flow, limitation in the MULTIPLY_ASSIGNMENT rightFactor tracking
+    return 10 / leftFactor; // Noncompliant [[sc=17;ec=27;secondary=]] {{Make sure "leftFactor" can't be zero before doing this division.}}
+  }
+
+  int flow_on_plus_assignment_left_summand(boolean condition) {
+    int leftSummand = condition ? 0 : 1;
+    leftSummand += 0; // missing flow, limitation in the PLUS_ASSIGNMENT leftSummand tracking
+    return 10 / leftSummand; // Noncompliant [[sc=17;ec=28;secondary=]] {{Make sure "leftSummand" can't be zero before doing this division.}}
+  }
+
+  int flow_on_minus_assignment_minuend(boolean condition) {
+    int minuend = condition ? 0 : 1;
+    minuend -= 0; // missing flow, limitation in the MINUS_ASSIGNMENT minuend tracking
+    return 10 / minuend; // Noncompliant [[sc=17;ec=24;secondary=]] {{Make sure "minuend" can't be zero before doing this division.}}
+  }
+
+  int flow_on_remainder_assignment_dividend(boolean condition, int unknownInt) {
+    int dividend = condition ? 0 : 1;
+    dividend %= unknownInt; // missing flow, limitation in the DIVIDE_ASSIGNMENT dividend tracking
+    return 10 / dividend; // Noncompliant [[sc=17;ec=25;secondary=]] {{Make sure "dividend" can't be zero before doing this division.}}
   }
 
   static final int nonZero = 1;

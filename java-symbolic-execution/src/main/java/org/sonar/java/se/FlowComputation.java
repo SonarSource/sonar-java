@@ -75,7 +75,7 @@ public class FlowComputation {
   private static final String IMPLIES_IS_MSG = "Implies '%s' is %s.";
   private static final String IMPLIES_CAN_BE_MSG = "Implies '%s' can be %s.";
   private static final String IMPLIES_SAME_VALUE = "Implies '%s' has the same value as '%s'.";
-  private static final EnumSet<Tree.Kind> PROBLEMATIC_TREE_WITH_SEVERAL_POSSIBLE_FLOWS = EnumSet.of(
+  private static final EnumSet<Tree.Kind> MULTIPLE_FLOWS_TREES = EnumSet.of(
     Tree.Kind.PLUS,
     Tree.Kind.MINUS,
     Tree.Kind.MULTIPLY,
@@ -623,7 +623,7 @@ public class FlowComputation {
       String name = null;
       if (trackedSymbol != null) {
         name = trackedSymbol.name();
-      } else if (!PROBLEMATIC_TREE_WITH_SEVERAL_POSSIBLE_FLOWS.contains(nodeTree.kind())) {
+      } else if (!MULTIPLE_FLOWS_TREES.contains(nodeTree.kind())) {
         name = SyntaxTreeNameFinder.getName(nodeTree);
       }
       if (name == null) {
