@@ -19,11 +19,11 @@
  */
 package org.sonar.java.se;
 
-import org.sonar.java.Preconditions;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,10 +39,8 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.Preconditions;
 import org.sonar.java.cfg.CFG;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
-import org.sonarsource.analyzer.commons.collections.PCollections;
-import org.sonarsource.analyzer.commons.collections.PSet;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.se.ExplodedGraph.Node;
@@ -68,12 +66,26 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.PCollections;
+import org.sonarsource.analyzer.commons.collections.PSet;
 
 public class FlowComputation {
 
   private static final String IMPLIES_IS_MSG = "Implies '%s' is %s.";
   private static final String IMPLIES_CAN_BE_MSG = "Implies '%s' can be %s.";
   private static final String IMPLIES_SAME_VALUE = "Implies '%s' has the same value as '%s'.";
+  private static final EnumSet<Tree.Kind> MULTIPLE_FLOWS_TREES = EnumSet.of(
+    Tree.Kind.PLUS,
+    Tree.Kind.MINUS,
+    Tree.Kind.MULTIPLY,
+    Tree.Kind.DIVIDE,
+    Tree.Kind.REMAINDER,
+    Tree.Kind.PLUS_ASSIGNMENT,
+    Tree.Kind.MINUS_ASSIGNMENT,
+    Tree.Kind.MULTIPLY_ASSIGNMENT,
+    Tree.Kind.DIVIDE_ASSIGNMENT,
+    Tree.Kind.REMAINDER_ASSIGNMENT);
 
   private static final int MAX_FLOW_STEPS = 3_000_000;
   public static final int FIRST_FLOW = 1;
@@ -608,7 +620,12 @@ public class FlowComputation {
       }
 
       Symbol trackedSymbol = getSymbol(parent.programState, learnedConstraint.sv);
-      String name = trackedSymbol != null ? trackedSymbol.name() : SyntaxTreeNameFinder.getName(nodeTree);
+      String name = null;
+      if (trackedSymbol != null) {
+        name = trackedSymbol.name();
+      } else if (!MULTIPLE_FLOWS_TREES.contains(nodeTree.kind())) {
+        name = SyntaxTreeNameFinder.getName(nodeTree);
+      }
       if (name == null) {
         // unable to deduce name of element on which we learn a constraint. Nothing is reported
         return Flow.empty();

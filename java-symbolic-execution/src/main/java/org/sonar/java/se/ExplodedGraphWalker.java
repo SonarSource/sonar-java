@@ -1098,8 +1098,18 @@ public class ExplodedGraphWalker {
     ProgramState.Pop unstackBinary = programState.unstackValue(2);
     programState = unstackBinary.state;
     SymbolicValue symbolicValue = constraintManager.createBinarySymbolicValue(tree, unstackBinary.valuesAndSymbols);
+    Symbol symbolicValueSymbol = null;
+    // Some binary expressions produce as a result the symbolic value of one of their operands, or a wrapped version of it.
+    // For example: zero plus something returns something
+    // In this case, it helps the flow computation to also attach the symbol that produces the initial symbolic value.
+    if (tree.is(Tree.Kind.PLUS, Tree.Kind.MINUS, Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE, Tree.Kind.REMAINDER)) {
+      symbolicValueSymbol = unstackBinary.valuesAndSymbols.stream()
+        .filter(e -> e.symbolicValue().wrappedValue().equals(symbolicValue.wrappedValue())).findFirst()
+        .map(ProgramState.SymbolicValueSymbol::symbol)
+        .orElse(null);
+    }
     programState = programState.addConstraint(symbolicValue, ObjectConstraint.NOT_NULL);
-    programState = programState.stackValue(symbolicValue);
+    programState = programState.stackValue(symbolicValue, symbolicValueSymbol);
   }
 
   private void executeUnaryExpression(Tree tree) {
