@@ -143,7 +143,7 @@ public class NullDereferenceCheck extends SECheck {
       case VARIABLE:
         var variableTree = (VariableTree) syntaxNode;
         extractUnboxingExpression(variableTree).ifPresent(expression ->
-          checkConstraint(context, expression, peekValue)
+          checkUnboxingConstraint(context, expression, peekValue)
         );
         break;
       case YIELD_STATEMENT:
@@ -160,7 +160,7 @@ public class NullDereferenceCheck extends SECheck {
         } else if (syntaxNode instanceof UnaryExpressionTree) {
           var unaryOperation = (UnaryExpressionTree) syntaxNode;
           extractUnboxingExpression(unaryOperation).ifPresent(expression ->
-            checkConstraint(context, expression, peekValue)
+            checkUnboxingConstraint(context, expression, peekValue)
           );
         }
     }
@@ -190,12 +190,7 @@ public class NullDereferenceCheck extends SECheck {
         type = ((SwitchExpressionTree) tree).symbolType();
       }
       if (type.isPrimitive()) {
-        if (returnedExpression.is(Tree.Kind.IDENTIFIER)) {
-          Symbol symbol = ((IdentifierTree) returnedExpression).symbol();
-          checkConstraint(context, returnedExpression, context.getState().getValue(symbol));
-        } else {
-          checkConstraint(context, returnedExpression, peekValue);
-        }
+        checkUnboxingConstraint(context, returnedExpression, peekValue);
       }
     });
   }
@@ -210,26 +205,24 @@ public class NullDereferenceCheck extends SECheck {
 
   private void inspectAssignment(CheckerContext context, AssignmentExpressionTree syntaxNode, SymbolicValue peekValue) {
     var assignment = syntaxNode;
-    extractUnboxingExpression(assignment).ifPresent(expression -> {
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        Symbol symbol = ((IdentifierTree) expression).symbol();
-        checkConstraint(context, expression, context.getState().getValue(symbol));
-      } else {
-        checkConstraint(context, expression, peekValue);
-      }
-    });
+    extractUnboxingExpression(assignment).ifPresent(expression -> checkUnboxingConstraint(context, expression, peekValue));
   }
 
   private void inspectBinaryExpression(CheckerContext context, BinaryExpressionTree syntaxNode, SymbolicValue peekValue) {
     var binaryOperation = syntaxNode;
-    extractUnboxingExpression(binaryOperation).ifPresent(expression -> {
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        Symbol symbol = ((IdentifierTree) expression).symbol();
-        checkConstraint(context, expression, context.getState().getValue(symbol));
-      } else {
-        checkConstraint(context, expression, peekValue);
+    extractUnboxingExpression(binaryOperation).ifPresent(expression -> checkUnboxingConstraint(context, expression, peekValue));
+  }
+
+  private ProgramState checkUnboxingConstraint(CheckerContext context, ExpressionTree expression, SymbolicValue defaultValue) {
+    SymbolicValue constraintValue = defaultValue;
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) expression).symbol();
+      SymbolicValue value = context.getState().getValue(symbol);
+      if (value != null) {
+        constraintValue = value;
       }
-    });
+    }
+    return checkConstraint(context, expression, constraintValue);
   }
 
   private static Optional<ExpressionTree> extractUnboxingExpression(VariableTree variableTree) {
@@ -296,8 +289,6 @@ public class NullDereferenceCheck extends SECheck {
     }
     return Optional.empty();
   }
-
-
   private ProgramState checkMemberSelect(CheckerContext context, MemberSelectExpressionTree mse, SymbolicValue currentVal) {
     if ("class".equals(mse.identifier().name())) {
       // expression ClassName.class won't raise NPE.

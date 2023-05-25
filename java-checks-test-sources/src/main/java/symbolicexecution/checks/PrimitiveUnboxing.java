@@ -42,6 +42,14 @@ public class PrimitiveUnboxing {
     return boxed; // Noncompliant [[sc=12;ec=17]]
   }
 
+  class VolatileFieldsAreCompliantFalseNegatives {
+    private volatile Long boxedVolatile = null;
+
+    public long getBoxedVolatile() {
+      return boxedVolatile; // Compliant FN because the engine does look into the symbolic values of volatile fields
+    }
+  }
+
   int unboxExpressionOnReturn() {
     return getANullabbleInteger(); // Noncompliant [[sc=12;ec=34]]
   }
