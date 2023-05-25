@@ -68,6 +68,11 @@ class MinMaxRangeCheck {
     return Math.max(result, upper); // Noncompliant
   }
 
+  public int doRangeCheckNOK10(int num) {
+    int result = Math.min(MinMaxRangeCheck.LOWER_INT, num);
+    return Math.max(MinMaxRangeCheck.UPPER_INT, result); // Noncompliant {{Change these chained max/min methods invocations, as final results will always be the upper bound.}}
+  }
+
   public int doRangeCheckOK1(int num) { // Let's say num = 12
     int result = Math.min(UPPER_INT, num); // result = 12
     return Math.max(LOWER_INT, result); // Compliant; result is still 12
