@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +41,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -152,6 +154,8 @@ public class MinMaxRangeCheck extends SECheck {
         return handleNumericalLiteral(context, (UnaryExpressionTree) syntaxNode);
       case IDENTIFIER:
         return handleNumericalConstant(context, (IdentifierTree) syntaxNode);
+      case MEMBER_SELECT:
+        return handleNumericalConstant(context, ((MemberSelectExpressionTree) syntaxNode).identifier());
       case METHOD_INVOCATION:
         return handleMinMaxInvocation(context, (MethodInvocationTree) syntaxNode);
       default:
