@@ -192,7 +192,10 @@ public class NullDereferenceCheck extends SECheck {
       if (type.isPrimitive()) {
         if (returnedExpression.is(Tree.Kind.IDENTIFIER)) {
           Symbol symbol = ((IdentifierTree) returnedExpression).symbol();
-          checkConstraint(context, returnedExpression, context.getState().getValue(symbol));
+          var value = context.getState().getValue(symbol);
+          if (value != null) {
+            checkConstraint(context, returnedExpression, value);
+          }
         } else {
           checkConstraint(context, returnedExpression, peekValue);
         }
