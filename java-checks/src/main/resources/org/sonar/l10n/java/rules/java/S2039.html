@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>Failing to explicitly declare the visibility of a member variable could result it in having a visibility you don’t expect, and potentially leave it
 open to unexpected modification by other classes.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class Ball {
     String color="red";  // Noncompliant
@@ -10,7 +11,7 @@ enum A {
   int a;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class Ball {
     private String color="red";  // Compliant
@@ -20,7 +21,7 @@ enum A {
   private int a;
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Members annotated with <code>@VisibleForTesting</code> annotation are ignored, as it indicates that visibility has been purposely relaxed to make
 the code testable.</p>
 <pre>

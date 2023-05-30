@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>The purpose of an abstract class is to provide some heritable behaviors while also defining methods which must be implemented by sub-classes.</p>
 <p>A class with no abstract methods that was made abstract purely to prevent instantiation should be converted to a concrete class (i.e. remove the
 <code>abstract</code> keyword) with a private constructor.</p>
 <p>A class with only abstract methods and no inheritable behavior should be converted to an interface.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public abstract class Animal {  // Noncompliant; should be an interface
   abstract void move();
@@ -19,7 +20,7 @@ public abstract class Color {  // Noncompliant; should be concrete with a privat
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public interface Animal {
   void move();

@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Assigning a value to a <code>static</code> field in a constructor could cause unreliable behavior at runtime since it will change the value for all
 instances of the class.</p>
 <p>Instead remove the field’s <code>static</code> modifier, or initialize it statically.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Person {
   static Date dateOfBirth;
@@ -13,7 +14,7 @@ public class Person {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Person {
   Date dateOfBirth;

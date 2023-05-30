@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to the Single Responsibility Principle, introduced by Robert C. Martin in his book "Principles of Object Oriented Design", a class should
 have only one responsibility:</p>
 <blockquote>
@@ -7,7 +8,7 @@ have only one responsibility:</p>
 </blockquote>
 <p>Classes which rely on many other classes tend to aggregate too many responsibilities and should be split into several smaller ones.</p>
 <p>Nested classes dependencies are not counted as dependencies of the outer class.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p>With a threshold of 5:</p>
 <pre>
 class Foo {                        // Noncompliant - Foo depends on too many classes: T1, T2, T3, T4, T5, T6 and T7

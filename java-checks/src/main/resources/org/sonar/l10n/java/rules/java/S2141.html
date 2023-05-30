@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Because <code>Object</code> implements <code>hashCode</code>, any Java class can be put into a hash structure. However, classes that define
 <code>equals(Object)</code> but not <code>hashCode()</code> aren’t truly hash-able because instances that are equivalent according to the
 <code>equals</code> method can return different hashes.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Student {  // no hashCode() method; not hash-able
   // ...
@@ -17,7 +18,7 @@ public class School {
 
   // ...
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Student {  // has hashCode() method; hash-able
   // ...

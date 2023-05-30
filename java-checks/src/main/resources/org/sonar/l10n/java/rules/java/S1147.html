@@ -1,17 +1,18 @@
+<h2>Why is this an issue?</h2>
 <p>Calling <code>System.exit(int status)</code> or <code>Rutime.getRuntime().exit(int status)</code> calls the shutdown hooks and shuts downs the
 entire Java virtual machine. Calling <code>Runtime.getRuntime().halt(int)</code> does an immediate shutdown, without calling the shutdown hooks, and
 skipping finalization.</p>
 <p>Each of these methods should be used with extreme care, and only when the intent is to stop the whole Java process. For instance, none of them
 should be called from applications running in a J2EE container.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 System.exit(0);
 Runtime.getRuntime().exit(0);
 Runtime.getRuntime().halt(0);
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>These methods are ignored inside <code>main</code>.</p>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/382">MITRE, CWE-382</a> - Use of System.exit() </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/7zZGBQ">CERT, ERR09-J.</a> - Do not allow untrusted code to terminate the JVM </li>

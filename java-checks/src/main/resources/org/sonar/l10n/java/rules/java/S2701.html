@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>There’s no reason to use literal boolean values or nulls in assertions. Instead of using them with <em>assertEquals</em>, <em>assertNotEquals</em>
 and similar methods, you should be using <em>assertTrue</em>, <em>assertFalse</em>, <em>assertNull</em> or <em>assertNotNull</em> instead (or
 <em>isNull</em> etc. when using Fest). Using them with assertions unrelated to equality (such as <em>assertNull</em>) is most likely a bug.</p>
@@ -8,7 +9,7 @@ and similar methods, you should be using <em>assertTrue</em>, <em>assertFalse</e
   <li> JUnit5 </li>
   <li> Fest assert </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Assert.assertTrue(true);  // Noncompliant
 assertThat(null).isNull(); // Noncompliant
@@ -16,7 +17,7 @@ assertThat(null).isNull(); // Noncompliant
 assertEquals(true, something()); // Noncompliant
 assertNotEquals(null, something()); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 assertTrue(something());
 assertNotNull(something());

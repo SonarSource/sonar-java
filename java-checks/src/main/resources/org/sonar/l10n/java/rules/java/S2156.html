@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>The difference between <code>private</code> and <code>protected</code> visibility is that child classes can see and use <code>protected</code>
 members, but they cannot see <code>private</code> ones. Since a <code>final</code> class will have no children, marking the members of a
 <code>final</code> class <code>protected</code> is confusingly pointless.</p>
 <p>Note that the <code>protected</code> members of a class can also be seen and used by other classes that are placed within the same package, this
 could lead to accidental, unintended access to otherwise private members.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public final class MyFinalClass {
 
@@ -12,7 +13,7 @@ public final class MyFinalClass {
     // ...
   }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public final class MyFinalClass {
 
@@ -21,7 +22,7 @@ public final class MyFinalClass {
     // ...
   }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Members annotated with&nbsp;<code>@VisibleForTesting</code> annotation are ignored, as it indicates that visibility has been purposely relaxed to
 make the code testable.</p>
 <pre>

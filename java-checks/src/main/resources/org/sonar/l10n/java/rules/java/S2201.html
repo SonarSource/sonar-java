@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When the call to a function doesn’t have any side effects, what is the point of making the call if the results are ignored? In such case, either
 the function call is useless and should be dropped or the source code doesn’t behave as expected.</p>
 <p>To prevent generating any false-positives, this rule triggers an issue only on the following predefined list of immutable classes in the Java API
@@ -69,21 +70,21 @@ the function call is useless and should be dropped or the source code doesn’t 
       <li> <code>toList</code> </li>
     </ul>  </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void handle(String command){
   command.toLowerCase(); // Noncompliant; result of method thrown away
   ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void handle(String command){
   String formattedCommand = command.toLowerCase();
   ...
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>This rule will not raise an issue when both these conditions are met:</p>
 <ul>
   <li> The method call is in a <code>try</code> block with an associated <code>catch</code> clause. </li>
@@ -100,7 +101,7 @@ private boolean textIsInteger(String textToCheck) {
     }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/xzdGBQ">CERT, EXP00-J.</a> - Do not ignore values returned by methods </li>
 </ul>

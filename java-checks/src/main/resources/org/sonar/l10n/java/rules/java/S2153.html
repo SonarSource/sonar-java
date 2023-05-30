@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>Boxing is the process of putting a primitive value into an analogous object, such as creating an <code>Integer</code> to hold an <code>int</code>
 value. Unboxing is the process of retrieving the primitive value from such an object.</p>
 <p>Since the original value is unchanged during boxing and unboxing, there’s no point in doing either when not needed. This also applies to autoboxing
 and auto-unboxing (when Java implicitly handles the primitive/object transition for you).</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void examineInt(int a) {
   //...
@@ -28,7 +29,7 @@ public void func() {
   Integer iger2 = new Integer(iger1); // Noncompliant; unnecessary unboxing, value can be reused
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void examineInt(int a) {
   //...

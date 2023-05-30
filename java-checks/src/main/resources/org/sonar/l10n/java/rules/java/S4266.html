@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When using the <code>Stream</code> API, call chains should be simplified as much as possible to improve readability and maintainability.</p>
 <p>This rule raises an issue when one of the following substitution can be made:</p>
 <table>
@@ -46,11 +47,11 @@
     </tr>
   </tbody>
 </table>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 int count = stream.collect(counting());  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 int count = stream.count();
 </pre>

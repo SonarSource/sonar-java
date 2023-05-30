@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>By contract, the <code>equals(Object)</code> method, from <code>java.lang.Object</code>, should accept a <code>null</code> argument. Among all the
 other cases, the <code>null</code> case is even explicitly detailed in the <code>Object.equals(...)</code> Javadoc, stating <em>"For any non-null
 reference value x, x.equals(null) should return false."</em></p>
@@ -5,13 +6,13 @@ reference value x, x.equals(null) should return false."</em></p>
 violation of the contract of <code>equals</code>, but it is also likely to cause problems in the future as the use of the class evolves over time.</p>
 <p>The rule raises an issue when the <code>equals</code> method is overridden and its parameter annotated with any kind of <code>@Nonnull</code>
 annotation.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public boolean equals(@javax.annotation.Nonnull Object obj) { // Noncompliant
   // ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public boolean equals(Object obj) {
   if (obj == null) {

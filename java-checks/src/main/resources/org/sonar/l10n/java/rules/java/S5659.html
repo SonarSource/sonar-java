@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>If a JSON Web Token (JWT) is not signed with a strong cipher algorithm (or not signed at all) an attacker can forge it and impersonate user
 identities.</p>
 <ul>
   <li> Don’t use <code>none</code> algorithm to sign or verify the validity of a token. </li>
   <li> Don’t use a token without verifying its signature before. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p>Using <a href="https://github.com/jwtk/jjwt">jwtk/Java JWT</a> library (to verify a signed token (containing a JWS) don’t use the
 <code>parse</code> method as it doesn’t throw an exception if an unsigned token is provided):</p>
 <pre>
@@ -26,7 +27,7 @@ JWTVerifier nonCompliantVerifier = com.auth0.jwt.JWT.require(Algorithm.none()) /
   .withSubject(LOGIN)
   .build();
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <p>Using <a href="https://github.com/jwtk/jjwt">Java JWT</a> library (to verify a signed token (containing a JWS) use the <code>parseClaimsJws</code>
 method that will throw an exception if an unsigned token is provided):</p>
 <pre>
@@ -49,7 +50,7 @@ JWTVerifier nonCompliantVerifier = JWT.require(Algorithm.HMAC256(SECRET_KEY)) //
   .withSubject(LOGIN)
   .build();
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data

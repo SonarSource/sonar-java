@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Shadowing makes it impossible to use the type parameter from the outer scope. Also, it can be confusing to distinguish which type parameter is
 being used.</p>
 <p>This rule raises an issue when a type parameter from an inner scope uses the same name as one in an outer scope.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
  public class TypeParameterHidesAnotherType&lt;T&gt; {
 
@@ -15,7 +16,7 @@ being used.</p>
 
   }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class NoTypeParameterHiding&lt;T&gt; {
 

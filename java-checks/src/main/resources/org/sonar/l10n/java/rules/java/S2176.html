@@ -1,12 +1,13 @@
+<h2>Why is this an issue?</h2>
 <p>While it’s perfectly legal to give a class the same simple name as a class in another package that it extends or interface it implements, it’s
 confusing and could cause problems in the future.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 package my.mypackage;
 
 public class Foo implements a.b.Foo { // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 package my.mypackage;
 

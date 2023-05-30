@@ -1,14 +1,15 @@
+<h2>Why is this an issue?</h2>
 <p>If a string fits on a single line, without concatenation and escaped newlines, you should probably continue to use a string literal.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String question = """
               What's the point, really?""";
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String question = "What's the point, really?";
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://openjdk.java.net/jeps/378">JEP 378: Text Blocks</a> </li>
   <li> <a href="https://openjdk.org/projects/amber/guides/text-blocks-guide">Programmer’s Guide To Text Blocks</a>, by Jim Laskey and Stuart Marks

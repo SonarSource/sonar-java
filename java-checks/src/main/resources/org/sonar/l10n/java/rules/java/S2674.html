@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>You cannot assume that any given stream reading call will fill the <code>byte[]</code> passed in to the method. Instead, you must check the value
 returned by the read method to see how many bytes were read. Fail to do so, and you introduce bug that is both harmful and difficult to reproduce.</p>
 <p>Similarly, you cannot assume that <code>InputStream.skip</code> will actually skip the requested number of bytes, but must check the value returned
@@ -5,7 +6,7 @@ from the method.</p>
 <p>This rule raises an issue when an <code>InputStream.read</code> method that accepts a <code>byte[]</code> is called, but the return value is not
 checked, and when the return value of <code>InputStream.skip</code> is not checked. The rule also applies to <code>InputStream</code> child
 classes.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doSomething(String fileName) {
   try {
@@ -16,7 +17,7 @@ public void doSomething(String fileName) {
   } catch (IOException e) { ... }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void doSomething(String fileName) {
   try {
@@ -29,7 +30,7 @@ public void doSomething(String fileName) {
   } catch (IOException e) { ... }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/VzdGBQ">CERT, FIO10-J.</a> - Ensure the array is filled when using read() to fill an array </li>
 </ul>

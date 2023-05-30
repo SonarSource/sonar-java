@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The <code>equals</code> and <code>hashCode</code> methods of <code>java.net.URL</code> both may trigger a name service (usually DNS) lookup to
 resolve the host name or IP address. Depending on the configuration, and network status, that can take a long time. <code>URI</code> on the other hand
 makes no such calls and should be used instead unless the specific <code>URL</code> functionality is required.</p>
@@ -5,7 +6,7 @@ makes no such calls and should be used instead unless the specific <code>URL</co
 <code>URI</code> to a <code>URL</code> using <code>URI.toURL()</code>.</p>
 <p>This rule checks for uses of <code>URL</code> 's in <code>Map</code> and <code>Set</code> , and for explicit calls to the <code>equals</code> and
 <code>hashCode</code> methods.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void checkUrl(URL url) {
   Set&lt;URL&gt; sites = new HashSet&lt;URL&gt;();  // Noncompliant
@@ -16,7 +17,7 @@ public void checkUrl(URL url) {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void checkUrl(URL url) {
   Set&lt;URI&gt; sites = new HashSet&lt;URI&gt;();  // Compliant

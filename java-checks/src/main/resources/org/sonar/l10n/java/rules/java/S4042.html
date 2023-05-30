@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>When <code>java.io.File#delete</code> fails, this <code>boolean</code> method simply returns <code>false</code> with no indication of the cause. On
 the other hand, when <code>java.nio.file.Files#delete</code> fails, this <code>void</code> method returns one of a series of exception types to better
 indicate the cause of the failure. And since more information is generally better in a debugging situation, <code>java.nio.file.Files#delete</code> is
 the preferred option.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void cleanUp(Path path) {
   File file = new File(path);
@@ -11,7 +12,7 @@ public void cleanUp(Path path) {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void cleanUp(Path path) throws NoSuchFileException, DirectoryNotEmptyException, IOException {
   Files.delete(path);

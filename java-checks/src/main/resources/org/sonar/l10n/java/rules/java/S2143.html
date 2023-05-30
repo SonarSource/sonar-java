@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The old, much-derided <code>Date</code> and <code>Calendar</code> classes have always been confusing and difficult to use properly, particularly in
 a multi-threaded context. <code>JodaTime</code> has long been a popular alternative, but now an even better option is built-in. Java 8’s JSR 310
 implementation offers specific classes for:</p>
@@ -67,14 +68,14 @@ implementation offers specific classes for:</p>
     </tr>
   </tbody>
 </table>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Date now = new Date();  // Noncompliant
 DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 Calendar christmas  = Calendar.getInstance();  // Noncompliant
 christmas.setTime(df.parse("25.12.2020"));
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 LocalDate now = LocalDate.now();  // gets calendar date. no time component
 LocalTime now2 = LocalTime.now(); // gets current time. no date component

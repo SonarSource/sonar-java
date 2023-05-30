@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>Simply implementing <code>Cloneable</code> without also overriding <code>Object.clone()</code> does not necessarily make the class cloneable. While
 the <code>Cloneable</code> interface does not include a <code>clone</code> method, it is required by convention, and ensures true cloneability.
 Otherwise the default JVM <code>clone</code> will be used, which copies primitive values and object references from the source to the target. I.e.
 without overriding <code>clone</code>, any cloned instances will potentially share members with the source instance.</p>
 <p>Removing the <code>Cloneable</code> implementation and providing a good copy constructor is another viable (some say preferable) way of allowing a
 class to be copied.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class Team implements Cloneable {  // Noncompliant
   private Person coach;
@@ -13,7 +14,7 @@ class Team implements Cloneable {  // Noncompliant
   public Person getCoach() {...}
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class Team implements Cloneable {
   private Person coach;

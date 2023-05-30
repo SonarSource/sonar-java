@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>In cryptography, a "salt" is an extra piece of data which is included when hashing a password. This makes <code>rainbow-table attacks</code> more
 difficult. Using a cryptographic hash function without an unpredictable salt increases the likelihood that an attacker could successfully find the
 hash value in databases of precomputed hashes (called <code>rainbow-tables</code>).</p>
@@ -9,7 +10,7 @@ as they should not be used to hash passwords.</p>
   <li> Use hashing functions generating their own secure salt or generate a secure random value of at least 16 bytes. </li>
   <li> The salt should be unique by user password. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p>Below, the hashed password use a predictable salt:</p>
 <pre>
 byte[] salt = "notrandom".getBytes();
@@ -17,7 +18,7 @@ byte[] salt = "notrandom".getBytes();
 PBEParameterSpec cipherSpec = new PBEParameterSpec(salt, 10000); // Noncompliant, predictable salt
 PBEKeySpec spec = new PBEKeySpec(chars, salt, 10000, 256); // Noncompliant, predictable salt
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <p>Use <code>java.security.SecureRandom</code> to generate an unpredictable salt:</p>
 <pre>
 SecureRandom random = new SecureRandom();
@@ -27,7 +28,7 @@ random.nextBytes(salt);
 PBEParameterSpec cipherSpec = new PBEParameterSpec(salt, 10000); // Compliant
 PBEKeySpec spec = new PBEKeySpec(chars, salt, 10000, 256); // Compliant
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data

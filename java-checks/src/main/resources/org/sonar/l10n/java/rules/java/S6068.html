@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>Mockito provides <em>argument matchers</em> for flexibly stubbing or verifying method calls.</p>
 <p><code>Mockito.verify()</code>, <code>Mockito.when()</code>, <code>Stubber.when()</code> and <code>BDDMockito.given()</code> each have overloads
 with and without argument matchers.</p>
 <p>However, the default matching behavior (i.e. without argument matchers) uses <code>equals()</code>. If only the matcher
 <code>org.mockito.ArgumentMatchers.eq()</code> is used, the call is equivalent to the call without matchers, i.e. the <code>eq()</code> is not
 necessary and can be omitted. The resulting code is shorter and easier to read.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Test
 public void myTest() {
@@ -14,7 +15,7 @@ public void myTest() {
   verify(foo).bar(eq(v1), eq(v2), eq(v3));   // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @Test
 public void myTest() {
@@ -24,7 +25,7 @@ public void myTest() {
   verify(foo).bar(v1, v2, v3);
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#argument_matchers">Mockito documentation</a> -
   argument matchers </li>

@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>Non-overridable methods (<code>private</code> or <code>final</code>) that don’t access instance data can be <code>static</code> to prevent any
 misunderstanding about the contract of the method.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class Utilities {
   private static String magicWord = "magic";
@@ -15,7 +16,7 @@ class Utilities {
 
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class Utilities {
   private static String magicWord = "magic";
@@ -30,7 +31,7 @@ class Utilities {
 
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>When <code>java.io.Serializable</code> is implemented the following three methods are excluded by the rule:</p>
 <ul>
   <li> <code>private void writeObject(java.io.ObjectOutputStream out) throws IOException;</code> </li>

@@ -1,16 +1,17 @@
+<h2>Why is this an issue?</h2>
 <p>When a back reference in a regex refers to a capturing group that hasn’t been defined yet (or at all), it can never be matched. Named back
 references throw a <code>PatternSyntaxException</code> in that case; numeric back references fail silently when they can’t match, simply making the
 match fail.</p>
 <p>When the group is defined before the back reference but on a different control path (like in <code>(.)|\1</code> for example), this also leads to a
 situation where the back reference can never match.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Pattern.compile("\\1(.)"); // Noncompliant, group 1 is defined after the back reference
 Pattern.compile("(.)\\2"); // Noncompliant, group 2 isn't defined at all
 Pattern.compile("(.)|\\1"); // Noncompliant, group 1 and the back reference are in different branches
 Pattern.compile("(?&lt;x&gt;.)|\\k&lt;x&gt;"); // Noncompliant, group x and the back reference are in different branches
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Pattern.compile("(.)\\1");
 Pattern.compile("(?&lt;x&gt;.)\\k&lt;x&gt;");

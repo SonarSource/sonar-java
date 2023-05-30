@@ -1,16 +1,17 @@
+<h2>Why is this an issue?</h2>
 <p>Creating a new <code>Random</code> object each time a random value is needed is inefficient and may produce numbers which are not random depending
 on the JDK. For better efficiency and randomness, create a single <code>Random</code>, then store, and reuse it.</p>
 <p>The <code>Random()</code> constructor tries to set the seed with a distinct value every time. However there is no guarantee that the seed will be
 random or even uniformly distributed. Some JDK will use the current time as seed, which makes the generated numbers not random at all.</p>
 <p>This rule finds cases where a new <code>Random</code> is created each time a method is invoked.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doSomethingCommon() {
   Random rand = new Random();  // Noncompliant; new instance created with each invocation
   int rValue = rand.nextInt();
   //...
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 private Random rand = SecureRandom.getInstanceStrong();  // SecureRandom is preferred to Random
 
@@ -18,10 +19,10 @@ public void doSomethingCommon() {
   int rValue = this.rand.nextInt();
   //...
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>A class which uses a <code>Random</code> in its constructor or in a static <code>main</code> function and nowhere else will be ignored by this
 rule.</p>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
   Misconfiguration </li>

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>In regular expressions the escape sequence <code>\cX</code>, where the X stands for any character that’s either <code>@</code>, any capital ASCII
 letter, <code>[</code>, <code>\</code>, <code>]</code>, <code>^</code> or <code>_</code>, represents the control character that "corresponds" to the
 character following <code>\c</code>, meaning the control character that comes 64 bytes before the given character in the ASCII encoding.</p>
@@ -7,12 +8,12 @@ character as <code>\cD</code>. Further using <code>\c</code> with a character th
 in Java, where the value of the character is always XORed with 64 without checking that this operation makes sense. Since this won’t lead to a
 sensible result for characters that are outside of the <code>@</code> to <code>_</code> range, using <code>\c</code> with such characters is almost
 certainly a mistake.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Pattern.compile("\\ca"); // Noncompliant, 'a' is not an upper case letter
 Pattern.compile("\\c!"); // Noncompliant, '!' is outside of the '@'-'_' range
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Pattern.compile("\\cA"); // Compliant, this will match the "start of heading" control character
 Pattern.compile("\\c^"); // Compliant, this will match the "record separator" control character

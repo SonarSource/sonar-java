@@ -1,19 +1,20 @@
+<h2>Why is this an issue?</h2>
 <p>A <code>org.assertj.core.configuration.Configuration</code> will be effective only once you call <code>Configuration.apply()</code> or
 <code>Configuration.applyAndDisplay()</code>.</p>
 <p>This rule raises an issue when configurations are set without the appropriate call to apply them.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Configuration configuration = new Configuration(); // Noncompliant, this configuration will not be applied.
 configuration.setComparingPrivateFields(true);
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Configuration configuration = new Configuration();
 configuration.setComparingPrivateFields(true);
 configuration.applyAndDisplay();
 // Alternatively: configuration.apply();
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://assertj.github.io/doc/#assertj-configuration">AssertJ configuration documentation</a> </li>
 </ul>

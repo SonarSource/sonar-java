@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p><code>NullPointerException</code> should be avoided, not caught. Any situation in which <code>NullPointerException</code> is explicitly caught can
 easily be converted to a <code>null</code> test, and any behavior being carried out in the catch block can easily be moved to the "is null" branch of
 the conditional.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public int lengthPlus(String str) {
   int len = 2;
@@ -14,7 +15,7 @@ public int lengthPlus(String str) {
   return len;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public int lengthPlus(String str) {
   int len = 2;
@@ -28,7 +29,7 @@ public int lengthPlus(String str) {
   return len;
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/395">MITRE, CWE-395</a> - Use of NullPointerException Catch to Detect NULL Pointer Dereference
   </li>

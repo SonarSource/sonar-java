@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>In single-threaded environments, the use of <code>this</code> in constructors is normal, and expected. But in multi-threaded environments, it could
 expose partially-constructed objects to other threads, and should be used with caution.</p>
 <p>The classic example is a class with a <code>static</code> list of its instances. If the constructor stores <code>this</code> in the list, another
@@ -6,7 +7,7 @@ there’s still a danger if the class is not <code>final</code>. In that case, t
 <code>this</code> is exposed.</p>
 <p>This rule raises an issue when <code>this</code> is assigned to any globally-visible object in a constructor, and when it is passed to the method
 of another object in a constructor</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Monument {
 
@@ -21,10 +22,10 @@ public class Monument {
   }
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>This rule ignores instances of assigning <code>this</code> directly to a <code>static</code> field of the same class because that case is covered
 by {rule:java:S3010} .</p>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/iDdGBQ">CERT, TSM01-J.</a> - Do not let the this reference escape during object construction
   </li>

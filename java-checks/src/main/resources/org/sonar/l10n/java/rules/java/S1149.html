@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Early classes of the Java API, such as <code>Vector</code>, <code>Hashtable</code> and <code>StringBuffer</code>, were synchronized to make them
 thread-safe. Unfortunately, synchronization has a big negative impact on performance, even when using these collections from a single thread.</p>
 <p>It is better to use their new unsynchronized replacements:</p>
@@ -9,15 +10,15 @@ thread-safe. Unfortunately, synchronization has a big negative impact on perform
 </ul>
 <p>Even when used in synchronized context, you should think twice before using it, since it’s usage can be tricky. If you are confident the usage is
 legitimate, you can safely ignore this warning.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Vector cats = new Vector();
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 ArrayList cats = new ArrayList();
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Use of those synchronized classes is ignored in the signatures of overriding methods.</p>
 <pre>
 @Override

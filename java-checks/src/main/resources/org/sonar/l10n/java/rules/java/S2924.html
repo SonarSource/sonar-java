@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>While some <code>TestRule</code> classes have the desired effect without ever being directly referenced by a test, several others do not, and
 there’s no reason to leave them cluttering up the file if they’re not in use.</p>
 <p>This rule raises an issue when <code>Test</code> class fields of the following types aren’t used by any of the test methods:
 <code>TemporaryFolder</code>, and <code>TestName</code>.</p>
 <p>This rule also applies to the JUnit 5 equivalent classes: <code>TempDir</code>, and <code>TestInfo</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class ProjectDefinitionTest {
 
@@ -18,7 +19,7 @@ public class ProjectDefinitionTest {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class ProjectDefinitionTest {
 

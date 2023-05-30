@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p><code>java.lang.Error</code> and its subclasses represent abnormal conditions, such as <code>OutOfMemoryError</code>, which should only be
 encountered by the Java Virtual Machine.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyException extends Error { /* ... */ }       // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class MyException extends Exception { /* ... */ }   // Compliant
 </pre>

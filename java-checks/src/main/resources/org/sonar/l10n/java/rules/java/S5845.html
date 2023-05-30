@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Assertions comparing incompatible types always fail, and negative assertions always pass. At best, negative assertions are useless. At worst, the
 developer loses time trying to fix his code logic before noticing wrong assertions.</p>
 <p>Dissimilar types are:</p>
@@ -17,7 +18,7 @@ failure to inform the developer about this unusual comparison.</p>
   <li> JUnit5 </li>
   <li> AssertJ </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 interface KitchenTool {}
 interface Plant {}
@@ -43,7 +44,7 @@ void assertValues(int size,
   assertThat(tool).isNotEqualTo(plant);    // Noncompliant; unrelated interfaces
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> {rule:java:S2159} - Silly equality checks should not be made </li>
 </ul>

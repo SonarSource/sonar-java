@@ -1,5 +1,6 @@
+<h2>Why is this an issue?</h2>
 <p>Multiple catch blocks of the appropriate type should be used instead of catching a general exception, and then testing on the type.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 try {
   /* ... */
@@ -8,14 +9,14 @@ try {
   if(e instanceof NullPointerException{ /* ... */ }  // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 try {
   /* ... */
 } catch (IOException e) { /* ... */ }                // Compliant
 } catch (NullPointerException e) { /* ... */ }       // Compliant
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR51-J.+Prefer+user-defined+exceptions+over+more+general+exception+types">CERT,
   ERR51-J.</a> - Prefer user-defined exceptions over more general exception types </li>

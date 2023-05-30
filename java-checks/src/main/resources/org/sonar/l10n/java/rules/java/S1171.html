@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>Non-static initializers are rarely used, and can be confusing for most developers because they only run when new class instances are created. When
 possible, non-static initializers should be refactored into standard constructors or field initializers.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class MyClass {
   private static final Map&lt;String, String&gt; MY_MAP = new HashMap&lt;String, String&gt;() {
@@ -13,7 +14,7 @@ class MyClass {
   };
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class MyClass {
   private static final Map&lt;String, String&gt; MY_MAP = new HashMap&lt;String, String&gt;();

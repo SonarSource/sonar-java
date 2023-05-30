@@ -1,14 +1,15 @@
+<h2>Why is this an issue?</h2>
 <p>By default case insensitivity only affects letters in the ASCII range. This can be changed by either passing <code>Pattern.UNICODE_CASE</code> or
 <code>Pattern.UNICODE_CHARACTER_CLASS</code> as an argument to <code>Pattern.compile</code> or using <code>(?u)</code> or <code>(?U)</code> within the
 regex.</p>
 <p>If not done, regular expressions involving non-ASCII letters will still handle those letters as being case sensitive.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE);
 str.matches("(?i)söme pättern");
 str.matches("(?i:söme) pättern");
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 str.matches("(?iu)söme pättern");

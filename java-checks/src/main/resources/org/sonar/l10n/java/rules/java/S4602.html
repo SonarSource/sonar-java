@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p><code>@ComponentScan</code> is used to determine which Spring Beans are available in the application context. The packages to scan can be
 configured thanks to the <code>basePackageClasses</code> or <code>basePackages</code> (or its alias <code>value</code>) parameters. If neither
 parameter is configured, <code>@ComponentScan</code> will consider only the package of the class annotated with it. When <code>@ComponentScan</code>
@@ -10,7 +11,7 @@ is used on a class belonging to the default package, the entire classpath will b
   default package </li>
   <li> <code>@ComponentScan</code> is explicitly configured with the default package </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 import org.springframework.boot.SpringApplication;
 
@@ -25,7 +26,7 @@ public class Application {
 ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 package hello;
 

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The Java language authors have been quite frank that <code>Optional</code> was intended for use only as a return type, as a way to convey that a
 method may or may not return a value.</p>
 <p>And for that, it’s valuable but using <code>Optional</code> on the input side increases the work you have to do in the method without really
@@ -7,7 +8,7 @@ optional, and there’s really no reason to have <code>Optional</code> parameter
 <p>The rule also checks for Guava’s <code>Optional</code>, as it was the inspiration for the JDK <code>Optional</code>. Although it is different in
 some aspects (serialization, being recommended for use as collection elements), using it as a parameter type causes exactly the same problems as for
 JDK <code>Optional</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public String sayHello(Optional&lt;String&gt; name) {  // Noncompliant
   if (name == null || !name.isPresent()) {
@@ -17,7 +18,7 @@ public String sayHello(Optional&lt;String&gt; name) {  // Noncompliant
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public String sayHello(String name) {
   if (name == null) {
@@ -27,7 +28,7 @@ public String sayHello(String name) {
   }
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>No issues will be raised if a method is overriding, as the developer has no control over the signature at this point.</p>
 <pre>
 @Override

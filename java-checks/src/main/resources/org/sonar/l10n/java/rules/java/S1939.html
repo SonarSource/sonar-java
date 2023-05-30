@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>All classes extend <code>Object</code> implicitly. Doing so explicitly is redundant.</p>
 <p>Further, declaring the implementation of an interface <em>and</em> one if its parents is also redundant. If you implement the interface, you also
 implicitly implement its parents and there’s no need to do so explicitly.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public interface MyFace {
   // ...
@@ -17,7 +18,7 @@ public class Foo
   //...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public interface MyFace {
   // ...

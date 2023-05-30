@@ -1,14 +1,15 @@
+<h2>Why is this an issue?</h2>
 <p>Using reluctant quantifiers (also known as lazy or non-greedy quantifiers) in patterns can often lead to needless backtracking, making the regex
 needlessly inefficient and potentially vulnerable to <a href="https://www.regular-expressions.info/catastrophic.html">catastrophic backtracking</a>.
 Particularly when using <code>.*?</code> or <code>.+?</code> to match anything up to some terminating character, it is usually a better idea to
 instead use a greedily or possessively quantified negated character class containing the terminating character. For example <code>&lt;.+?&gt;</code>
 should be replaced with <code>&lt;[^&gt;]++&gt;</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 &lt;.+?&gt;
 ".*?"
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 &lt;[^&gt;]++&gt;
 "[^"]*+"
@@ -18,7 +19,7 @@ should be replaced with <code>&lt;[^&gt;]++&gt;</code>.</p>
 &lt;[^&gt;]+&gt;
 "[^"]*"
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>This rule only applies in cases where the reluctant quantifier can easily be replaced with a negated character class. That means the repetition has
 to be terminated by a single character or character class. Patterns such as the following, where the alternatives without reluctant quantifiers are
 more complicated, are therefore not subject to this rule:</p>

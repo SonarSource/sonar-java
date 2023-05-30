@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>If the region is not specified when creating a new AwsClient with an <a
 href="https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/awscore/client/builder/AwsClientBuilder.html">AwsClientBuilder</a>, the AWS SDK
 will execute some logic to identify the endpoint automatically.</p>
@@ -6,20 +7,20 @@ will execute some logic to identify the endpoint automatically.</p>
 AWS_REGION environment variable.</p>
 <p>This will make the code more explicit and spare initialization time.</p>
 <p>This rule reports an issue when the region is not set when creating an AwsClient.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 S3Client.builder()
     .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
     .build();
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 S3Client.builder()
     .region(Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable()))
     .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
     .build();
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://aws.amazon.com/fr/blogs/developer/tuning-the-aws-java-sdk-2-x-to-reduce-startup-time/">Tuning the AWS Java SDK 2.x to reduce
   startup time</a> </li>

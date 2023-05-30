@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to the Java API documentation:</p>
 <blockquote>
   <p>There are two ways to create a new thread of execution. One is to declare a class to be a subclass of Thread. This subclass should override the
@@ -7,14 +8,14 @@
 </blockquote>
 <p>By definition, extending the Thread class without overriding the <code>run</code> method doesn’t make sense, and implies that the contract of the
 <code>Thread</code> class is not well understood.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyRunner extends Thread { // Noncompliant; run method not overridden
 
   public void doSometing() {...}
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>If <code>run()</code> is not overridden in a class extending <code>Thread</code>, it means that starting the thread will actually call
 <code>Thread.run()</code>. However, <code>Thread.run()</code> does nothing if it has not been fed with a target <code>Runnable</code>. The rule
 consequently ignore classes extending <code>Thread</code> if they are calling, in their constructors, the <code>super(...)</code> constructor with a

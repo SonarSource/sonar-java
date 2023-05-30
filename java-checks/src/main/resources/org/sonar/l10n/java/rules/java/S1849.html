@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Calling <code>Iterator.hasNext()</code> is not supposed to have any side effects, and therefore should not change the state of the iterator.
 <code>Iterator.next()</code> advances the iterator by one item. So calling it inside <code>Iterator.hasNext()</code>, breaks the
 <code>hasNext()</code> contract, and will lead to unexpected behavior in production.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class FibonacciIterator implements Iterator&lt;Integer&gt;{
 ...

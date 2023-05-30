@@ -1,12 +1,13 @@
+<h2>Why is this an issue?</h2>
 <p>Non-abstract classes and enums with non-<code>static</code>, <code>private</code> members should explicitly initialize those members, either in a
 constructor or with a default value.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class A { // Noncompliant
   private int field;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class A {
   private int field;
@@ -16,7 +17,7 @@ class A {
   }
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <ul>
   <li> Class implementing a Builder Pattern (name ending with "Builder"). </li>
   <li> <a href="https://docs.oracle.com/javaee/7/tutorial/index.html">Java EE</a> class annotated with:

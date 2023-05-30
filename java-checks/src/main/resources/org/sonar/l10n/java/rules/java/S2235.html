@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to Oracle Javadoc:</p>
 <blockquote>
   <p><code>IllegalMonitorStateException</code> is thrown when a thread has attempted to wait on an object’s monitor or to notify other threads waiting
@@ -5,7 +6,7 @@
 </blockquote>
 <p>In other words, this exception can be thrown only in case of bad design because <code>Object.wait(...)</code>, <code>Object.notify()</code> and
 <code>Object.notifyAll()</code> methods should never be called on an object whose monitor is not held.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doSomething(){
   ...
@@ -18,7 +19,7 @@ public void doSomething(){
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void doSomething(){
   ...

@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>If you have no intention of writting an <code>HttpSession</code> object to file, then storing non-<code>serializable</code> objects in it may not
 seem like a big deal. But whether or not you explicitly serialize the session, it may be written to disk anyway, as the server manages its memory use
 in a process called "passivation". Further, some servers automatically write their active sessions out to file at shutdown &amp; deserialize any such
 sessions at startup.</p>
 <p>The point is, that even though <code>HttpSession</code> does not <code>extend Serializable</code>, you must nonetheless assume that it will be
 serialized, and understand that if you’ve stored non-serializable objects in the session, errors will result.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Address {
   //...
@@ -14,7 +15,7 @@ public class Address {
 HttpSession session = request.getSession();
 session.setAttribute("address", new Address());  // Noncompliant; Address isn't serializable
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">OWASP Top 10 2021 Category A4</a> - Insecure Design </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/579">MITRE, CWE-579</a> - J2EE Bad Practices: Non-serializable Object Stored in Session </li>

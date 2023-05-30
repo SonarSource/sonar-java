@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>There are two classes in the Java standard library that deal with iterations: <code>Iterable&lt;T&gt;</code> and <code>Iterator&lt;T&gt;</code>. An
 <code>Iterable&lt;T&gt;</code> represents a data structure that can be the target of the "for-each loop" statement, and an
 <code>Iterator&lt;T&gt;</code> represents the state of an ongoing traversal. An <code>Iterable&lt;T&gt;</code> is generally expected to support
@@ -6,7 +7,7 @@ multiple traversals.</p>
 support multiple traversals since its state will be carried over.</p>
 <p>This rule raises an issue when the <code>iterator()</code> method of a class implementing both <code>Iterable&lt;T&gt;</code> and
 <code>Iterator&lt;t&gt;</code> returns <code>this</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class FooIterator implements Iterator&lt;Foo&gt;, Iterable&lt;Foo&gt; {
   private Foo[] seq;
@@ -26,7 +27,7 @@ class FooIterator implements Iterator&lt;Foo&gt;, Iterable&lt;Foo&gt; {
   // ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class FooSequence implements Iterable&lt;Foo&gt; {
   private Foo[] seq;

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>XML standard allows the use of entities, declared in the DOCTYPE of the document, which can be <a
 href="https://www.w3.org/TR/xml/#sec-internal-ent">internal</a> or <a href="https://www.w3.org/TR/xml/#sec-external-ent">external</a>.</p>
 <p>When parsing the XML file, the content of the external entities is retrieved from an external storage such as the file system or network, which may
@@ -37,7 +38,7 @@ SAXReader xmlReader = new SAXReader(); // Noncompliant
 <pre>
 SAXBuilder builder = new SAXBuilder(); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInput</a>, <a
@@ -101,7 +102,7 @@ SAXBuilder builder = new SAXBuilder();
 builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">OWASP Top 10 2021 Category A5</a> - Security Misconfiguration </li>
   <li> <a

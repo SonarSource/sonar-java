@@ -1,13 +1,14 @@
+<h2>Why is this an issue?</h2>
 <p>A non-serializable <code>Comparator</code> can prevent an otherwise-<code>Serializable</code> ordered collection from being serializable. Since the
 overhead to make a <code>Comparator</code> serializable is usually low, doing so can be considered good defensive programming.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class FruitComparator implements Comparator&lt;Fruit&gt; {  // Noncompliant
   int compare(Fruit f1, Fruit f2) {...}
   boolean equals(Object obj) {...}
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class FruitComparator implements Comparator&lt;Fruit&gt;, Serializable {
   private static final long serialVersionUID = 1;

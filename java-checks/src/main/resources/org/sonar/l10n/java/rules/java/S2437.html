@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Certain bit operations are just silly and should not be performed because their results are predictable.</p>
 <p>Specifically, using <code>&amp; -1</code> with any value will always result in the original value, as will <code>anyValue ^ 0</code> and
 <code>anyValue | 0</code>.</p>

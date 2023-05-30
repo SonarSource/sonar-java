@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The methods declared in an <code>interface</code> are <code>public</code> and <code>abstract</code> by default. Any variables are automatically
 <code>public static final</code>. Finally, <code>class</code> and <code>interface</code> are automatically <code>public static</code>. There is no
 need to explicitly declare them so.</p>
@@ -5,13 +6,13 @@ need to explicitly declare them so.</p>
 <p>Similarly, the <code>final</code> modifier is redundant on any method of a <code>final</code> class, <code>private</code> is redundant on the
 constructor of an <code>Enum</code>, and <code>static</code> is redundant for <code>interface</code> nested into a <code>class</code> or
 <code>enum</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public interface Vehicle {
 
   public void go(int speed, Direction direction);  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public interface Vehicle {
 

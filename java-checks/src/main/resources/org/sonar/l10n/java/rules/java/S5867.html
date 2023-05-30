@@ -1,15 +1,16 @@
+<h2>Why is this an issue?</h2>
 <p>When using POSIX classes like <code>\p{Alpha}</code> without the <code>UNICODE_CHARACTER_CLASS</code> flag or when using hard-coded character
 classes like <code>"[a-zA-Z]"</code>, letters outside of the ASCII range, such as umlauts, accented letters or letter from non-Latin languages, won’t
 be matched. This may cause code to incorrectly handle input containing such letters.</p>
 <p>To correctly handle non-ASCII input, it is recommended to use Unicode classes like <code>\p{IsAlphabetic}</code>. When using POSIX classes, Unicode
 support should be enabled by either passing <code>Pattern.UNICODE_CHARACTER_CLASS</code> as a flag to <code>Pattern.compile</code> or by using
 <code>(?U)</code> inside the regex.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Pattern.compile("[a-zA-Z]");
 Pattern.compile("\\p{Alpha}");
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Pattern.compile("\\p{IsAlphabetic}"); // matches all letters from all languages
 Pattern.compile("\\p{IsLatin}"); // matches latin letters, including umlauts and other non-ASCII variations

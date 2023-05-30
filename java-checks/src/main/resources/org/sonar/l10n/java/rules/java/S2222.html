@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>If a lock is acquired and released within a method, then it must be released along all execution paths of that method.</p>
 <p>Failing to do so will expose the conditional locking logic to the method’s callers and hence be deadlock-prone.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass {
   public void doSomething() {
@@ -13,7 +14,7 @@ public class MyClass {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class MyClass {
   public void doSomething() {
@@ -26,7 +27,7 @@ public class MyClass {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/459">MITRE, CWE-459</a> - Incomplete Cleanup </li>
 </ul>

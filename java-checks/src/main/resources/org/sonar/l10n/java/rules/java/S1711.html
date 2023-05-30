@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>Just as there is little justification for writing your own String class, there is no good reason to re-define one of the existing, standard
 functional interfaces.</p>
 <p>Doing so may seem tempting, since it would allow you to specify a little extra context with the name. But in the long run, it will be a source of
 confusion, because maintenance programmers will wonder what is different between the custom functional interface and the standard one.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @FunctionalInterface
 public interface MyInterface { // Noncompliant
@@ -24,7 +25,7 @@ public class MyClass {
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @FunctionalInterface
 public interface ExtendedBooleanSupplier extends BooleanSupplier { // Compliant, extends java.util.function.BooleanSupplier

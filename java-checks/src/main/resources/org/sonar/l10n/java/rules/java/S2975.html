@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Many consider <code>clone</code> and <code>Cloneable</code> broken in Java, largely because the rules for overriding <code>clone</code> are tricky
 and difficult to get right, according to Joshua Bloch:</p>
 <blockquote>
@@ -9,7 +10,7 @@ and difficult to get right, according to Joshua Bloch:</p>
 </blockquote>
 <p>A copy constructor or copy factory should be used instead.</p>
 <p>This rule raises an issue when <code>clone</code> is overridden, whether or not <code>Cloneable</code> is implemented.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass {
   // ...
@@ -19,7 +20,7 @@ public class MyClass {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class MyClass {
   // ...
@@ -29,7 +30,7 @@ public class MyClass {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://www.artima.com/intv/bloch13.html">Copy Constructor versus Cloning</a> </li>
 </ul>

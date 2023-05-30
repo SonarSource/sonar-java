@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Extend a class that overrides <code>equals</code> and add fields without overriding <code>equals</code> in the subclass, and you run the risk of
 non-equivalent instances of your subclass being seen as equal, because only the superclass fields will be considered in the equality test.</p>
 <p>This rule looks for classes that do all of the following:</p>
@@ -6,7 +7,7 @@ non-equivalent instances of your subclass being seen as equal, because only the 
   <li> do not themselves override <code>equals</code>. </li>
   <li> add fields. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Fruit {
   private Season ripe;
@@ -30,7 +31,7 @@ public class Raspberry extends Fruit {  // Noncompliant; instances will use Frui
   private Color ripeColor;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Fruit {
   private Season ripe;

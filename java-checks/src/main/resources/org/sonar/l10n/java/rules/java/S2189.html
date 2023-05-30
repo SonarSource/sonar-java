@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>An infinite loop is one that will never end while the program is running, i.e., you have to kill the program to get out of the loop. Whether it is
 by meeting the loop’s end condition or via a <code>break</code>, every loop should have an end condition.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 for (;;) {  // Noncompliant; end condition omitted
   // ...
@@ -17,7 +18,7 @@ while (b) { // Noncompliant; b never written to in loop
   k++;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 int j;
 while (true) { // reachable end condition added
@@ -34,7 +35,7 @@ while (b) {
   b = k &lt; Integer.MAX_VALUE;
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/lzZGBQ">CERT, MSC01-J.</a> - Do not use an empty infinite loop </li>
 </ul>

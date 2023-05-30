@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Tests should always:</p>
 <ul>
   <li> Make sure that production code behaves as expected, including edge cases. </li>
@@ -10,17 +11,17 @@ do is use random to test every value on the long run. You should however make su
 Some libraries exist to make all this easier. You can for example use property-based testing libraries such as <a
 href="https://github.com/jlink/jqwik">jqwik</a>.</p>
 <p>This rule raises an issue when <code>new Random()</code> or <code>UUID.randomUUID()</code> are called in test code.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 int userAge = new Random().nextInt(42);  // Noncompliant
 UUID userID = UUID.randomUUID(); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 int userAge = 31;
 UUID userID = UUID.fromString("00000000-000-0000-0000-000000000001");
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://phauer.com/2019/modern-best-practices-testing-java/#use-fixed-data-instead-of-randomized-data">Modern Best Practices for
   Testing in Java - Philipp Hauer</a> </li>

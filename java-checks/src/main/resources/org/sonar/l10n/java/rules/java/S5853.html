@@ -1,12 +1,13 @@
+<h2>Why is this an issue?</h2>
 <p>AssertJ assertions methods targeting the same object can be chained instead of using multiple <code>assertThat</code>. It avoids duplication and
 increases the clarity of the code.</p>
 <p>This rule raises an issue when multiples <code>assertThat</code> target the same tested value.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 assertThat(someList).hasSize(3);
 assertThat(someList).contains("something");
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 assertThat(someList)
   .hasSize(3)

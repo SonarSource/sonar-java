@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>While it is technically correct to use a <code>Thread</code> where a <code>Runnable</code> is called for, the semantics of the two objects are
 different, and mixing them is a bad practice that will likely lead to headaches in the future.</p>
 <p>The crux of the issue is that <code>Thread</code> is a larger concept than <code>Runnable</code>. A <code>Runnable</code> is an object whose
 running should be managed. A <code>Thread</code> expects to manage the running of itself or other <code>Runnables</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 	public static void main(String[] args) {
 		Thread r =new Thread() {
@@ -15,7 +16,7 @@ running should be managed. A <code>Thread</code> expects to manage the running o
 		};
 		new Thread(r).start();  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 	public static void main(String[] args) {
 		Runnable r =new Runnable() {

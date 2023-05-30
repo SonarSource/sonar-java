@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>In Java 14 there is a new way to write cases in Switch Statement and Expression when the same action should be performed for different cases.
 Instead of declaring multiples branches with the same action, you can combine all of them in a single case group, separated with commas. It will
 result in a more concise code and improved readability.</p>
 <p>This rule reports an issue when multiple cases in a Switch can be grouped into a single comma-separated case.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 // Switch Expression
 int i = switch (mode) {
@@ -23,7 +24,7 @@ switch (mode) {
     doSomethingElse();
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 // Switch Expression
 int i = switch (mode) {
@@ -48,7 +49,7 @@ switch (mode) {
   default -&gt; doSomethingElse();
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://openjdk.java.net/jeps/361">JEP 361: Switch Expressions</a> </li>
 </ul>

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Annotating unit tests with more than one test-related annotation is not only useless but could also result in unexpected behavior like failing
 tests or unwanted side-effects.</p>
 <p>This rule reports an issue when a test method is annotated with more than one of the following competing annotation:</p>
@@ -8,7 +9,7 @@ tests or unwanted side-effects.</p>
   <li> @TestFactory </li>
   <li> @TestTemplate </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Test
 @RepeatedTest(2) // Noncompliant, this test will be repeated 3 times
@@ -19,7 +20,7 @@ void test() { }
 @MethodSource("methodSource")
 void test2(int argument) { } // Noncompliant, this test will fail with ParameterResolutionException
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @RepeatedTest(2)
 void test() { }

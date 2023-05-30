@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Map <a
 href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html#computeIfAbsent-K-java.util.function.Function-">computeIfAbsent</a>&nbsp;and <a
 href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html#computeIfPresent-K-java.util.function.BiFunction-">computeIfPresent</a> methods are
@@ -6,12 +7,12 @@ compute the value returns <code>null</code>, the entry <code>key-&gt;null</code>
 <code>computeIfPresent</code>, if the key is present the entry will be removed. These methods should therefore not be used to conditionally add an
 entry with a null value. The traditional way should be used instead.</p>
 <p>This rule raises an issue when <code>computeIfAbsent</code> or <code>computeIfPresent</code> is used with a lambda always returning null.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 map.computeIfAbsent(key, k -&gt; null); // Noncompliant, the map will not contain an entry key-&gt;null.
 map.computeIfPresent(key, (k, oldValue) -&gt; null); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 if (!map.containsKey(key)) {
     map.put(key, null);

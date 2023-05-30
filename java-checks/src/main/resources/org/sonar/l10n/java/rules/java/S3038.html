@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>There’s no point in redundantly defining an <code>abstract</code> method with the same signature as a method in an <code>interface</code> that the
 class <code>implements</code>. Any concrete child classes will have to implement the method either way.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public interface Reportable {
   String getReport();

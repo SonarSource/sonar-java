@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Running finalizers on JVM exit is disabled by default. It can be enabled with <code>System.runFinalizersOnExit</code> and
 <code>Runtime.runFinalizersOnExit</code>, but both methods are deprecated because they are inherently unsafe.</p>
 <p>According to the Oracle Javadoc:</p>
@@ -6,7 +7,7 @@
   behavior or deadlock.</p>
 </blockquote>
 <p>If you really want to execute something when the virtual machine begins its shutdown sequence, you should attach a shutdown hook.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public static void main(String [] args) {
   ...
@@ -18,7 +19,7 @@ protected void finalize(){
   doSomething();
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public static void main(String [] args) {
   Runtime.addShutdownHook(new Runnable() {
@@ -28,7 +29,7 @@ public static void main(String [] args) {
   });
   //...
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/4jZGBQ">CERT, MET12-J.</a> - Do not use finalizers </li>
 </ul>

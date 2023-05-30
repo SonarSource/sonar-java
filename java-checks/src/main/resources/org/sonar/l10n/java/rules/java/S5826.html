@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>The <code>setUp()</code> and <code>tearDown()</code> methods (initially introduced with JUnit3 to execute a block of code before and after each
 test) need to be correctly annotated with the equivalent annotation in order to preserve the same behavior when migrating from JUnit3 to JUnit4 or
 JUnit5.</p>
 <p>This rule consequently raise issues on <code>setUp()</code> and <code>tearDown()</code> methods which are not annotated in test classes.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <ul>
   <li> JUnit4: </li>
 </ul>
@@ -17,7 +18,7 @@ public void tearDown() { ... }  // Noncompliant; should be annotated with @After
 public void setUp() { ... } // Noncompliant; should be annotated with @BeforeEach
 public void tearDown() { ... }  // Noncompliant; should be annotated with @AfterEach
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <ul>
   <li> JUnit4: </li>
 </ul>

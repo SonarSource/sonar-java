@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>If <code>Thread.sleep(...)</code> is called when the current thread holds a lock, it could lead to performance and scalability issues, or even
 worse to deadlocks because the execution of the thread holding the lock is frozen. It’s better to call <code>wait(...)</code> on the monitor object to
 temporarily release the lock and allow other threads to run.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doSomething(){
   synchronized(monitor) {
@@ -13,7 +14,7 @@ public void doSomething(){
   ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void doSomething(){
   synchronized(monitor) {
@@ -25,7 +26,7 @@ public void doSomething(){
   ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/YTdGBQ">CERT, LCK09-J.</a> - Do not perform operations that can block while holding a lock </li>
 </ul>

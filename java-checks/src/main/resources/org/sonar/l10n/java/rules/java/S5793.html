@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>As mentioned in JUnit5 documentation, it is possible to integrate JUnit4 with JUnit5:</p>
 <blockquote>
   <p>JUnit provides a gentle migration path via a JUnit Vintage test engine which allows existing tests based on JUnit 3 and JUnit 4 to be executed
@@ -77,7 +78,7 @@ annotation won’t work immediately:</p>
     </tr>
   </tbody>
 </table>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 package org.foo;
 
@@ -133,7 +134,7 @@ public class MyJUnit4Test {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 package org.foo;
 
@@ -187,7 +188,7 @@ class MyJUnit5Test {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://junit.org/junit5/docs/current/user-guide/#migrating-from-junit4">JUnit 5: Migrating from JUnit4</a> </li>
 </ul>

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Regular expressions are powerful but tricky, and even those long used to using them can make mistakes.</p>
 <p>The following should not be used as regular expressions:</p>
 <ul>
@@ -5,7 +6,7 @@
   <li> <code>|</code> - normally used as an option delimiter. Used stand-alone, it matches the space between characters </li>
   <li> <code>File.separator</code> - matches the platform-specific file path delimiter. On Windows, this will be taken as an escape character </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String str = "/File|Name.txt";
 

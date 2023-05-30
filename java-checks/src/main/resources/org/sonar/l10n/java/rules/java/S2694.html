@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>A non-static inner class has a reference to its outer class, and access to the outer class' fields and methods. That class reference makes the
 inner class larger and could cause the outer class instance to live in memory longer than necessary.</p>
 <p>If the reference to the outer class isn’t used, it is more efficient to make the inner class <code>static</code> (also called nested). If the
@@ -9,7 +10,7 @@ class and a nested one:</p>
   <li> an inner class can only be instantiated within the context of an instance of the outer class. </li>
   <li> a nested (<code>static</code>) class can be instantiated independently of the outer class. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Fruit {
   // ...
@@ -25,7 +26,7 @@ public class Fruit {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Fruit {
   // ...

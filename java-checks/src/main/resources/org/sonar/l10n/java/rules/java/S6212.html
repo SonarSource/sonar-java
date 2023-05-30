@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>In Java 10 <a href="https://openjdk.java.net/jeps/286">Local-Variable Type Inference</a> was introduced. It allows you to omit the expected type of
 a variable by declaring it with the <code>var</code> keyword.</p>
 <p>While it is not always possible or cleaner to use this new way of declaring a variable, when the type on the left is the same as the one on the
@@ -5,7 +6,7 @@ right in an assignment, using the <code>var</code> will result in a more concise
 <p>This rule reports an issue when the expected type of the variable is the same as the returned type of assigned expression and the type can be
 easily inferred by the reader, either when the type is already mentioned in the name or the initializer, or when the expression is
 self-explanatory.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 MyClass myClass = new MyClass();
 
@@ -15,7 +16,7 @@ MyClass something = MyClass.getMyClass(); // Type is already mentioned in the in
 
 MyClass myClass = get(); // Type is already mentioned in the name
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 var myClass = new MyClass();
 
@@ -25,7 +26,7 @@ var something = MyClass.getMyClass();
 
 var myClass = get();
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://openjdk.java.net/jeps/286">JEP 286: Local-Variable Type Inference</a> </li>
 </ul>

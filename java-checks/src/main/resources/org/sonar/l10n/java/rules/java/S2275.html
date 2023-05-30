@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>Because <code>printf</code>-style format strings are interpreted at runtime, rather than validated by the Java compiler, they can contain errors
 that lead to unexpected behavior or runtime errors. This rule statically validates the good behavior of <code>printf</code>-style formats when calling
 the <code>format(...)</code> methods of <code>java.util.Formatter</code>, <code>java.lang.String</code>, <code>java.io.PrintStream</code>,
 <code>MessageFormat</code>, and <code>java.io.PrintWriter</code> classes and the <code>printf(...)</code> methods of <code>java.io.PrintStream</code>
 or <code>java.io.PrintWriter</code> classes.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String.format("The value of my integer is %d", "Hello World");  // Noncompliant; an 'int' is expected rather than a String
 String.format("Duke's Birthday year is %tX", c);  //Noncompliant; X is not a supported time conversion character
@@ -26,7 +27,7 @@ slf4jLog.debug(marker, "message {}"); // Noncompliant - Not enough arguments.
 org.apache.logging.log4j.Logger log4jLog;
 log4jLog.debug("message {}"); // Noncompliant - Not enough arguments.
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String.format("The value of my integer is %d", 3);
 String.format("Duke's Birthday year is %tY", c);
@@ -49,7 +50,7 @@ slf4jLog.debug(marker, "message {}", 1);
 org.apache.logging.log4j.Logger log4jLog;
 log4jLog.debug("message {}", 1);
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/wQA1">CERT, FIO47-C.</a> - Use valid format strings </li>
 </ul>

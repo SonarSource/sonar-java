@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>In Switch Expressions, an arrow label consisting of a block with a single <code>yield</code> can be simplified to directly return the value,
 resulting in cleaner code.</p>
 <p>Similarly, for Switch Statements and arrow labels, a <code>break</code> in a block is always redundant and should not be used. Furthermore, if the
 resulting block contains only one statement, the curly braces of that block can also be omitted.</p>
 <p>This rule reports an issue when a case of a Switch Expression contains a block with a single <code>yield</code> or when a Switch Statement contains
 a block with a <code>break</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 int i = switch (mode) {
   case "a" -&gt; {        // Noncompliant: Remove the redundant block and yield.
@@ -27,7 +28,7 @@ switch (mode) {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 int i = switch (mode) {
   case "a" -&gt; 1;
@@ -42,7 +43,7 @@ switch (mode) {
  }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://openjdk.java.net/jeps/361">JEP 361: Switch Expressions</a> </li>
 </ul>

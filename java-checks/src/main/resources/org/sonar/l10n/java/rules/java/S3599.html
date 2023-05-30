@@ -1,15 +1,16 @@
+<h2>Why is this an issue?</h2>
 <p>Because Double Brace Initialization (DBI) creates an anonymous class with a reference to the instance of the owning object, its use can lead to
 memory leaks if the anonymous inner class is returned and held by other objects. Even when there’s no leak, DBI is so obscure that it’s bound to
 confuse most maintainers.</p>
 <p>For collections, use <code>Arrays.asList</code> instead, or explicitly add each item directly to the collection.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Map source = new HashMap(){{ // Noncompliant
     put("firstName", "John");
     put("lastName", "Smith");
 }};
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Map source = new HashMap();
 // ...

@@ -1,14 +1,15 @@
+<h2>Why is this an issue?</h2>
 <p>According to the Java Language Specification:</p>
 <blockquote>
   <p>Unnamed packages are provided by the Java platform principally for convenience when developing small or temporary applications or when just
   beginning development.</p>
 </blockquote>
 <p>To enforce this best practice, classes located in default package can no longer be accessed from named ones since Java 1.4.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass { /* ... */ }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 package org.example;
 

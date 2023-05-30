@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When creating a <code>DateTimeFormatter</code> using the <code>WeekFields.weekBasedYear()</code> temporal field, the resulting year number may be
 off by 1 at the beginning of a new year (when the date to format is in a week that is shared by two consecutive years).</p>
 <p>Using this year number in combination with an incompatible week temporal field yields a result that may be confused with the first week of the
@@ -6,7 +7,7 @@ previous year.</p>
 <code>WeekFields.weekOfWeekBasedYear()</code>.</p>
 <p>Alternatively the temporal field <code>ChronoField.ALIGNED_WEEK_OF_YEAR</code> can be used together with a regular year (but not the week based
 year).</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 new DateTimeFormatterBuilder()
       .appendValue(ChronoField.YEAR, 4) // Noncompliant: using week of week-based year with regular year
@@ -27,7 +28,7 @@ new DateTimeFormatterBuilder()
       .toFormatter();
 </pre>
 <p>Here the first two formatters would wrongly format the 1st of January 2016 as "2016-53" while the last one would format it as "2015-01"</p>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 new DateTimeFormatterBuilder()
       .appendValue(WeekFields.ISO.weekBasedYear(), 4)
@@ -49,7 +50,7 @@ new DateTimeFormatterBuilder()
 </pre>
 <p>Here the first formatter would format the 1st of January 2016 as "2015-53" while the last two would produce "2016-01", both of which are correct
 depending on how you count the weeks.</p>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>No issue is raised when week-based year is not used in combination with a week temporal field.</p>
 <p>Similarly, no issue is raised if week of week-based year is not used in combination with a year temporal field.</p>
 

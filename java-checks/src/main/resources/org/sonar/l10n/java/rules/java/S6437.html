@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>A hard-coded secret has been found in your code. You should quickly list where this secret is used, revoke it, and then change it in every system
 that uses it.</p>
 <p>Passwords, secrets, and any type of credentials should only be used to authenticate a single entity (a person or a system).</p>
@@ -19,7 +20,7 @@ and on-premise services can be used for this purpose.</p>
       <li> For example, in a file whose permissions are restricted and protected with chmod and chown. </li>
     </ul>  </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 import org.h2.security.SHA256;
 
@@ -28,7 +29,7 @@ byte[] key         = inputString.getBytes();
 
 SHA256.getHMAC(key, message);  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <p>Using <a href="https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/javav2/example_code/secretsmanager">AWS Secrets Manager</a>:</p>
 <pre>
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
@@ -64,7 +65,7 @@ public static void doSomething(SecretClient secretClient, String secretName) {
   SHA256.getHMAC(key, message);
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://aws.amazon.com/fr/secrets-manager/">AWS</a> - Secret Manager </li>
   <li> <a href="https://azure.microsoft.com/fr-fr/services/key-vault/">Azure</a> - Key Vault </li>

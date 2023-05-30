@@ -1,13 +1,14 @@
+<h2>Why is this an issue?</h2>
 <p>Using <code>Collection.size()</code> to test for emptiness works, but using <code>Collection.isEmpty()</code> makes the code more readable and can
 be more performant. The time complexity of any <code>isEmpty()</code> method implementation should be <code>O(1)</code> whereas some implementations
 of <code>size()</code> can be <code>O(n)</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 if (myCollection.size() == 0) {  // Noncompliant
   /* ... */
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 if (myCollection.isEmpty()) {
   /* ... */

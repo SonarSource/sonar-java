@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The time complexity of method calls on collections is not always obvious. For instance, for most collections the <code>size()</code> method takes
 constant time, but the time required to execute <code>ConcurrentLinkedQueue.size()</code> is O(n), i.e. directly proportional to the number of
 elements in the collection. When the collection is large, this could therefore be an expensive operation.</p>
@@ -36,7 +37,7 @@ elements in the collection. When the collection is large, this could therefore b
       <li> <code>remove</code> </li>
     </ul>  </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
 //...

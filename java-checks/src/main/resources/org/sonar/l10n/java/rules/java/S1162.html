@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>The purpose of checked exceptions is to ensure that errors will be dealt with, either by propagating them or by handling them, but some believe
 that checked exceptions negatively impact the readability of source code, by spreading this error handling/propagation logic everywhere.</p>
 <p>This rule verifies that no method throws a new checked exception.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void myMethod1() throws CheckedException {
   ...

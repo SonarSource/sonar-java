@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>The <code>Object.finalize()</code> method is called on an object by the garbage collector when it determines that there are no more references to
 the object. But there is absolutely no warranty that this method will be called AS SOON AS the last references to the object are removed. It can be
 few microseconds to few minutes later. So when system resources need to be disposed by an object, it’s better to not rely on this asynchronous
 mechanism to dispose them.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass {
   ...
@@ -12,7 +13,7 @@ public class MyClass {
   ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/4jZGBQ">CERT, MET12-J.</a> - Do not use finalizers </li>
 </ul>

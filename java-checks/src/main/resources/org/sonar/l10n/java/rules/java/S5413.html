@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>When <code>List.remove()</code> is called it will shrink the list. If this is done inside the ascending loop iterating through all elements it will
 skip the element after the removed index.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 void removeFrom(List&lt;String&gt; list) {
   // expected: iterate over all the elements of the list
@@ -12,7 +13,7 @@ void removeFrom(List&lt;String&gt; list) {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <p>You can either adjust the loop index to account for the change in the size of the list</p>
 <pre>
 static void removeFrom(List&lt;String&gt; list) {
@@ -33,7 +34,7 @@ static void removeFrom(List&lt;String&gt; list) {
   }
 </pre>
 <p>&nbsp;</p>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>The descending loop doesn’t have this issue, because the index will be correct when we loop in descending order</p>
 <pre>
 void removeFrom(List&lt;String&gt; list) {

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The <code>java.util.regex.Pattern.compile()</code> methods have a significant performance cost, and therefore should be used sensibly.</p>
 <p>Moreover they are the only mechanism available to create instances of the Pattern class, which are necessary to do any pattern matching using
 regular expressions. Unfortunately that can be hidden behind convenience methods like <code>String.matches()</code> or
@@ -10,7 +11,7 @@ regular expressions. Unfortunately that can be hidden behind convenience methods
   <code>String</code> literal or constant. In which case the code should be refactored to use a <code>java.util.regex.Pattern</code> while respecting
   the previous rule. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doingSomething(String stringToMatch) {
   Pattern regex = Pattern.compile("myRegex");  // Noncompliant
@@ -21,7 +22,7 @@ public void doingSomething(String stringToMatch) {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 private static final Pattern myRegex = Pattern.compile("myRegex");
 private static final Pattern myRegex2 = Pattern.compile("myRegex2");
@@ -34,7 +35,7 @@ public void doingSomething(String stringToMatch) {
   }
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p><code>String.split</code> doesn’t create a regex when the string passed as argument meets either of these 2 conditions:</p>
 <ul>
   <li> It is a one-char String and this character is not one of the RegEx’s meta characters ".$|()[{^?*+\" </li>

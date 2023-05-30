@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>If a <code>private</code> field is declared but not used in the program, it can be considered dead code and should therefore be removed. This will
 improve maintainability because developers will not wonder what the variable is used for.</p>
 <p>Note that this rule does not take reflection into account, which means that issues will be raised on <code>private</code> fields that are only
 accessed using the reflection API.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass {
   private int foo = 42;
@@ -13,7 +14,7 @@ public class MyClass {
 
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class MyClass {
   public int compute(int a) {
@@ -21,14 +22,11 @@ public class MyClass {
   }
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>The rule admits 3 exceptions:</p>
 <ul>
   <li> Serialization id fields </li>
-  <li> Annotated fields </li>
-  <li> Fields from classes with native methods </li>
 </ul>
-<h3>Serialization id fields</h3>
 <p>The Java serialization runtime associates with each serializable class a version number, called <code>serialVersionUID</code>, which is used during
 deserialization to verify that the sender and receiver of a serialized object have loaded classes for that object that are compatible with respect to
 serialization.</p>
@@ -39,7 +37,9 @@ public class MyClass implements java.io.Serializable {
   private static final long serialVersionUID = 42L;
 }
 </pre>
-<h3>Annotated fields</h3>
+<ul>
+  <li> Annotated fields </li>
+</ul>
 <p>The unused field in this class will not be reported by the rule as it is annotated.</p>
 <pre>
 public class MyClass {
@@ -47,7 +47,9 @@ public class MyClass {
   private int unused;
 }
 </pre>
-<h3>Fields from classes with native methods</h3>
+<ul>
+  <li> Fields from classes with native methods </li>
+</ul>
 <p>The unused field in this class will not be reported by the rule as it might be used by native code.</p>
 <pre>
 public class MyClass {

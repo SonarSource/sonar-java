@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Try to imagine using the standard Java API (Collections, JDBC, IO, …​) without Javadoc. It would be a nightmare, because Javadoc is the only way to
 understand of the contract of the API. Documenting an API with Javadoc increases the productivity of the developers consuming it.</p>
 <p>On top of a main description for each member of a public API, the following Javadoc elements are required to be described:</p>
@@ -34,7 +35,7 @@ understand of the contract of the API. Documenting an API with Javadoc increases
   <li> <code>java.internal.*</code> will match any member of <code>java.internal</code> package. </li>
   <li> <code>java.internal.**</code> same as above, but including sub-packages. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 /**
   * This is a Javadoc comment
@@ -69,7 +70,7 @@ public class MyClass&lt;T&gt; implements Runnable {    // Noncompliant - missing
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 /**
   * This is a Javadoc comment

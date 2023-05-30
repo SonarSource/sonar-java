@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>The <code>switch</code> statement should be used only to clearly define some new branches in the control flow. As soon as a <code>case</code>
 clause contains too many statements this highly decreases the readability of the overall control flow statement. In such case, the content of the
 <code>case</code> clause should be extracted into a dedicated method.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p>With the default threshold of 5:</p>
 <pre>
 switch (myVariable) {
@@ -15,7 +16,7 @@ switch (myVariable) {
   ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 switch (myVariable) {
   case 0:

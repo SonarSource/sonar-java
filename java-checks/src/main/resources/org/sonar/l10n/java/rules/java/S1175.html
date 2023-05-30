@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p><code>Object.finalize()</code> is called by the Garbage Collector at some point after the object becomes unreferenced.</p>
 <p>In general, overloading <code>Object.finalize()</code> is a bad idea because:</p>
 <ul>
@@ -5,13 +6,13 @@
   <li> Users are not expected to call <code>Object.finalize()</code> and will get confused. </li>
 </ul>
 <p>But beyond that it’s a terrible idea to name a method "finalize" if it doesn’t actually override <code>Object.finalize()</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public int finalize(int someParameter) {        // Noncompliant
   /* ... */
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public int someBetterName(int someParameter) {  // Compliant
   /* ... */

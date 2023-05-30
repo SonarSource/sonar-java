@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>Double-checked locking can be used for lazy initialization of <code>volatile</code> fields, but only if field assignment is the last step in the
 <code>synchronized</code> block. Otherwise you run the risk of threads accessing a half-initialized object.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass {
 
@@ -20,7 +21,7 @@ public class MyClass {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class MyClass {
 
@@ -41,7 +42,7 @@ public class MyClass {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/6zdGBQ">CERT, LCK10-J.</a> - Use a correct form of the double-checked locking idiom </li>
 </ul>

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to the documentation,</p>
 <blockquote>
   <p>A program may produce unpredictable results if it attempts to distinguish two references to equal values of a value-based class, whether directly
@@ -21,21 +22,21 @@ value types are introduced in the language.</p>
 <p>This rule raises an issue when a <code>Serializable</code> class defines a non-transient, non-static field field whose type is a known serializable
 value-based class. Known serializable value-based classes are: all the classes in the <code>java.time</code> package except <code>Clock</code>; the
 date classes for alternate calendars: <code>HijrahDate</code>, <code>JapaneseDate</code>, <code>MinguoDate</code>, <code>ThaiBuddhistDate</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class MyClass implements Serializable {
   private HijrahDate date;  // Noncompliant; mark this transient
   // ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class MyClass implements Serializable {
   private transient HijrahDate date;
   // ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/doc-files/ValueBased.html">Value-based classes</a> </li>
 </ul>

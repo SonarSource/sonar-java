@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Floating point math is imprecise because of the challenges of storing such values in a binary representation. Even worse, floating point math is
 not associative; push a <code>float</code> or a <code>double</code> through a series of simple mathematical operations and the answer will be
 different based on the order of those operation because of the rounding that takes place at each step.</p>
@@ -14,7 +15,7 @@ option is to look not for equality but for whether the value is close enough. I.
 value and the expected value against a margin of acceptable error. Note that this does not cover all cases (<code>NaN</code> and <code>Infinity</code>
 for instance).</p>
 <p>This rule checks for the use of direct and indirect equality/inequailty tests on floats and doubles.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 float myNumber = 3.146;
 if ( myNumber == 3.146f ) { //Noncompliant. Because of floating point imprecision, this will be false
@@ -32,7 +33,7 @@ float zeroFloat = 0.0f;
 if (zeroFloat == 0) {  // Noncompliant. Computations may end up with a value close but not equal to zero.
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Since <code>NaN</code> is not equal to itself, the specific case of testing a floating point value against itself is a valid test for
 <code>NaN</code> and is therefore ignored. Though using <code>Double.isNaN</code> method should be preferred instead, as intent is more explicit.</p>
 <pre>

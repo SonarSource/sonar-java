@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>A common good practice is to write test methods targeting only one logical concept, that can only fail for one reason.</p>
 <p>While it might make sense to have more than one assertion to test one concept, having too many is a sign that a test became too complex and should
 be refactored to multiples ones.</p>
 <p>This rule will report any test method containing more than a given number of assertion.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p>With a parameter of 2.</p>
 <pre>
 @Test
@@ -12,7 +13,7 @@ void test() { // Refactor this method.
   assertEquals(3, g(1));
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 void test_f() {
   assertEquals(1, f(1));

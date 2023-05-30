@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>A key facet of the <code>equals</code> contract is that if <code>a.equals(b)</code> then <code>b.equals(a)</code>, i.e. that the relationship is
 symmetric.</p>
 <p>Using <code>instanceof</code> breaks the contract when there are subclasses, because while the child is an <code>instanceof</code> the parent, the
@@ -19,7 +20,7 @@ fruit.equals(raspberry); //true
 method for subclasses. Instead, make the comparison dynamic.</p>
 <p>Further, comparing to an unrelated class type breaks the contract for that unrelated type, because while
 <code>thisClass.equals(unrelatedClass)</code> can return true, <code>unrelatedClass.equals(thisClass)</code> will not.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Fruit extends Food {
   private Season ripe;
@@ -42,7 +43,7 @@ public class Fruit extends Food {
     }
     //...
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Fruit extends Food {
   private Season ripe;
@@ -60,7 +61,7 @@ public class Fruit extends Food {
     return false;
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/AzZGBQ">CERT, MET08-J.</a> - Preserve the equality contract when overriding the equals() method
   </li>

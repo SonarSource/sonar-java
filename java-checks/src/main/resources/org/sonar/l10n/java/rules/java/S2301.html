@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>A selector argument is a <code>boolean</code> argument that’s used to determine which of two paths to take through a method. Specifying such a
 parameter may seem innocuous, particularly if it’s well named.</p>
 <p>Unfortunately, the maintainers of the code calling the method won’t see the parameter name, only its value. They’ll be forced either to guess at
 the meaning or to take extra time to look the method up.</p>
 <p>Instead, separate methods should be written.</p>
 <p>This rule finds methods with a <code>boolean</code> that’s used to determine which path to take through the method.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public String tempt(String name, boolean ofAge) {
   if (ofAge) {
@@ -19,7 +20,7 @@ public void corrupt() {
   tempt("Joe", false); // does this mean not to temp Joe?
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void temptAdult(String name) {
   offerLiquor(name);

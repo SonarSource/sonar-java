@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Beginning with Java 7, it is possible to add underscores ('_') to numeric literals to enhance readability. The addition of underscores in this
 manner has no semantic meaning, but makes it easier for maintainers to understand the code.</p>
 <p>The number of digits to the left of a decimal point needed to trigger this rule varies by base.</p>
@@ -33,13 +34,13 @@ manner has no semantic meaning, but makes it easier for maintainers to understan
 </table>
 <p>It is only the presence of underscores, not their spacing that is scrutinized by this rule.</p>
 <p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>7</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 int i = 10000000;  // Noncompliant; is this 10 million or 100 million?
 int  j = 0b01101001010011011110010101011110;  // Noncompliant
 long l = 0x7fffffffffffffffL;  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 int i = 10_000_000;
 int  j = 0b01101001_01001101_11100101_01011110;

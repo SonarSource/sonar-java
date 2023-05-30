@@ -1,11 +1,12 @@
+<h2>Why is this an issue?</h2>
 <p>Array designators should always be located on the type for better code readability. Otherwise, developers must look both at the type and the
 variable name to know whether or not a variable is an array.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 int matrix[][];   // Noncompliant
 int[] matrix[];   // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 int[][] matrix;   // Compliant
 </pre>

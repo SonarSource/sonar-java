@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>When multiple tests differ only by a few hardcoded values they should be refactored as a single "parameterized" test. This reduces the chances of
 adding a bug and makes them more readable. Parameterized tests exist in most test frameworks (JUnit, TestNG, etc…​).</p>
 <p>The right balance needs of course to be found. There is no point in factorizing test methods when the parameterized version is a lot more complex
 than initial tests.</p>
 <p>This rule raises an issue when at least 3 tests could be refactored as one parameterized test with less than 4 parameters. Only test methods which
 have at least one duplicated statement are considered.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p>with JUnit 5</p>
 <pre>
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,7 +54,7 @@ public class AppTest
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -83,7 +84,7 @@ public class AppTest
     }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://phauer.com/2019/modern-best-practices-testing-java/#use-parameterized-tests">Modern Best Practices for Testing in Java -
   Philipp Hauer</a> </li>

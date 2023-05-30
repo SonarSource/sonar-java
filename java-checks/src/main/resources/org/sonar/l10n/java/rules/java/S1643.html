@@ -1,15 +1,16 @@
+<h2>Why is this an issue?</h2>
 <p>Strings are immutable objects, so concatenation doesn’t simply add the new String to the end of the existing string. Instead, in each loop
 iteration, the first String is converted to an intermediate object type, the second string is appended, and then the intermediate object is converted
 back to a String. Further, performance of these intermediate operations degrades as the String gets longer. Therefore, the use of StringBuilder is
 preferred.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String str = "";
 for (int i = 0; i &lt; arrayOfStrings.length ; ++i) {
   str = str + arrayOfStrings[i];
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 StringBuilder bld = new StringBuilder();
   for (int i = 0; i &lt; arrayOfStrings.length; ++i) {

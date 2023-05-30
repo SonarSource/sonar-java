@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When logging a message there are several important requirements which must be fulfilled:</p>
 <ul>
   <li> The user must be able to easily retrieve the logs </li>
@@ -7,15 +8,15 @@
 </ul>
 <p>If a program directly writes to the standard outputs, there is absolutely no way to comply with those requirements. That’s why defining and using a
 dedicated logger is highly recommended.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 System.out.println("My Message");  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 logger.log("My Message");
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/">OWASP Top 10 2021 Category A9</a> - Security Logging and
   Monitoring Failures </li>

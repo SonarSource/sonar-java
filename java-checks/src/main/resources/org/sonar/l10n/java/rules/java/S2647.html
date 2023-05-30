@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>Basic authentication’s only means of obfuscation is Base64 encoding. Since Base64 encoding is easily recognized and reversed, it offers only the
 thinnest veil of protection to your users, and should not be used.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 // Using HttpPost from Apache HttpClient
 String encoding = Base64Encoder.encode ("login:passwd");
@@ -16,7 +17,7 @@ conn.setRequestMethod("POST");
 conn.setDoOutput(true);
 conn.setRequestProperty("Authorization", "Basic " + encoding); // Noncompliant
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">OWASP Top 10 2021 Category A4</a> - Insecure Design </li>
   <li> <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data

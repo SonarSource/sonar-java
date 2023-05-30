@@ -1,20 +1,21 @@
+<h2>Why is this an issue?</h2>
 <p>It’s almost always a mistake to compare two instances of <code>java.lang.String</code> or boxed types like <code>java.lang.Integer</code> using
 reference equality <code>==</code> or <code>!=</code>, because it is not comparing actual value but locations in memory.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String firstName = getFirstName(); // String overrides equals
 String lastName = getLastName();
 
 if (firstName == lastName) { ... }; // Non-compliant; false even if the strings have the same value
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String firstName = getFirstName();
 String lastName = getLastName();
 
 if (firstName != null &amp;&amp; firstName.equals(lastName)) { ... };
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/595">MITRE, CWE-595</a> - Comparison of Object References Instead of Object Contents </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/597">MITRE, CWE-597</a> - Use of Wrong Operator in String Comparison </li>

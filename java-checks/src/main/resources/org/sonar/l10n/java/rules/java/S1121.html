@@ -1,17 +1,18 @@
+<h2>Why is this an issue?</h2>
 <p>Assignments within sub-expressions are hard to spot and therefore make the code less readable. Ideally, sub-expressions should not have
 side-effects.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 if ((str = cont.substring(pos1, pos2)).isEmpty()) {  // Noncompliant
   //...
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 str = cont.substring(pos1, pos2);
 if (str.isEmpty()) {
   //...
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Assignments in <code>while</code> statement conditions, and assignments enclosed in relational expressions are ignored.</p>
 <pre>
 BufferedReader br = new BufferedReader(/* ... */);
@@ -25,7 +26,7 @@ int i = j = 0;
 int k = (j += 1);
 result = (bresult = new byte[len]);
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/481">MITRE, CWE-481</a> - Assigning instead of Comparing </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/ZNYxBQ">CERT, EXP45-C.</a> - Do not perform assignments in selection statements </li>

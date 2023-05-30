@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>An XML bomb / <a href="https://en.wikipedia.org/wiki/Billion_laughs_attack">billion laughs</a> attack is a malicious XML document containing the
 same large entity repeated over and over again. If no restrictions is in place, such a limit on the number of entity expansions, the XML processor can
 consume a lot memory and time during the parsing of such documents leading to Denial of Service.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a> and <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> and <a
@@ -29,7 +30,7 @@ xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompl
 SAXBuilder builder = new SAXBuilder();
 builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a> and <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> and <a
@@ -57,7 +58,7 @@ xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 SAXBuilder builder = new SAXBuilder();
 builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a
   href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-8CD65EF5-D113-4D5C-A564-B875C8625FAC">Oracle Java Documentation</a> - XML External Entity Injection Attack </li>

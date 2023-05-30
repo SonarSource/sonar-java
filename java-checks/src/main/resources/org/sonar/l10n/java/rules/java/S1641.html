@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>When all the elements in a Set are values from the same enum, the Set can be replaced with an EnumSet, which can be much more efficient than other
 sets because the underlying data structure is a simple bitmap.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass {
 
@@ -15,7 +16,7 @@ public class MyClass {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class MyClass {
 

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The rules of operator precedence are complicated and can lead to errors. For this reason, parentheses should be used for clarification in complex
 statements. However, this does not mean that parentheses should be gratuitously added around every operation.</p>
 <p>This rule raises issues when <code>&amp;&amp;</code> and <code>||</code> are used in combination, when assignment and equality or relational
@@ -65,7 +66,7 @@ operators are used together in a condition, and for other operator combinations 
   </tbody>
 </table>
 <p>This rule also raises an issue when the "true" or "false" expression of a ternary operator is not trivial and not wrapped inside parentheses.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 x = a + b - c;
 x = a + 1 &lt;&lt; b;  // Noncompliant
@@ -75,7 +76,7 @@ if ( a &gt; b || c &lt; d || a == d) {...}
 if ( a &gt; b &amp;&amp; c &lt; d || a == b) {...}  // Noncompliant
 if (a = f(b,c) == 1) { ... } // Noncompliant; == evaluated first
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 x = a + b - c;
 x = (a + 1) &lt;&lt; b;
@@ -85,7 +86,7 @@ if ( a &gt; b || c &lt; d || a == d) {...}
 if ( (a &gt; b &amp;&amp; c &lt; d) || a == b) {...}
 if ( (a = f(b,c)) == 1) { ... }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/YdYxBQ">CERT, EXP00-C.</a> - Use parentheses for precedence of operation </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/ZzZGBQ">CERT, EXP53-J.</a> - Use parentheses for precedence of operation </li>

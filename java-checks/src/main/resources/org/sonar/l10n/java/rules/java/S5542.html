@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Encryption algorithms should use secure modes and padding schemes where appropriate to guarantee data confidentiality and integrity.</p>
 <ul>
   <li> For block cipher encryption algorithms (like AES):
@@ -14,7 +15,7 @@
     </ul>  </li>
   <li> For RSA encryption algorithm, the recommended padding scheme is OAEP. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Cipher.getInstance("AES"); // Noncompliant: by default ECB mode is chosen
 Cipher.getInstance("AES/ECB/NoPadding"); // Noncompliant: ECB doesn't provide serious message confidentiality
@@ -23,7 +24,7 @@ Cipher.getInstance("AES/CBC/PKCS5Padding"); // Noncompliant: Vulnerable to Paddi
 
 Cipher.getInstance("RSA/None/NoPadding"); // Noncompliant: RSA without OAEP padding scheme is not recommended
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Cipher.getInstance("AES/GCM/NoPadding");
 
@@ -31,7 +32,7 @@ Cipher.getInstance("RSA/None/OAEPWITHSHA-256ANDMGF1PADDING");
 // or the ECB mode can be used for RSA when "None" is not available with the security provider used - in that case, ECB will be treated as "None" for RSA.
 Cipher.getInstance("RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING");
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security

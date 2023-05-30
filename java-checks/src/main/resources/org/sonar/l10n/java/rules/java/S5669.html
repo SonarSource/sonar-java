@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>Passing single <code>null</code> or primitive array argument to the variable arity method may not work as expected. In the case of
 <code>null</code>, it is not passed as array with single element, but the argument itself is <code>null</code>. In the case of a primitive array, if
 the formal parameter is <code>Object...</code>, it is passed as a single element array. This may not be obvious to someone not familiar with such
 corner cases, and it is probably better to avoid such ambiguities by explicitly casting the argument to the desired type.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class A {
   public static void main(String[] args) {
@@ -20,7 +21,7 @@ class A {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class A {
   public static void main(String[] args) {

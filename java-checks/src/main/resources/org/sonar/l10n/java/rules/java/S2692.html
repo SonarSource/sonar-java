@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>Most checks against an <code>indexOf</code> value compare it with -1 because 0 is a valid index. Any checks which look for values &gt;0 ignore the
 first element, which is likely a bug. If the intent is merely to check inclusion of a value in a <code>String</code> or a <code>List</code>, consider
 using the <code>contains</code> method instead.</p>
 <p>This rule raises an issue when an <code>indexOf</code> value retrieved either from a <code>String</code> or a <code>List</code> is tested against
 <code>&gt;0</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String color = "blue";
 String name = "ishmael";
@@ -22,7 +23,7 @@ if (name.indexOf("ae") &gt; 0) { // Noncompliant
   // ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String color = "blue";
 String name = "ishmael";

@@ -1,14 +1,15 @@
+<h2>Why is this an issue?</h2>
 <p>"Boxing" is the process of putting a primitive value into a primitive-wrapper object. When that’s done purely to use the wrapper class'
 <code>toString</code> method, it’s a waste of memory and cycles because those methods are <code>static</code>, and can therefore be used without a
 class instance. Similarly, using the <code>static</code> method <code>valueOf</code> in the primitive-wrapper classes with a non-<code>String</code>
 argument should be avoided.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 int myInt = 4;
 String myIntString = (new Integer(myInt)).toString(); // Noncompliant; creates &amp; discards an Integer object
 myIntString = Integer.valueOf(myInt).toString(); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 int myInt = 4;
 String myIntString = Integer.toString(myInt);

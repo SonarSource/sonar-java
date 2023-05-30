@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>For maximum reusability, methods should accept parameters with as little specialization as possible. So unless specific features from a child class
 are required by a method, a type higher up the class hierarchy should be used instead.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void printSize(ArrayList&lt;Object&gt; list) {  // Collection can be used instead
     System.out.println(list.size());
@@ -12,7 +13,7 @@ public static void loop(List&lt;Object&gt; list) { // java.lang.Iterable can be 
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void printSize(Collection&lt;?&gt; list) {  // Collection can be used instead
     System.out.println(list.size());
@@ -24,7 +25,7 @@ public static void loop(Iterable&lt;?&gt; list) { // java.lang.Iterable can be u
   }
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Parameters in non-public methods are not checked, because such methods are not intended to be generally reusable. <code>java.lang.String</code>
 parameters are excluded, because String is immutable and can not be always substituted for more generic type. Parameters used in any other context
 than method invocation or enhanced for loop are also excluded.</p>

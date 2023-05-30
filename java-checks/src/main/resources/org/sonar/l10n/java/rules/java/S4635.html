@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Looking for a given substring starting from a specified offset can be achieved by such code: <code>str.substring(beginIndex).indexOf(char1)</code>.
 This works well, but it creates a new <code>String</code> for each call to the <code>substring</code> method. When this is done in a loop, a lot of
 <code>Strings</code> are created for nothing, which can lead to performance problems if <code>str</code> is large.</p>
@@ -12,11 +13,11 @@ This works well, but it creates a new <code>String</code> for each call to the <
 <p>For each of these methods, another method with an additional parameter is available to specify an offset.</p>
 <p>Using these methods will avoid the creation of additional <code>String</code> instances. For indexOf methods, adjust the returned value by
 subtracting the substring index parameter to obtain the same result.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 str.substring(beginIndex).indexOf(char1); // Noncompliant; a new String is going to be created by "substring"
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 str.indexOf(char1, beginIndex) - beginIndex; // index for char1 not found is (-1-beginIndex)
 </pre>

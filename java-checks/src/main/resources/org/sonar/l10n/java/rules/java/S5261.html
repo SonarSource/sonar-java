@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The dangling <code>else</code> problem appears when nested <code>if</code>/<code>else</code>&nbsp;statements are written without curly braces. In
 this case, <code>else</code> is associated with the nearest&nbsp;<code>if</code> but that is not always obvious and sometimes the indentation can also
 be misleading.</p>
@@ -5,7 +6,7 @@ be misleading.</p>
 curly braces.</p>
 <p>Adding curly braces can generally make the code clearer (see rule {rule:java:S121} ), and in this situation of dangling <code>else</code>, it
 really clarifies the intention of the code.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
  if (a)
    if (b)
@@ -13,7 +14,7 @@ really clarifies the intention of the code.</p>
  else     // Noncompliant, is the "else" associated with "if(a)" or "if (b)"? (the answer is "if(b)")
    e++;
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
  if (a) {
    if (b) {
@@ -23,7 +24,7 @@ really clarifies the intention of the code.</p>
    e++;
  }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://en.wikipedia.org/wiki/Dangling_else">https://en.wikipedia.org/wiki/Dangling_else</a> </li>
 </ul>

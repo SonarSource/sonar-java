@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>To establish a SSL/TLS connection not vulnerable to man-in-the-middle attacks, it’s essential to make sure the server presents the right
 certificate.</p>
 <p>The certificate’s hostname-specific data should match the server hostname.</p>
@@ -11,7 +12,7 @@ certificate.</p>
   <li> a Apache Common Emails’s <code>org.apache.commons.mail.SimpleEmail</code> is used with <code>setSSLOnConnect(true)</code> or
   <code>setStartTLSEnabled(true)</code> or <code>setStartTLSRequired(true)</code> without a call to <code>setSSLCheckServerIdentity(true)</code> </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 URL url = new URL("https://example.org/");
 HttpsURLConnection urlConnection = (HttpsURLConnection)url.openConnection();
@@ -45,7 +46,7 @@ Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator
   }
 });
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 URL url = new URL("https://example.org/");
 HttpsURLConnection urlConnection = (HttpsURLConnection)url.openConnection();
@@ -76,7 +77,7 @@ Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator
   }
 });
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">OWASP Top 10 2021 Category A5</a> - Security Misconfiguration </li>

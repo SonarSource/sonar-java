@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Writers of <code>Serializable</code> classes can choose to let Java’s automatic mechanisms handle serialization and deserialization, or they can
 choose to handle it themselves by implementing specific methods. However, if the signatures of those methods are not exactly what is expected, they
 will be ignored and the default serialization mechanisms will kick back in.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Watermelon implements Serializable {
   // ...
@@ -21,7 +22,7 @@ public class Watermelon implements Serializable {
   {...}
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Watermelon implements Serializable {
   // ...
@@ -43,7 +44,7 @@ public class Watermelon implements Serializable {
   private Object writeReplace() throws ObjectStreamException
   {...}
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/WTdGBQ">CERT, SER01-J.</a> - Do not deviate from the proper signatures of serialization methods
   </li>

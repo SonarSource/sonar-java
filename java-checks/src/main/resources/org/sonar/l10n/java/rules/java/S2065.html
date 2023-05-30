@@ -1,13 +1,14 @@
+<h2>Why is this an issue?</h2>
 <p><code>transient</code> is used to mark fields in a <code>Serializable</code> class which will not be written out to file (or stream). In a class
 that does not implement <code>Serializable</code>, this modifier is simply wasted keystrokes, and should be removed.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class Vegetable {  // does not implement Serializable
   private transient Season ripe;  // Noncompliant
   // ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class Vegetable {
   private Season ripe;

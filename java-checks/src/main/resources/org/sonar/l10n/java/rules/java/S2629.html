@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Passing message arguments that require further evaluation into a Guava <code>com.google.common.base.Preconditions</code> check can result in a
 performance penalty. That’s because whether or not they’re needed, each argument must be resolved before the method is actually called.</p>
 <p>Similarly, passing concatenated strings into a logging method can also incur a needless performance hit because the concatenation will be performed
@@ -6,7 +7,7 @@ every time the method is called, whether or not the log level is low enough to s
 calls.</p>
 <p>Specifically, the built-in string formatting should be used instead of string concatenation, and if the message is the result of a method call,
 then <code>Preconditions</code> should be skipped altogether, and the relevant exception should be conditionally thrown instead.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 logger.log(Level.DEBUG, "Something went wrong: " + message);  // Noncompliant; string concatenation performed even when log level too high to show DEBUG messages
 
@@ -20,7 +21,7 @@ Preconditions.checkState(condition, formatMessage());  // Noncompliant. formatMe
 
 Preconditions.checkState(condition, "message: %s", formatMessage());  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 logger.log(Level.SEVERE, "Something went wrong: {0} ", message);  // String formatting only applied if needed
 
@@ -44,7 +45,7 @@ if (!condition) {
   throw new IllegalStateException("message: " + formatMessage());
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p><code>catch</code> blocks are ignored, because the performance penalty is unimportant on exceptional paths (catch block should not be a part of
 standard program flow). Getters are ignored as well as methods called on annotations which can be considered as getters. This rule accounts for
 explicit test-level testing with SLF4J methods <code>isXXXEnabled</code> and ignores the bodies of such <code>if</code> statements.</p>

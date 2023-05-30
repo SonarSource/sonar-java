@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p><code>Double.longBitsToDouble</code> expects a 64-bit, <code>long</code> argument. Pass it a smaller value, such as an <code>int</code> and the
 mathematical conversion into a <code>double</code> simply won’t work as anticipated because the layout of the bits will be interpreted incorrectly, as
 if a child were trying to use an adult’s gloves.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 int i = 42;
 double d = Double.longBitsToDouble(i);  // Noncompliant

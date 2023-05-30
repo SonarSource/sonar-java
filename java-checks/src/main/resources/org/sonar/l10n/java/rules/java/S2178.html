@@ -1,14 +1,15 @@
+<h2>Why is this an issue?</h2>
 <p>The use of non-short-circuit logic in a boolean context is likely a mistake - one that could cause serious program errors as conditions are
 evaluated under the wrong circumstances.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 if(getTrue() | getFalse()) { ... } // Noncompliant; both sides evaluated
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 if(getTrue() || getFalse()) { ... } // true short-circuit logic
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/WNYxBQ">CERT, EXP46-C.</a> - Do not use a bitwise operator with a Boolean-like operand </li>
 </ul>

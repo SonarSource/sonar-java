@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>This rule raises an issue when reflection is used to change the visibility of a class, method or field, and when it is used to directly update a
 field value. Altering or bypassing the accessibility of classes, methods, or fields violates the encapsulation principle and could lead to run-time
 errors.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void makeItPublic(String methodName) throws NoSuchMethodException {
 
@@ -12,7 +13,7 @@ public void setItAnyway(String fieldName, int value) {
   this.getClass().getDeclaredField(fieldName).setInt(this, value); // Noncompliant; bypasses controls in setter
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/_jZGBQ">CERT, SEC05-J.</a> - Do not use reflection to increase accessibility of classes,
   methods, or fields </li>

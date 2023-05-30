@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Because of floating point imprecision, you’re unlikely to get the value you expect from the <code>BigDecimal(double)</code> constructor.</p>
 <p>From <a href="http://docs.oracle.com/javase/7/docs/api/java/math/BigDecimal.html#BigDecimal(double)">the JavaDocs</a>:</p>
 <blockquote>
@@ -9,21 +10,21 @@
 </blockquote>
 <p>Instead, you should use <code>BigDecimal.valueOf</code>, which uses a string under the covers to eliminate floating point rounding errors, or the
 constructor that takes a <code>String</code> argument.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 double d = 1.1;
 
 BigDecimal bd1 = new BigDecimal(d); // Noncompliant; see comment above
 BigDecimal bd2 = new BigDecimal(1.1); // Noncompliant; same result
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 double d = 1.1;
 
 BigDecimal bd1 = BigDecimal.valueOf(d);
 BigDecimal bd2 = new BigDecimal("1.1"); // using String constructor will result in precise value
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/kzdGBQ">CERT, NUM10-J.</a> - Do not construct BigDecimal objects from floating-point literals
   </li>

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>In the past, it was required to load a JDBC driver before creating a <code>java.sql.Connection</code>. Nowadays, when using JDBC 4.0 drivers, this
 is no longer required and <code>Class.forName()</code> can be safely removed because JDBC 4.0 (JDK 6) drivers available in the classpath are
 automatically loaded.</p>
@@ -19,7 +20,7 @@ automatically loaded.</p>
   <li> <code>net.sourceforge.jtds.jdbc.Driver</code> </li>
   <li> <code>com.ibm.db2.jcc.DB2Driver</code> </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,7 +36,7 @@ public class Demo {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 import java.sql.Connection;
 import java.sql.DriverManager;

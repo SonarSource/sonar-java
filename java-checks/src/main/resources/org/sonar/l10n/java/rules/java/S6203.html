@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>In Java 15 Text Blocks are official and can be used just like an ordinary String. However, when they are used to represent a big chunk of text,
 they should not be used directly in complex expressions, as it decreases the readability. In this case, it is better to extract the text block into a
 variable or a field.</p>
 <p>This rule reports an issue when a text block longer than a number of lines given as a parameter is directly used within a lambda expression.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 listOfString.stream()
   .map(str -&gt; !"""
@@ -20,7 +21,7 @@ listOfString.stream()
     &lt;/project&gt;
     """.equals(str));
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String myTextBlock = """
     &lt;project&gt;
@@ -40,7 +41,7 @@ String myTextBlock = """
 listOfString.stream()
   .map(str -&gt; !myTextBlock.equals(str));
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://openjdk.java.net/jeps/378">JEP 378: Text Blocks</a> </li>
   <li> <a href="https://openjdk.org/projects/amber/guides/text-blocks-guide">Programmer’s Guide To Text Blocks</a>, by Jim Laskey and Stuart Marks

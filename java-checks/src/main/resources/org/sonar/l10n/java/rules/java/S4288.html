@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>Spring <code>@Controller</code>, <code>@Service</code>, and <code>@Repository</code> classes are singletons by default, meaning only one instance
 of the class is ever instantiated in the application. Typically such a class might have a few <code>static</code> members, such as a logger, but all
 non-static members should be managed by Spring and supplied via constructor injection rather than by field injection.</p>
 <p>This rule raise an issue when any non-<code>static</code> member of a Spring component has an injection annotation.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Controller
 public class HelloWorld {
@@ -12,7 +13,7 @@ public class HelloWorld {
 
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <p>As of Spring 4.3</p>
 <pre>
 @Controller

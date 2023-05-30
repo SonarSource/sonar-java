@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p><code>InterruptedExceptions</code> should never be ignored in the code, and simply logging the exception counts in this case as "ignoring". The
 throwing of the <code>InterruptedException</code> clears the interrupted state of the Thread, so if the exception is not handled properly the
 information that the thread was interrupted will be lost. Instead, <code>InterruptedExceptions</code> should either be rethrown - immediately or after
@@ -8,7 +9,7 @@ probably without finishing its task.</p>
 <blockquote>
   <p>If <code>ThreadDeath</code> is caught by a method, it is important that it be rethrown so that the thread actually dies.</p>
 </blockquote>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void run () {
   try {
@@ -20,7 +21,7 @@ public void run () {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void run () {
   try {
@@ -34,7 +35,7 @@ public void run () {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/391">MITRE, CWE-391</a> - Unchecked Error Condition </li>
 </ul>

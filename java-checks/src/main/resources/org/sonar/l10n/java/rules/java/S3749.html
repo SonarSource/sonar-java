@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Spring <code>@Component</code>, <code>@Controller</code>, <code>@Service</code>, and <code>@Repository</code> classes are singletons by default,
 meaning only one instance of the class is ever instantiated in the application. Typically such a class might have a few <code>static</code> members,
 such as a logger, but all non-<code>static</code> members should be managed by Spring. That is, they should have one of these annotations:
@@ -12,7 +13,7 @@ not annotated with <code>@ConfigurationProperties</code>, has non-<code>static</
   <li> <code>javax.annotation.Inject</code> </li>
   <li> <code>javax.annotation.Resource</code> </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Controller
 public class HelloWorld {
@@ -30,7 +31,7 @@ public class HelloWorld {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data
   Exposure </li>

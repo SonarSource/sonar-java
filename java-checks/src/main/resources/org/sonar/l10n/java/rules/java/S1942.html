@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>Java’s <code>import</code> mechanism allows the use of simple class names. Therefore, using a class' fully qualified name in a file that
 <code>import</code>s the class is redundant and confusing.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 import java.util.List;
 import java.sql.Timestamp;
@@ -10,7 +11,7 @@ import java.sql.Timestamp;
 java.util.List&lt;String&gt; myList;  // Noncompliant
 java.sql.Timestamp tStamp; // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 import java.util.List;
 import java.sql.Timestamp;

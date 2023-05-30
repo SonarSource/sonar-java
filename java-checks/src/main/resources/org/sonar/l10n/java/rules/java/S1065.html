@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>If a label is declared but not used in the program, it can be considered as dead code and should therefore be removed.</p>
 <p>This will improve maintainability as developers will not wonder what this label is used for.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 void foo() {
   outer: //label is not used.
@@ -9,7 +10,7 @@ void foo() {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 void foo() {
   for(int i = 0; i&lt;10; i++) {
@@ -17,7 +18,7 @@ void foo() {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/5dUxBQ">CERT, MSC12-C.</a> - Detect and remove code that has no effect or is never executed
   </li>

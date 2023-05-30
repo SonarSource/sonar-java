@@ -1,20 +1,21 @@
+<h2>Why is this an issue?</h2>
 <p><code>java.util.concurrent.locks.Lock</code> offers far more powerful and flexible locking operations than are available with
 <code>synchronized</code> blocks. So synchronizing on a <code>Lock</code> throws away the power of the object, and is just silly. Instead, such
 objects should be locked and unlocked using <code>tryLock()</code> and <code>unlock()</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Lock lock = new MyLockImpl();
 synchronized(lock) {  // Noncompliant
   //...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Lock lock = new MyLockImpl();
 lock.tryLock();
 //...
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/qjdGBQ">CERT, LCK03-J.</a> - Do not synchronize on the intrinsic locks of high-level concurrency
   objects </li>

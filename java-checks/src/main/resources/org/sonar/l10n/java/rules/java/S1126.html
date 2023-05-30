@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Return of boolean literal statements wrapped into <code>if-then-else</code> ones should be simplified.</p>
 <p>Similarly, method invocations wrapped into <code>if-then-else</code> differing only from boolean literals should be simplified into a single
 invocation.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 boolean foo(Object param) {
   if (expression) { // Noncompliant
@@ -17,7 +18,7 @@ boolean foo(Object param) {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 boolean foo(Object param) {
   bar(param, expression, "qix");

@@ -1,17 +1,18 @@
+<h2>Why is this an issue?</h2>
 <p>There is no good excuse for an empty class. If it’s being used simply as a common extension point, it should be replaced with an
 <code>interface</code>. If it was stubbed in as a placeholder for future development it should be fleshed-out. In any other case, it should be
 eliminated.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Nothing {  // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public interface Nothing {
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Empty classes can be used as marker types (for Spring for instance), therefore empty classes that are annotated will be ignored.</p>
 <pre>
 @Configuration

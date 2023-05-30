@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>In 2018, Duo Security found a new vulnerability class that affects SAML-based single sign-on (SSO) systems and this led to the following
 vulnerabilities being disclosed: <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11427">CVE-2017-11427</a>, <a
 href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11428">CVE-2017-11428</a>, <a
@@ -23,7 +24,7 @@ vulnerability.</p>
 <p>The attacker will manage to generate a valid &lt;SAMLResponse&gt; content with the account "admin@domain.com.evil.com". He will modify it with XML
 comments to finally be authenticated as "admin@domain.com". To prevent this vulnerability on application using Spring Security SAML relying on
 OpenSAML2, XML comments should be ignored thanks to the property <code>ignoreComments</code> set to <code>true</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 import org.opensaml.xml.parse.BasicParserPool;
 import org.opensaml.xml.parse.ParserPool;
@@ -42,7 +43,7 @@ public ParserPool parserPool() {
   return basicParserPool;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public ParserPool parserPool() {
   return new StaticBasicParserPool(); // Compliant: "ignoreComments" is set to "true" in StaticBasicParserPool constructor
@@ -53,7 +54,7 @@ public ParserPool parserPool() {
   return new BasicParserPool();  // Compliant: "ignoreComments" is set to "true" in BasicParserPool constructor
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/">OWASP Top 10 2021 Category A6</a> - Vulnerable and Outdated
   Components </li>

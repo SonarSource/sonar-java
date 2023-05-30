@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Creating a substring from 0 to the end is silly. You’ll end up with the same string you started with. Using the value of <code>String.length</code>
 as either the start or end of a substring has similarly predictable results.</p>
 <p>Calling <code>String.contains</code> with the argument being identical to the String on which contains is invoked doesn’t make sense.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String speech = "Now is the time for all good people to come to the aid of their country.";
 
@@ -13,7 +14,7 @@ if (speech.contains(speech)) { // Noncompliant
  // always true
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String speech = "Now is the time for all good people to come to the aid of their country.";
 

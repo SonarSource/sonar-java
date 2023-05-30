@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>The compiler automatically initializes class fields to their default values before setting them with any initialization values, so there is no need
 to explicitly set a field to its default value. Further, under the logic that cleaner code is better code, it’s considered poor style to do so.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass {
 
@@ -9,7 +10,7 @@ public class MyClass {
 
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class MyClass {
 
@@ -18,6 +19,6 @@ public class MyClass {
 
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p><code>final</code> fields are ignored.</p>
 

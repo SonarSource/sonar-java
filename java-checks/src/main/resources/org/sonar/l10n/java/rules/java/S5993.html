@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>Abstract classes should not have public constructors. Constructors of abstract classes can only be called in constructors of their subclasses. So
 there is no point in making them public. The <code>protected</code> modifier should be enough.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public abstract class AbstractClass1 {
     public AbstractClass1 () { // Noncompliant, has public modifier
@@ -8,7 +9,7 @@ public abstract class AbstractClass1 {
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public abstract class AbstractClass2 {
     protected AbstractClass2 () {

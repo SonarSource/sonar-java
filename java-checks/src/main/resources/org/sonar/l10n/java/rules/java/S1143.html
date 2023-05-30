@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>Using <code>return</code>, <code>break</code>, <code>throw</code>, and so on from a <code>finally</code> block suppresses the propagation of any
 unhandled <code>Throwable</code> which was thrown in the <code>try</code> or <code>catch</code> block.</p>
 <p>This rule raises an issue when a jump statement (<code>break</code>, <code>continue</code>, <code>return</code>, <code>throw</code>, and
 <code>goto</code>) would force control flow to leave a <code>finally</code> block.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public static void main(String[] args) {
   try {
@@ -29,7 +30,7 @@ public static void doSomethingWhichThrowsException() {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public static void main(String[] args) {
   try {
@@ -55,7 +56,7 @@ public static void doSomethingWhichThrowsException() {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/584">MITRE, CWE-584</a> - Return Inside Finally Block </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/BTdGBQ">CERT, ERR04-J.</a> - Do not complete abruptly from a finally block </li>

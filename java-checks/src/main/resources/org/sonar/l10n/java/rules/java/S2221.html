@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>Catching <code>Exception</code> seems like an efficient way to handle multiple possible exceptions. Unfortunately, it traps all exception types,
 both checked and runtime exceptions, thereby casting too broad a net. Indeed, was it really the intention of developers to also catch runtime
 exceptions? To prevent any misunderstanding, if both checked and runtime exceptions are really expected to be caught, they should be explicitly listed
 in the <code>catch</code> clause.</p>
 <p>This rule raises an issue if <code>Exception</code> is caught when it is not explicitly thrown by a method in the <code>try</code> block.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 try {
   // do something that might throw an UnsupportedDataTypeException or UnsupportedEncodingException
@@ -11,7 +12,7 @@ try {
   // log exception ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 try {
   // do something
@@ -27,7 +28,7 @@ try {
   // log exception ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/396">MITRE, CWE-396</a> - Declaration of Catch for Generic Exception </li>
 </ul>

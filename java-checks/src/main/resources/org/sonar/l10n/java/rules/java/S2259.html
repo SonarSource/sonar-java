@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>A reference to <code>null</code> should never be dereferenced/accessed. Doing so will cause a <code>NullPointerException</code> to be thrown. At
 best, such an exception will cause abrupt program termination. At worst, it could expose debugging information that would be useful to an attacker, or
 it could allow an attacker to bypass security measures.</p>
 <p>Note that when they are present, this rule takes advantage of <code>@CheckForNull</code> and <code>@Nonnull</code> annotations defined in <a
 href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values are and are not nullable except when <code>@Nonnull</code> is used
 on the parameter to <code>equals</code>, which by contract should always work with null.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @CheckForNull
 String getName(){...}
@@ -44,7 +45,7 @@ void paint(Color color) {
   ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/476">MITRE, CWE-476</a> - NULL Pointer Dereference </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/QdcxBQ">CERT, EXP34-C.</a> - Do not dereference null pointers </li>

@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>When a parent class references a member of a subclass during its own initialization, the results might not be what you expect because the child
 class might not have been initialized yet. This could create what is known as an "initialisation cycle", or even a deadlock in some extreme cases.</p>
 <p>To make things worse, these issues are very hard to diagnose so it is highly recommended you avoid creating this kind of dependencies.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class Parent {
   static int field1 = Child.method(); // Noncompliant
@@ -18,7 +19,7 @@ class Child extends Parent {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://www.securecoding.cert.org/confluence/display/java/DCL00-J.+Prevent+class+initialization+cycles">CERT, DCL00-J.</a> - Prevent
   class initialization cycles </li>

@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>The contract of the <code>Object.finalize()</code> method is clear: only the Garbage Collector is supposed to call this method.</p>
 <p>Making this method public is misleading, because it implies that any caller can use it.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass {
 
@@ -10,7 +11,7 @@ public class MyClass {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/583">MITRE, CWE-583</a> - finalize() Method Declared Public </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/4jZGBQ">CERT, MET12-J.</a> - Do not use finalizers </li>

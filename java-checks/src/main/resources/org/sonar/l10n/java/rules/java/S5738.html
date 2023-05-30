@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Java 9 introduced a flag for the <code>@Deprecated</code> annotation, which allows to explicitly say if the deprecated code is planned to be
 removed at some point or not. This is done using <code>forRemoval=true</code> as annotation parameter. The javadoc of the annotation explicitly
 mention the following:</p>
@@ -8,7 +9,7 @@ mention the following:</p>
 <p>While usually deprecated classes, interfaces, and their deprecated members should be avoided rather than used, inherited or extended, those already
 marked for removal are much more sensitive to causing trouble in your code soon. Consequently, any usage of such deprecated code should be avoided or
 removed.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 /**
  * @deprecated As of release 1.3, replaced by {@link #Fee}. Will be dropped with release 1.4.
@@ -47,7 +48,7 @@ public class Bar extends Foo {  // Noncompliant; Foo is deprecated and will be r
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/477">MITRE, CWE-477</a> - Use of Obsolete Functions </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/6TdGBQ">CERT, MET02-J.</a> - Do not use deprecated or obsolete classes or methods </li>

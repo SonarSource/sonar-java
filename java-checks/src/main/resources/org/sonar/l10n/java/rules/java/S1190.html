@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Through Java’s evolution keywords have been added. While code that uses those words as identifiers may be compilable under older versions of Java,
 it will not be under modern versions.</p>
 <p>Following keywords are marked as invalid identifiers</p>
@@ -25,14 +26,14 @@ it will not be under modern versions.</p>
 </table>
 <p><code>assert</code> and <code>strictfp</code> are another example of valid identifiers which became keywords in later versions, but are not
 supported by this rule.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doSomething() {
   int enum = 42;            // Noncompliant
   String _ = "";   // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void doSomething() {
   int magic = 42;

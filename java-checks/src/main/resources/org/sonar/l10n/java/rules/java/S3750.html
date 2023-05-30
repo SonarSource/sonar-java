@@ -1,16 +1,17 @@
+<h2>Why is this an issue?</h2>
 <p>Spring <code>@Controller</code>s, <code>@Service</code>s, and <code>@Repository</code>s have <code>singleton</code> scope by default, meaning only
 one instance of the class is ever instantiated in the application. Defining any other scope for one of these class types will result in needless churn
 as new instances are created and destroyed. In a busy web application, this could cause a significant amount of needless additional load on the
 server.</p>
 <p>This rule raises an issue when the <code>@Scope</code> annotation is applied to a <code>@Controller</code>, <code>@Service</code>, or
 <code>@Repository</code> with any value but "singleton". <code>@Scope("singleton")</code> is redundant, but ignored.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Scope("prototype")  // Noncompliant
 @Controller
 public class HelloWorld {
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @Controller
 public class HelloWorld {

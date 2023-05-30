@@ -1,14 +1,15 @@
+<h2>Why is this an issue?</h2>
 <p>In regular expressions the boundaries <code>^</code> and <code>\A</code> can only match at the beginning of the input (or, in case of
 <code>^</code> in combination with the <code>MULTILINE</code> flag, the beginning of the line) and <code>$</code>, <code>\Z</code> and <code>\z</code>
 only at the end.</p>
 <p>These patterns can be misused, by accidentally switching <code>^</code> and <code>$</code> for example, to create a pattern that can never
 match.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 // This can never match because $ and ^ have been switched around
 Pattern.compile("$[a-z]+^"); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Pattern.compile("^[a-z]+$");
 </pre>

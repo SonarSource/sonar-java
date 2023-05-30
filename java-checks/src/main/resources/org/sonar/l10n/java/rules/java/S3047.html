@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>When a method loops multiple over the same set of data, whether it’s a list or a set of numbers, it is highly likely that the method could be made
 more efficient by combining the loops into a single set of iterations.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doSomethingToAList(List&lt;String&gt; strings) {
   for (String str : strings) {
@@ -11,7 +12,7 @@ public void doSomethingToAList(List&lt;String&gt; strings) {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void doSomethingToAList(List&lt;String&gt; strings) {
   for (String str : strings) {

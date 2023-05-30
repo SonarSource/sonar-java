@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Method/constructor references are commonly agreed to be more readable than lambdas in most situations, and are therefore preferred.</p>
 <p>However, method references are sometimes less concise than lambdas. In such cases, it might be fine to keep the lambda if it is better for
 readability. This choice is ultimately up to the programmer. Therefore, this rule only raises issues on lambda functions that could be replaced by
@@ -6,7 +7,7 @@ shorter method references.</p>
 <code>casts</code> can be replaced with <code>SomeClass.class::cast</code> and <code>instanceof</code> can be replaced with
 <code>SomeClass.class::isInstance</code>.</p>
 <p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class A {
   void process(List&lt;A&gt; list) {
@@ -24,7 +25,7 @@ class B extends A {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class A {
   void process(List&lt;A&gt; list) {

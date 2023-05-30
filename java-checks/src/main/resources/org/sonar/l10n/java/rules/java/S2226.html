@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>By contract, a servlet container creates one instance of each servlet and then a dedicated thread is attached to each new incoming HTTP request to
 process the request. So all threads share the servlet instances and by extension their instance fields. To prevent any misunderstanding and unexpected
 behavior at runtime, all servlet fields should then be either <code>static</code> and/or <code>final</code>, or simply removed.</p>
 <p>With Struts 1.X, the same constraint exists on <code>org.apache.struts.action.Action</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyServlet extends HttpServlet {
   private String userName;  //As this field is shared by all users, it's obvious that this piece of information should be managed differently
@@ -16,13 +17,13 @@ public class MyAction extends Action {
   ...
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <ul>
   <li> Fields annotated with <code>@javax.inject.Inject</code>, <code>@javax.ejb.EJB</code>,
   <code>@org.springframework.beans.factory.annotation.Autowired</code>, <code>@javax.annotation.Resource</code> </li>
   <li> Fields initialized in <code>init()</code> or <code>init(ServletConfig config)</code> methods </li>
 </ul>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/2TZGBQ">CERT, MSC11-J.</a> - Do not let session information leak within a servlet </li>
 </ul>

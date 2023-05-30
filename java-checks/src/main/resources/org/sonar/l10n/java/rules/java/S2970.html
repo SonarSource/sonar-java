@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>It is very easy to write incomplete assertions when using some test frameworks. This rule enforces complete assertions in the following cases:</p>
 <ul>
   <li> Fest: <code>assertThat</code> is not followed by an assertion invocation </li>
@@ -6,7 +7,7 @@
   <li> Truth: <code>assertXXX</code> is not followed by an assertion invocation </li>
 </ul>
 <p>In such cases, what is intended to be a test doesn’t actually verify anything</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 // Fest
 boolean result = performAction();
@@ -20,7 +21,7 @@ mockedList.clear();
 // let's check that "add" and "clear" methods are actually called
 Mockito.verify(mockedList); // Noncompliant; nothing is checked here, oups no call is chained to verify()
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 // Fest
 boolean result = performAction();
@@ -35,7 +36,7 @@ mockedList.clear();
 Mockito.verify(mockedList).add("one");
 Mockito.verify(mockedList).clear();
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Variable assignments and return statements are skipped to allow helper methods.</p>
 <pre>
 private BooleanAssert check(String filename, String key) {

@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Constructors for <code>String</code>, <code>BigInteger</code>, <code>BigDecimal</code> and the objects used to wrap primitives should never be
 used. Doing so is less clear and uses more memory than simply using the desired value in the case of strings, and using <code>valueOf</code> for
 everything else.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String empty = new String(); // Noncompliant; yields essentially "", so just use that.
 String nonempty = new String("Hello world"); // Noncompliant
@@ -12,7 +13,7 @@ BigInteger bigInteger1 = new BigInteger("3"); // Noncompliant
 BigInteger bigInteger2 = new BigInteger("9223372036854775807"); // Noncompliant
 BigInteger bigInteger3 = new BigInteger("111222333444555666777888999"); // Compliant, greater than Long.MAX_VALUE
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String empty = "";
 String nonempty = "Hello world";
@@ -23,7 +24,7 @@ BigInteger bigInteger1 = BigInteger.valueOf(3);
 BigInteger bigInteger2 = BigInteger.valueOf(9223372036854775807L);
 BigInteger bigInteger3 = new BigInteger("111222333444555666777888999");
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p><code>BigDecimal</code> constructor with <code>double</code> argument is ignored as using <code>valueOf</code> instead might change resulting
 value. See {rule:java:S2111} .</p>
 

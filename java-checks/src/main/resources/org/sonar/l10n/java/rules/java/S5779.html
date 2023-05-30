@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>Assertion methods&nbsp;are throwing a "<code>java.lang.AssertionError</code>". If this call is done within the try block of a try-catch cathing a
 similar error, you should make sure to test some properties of the exception. Otherwise, the assertion will never fail.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Test
 public void should_throw_assertion_error() {
@@ -14,7 +15,7 @@ private void throwAssertionError() {
   throw new AssertionError("My assertion error");
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 assertThrows(AssertionError.class, () -&gt; throwAssertionError());
 </pre>
@@ -26,7 +27,7 @@ try {
    Assert.assertThat(e.getMessage(), is("My assertion error"));
  }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit 4 exception testing documentation</a> </li>
 </ul>

@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p><code>java.util.concurrent.ScheduledThreadPoolExecutor</code>'s pool is sized with <code>corePoolSize</code>, so setting <code>corePoolSize</code>
 to zero means the executor will have no threads and run nothing.</p>
 <p>This rule detects instances where <code>corePoolSize</code> is set to zero, via either its setter or the object constructor.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void do(){
 

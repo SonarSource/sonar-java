@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>There is no good reason to have a mutable object as the <code>public</code> (by default), <code>static</code> member of an <code>interface</code>.
 Such variables should be moved into classes and their visibility lowered.</p>
 <p>Similarly, mutable <code>static</code> members of classes and enumerations which are accessed directly, rather than through getters and setters,
@@ -5,7 +6,7 @@ should be protected to the degree possible. That can be done by reducing visibil
 <p>Note that making a mutable field, such as an array, <code>final</code> will keep the variable from being reassigned, but doing so has no effect on
 the mutability of the internal state of the array (i.e. it doesn’t accomplish the goal).</p>
 <p>This rule raises issues for <code>public static</code> array, <code>Collection</code>, <code>Date</code>, and <code>awt.Point</code> members.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public interface MyInterface {
   public static String [] strings; // Noncompliant
@@ -18,7 +19,7 @@ public class A {
   // ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/582">MITRE, CWE-582</a> - Array Declared Public, Final, and Static </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/607">MITRE, CWE-607</a> - Public Static Final Field References Mutable Object </li>
