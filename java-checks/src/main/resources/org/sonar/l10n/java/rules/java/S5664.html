@@ -1,5 +1,6 @@
+<h2>Why is this an issue?</h2>
 <p>Either use only spaces or only tabs for the indentation of a text block. Mixing white space will lead to a result with irregular indentation.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String textBlock = """
         this is
@@ -7,7 +8,7 @@ String textBlock = """
         !!!!
       """;
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String textBlock = """
         this is
@@ -15,7 +16,7 @@ String textBlock = """
         !!!!
       """;
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://openjdk.java.net/jeps/378">JEP 378: Text Blocks</a> </li>
   <li> <a href="https://openjdk.org/projects/amber/guides/text-blocks-guide">Programmer’s Guide To Text Blocks</a>, by Jim Laskey and Stuart Marks

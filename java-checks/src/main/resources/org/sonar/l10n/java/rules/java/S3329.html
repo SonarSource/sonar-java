@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>When encrypting data with the Cipher Block Chaining (CBC) mode an Initialization Vector (IV) is used to randomize the encryption, ie under a given
 key the same plaintext doesn’t always produce the same ciphertext. The IV doesn’t need to be secret but should be unpredictable to avoid
 "Chosen-Plaintext Attack".</p>
 <p>To generate Initialization Vectors, NIST recommends to use a secure random number generator.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void encrypt(String key, String plainText) throws GeneralSecurityException {
     byte[] bytesIV = "7cVgr5cbdCZVw5WY".getBytes(StandardCharsets.UTF_8); // secondary
@@ -14,7 +15,7 @@ public void encrypt(String key, String plainText) throws GeneralSecurityExceptio
     cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv); // Noncompliant
   }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void encrypt(String key, String plainText) throws GeneralSecurityException {
     SecureRandom random = new SecureRandom();
@@ -28,7 +29,7 @@ public void encrypt(String key, String plainText) throws GeneralSecurityExceptio
     cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
   }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure

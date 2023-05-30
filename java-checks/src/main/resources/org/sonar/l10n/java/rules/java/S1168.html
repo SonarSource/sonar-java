@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Returning <code>null</code> instead of an actual array, collection or map forces callers of the method to explicitly test for nullity, making them
 more complex and less readable.</p>
 <p>Moreover, in many cases, <code>null</code> is used as a synonym for empty.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public static List&lt;Result&gt; getAllResults() {
   return null;                             // Noncompliant
@@ -36,7 +37,7 @@ public static void main(String[] args) {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public static List&lt;Result&gt; getAllResults() {
   return Collections.emptyList();          // Compliant
@@ -62,7 +63,7 @@ public static void main(String[] args) {
   getValues().forEach((k, v) -&gt; doSomething(k, v));
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/aNYxBQ">CERT, MSC19-C.</a> - For functions that return an array, prefer returning an empty array
   over a null value </li>

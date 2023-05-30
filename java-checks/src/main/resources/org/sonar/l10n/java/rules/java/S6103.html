@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>AssertJ assertions taking <code>Consumer</code> objects as arguments are expected to contain "requirements", which should themselves be expressed
 as assertions. This concerns the following methods: <a
 href="http://joel-costigliola.github.io/assertj/core-8/api/org/assertj/core/api/AbstractIterableAssert.html#allSatisfy-java.util.function.Consumer-">allSatisfy</a>,
@@ -15,12 +16,12 @@ href="http://joel-costigliola.github.io/assertj/core-8/api/org/assertj/core/api/
 <p>These methods are assuming the&nbsp;<code>Consumer</code>&nbsp;will do the assertions itself. If you do not do any assertion in the
 <code>Consumer</code>, it probably means that you are inadvertently only partially testing your object.</p>
 <p>This rule raises an issue when a <code>Consumer</code> argument of any of the above methods does not contain any assertion.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 assertThat(myObject).isInstanceOfSatisfying(String.class, s -&gt; "Hello".equals(s)); // Noncompliant - not testing the string value
 assertThat(myObject).satisfies("Hello"::equals); // Noncompliant - not testing the string value
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 assertThat(myObject).isInstanceOfSatisfying(String.class, s -&gt; assertThat(s).isEqualTo("Hello"));
 assertThat(myObject).satisfies(obj -&gt; assertThat(obj).isEqualTo("Hello"));

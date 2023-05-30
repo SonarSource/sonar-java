@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Comparisons of dissimilar types will always return false. The comparison and all its dependent code can simply be removed. This includes:</p>
 <ul>
   <li> comparing an object with null </li>
@@ -13,7 +14,7 @@ as comparing their addresses. This means that <code>array1.equals(array2)</code>
 <p>However, some developers might expect <code>Array.equals(Object obj)</code> to do more than a simple memory address comparison, comparing for
 instance the size and content of the two arrays. Instead, the <code>==</code> operator or <code>Arrays.equals(array1, array2)</code> should always be
 used with arrays.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 interface KitchenTool { ... };
 interface Plant {...}
@@ -50,7 +51,7 @@ else if (tree.equals(null)) { // Noncompliant
   // ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/5zdGBQ">CERT, EXP02-J.</a> - Do not use the Object.equals() method to compare two arrays </li>
 </ul>

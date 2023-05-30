@@ -1,21 +1,22 @@
+<h2>Why is this an issue?</h2>
 <p>Making a <code>public</code> constant just <code>final</code> as opposed to <code>static final</code> leads to duplicating its value for every
 instance of the class, uselessly increasing the amount of memory required to execute the application.</p>
 <p>Further, when a non-<code>public</code>, <code>final</code> field isn’t also <code>static</code>, it implies that different instances can have
 different values. However, initializing a non-<code>static final</code> field in its declaration forces every instance to have the same value. So such
 fields should either be made <code>static</code> or initialized in the constructor.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Myclass {
   public final int THRESHOLD = 3;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Myclass {
   public static final int THRESHOLD = 3;    // Compliant
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>No issues are reported on final fields of inner classes whose type is not a primitive or a String. Indeed according to the Java specification:</p>
 <blockquote>
   <p>An inner class is a nested class that is not explicitly or implicitly declared static. Inner classes may not declare static initializers (§8.7)

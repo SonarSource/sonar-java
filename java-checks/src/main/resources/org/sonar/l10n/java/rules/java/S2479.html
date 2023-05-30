@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Non-encoded control characters and whitespace characters are often injected in the source code because of a bad manipulation. They are either
 invisible or difficult to recognize, which can result in bugs when the string is not what the developer expects. If you actually need to use a control
 character use their encoded version (ex: ASCII <code>\n,\t,</code>…​ or Unicode <code>U+000D, U+0009,</code>…​).</p>
@@ -9,13 +10,13 @@ character use their encoded version (ex: ASCII <code>\n,\t,</code>…​ or Unic
   <li> Unicode characters <code>U+200B, U+200C, U+200D, U+2060, U+FEFF, U+2028, U+2029</code> </li>
 </ul>
 <p>No issue will be raised on the simple space character. Unicode <code>U+0020</code>, ASCII 32.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String tabInside = "A	B";  // Noncompliant, contains a tabulation
 String zeroWidthSpaceInside = "foo​bar"; // Noncompliant, it contains a U+200B character inside
 char tab = '	';
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String tabInside = "A\tB";  // Compliant, uses escaped value
 String zeroWidthSpaceInside = "foo\u200Bbar";  // Compliant, uses escaped value

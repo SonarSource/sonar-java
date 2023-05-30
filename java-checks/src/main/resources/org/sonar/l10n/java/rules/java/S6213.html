@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Even if it is technically possible, <a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-3.html#jls-3.8">Restricted Identifiers</a>
 should not be used as identifiers. This is only possible for compatibility reasons, using it in Java code is confusing and should be avoided.</p>
 <p>Note that this applies to any version of Java, including the one where these identifiers are not yet restricted, to avoid future confusion.</p>
@@ -8,7 +9,7 @@ should not be used as identifiers. This is only possible for compatibility reaso
   <li> record </li>
 </ul>
 <p>are used as identifiers.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 var var = "var"; // Noncompliant: compiles but this code is confusing
 var = "what is this?";
@@ -22,7 +23,7 @@ int yield(int i) { // Noncompliant
 
 String record = "record"; // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 var myVariable = "var";
 
@@ -35,7 +36,7 @@ int minusOne(int i) {
 
 String myRecord = "record";
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-3.html#jls-3.8">JLS16, 3.8: Identifiers</a> </li>
 </ul>

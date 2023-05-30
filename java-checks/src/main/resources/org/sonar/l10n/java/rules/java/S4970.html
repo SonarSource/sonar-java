@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The <code>catch</code> block of a checked exception "E" may be hidden because the corresponding <code>try</code> block only throws exceptions
 derived from E.</p>
 <p>These derived exceptions are handled in dedicated <code>catch</code> blocks prior to the <code>catch</code> block of the base exception E.</p>
@@ -5,7 +6,7 @@ derived from E.</p>
 be refactored.</p>
 <p>It is also possible that a single exception type in a multi-catch block may be hidden while the catch block itself is still reachable. In that case
 it is enough to only remove the hidden exception type or to replace it with another type.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class HiddenCatchBlock {
 
@@ -30,7 +31,7 @@ public class HiddenCatchBlock {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class HiddenCatchBlock {
 

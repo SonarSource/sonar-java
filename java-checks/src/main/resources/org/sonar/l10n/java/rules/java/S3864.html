@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to its JavaDocs, the intermediate Stream operation <code>java.util.Stream.peek()</code> “exists mainly to support debugging”
 purposes.</p>
 <p>A key difference with other intermediate Stream operations is that the Stream implementation is free to skip calls to <code>peek()</code> for
@@ -5,19 +6,19 @@ optimization purpose. This can lead to <code>peek()</code> being unexpectedly ca
 <p>As a consequence, relying on <code>peek()</code> without careful consideration can lead to error-prone code.</p>
 <p>This rule raises an issue for each use of peek() to be sure that it is challenged and validated by the team to be meant for production
 debugging/logging purposes.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Stream.of("one", "two", "three", "four")
          .filter(e -&gt; e.length() &gt; 3)
          .peek(e -&gt; System.out.println("Filtered value: " + e)); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Stream.of("one", "two", "three", "four")
          .filter(e -&gt; e.length() &gt; 3)
          .foreach(e -&gt; System.out.println("Filtered value: " + e));
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#peek-java.util.function.Consumer-">Java 8 API Documentation</a>
   </li>

@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Overriding a parent class method prevents that method from being called unless an explicit <code>super</code> call is made in the overriding
 method. In some cases not calling the <code>super</code> method is acceptable, but not with <code>setUp</code> and <code>tearDown</code> in a JUnit 3
 <code>TestCase</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClassTest extends MyAbstractTestCase {
 
@@ -11,7 +12,7 @@ public class MyClassTest extends MyAbstractTestCase {
       myClass = new MyClass();
     }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class MyClassTest extends MyAbstractTestCase {
 

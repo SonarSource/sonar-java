@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Storing data locally is a common task for mobile applications. There are many convenient solutions that allow storing data persistently, for
 example SQLiteDatabase and Realm. These systems can be initialized with a secret key in order to store the data encrypted.</p>
 <p>The encryption key is meant to stay secret and should not be hard-coded in the application as it would mean that:</p>
@@ -9,7 +10,7 @@ example SQLiteDatabase and Realm. These systems can be initialized with a secret
 <p>There are different approaches how the key can be provided to encrypt and decrypt the database. One of the most convinient way to is to rely on
 <code>EncryptedSharedPreferences</code> to store encryption keys. It can also be provided dynamically by the user of the application or fetched from a
 remote server.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p><a href="https://www.zetetic.net/sqlcipher/sqlcipher-for-android/">SQLCipher</a></p>
 <pre>
 String key = "gb09ym9ydoolp3w886d0tciczj6ve9kszqd65u7d126040gwy86xqimjpuuc788g";
@@ -23,7 +24,7 @@ RealmConfiguration config = new RealmConfiguration.Builder();
     .build();
 Realm realm = Realm.getInstance(config);
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <p><a href="https://www.zetetic.net/sqlcipher/sqlcipher-for-android/">SQLCipher</a></p>
 <pre>
 SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("test.db", getKey(), null);
@@ -35,7 +36,7 @@ RealmConfiguration config = new RealmConfiguration.Builder()
     .build();
 Realm realm = Realm.getInstance(config);
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">OWASP Top 10 2021 Category A4</a> - Insecure Design </li>

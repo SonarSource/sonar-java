@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to the Java Language Specification, there is a contract between <code>equals(Object)</code> and <code>hashCode()</code>:</p>
 <blockquote>
   <p>If two objects are equal according to the <code>equals(Object)</code> method, then calling the <code>hashCode</code> method on each of the two
@@ -8,7 +9,7 @@
   hashtables.</p>
 </blockquote>
 <p>In order to comply with this contract, those methods should be either both inherited, or both overridden.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class MyClass {    // Noncompliant - should also override "hashCode()"
 
@@ -19,7 +20,7 @@ class MyClass {    // Noncompliant - should also override "hashCode()"
 
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class MyClass {    // Compliant
 
@@ -35,7 +36,7 @@ class MyClass {    // Compliant
 
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/581">MITRE, CWE-581</a> - Object Model Violation: Just One of Equals and Hashcode Defined </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/7DVGBQ">CERT, MET09-J.</a> - Classes that define an equals() method must also define a

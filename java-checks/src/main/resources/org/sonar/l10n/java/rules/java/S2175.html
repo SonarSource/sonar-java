@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The <code>java.util.Collection</code> API has methods that accept <code>Object</code> parameters such as <code>Collection.remove(Object o)</code>,
 and <code>Collection.contains(Object o)</code>. When the actual type of the object provided to these methods is not consistent with the type declared
 on the <code>Collection</code> instantiation, those methods will always return <code>false</code> or <code>null</code>. This is most likely unintended
@@ -17,7 +18,7 @@ declaration:</p>
   <li> <code>Map.remove(Object key)</code> </li>
   <li> <code>Map.remove(Object key, Object value)</code> </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class S2175 {
 
@@ -37,7 +38,7 @@ public class S2175 {
 
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/uDdGBQ">CERT, EXP04-J.</a> - Do not pass arguments to certain Java Collections Framework methods
   that are a different type than the collection parameter type </li>

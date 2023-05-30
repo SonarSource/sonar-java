@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When a method in a child class has the same signature as a method in a parent class, it is assumed to be an override. However, that’s not the case
 when:</p>
 <ul>
@@ -8,7 +9,7 @@ when:</p>
 <p>Typically, these things are done unintentionally; the private parent class method is overlooked, the <code>static</code> keyword in the parent
 declaration is overlooked, or the wrong class is imported in the child. But if the intent is truly for the child class method to be different, then
 the method should be renamed to prevent confusion.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 // Parent.java
 import computer.Pear;
@@ -37,7 +38,7 @@ public class Child extends Parent {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 // Parent.java
 import computer.Pear;

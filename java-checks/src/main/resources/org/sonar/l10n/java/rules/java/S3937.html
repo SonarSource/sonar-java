@@ -1,13 +1,14 @@
+<h2>Why is this an issue?</h2>
 <p>The use of punctuation characters to separate subgroups in a number can make the number more readable. For instance consider 1,000,000,000 versus
 1000000000. But when the grouping is irregular, such as 1,000,00,000; it indicates an error.</p>
 <p>This rule raises an issue when underscores (<code>_</code>) are used to break a number into irregular subgroups.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 int thousand = 100_0;
 int tenThousand = 100_00;
 int million = 1_000_00_000;
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 int thousand = 1000;
 int tenThousand = 10_000;
@@ -15,7 +16,7 @@ int tenThousandWithout = 10000;
 int duos = 1_00_00;
 int million = 100_000_000;
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>No issue will be raised on binary numbers (starting with <code>0b</code> or <code>0B</code>). Binary number bits are often grouped corresponding to
 certain meanings, resulting in irregular bit group sizes.</p>
 <pre>

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to the Java <code>Comparable.compareTo(T o)</code> documentation:</p>
 <blockquote>
   <p>It is strongly recommended, but not strictly required that <code>(x.compareTo(y)==0) == (x.equals(y))</code>.</p>
@@ -7,14 +8,14 @@
 <p>If this rule is violated, weird and unpredictable failures can occur.</p>
 <p>For example, in Java 5 the <code>PriorityQueue.remove()</code> method relied on <code>compareTo()</code>, but since Java 6 it has relied on
 <code>equals()</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Foo implements Comparable&lt;Foo&gt; {
   @Override
   public int compareTo(Foo foo) { /* ... */ }      // Noncompliant as the equals(Object obj) method is not overridden
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Foo implements Comparable&lt;Foo&gt; {
   @Override

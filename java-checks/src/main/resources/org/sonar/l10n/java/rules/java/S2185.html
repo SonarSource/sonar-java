@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Certain math operations are just silly and should not be performed because their results are predictable.</p>
 <p>In particular, <code>anyValue % 1</code> is silly because it will always return 0.</p>
 <p>Casting a non-floating-point value to floating-point and then passing it to <code>Math.round</code>, <code>Math.ceil</code>, or
@@ -91,7 +92,7 @@
     </tr>
   </tbody>
 </table>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doMath(int a) {
   double floor = Math.floor((double)a); // Noncompliant

@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>When using null-related annotations at global scope level, for instance using <code>javax.annotation.ParametersAreNonnullByDefault</code> (from
 JSR-305) at package level, it means that all the parameters to all the methods included in the package will, or should, be considered
 Non-<code>null</code>. It is equivalent to annotating every parameter in every method with non-null annotations (such as <code>@Nonnull</code>).</p>
 <p>The rule raises an issue every time a parameter could be <code>null</code> for a method invocation, where the method is annotated as forbidding
 null parameters.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @javax.annotation.ParametersAreNonnullByDefault
 class A {
@@ -20,7 +21,7 @@ class A {
   abstract Object getValue();
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <p>Two solutions are possible:</p>
 <ul>
   <li> The signature of the method is correct, and null check should be done prior to the call. </li>

@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>Maps use hashes of the keys to select a bucket to store data in. Objects that hash to the same value will be added to the same bucket.</p>
 <p>When the hashing function has a poor distribution, buckets can grow to very large sizes. This may negatively affect lookup performance, as, by
 default, matching a key within a bucket has linear complexity.</p>
 <p>In addition, as the default hashCode function can be selected at runtime, performance expectations cannot be maintained.</p>
 <p>Implementing Comparable mitigates the performance issue for objects that hash to the same value.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class MyKeyType {
     // ...
@@ -17,7 +18,7 @@ class Program {
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class MyKeyType implements Comparable&lt;MyKeyType&gt; {
     // ...
@@ -36,7 +37,7 @@ class Program {
     }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://www.kb.cert.org/vuls/id/903934">https://www.kb.cert.org/vuls/id/903934</a> </li>
   <li> <a

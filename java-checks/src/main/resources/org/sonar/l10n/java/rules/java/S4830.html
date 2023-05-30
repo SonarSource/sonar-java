@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Validation of X.509 certificates is essential to create secure SSL/TLS sessions not vulnerable to man-in-the-middle attacks.</p>
 <p>The certificate chain validation includes these steps:</p>
 <ul>
@@ -8,7 +9,7 @@
 <p>This rule raises an issue when an implementation of X509TrustManager is not controlling the validity of the certificate (ie: no exception is
 raised). Empty implementations of the <code>X509TrustManager</code> interface are often created to disable certificate validation. The correct
 solution is to provide an appropriate trust store.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class TrustAllManager implements X509TrustManager {
 
@@ -27,7 +28,7 @@ class TrustAllManager implements X509TrustManager {
     }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">OWASP Top 10 2021 Category A5</a> - Security Misconfiguration </li>

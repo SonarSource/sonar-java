@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>There’s no point in creating an array solely for the purpose of passing it as a varargs (<code>...</code>) argument; varargs <em>is</em> an array.
 Simply pass the elements directly. They will be consolidated into an array automatically. Incidentally passing an array where <code>Object ...</code>
 is expected makes the intent ambiguous: Is the array supposed to be one object or a collection of objects?</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void callTheThing() {
   //...
@@ -19,7 +20,7 @@ public void doTheOtherThing(Object ... args) {
   // ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void callTheThing() {
   //...

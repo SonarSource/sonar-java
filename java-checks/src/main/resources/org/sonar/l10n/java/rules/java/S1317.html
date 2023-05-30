@@ -1,11 +1,12 @@
+<h2>Why is this an issue?</h2>
 <p>Instantiating a <code>StringBuilder</code> or a <code>StringBuffer</code> with a character is misleading because most Java developers would expect
 the character to be the initial value of the <code>StringBuffer</code>.</p>
 <p>What actually happens is that the int representation of the character is used to determine the initial size of the <code>StringBuffer</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 StringBuffer foo = new StringBuffer('x');   //equivalent to StringBuffer foo = new StringBuffer(120);
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 StringBuffer foo = new StringBuffer("x");
 </pre>

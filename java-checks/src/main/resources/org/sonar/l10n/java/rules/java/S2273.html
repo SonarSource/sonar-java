@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>By contract, the method <code>Object.wait(...)</code>, <code>Object.notify()</code> and <code>Object.notifyAll()</code> should be called by a
 thread that is the owner of the object’s monitor. If this is not the case an <code>IllegalMonitorStateException</code> exception is thrown. This rule
 reinforces this constraint by making it mandatory to call one of these methods only inside a <code>synchronized</code> method or statement.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 private void removeElement() {
   while (!suitableCondition()){
@@ -19,7 +20,7 @@ private void removeElement() {
   ... // Perform removal
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 private void removeElement() {
   synchronized(obj) {

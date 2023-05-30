@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>A method with a <code>@RequestMapping</code> annotation part of a class annotated with <code>@Controller</code> (directly or indirectly through a
 meta annotation - <code>@RestController</code> from Spring Boot is a good example) will be called to handle matching web requests. That will happen
 even if the method is <code>private</code>, because Spring invokes such methods via reflection, without checking visibility.</p>
@@ -7,17 +8,17 @@ frameworks ignore visibility in this way. For instance, if you’ve tried to con
 it. That’s because AOP proxies are not applied to private methods.</p>
 <p>In addition to <code>@RequestMapping</code>, this rule also considers the annotations introduced in Spring Framework 4.3: <code>@GetMapping</code>,
 <code>@PostMapping</code>, <code>@PutMapping</code>, <code>@DeleteMapping</code>, <code>@PatchMapping</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @RequestMapping("/greet", method = GET)
 private String greet(String greetee) {  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @RequestMapping("/greet", method = GET)
 public String greet(String greetee) {
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
   Misconfiguration </li>

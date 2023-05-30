@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>From the Java API documentation:</p>
 <blockquote>
   <p><code>Condition</code> factors out the <code>Object</code> monitor methods (<code>wait</code>, <code>notify</code> and <code>notifyAll</code>)
@@ -7,14 +8,14 @@
 </blockquote>
 <p>The purpose of implementing the <code>Condition</code> interface is to gain access to its more nuanced <code>await</code> methods. Therefore,
 calling the method <code>Object.wait(...)</code> on a class implementing the <code>Condition</code> interface is silly and confusing.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 final Lock lock = new ReentrantLock();
 final Condition notFull  = lock.newCondition();
 ...
 notFull.wait();
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 final Lock lock = new ReentrantLock();
 final Condition notFull  = lock.newCondition();

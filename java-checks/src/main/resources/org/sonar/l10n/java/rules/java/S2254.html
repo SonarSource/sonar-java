@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to the Oracle Java API, the <code>HttpServletRequest.getRequestedSessionId()</code> method:</p>
 <blockquote>
   <p>Returns the session ID specified by the client. This may not be the same as the ID of the current valid session for this request. If the client
@@ -15,13 +16,13 @@ Cookie: JSESSIONID=Hacked_Session_Value'''"&gt;
 <p>Due to the ability of the end-user to manually change the value, the session ID in the request should only be used by a servlet container (E.G.
 Tomcat or Jetty) to see if the value matches the ID of an an existing session. If it does not, the user should be considered unauthenticated.
 Moreover, this session ID should never be logged as is but using a one-way hash to prevent hijacking of active sessions.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 if(isActiveSession(request.getRequestedSessionId()) ){
   ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">OWASP Top 10 2021 Category A4</a> - Insecure Design </li>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">OWASP Top 10 2017 Category A2</a> - Broken Authentication

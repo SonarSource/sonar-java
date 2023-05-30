@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Before records appeared in Java 16, there was a common way to represent getters for private fields of a class:&nbsp; a method named "get" with a
 capitalized field name. For example, for a&nbsp;<code>String</code> field named "myField" the signature of the getter method will be: <code>public
 String getMyField()</code></p>
@@ -8,7 +9,7 @@ one. Otherwise, this will bring confusion to the users of the record as two gett
 different from the default one.</p>
 <p>This rule raises an issue when a record contains a getter named "get" with a capitalized field name that is not behaving the same as the default
 one.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 record Person(String name, int age) {
     public String getName() { // Noncompliant
@@ -16,7 +17,7 @@ record Person(String name, int age) {
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 record Person(String name, int age) {
     @Override
@@ -45,10 +46,10 @@ record Person(String name, int age) {
     }
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>If the implementations of <code>getMyField()</code> and <code>myField()</code> methods are equivalent, the issue should not be raised as this was
 probably done to support compatibility with the previous convention.</p>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-8.html#jls-8.10">Records specification</a> </li>
 </ul>

@@ -1,13 +1,14 @@
+<h2>Why is this an issue?</h2>
 <p>Unlike similar AssertJ methods testing exceptions (<code>assertThatCode()</code>, <code>assertThatExceptionOfType()</code>, …​), the
 <code>assertThatThrownBy()</code> method can be used alone, failing if the code did not raise any exception.</p>
 <p>Still, only testing that an exception was raised is not enough to guarantee that it was the expected one, and you should test the exception type or
 content further. In addition, it will make explicit what you are expecting, without relying on side-effects.</p>
 <p>This rule raises an issue when <code>assertThatThrownBy</code> is used, without testing the exception further.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 assertThatThrownBy(() -&gt; shouldThrow()); // Noncompliant, is it really the exception you expected?
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 assertThatThrownBy(() -&gt; shouldThrow()).isInstanceOf(IOException.class);
 //or

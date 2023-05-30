@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>Utility classes, which are collections of <code>static</code> members, are not meant to be instantiated. Even abstract utility classes, which can
 be extended, should not have public constructors.</p>
 <p>Java adds an implicit public constructor to every class which does not define at least one explicitly. Hence, at least one non-public constructor
 should be defined.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class StringUtils { // Noncompliant
 
@@ -12,7 +13,7 @@ class StringUtils { // Noncompliant
 
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class StringUtils { // Compliant
 
@@ -26,7 +27,7 @@ class StringUtils { // Compliant
 
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>When class contains <code>public static void main(String[] args)</code> method it is not considered as utility class and will be ignored by this
 rule.</p>
 

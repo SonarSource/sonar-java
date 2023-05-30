@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>Before Java 8, the only way to partially support closures in Java was by using anonymous inner classes. But the syntax of anonymous classes may
 seem unwieldy and unclear.</p>
 <p>With Java 8, most uses of anonymous inner classes should be replaced by lambdas to highly increase the readability of the source code.</p>
 <p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 myCollection.stream().map(new Mapper&lt;String,String&gt;() {
   public String map(String input) {
@@ -16,7 +17,7 @@ Predicate&lt;String&gt; isEmpty = new Predicate&lt;String&gt; {
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 myCollection.stream().map(input -&gt; new StringBuilder(input).reverse().toString());
 

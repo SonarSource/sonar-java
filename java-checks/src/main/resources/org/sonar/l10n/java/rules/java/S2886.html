@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>When one part of a getter/setter pair is <code>synchronized</code> the other part should be too. Failure to synchronize both sides of a pair may
 result in inconsistent behavior at runtime as callers access an inconsistent method state.</p>
 <p>This rule raises an issue when either the method or the contents of one method in a getter/setter pair are synchrnoized but the other is not.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Person {
   String name;
@@ -26,7 +27,7 @@ public class Person {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Person {
   String name;
@@ -53,7 +54,7 @@ public class Person {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/4jdGBQ">CERT, VNA01-J.</a> - Ensure visibility of shared references to immutable objects </li>
 </ul>

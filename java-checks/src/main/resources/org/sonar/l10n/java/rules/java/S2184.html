@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When arithmetic is performed on integers, the result will always be an integer. You can assign that result to a <code>long</code>,
 <code>double</code>, or <code>float</code> with automatic type conversion, but having started as an <code>int</code> or <code>long</code>, the result
 will likely not be what you expect.</p>
@@ -5,7 +6,7 @@ will likely not be what you expect.</p>
 assignment. Likewise, if the result of multiplication is assigned to a <code>long</code>, it may have already overflowed before the assignment.</p>
 <p>In either case, the result will not be what was expected. Instead, at least one operand should be cast or promoted to the final type before the
 operation takes place.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 float twoThirds = 2/3; // Noncompliant; int division. Yields 0.0
 long millisInYear = 1_000*3_600*24*365; // Noncompliant; int multiplication. Yields 1471228928
@@ -21,7 +22,7 @@ public float compute2(long factor){
   return factor / 123;  //Noncompliant, will be rounded to closest long integer
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 float twoThirds = 2f/3; // 2 promoted to float. Yields 0.6666667
 long millisInYear = 1_000L*3_600*24*365; // 1000 promoted to long. Yields 31_536_000_000
@@ -53,7 +54,7 @@ public float compute2(float factor){
   return factor / 123;
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/190">MITRE, CWE-190</a> - Integer Overflow or Wraparound </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/AjdGBQ">CERT, NUM50-J.</a> - Convert integers to floating point for floating-point operations

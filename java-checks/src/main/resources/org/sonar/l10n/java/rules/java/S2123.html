@@ -1,5 +1,6 @@
+<h2>Why is this an issue?</h2>
 <p>A value that is incremented or decremented and then not stored is at best wasted code and at worst a bug.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public int pickNumber() {
   int i = 0;
@@ -10,7 +11,7 @@ public int pickNumber() {
   return j++; // Noncompliant; 0 returned
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public int pickNumber() {
   int i = 0;

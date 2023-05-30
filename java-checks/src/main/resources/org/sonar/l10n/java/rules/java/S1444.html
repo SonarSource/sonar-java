@@ -1,21 +1,22 @@
+<h2>Why is this an issue?</h2>
 <p>There is no good reason to declare a field "public" and "static" without also declaring it "final". Most of the time this is a kludge to share a
 state among several objects. But with this approach, any object can do whatever it wants with the shared state, such as setting it to
 <code>null</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Greeter {
   public static Foo foo = new Foo();
   ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Greeter {
   public static final Foo FOO = new Foo();
   ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/500">MITRE, CWE-500</a> - Public Static Field Not Marked Final </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/WjdGBQ">CERT OBJ10-J.</a> - Do not use public static nonfinal fields </li>

@@ -1,13 +1,14 @@
+<h2>Why is this an issue?</h2>
 <p>Because the <code>equals</code> method takes a generic <code>Object</code> as a parameter, any type of object may be passed to it. The method
 should not assume it will only be used to test objects of its class type. It must instead check the parameter’s type.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public boolean equals(Object obj) { // Noncompliant
   MyClass mc = (MyClass)obj;
   // ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public boolean equals(Object obj) {
   if (obj == null)

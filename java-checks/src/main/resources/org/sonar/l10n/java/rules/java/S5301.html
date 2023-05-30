@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>ActiveMQ can send/receive JMS Object messages (named ObjectMessage in ActiveMQ context) to comply with JMS specification. Internally, ActiveMQ
 relies on Java serialization mechanism for marshaling/unmarshalling of the message payload. Deserialization based on data supplied by the user could
 lead to remote code execution attacks, where the structure of the serialized data is changed to modify the behavior of the object being
 unserialized.</p>
 <p>To limit the risk to be victim of such attack, ActiveMQ 5.12.2+ enforces developers to explicitly whitelist packages that can be exchanged using
 ObjectMessages.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 factory.setTrustAllPackages(true); // Noncompliant
@@ -12,12 +13,12 @@ factory.setTrustAllPackages(true); // Noncompliant
 ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 // no call to factory.setTrustedPackages(...);
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 factory.setTrustedPackages(Arrays.asList("org.mypackage1", "org.mypackage2"));
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">OWASP Top 10 2021 Category A8</a> - Software and Data
   Integrity Failures </li>

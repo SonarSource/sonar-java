@@ -1,18 +1,19 @@
+<h2>Why is this an issue?</h2>
 <p>When the modulus of a negative number is calculated, the result will either be negative or zero. Thus, comparing the modulus of a variable for
 equality with a positive number (or a negative one) could result in unexpected results.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public boolean isOdd(int x) {
   return x % 2 == 1;  // Noncompliant; if x is an odd negative, x % 2 == -1
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public boolean isOdd(int x) {
   return x % 2 != 0;
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/pDdGBQ">CERT, NUM51-J.</a> - Do not assume that the remainder operator always returns a
   nonnegative result for integral operands </li>

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>In Java 16 <code>records</code> are finalized and can be safely used in production code. <code>Records</code> represent immutable read-only data
 structure and should be used instead of creating immutable classes. Immutability of records is guaranteed by the Java language itself, while
 implementing immutable classes on your own might lead to some bugs.</p>
@@ -8,7 +9,7 @@ implementing immutable classes on your own might lead to some bugs.</p>
   <li> has only one constructor with a parameter for all fields </li>
   <li> has getters for all fields </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 final class Person { // Noncompliant
   private final String name;
@@ -33,11 +34,11 @@ final class Person { // Noncompliant
   public String toString() {...}
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 record Person(String name, int age) { }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-8.html#jls-8.10">Records specification</a> </li>
 </ul>

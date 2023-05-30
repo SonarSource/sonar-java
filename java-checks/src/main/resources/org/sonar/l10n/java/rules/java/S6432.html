@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When encrypting data with Counter (CTR) derived block cipher modes of operation, it is essential not to reuse the same initialization vector (IV)
 with a given key, such IV is called a "nonce" (number used only once). Galois/Counter (GCM) and Counter with Cipher Block Chaining-Message
 Authentication Code (CCM) are both CTR-based modes of operation.</p>
@@ -8,7 +9,7 @@ downgrading it to a simpler polynomial root-finding problem.</p>
 The 'Deterministic' construction involves a counter, which increments per encryption process. The 'RBG' construction, as the name suggests, generates
 the nonce using a random bit generator. Collision probabilities (nonce-key pair reuse) using the 'RBG-based' approach require a shorter key rotation
 period, 2^32 maximum invocations per key.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void encrypt(byte[] key, byte[] ptxt) {
     byte[] bytesIV = "7cVgr5cbdCZV".getBytes("UTF-8"); // The initialization vector is a static value
@@ -20,7 +21,7 @@ public void encrypt(byte[] key, byte[] ptxt) {
     cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);  // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void encrypt(byte[] key, byte[] ptxt) {
     SecureRandom random = new SecureRandom();
@@ -34,7 +35,7 @@ public void encrypt(byte[] key, byte[] ptxt) {
     cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure

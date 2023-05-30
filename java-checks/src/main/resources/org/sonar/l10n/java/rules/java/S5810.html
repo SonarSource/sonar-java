@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>JUnit5 is more tolerant regarding the visibilities of Test classes and methods than JUnit4, which required everything to be public. JUnit5 supports
 default package, public and protected visibility, even if it is recommended to use the default package visibility, which improves the readability of
 code.</p>
@@ -7,7 +8,7 @@ code.</p>
   <li> static methods </li>
   <li> methods returning a value without being a TestFactory </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +34,7 @@ class MyClassTest {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 import org.junit.jupiter.api.Test;
 

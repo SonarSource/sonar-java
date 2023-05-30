@@ -1,15 +1,16 @@
+<h2>Why is this an issue?</h2>
 <p>When a reluctant quantifier (such as <code>*?</code> or <code>+?</code>) is followed by a pattern that can match the empty string or directly by
 the end of the regex, it will always match the empty string when used with methods that find partial matches (such as <code>find</code>,
 <code>replaceAll</code>, <code>split</code> etc.).</p>
 <p>Similarly, when used with methods that find full matches, a reluctant quantifier that’s followed directly by the end of the regex (or a pattern
 that always matches the empty string, such as <code>()</code>) behaves indistinguishably from a greedy quantifier while being less efficient.</p>
 <p>This is likely a sign that the regex does not work as intended.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 "start123endstart456".replaceAll("start\\w*?(end)?", "x"); // Noncompliant. In contrast to what one would expect, the result is not "xx".
 str.matches("\\d*?"); // Noncompliant. Matches the same as "\d*", but will backtrack in every position.
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 "start123endstart456".replaceAll("start\\w*?(end|$)", "x"); // Result is "xx".
 str.matches("\\d*");

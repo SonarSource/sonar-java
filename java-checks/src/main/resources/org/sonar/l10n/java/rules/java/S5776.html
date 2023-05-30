@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When testing exception via <code>org.junit.rules.ExpectedException</code> any code after the raised exception will not be executed, so adding
 subsequent assertions is wrong and misleading. This rule raises an issue when an assertion is done after the "expect(…​)" invocation, only the code
 throwing the expected exception should be after "expect(…​)".</p>
@@ -6,7 +7,7 @@ href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertth
 since JUnit 4.13 and it allows additional subsequent assertions.</p>
 <p>Alternatively, you could use <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a> for JUnit
 version &lt; 4.13 or if your project does not support lambdas.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Rule
 public ExpectedException thrown = ExpectedException.none();
@@ -23,7 +24,7 @@ private Object get() {
   throw new IndexOutOfBoundsException();
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <ul>
   <li> For JUnit &gt;= 4.13, use <a
   href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a>: </li>
@@ -43,7 +44,7 @@ try {
 } catch (IndexOutOfBoundsException e) {}
 Assert.assertEquals(0, 1); // Correctly fails.
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a> </li>
 </ul>

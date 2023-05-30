@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p><code>Cloneable</code> is the marker <code>Interface</code> that indicates that <code>clone()</code> may be called on an object. Overriding
 <code>clone()</code> without implementing <code>Cloneable</code> can be useful if you want to control how subclasses clone themselves, but otherwise,
 it’s probably a mistake.</p>
@@ -13,7 +14,7 @@ it’s probably a mistake.</p>
   <li> <code>super.clone()</code> returns an object of the same type as the one <code>clone()</code> was called on </li>
   <li> <code>Object.clone()</code> performs a shallow copy of the object’s state </li>
 </ol>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class BaseClass {  // Noncompliant; should implement Cloneable
   @Override
@@ -37,7 +38,7 @@ class Application {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class BaseClass implements Cloneable {
   @Override
@@ -61,7 +62,7 @@ class Application {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/580">MITRE, CWE-580</a> - clone() Method Without super.clone() </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/FjZGBQ">CERT, MET53-J.</a> - Ensure that the clone() method calls super.clone() </li>

@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p><code>private</code> methods that are never executed are dead code: unnecessary, inoperative code that should be removed. Cleaning out dead code
 decreases the size of the maintained codebase, making it easier to understand the program and preventing bugs from being introduced.</p>
 <p>Note that this rule does not take reflection into account, which means that issues will be raised on <code>private</code> methods that are only
 accessed using the reflection API.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Foo implements Serializable
 {
@@ -16,7 +17,7 @@ public class Foo implements Serializable
   private void readObject(ObjectInputStream in){...}  //Compliant, relates to the java serialization mechanism
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Foo implements Serializable
 {
@@ -31,7 +32,7 @@ public class Foo implements Serializable
   private void readObject(ObjectInputStream in){...}  //Compliant, relates to the java serialization mechanism
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>This rule doesn’t raise issues for:</p>
 <ul>
   <li> annotated methods </li>

@@ -1,15 +1,16 @@
+<h2>Why is this an issue?</h2>
 <p>It is the sign, rather than the magnitude of the value returned from <code>compareTo</code> that matters. Returning <code>Integer.MIN_VALUE</code>
 does <em>not</em> convey a higher degree of inequality, and doing so can cause errors because the return value of <code>compareTo</code> is sometimes
 inversed, with the expectation that negative values become positive. However, inversing <code>Integer.MIN_VALUE</code> yields
 <code>Integer.MIN_VALUE</code> rather than <code>Integer.MAX_VALUE</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public int compareTo(MyClass) {
   if (condition) {
     return Integer.MIN_VALUE;  // Noncompliant
   }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public int compareTo(MyClass) {
   if (condition) {

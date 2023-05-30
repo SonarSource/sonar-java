@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Most of cryptographic systems require a sufficient key size to be robust against brute-force attacks.</p>
 <p><a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-131Ar2.pdf">NIST recommendations</a> will be checked for these
 use-cases:</p>
@@ -17,7 +18,7 @@ use-cases:</p>
   <li> key length ≥ 128 bits </li>
 </ul>
 <p>This rule will not raise issues for ciphers that are considered weak (no matter the key size) like <code>DES</code>, <code>Blowfish</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 KeyPairGenerator keyPairGen1 = KeyPairGenerator.getInstance("RSA");
 keyPairGen1.initialize(1024); // Noncompliant
@@ -29,7 +30,7 @@ keyPairGen5.initialize(ecSpec1);
 KeyGenerator keyGen1 = KeyGenerator.getInstance("AES");
 keyGen1.init(64); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 KeyPairGenerator keyPairGen6 = KeyPairGenerator.getInstance("RSA");
 keyPairGen6.initialize(2048); // Compliant
@@ -41,7 +42,7 @@ keyPairGen5.initialize(ecSpec10);
 KeyGenerator keyGen2 = KeyGenerator.getInstance("AES");
 keyGen2.init(128); // Compliant
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data

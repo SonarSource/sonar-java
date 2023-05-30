@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When using Spring proxies, calling a method in the same class (e.g. <code>this.aMethod()</code>) with an incompatible <code>@Transactional</code>
 requirement will result in runtime exceptions because Spring only "sees" the caller and makes no provisions for properly invoking the callee.</p>
 <p>Therefore, certain calls should never be made within the same class:</p>
@@ -47,7 +48,7 @@ requirement will result in runtime exceptions because Spring only "sees" the cal
     </tr>
   </tbody>
 </table>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Override
 public void doTheThing() {

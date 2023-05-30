@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>A user password should never be stored in clear-text, instead a hash should be produced from it using a secure algorithm:</p>
 <ul>
   <li> not vulnerable to <code>brute force attacks</code>. </li>
@@ -8,7 +9,7 @@
 algorithms, like <code>md5</code> or <code>SHA-family</code> functions are fast to compute the hash and therefore brute force attacks are possible
 (it’s easier to exhaust the entire space of all possible passwords) especially with hardware like GPU, FPGA or ASIC. Modern password hashing
 algorithms such as <code>bcrypt</code>, <code>PBKDF2</code> or <code>argon2</code> are recommended.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Autowired
 public void configureGlobal(AuthenticationManagerBuilder auth, DataSource dataSource) throws Exception {
@@ -28,7 +29,7 @@ public void configureGlobal(AuthenticationManagerBuilder auth, DataSource dataSo
   auth.userDetailsService(...).passwordEncoder(new StandardPasswordEncoder()); // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @Autowired
 public void configureGlobal(AuthenticationManagerBuilder auth, DataSource dataSource) throws Exception {
@@ -41,7 +42,7 @@ public void configureGlobal(AuthenticationManagerBuilder auth, DataSource dataSo
   auth.userDetailsService(null).passwordEncoder(new BCryptPasswordEncoder());
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">OWASP Top 10 2021 Category A4</a> - Insecure Design </li>

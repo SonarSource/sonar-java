@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>By default XML processors attempt to load all XML schemas and DTD (their locations are defined with <code>xsi:schemaLocation</code> attributes and
 <code>DOCTYPE</code> declarations), potentially from an external storage such as file system or network, which may lead, if no restrictions are put in
 place, to <a href="https://owasp.org/www-community/attacks/Server_Side_Request_Forgery">server-side request forgery (SSRF)</a> vulnerabilities.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a> and <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> JAPX factories:</p>
@@ -27,7 +28,7 @@ xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external
 SAXBuilder builder = new SAXBuilder();
 builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a> and <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> JAPX factories:</p>
@@ -51,7 +52,7 @@ xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external
 SAXBuilder builder = new SAXBuilder();
 builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>This rules does not raise an issue when an <code>EntityResolver</code> is set.</p>
 <pre>
 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -63,7 +64,7 @@ SAXBuilder builder = new SAXBuilder();
 builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true);
 builder.setEntityResolver(new EntityResolver());
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a
   href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-8CD65EF5-D113-4D5C-A564-B875C8625FAC">Oracle Java Documentation</a> - XML External Entity Injection Attack </li>

@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>A chain of <code>if</code>/<code>else if</code> statements is evaluated from top to bottom. At most, only one branch will be executed: the first
 one with a condition that evaluates to <code>true</code>.</p>
 <p>Therefore, duplicating a condition automatically leads to dead code. Usually, this is due to a copy/paste error. At best, it’s simply dead code and
 at worst, it’s a bug that is likely to induce further bugs as the code is maintained, and obviously it could lead to unexpected behavior.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 if (param == 1)
   openWindow();
@@ -12,7 +13,7 @@ else if (param == 1)  // Noncompliant
   moveWindowToTheBackground();
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 if (param == 1)
   openWindow();
@@ -22,7 +23,7 @@ else if (param == 3)
   moveWindowToTheBackground();
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/5dUxBQ">CERT, MSC12-C.</a> - Detect and remove code that has no effect or is never executed
   </li>

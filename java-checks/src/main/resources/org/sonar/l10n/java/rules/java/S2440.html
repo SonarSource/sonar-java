@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p><code>static</code> methods can be accessed without an instance of the enclosing class, so there’s no reason to instantiate a class that has only
 <code>static</code> methods.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class TextUtils {
   public static String stripHtml(String source) {
@@ -21,7 +22,7 @@ public class TextManipulator {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class TextUtils {
   public static String stripHtml(String source) {
@@ -40,7 +41,8 @@ public class TextManipulator {
   }
 }
 </pre>
-<h2>See Also</h2>
+<h2>Resources</h2>
+<h3>Related rules</h3>
 <ul>
   <li> {rule:java:S1118} - Utility classes should not have public constructors </li>
 </ul>

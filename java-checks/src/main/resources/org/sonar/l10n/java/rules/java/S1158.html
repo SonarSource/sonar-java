@@ -1,12 +1,13 @@
+<h2>Why is this an issue?</h2>
 <p>Creating temporary primitive wrapper objects only for <code>String</code> conversion or the use of the <code>compareTo</code> method is
 inefficient.</p>
 <p>Instead, the static <code>toString</code> or <code>compare</code> method of the primitive wrapper class should be used.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 new Integer(myInteger).toString();   // Noncompliant
 Integer.valueOf(myInt).compareTo(0); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Integer.toString(myInteger);        // Compliant
 Integer.compare(myInteger, 0);      // Compliant

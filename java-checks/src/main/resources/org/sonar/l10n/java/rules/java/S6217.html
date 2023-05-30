@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p><code>sealed</code> classes were introduced in Java 17. This feature is very useful if there is a need to define a strict hierarchy and restrict
 the possibility of extending classes. In order to mention all the allowed subclasses, there is a keyword <code>permits</code>, which should be
 followed by subclasses' names.</p>
@@ -5,7 +6,7 @@ followed by subclasses' names.</p>
 case when all subclasses are declared in the same file there is no need to mention the explicitly and <code>permits</code> part of a declaration can
 be omitted.</p>
 <p>This rule reports an issue if all subclasses of a <code>sealed</code> class are declared in the same file as their superclass.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 sealed class A permits B, C, D, E {} // Noncompliant
 final class B extends A {}
@@ -13,7 +14,7 @@ final class C extends A {}
 final class D extends A {}
 final class E extends A {}
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 sealed class A {} // Compliant
 final class B extends A {}
@@ -21,7 +22,7 @@ final class C extends A {}
 final class D extends A {}
 final class E extends A {}
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.1.1.2">Sealed Classes specification</a> </li>
 </ul>

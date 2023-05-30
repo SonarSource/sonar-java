@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The purpose of the Java Collections API is to provide a well defined hierarchy of interfaces in order to hide implementation details.</p>
 <p>Implementing classes must be used to instantiate new collections, but the result of an instantiation should ideally be stored in a variable whose
 type is a Java Collection interface.</p>
@@ -7,7 +8,7 @@ type is a Java Collection interface.</p>
   <li> is accepted as an argument to a <code>public</code> method. </li>
   <li> is exposed as a <code>public</code> member. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Employees {
   private HashSet&lt;Employee&gt; employees = new HashSet&lt;Employee&gt;();  // Noncompliant - "employees" should have type "Set" rather than "HashSet"
@@ -17,7 +18,7 @@ public class Employees {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Employees {
   private Set&lt;Employee&gt; employees = new HashSet&lt;Employee&gt;();      // Compliant

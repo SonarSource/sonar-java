@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>Connections, streams, files, and other classes that implement the <code>Closeable</code> interface or its super-interface,
 <code>AutoCloseable</code>, needs to be closed after use. Further, that <code>close</code> call must be made in a <code>finally</code> block otherwise
 an exception could keep the call from being made. Preferably, when class implements <code>AutoCloseable</code>, resource should be created using
 "try-with-resources" pattern and will be closed automatically.</p>
 <p>Failure to properly close resources will result in a resource leak which could bring first the application and then perhaps the box the application
 is on to their knees.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 private void readTheFile() throws IOException {
   Path path = Paths.get(this.fileName);
@@ -29,7 +30,7 @@ private void doSomething() {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 private void readTheFile(String fileName) throws IOException {
     Path path = Paths.get(fileName);
@@ -57,7 +58,7 @@ private void doSomething() {
   }
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Instances of the following classes are ignored by this rule because <code>close</code> has no effect:</p>
 <ul>
   <li> <code>java.io.ByteArrayOutputStream</code> </li>
@@ -77,7 +78,7 @@ catch ( ... ) {
   //...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/459">MITRE, CWE-459</a> - Incomplete Cleanup </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/772">MITRE, CWE-772</a> - Missing Release of Resource after Effective Lifetime </li>

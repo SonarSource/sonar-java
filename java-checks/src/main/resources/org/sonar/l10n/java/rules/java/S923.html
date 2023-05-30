@@ -1,16 +1,17 @@
+<h2>Why is this an issue?</h2>
 <p>As stated per effective java :</p>
 <blockquote>
   <p>Varargs methods are a convenient way to define methods that require a variable number of arguments, but they should not be overused. They can
   produce confusing results if used inappropriately.</p>
 </blockquote>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 void fun ( String... strings )	// Noncompliant
 {
   // ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL57-J.+Avoid+ambiguous+overloading+of+variable+arity+methods">CERT, DCL57J</a> -
   Avoid ambiguous overloading of variable arity methods </li>

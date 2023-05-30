@@ -1,12 +1,13 @@
+<h2>Why is this an issue?</h2>
 <p>Characters like <code>'é'</code> can be expressed either as a single code point or as a cluster of the letter <code>'e'</code> and a combining
 accent mark. Without the <code>CANON_EQ</code> flag, a regex will only match a string in which the characters are expressed in the same way.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String s = "e\u0300";
 Pattern p = Pattern.compile("é|ë|è"); // Noncompliant
 System.out.println(p.matcher(s).replaceAll("e")); // print 'è'
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String s = "e\u0300";
 Pattern p = Pattern.compile("é|ë|è", Pattern.CANON_EQ);

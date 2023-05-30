@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>The concept of <code>Optional</code> is that it will be used when <code>null</code> could cause errors. In a way, it replaces <code>null</code>,
 and when <code>Optional</code> is in use, there should never be a question of returning or receiving <code>null</code> from a call.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doSomething () {
   Optional&lt;String&gt; optional = getOptional();
@@ -17,7 +18,7 @@ public Optional&lt;String&gt; getOptional() {
   return null;  // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void doSomething () {
   Optional&lt;String&gt; optional = getOptional();

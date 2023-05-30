@@ -1,17 +1,18 @@
+<h2>Why is this an issue?</h2>
 <p><code>AtomicInteger</code>, and <code>AtomicLong</code> extend <code>Number</code>, but they’re distinct from <code>Integer</code> and
 <code>Long</code> and should be handled differently. <code>AtomicInteger</code> and <code>AtomicLong</code> are designed to support lock-free,
 thread-safe programming on single variables. As such, an <code>AtomicInteger</code> will only ever be "equal" to itself. Instead, you should
 <code>.get()</code> the value and make comparisons on it.</p>
 <p>This applies to all the atomic, seeming-primitive wrapper classes: <code>AtomicInteger</code>, <code>AtomicLong</code>, and
 <code>AtomicBoolean</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 AtomicInteger aInt1 = new AtomicInteger(0);
 AtomicInteger aInt2 = new AtomicInteger(0);
 
 if (aInt1.equals(aInt2)) { ... }  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 AtomicInteger aInt1 = new AtomicInteger(0);
 AtomicInteger aInt2 = new AtomicInteger(0);

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>An LDAP client authenticates to an LDAP server with a "bind request" which provides, among other, a <a
 href="https://web.archive.org/web/20220922153922/https://ldapwiki.com/wiki/Simple%20Authentication">simple authentication method</a>.</p>
 <p>Simple authentication in LDAP can be used with three different mechanisms:</p>
@@ -8,7 +9,7 @@ href="https://web.archive.org/web/20220922153922/https://ldapwiki.com/wiki/Simpl
 </ul>
 <p>Anonymous binds and unauthenticated binds allow access to information in the LDAP directory without providing a password, their use is therefore
 strongly discouraged.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p>This rule raises an issue when an LDAP connection is created with <code>Context.SECURITY_AUTHENTICATION</code> set to <code>"none"</code>.</p>
 <pre>
 // Set up the environment for creating the initial context
@@ -22,7 +23,7 @@ env.put(Context.SECURITY_AUTHENTICATION, "none"); // Noncompliant
 // Create the initial context
 DirContext ctx = new InitialDirContext(env);
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 // Set up the environment for creating the initial context
 Hashtable&lt;String, Object&gt; env = new Hashtable&lt;String, Object&gt;();
@@ -37,7 +38,7 @@ env.put(Context.SECURITY_CREDENTIALS, getLDAPPassword());
 // Create the initial context
 DirContext ctx = new InitialDirContext(env);
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">OWASP Top 10 2021 Category A7</a> - Identification and
   Authentication Failures </li>

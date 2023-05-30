@@ -1,17 +1,18 @@
+<h2>Why is this an issue?</h2>
 <p>Unused parameters are misleading. Whatever the values passed to such parameters, the behavior will be the same.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 void doSomething(int a, int b) {     // "b" is unused
   compute(a);
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 void doSomething(int a) {
   compute(a);
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>The rule will not raise issues for unused parameters:</p>
 <ul>
   <li> that are annotated with <code>@javax.enterprise.event.Observes</code> </li>
@@ -48,7 +49,7 @@ protected void foobar(int a, String s) { // no issue, method is overridable and 
   compute(a);
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/5dUxBQ">CERT, MSC12-C.</a> - Detect and remove code that has no effect or is never executed
   </li>

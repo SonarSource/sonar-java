@@ -1,17 +1,18 @@
+<h2>Why is this an issue?</h2>
 <p>The purpose of the <code>Thread.run()</code> method is to execute code in a separate, dedicated thread. Calling this method directly doesn’t make
 sense because it causes its code to be executed in the current thread.</p>
 <p>To get the expected behavior, call the <code>Thread.start()</code> method instead.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Thread myThread = new Thread(runnable);
 myThread.run(); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Thread myThread = new Thread(runnable);
 myThread.start(); // Compliant
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/572">MITRE, CWE-572</a> - Call to Thread run() instead of start() </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/6DdGBQ">CERT THI00-J.</a> - Do not invoke Thread.run() </li>

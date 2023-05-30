@@ -1,22 +1,23 @@
+<h2>Why is this an issue?</h2>
 <p>It is equivalent to use the equality <code>==</code> operator and the <code>equals</code> method to compare two objects if the <code>equals</code>
 method inherited from <code>Object</code> has not been overridden. In this case both checks compare the object references.</p>
 <p>But as soon as <code>equals</code> is overridden, two objects not having the same reference but having the same value can be equal. This rule spots
 suspicious uses of <code>==</code> and <code>!=</code> operators on objects whose <code>equals</code> methods are overridden.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String firstName = getFirstName(); // String overrides equals
 String lastName = getLastName();
 
 if (firstName == lastName) { ... }; // Non-compliant; false even if the strings have the same value
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String firstName = getFirstName();
 String lastName = getLastName();
 
 if (firstName != null &amp;&amp; firstName.equals(lastName)) { ... };
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Comparing two instances of the <code>Class</code> object will not raise an issue:</p>
 <pre>
 Class c;
@@ -51,7 +52,7 @@ void foo(Type other) {
  }
 </pre>
 <p>Comparing with <code>java.lang.String</code> and boxed types <code>java.lang.Integer</code>, …​ will not raise an issue.</p>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> {rule:java:S4973} - Strings and Boxed types should be compared using "equals()" </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/595">MITRE, CWE-595</a> - Comparison of Object References Instead of Object Contents </li>

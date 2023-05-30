@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>Resources that can be reused across multiple invocations of the Lambda function should be initialized at construction time. For example in the
 constructor of the class, or in field initializers. This way, when the same container is reused for multiple function invocations, the existing
 instance can be reused, along with all resources stored in its fields. It is a good practice to reuse SDK clients and database connections by
 initializing them at class construction time, to avoid recreating them on every lambda invocation. Failing to do so can lead to performance
 degradation, and when not closed properly, even out of memory errors.</p>
 <p>This rule reports an issue when the SDK client or the database connection is initialized locally inside a Lambda function.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class App implements RequestHandler&lt;Object, Object&gt; {
     @Override
@@ -15,7 +16,7 @@ public class App implements RequestHandler&lt;Object, Object&gt; {
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class App implements RequestHandler&lt;Object, Object&gt; {
     private final S3Client s3Client;
@@ -31,7 +32,7 @@ public class App implements RequestHandler&lt;Object, Object&gt; {
     }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://aws.amazon.com/fr/blogs/developer/tuning-the-aws-java-sdk-2-x-to-reduce-startup-time/">Tuning the AWS Java SDK 2.x to reduce
   startup time</a> </li>

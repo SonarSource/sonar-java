@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>When the value of a private field is always assigned to in a class' methods before being read, then it is not being used to store class
 information. Therefore, it should become a local variable in the relevant methods to prevent any misunderstanding.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Foo {
   private int a;
@@ -21,7 +22,7 @@ public class Foo {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Foo {
 
@@ -39,6 +40,6 @@ public class Foo {
   }
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>This rule doesn’t raise any issue on annotated field.</p>
 

@@ -1,10 +1,11 @@
+<h2>Why is this an issue?</h2>
 <p>In a multi-threaded situation, un-<code>synchronized</code> lazy initialization of static fields could mean that a second thread has access to a
 half-initialized object while the first thread is still creating it. Allowing such access could cause serious bugs. Instead. the initialization block
 should be <code>synchronized</code>.</p>
 <p>Similarly, updates of such fields should also be <code>synchronized</code>.</p>
 <p>This rule raises an issue whenever a lazy static initialization is done on a class with at least one <code>synchronized</code> method, indicating
 intended usage in multi-threaded applications.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 private static Properties fPreferences = null;
 
@@ -19,7 +20,7 @@ private static Properties getPreferences() {
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 private static Properties fPreferences = null;
 

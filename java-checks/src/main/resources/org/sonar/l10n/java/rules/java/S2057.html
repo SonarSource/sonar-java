@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>A <code>serialVersionUID</code> field is strongly recommended in all <code>Serializable</code> classes. If you do not provide one, one will be
 calculated for you by the compiler. The danger in not explicitly choosing the value is that when the class changes, the compiler will generate an
 entirely new id, and you will be suddenly unable to deserialize (read from file) objects that were serialized with the previous version of the
 class.</p>
 <p><code>serialVersionUID</code>'s should be declared with all of these modifiers: <code>static final long</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Raspberry extends Fruit  // Noncompliant; no serialVersionUID.
         implements Serializable {
@@ -18,7 +19,7 @@ public class Raspberry extends Fruit
         implements Serializable {
   private final int serialVersionUID = 1; // Noncompliant; not static &amp; int rather than long
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Raspberry extends Fruit
         implements Serializable {
@@ -30,10 +31,10 @@ public class Raspberry extends Fruit
   public String getVarity() {...}
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Records, Swing and AWT classes, <code>abstract</code> classes, <code>Throwable</code> and its subclasses (<code>Exception</code>s and
 <code>Error</code>s), and classes marked with <code>@SuppressWarnings("serial")</code> are ignored.</p>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/ajdGBQ">CERT, SER00-J.</a> - Enable serialization compatibility during class evolution </li>
   <li> <a href="https://docs.oracle.com/en/java/javase/16/docs/specs/serialization/serial-arch.html#serialization-of-records">Record Serialization</a>

@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>Empty statements, i.e. <code>;</code>, are usually introduced by mistake, for example because:</p>
 <ul>
   <li> It was meant to be replaced by an actual statement, but this was forgotten. </li>
   <li> There was a typo which lead the semicolon to be doubled, i.e. <code>;;</code>. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 void doSomething() {
   ;                                                       // Noncompliant - was used as a kind of TODO marker
@@ -14,7 +15,7 @@ void doSomethingElse() {
   ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 void doSomething() {}
 
@@ -25,7 +26,7 @@ void doSomethingElse() {
   ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/5dUxBQ">CERT, MSC12-C.</a> - Detect and remove code that has no effect or is never executed
   </li>

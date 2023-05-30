@@ -1,15 +1,16 @@
+<h2>Why is this an issue?</h2>
 <p>Since <code>assert</code> statements aren’t executed by default (they must be enabled with JVM flags) developers should never rely on their
 execution the evaluation of any logic required for correct program function.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 assert myList.remove(myList.get(0));  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 boolean removed = myList.remove(myList.get(0));
 assert removed;
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/mjdGBQ">CERT, EXP06-J.</a> - Expressions used in assertions must not produce side effects </li>
 </ul>

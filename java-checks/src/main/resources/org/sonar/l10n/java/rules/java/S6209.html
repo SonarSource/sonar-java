@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>In Records, serialization is not done the same way as for ordinary serializable or externalizable classes. The serialized representation of a
 record object will be a sequence of values (record components). During the deserialization of records, the stream of components is read and components
 are constructed. Then the record object is recreated by invoking the record’s canonical constructor with the component values serving as arguments (or
@@ -8,7 +9,7 @@ serialization and deserialization.</p>
 <p>However, there is a way to substitute serialized/deserialized objects in <code>writeReplace</code> and <code>readResolve</code>.</p>
 <p>This rule raises an issue when any of <code>writeObject</code>, <code>readObject</code>, <code>readObjectNoData</code>, <code>writeExternal</code>,
 <code>readExternal</code> or <code>serialPersistentFields</code> are present as members in a Record class.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 record Record() implements Serializable {
   @Serial
@@ -29,7 +30,7 @@ record Record() implements Externalizable {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 record Record() implements Serializable {}
 
@@ -42,7 +43,7 @@ record Record() implements Serializable {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-8.html#jls-8.10">Records specification</a> </li>
   <li> <a href="https://docs.oracle.com/en/java/javase/16/docs/specs/serialization/serial-arch.html#serialization-of-records">serialization of

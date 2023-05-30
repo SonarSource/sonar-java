@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Adding messages to JUnit, FEST and AssertJ assertions is an investment in your future productivity. Spend a few seconds writing them now, and
 you’ll save a lot of time on the other end when either the tests fail and you need to quickly diagnose the problem, or when you need to maintain the
 tests and the assertion messages work as a sort of documentation.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 assertEquals(4, list.size());  // Noncompliant
 
@@ -11,7 +12,7 @@ try {
   assertThat(list.get(0)).isEqualTo("pear");  // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 assertEquals("There should have been 4 Fruits in the list", 4, list.size());
 

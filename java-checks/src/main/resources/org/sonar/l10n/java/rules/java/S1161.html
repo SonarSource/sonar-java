@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>Using the <code>@Override</code> annotation is useful for two reasons :</p>
 <ul>
   <li> It elicits a warning from the compiler if the annotated method doesn’t actually override anything, as in the case of a misspelling. </li>
   <li> It improves the readability of the source code by making it obvious that methods are overridden. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class ParentClass {
   public boolean doSomething(){...}
@@ -12,7 +13,7 @@ class FirstChildClass extends ParentClass {
   public boolean doSomething(){...}  // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class ParentClass {
   public boolean doSomething(){...}
@@ -22,6 +23,6 @@ class FirstChildClass extends ParentClass {
   public boolean doSomething(){...}  // Compliant
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>This rule is relaxed when overriding a method from the <code>Object</code> class like <code>toString()</code>, <code>hashCode()</code>, …​</p>
 

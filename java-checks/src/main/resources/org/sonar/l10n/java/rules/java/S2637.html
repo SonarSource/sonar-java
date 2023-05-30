@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Fields, parameters and return values marked <code>@NotNull</code>, <code>@NonNull</code>, or <code>@Nonnull</code> are assumed to have non-null
 values and are not typically null-checked before use. Therefore setting one of these values to <code>null</code>, or failing to set such a class field
 in a constructor, could cause <code>NullPointerException</code>s at runtime.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MainClass {
 
@@ -25,7 +26,7 @@ public class MainClass {
     return mix;  // Noncompliant; return value is Nonnull, but null is returned.
   }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/476">MITRE, CWE-476</a> - NULL Pointer Dereference </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/aDdGBQ">CERT, EXP01-J.</a> - Do not use a null in a case where an object is required </li>

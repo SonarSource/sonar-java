@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Overriding the <code>Object.finalize()</code> method must be done with caution to dispose some system resources.</p>
 <p>Calling the <code>super.finalize()</code> at the end of this method implementation is highly recommended in case parent implementations must also
 dispose some system resources.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 protected void finalize() {   // Noncompliant; no call to super.finalize();
   releaseSomeResources();
@@ -12,14 +13,14 @@ protected void finalize() {
   releaseSomeResources();
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 protected void finalize() {
   releaseSomeResources();
   super.finalize();
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/568">MITRE, CWE-568</a> - finalize() Method Without super.finalize() </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/4jZGBQ">CERT, MET12-J.</a> - Do not use finalizers </li>

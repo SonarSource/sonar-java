@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Assertions are intended to be used in <strong>test</strong> code, but not in <strong>production</strong> code. It is confusing, and might lead to
 <code>ClassNotFoundException</code> when the build tools only provide the required dependency in test scope.</p>
 <p>In addition, assertions will throw a sub-class of <code>Error</code>: <code>AssertionError</code>, which should be avoided in production code.</p>

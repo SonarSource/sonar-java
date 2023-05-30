@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>The problem with invoking <code>Thread.start()</code> in a constructor is that you’ll have a confusing mess on your hands if the class is ever
 extended because the superclass' constructor will start the thread before the child class has truly been initialized.</p>
 <p>This rule raises an issue any time <code>start</code> is invoked in the constructor of a non-<code>final</code> class.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass {
 
@@ -13,7 +14,7 @@ public class MyClass {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/FDdGBQ">CERT, TSM02-J.</a> - Do not use background threads during class initialization </li>
 </ul>

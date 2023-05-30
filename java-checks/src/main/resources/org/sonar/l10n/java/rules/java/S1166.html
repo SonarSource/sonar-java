@@ -1,5 +1,6 @@
+<h2>Why is this an issue?</h2>
 <p>When handling a caught exception, the original exception’s message and stack trace should be logged or passed forward.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 try {
   /* ... */
@@ -19,7 +20,7 @@ try {
   throw new RuntimeException("context");
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 try {
   /* ... */
@@ -42,7 +43,7 @@ try {
   throw new RuntimeException(e);  // Conversion into unchecked exception is also allowed
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p><code>InterruptedException</code>, <code>NumberFormatException</code>, <code>DateTimeParseException</code>, <code>ParseException</code> and
 <code>MalformedURLException</code> exceptions are arguably used to indicate nonexceptional outcomes. Similarly, handling
 <code>NoSuchMethodException</code> is often required when dealing with the Java reflection API.</p>
@@ -67,7 +68,7 @@ try {
   LOGGER.warn(message); // Compliant - exception message logged with some contextual information
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/">OWASP Top 10 2021 Category A9</a> - Security Logging and
   Monitoring Failures </li>

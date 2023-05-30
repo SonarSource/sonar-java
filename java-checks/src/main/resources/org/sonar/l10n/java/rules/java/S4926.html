@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Providing a <code>serialVersionUID</code> field on <code>Serializable</code> classes is strongly recommended by the <code>Serializable</code>
 documentation but blindly following that recommendation can be harmful.</p>
 <p><code>serialVersionUID</code> value is stored with the serialized data and this field is verified when deserializing the data to ensure that the
@@ -9,7 +10,7 @@ serialized data will incorrectly be considered compatible with the newer version
 <p>Therefore, defining <code>serialVersionUID</code> should be done with care. This rule raises an issue on each <code>serialVersionUID</code> field
 declared on classes implementing <code>Serializable</code> to be sure the presence and the value of the <code>serialVersionUID</code> field is
 challenged and validated by the team.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Foo implements Serializable {
   private static final long serialVersionUID = 1;
@@ -19,7 +20,7 @@ public class BarException extends RuntimeException {
   private static final long serialVersionUID = 8582433437601788991L;
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> Vojtech Ruzicka’s Programming Blog: <a href="https://www.vojtechruzicka.com/explicitly-declare-serialversionuid/">Should I explicitly declare
   serialVersionUID?</a> </li>

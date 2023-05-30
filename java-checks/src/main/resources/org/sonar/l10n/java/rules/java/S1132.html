@@ -1,13 +1,14 @@
+<h2>Why is this an issue?</h2>
 <p>It is preferable to place string literals on the left-hand side of an <code>equals()</code> or <code>equalsIgnoreCase()</code> method call.</p>
 <p>This prevents null pointer exceptions from being raised, as a string literal can never be null by definition.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 String myString = null;
 
 System.out.println("Equal? " + myString.equals("foo"));                        // Noncompliant; will raise a NPE
 System.out.println("Equal? " + (myString != null &amp;&amp; myString.equals("foo")));  // Noncompliant; null check could be removed
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 System.out.println("Equal?" + "foo".equals(myString));                         // properly deals with the null case
 </pre>

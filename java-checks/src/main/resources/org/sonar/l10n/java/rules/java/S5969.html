@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>If you end up mocking every non-private method of a class in order to write tests, it is a strong sign that your test became too complex, or that
 you misunderstood the way you are supposed to use the mocking mechanism.</p>
 <p>You should either refactor the test code into multiple units, or consider using the class itself, by either directly instantiating it, or creating
 a new one inheriting from it, with the expected behavior.</p>
 <p>This rule reports an issue when every member of a given class are mocked.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Test
 void test_requiring_MyClass() {
@@ -18,7 +19,7 @@ abstract class MyClass {
   abstract int g();
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @Test
 void test_requiring_MyClass() {

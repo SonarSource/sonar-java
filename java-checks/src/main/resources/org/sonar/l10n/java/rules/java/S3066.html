@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p><code>enum</code>s are generally thought of as constant, but an <code>enum</code> with a <code>public</code> field or <code>public</code> setter is
 non-constant. Ideally fields in an <code>enum</code> are <code>private</code> and set in the constructor, but if that’s not possible, their visibility
 should be reduced as much as possible.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public enum Continent {
 
@@ -20,7 +21,7 @@ public enum Continent {
     this.landMass = landMass;
   }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public enum Continent {
 

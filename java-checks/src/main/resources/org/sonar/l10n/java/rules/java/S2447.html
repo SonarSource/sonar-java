@@ -1,14 +1,15 @@
+<h2>Why is this an issue?</h2>
 <p>While <code>null</code> is technically a valid <code>Boolean</code> value, that fact, and the distinction between <code>Boolean</code> and
 <code>boolean</code> is easy to forget. So returning <code>null</code> from a <code>Boolean</code> method is likely to cause problems with callers'
 code.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public Boolean isUsable() {
   // ...
   return null;  // Noncompliant
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/476">MITRE, CWE-476</a> - NULL Pointer Dereference </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/aDdGBQ">CERT, EXP01-J.</a> - Do not use a null in a case where an object is required </li>

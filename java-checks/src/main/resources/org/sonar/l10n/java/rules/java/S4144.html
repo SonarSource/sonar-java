@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>When two methods have the same implementation, either it was a mistake - something else was intended - or the duplication was intentional, but may
 be confusing to maintainers. In the latter case, one implementation should invoke the other. Numerical and string literals are not taken into
 account.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 private final static String CODE = "bounteous";
 
@@ -15,7 +16,7 @@ public String getName() {  // Noncompliant
   return CODE;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 private final static String CODE = "bounteous";
 
@@ -28,6 +29,6 @@ public String getName() {
   return getCode();
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Methods that are not accessors (getters and setters), with fewer than 2 statements are ignored.</p>
 

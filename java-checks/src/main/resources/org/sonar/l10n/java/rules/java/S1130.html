@@ -1,20 +1,21 @@
+<h2>Why is this an issue?</h2>
 <p>An exception in a <code>throws</code> declaration in Java is superfluous if it is:</p>
 <ul>
   <li> listed multiple times </li>
   <li> a subclass of another listed exception </li>
   <li> completely unnecessary because the declared exception type cannot actually be thrown </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 void foo() throws MyException, MyException {}  // Noncompliant; should be listed once
 void bar() throws Throwable, Exception {}  // Noncompliant; Exception is a subclass of Throwable
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 void foo() throws MyException {}
 void bar() throws Throwable {}
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>The rule will not raise any issue for exceptions that cannot be thrown from the method body:</p>
 <ul>
   <li> in overriding and implementation methods </li>

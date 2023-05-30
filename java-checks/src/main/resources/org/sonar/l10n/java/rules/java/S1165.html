@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Exceptions are meant to represent the application’s state at the point at which an error occurred.</p>
 <p>Making all fields in an <code>Exception</code> class <code>final</code> ensures that this state:</p>
 <ul>
@@ -5,7 +6,7 @@
   <li> Won’t be updated or corrupted by a questionable error handler. </li>
 </ul>
 <p>This will enable developers to quickly understand what went wrong.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyException extends Exception {
 
@@ -25,7 +26,7 @@ public class MyException extends Exception {
 
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class MyException extends Exception {
 

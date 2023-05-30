@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>There is no point in setting class fields to <code>null</code> in a finalizer. If this this is a hint to the garbage collector, it is unnecessary -
 the object will be garbage collected anyway - and doing so may actually cause extra work for the garbage collector.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Foo {
   private String name;

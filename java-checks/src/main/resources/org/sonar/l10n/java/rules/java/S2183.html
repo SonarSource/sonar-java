@@ -1,23 +1,24 @@
+<h2>Why is this an issue?</h2>
 <p>Since an <code>int</code> is a 32-bit variable, shifting by more than +/-31 is confusing at best and an error at worst. When the runtime shifts
 32-bit integers, it uses the lowest 5 bits of the shift count operand. In other words, shifting an <code>int</code> by 32 is the same as shifting it
 by 0, and shifting it by 33 is the same as shifting it by 1.</p>
 <p>Similarly, when shifting 64-bit integers, the runtime uses the lowest 6 bits of the shift count operand and shifting <code>long</code> by 64 is the
 same as shifting it by 0, and shifting it by 65 is the same as shifting it by 1.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public int shift(int a) {
   int x = a &gt;&gt; 32; // Noncompliant
   return a &lt;&lt; 48;  // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public int shift(int a) {
   int x = a &gt;&gt; 31;
   return a &lt;&lt; 16;
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>This rule doesn’t raise an issue when the shift by zero is obviously for cosmetic reasons:</p>
 <ul>
   <li> When the value shifted is a literal. </li>

@@ -1,17 +1,18 @@
+<h2>Why is this an issue?</h2>
 <p>Using upper case literal suffixes removes the potential ambiguity between "1" (digit 1) and "l" (letter el) for declaring literals.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 long long1 = 1l; // Noncompliant
 float float1 = 1.0f; // Noncompliant
 double double1 = 1.0d; // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 long long1 = 1L;
 float float1 = 1.0F;
 double double1 = 1.0D;
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/cdYxBQ">CERT DCL16-C.</a> - Use "L," not "l," to indicate a long value </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/7DZGBQ">CERT, DCL50-J.</a> - Use visually distinct identifiers </li>

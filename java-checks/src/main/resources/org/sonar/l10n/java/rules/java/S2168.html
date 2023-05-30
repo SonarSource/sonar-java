@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Double-checked locking is the practice of checking a lazy-initialized object’s state both before and after a <code>synchronized</code> block is
 entered to determine whether or not to initialize the object.</p>
 <p>It does not work reliably in a platform-independent manner without additional synchronization for mutable instances of anything other than
@@ -8,7 +9,7 @@ program.</p>
 With early versions of the JVM, synchronizing the whole method was generally advised against for performance reasons. But <code>synchronized</code>
 performance has improved a lot in newer JVMs, so this is now a preferred solution. If you prefer to avoid using <code>synchronized</code> altogether,
 you can use an inner <code>static class</code> to hold the reference instead. Inner static classes are guaranteed to load lazily.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @NotThreadSafe
 public class DoubleCheckedLocking {
@@ -29,7 +30,7 @@ public class DoubleCheckedLocking {
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @ThreadSafe
 public class SafeLazyInitialization {
@@ -83,7 +84,7 @@ class ResourceFactory {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">The "Double-Checked Locking is Broken" Declaration</a> </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/6zdGBQ">CERT, LCK10-J.</a> - Use a correct form of the double-checked locking idiom </li>

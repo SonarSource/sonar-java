@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>When an inner class extends another class, and both its outer class and its parent class have a method with the same name, calls to that method can
 be confusing. The compiler will resolve the call to the superclass method, but maintainers may be confused, so the superclass method should be called
 explicitly, using <code>super.</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Parent {
   public void foo() { ... }
@@ -20,7 +21,7 @@ public class Outer {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Parent {
   public void foo() { ... }

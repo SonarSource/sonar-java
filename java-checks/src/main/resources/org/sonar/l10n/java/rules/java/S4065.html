@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>Java 8 introduced <code>ThreadLocal.withInitial</code> which is a simpler alternative to creating an anonymous inner class to initialise a
 <code>ThreadLocal</code> instance.</p>
 <p>This rule raises an issue when a <code>ThreadLocal</code> anonymous inner class can be replaced by a call to
 <code>ThreadLocal.withInitial</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 ThreadLocal&lt;List&lt;String&gt;&gt; myThreadLocal =
     new ThreadLocal&lt;List&lt;String&gt;&gt;() { // Noncompliant
@@ -12,7 +13,7 @@ ThreadLocal&lt;List&lt;String&gt;&gt; myThreadLocal =
         }
     };
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 ThreadLocal&lt;List&lt;String&gt;&gt; myThreadLocal = ThreadLocal.withInitial(ArrayList::new);
 </pre>

@@ -1,8 +1,9 @@
+<h2>Why is this an issue?</h2>
 <p>In Java 16, the feature "Pattern matching for instanceof" is finalized and can&nbsp;be used in production. Previously developers needed to do 3
 operations in order to do this: check the variable type, cast it and assign the casted value to the new variable. This approach is quite verbose and
 can be replaced with pattern matching for&nbsp;<code>instanceof</code>, doing these 3 actions (check, cast and assign) in one expression.</p>
 <p>This rule raises an issue when an <code>instanceof</code> check followed by a cast and an assignment could be replaced by pattern matching.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 int f(Object o) {
   if (o instanceof String) {&nbsp; // Noncompliant
@@ -12,7 +13,7 @@ int f(Object o) {
   return 0;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 int f(Object o) {
 &nbsp; if (o instanceof String string) {&nbsp; // Compliant
@@ -21,7 +22,7 @@ int f(Object o) {
 &nbsp; return 0;
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://openjdk.java.net/jeps/394">JEP 394: Pattern Matching for instanceof</a> &nbsp; </li>
 </ul>

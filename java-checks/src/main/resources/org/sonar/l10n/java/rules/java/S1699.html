@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Calling an overridable method from a constructor could result in failures or strange behaviors when instantiating a subclass which overrides the
 method.</p>
 <p>For example:</p>
@@ -7,7 +8,7 @@ method.</p>
   <li> If the behavior of the child class method depends on fields that are initialized in the child class constructor, unexpected behavior (like a
   <code>NullPointerException</code>) can result, because the fields aren’t initialized yet. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Parent {
 
@@ -35,7 +36,7 @@ public class Child extends Parent {
 
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/8zZGBQ">CERT, MET05-J.</a> - Ensure that constructors do not call overridable methods </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/6ns-BQ">CERT, OOP50-CPP.</a> - Do not invoke virtual functions from constructors or destructors

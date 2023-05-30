@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Naming a method <code>tostring</code>, <code>hashcode</code> or <code>equal</code> is either:</p>
 <ul>
   <li> A bug in the form of a typo. Overriding <code>toString</code>, <code>Object.hashCode()</code> (note the camelCasing) or
@@ -6,7 +7,7 @@
   </li>
 </ul>
 <p>In both cases, the method should be renamed.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public int hashcode() { /* ... */ }  // Noncompliant
 
@@ -14,7 +15,7 @@ public String tostring() { /* ... */ } // Noncompliant
 
 public boolean equal(Object obj) { /* ... */ }  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @Override
 public int hashCode() { /* ... */ }

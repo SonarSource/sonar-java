@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>URL patterns configured on a <code>HttpSecurity.authorizeRequests()</code> method are considered in the order they were declared. It’s easy to make
 a mistake and declare a less restrictive configuration before a more restrictive one. Therefore, it’s required to review the order of the
 "antMatchers" declarations. The <code>/**</code> one should be the last one if it is declared.</p>
@@ -8,7 +9,7 @@ a mistake and declare a less restrictive configuration before a more restrictive
   <li> A pattern without wildcard characters is preceded by another that matches. E.g.: <code>/page-index/db</code> is after <code>/page*/**</code>
   </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
@@ -20,7 +21,7 @@ a mistake and declare a less restrictive configuration before a more restrictive
       .and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
   }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
@@ -32,7 +33,7 @@ a mistake and declare a less restrictive configuration before a more restrictive
       .and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
   }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">OWASP Top 10 2021 Category A1</a> - Broken Access Control </li>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security

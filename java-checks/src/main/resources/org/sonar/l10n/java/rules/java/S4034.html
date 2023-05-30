@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When using the <code>Stream</code> API, call chains should be simplified as much as possible. Not only does it make the code easier to read, it
 also avoid creating unnecessary temporary objects.</p>
 <p>This rule raises an issue when one of the following substitution is possible:</p>
@@ -35,11 +36,11 @@ also avoid creating unnecessary temporary objects.</p>
     </tr>
   </tbody>
 </table>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 boolean hasRed = widgets.stream().filter(w -&gt; w.getColor() == RED).findFirst().isPresent(); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 boolean hasRed = widgets.stream().anyMatch(w -&gt; w.getColor() == RED);
 </pre>

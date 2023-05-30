@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>On one side, Spring MVC automatically bind request parameters to beans declared as arguments of methods annotated with
 <code>@RequestMapping</code>. Because of this automatic binding feature, it’s possible to feed some unexpected fields on the arguments of the
 <code>@RequestMapping</code> annotated methods.</p>
@@ -9,7 +10,7 @@ automatically by a persistence framework, such as Hibernate, JPA or Spring Data 
 should be avoided.</p>
 <p>In addition to <code>@RequestMapping</code>, this rule also considers the annotations introduced in Spring Framework 4.3: <code>@GetMapping</code>,
 <code>@PostMapping</code>, <code>@PutMapping</code>, <code>@DeleteMapping</code>, <code>@PatchMapping</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 import javax.persistence.Entity;
 
@@ -44,7 +45,7 @@ public class WishListController {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class WishDTO {
   Long productId;
@@ -75,10 +76,10 @@ public class PurchaseOrderController {
   }
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>No issue is reported when the parameter is annotated with <code>@PathVariable</code> from Spring Framework, since the lookup will be done via id,
 the object cannot be forged on client side.</p>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">OWASP Top 10 2021 Category A8</a> - Software and Data
   Integrity Failures </li>

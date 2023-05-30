@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When the return value of a function call contains the operation status code, this value should be tested to make sure the operation completed
 successfully.</p>
 <p>This rule raises an issue when the return values of the following are ignored:</p>
@@ -11,7 +12,7 @@ successfully.</p>
   <li> <code>Semaphore.tryAcquire</code> </li>
   <li> <code>BlockingQueue</code>: <code>offer</code>, <code>remove</code> </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doSomething(File file, Lock lock) {
   file.delete();  // Noncompliant
@@ -19,7 +20,7 @@ public void doSomething(File file, Lock lock) {
   lock.tryLock(); // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void doSomething(File file, Lock lock) {
   if (!lock.tryLock()) {
@@ -30,7 +31,7 @@ public void doSomething(File file, Lock lock) {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/xzdGBQ">CERT, EXP00-J.</a> - Do not ignore values returned by methods </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/TTZGBQ">CERT, FIO02-J.</a> - Detect and handle file-related errors </li>

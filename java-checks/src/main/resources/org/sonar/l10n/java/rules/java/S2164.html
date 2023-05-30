@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>For small numbers, <code>float</code> math has enough precision to yield the expected value, but for larger numbers, it does not.
 <code>BigDecimal</code> is the best alternative, but if a primitive is required, use a <code>double</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 float a = 16777216.0f;
 float b = 1.0f;
@@ -8,7 +9,7 @@ float c = a + b; // Noncompliant; yields 1.6777216E7 not 1.6777217E7
 
 double d = a + b; // Noncompliant; addition is still between 2 floats
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 float a = 16777216.0f;
 float b = 1.0f;
@@ -16,13 +17,13 @@ BigDecimal c = BigDecimal.valueOf(a).add(BigDecimal.valueOf(b));
 
 double d = (double)a + (double)b;
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>This rule doesn’t raise an issue when the mathematical expression is only used to build a string.</p>
 <pre>
 System.out.println("["+getName()+"] " +
            "\n\tMax time to retrieve connection:"+(max/1000f/1000f)+" ms.");
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/CtcxBQ">CERT, FLP02-C.</a> - Avoid using floating-point numbers when precise computation is
   needed </li>

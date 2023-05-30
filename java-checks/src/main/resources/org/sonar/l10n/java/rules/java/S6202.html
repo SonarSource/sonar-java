@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The <code>instanceof</code> construction is a preferred way to check whether a variable can be cast to some type statically because a compile-time
 error will occur in case of incompatible types. The method <a
 href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html#isInstance-java.lang.Object-">isInstance()</a> from <code>java.lang.Class</code>
@@ -5,7 +6,7 @@ works differently and does type check at runtime only, incompatible types will t
 resulting in dead code. The <code>isInstance()</code> method should only be used in dynamic cases when the <code>instanceof</code> operator can’t be
 used.</p>
 <p>This rule raises an issue when <code>isInstance()</code> is used and could be replaced with an <code>instanceof</code> check.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 int f(Object o) {
 &nbsp; if (String.class.isInstance(o)) {&nbsp; // Noncompliant
@@ -21,7 +22,7 @@ int f(Number n) {
 &nbsp; return 0;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 int f(Object o) {
 &nbsp; if (o instanceof String) {&nbsp; // Compliant

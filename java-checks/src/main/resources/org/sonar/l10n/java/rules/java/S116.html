@@ -1,13 +1,14 @@
+<h2>Why is this an issue?</h2>
 <p>Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that field
 names match a provided regular expression.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p>With the default regular expression <code>^[a-z][a-zA-Z0-9]*$</code>:</p>
 <pre>
 class MyClass {
    private int my_field;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class MyClass {
    private int myField;

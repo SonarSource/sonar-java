@@ -1,14 +1,15 @@
+<h2>Why is this an issue?</h2>
 <p>Spring framework 4.3 introduced variants of the <code>@RequestMapping</code> annotation to better represent the semantics of the annotated methods.
 The use of <code>@GetMapping</code>, <code>@PostMapping</code>, <code>@PutMapping</code>, <code>@PatchMapping</code> and <code>@DeleteMapping</code>
 should be preferred to the use of the raw <code>@RequestMapping(method = RequestMethod.XYZ)</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @RequestMapping(path = "/greeting", method = RequestMethod.GET) // Noncompliant
 public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
 ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @GetMapping(path = "/greeting") // Compliant
 public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {

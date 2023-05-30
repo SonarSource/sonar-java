@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>When testing exception via <code>@Test</code> annotation, having additional assertions inside that test method can be problematic because any code
 after the raised exception will not be executed. It will prevent you to test the state of the program after the raised exception and, at worst, make
 you&nbsp;misleadingly think that it is executed.</p>
@@ -5,7 +6,7 @@ you&nbsp;misleadingly think that it is executed.</p>
 href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a> instead.</p>
 <p>Alternatively, you could use <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a> for JUnit
 version &lt; 4.13 or if your project does not support lambdas.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Test(expected = IndexOutOfBoundsException.class)
 public void testShouldFail() {
@@ -18,7 +19,7 @@ private Object get() {
   throw new IndexOutOfBoundsException();
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <ul>
   <li> For JUnit &gt;= 4.13, use <a
   href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a>: </li>
@@ -46,7 +47,7 @@ public void testShouldFail() {
     Assert.assertEquals(0, 1); // Correctly fails.
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a> </li>
 </ul>

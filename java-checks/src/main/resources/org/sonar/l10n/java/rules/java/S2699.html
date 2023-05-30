@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>A test case without assertions ensures only that no exceptions are thrown. Beyond basic runnability, it ensures nothing about the behavior of the
 code under test.</p>
 <p>This rule raises an exception when no assertions from any of the following known frameworks are found in a test:</p>
@@ -25,7 +26,7 @@ considered as assertions. No issue will be raised when such methods are found in
 <code>&lt;FullyQualifiedClassName&gt;#&lt;MethodName&gt;</code>, where <code>MethodName</code> can end with the wildcard character. For constructors,
 the pattern should be <code>&lt;FullyQualifiedClassName&gt;#&lt;init&gt;</code>.</p>
 <p>Example:&nbsp;<code>com.company.CompareToTester#compare*,com.company.CustomAssert#customAssertMethod,com.company.CheckVerifier#&lt;init&gt;</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Test
 public void testDoSomething() {  // Noncompliant
@@ -33,7 +34,7 @@ public void testDoSomething() {  // Noncompliant
   myClass.doSomething();
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <p>Example when <code>com.company.CompareToTester#compare*</code> is used as parameter to the rule.</p>
 <pre>
 import com.company.CompareToTester;

@@ -1,18 +1,19 @@
+<h2>Why is this an issue?</h2>
 <p>Using checked exceptions forces method callers to deal with errors, either by propagating them or by handling them. Throwing exceptions makes them
 fully part of the API of the method.</p>
 <p>But to keep the complexity for callers reasonable, methods should not throw more than one kind of checked exception.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void delete() throws IOException, SQLException {      // Noncompliant
   /* ... */
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void delete() throws SomeApplicationLevelException {
   /* ... */
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Overriding methods are not checked by this rule and are allowed to throw several checked exceptions.</p>
 

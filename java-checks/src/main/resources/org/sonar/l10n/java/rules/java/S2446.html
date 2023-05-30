@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p><code>notify</code> and <code>notifyAll</code> both wake up sleeping threads, but <code>notify</code> only rouses one, while <code>notifyAll</code>
 rouses all of them. Since <code>notify</code> might not wake up the right thread, <code>notifyAll</code> should be used instead.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class MyThread extends Thread{
 
@@ -13,7 +14,7 @@ class MyThread extends Thread{
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class MyThread extends Thread{
 
@@ -26,7 +27,7 @@ class MyThread extends Thread{
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/MTdGBQ">CERT, THI02-J.</a> - Notify all waiting threads rather than a single thread </li>
 </ul>

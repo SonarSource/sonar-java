@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Before Java 8 if you needed to use multiple instances of the same annotation, they had to be wrapped in a container annotation. With Java 8, that’s
 no longer necessary, allowing for cleaner, more readable code.</p>
 <p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @SomeAnnotations({  // Noncompliant
   @SomeAnnotation(..a..),
@@ -12,7 +13,7 @@ public class SomeClass {
   ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @SomeAnnotation(..a..)
 @SomeAnnotation(..b..)

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Objects annotated with Mockito annotations <code>@Mock</code>,&nbsp;<code>@Spy</code>,&nbsp;<code>@Captor</code>,&nbsp;or <code>@InjectMocks</code>
 need to be initialized explicitly.</p>
 <p>There are several ways to do this:</p>
@@ -11,7 +12,7 @@ need to be initialized explicitly.</p>
 <p>Note that this only applies to annotated Mockito objects. It is not necessary to initialize objects instantiated via <code>Mockito.mock()</code> or
 <code>Mockito.spy()</code>.</p>
 <p>This rule raises an issue when a test class uses uninitialized mocks.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class FooTest { // Noncompliant: Mockito initialization missing
   @Mock private Bar bar;
@@ -31,7 +32,7 @@ public class FooTest { // Noncompliant: Mockito initialization missing
     private Bar bar;
   }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @RunWith(MockitoJUnitRunner.class)
 public class FooTest {
@@ -89,7 +90,7 @@ public class FooTest {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://site.mockito.org/javadoc/current/org/mockito/MockitoAnnotations.html">Mockito documentation - MockitoAnnotations</a> </li>
   <li> <a href="https://site.mockito.org/javadoc/current/org/mockito/junit/MockitoRule.html">Mockito documentation - MockitoRule </a> </li>

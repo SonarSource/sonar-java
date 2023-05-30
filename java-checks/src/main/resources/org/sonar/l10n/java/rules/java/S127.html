@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>A <code>for</code> loop stop condition should test the loop counter against an invariant value (i.e. one that is true at both the beginning and
 ending of every loop iteration). Ideally, this means that the stop condition is set to a local variable just before the loop begins.</p>
 <p>Stop conditions that are not invariant are slightly less efficient, as well as being difficult to understand and maintain, and likely lead to the
@@ -8,7 +9,7 @@ introduction of errors in the future.</p>
   <li> When the stop condition depend upon a method call </li>
   <li> When the stop condition depends on an object property, since such properties could change during the execution of the loop. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 for (int i = 0; i &lt; 10; i++) {
   ...
@@ -16,7 +17,7 @@ for (int i = 0; i &lt; 10; i++) {
   ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 for (int i = 0; i &lt; 10; i++) {...}
 </pre>

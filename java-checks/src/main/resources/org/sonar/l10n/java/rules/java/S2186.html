@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>JUnit assertions should not be made from the <code>run</code> method of a <code>Runnable</code>, because failed assertions result in
 <code>AssertionError</code>s being thrown. If the error is thrown from a thread other than the one that ran the test, the thread will exit but the
 test won’t fail.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void run() {
   // ...

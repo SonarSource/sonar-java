@@ -1,11 +1,12 @@
+<h2>Why is this an issue?</h2>
 <p>There are two ways to write lambdas that contain single statement, but one is definitely more compact and readable than the other.</p>
 <p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 x -&gt; {System.out.println(x+1);}
 (a, b) -&gt; { return a+b; }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 x -&gt; System.out.println(x+1)
 (a, b) -&gt; a+b    //For return statement, the return keyword should also be dropped

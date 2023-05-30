@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to the documentation,</p>
 <blockquote>
   <p>A program may produce unpredictable results if it attempts to distinguish two references to equal values of a value-based class, whether directly
@@ -20,14 +21,14 @@ package except <code>Clock</code>; the date classes for alternate calendars, <co
 <code>MinguoDate</code>, <code>ThaiBuddhistDate</code>; and the optional classes: <code>Optional</code>, <code>OptionalDouble</code>,
 <code>OptionalLong</code>, <code>OptionalInt</code>.</p>
 <p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Optional&lt;Foo&gt; fOpt = doSomething();
 synchronized (fOpt) {  // Noncompliant
   // ...
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/doc-files/ValueBased.html">Value-based classes</a> </li>
 </ul>

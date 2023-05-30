@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>Jump statements such as <code>return</code> and <code>continue</code> let you change the default flow of program execution, but jump statements
 that direct the control flow to the original direction are just a waste of keystrokes.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void foo() {
   while (condition1) {
@@ -13,7 +14,7 @@ public void foo() {
   return; // Noncompliant; this is a void method
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void foo() {
   while (condition1) {

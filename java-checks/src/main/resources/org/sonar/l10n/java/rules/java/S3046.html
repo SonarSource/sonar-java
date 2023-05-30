@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>When two locks are held simultaneously, a <code>wait</code> call only releases one of them. The other will be held until some other thread requests
 a lock on the awaited object. If no unrelated code tries to lock on that object, then all other threads will be locked out, resulting in a
 deadlock.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 synchronized (this.mon1) {  // threadB can't enter this block to request this.mon2 lock &amp; release threadA
 	synchronized (this.mon2) {

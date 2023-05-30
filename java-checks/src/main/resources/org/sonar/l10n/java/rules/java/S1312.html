@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Regardless of the logging framework in use (logback, log4j, commons-logging, java.util.logging, …​), loggers should be:</p>
 <ul>
   <li> <code>private</code>: never be accessible outside of its parent class. If another class needs to log something, it should instantiate its own
@@ -6,15 +7,15 @@
   provided in the messages but the logger should be created at class level to prevent creating a logger along with each object. </li>
   <li> <code>final</code>: be created once and only once per class. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p>With a default regular expression of <code>LOG(?:GER)?</code>:</p>
 <pre>
 public Logger logger = LoggerFactory.getLogger(Foo.class);  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 private static final Logger LOGGER = LoggerFactory.getLogger(Foo.class);
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Variables of type <code>org.apache.maven.plugin.logging.Log</code> are ignored.</p>
 

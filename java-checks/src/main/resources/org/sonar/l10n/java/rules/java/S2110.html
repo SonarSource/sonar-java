@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>Whether the valid value ranges for <code>Date</code> fields start with 0 or 1 varies by field. For instance, month starts at 0, and day of month
 starts at 1. Enter a date value that goes past the end of the valid range, and the date will roll without error or exception. For instance, enter 12
 for month, and you’ll get January of the following year.</p>
@@ -38,7 +39,7 @@ for month, and you’ll get January of the following year.</p>
   </tbody>
 </table>
 <p>Note that this rule does not check for invalid leap years, leap seconds (second = 61), or invalid uses of the 31st day of the month.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Date d = new Date();
 d.setDate(25);
@@ -50,7 +51,7 @@ if (c.get(Calendar.MONTH) == 12) {  // Noncompliant; invalid comparison
   // ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Date d = new Date();
 d.setDate(25);

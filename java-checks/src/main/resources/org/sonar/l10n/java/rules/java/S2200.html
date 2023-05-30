@@ -1,12 +1,13 @@
+<h2>Why is this an issue?</h2>
 <p>While most <code>compareTo</code> methods return -1, 0, or 1, some do not, and testing the result of a <code>compareTo</code> against a specific
 value other than 0 could result in false negatives.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 if (myClass.compareTo(arg) == -1) {  // Noncompliant
   // ...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 if (myClass.compareTo(arg) &lt; 0) {
   // ...

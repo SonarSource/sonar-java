@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>Under the reasoning that cleaner code is better code, the semicolon at the end of a try-with-resources construct should be omitted because it can
 be omitted.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 try (ByteArrayInputStream b = new ByteArrayInputStream(new byte[10]);  // ignored; this one's required
       Reader r = new InputStreamReader(b);)   // Noncompliant
@@ -8,7 +9,7 @@ try (ByteArrayInputStream b = new ByteArrayInputStream(new byte[10]);  // ignore
    //do stuff
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 try (ByteArrayInputStream b = new ByteArrayInputStream(new byte[10]);
       Reader r = new InputStreamReader(b))

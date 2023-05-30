@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>There is no requirement that class names be unique, only that they be unique within a package. Therefore trying to determine an object’s type based
 on its class name is an exercise fraught with danger. One of those dangers is that a malicious user will send objects of the same name as the trusted
 class and thereby gain trusted access.</p>
 <p>Instead, the <code>instanceof</code> operator or the <code>Class.isAssignableFrom()</code> method should be used to check the object’s underlying
 type.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 package computer;
 class Pear extends Laptop { ... }
@@ -28,7 +29,7 @@ class Store {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class Store {
 
@@ -47,7 +48,7 @@ class Store {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/486">MITRE, CWE-486</a> - Comparison of Classes by Name </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/eDdGBQ">CERT, OBJ09-J.</a> - Compare classes and not class names </li>

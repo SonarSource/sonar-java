@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>"equals" as a method name should be used exclusively to override <code>Object.equals(Object)</code> to prevent any confusion.</p>
 <p>It is tempting to overload the method to take a specific class instead of <code>Object</code> as parameter, to save the class comparison check.
 However, this will not work as expected when that is the only override.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 class MyClass {
   private int foo = 1;
@@ -27,7 +28,7 @@ class MyClass2 {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 class MyClass {
   private int foo = 1;

@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>It is possible for a call to <code>hashCode</code> to return <code>Integer.MIN_VALUE</code>. Take the absolute value of such a hashcode and you’ll
 still have a negative number. Since your code is likely to assume that it’s a positive value instead, your results will be unreliable.</p>
 <p>Similarly, <code>Integer.MIN_VALUE</code> could be returned from <code>Random.nextInt()</code> or any object’s <code>compareTo</code> method, and
 <code>Long.MIN_VALUE</code> could be returned from <code>Random.nextLong()</code>. Calling <code>Math.abs</code> on values returned from these methods
 is similarly ill-advised.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doSomething(String str) {
   if (Math.abs(str.hashCode()) &gt; 0) { // Noncompliant
@@ -11,7 +12,7 @@ public void doSomething(String str) {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void doSomething(String str) {
   if (str.hashCode() != 0) {

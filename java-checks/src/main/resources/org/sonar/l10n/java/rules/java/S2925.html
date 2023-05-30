@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Using <code>Thread.sleep</code> in a test is just generally a bad idea. It creates brittle tests that can fail unpredictably depending on
 environment ("Passes on my machine!") or load. Don’t rely on timing (use mocks) or use libraries such as <code>Awaitility</code> for asynchroneous
 testing.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Test
 public void testDoTheThing(){
@@ -13,7 +14,7 @@ public void testDoTheThing(){
   // assertions...
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @Test
 public void testDoTheThing(){

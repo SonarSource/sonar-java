@@ -1,18 +1,19 @@
+<h2>Why is this an issue?</h2>
 <p>Using such generic exceptions as <code>Error</code>, <code>RuntimeException</code>, <code>Throwable</code>, and <code>Exception</code> prevents
 calling methods from handling true, system-generated exceptions differently than application-generated errors.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void foo(String bar) throws Throwable {  // Noncompliant
   throw new RuntimeException("My Message");     // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void foo(String bar) {
   throw new MyOwnRuntimeException("My Message");
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>Generic exceptions in the signatures of overriding methods are ignored, because overriding method has to follow signature of the throw declaration
 in the superclass. The issue will be raised on superclass declaration of the method (or won’t be raised at all if superclass is not part of the
 analysis).</p>
@@ -26,7 +27,7 @@ public void myOtherMethod throws Exception {
   doTheThing();  // this method throws Exception
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/397">MITRE, CWE-397</a> - Declaration of Throws for Generic Exception </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/_DdGBQ">CERT, ERR07-J.</a> - Do not throw RuntimeException, Exception, or Throwable </li>

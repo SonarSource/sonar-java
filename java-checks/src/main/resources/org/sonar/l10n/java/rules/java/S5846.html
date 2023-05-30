@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>One way to test for empty lines is to use the regex <code>"^$"</code>, which can be extremely handy when filtering out empty lines from collections
 of Strings, for instance. With regard to this, the Javadoc for <a
 href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/regex/Pattern.html">Pattern (Line Terminators)</a> states the
@@ -13,7 +14,7 @@ lead to completely missing empty lines, while it would be the initial reason for
 <p>Therefore, when searching for empty lines using a multi-line regular expression, you should also check whether the string is empty.</p>
 <p>This rule is raising an issue every time a pattern that can match the empty string is used with <code>MULTILINE</code> flag and without calling
 <code>isEmpty()</code> on the string.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 static final Pattern p = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant
 
@@ -29,7 +30,7 @@ boolean containsEmptyLines(String str) {
 System.out.println(containsEmptyLines("a\n\nb")); // correctly prints 'true'
 System.out.println(containsEmptyLines("")); // incorrectly prints 'false'
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 static final Pattern p = Pattern.compile("^$", Pattern.MULTILINE);
 

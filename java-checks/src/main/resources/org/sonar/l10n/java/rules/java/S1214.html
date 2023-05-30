@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to Joshua Bloch, author of "Effective Java":</p>
 <blockquote>
   <p>The constant interface pattern is a poor use of interfaces.</p>
@@ -9,14 +10,14 @@
   <p>all of its subclasses will have their namespaces polluted by the constants in the interface.</p>
 </blockquote>
 <p>This rule raises an issue when an interface consists solely of fields, without any other members.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 interface Status {                      // Noncompliant
    int OPEN = 1;
    int CLOSED = 2;
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public enum Status {                    // Compliant
   OPEN,

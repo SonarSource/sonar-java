@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to the Java Code Conventions as defined by Oracle, the members of a class or interface declaration should appear in the following order
 in the source files:</p>
 <ul>
@@ -6,7 +7,7 @@ in the source files:</p>
   <li> Constructors </li>
   <li> Methods </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Foo{
    private int field = 0;
@@ -15,7 +16,7 @@ public class Foo{
    public static final int OPEN = 4;  //Noncompliant, variable defined after constructors and methods
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Foo{
    public static final int OPEN = 4;

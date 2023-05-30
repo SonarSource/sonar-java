@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>AssertJ contains many assertions methods specific to common types. Both versions will test the same things, but the dedicated one will provide a
 better error message, simplifying the debugging process.</p>
 <p>This rule reports an issue when an assertion can be simplified to a dedicated one.</p>
@@ -317,7 +318,7 @@ reported.</p>
     </tr>
   </tbody>
 </table>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 assertThat(getObject()).isEqualTo(null); // Noncompliant
 assertThat(getObject()).isNotEqualTo(null); // Noncompliant - not listed above but also supported
@@ -326,7 +327,7 @@ assertThat(getString().trim()).isEmpty();
 assertThat(getFile().canRead()).isTrue();
 assertThat(getPath().getParent()).isNull();
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 assertThat(getObject()).isNull();
 assertThat(getObject()).isNotNull();

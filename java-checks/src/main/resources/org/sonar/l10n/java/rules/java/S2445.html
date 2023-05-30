@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>Synchronizing on a class field synchronizes not on the field itself, but on the object assigned to it. So synchronizing on a non-<code>final</code>
 field makes it possible for the field’s value to change while a thread is in a block synchronized on the old value. That would allow a second thread,
 synchronized on the new value, to enter the block at the same time.</p>
 <p>The story is very similar for synchronizing on parameters; two different threads running the method in parallel could pass two different object
 instances in to the method as parameters, completely undermining the synchronization.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 private String color = "red";
 
@@ -18,7 +19,7 @@ private void doSomething(){
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 private String color = "red";
 private final Object lockObj = new Object();
@@ -31,7 +32,7 @@ private void doSomething(){
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/412">MITRE, CWE-412</a> - Unrestricted Externally Accessible Lock </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/413">MITRE, CWE-413</a> - Improper Resource Locking </li>

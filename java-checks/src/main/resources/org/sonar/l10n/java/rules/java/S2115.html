@@ -1,15 +1,16 @@
+<h2>Why is this an issue?</h2>
 <p>When relying on the password authentication mode for the database connection, a secure password should be chosen.</p>
 <p>This rule raises an issue when an empty password is used.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Connection conn = DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "login", "");
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String password = System.getProperty("database.password");
 Connection conn = DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "login", password);
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">OWASP Top 10 2021 Category A7</a> - Identification and
   Authentication Failures </li>

@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>When verifying that code raises a runtime exception, a good practice is to avoid having multiple method calls inside the tested code, to be
 explicit about which method call is expected to raise the exception.</p>
 <p>It increases the clarity of the test, and avoid incorrect testing when another method is actually raising the exception.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 @Test
 public void testToString() {
@@ -20,7 +21,7 @@ public void testToStringTryCatchIdiom() {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @Test
 public void testToString() {
@@ -39,7 +40,7 @@ public void testToStringTryCatchIdiom() {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a> </li>
 </ul>

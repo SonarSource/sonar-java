@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>AssertJ assertions <code>allMatch</code> and <code>doesNotContains</code> on an empty list always&nbsp;returns true whatever the content of the
 predicate. Despite being correct, you should make explicit if you expect an empty list or not, by adding
 <code>isEmpty()</code>/<code>isNotEmpty()</code> in addition to calling the assertion, or by testing the list’s content further. It will justify the
@@ -13,14 +14,14 @@ content.</p>
   <li> <code>doesNotContainSubsequence</code> </li>
   <li> <code>doesNotContainAnyElementsOf</code> </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 List&lt;String&gt; logs = getLogs();
 
 assertThat(logs).allMatch(e -&gt; e.contains(“error”)); // Noncompliant, this test pass if logs are empty!
 assertThat(logs).doesNotContain("error"); // Noncompliant, do you expect any log?
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 List&lt;String&gt; logs = getLogs();
 

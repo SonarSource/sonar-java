@@ -12,7 +12,7 @@ authentication, to restrict usage of keys to only authenticated users. The lock 
 <p>It’s recommended to enable user authentication (by setting <code>setUserAuthenticationRequired</code> to <code>true</code> during key generation)
 to use keys for a limited duration of time (by setting appropriate values to <code>setUserAuthenticationValidityDurationSeconds</code>), after which
 the user must re-authenticate.</p>
-<h2>Noncompliant Code Example</h2>
+<h2>Sensitive Code Example</h2>
 <p>Any user can use the key:</p>
 <pre>
 KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");

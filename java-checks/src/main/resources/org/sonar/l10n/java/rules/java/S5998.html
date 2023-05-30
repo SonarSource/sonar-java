@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The Java regex engine uses recursive method calls to implement backtracking. Therefore when a repetition inside a regular expression contains
 multiple paths (i.e. the body of the repetition contains an alternation (<code>|</code>), an optional element or another repetition), trying to match
 the regular expression can cause a stack overflow on large inputs. This does not happen when using a possessive quantifier (such as <code>*+</code>
@@ -10,13 +11,13 @@ characters because such consecutive characters will be matched by the regex engi
 15000 characters.</p>
 <p>Since often times stack growth can’t easily be avoided, this rule will only report issues on regular expressions if they can cause a stack overflow
 on realistically sized inputs. You can adjust the <code>maxStackConsumptionFactor</code> parameter to adjust this.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Pattern.compile("(a|b)*"); // Noncompliant
 Pattern.compile("(.|\n)*"); // Noncompliant
 Pattern.compile("(ab?)*"); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 Pattern.compile("[ab]*"); // Character classes don't cause recursion the way that '|' does
 Pattern.compile("(?s).*"); // Enabling the (?s) flag makes '.' match line breaks, so '|\n' isn't necessary

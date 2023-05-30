@@ -1,15 +1,16 @@
+<h2>Why is this an issue?</h2>
 <p>Shared naming conventions make it possible for a team to collaborate efficiently. Following the established convention of single-letter type
 parameter names helps users and maintainers of your code quickly see the difference between a type parameter and a poorly named class.</p>
 <p>This rule check that all type parameter names match a provided regular expression. The following code snippets use the default regular
 expression.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass&lt;TYPE&gt; { // Noncompliant
   &lt;TYPE&gt; void method(TYPE t) { // Noncompliant
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class MyClass&lt;T&gt; {
   &lt;T&gt; void method(T t) {

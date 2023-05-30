@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>According to the documentation of the Java <code>Condition</code> interface:</p>
 <blockquote>
   <p>When waiting upon a <code>Condition</code>, a "spurious wakeup" is permitted to occur, in general, as a concession to the underlying platform
@@ -17,7 +18,7 @@ synchronized (obj) {
 }
 </pre>
 </blockquote>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 synchronized (obj) {
   if (!suitableCondition()){
@@ -26,7 +27,7 @@ synchronized (obj) {
    ... // Perform action appropriate to condition
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 synchronized (obj) {
   while (!suitableCondition()){
@@ -35,7 +36,7 @@ synchronized (obj) {
    ... // Perform action appropriate to condition
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/EzdGBQ">CERT THI03-J.</a> - Always invoke wait() and await() methods inside a loop </li>
 </ul>

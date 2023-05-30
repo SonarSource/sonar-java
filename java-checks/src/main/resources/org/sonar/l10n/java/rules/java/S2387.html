@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>Having a variable with the same name in two unrelated classes is fine, but do the same thing within a class hierarchy and you’ll get confusion at
 best, chaos at worst.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Fruit {
   protected Season ripe;
@@ -14,7 +15,7 @@ public class Raspberry extends Fruit {
   private static Color FLESH; // Noncompliant
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Fruit {
   protected Season ripe;
@@ -29,7 +30,7 @@ public class Raspberry extends Fruit {
 
 }
 </pre>
-<h2>Exceptions</h2>
+<h3>Exceptions</h3>
 <p>This rule ignores same-name fields that are <code>static</code> in both the parent and child classes. This rule ignores <code>private</code> parent
 class fields, but in all other such cases, the child class field should be renamed.</p>
 <pre>

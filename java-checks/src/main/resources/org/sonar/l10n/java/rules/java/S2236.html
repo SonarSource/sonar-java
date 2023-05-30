@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The methods <code>wait(...)</code>, <code>notify()</code> and <code>notifyAll()</code> are available on a <code>Thread</code> instance, but only
 because all classes in Java extend <code>Object</code> and therefore automatically inherit those methods. But there are two very good reasons for not
 calling them on a <code>Thread</code>:</p>
@@ -7,7 +8,7 @@ calling them on a <code>Thread</code>:</p>
   <li> It is not clear (perhaps even to the original coder) what is really expected. For instance, it is waiting for the execution of the Thread to
   suspended, or is it the acquisition of the object monitor that is waited for? </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Thread myThread = new Thread(new RunnableJob());
 ...

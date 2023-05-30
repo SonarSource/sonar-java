@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The <code>java.util.function</code> package provides a large array of functional interface definitions for use in lambda expressions and method
 references. In general it is recommended to use the more specialised form to avoid auto-boxing. For instance <code>IntFunction&lt;Foo&gt;</code>
 should be preferred over <code>Function&lt;Integer, Foo&gt;</code>.</p>
@@ -148,7 +149,7 @@ should be preferred over <code>Function&lt;Integer, Foo&gt;</code>.</p>
     </tr>
   </tbody>
 </table>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Foo implements Supplier&lt;Integer&gt; {  // Noncompliant
     @Override
@@ -157,7 +158,7 @@ public class Foo implements Supplier&lt;Integer&gt; {  // Noncompliant
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Foo implements IntSupplier {
 

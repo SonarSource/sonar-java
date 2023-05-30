@@ -1,14 +1,15 @@
+<h2>Why is this an issue?</h2>
 <p>Not all classes in the standard Java library were written to be thread-safe. Using them in a multi-threaded manner is highly likely to cause data
 problems or exceptions at runtime.</p>
 <p>This rule raises an issue when an instance of <code>Calendar</code>, <code>DateFormat</code>, <code>javax.xml.xpath.XPath</code>, or
 <code>javax.xml.validation.SchemaFactory</code> is marked <code>static</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class MyClass {
   private static SimpleDateFormat format = new SimpleDateFormat("HH-mm-ss");  // Noncompliant
   private static Calendar calendar = Calendar.getInstance();  // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class MyClass {
   private SimpleDateFormat format = new SimpleDateFormat("HH-mm-ss");

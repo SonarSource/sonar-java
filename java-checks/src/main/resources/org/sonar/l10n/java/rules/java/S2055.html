@@ -1,9 +1,10 @@
+<h2>Why is this an issue?</h2>
 <p>When a <code>Serializable</code> object has a non-serializable ancestor in its inheritance chain, object deserialization (re-instantiating the
 object from file) starts at the first non-serializable class, and proceeds down the chain, adding the properties of each subsequent child class, until
 the final object has been instantiated.</p>
 <p>In order to create the non-serializable ancestor, its no-argument constructor is called. Therefore the non-serializable ancestor of a
 <code>Serializable</code> class must have a no-arg constructor. Otherwise the class is <code>Serializable</code> but not deserializable.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public class Fruit {
   private Season ripe;
@@ -24,7 +25,7 @@ public class Raspberry extends Fruit
   public String getVarity() {...}
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public class Fruit {
   private Season ripe;

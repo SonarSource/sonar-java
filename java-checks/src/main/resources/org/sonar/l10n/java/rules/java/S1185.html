@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>Overriding a method just to call the same method from the super class without performing any other actions is useless and misleading. The only time
 this is justified is in <code>final</code> overriding methods, where the effect is to lock in the parent class behavior. This rule ignores such
 overrides of <code>equals</code>, <code>hashCode</code> and <code>toString</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doSomething() {
   super.doSomething();
@@ -12,7 +13,7 @@ public boolean isLegal(Action action) {
   return super.isLegal(action);
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 @Override
 public boolean isLegal(Action action) {         // Compliant - not simply forwarding the call

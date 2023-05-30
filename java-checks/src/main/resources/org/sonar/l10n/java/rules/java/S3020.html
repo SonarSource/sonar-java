@@ -1,13 +1,14 @@
+<h2>Why is this an issue?</h2>
 <p>Given no arguments, the <code>Collections.toArray</code> method returns an <code>Object []</code>, which will cause a
 <code>ClassCastException</code> at runtime if you try to cast it to an array of the proper class. Instead, pass an array of the correct type in to the
 call.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public String [] getStringArray(List&lt;String&gt; strings) {
   return (String []) strings.toArray();  // Noncompliant; ClassCastException thrown
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public String [] getStringArray(List&lt;String&gt; strings) {
   return strings.toArray(new String[0]);

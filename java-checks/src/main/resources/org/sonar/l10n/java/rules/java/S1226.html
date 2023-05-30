@@ -1,7 +1,8 @@
+<h2>Why is this an issue?</h2>
 <p>While it is technically correct to assign to parameters from within method bodies, doing so before the parameter value is read is likely a bug.
 Instead, initial values of parameters, caught exceptions, and foreach parameters should be, if not treated as <code>final</code>, then at least read
 before reassignment.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doTheThing(String str, int i, List&lt;String&gt; strings) {
   str = Integer.toString(i); // Noncompliant

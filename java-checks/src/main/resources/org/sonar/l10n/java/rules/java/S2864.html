@@ -1,6 +1,7 @@
+<h2>Why is this an issue?</h2>
 <p>When only the keys from a map are needed in a loop, iterating the <code>keySet</code> makes sense. But when both the key and the value are needed,
 it’s more efficient to iterate the <code>entrySet</code>, which will give access to both the key and value, instead.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 public void doSomethingWithMap(Map&lt;String,Object&gt; map) {
   for (String key : map.keySet()) {  // Noncompliant; for each key the value is retrieved
@@ -9,7 +10,7 @@ public void doSomethingWithMap(Map&lt;String,Object&gt; map) {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 public void doSomethingWithMap(Map&lt;String,Object&gt; map) {
   for (Map.Entry&lt;String,Object&gt; entry : map.entrySet()) {

@@ -1,3 +1,4 @@
+<h2>Why is this an issue?</h2>
 <p>The writer of an annotation can set one of three retention policies for it:</p>
 <ul>
   <li> <code>RetentionPolicy.SOURCE</code> - these annotations are dropped during compilation, E.G. <code>@Override</code>,
@@ -9,7 +10,7 @@
 <p>Only annotations that have been given a <code>RUNTIME</code> retention policy will be available to reflection. Testing for annotations with any
 other retention policy is simply an error, since the test will always return false.</p>
 <p>This rule checks that reflection is not used to detect annotations that do not have <code>RUNTIME</code> retention.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <pre>
 Method m = String.class.getMethod("getBytes", new Class[] {int.class,
 int.class, byte[].class, int.class});

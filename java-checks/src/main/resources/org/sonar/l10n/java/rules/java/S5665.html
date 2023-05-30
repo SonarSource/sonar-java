@@ -1,5 +1,6 @@
+<h2>Why is this an issue?</h2>
 <p>The use of escape sequences is mostly unnecessary in text blocks.</p>
-<h2>Noncompliant Code Example</h2>
+<h3>Noncompliant code example</h3>
 <p><code>\n</code> can be replaced by simply introducing the newline, <code>\"\"\"</code> it is sufficient to escape only the first qoute.</p>
 <pre>
 String textBlock = """
@@ -8,7 +9,7 @@ String textBlock = """
         !!!!
       """;
 </pre>
-<h2>Compliant Solution</h2>
+<h3>Compliant solution</h3>
 <pre>
 String textBlock = """
         \""" this
@@ -17,7 +18,7 @@ String textBlock = """
         !!!!
       """;
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
 <ul>
   <li> <a href="https://openjdk.java.net/jeps/378">JEP 378: Text Blocks</a> </li>
   <li> <a href="https://openjdk.org/projects/amber/guides/text-blocks-guide">Programmer’s Guide To Text Blocks</a>, by Jim Laskey and Stuart Marks
