@@ -28,7 +28,8 @@ return map.computeIfAbsent(key, k -&gt; V.createFor(k));
 <h3>Exceptions</h3>
 <p>This rule will not raise an issue when trying to add <code>null</code> to a map, because <code>computeIfAbsent</code> will not add the entry if the
 value returned by the function is <code>null</code>.</p>
-<h2>See Also</h2>
+<h2>Resources</h2>
+<h3>Related rules</h3>
 <ul>
   <li> {rule:java:S6104} - Map "computeIfAbsent()" and "computeIfPresent()" should not be used to add "null" values. </li>
 </ul>
