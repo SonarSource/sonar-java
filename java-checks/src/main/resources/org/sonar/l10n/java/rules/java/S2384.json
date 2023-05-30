@@ -1,5 +1,5 @@
 {
-  "title": "Mutable members should not be stored or returned directly",
+  "title": "Private mutable members should not be stored or returned directly",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
