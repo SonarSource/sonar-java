@@ -11,9 +11,10 @@ href="https://owasp.org/www-community/attacks/Server_Side_Request_Forgery">serve
   <li> If external entities are necessary then:
     <ul>
       <li> Use XML processor features, if available, to authorize only required protocols (eg: https). </li>
-      <li> And use an entity resolver (and optionally an XML Catalog) to resolve only trusted entities. == Noncompliant Code Example </li>
+      <li> And use an entity resolver (and optionally an XML Catalog) to resolve only trusted entities. </li>
     </ul>  </li>
 </ul>
+<h3>Noncompliant code example</h3>
 <p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInput</a>, <a
