@@ -1,3 +1,4 @@
+<p>This rule is deprecated; use {rule:java:S1158} instead.</p>
 <h2>Why is this an issue?</h2>
 <p>"Boxing" is the process of putting a primitive value into a primitive-wrapper object. When that’s done purely to use the wrapper class'
 <code>toString</code> method, it’s a waste of memory and cycles because those methods are <code>static</code>, and can therefore be used without a
@@ -14,6 +15,4 @@ myIntString = Integer.valueOf(myInt).toString(); // Noncompliant
 int myInt = 4;
 String myIntString = Integer.toString(myInt);
 </pre>
-<h2>Deprecated</h2>
-<p>This rule is deprecated; use {rule:java:S1158} instead.</p>
 

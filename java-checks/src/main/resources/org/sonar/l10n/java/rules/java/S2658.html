@@ -1,3 +1,4 @@
+<p>This rule is deprecated; use {rule:javasecurity:S6173} instead.</p>
 <h2>Why is this an issue?</h2>
 <p>Dynamically loaded classes could contain malicious code executed by a static class initializer. I.E. you wouldn’t even have to instantiate or
 explicitly invoke methods on such classes to be vulnerable to an attack.</p>
@@ -13,6 +14,4 @@ Class clazz = Class.forName(className);  // Noncompliant
   <li> <a href="https://cwe.mitre.org/data/definitions/470">MITRE, CWE-470</a> - Use of Externally-Controlled Input to Select Classes or Code ('Unsafe
   Reflection') </li>
 </ul>
-<h2>Deprecated</h2>
-<p>This rule is deprecated; use {rule:javasecurity:S6173} instead.</p>
 
