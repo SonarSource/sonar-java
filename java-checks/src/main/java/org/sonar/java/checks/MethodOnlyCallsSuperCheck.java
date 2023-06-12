@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -27,7 +26,6 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -45,9 +43,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1185")
 public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
-
-  private static final List<String> TRANSACTIONAL_ANNOTATIONS = Arrays.asList("javax.transaction.Transactional",
-    "org.springframework.transaction.annotation.Transactional");
 
   private static final MethodMatchers ALLOWED_METHODS = MethodMatchers.or(
     MethodMatchers.create().ofAnyType().names("toString", "hashCode").addWithoutParametersMatcher().build(),
@@ -166,8 +161,7 @@ public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isClassAnnotatedWithTransactional(MethodTree methodTree) {
-    SymbolMetadata metadata = methodTree.symbol().enclosingClass().metadata();
-    return TRANSACTIONAL_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
+    return methodTree.symbol().enclosingClass().metadata().isAnnotatedWith("javax.transaction.Transactional");
   }
 
 }

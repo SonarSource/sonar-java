@@ -19,24 +19,19 @@
  */
 package org.sonar.java.filters;
 
-import java.util.Set;
-import org.sonar.java.checks.ClassVariableVisibilityCheck;
-import org.sonar.java.checks.PublicStaticFieldShouldBeFinalCheck;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.tree.ClassTree;
+import org.junit.jupiter.api.Test;
 
-public class EclipseI18NFilter extends BaseTreeVisitorIssueFilter {
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
-  @Override
-  public Set<Class<? extends JavaCheck>> filteredRules() {
-    return Set.of(
-      /* S1104 */ ClassVariableVisibilityCheck.class,
-      /* S1444 */ PublicStaticFieldShouldBeFinalCheck.class);
+class SpringFilterTest {
+  @Test
+  void test() {
+    FilterVerifier.verify(mainCodeSourcesPath("filters/SpringFilter.java"), new SpringFilter());
   }
 
-  @Override
-  public void visitClass(ClassTree tree) {
-    excludeLinesIfTrue(tree.symbol().type().isSubtypeOf("org.eclipse.osgi.util.NLS"), tree, PublicStaticFieldShouldBeFinalCheck.class, ClassVariableVisibilityCheck.class);
-    super.visitClass(tree);
+  @Test
+  void test_without_semantic() {
+    FilterVerifier.verify(nonCompilingTestSourcesPath("filters/SpringFilter.java"), new SpringFilter());
   }
 }

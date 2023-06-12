@@ -40,7 +40,8 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueF
         new LombokFilter(),
         new GoogleAutoFilter(),
         new SuppressWarningFilter(),
-        new GeneratedCodeFilter()));
+        new GeneratedCodeFilter(),
+        new SpringFilter()));
     }
     return issueFilters;
   }

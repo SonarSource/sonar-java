@@ -1,9 +1,9 @@
 package checks;
 
 import java.util.function.Function;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServlet;
 import org.apache.struts.action.Action;
-import javax.annotation.Resource;
 
 @interface Inject{}
 
@@ -58,7 +58,7 @@ class HttpServletD extends HttpServlet {
 
 public class ServletInstanceFieldCheck extends HttpServlet {
   @org.springframework.beans.factory.annotation.Autowired
-  private javax.sql.DataSource myDB; // compliant annotated with autowired
+  private javax.sql.DataSource myDB; // Noncompliant - filtered by the SpringFilter
 }
 
 class HttpServletE extends HttpServlet {

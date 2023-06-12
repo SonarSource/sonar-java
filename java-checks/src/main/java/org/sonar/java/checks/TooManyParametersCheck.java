@@ -36,6 +36,9 @@ import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotati
 @Rule(key = "S107")
 public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
 
+  private static final Tree.Kind[] METHOD_AND_CONSTRUCTOR = {Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR};
+  private static final Tree.Kind[] METHOD_ONLY = {Tree.Kind.METHOD};
+
   private static final int DEFAULT_MAXIMUM = 7;
 
   @RuleProperty(
@@ -51,20 +54,12 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
   public int constructorMax = DEFAULT_MAXIMUM;
 
   private static final List<String> METHOD_ANNOTATION_EXCEPTIONS = Arrays.asList(
-    "org.springframework.web.bind.annotation.RequestMapping",
-    "org.springframework.web.bind.annotation.GetMapping",
-    "org.springframework.web.bind.annotation.PostMapping",
-    "org.springframework.web.bind.annotation.PutMapping",
-    "org.springframework.web.bind.annotation.DeleteMapping",
-    "org.springframework.web.bind.annotation.PatchMapping",
     "com.fasterxml.jackson.annotation.JsonCreator",
     "javax.ws.rs.GET",
     "javax.ws.rs.POST",
     "javax.ws.rs.PUT",
     "javax.ws.rs.PATCH",
-    "org.springframework.beans.factory.annotation.Autowired",
     "javax.inject.Inject",
-    "org.springframework.context.annotation.Bean",
     "io.micronaut.http.annotation.Get",
     "io.micronaut.http.annotation.Post",
     "io.micronaut.http.annotation.Put",
@@ -73,13 +68,6 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
     "io.micronaut.http.annotation.Patch",
     "io.micronaut.http.annotation.Head",
     "io.micronaut.http.annotation.Trace");
-
-  // if a class is annotated as one of these types, its constructor should be ignored if it's the only constructor
-  private static final List<String> CLASS_ANNOTATION_CONSTRUCTOR_EXCEPTIONS = Arrays.asList(
-    "org.springframework.stereotype.Component",
-    "org.springframework.context.annotation.Configuration",
-    "org.springframework.stereotype.Service",
-    "org.springframework.stereotype.Repository");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -91,10 +79,9 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
 
-    // this is true only if the class has unknown annotations, or if it has a single constructor and
-    // it is annotated with one of CLASS_ANNOTATION_CONSTRUCTOR_EXCEPTIONS
+    // this is true only if the class has unknown annotations or a single constructor
     // if TRUE, we can skip the analysis of constructors in the forEach below
-    Tree.Kind[] membersToVisit = classUsesAuthorizedAnnotation(classTree) ? new Tree.Kind[] {Tree.Kind.METHOD} : new Tree.Kind[] {Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR};
+    Tree.Kind[] membersToVisit = membersToVisit(classTree);
 
     classTree.members().stream()
       .filter(member -> member.is(membersToVisit))
@@ -130,18 +117,15 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
     return hasUnknownAnnotation(metadata) || METHOD_ANNOTATION_EXCEPTIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
-  // As of Spring 4.3, classes (@Component, @Service, etc..) with a single constructor can omit the @Autowired annotation.
-  private static boolean classUsesAuthorizedAnnotation(ClassTree methodParentClass) {
+  private static Tree.Kind[] membersToVisit(ClassTree methodParentClass) {
     SymbolMetadata parentClassMetadata = methodParentClass.symbol().metadata();
-    // if the parent class is a Spring component or has unknown annotations
-    if (hasUnknownAnnotation(parentClassMetadata) || CLASS_ANNOTATION_CONSTRUCTOR_EXCEPTIONS.stream().anyMatch(parentClassMetadata::isAnnotatedWith)) {
+    if (hasUnknownAnnotation(parentClassMetadata)) {
       long numberOfConstructors = methodParentClass.members().stream().filter(member -> member.is(Tree.Kind.CONSTRUCTOR)).count();
-      // if it only has 1 constructor, @Autowired could be implicit, and it's an exception to the rule
       if (numberOfConstructors == 1) {
-        return true;
+        // skip constructors
+        return METHOD_ONLY;
       }
     }
-    return false;
+    return METHOD_AND_CONSTRUCTOR;
   }
-
 }

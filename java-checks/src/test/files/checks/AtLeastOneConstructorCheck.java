@@ -60,21 +60,12 @@ class myEJB  {
 }
 
 class MyService {}
-class Spring1 {
-  @Autowired
-  private MyService myService;
-}
-class Spring2 { // Noncompliant [[secondary=70]]
-  @Autowired
-  private MyService myService;
-  private MyService myService2;
-}
 
 class Inject1 {
   @Inject
   private MyService myService;
 }
-class Inject2 { // Noncompliant [[secondary=80]]
+class Inject2 { // Noncompliant [[secondary=71]]
   @Inject
   private MyService myService;
   private MyService myService2;

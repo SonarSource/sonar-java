@@ -11,6 +11,6 @@ class MyServlet extends HttpServlet {
 }
 
 public class ServletInstanceFieldCheck extends HttpServlet {
-  @org.springframework.beans.factory.annotation.Autowired
-  private javax.sql.DataSource myDB; // compliant annotated with autowired
+  @javax.annotation.Resource
+  private javax.sql.DataSource myDB; // compliant annotated with Resource
 }
