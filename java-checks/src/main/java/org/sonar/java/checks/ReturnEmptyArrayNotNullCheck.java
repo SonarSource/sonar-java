@@ -33,7 +33,6 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -42,13 +41,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
-
 @Rule(key = "S1168")
 public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
-
-  private static final MethodMatchers ITEM_PROCESSOR_PROCESS_METHOD = MethodMatchers.create()
-    .ofSubTypes("org.springframework.batch.item.ItemProcessor").names("process").withAnyParameters().build();
 
   private final Deque<ReturnKind> returnKinds = new LinkedList<>();
   private QuickFixHelper.ImportSupplier importSupplier;
@@ -112,7 +106,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       SymbolMetadata metadata = methodTree.symbol().metadata();
-      if (metadata.nullabilityData().isNullable(NullabilityLevel.PACKAGE, false, true) || requiresReturnNull(methodTree)) {
+      if (metadata.nullabilityData().isNullable(SymbolMetadata.NullabilityLevel.PACKAGE, false, true) || requiresReturnNull(methodTree)) {
         returnKinds.push(ReturnKind.OTHER);
       } else {
         returnKinds.push(ReturnKind.forType(methodTree.returnType().symbolType()));
@@ -160,8 +154,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
       return true;
     }
     List<Type> interfaces = ((Symbol.TypeSymbol) owner).interfaces();
-    return isOverriding(methodTree)
-      && (interfaces.stream().anyMatch(Type::isUnknown) || ITEM_PROCESSOR_PROCESS_METHOD.matches(methodTree));
+    return isOverriding(methodTree) && interfaces.stream().anyMatch(Type::isUnknown);
   }
 
   private static boolean isOverriding(MethodTree tree) {
