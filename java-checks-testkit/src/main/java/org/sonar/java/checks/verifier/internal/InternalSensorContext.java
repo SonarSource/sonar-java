@@ -126,6 +126,11 @@ public class InternalSensorContext extends InternalMockedSonarAPI implements Sen
   }
 
   @Override
+  public void markAsUnchanged(InputFile inputFile) {
+    throw notSupportedException("markAsUnchanged(InputFile)");
+  }
+
+  @Override
   public WriteCache nextCache() {
     return null;
   }
