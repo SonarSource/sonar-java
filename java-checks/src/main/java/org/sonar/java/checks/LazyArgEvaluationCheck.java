@@ -133,8 +133,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
     private static final String LEVEL = "org.apache.logging.log4j.Level";
     private static final String LOGGER = "org.apache.logging.log4j.Logger";
     private static final String MARKER = "org.apache.logging.log4j.Marker";
-    private static final Predicate<Type> SUPPLIER = type ->
-      type.isSubtypeOf("org.apache.logging.log4j.util.Supplier") ||
+    private static final Predicate<Type> SUPPLIER = type -> type.isSubtypeOf("org.apache.logging.log4j.util.Supplier") ||
       type.isSubtypeOf("org.apache.logging.log4j.util.MessageSupplier");
 
     private static final MethodMatchers LOG = MethodMatchers.or(
@@ -288,15 +287,30 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (!isGetter(tree) && !isAnnotationMethod(tree)) {
+      if (isReturnTypeNotUnknown(tree) && !isGetter(tree) && !isAnnotationMethod(tree)) {
         shouldReport = true;
         hasMethodInvocation = true;
       }
     }
 
+    private static boolean isReturnTypeNotUnknown(MethodInvocationTree tree) {
+      return !tree.methodSymbol().returnType().isUnknown();
+    }
+
     private static boolean isGetter(MethodInvocationTree tree) {
       String methodName = tree.methodSymbol().name();
-      return methodName != null && (methodName.startsWith("get") || methodName.startsWith("is"));
+      return methodName.startsWith("get") || methodName.startsWith("is") || isGetterMatchingFieldNameAndType(tree.methodSymbol());
+    }
+
+    private static boolean isGetterMatchingFieldNameAndType(Symbol.MethodSymbol methodSymbol) {
+      Symbol owner = methodSymbol.owner();
+      Type getterReturnType = methodSymbol.returnType().type();
+      return methodSymbol.parameterTypes().isEmpty()
+        // methodSymbol's owner is always not null and TypeSymbol
+        && ((Symbol.TypeSymbol) owner).memberSymbols()
+          .stream()
+          .filter(symbol -> symbol.isVariableSymbol() && symbol.type().equals(getterReturnType))
+          .anyMatch(symbol -> symbol.name().equals(methodSymbol.name()));
     }
 
     private static boolean isAnnotationMethod(MethodInvocationTree tree) {

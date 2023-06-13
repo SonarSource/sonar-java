@@ -1,23 +1,36 @@
-package org.test;
+package checks;
 
 import com.google.common.base.Preconditions;
-import org.slf4j.*;
-
-import java.util.*;
-import java.io.*;
+import java.util.Date;
 import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
 import static com.google.common.base.Preconditions.checkState;
 
+@SuppressWarnings("java:S139")
 class LazyArgEvaluationCheck {
 
   public static final Logger slf4j = LoggerFactory.getLogger(LazyArgEvaluationCheck.class);
   public static final java.util.logging.Logger logger = java.util.logging.Logger.getGlobal();
   public static final org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
+
+  public static void recordFieldsAccessors() {
+    record Person(String name, int age) {
+      int age(int age) {
+        return age;
+      }
+    }
+
+    Person person = new Person("John", 42);
+    logger.log(Level.SEVERE, "Something went wrong: " + person.name()); // Compliant - getters are OK
+    logger.log(Level.SEVERE, "Something went wrong: " + person.age()); // Compliant - getters are OK
+    logger.log(Level.SEVERE, "Something went wrong: " + person.age(12)); // Noncompliant - not a getter
+  }
 
   public static void main(String[] args) {
     String csvPath = "";
@@ -40,17 +53,17 @@ class LazyArgEvaluationCheck {
 
   public static void cachingOnDisk(File path) {
     slf4j.info("Caching on disk @ {}", path.getAbsolutePath()); // Compliant - getters are OK
-    slf4j.info("Caching on disk @ {}", path.isAbsolutePath()); // Compliant - getters are OK
+    slf4j.info("Caching on disk @ {}", path.isAbsolute()); // Compliant - getters are OK
   }
 
-  public void exceptionalPaths() {
+  public void exceptionalPaths(File path) {
     try {
 
     } catch (Exception e) {
       slf4j.info("Caching on disk @ {}", path.getAbsolutePath()); // Compliant - because we don't care about small performance loss in exceptional paths
-      myField = new MyClass() {
-        @Overidde
-        void doSomethingAllTheTime() {
+      new Runnable() {
+        @Override
+        public void run() {
           slf4j.info("logging all the time consuming resources for nothing " + computeValue()); // Noncompliant
         }
 
@@ -76,7 +89,7 @@ class LazyArgEvaluationCheck {
     });
   }
 
-  void slf4j(String csvPath) {
+  void slf4j(String csvPath, boolean condition) {
     slf4j.trace("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
     slf4j.debug("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
     slf4j.info("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
@@ -109,7 +122,7 @@ class LazyArgEvaluationCheck {
     if (slf4j.isErrorEnabled()) {
       slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Compliant - inside if test
     }
-    if (b) {
+    if (condition) {
       slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant
     }
   }
@@ -128,7 +141,7 @@ class LazyArgEvaluationCheck {
     }
 
     if (logger.isLoggable(Level.INFO)) {
-      logger.trace("Unable to open file " + csvPath);  // Compliant - FN, we don't verify that level in "if" matches actual level used in logging
+      logger.finer("Unable to open file " + csvPath);  // Compliant - FN, we don't verify that level in "if" matches actual level used in logging
       logger.info("Unable to open file " + csvPath);  // Compliant
     }
   }
@@ -158,9 +171,9 @@ class LazyArgEvaluationCheck {
 
 }
 
-class A {
-  private static final Logger LOGGER = LoggerFactory.getLogger(A.class);
-  private static final XLogger X_LOGGER = XLoggerFactory.getXLogger(A.class);
+class AddTwoArguments {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AddTwoArguments.class);
+  private static final XLogger X_LOGGER = XLoggerFactory.getXLogger(AddTwoArguments.class);
 
   void foo(int timeout, String units) {
     LOGGER.debug("Setting read timeout to " + timeout + " " + units); // Noncompliant
@@ -168,8 +181,8 @@ class A {
   }
 }
 
-class constantInlining {
-  Logger logger = LoggerFactory.getLogger(A.class);
+class ConstantInlining {
+  Logger logger = LoggerFactory.getLogger(AddTwoArguments.class);
 
   static final String MY_CONST = "world";
   final String myField = "world";
@@ -177,7 +190,7 @@ class constantInlining {
 
   void foo(boolean answer) {
     logger.warn("hello " + MY_CONST + ". Is this inlined by the compiler? {}", answer);
-    logger.warn("hello " + constantInlining.MY_CONST + ". Is this inlined by the compiler? {}", answer);
+    logger.warn("hello " + ConstantInlining.MY_CONST + ". Is this inlined by the compiler? {}", answer);
     logger.warn("hello " + myField + ". Is this inlined by the compiler? {}", answer); // Noncompliant
     logger.warn("hello " + myStaticField + ". Is this inlined by the compiler? {}", answer); // Noncompliant
     logger.warn(MY_CONST + MY_CONST, answer);
