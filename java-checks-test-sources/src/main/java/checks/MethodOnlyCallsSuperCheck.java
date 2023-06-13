@@ -196,14 +196,6 @@ class MethodOnlyCallsSuperCheck{
     }
   }
 
-  @org.springframework.transaction.annotation.Transactional
-  abstract class G extends A {
-    @Override
-    protected void bar2() {
-      super.bar2();
-    }
-  }
-
   @AnotherAnnotation
   abstract class H extends A {
     @Override

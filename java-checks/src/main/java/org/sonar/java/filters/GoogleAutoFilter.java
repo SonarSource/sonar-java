@@ -19,27 +19,25 @@
  */
 package org.sonar.java.filters;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.sonar.java.checks.AbstractClassNoFieldShouldBeInterfaceCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
 import org.sonar.java.checks.EqualsOverridenWithHashCodeCheck;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 
 public class GoogleAutoFilter extends BaseTreeVisitorIssueFilter {
 
-  private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = SetUtils.immutableSetOf(
+  private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = Set.of(
     EqualsOverridenWithHashCodeCheck.class,
     EqualsNotOverridenWithCompareToCheck.class,
     AbstractClassNoFieldShouldBeInterfaceCheck.class);
 
   private static final String AUTO_VALUE_ANNOTATION = "com.google.auto.value.AutoValue";
 
-  private static final List<String> AUTO_ANNOTATIONS = Arrays.asList(
+  private static final List<String> AUTO_ANNOTATIONS = List.of(
     "com.google.auto.value.AutoValue$Builder",
     "com.google.auto.value.AutoOneOf");
 
@@ -53,15 +51,10 @@ public class GoogleAutoFilter extends BaseTreeVisitorIssueFilter {
     SymbolMetadata classMetadata = tree.symbol().metadata();
 
     boolean isAnnotatedWithAutoValue = classMetadata.isAnnotatedWith(AUTO_VALUE_ANNOTATION);
-
-    if (isAnnotatedWithAutoValue) {
-      excludeLines(tree, EqualsOverridenWithHashCodeCheck.class);
-      excludeLines(tree, EqualsNotOverridenWithCompareToCheck.class);
-    }
-
-    if (isAnnotatedWithAutoValue || AUTO_ANNOTATIONS.stream().anyMatch(classMetadata::isAnnotatedWith)){
-      excludeLines(tree.simpleName(), AbstractClassNoFieldShouldBeInterfaceCheck.class);
-    }
+    excludeLinesIfTrue(isAnnotatedWithAutoValue,
+      tree, EqualsOverridenWithHashCodeCheck.class, EqualsNotOverridenWithCompareToCheck.class);
+    excludeLinesIfTrue(isAnnotatedWithAutoValue || AUTO_ANNOTATIONS.stream().anyMatch(classMetadata::isAnnotatedWith),
+      tree.simpleName(), AbstractClassNoFieldShouldBeInterfaceCheck.class);
 
     super.visitClass(tree);
   }

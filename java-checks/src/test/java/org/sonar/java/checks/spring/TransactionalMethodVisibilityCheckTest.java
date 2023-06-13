@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
@@ -30,7 +30,7 @@ class TransactionalMethodVisibilityCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TransactionalMethodVisibilityCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/TransactionalMethodVisibilityCheck.java"))
       .withCheck(new TransactionalMethodVisibilityCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class TransactionalMethodVisibilityCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/TransactionalMethodVisibilityCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/spring/TransactionalMethodVisibilityCheck.java"))
       .withCheck(new TransactionalMethodVisibilityCheck())
       .verifyIssues();
   }

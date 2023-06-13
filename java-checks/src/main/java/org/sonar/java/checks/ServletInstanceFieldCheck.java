@@ -53,7 +53,6 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
   private static final List<String> ANNOTATIONS_EXCLUDING_FIELDS = Arrays.asList(
     "javax.inject.Inject",
     "javax.ejb.EJB",
-    "org.springframework.beans.factory.annotation.Autowired",
     "javax.annotation.Resource");
 
   @Override

@@ -79,28 +79,30 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     return excludedLinesByRule;
   }
 
-  public void acceptLines(@Nullable Tree tree, Iterable<Class<? extends JavaCheck>> rules) {
-    for (Class<? extends JavaCheck> rule : rules) {
-      acceptLines(tree, rule);
-    }
-  }
-
-  public void acceptLines(@Nullable Tree tree, Class<? extends JavaCheck> rule) {
-    computeFilteredLinesForRule(tree, rule, false);
-  }
-
-  public void excludeLines(@Nullable Tree tree, Iterable<Class<? extends JavaCheck>> rules) {
-    for (Class<? extends JavaCheck> rule : rules) {
-      excludeLines(tree, rule);
-    }
-  }
-
-  public void excludeLines(Set<Integer> lines, String ruleKey) {
+  final void excludeLines(Set<Integer> lines, String ruleKey) {
     computeFilteredLinesForRule(lines, ruleKey, true);
   }
 
-  public void excludeLines(@Nullable Tree tree, Class<? extends JavaCheck> rule) {
+  final void excludeLines(@Nullable Tree tree, Class<? extends JavaCheck> rule) {
     computeFilteredLinesForRule(tree, rule, true);
+  }
+
+  @SafeVarargs
+  final void excludeLines(@Nullable Tree tree, Class<? extends JavaCheck>... rules) {
+    for (Class<? extends JavaCheck> rule : rules) {
+      computeFilteredLinesForRule(tree, rule, true);
+    }
+  }
+
+  @SafeVarargs
+  final void excludeLinesIfTrue(boolean condition, Tree tree, Class<? extends JavaCheck>... rules) {
+    for (Class<? extends JavaCheck> rule : rules) {
+      computeFilteredLinesForRule(tree, rule, condition);
+    }
+  }
+
+  final void excludeLinesIfTrue(boolean condition, Tree tree, Class<? extends JavaCheck> rule) {
+    computeFilteredLinesForRule(tree, rule, condition);
   }
 
   private void computeFilteredLinesForRule(@Nullable Tree tree, Class<? extends JavaCheck> filteredRule, boolean excludeLine) {

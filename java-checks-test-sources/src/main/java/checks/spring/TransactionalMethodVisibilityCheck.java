@@ -1,4 +1,4 @@
-package checks;
+package checks.spring;
 
 import org.springframework.transaction.annotation.Transactional;
 

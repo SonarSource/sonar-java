@@ -12,8 +12,8 @@ public class TooManyParametersCustom {
 
 class MethodsUsingSpringRequestMappingCustom {
   @org.springframework.web.bind.annotation.RequestMapping
-  void foo(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8, String p9) {} // Compliant
+  void foo(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8, String p9) {} // Noncompliant - filtered out by SpringFilter
 
   @RequestMapping
-  void bar(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8, String p9) {} // Compliant
+  void bar(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8, String p9) {} // Noncompliant - filtered out by SpringFilter
 }

@@ -33,7 +33,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -148,7 +147,7 @@ class BaseTreeVisitorIssueFilterTest {
   private static class FakeJavaIssueFilterOnClassAndVariable extends BaseTreeVisitorIssueFilter {
     @Override
     public Set<Class<? extends JavaCheck>> filteredRules() {
-      return SetUtils.immutableSetOf(FakeRule.class, FakeRuleWithoutKey.class);
+      return Set.of(FakeRule.class, FakeRuleWithoutKey.class);
     }
 
     @Override
@@ -164,7 +163,7 @@ class BaseTreeVisitorIssueFilterTest {
         // force check on null tree
         excludeLines(simpleName, FakeRuleWithoutKey.class);
       } else if ("AllowedClassName".equals(simpleName.name())) {
-        acceptLines(simpleName, FakeRule.class);
+        excludeLinesIfTrue(false, simpleName, FakeRule.class);
       } else {
         excludeLines(simpleName, FakeRule.class);
       }

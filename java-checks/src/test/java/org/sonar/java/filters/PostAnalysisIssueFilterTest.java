@@ -60,7 +60,7 @@ class PostAnalysisIssueFilterTest {
 
   @Test
   void number_of_issue_filters() {
-    assertThat(postAnalysisIssueFilter.issueFilters()).hasSize(5);
+    assertThat(postAnalysisIssueFilter.issueFilters()).hasSize(6);
   }
 
   @Test
@@ -107,7 +107,7 @@ class PostAnalysisIssueFilterTest {
   @Test
   void issue_filter_should_scan_file_with_all_filters() {
     postAnalysisIssueFilter.scanFile(context);
-    Mockito.verify(context, Mockito.times(5)).getInputFile();
+    Mockito.verify(context, Mockito.times(6)).getInputFile();
   }
 
 }
