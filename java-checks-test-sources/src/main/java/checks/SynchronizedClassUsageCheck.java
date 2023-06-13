@@ -40,6 +40,7 @@ public class SynchronizedClassUsageCheck {
 
     A(Vector v) { // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
       a = v;
+      new antlr.collections.impl.Vector().capacity();
     }
 
     private static Hashtable foo() { // Noncompliant

@@ -116,7 +116,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   private class DeprecatedTypeVisitor extends BaseTreeVisitor {
 
-    private Deque<List<Type>> overridingMethodTypes = new ArrayDeque<>();
+    private Deque<Set<String>> overridingMethodTypes = new ArrayDeque<>();
 
     @Override
     public void visitClass(ClassTree tree) {
@@ -131,26 +131,29 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethod(MethodTree tree) {
       TypeTree returnTypeTree = tree.returnType();
+      populateOverridingMethodExclusions(tree);
       if (!isOverriding(tree) || returnTypeTree == null) {
         if (returnTypeTree != null) {
           reportIssueOnDeprecatedType(returnTypeTree, returnTypeTree.symbolType());
         }
         scan(tree.parameters());
       }
-      visitMethodBody(tree);
+      scan(tree.block());
+      overridingMethodTypes.pop();
     }
 
-    void visitMethodBody(MethodTree methodTree) {
-      var methodTypes = new ArrayList<Type>();
+    void populateOverridingMethodExclusions(MethodTree methodTree) {
+      var methodTypes = new HashSet<String>();
       if (isOverriding(methodTree)) {
-        methodTypes.add(methodTree.returnType().symbolType());
-        for (var param : methodTree.parameters()) {
-          methodTypes.add(param.type().symbolType());
+        if (methodTree.returnType() != null) {
+          methodTypes.add(methodTree.returnType().symbolType().fullyQualifiedName());
         }
+        methodTree.parameters().stream()
+          .filter(param -> param.type() != null)
+          .map(param -> param.type().symbolType().fullyQualifiedName())
+          .forEach(methodTypes::add);
       }
       overridingMethodTypes.push(methodTypes);
-      scan(methodTree.block());
-      overridingMethodTypes.pop();
     }
 
     private boolean isOverriding(MethodTree tree) {
@@ -185,7 +188,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     }
 
     private boolean isAllowedByOverridingSignature(Type type) {
-      return !overridingMethodTypes.isEmpty() && overridingMethodTypes.peek().contains(type);
+      return !overridingMethodTypes.isEmpty() && overridingMethodTypes.peek().contains(type.fullyQualifiedName());
     }
 
     private boolean isDeprecatedType(Type symbolType) {
