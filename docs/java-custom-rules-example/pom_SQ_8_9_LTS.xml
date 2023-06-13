@@ -22,7 +22,7 @@
     <sonarqube.version>8.9.0.43852</sonarqube.version>
     <sonarjava.version>6.15.1.26025</sonarjava.version>
     <!-- Don't forget to update this version of JaCoCo -->
-    <jacoco.version>0.8.7</jacoco.version>
+    <jacoco.version>0.8.10</jacoco.version>
     <!-- Use UTF-8 for all resources -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Make sure to be compatible with java 8 -->
