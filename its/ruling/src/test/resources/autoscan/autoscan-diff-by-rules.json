@@ -3,7 +3,7 @@
     "ruleKey": "S100",
     "hasTruePositives": true,
     "falseNegatives": 0,
-    "falsePositives": 0
+    "falsePositives": 2
   },
   {
     "ruleKey": "S101",
