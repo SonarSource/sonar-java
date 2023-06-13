@@ -37,18 +37,18 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
-import org.sonarsource.sonarlint.core.client.api.common.Language;
-import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
-import org.sonarsource.sonarlint.core.client.api.common.ProgressMonitor;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
+import org.sonarsource.sonarlint.core.analysis.api.AnalysisResults;
+import org.sonarsource.sonarlint.core.analysis.api.ClientInputFile;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneAnalysisConfiguration;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneGlobalConfiguration;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneSonarLintEngine;
+import org.sonarsource.sonarlint.core.commons.IssueSeverity;
+import org.sonarsource.sonarlint.core.commons.Language;
+import org.sonarsource.sonarlint.core.commons.log.ClientLogOutput;
+import org.sonarsource.sonarlint.core.commons.progress.ClientProgressMonitor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
 public class SonarLintTest {
@@ -62,7 +62,7 @@ public class SonarLintTest {
   @BeforeClass
   public static void prepare() throws Exception {
     StandaloneGlobalConfiguration config = StandaloneGlobalConfiguration.builder()
-      .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toURI().toURL())
+      .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toPath())
       .setSonarLintUserHome(temp.newFolder().toPath())
       .setLogOutput((formattedMessage, level) -> { /* Don't pollute logs*/ })
       .addEnabledLanguage(Language.JAVA)
@@ -91,9 +91,9 @@ public class SonarLintTest {
     sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("java:S106", 4, inputFile.getPath(), "MAJOR"),
-      tuple("java:S1220", null, inputFile.getPath(), "MINOR"),
-      tuple("java:S1481", 3, inputFile.getPath(), "MINOR"));
+      tuple("java:S106", 4, inputFile.getPath(), IssueSeverity.MAJOR),
+      tuple("java:S1220", null, inputFile.getPath(), IssueSeverity.MINOR),
+      tuple("java:S1481", 3, inputFile.getPath(), IssueSeverity.MINOR));
   }
 
   @Test
@@ -126,7 +126,7 @@ public class SonarLintTest {
     // Issues reported by S1607 are no longer expected here as the check requires complete semantic to run properly.
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
       // tuple("squid:S2970", 6, inputFile.getPath(), "BLOCKER"),
-      tuple("java:S2925", 7, inputFile.getPath(), "MAJOR"));
+      tuple("java:S2925", 7, inputFile.getPath(), IssueSeverity.MAJOR));
   }
 
   @Test
@@ -150,8 +150,8 @@ public class SonarLintTest {
     sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("java:S1220", null, inputFile.getPath(), "MINOR"),
-      tuple("java:S1481", 4, inputFile.getPath(), "MINOR"));
+      tuple("java:S1220", null, inputFile.getPath(), IssueSeverity.MINOR),
+      tuple("java:S1481", 4, inputFile.getPath(), IssueSeverity.MINOR));
   }
 
   @Test
@@ -168,12 +168,13 @@ public class SonarLintTest {
   }
 
   @Test
-  public void sonarlint_cancel_analysis() throws Exception {
-    List<LogOutput.Level> logs = new ArrayList<>();
+  public void sonarlint_cancelled_analysis_logs_but_does_not_rethrow_exception() throws Exception {
+    List<ClientLogOutput.Level> logLevels = new ArrayList<>();
+    List<String> errorLogs = new ArrayList<>();
     StandaloneGlobalConfiguration config = StandaloneGlobalConfiguration.builder()
-      .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toURI().toURL())
+      .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toPath())
       .setSonarLintUserHome(temp.newFolder().toPath())
-      .setLogOutput((formattedMessage, level) -> logs.add(level))
+      .setLogOutput((formattedMessage, level) -> logLevels.add(level))
       .addEnabledLanguage(Language.JAVA)
       .build();
     StandaloneSonarLintEngine sonarlintEngine = new StandaloneSonarLintEngineImpl(config);
@@ -193,19 +194,32 @@ public class SonarLintTest {
       .setBaseDir(baseDir.toPath())
       .addInputFile(inputFile)
       .build();
-
     final List<Issue> issues = new ArrayList<>();
     CancellableProgressMonitor progressMonitor = new CancellableProgressMonitor();
-    assertThatThrownBy(() -> sonarlintEngine.analyze(standaloneAnalysisConfiguration, i -> {
-      if (!issues.isEmpty()) {
-        progressMonitor.isCanceled = true;
-        throw new MyCancelException();
-      }
-      issues.add(i);
-    }, null, progressMonitor)).hasMessage("Analysis cancelled");
+    sonarlintEngine.analyze(
+      standaloneAnalysisConfiguration,
+      issue -> {
+        if (!issues.isEmpty()) {
+          progressMonitor.isCanceled = true;
+          throw new MyCancelException();
+        }
+        issues.add(issue);
+      },
+      (formattedMessage, level) -> {
+        if (level == ClientLogOutput.Level.ERROR) {
+          errorLogs.add(formattedMessage);
+        }
+      },
+      progressMonitor
+    );
 
-    // When any Exception (including user defined) is thrown and the progress is cancelled, no errors should be logged.
-    assertThat(logs).doesNotContain(LogOutput.Level.ERROR);
+    // Check that there were no error logs prior to the analysis, as the log levels are not collected DURING the analysis
+    assertThat(logLevels).doesNotContain(ClientLogOutput.Level.ERROR);
+    assertThat(errorLogs)
+      .hasSize(2)
+      .allMatch(msg -> msg.equals("Error executing sensor: 'JavaSensor'") ||
+        msg.startsWith("org.sonar.java.AnalysisException: Analysis cancelled")
+      );
     assertThat(issues).hasSize(1);
   }
 
@@ -268,11 +282,31 @@ public class SonarLintTest {
   static class MyCancelException extends RuntimeException {
   }
 
-  static class CancellableProgressMonitor extends ProgressMonitor {
+  static class CancellableProgressMonitor implements ClientProgressMonitor {
     boolean isCanceled = false;
+    String message;
+    float fraction;
+
+    boolean intermediate;
+
     @Override
     public boolean isCanceled() {
       return isCanceled;
+    }
+
+    @Override
+    public void setMessage(String msg) {
+      message = msg;
+    }
+
+    @Override
+    public void setFraction(float fraction) {
+      this.fraction = fraction;
+    }
+
+    @Override
+    public void setIndeterminate(boolean indeterminate) {
+      intermediate = intermediate;
     }
   }
 
