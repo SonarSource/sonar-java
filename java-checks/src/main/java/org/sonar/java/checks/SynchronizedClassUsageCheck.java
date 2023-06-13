@@ -81,7 +81,6 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     tree.accept(new DeprecatedTypeVisitor());
   }
 
-
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
@@ -117,6 +116,8 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   private class DeprecatedTypeVisitor extends BaseTreeVisitor {
 
+    private Deque<List<Type>> overridingMethodTypes = new ArrayDeque<>();
+
     @Override
     public void visitClass(ClassTree tree) {
       TypeTree superClass = tree.superClass();
@@ -130,18 +131,31 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethod(MethodTree tree) {
       TypeTree returnTypeTree = tree.returnType();
-      if (isNotOverriding(tree) || returnTypeTree == null) {
+      if (!isOverriding(tree) || returnTypeTree == null) {
         if (returnTypeTree != null) {
           reportIssueOnDeprecatedType(returnTypeTree, returnTypeTree.symbolType());
         }
         scan(tree.parameters());
       }
-      scan(tree.block());
+      visitMethodBody(tree);
     }
 
-    private boolean isNotOverriding(MethodTree tree) {
+    void visitMethodBody(MethodTree methodTree) {
+      var methodTypes = new ArrayList<Type>();
+      if (isOverriding(methodTree)) {
+        methodTypes.add(methodTree.returnType().symbolType());
+        for (var param : methodTree.parameters()) {
+          methodTypes.add(param.type().symbolType());
+        }
+      }
+      overridingMethodTypes.push(methodTypes);
+      scan(methodTree.block());
+      overridingMethodTypes.pop();
+    }
+
+    private boolean isOverriding(MethodTree tree) {
       // In case it can not be determined (isOverriding returns null), return false to avoid FP.
-      return Boolean.FALSE.equals(tree.isOverriding());
+      return Boolean.TRUE.equals(tree.isOverriding());
     }
 
     @Override
@@ -159,7 +173,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     }
 
     private boolean reportIssueOnDeprecatedType(Tree tree, Type type) {
-      if (visited.contains(tree)) {
+      if (visited.contains(tree) || isAllowedByOverridingSignature(type)) {
         return false;
       }
       visited.add(tree);
@@ -168,6 +182,10 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
         return true;
       }
       return false;
+    }
+
+    private boolean isAllowedByOverridingSignature(Type type) {
+      return !overridingMethodTypes.isEmpty() && overridingMethodTypes.peek().contains(type);
     }
 
     private boolean isDeprecatedType(Type symbolType) {

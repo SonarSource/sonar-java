@@ -68,8 +68,20 @@ public class SynchronizedClassUsageCheck {
 
     @Override
     public Vector f3(Vector a) { // Compliant
-      Vector b; // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
-      return null;
+      Vector b = new Vector(); // Compliant: since Vector is part of the overriding signature, it is allowed to use inside the method body
+      Hashtable ht; // Noncompliant
+
+      class Anonymous implements IA{
+        @Override
+        public Vector f3(Vector a) {
+          Vector b = new Vector();
+          Hashtable ht; // Noncompliant
+          return null;
+        }
+      }
+
+      Vector b2 = new Vector();
+      return b;
     }
     public void f(Integer i) { // Compliant
     }
