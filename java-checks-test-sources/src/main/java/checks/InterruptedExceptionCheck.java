@@ -450,12 +450,26 @@ class Interruptable {
     }
   }
 
+
+  public void catchUnionType1() throws IOException, InterruptedException {
+    try {
+      getRuntimeExceptionThrowsInterruptedException();
+      getRuntimeExceptionThrowsIOException();
+    } catch (InterruptedException | IOException e) { // Compliant - FP from S2142
+      doSomething();
+      throw e;
+    }
+  }
+
   private AutoCloseable getAutoCloseableThrowsInterruptedException() throws InterruptedException {
     throw getInterruptedException();
   }
 
   private RuntimeException getRuntimeExceptionThrowsInterruptedException() throws InterruptedException {
     throw getInterruptedException();
+  }
+  private RuntimeException getRuntimeExceptionThrowsIOException() throws IOException {
+    throw new IOException();
   }
 
   @FunctionalInterface

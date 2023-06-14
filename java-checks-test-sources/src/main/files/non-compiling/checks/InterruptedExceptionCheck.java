@@ -152,6 +152,16 @@ public class InterruptedExceptionCheck {
     throw new InterruptedException();
   }
 
+  public void catchUnionType2 () {
+    try {
+      while (true) {
+        // do stuff
+      }
+    } catch (InterruptedException | java.io.IOException e) { // Compliant - FP from S2142
+      unknownField.log(Level.WARN, "Interrupted!", e);
+      throw e;
+    }
+  }
 }
 
 class Interruptable {

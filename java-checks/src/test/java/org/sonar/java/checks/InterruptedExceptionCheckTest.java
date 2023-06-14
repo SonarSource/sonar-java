@@ -22,32 +22,32 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class InterruptedExceptionCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/InterruptedExceptionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InterruptedExceptionCheck.java"))
       .withCheck(new InterruptedExceptionCheck())
       .verifyIssues();
-    
+
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/InterruptedExceptionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InterruptedExceptionCheck.java"))
       .withCheck(new InterruptedExceptionCheck())
       .withoutSemantic()
       .verifyIssues();
   }
-  
+
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/InterruptedExceptionCheck.java"))
       .withCheck(new InterruptedExceptionCheck())
       .verifyIssues();
-    
+
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/InterruptedExceptionCheck.java"))
       .withCheck(new InterruptedExceptionCheck())
