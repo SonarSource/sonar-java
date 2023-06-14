@@ -56,6 +56,11 @@ class InternalSensorContextTest {
     assertThat(context.isCacheEnabled()).isFalse();
     assertThat(context.previousCache()).isNull();
     assertThat(context.nextCache()).isNull();
+  }
+
+  @Test
+  void methods_not_supported() {
+    SensorContext context = new InternalSensorContext();
 
     assertMethodNotSupported(() -> context.activeRules(), "InternalSensorContext::activeRules()");
     assertMethodNotSupported(() -> context.addContextProperty(null, null), "InternalSensorContext::addContextProperty(String,String)");
