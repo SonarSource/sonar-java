@@ -287,30 +287,30 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (isReturnTypeNotUnknown(tree) && !isGetter(tree) && !isAnnotationMethod(tree)) {
+      if (!isGetter(tree)) {
         shouldReport = true;
         hasMethodInvocation = true;
       }
     }
 
-    private static boolean isReturnTypeNotUnknown(MethodInvocationTree tree) {
-      return !tree.methodSymbol().returnType().isUnknown();
-    }
-
     private static boolean isGetter(MethodInvocationTree tree) {
+      if (isAnnotationMethod(tree)) {
+        return true;
+      }
+
       String methodName = tree.methodSymbol().name();
-      return methodName.startsWith("get") || methodName.startsWith("is") || isGetterMatchingFieldNameAndType(tree.methodSymbol());
+      return tree.methodSymbol().parameterTypes().isEmpty()
+        && (methodName.startsWith("get") || methodName.startsWith("is") || isGetterMatchingFieldNameAndType(tree.methodSymbol()));
     }
 
     private static boolean isGetterMatchingFieldNameAndType(Symbol.MethodSymbol methodSymbol) {
       Symbol owner = methodSymbol.owner();
       Type getterReturnType = methodSymbol.returnType().type();
-      return methodSymbol.parameterTypes().isEmpty()
-        // methodSymbol's owner is always not null and TypeSymbol
-        && ((Symbol.TypeSymbol) owner).memberSymbols()
-          .stream()
-          .filter(symbol -> symbol.isVariableSymbol() && symbol.type().equals(getterReturnType))
-          .anyMatch(symbol -> symbol.name().equals(methodSymbol.name()));
+      // methodSymbol's owner is always not null and TypeSymbol
+      return ((Symbol.TypeSymbol) owner).memberSymbols()
+        .stream()
+        .filter(symbol -> symbol.isVariableSymbol() && symbol.type().equals(getterReturnType))
+        .anyMatch(symbol -> symbol.name().equals(methodSymbol.name()));
     }
 
     private static boolean isAnnotationMethod(MethodInvocationTree tree) {

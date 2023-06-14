@@ -20,20 +20,20 @@ class LazyArgEvaluationCheck {
   public static final org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
 
   public static void recordFieldsAccessors() {
-    record Person(String name, int age) {
-      int age(int age) {
+    record Person(String name, String age) {
+      String age(String age) {
         return age;
       }
     }
 
-    Person person = new Person("John", 42);
-    logger.log(Level.SEVERE, "Something went wrong: " + person.name()); // Compliant - getters are OK
-    logger.log(Level.SEVERE, "Something went wrong: " + person.age()); // Compliant - getters are OK
-    logger.log(Level.SEVERE, "Something went wrong: " + person.age(12)); // Noncompliant - not a getter
+    Person person = new Person("John", "42");
+    logger.log(Level.SEVERE, "Something went wrong: " + person.name()); // false-negative getter has not the same logic than identifier
+    logger.log(Level.SEVERE, person.name()); // Compliant - getters are OK
+    logger.log(Level.SEVERE, person.age()); // Compliant - getters are OK
+    logger.log(Level.SEVERE, person.age("12")); // Noncompliant - not a getter
   }
 
   public static void main(String[] args) {
-    String csvPath = "";
     String message = "";
 
     logger.log(Level.SEVERE, message); // Compliant
@@ -52,6 +52,8 @@ class LazyArgEvaluationCheck {
   }
 
   public static void cachingOnDisk(File path) {
+    logger.severe("Caching on disk @ " + path.getAbsolutePath()); // false-negative getter has not the same logic than identifier
+    logger.severe("Caching on disk @ " + path.isAbsolute()); // false-negative getter has not the same logic than identifier
     slf4j.info("Caching on disk @ {}", path.getAbsolutePath()); // Compliant - getters are OK
     slf4j.info("Caching on disk @ {}", path.isAbsolute()); // Compliant - getters are OK
   }
@@ -73,7 +75,7 @@ class LazyArgEvaluationCheck {
   }
 
   public void multiArgs() {
-    checkState(System.currentTimeMillis() > 0, "message: %s %s", formatMessage(), "Something went wrong: " + System.currentTimeMillis());  // Noncompliant {{Invoke method(s) only conditionally. }}
+    checkState(System.currentTimeMillis() > 0, "message: %s %s", formatMessage(), "Something went wrong: " + System.currentTimeMillis());  // Noncompliant
   }
 
   private static String formatMessage() {
@@ -182,7 +184,7 @@ class AddTwoArguments {
 }
 
 class ConstantInlining {
-  Logger logger = LoggerFactory.getLogger(AddTwoArguments.class);
+  Logger logger = LoggerFactory.getLogger(ConstantInlining.class);
 
   static final String MY_CONST = "world";
   final String myField = "world";
