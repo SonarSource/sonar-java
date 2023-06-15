@@ -455,7 +455,7 @@ class Interruptable {
     try {
       getRuntimeExceptionThrowsInterruptedException();
       getRuntimeExceptionThrowsIOException();
-    } catch (InterruptedException | IOException e) { // Compliant - FP from S2142
+    } catch (InterruptedException | IOException e) { // Compliant - FP from SONARJAVA-4497
       doSomething();
       throw e;
     }
