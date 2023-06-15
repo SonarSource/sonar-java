@@ -22,19 +22,25 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class LazyArgEvaluationCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/LazyArgEvaluationCheck.java")
+      .onFile(mainCodeSourcesPath("checks/LazyArgEvaluationCheck.java"))
       .withCheck(new LazyArgEvaluationCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/LazyArgEvaluationCheck.java")
+      .onFile(nonCompilingTestSourcesPath("checks/LazyArgEvaluationCheck.java"))
       .withCheck(new LazyArgEvaluationCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
 }
