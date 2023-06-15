@@ -53,6 +53,14 @@ class InternalSensorContextTest {
     assertThat(context.project()).isNotNull();
     assertThat(context.project().isFile()).isFalse();
     assertThat(context.project().key()).isEqualTo("project");
+    assertThat(context.isCacheEnabled()).isFalse();
+    assertThat(context.previousCache()).isNull();
+    assertThat(context.nextCache()).isNull();
+  }
+
+  @Test
+  void methods_not_supported() {
+    SensorContext context = new InternalSensorContext();
 
     assertMethodNotSupported(() -> context.activeRules(), "InternalSensorContext::activeRules()");
     assertMethodNotSupported(() -> context.addContextProperty(null, null), "InternalSensorContext::addContextProperty(String,String)");
@@ -68,6 +76,7 @@ class InternalSensorContextTest {
     assertMethodNotSupported(() -> context.newSignificantCode(), "InternalSensorContext::newSignificantCode()");
     assertMethodNotSupported(() -> context.newSymbolTable(), "InternalSensorContext::newSymbolTable()");
     assertMethodNotSupported(() -> context.settings(), "InternalSensorContext::settings()");
+    assertMethodNotSupported(() -> context.markAsUnchanged(null), "InternalSensorContext::markAsUnchanged(InputFile)");
   }
 
   @Test

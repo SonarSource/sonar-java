@@ -42,7 +42,7 @@ public class JavaQuickFix {
   }
 
   /**
-   * See {@link org.sonarsource.sonarlint.plugin.api.issue.NewQuickFix#message(String) } for guidelines on format of the description.
+   * See {@link org.sonar.api.batch.sensor.issue.fix.NewQuickFix#message(String) } for guidelines on format of the description.
    *
    * @param description a description for this quick fix
    * @return the builder for this quick fix
@@ -52,7 +52,7 @@ public class JavaQuickFix {
   }
 
   /**
-   * See {@link org.sonarsource.sonarlint.plugin.api.issue.NewQuickFix#message(String) } for guidelines on format of the description.
+   * See {@link org.sonar.api.batch.sensor.issue.fix.NewQuickFix#message(String) } for guidelines on format of the description.
    *
    * @param description a description for this quick fix, following the {@link String#format(String, Object...)} formatting
    * @param args the arguments for the description

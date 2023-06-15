@@ -82,8 +82,8 @@
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
     <sonar.version>9.5.0.56709</sonar.version>
-    <sonar.plugin.api.version>9.8.0.203</sonar.plugin.api.version>
-    <sonarlint.plugin.api.version>6.3.0.36253</sonarlint.plugin.api.version>
+    <sonar.plugin.api.version>9.13.0.360</sonar.plugin.api.version>
+    <sonarlint.plugin.api.version>8.18.0.70939</sonarlint.plugin.api.version>
     <analyzer.commons.version>2.5.0.1358</analyzer.commons.version>
     <orchestrator.version>3.40.0.183</orchestrator.version>
     <sslr.version>1.24.0.633</sslr.version>

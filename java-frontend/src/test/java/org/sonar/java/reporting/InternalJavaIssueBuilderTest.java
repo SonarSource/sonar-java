@@ -21,13 +21,13 @@ package org.sonar.java.reporting;
 
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -46,6 +46,10 @@ import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.batch.sensor.issue.IssueLocation;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
+import org.sonar.api.batch.sensor.issue.fix.InputFileEdit;
+import org.sonar.api.batch.sensor.issue.fix.NewQuickFix;
+import org.sonar.api.batch.sensor.issue.fix.QuickFix;
+import org.sonar.api.batch.sensor.issue.fix.TextEdit;
 import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.LogTesterJUnit5;
@@ -58,13 +62,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.sonarlint.core.analyzer.issue.DefaultQuickFix;
-import org.sonarsource.sonarlint.core.analyzer.sensor.DefaultSonarLintIssue;
-import org.sonarsource.sonarlint.core.client.api.common.ClientInputFileEdit;
-import org.sonarsource.sonarlint.core.client.api.common.TextEdit;
-import org.sonarsource.sonarlint.core.container.analysis.filesystem.SonarLintInputFile;
-import org.sonarsource.sonarlint.plugin.api.issue.NewQuickFix;
-import org.sonarsource.sonarlint.plugin.api.issue.NewSonarLintIssue;
+import org.sonarsource.sonarlint.core.analysis.container.analysis.filesystem.SonarLintInputFile;
+import org.sonarsource.sonarlint.core.analysis.sonarapi.DefaultSonarLintIssue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -421,12 +420,12 @@ class InternalJavaIssueBuilderTest {
       MockSonarLintIssue issue = (MockSonarLintIssue) issues.iterator().next();
 
       assertThat(issue.saved).isTrue();
-      assertThat(issue.quickFixes).hasSize(1);
+      assertThat(issue.quickFixes()).hasSize(1);
 
-      DefaultQuickFix defaultQuickFix = issue.quickFixes.get(0);
+      QuickFix defaultQuickFix = issue.quickFixes().get(0);
       assertThat(defaultQuickFix.message()).isEqualTo("description");
 
-      List<ClientInputFileEdit> edits = defaultQuickFix.inputFileEdits();
+      List<InputFileEdit> edits = defaultQuickFix.inputFileEdits();
       assertThat(edits).hasSize(1);
 
       List<TextEdit> textEdits = edits.get(0).textEdits();
@@ -454,7 +453,7 @@ class InternalJavaIssueBuilderTest {
       MockSonarLintIssue issue = (MockSonarLintIssue) issues.iterator().next();
 
       assertThat(issue.saved).isTrue();
-      assertThat(issue.quickFixes).isEmpty();
+      assertThat(issue.quickFixes()).isEmpty();
 
       assertThat(logTester.logs()).hasSize(1);
       assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly("Could not report quick fixes for rule: test:key. java.lang.RuntimeException: Exception message");
@@ -471,7 +470,7 @@ class InternalJavaIssueBuilderTest {
       MockSonarLintIssue issue = (MockSonarLintIssue) issues.iterator().next();
 
       assertThat(issue.saved).isTrue();
-      assertThat(issue.quickFixes).isEmpty();
+      assertThat(issue.quickFixes()).isEmpty();
     }
 
     @Test
@@ -484,7 +483,7 @@ class InternalJavaIssueBuilderTest {
       MockSonarLintIssue issue = (MockSonarLintIssue) issues.iterator().next();
 
       assertThat(issue.saved).isTrue();
-      assertThat(issue.quickFixes).isEmpty();
+      assertThat(issue.quickFixes()).isEmpty();
       assertTrue(issue.isQuickFixAvailable());
     }
 
@@ -497,7 +496,7 @@ class InternalJavaIssueBuilderTest {
       MockSonarLintIssue issue = (MockSonarLintIssue) issues.iterator().next();
 
       assertThat(issue.saved).isTrue();
-      assertThat(issue.quickFixes).isEmpty();
+      assertThat(issue.quickFixes()).isEmpty();
       assertFalse(issue.isQuickFixAvailable());
     }
 
@@ -514,10 +513,9 @@ class InternalJavaIssueBuilderTest {
     }
   }
 
-  private static class MockSonarLintIssue implements NewIssue, NewSonarLintIssue, Issue {
+  private static class MockSonarLintIssue implements NewIssue, Issue {
     private final DefaultSonarLintIssue parent = new DefaultSonarLintIssue(null, null, null);
     private final SensorContextTester context;
-    private final List<DefaultQuickFix> quickFixes = new ArrayList<>();
     private boolean isQuickFixAvailable = false;
     private boolean saved;
 
@@ -526,14 +524,13 @@ class InternalJavaIssueBuilderTest {
     }
 
     @Override
-    public NewQuickFix newQuickFix() {
-      return parent.newQuickFix();
+    public NewIssue addQuickFix(org.sonar.api.batch.sensor.issue.fix.NewQuickFix newQuickFix) {
+      return parent.addQuickFix(newQuickFix);
     }
 
     @Override
-    public NewSonarLintIssue addQuickFix(NewQuickFix newQuickFix) {
-      quickFixes.add((DefaultQuickFix) newQuickFix);
-      return parent.addQuickFix(newQuickFix);
+    public NewQuickFix newQuickFix() {
+      return parent.newQuickFix();
     }
 
     @Override
@@ -573,6 +570,11 @@ class InternalJavaIssueBuilderTest {
     @Override
     public NewIssue addFlow(Iterable<NewIssueLocation> flowLocations) {
       throw new IllegalStateException("Not supposed to be tested");
+    }
+
+    @Override
+    public NewIssue addFlow(Iterable<NewIssueLocation> iterable, FlowType flowType, @Nullable String s) {
+      return null;
     }
 
     @Override
@@ -620,6 +622,11 @@ class InternalJavaIssueBuilderTest {
     @Override
     public Optional<String> ruleDescriptionContextKey() {
       return Optional.empty();
+    }
+
+    @Override
+    public List<QuickFix> quickFixes() {
+      return parent.quickFixes();
     }
 
     @Override
