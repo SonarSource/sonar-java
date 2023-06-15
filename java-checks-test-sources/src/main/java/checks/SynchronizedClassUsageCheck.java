@@ -10,6 +10,9 @@ import java.util.Stack; // Compliant
 import java.util.Vector; // Compliant
 
 public class SynchronizedClassUsageCheck {
+
+  public SynchronizedClassUsageCheck() {}
+
   interface IA {
     // Noncompliant@+2 {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
     // Noncompliant@+1 {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}

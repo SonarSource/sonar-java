@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +31,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 @Rule(key = "S1149")
 public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
@@ -131,9 +132,12 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethod(MethodTree tree) {
       TypeTree returnTypeTree = tree.returnType();
-      populateOverridingMethodExclusions(tree);
-      if (!isOverriding(tree) || returnTypeTree == null) {
-        if (returnTypeTree != null) {
+      boolean isConstructor = tree.is(Tree.Kind.CONSTRUCTOR);
+      if (isOverriding(tree) && !isConstructor) {
+        overridingMethodTypes.push(collectOverridingMethodExclusions(tree, returnTypeTree));
+      } else {
+        overridingMethodTypes.push(Collections.emptySet());
+        if (!isConstructor) {
           reportIssueOnDeprecatedType(returnTypeTree, returnTypeTree.symbolType());
         }
         scan(tree.parameters());
@@ -142,18 +146,13 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
       overridingMethodTypes.pop();
     }
 
-    void populateOverridingMethodExclusions(MethodTree methodTree) {
+    private Set<String> collectOverridingMethodExclusions(MethodTree methodTree, TypeTree returnType) {
       var methodTypes = new HashSet<String>();
-      if (isOverriding(methodTree)) {
-        if (methodTree.returnType() != null) {
-          methodTypes.add(methodTree.returnType().symbolType().fullyQualifiedName());
-        }
-        methodTree.parameters().stream()
-          .filter(param -> param.type() != null)
-          .map(param -> param.type().symbolType().fullyQualifiedName())
-          .forEach(methodTypes::add);
-      }
-      overridingMethodTypes.push(methodTypes);
+      methodTypes.add(returnType.symbolType().fullyQualifiedName());
+      methodTree.parameters().stream()
+        .map(param -> param.type().symbolType().fullyQualifiedName())
+        .forEach(methodTypes::add);
+      return methodTypes;
     }
 
     private boolean isOverriding(MethodTree tree) {
@@ -201,5 +200,6 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
       }
       return false;
     }
+
   }
 }
