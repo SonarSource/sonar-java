@@ -87,8 +87,14 @@ import static org.mockito.Mockito.when;
 @EnableRuleMigrationSupport
 class JavaFrontendTest {
 
-  public static final SonarRuntime SONARLINT_RUNTIME = SonarRuntimeImpl.forSonarLint(Version.create(6, 7));
-  public static final SonarRuntime SONARQUBE_RUNTIME = SonarRuntimeImpl.forSonarQube(Version.create(8, 9), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
+
+  // sonarlint.plugin.api.version
+  public static final Version LATEST_SONARLINT_API_VERSION = Version.create(8, 18);
+  public static final SonarRuntime SONARLINT_RUNTIME = SonarRuntimeImpl.forSonarLint(LATEST_SONARLINT_API_VERSION);
+
+  //
+  private static final Version LATESTS_SONAR_API_VERSION = Version.create(8, 13);
+  public static final SonarRuntime SONARQUBE_RUNTIME = SonarRuntimeImpl.forSonarQube(LATESTS_SONAR_API_VERSION, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
 
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
