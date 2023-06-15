@@ -157,7 +157,7 @@ public class InterruptedExceptionCheck {
       while (true) {
         // do stuff
       }
-    } catch (InterruptedException | java.io.IOException e) { // Compliant - FP from S2142
+    } catch (InterruptedException | java.io.IOException e) { // Compliant - FP from SONARJAVA-4497
       unknownField.log(Level.WARN, "Interrupted!", e);
       throw e;
     }
