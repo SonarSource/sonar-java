@@ -101,7 +101,7 @@ public class SpringFilter extends BaseTreeVisitorIssueFilter {
    * The knowledge of being in a SpringData context can not be inferred from only tokens; it needs to understand the interfaces that the owning class implements.
    *
    * As a consequence, in case of missing semantic (degraded environment), S100 (BadMethodNameCheck) will still raise issues on SpringData methods.
-   * These issues will considered FPs by the user, but can not be eliminated without introducing way too many FN for the rule.
+   * These issues will be considered FPs by the user, but can not be eliminated without introducing way too many FN for the rule.
    *
    * @param symbol the symbol of the method under analysis
    * @return true if the method is understood as being a repository property expression, containing an underscore character in the middle of its name. Returns false otherwise.
