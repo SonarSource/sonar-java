@@ -1,22 +1,17 @@
 <h2>Why is this an issue?</h2>
-<p><code>InterruptedExceptions</code> should never be ignored in the code, and simply logging the exception counts in this case as "ignoring". The
-throwing of the <code>InterruptedException</code> clears the interrupted state of the Thread, so if the exception is not handled properly the
-information that the thread was interrupted will be lost. Instead, <code>InterruptedExceptions</code> should either be rethrown - immediately or after
-cleaning up the method’s state - or the thread should be re-interrupted by calling <code>Thread.interrupt()</code> even if this is supposed to be a
-single-threaded application. Any other course of action risks delaying thread shutdown and loses the information that the thread was interrupted -
+<p>If an <code>InterruptedException</code> or a <code>ThreadDeath</code> error is not handled properly, the information that the thread was
+interrupted will be lost. Handling this exception means either to re-throw it or manually re-interrupt the current thread by calling
+<code>Thread.interrupt()</code>. Simply logging the exception is not sufficient and counts as ignoring it. Between the moment the exception is caught
+and handled, is the right time to perform cleanup operations on the method’s state, if needed.</p>
+<h3>What is the potential impact?</h3>
+<p>Failing to interrupt the thread (or to re-throw) risks delaying the thread shutdown and losing the information that the thread was interrupted -
 probably without finishing its task.</p>
-<p>Similarly, the <code>ThreadDeath</code> exception should also be propagated. According to its JavaDoc:</p>
-<blockquote>
-  <p>If <code>ThreadDeath</code> is caught by a method, it is important that it be rethrown so that the thread actually dies.</p>
-</blockquote>
 <h3>Noncompliant code example</h3>
 <pre>
 public void run () {
   try {
-    while (true) {
-      // do stuff
-    }
-  }catch (InterruptedException e) { // Noncompliant; logging is not enough
+    /*...*/
+  } catch (InterruptedException e) { // Noncompliant; logging is not enough
     LOGGER.log(Level.WARN, "Interrupted!", e);
   }
 }
@@ -25,13 +20,21 @@ public void run () {
 <pre>
 public void run () {
   try {
-    while (true) {
-      // do stuff
-    }
-  }catch (InterruptedException e) {
+    /* ... */
+  } catch (InterruptedException e) { // Compliant; the interrupted state is restored
     LOGGER.log(Level.WARN, "Interrupted!", e);
-    // Restore interrupted state...
+    /* Clean up whatever needs to be handled before interrupting  */
     Thread.currentThread().interrupt();
+  }
+}
+
+public void run () {
+  try {
+    /* ... */
+  } catch (ThreadDeath e) { // Compliant; the error is being re-thrown
+    LOGGER.log(Level.WARN, "Interrupted!", e);
+    /* Clean up whatever needs to be handled before re-throwing  */
+    throw e;
   }
 }
 </pre>

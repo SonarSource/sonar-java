@@ -1,42 +1,109 @@
+<p>This rule raises an issue when a class overrides the <code>Object.clone</code> method instead of resorting to a copy constructor or other copy
+mechanisms.</p>
 <h2>Why is this an issue?</h2>
-<p>Many consider <code>clone</code> and <code>Cloneable</code> broken in Java, largely because the rules for overriding <code>clone</code> are tricky
-and difficult to get right, according to Joshua Bloch:</p>
-<blockquote>
-  <p>Object’s clone method is very tricky. It’s based on field copies, and it’s "extra-linguistic." It creates an object without calling a
-  constructor. There are no guarantees that it preserves the invariants established by the constructors. There have been lots of bugs over the years,
-  both in and outside Sun, stemming from the fact that if you just call super.clone repeatedly up the chain until you have cloned an object, you have
-  a shallow copy of the object. The clone generally shares state with the object being cloned. If that state is mutable, you don’t have two
-  independent objects. If you modify one, the other changes as well. And all of a sudden, you get random behavior.</p>
-</blockquote>
-<p>A copy constructor or copy factory should be used instead.</p>
-<p>This rule raises an issue when <code>clone</code> is overridden, whether or not <code>Cloneable</code> is implemented.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public class MyClass {
-  // ...
+<p>The <code>Object.clone</code> / <code>java.lang.Cloneable</code> mechanism in Java should be considered broken for the following reasons and
+should, consequently, not be used:</p>
+<ul>
+  <li> <code>Cloneable</code> is a <em>marker interface</em> without API but with a contract about class behavior that the compiler cannot enforce.
+  This is a bad practice. </li>
+  <li> Classes are instantiated without calling their constructor, so possible preconditions cannot be enforced. </li>
+  <li> There are implementation flaws by design when overriding <code>Object.clone</code>, like type casts or the handling of
+  <code>CloneNotSupportedException</code> exceptions. </li>
+</ul>
+<h2>How to fix it</h2>
+<p>A copy constructor, copy factory or a custom copy function are suitable alternatives to the <code>Object.clone</code> /
+<code>java.lang.Cloneable</code> mechanism.</p>
+<p>Consider the following example:</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class Entity implements Cloneable { // Noncompliant, using `Cloneable`
 
-  public Object clone() { // Noncompliant
-    //...
+  public int value;
+  public List&lt;Entity&gt; children; // deep copy wanted
+
+  Entity() {
+    EntityManager.register(this); // invariant
+  }
+
+  @Override
+  public Entity clone() {
+    try {
+      Entity copy = (Entity) super.clone(); // invariant not enforced, because no constructor is caled
+      copy.children = children.stream().map(Entity::clone).toList();
+      return copy;
+    } catch (CloneNotSupportedException e) { // this will not happen due to behavioral contract
+      throw new AssertionError();
+    }
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-public class MyClass {
-  // ...
+<p>The <code>Cloneable</code> / <code>Object.clone</code> mechanism could easily be replaced by copy constructor:</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Entity { // Compliant
 
-  MyClass (MyClass source) {
-    //...
+  public int value;
+  public List&lt;Entity&gt; children; // deep copy wanted
+
+  Entity() {
+    EntityManager.register(this); // invariant
+  }
+
+  Entity(Entity template) {
+    value = template.value;
+    children = template.children.stream().map(Entity::new).toList();
+  }
+}
+</pre>
+<p>Or by a factory method:</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Entity { // Compliant
+
+  public int value;
+  public List&lt;Entity&gt; children; // deep copy wanted
+
+  Entity() {
+    EntityManager.register(this); // invariant
+  }
+
+  public static Entity create(Entity template) {
+    Entity entity = new Entity();
+    entity.value = template.value;
+    entity.children = template.children.stream().map(Entity::new).toList();
+    return Entity;
+  }
+}
+</pre>
+<p>Or by a custom <code>copy</code> function:</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Entity { // Compliant
+
+  public int value;
+  public List&lt;Entity&gt; children; // deep copy wanted
+
+  Entity() {
+    EntityManager.register(this); // invariant
+  }
+
+  public Entity copy() {
+    Entity entity = new Entity();
+    entity.value = value;
+    entity.children = children.stream().map(Entity::new).toList();
+    return Entity;
   }
 }
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li> <a href="https://www.artima.com/intv/bloch13.html">Copy Constructor versus Cloning</a> </li>
+  <li> <a href="https://www.artima.com/intv/bloch13.html">Joshua Bloch - Copy Constructor versus Cloning</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Cloneable.html">Interface Cloneable - Java™ Platform, Standard Edition 8 API
+  Specification</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#clone--">Object.clone - Java™ Platform, Standard Edition 8 API
+  Specification</a> </li>
 </ul>
 <h3>Related rules</h3>
 <ul>
-  <li> {rule:java:S2157} - "Cloneables" should implement "clone" </li>
-  <li> {rule:java:S1182} - Classes that override "clone" should be "Cloneable" and call "super.clone()" </li>
+  <li> <a href="https://sonarsource.github.io/rspec/#/rspec/{rule:java:S2157}">{rule:java:S2157} - "Cloneables" should implement "clone"</a> </li>
+  <li> <a href="https://sonarsource.github.io/rspec/#/rspec/{rule:java:S1182}">{rule:java:S1182} - Classes that override "clone" should be "Cloneable"
+  and call "super.clone()"</a> </li>
 </ul>
 

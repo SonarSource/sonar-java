@@ -1,10 +1,19 @@
 <h2>Why is this an issue?</h2>
-<p>Classes in the <code>sun.*</code> packages are considered implementation details, and are not part of the Java API.</p>
-<p>They can cause problems when moving to new versions of Java because there is no backwards compatibility guarantee. Similarly, they can cause
-problems when moving to a different Java vendor, such as OpenJDK.</p>
-<p>Such classes are almost always wrapped by Java API classes that should be used instead.</p>
+<p>The classes in the <code>sun.*</code> packages are not part of the official Java API and are not intended for public use. They are internal
+implementation details specific to the Oracle JDK (Java Development Kit). Therefore, their availability, behavior, or compatibility is not guaranteed
+across different Java implementations or versions.</p>
+<p>Since these classes are not part of the official Java API, they usually lack proper documentation and support. Finding comprehensive and up-to-date
+information about their usage, functionality, and potential limitations can be challenging. This lack of documentation can make it difficult to
+understand how to use these classes correctly.</p>
+<p>Classes in the <code>sun.*</code> packages are often platform-dependent and can vary between different operating systems or Java Virtual Machine
+(JVM) implementations. Relying on these classes may lead to code that works on one platform but fails on others, limiting your code’s portability and
+cross-platform compatibility.</p>
 <h3>Noncompliant code example</h3>
 <pre>
 import sun.misc.BASE64Encoder; // Noncompliant
 </pre>
+<h2>Documentation</h2>
+<ul>
+  <li> <a href="https://www.oracle.com/java/technologies/faq-sun-packages.html">Sun Packages</a> </li>
+</ul>
 

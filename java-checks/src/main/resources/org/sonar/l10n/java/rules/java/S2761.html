@@ -1,30 +1,31 @@
 <h2>Why is this an issue?</h2>
-<p>The needless repetition of an operator is usually a typo. There is no reason to write <code>!!!i</code> when <code>!i</code> will do.</p>
-<p>On the other hand, the repetition of increment and decrement operators may have been done on purpose, but doing so obfuscates the meaning, and
-should be simplified.</p>
-<p>This rule raises an issue for sequences of: <code>!</code>, <code>~</code>, <code>-</code>, and <code>+</code>.</p>
-<h3>Noncompliant code example</h3>
+<p>The repetition of a unary operator is usually a typo. The second operator invalidates the first one in most cases:</p>
 <pre>
 int i = 1;
 
-int j = - - -i;  // Noncompliant; just use -i
-int k = ~~~i;    // Noncompliant; same as i
-int m = + +i;    // Noncompliant; operators are useless here
+int j = - - -i;  // Noncompliant: equivalent to "-i"
+int k = ~~~i;    // Noncompliant: equivalent to "~i"
+int m = + +i;    // Noncompliant: equivalent to "i"
 
 boolean b = false;
 boolean c = !!!b;   // Noncompliant
 </pre>
-<h3>Compliant solution</h3>
+<p>On the other hand, while repeating the increment and decrement operators is technically correct, it obfuscates the meaning:</p>
 <pre>
-int i =  1;
-
-int j = -i;
-int k = ~i;
-int m =  i;
-
-boolean b = false;
-boolean c = !b;
+int i = 1;
+int j = ++ ++i;  // Noncompliant
+int k = i-- --; // Noncompliant
 </pre>
+<p>Using <code>+=</code> or <code>-=</code> improves readability:</p>
+<pre>
+int i = 1;
+i += 2;
+int j = i;
+int k = i;
+i -=2;
+</pre>
+<p>This rule raises an issue for repetitions of <code>!</code>, <code>~</code>, <code>-</code>, <code>+</code>, prefix increments <code>++</code> and
+prefix decrements <code>--</code>.</p>
 <h3>Exceptions</h3>
 <p>Overflow handling for GWT compilation using <code>~~</code> is ignored.</p>
 

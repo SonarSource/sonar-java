@@ -1,14 +1,36 @@
+<p>This rule raises an issue when a lambda expression uses block notation while expression notation could be used.</p>
 <h2>Why is this an issue?</h2>
-<p>There are two ways to write lambdas that contain single statement, but one is definitely more compact and readable than the other.</p>
-<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-x -&gt; {System.out.println(x+1);}
-(a, b) -&gt; { return a+b; }
+<p>The right-hand side of a lambda expression can be written in two ways:</p>
+<ol>
+  <li> Expression notation: the right-hand side is as an expression, such as in <code>(a, b) → a + b</code> </li>
+  <li> Block notation: the right-hand side is a conventional function body with a code block and an optional return statement, such as in <code>(a, b)
+  → {return a + b;}</code> </li>
+</ol>
+<p>By convention, expression notation is preferred over block notation. Block notation must be used when the function implementation requires more
+than one statement. However, when the code block consists of only one statement (which may or may not be a <code>return</code> statement), it can be
+rewritten using expression notation.</p>
+<p>This convention exists because expression notation has a cleaner, more concise, functional programming style and is regarded as more readable.</p>
+<h2>How to fix it</h2>
+<ul>
+  <li> If the code block consists only of a <code>return</code> statement, replace the code block with the argument expression from the
+  <code>return</code> statement. </li>
+  <li> If the code block consists of a single statement that is not a <code>return</code> statement, replace the code block with that statement. </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+(a, b) -&gt; { return a + b; } // Noncompliant, replace code block with expression
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-x -&gt; System.out.println(x+1)
-(a, b) -&gt; a+b    //For return statement, the return keyword should also be dropped
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+(a, b) -&gt; a + b             // Compliant
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+x -&gt; {System.out.println(x+1);} // Noncompliant, replace code block with statement
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+x -&gt; System.out.println(x+1)    // Compliant
 </pre>
 

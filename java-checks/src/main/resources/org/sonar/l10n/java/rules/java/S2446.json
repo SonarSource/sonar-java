@@ -1,5 +1,5 @@
 {
-  "title": "\"notifyAll\" should be used",
+  "title": "\"notifyAll()\" should be preferred over \"notify()\"",
   "type": "BUG",
   "status": "ready",
   "remediation": {

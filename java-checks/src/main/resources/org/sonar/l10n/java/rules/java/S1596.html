@@ -1,17 +1,45 @@
+<p>This rule raises an issue when the <code>Collections.EMPTY_*</code> fields are used instead of the <code>Collections.empty*()</code> methods.</p>
 <h2>Why is this an issue?</h2>
-<p>Since the introduction of generics in Java 5, the use of generic types such as <code>List&lt;String&gt;</code> is recommended over the use of raw
-ones such as <code>List</code>. Assigning a raw type to a generic one is not type safe, and will generate a warning. The old <code>EMPTY_...</code>
-fields of the <code>Collections</code> class return raw types, whereas the newer <code>empty...()</code> methods return generic ones.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-List&lt;String&gt; collection1 = Collections.EMPTY_LIST;  // Noncompliant
-Map&lt;String, String&gt; collection2 = Collections.EMPTY_MAP;  // Noncompliant
-Set&lt;String&gt; collection3 = Collections.EMPTY_SET;  // Noncompliant
+<p>Generic types (types with type parameters) have been introduced into Java with language version 1.5. If type parameters are specified for a class
+or method, it is still possible to ignore them to keep backward compatibility with older code, which is called the <em>raw type</em> of the class or
+interface.</p>
+<p>Using raw type expressions is highly discouraged because the compiler cannot perform static type checking on them. This means that the compiler
+will not report typing errors about them at compile time, but a <code>ClassCastException</code> will be thrown during runtime.</p>
+<p>In Java 1.5, generics were also added to the Java collections API, and the data structures in <code>java.util</code>, such as <code>List</code>,
+<code>Set</code>, or <code>Map</code>, now feature type parameters. <code>Collections.EMPTY_LIST</code>, <code>Collections.EMPTY_SET</code>, and
+<code>Collections.EMPTY_MAP</code> are relics from before generics, and they return raw lists, sets, or maps, with the limitations mentioned
+above.</p>
+<h2>How to fix it</h2>
+<p>Use:</p>
+<ul>
+  <li> <code>Collections.emptyList()</code> instead of <code>Collections.EMPTY_LIST</code> </li>
+  <li> <code>Collections.emptySet()</code> instead of <code>Collections.EMPTY_SET</code> </li>
+  <li> <code>Collections.emptyMap()</code> instead of <code>Collections.EMPTY_MAP</code> </li>
+</ul>
+<p>In addition, there are variants of <code>Collections.empty*()</code> available also for other collection interfaces, such as
+<code>Collections.emptyIterator()</code>, <code>Collections.emptyNavigableMap()</code>, <code>Collections.emptySortedSet()</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+List&lt;String&gt; collection1 = Collections.EMPTY_LIST;     // Noncompliant, raw List
+Set&lt;Float&gt; collection2 = Collections.EMPTY_SET;        // Noncompliant, raw Set
+Map&lt;Int, String&gt; collection3 = Collections.EMPTY_MAP;  // Noncompliant, raw Map
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-List&lt;String&gt; collection1 = Collections.emptyList();
-Map&lt;String, String&gt; collection2 = Collections.emptyMap();
-Set&lt;String&gt; collection3 = Collections.emptySet();
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+List&lt;String&gt; collection1 = Collections.emptyList();    // Compliant, List&lt;String&gt;
+Set&lt;Float&gt; collection2 = Collections.emptySet();       // Compliant, Set&lt;Float&gt;
+Map&lt;Int, String&gt; collection3 = Collections.emptyMap(); // Compliant, Map&lt;Int, String&gt;
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html">Oracle - Java™ Platform, Standard Edition 8 API Specification,
+  Class Collections</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/generics/rawTypes.html">Oracle - The Java™ Tutorials - Raw Types</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/java-generics">Baeldung - The Basics of Java Generics</a> </li>
+</ul>
 

@@ -1,5 +1,5 @@
 {
-  "title": "\"\u003d+\" should not be used instead of \"+\u003d\"",
+  "title": "Non-existent operators like \"\u003d+\" should not be used",
   "type": "BUG",
   "status": "ready",
   "remediation": {

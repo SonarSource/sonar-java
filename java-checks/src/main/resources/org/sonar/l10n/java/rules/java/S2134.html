@@ -1,30 +1,50 @@
 <h2>Why is this an issue?</h2>
-<p>According to the Java API documentation:</p>
-<blockquote>
-  <p>There are two ways to create a new thread of execution. One is to declare a class to be a subclass of Thread. This subclass should override the
-  run method of class Thread. An instance of the subclass can then be allocated and started…​</p>
-  <p>The other way to create a thread is to declare a class that implements the Runnable interface. That class then implements the run method. An
-  instance of the class can then be allocated, passed as an argument when creating Thread, and started.</p>
-</blockquote>
-<p>By definition, extending the Thread class without overriding the <code>run</code> method doesn’t make sense, and implies that the contract of the
-<code>Thread</code> class is not well understood.</p>
+<p>The default implementation of <code>java.lang.Thread</code> 's <code>run</code> will only perform a task passed as a <code>Runnable</code>. If no
+<code>Runnable</code> has been provided at construction time, then the thread will not perform any action.</p>
+<p>When extending <code>java.lang.Thread</code>, you should override the <code>run</code> method or pass a <code>Runnable</code> target to the
+constructor of <code>java.lang.Thread</code>.</p>
 <h3>Noncompliant code example</h3>
 <pre>
-public class MyRunner extends Thread { // Noncompliant; run method not overridden
-
-  public void doSometing() {...}
+public class MyThread extends Thread { // Noncompliant
+  public void doSomething() {
+    System.out.println("Hello, World!");
+  }
 }
 </pre>
-<h3>Exceptions</h3>
-<p>If <code>run()</code> is not overridden in a class extending <code>Thread</code>, it means that starting the thread will actually call
-<code>Thread.run()</code>. However, <code>Thread.run()</code> does nothing if it has not been fed with a target <code>Runnable</code>. The rule
-consequently ignore classes extending <code>Thread</code> if they are calling, in their constructors, the <code>super(...)</code> constructor with a
-proper <code>Runnable</code> target.</p>
+<h2>How to fix it</h2>
+<p>To fix this issue, you have 2 options:</p>
+<ul>
+  <li> override the <code>run</code> method </li>
+</ul>
 <pre>
-class MyThread extends Thread { // Compliant - calling super constructor with a Runnable
-  MyThread(Runnable target) {
-    super(target); // calling super constructor with a Runnable, which will be used for when Thread.run() is executed
-    // ...
+public class MyThread extends Thread {
+  @Override
+  public void run() {
+    System.out.println("Hello, World!");
+  }
+}
+</pre>
+<ul>
+  <li> provide a <code>Runnable</code> at construction time </li>
+</ul>
+<pre>
+public class MyRunnable implements Runnable {
+  @Override
+  public void run() {
+    System.out.println("Hello, World!");
+  }
+}
+public class MyThread extends Thread {
+  public MyThread(Runnable runnable) {
+    super(runnable);
+  }
+}
+
+public class Main() {
+  public static void main(String [] args) {
+    Runnable runnable = new MyRunnable();
+    Thread customThread = new MyThread(runnable);
+    Thread regularThread = new Thread(runnable);
   }
 }
 </pre>

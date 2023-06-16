@@ -1,19 +1,57 @@
 <h2>Why is this an issue?</h2>
-<p>Calling <code>Iterator.hasNext()</code> is not supposed to have any side effects, and therefore should not change the state of the iterator.
-<code>Iterator.next()</code> advances the iterator by one item. So calling it inside <code>Iterator.hasNext()</code>, breaks the
-<code>hasNext()</code> contract, and will lead to unexpected behavior in production.</p>
+<p>Calling <code>Iterator.hasNext()</code> is not supposed to have any side effects and hence should not change the iterator’s state.
+<code>Iterator.next()</code> advances the iterator by one item. So calling it inside <code>Iterator.hasNext()</code> breaks the <code>hasNext()</code>
+contract and will lead to unexpected behavior in production.</p>
+<h2>How to fix it</h2>
+<p>How to fix this issue strongly depends on the specific implementation of the iterator. Make sure that the logic of the <code>hasNext()</code>
+implementation does not change the state of the iterator or any underlying data sources. Instead, it should merely return state information.</p>
+<h2>Code examples</h2>
 <h3>Noncompliant code example</h3>
-<pre>
-public class FibonacciIterator implements Iterator&lt;Integer&gt;{
-...
-@Override
-public boolean hasNext() {
-  if(next() != null) {
-    return true;
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class MyIterator implements Iterator&lt;Integer&gt; {
+
+  private Queue&lt;Integer&gt; elements;
+
+    ...
+
+  @Override
+  public boolean hasNext() {
+    try {
+      next(); // Noncompliant, next() is called from hasNext()
+      return true;
+    } catch (NoSuchElementException e) {
+      return false;
+    }
   }
-  return false;
-}
-...
+
+  @Override
+  public Integer next() {
+    return elements.remove();
+  }
 }
 </pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+class MyIterator implements Iterator&lt;Integer&gt; {
+
+  private Queue&lt;Integer&gt; elements;
+
+    ...
+
+  @Override
+  public boolean hasNext() {
+    return !elements.isEmpty(); // Compliant, no call to next()
+  }
+
+  @Override
+  public Integer next() {
+    return elements.remove();
+  }
+}
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html">Interface Iterator&lt;E&gt; - Java® Platform SE
+  11 API Specification</a> </li>
+</ul>
 

@@ -1,5 +1,5 @@
 {
-  "title": "Maps with keys that are enum values should be replaced with EnumMap",
+  "title": "Maps with keys that are enum values should use the EnumMap implementation",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

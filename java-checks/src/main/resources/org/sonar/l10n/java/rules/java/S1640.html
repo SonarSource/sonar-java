@@ -1,30 +1,25 @@
 <h2>Why is this an issue?</h2>
-<p>When all the keys of a Map are values from the same enum, the <code>Map</code> can be replaced with an <code>EnumMap</code>, which can be much more
-efficient than other sets because the underlying data structure is a simple array.</p>
+<p>If all the keys in a <code>Map</code> are values from a single enum, it is recommended to use an <code>EnumMap</code> as the specific
+implementation. An <code>EnumMap</code>, which has the advantage of knowing all possible keys in advance, is more efficient compared to other
+implementations, as it can use a simple array as its underlying data structure.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-public class MyClass {
-
-  public enum COLOR {
-    RED, GREEN, BLUE, ORANGE;
-  }
-
-  public void mapMood() {
-    Map&lt;COLOR, String&gt; moodMap = new HashMap&lt;COLOR, String&gt; ();
-  }
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public enum Color {
+  RED, GREEN, BLUE, ORANGE;
 }
+
+Map&lt;Color, String&gt; colorMap = new HashMap&lt;&gt;(); // Noncompliant
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-public class MyClass {
-
-  public enum COLOR {
-    RED, GREEN, BLUE, ORANGE;
-  }
-
-  public void mapMood() {
-    EnumMap&lt;COLOR, String&gt; moodMap = new EnumMap&lt;&gt; (COLOR.class);
-  }
+<pre data-diff-id="1" data-diff-type="compliant">
+public enum Color {
+  RED, GREEN, BLUE, ORANGE;
 }
+
+Map&lt;Color, String&gt; colorMap = new EnumMap&lt;&gt;(Color.class); // Compliant
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://www.baeldung.com/java-enum-map">A Guide to EnumMap - Baeldung</a> </li>
+</ul>
 

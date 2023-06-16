@@ -1,7 +1,15 @@
 <h2>Why is this an issue?</h2>
-<p>Multiple catch blocks of the appropriate type should be used instead of catching a general exception, and then testing on the type.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>A <code>try-catch</code> block is used to handle exceptions or errors that may occur during the execution of a block of code. It allows you to
+catch and handle exceptions gracefully, preventing your program from terminating abruptly.</p>
+<p>The code that may throw an exception is enclosed within the <code>try</code> block, while each <code>catch</code> block specifies the type of
+exception it can handle. The corresponding catch block is executed if the exception matches the type specified in any catch block. It is unnecessary
+to manually check the types using <code>instanceof</code> because Java automatically matches the exception type to the appropriate catch block based
+on the declared exception type in the catch clauses.</p>
+<h2>How to fix it</h2>
+<p>Replace <code>if</code> statements that check the exception type using <code>instaceof</code> with corresponding <code>catch</code> blocks.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 try {
   /* ... */
 } catch (Exception e) {
@@ -9,8 +17,8 @@ try {
   if(e instanceof NullPointerException{ /* ... */ }  // Noncompliant
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 try {
   /* ... */
 } catch (IOException e) { /* ... */ }                // Compliant
@@ -20,5 +28,6 @@ try {
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR51-J.+Prefer+user-defined+exceptions+over+more+general+exception+types">CERT,
   ERR51-J.</a> - Prefer user-defined exceptions over more general exception types </li>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/essential/exceptions/catch.html">Oracle - Exceptions</a> </li>
 </ul>
 

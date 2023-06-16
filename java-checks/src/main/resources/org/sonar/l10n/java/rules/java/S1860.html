@@ -1,22 +1,29 @@
 <h2>Why is this an issue?</h2>
-<p>Objects which are pooled and potentially reused should not be used for synchronization. If they are, it can cause unrelated threads to deadlock
-with unhelpful stacktraces. Specifically, <code>String</code> literals, and boxed primitives such as Integers should not be used as lock objects
-because they are pooled and reused. The story is even worse for <code>Boolean</code> objects, because there could possibly be only two instances of
-<code>Boolean</code>, <code>Boolean.TRUE</code> and <code>Boolean.FALSE</code> and every class that uses a Boolean will be referring to one of the
-two.</p>
-<p>Here is the list of types which shouldn’t be used for synchronization:</p>
+<p>Instances of value-based classes, which are pooled and potentially reused, should not be used for synchronization. If they are, it can cause
+unrelated threads to deadlock with unhelpful stacktraces.</p>
+<p>Within the JDK, types which should not be used for synchronization include:</p>
 <ul>
-  <li> The primitive wrapper classes in java.lang; </li>
-  <li> The class java.lang.Runtime.Version; </li>
-  <li> The "optional" classes in java.util: Optional, OptionalInt, OptionalLong, and OptionalDouble; </li>
-  <li> Many classes in the java.time API: Instant, LocalDate, LocalTime, LocalDateTime, ZonedDateTime, ZoneId, OffsetTime, OffsetDateTime, ZoneOffset,
-  Duration, Period, Year, YearMonth, and MonthDay, and, in java.time.chrono: MinguoDate, HijrahDate, JapaneseDate, and ThaiBuddhistDate; </li>
-  <li> The interface java.lang.ProcessHandle and its implementation classes; </li>
-  <li> The implementation classes of the collection factories in java.util: List.of, List.copyOf, Set.of, Set.copyOf, Map.of, Map.copyOf,
-  Map.ofEntries, and Map.entry. </li>
+  <li> <code>String</code> literals </li>
+  <li> Primitive wrapper classes in <code>java.lang</code> (such as <code>Boolean</code> with <code>Boolean.FALSE</code> and
+  <code>Boolean.TRUE</code>) </li>
+  <li> The class <code>java.lang.Runtime.Version</code> </li>
+  <li> The <code>Optional*</code> classes in <code>java.util</code>: <code>Optional</code>, <code>OptionalInt</code>, <code>OptionalLong</code>, and
+  <code>OptionalDouble</code> </li>
+  <li> Various classes in the <code>java.time</code> API: <code>Instant</code>, <code>LocalDate</code>, <code>LocalTime</code>,
+  <code>LocalDateTime</code>, <code>ZonedDateTime</code>, <code>ZoneId</code>, <code>OffsetTime</code>, <code>OffsetDateTime</code>,
+  <code>ZoneOffset</code>, <code>Duration</code>, <code>Period</code>, <code>Year</code>, <code>YearMonth</code>, and <code>MonthDay</code> </li>
+  <li> Various classes in the <code>java.time.chrono</code> API: <code>MinguoDate</code>, <code>HijrahDate</code>, <code>JapaneseDate</code>, and
+  <code>ThaiBuddhistDate</code> </li>
+  <li> The interface <code>java.lang.ProcessHandle</code> and its implementation classes </li>
+  <li> The implementation classes of the collection factories in <code>java.util</code>: <code>List.of</code>, <code>List.copyOf</code>,
+  <code>Set.of</code>, <code>Set.copyOf</code>, <code>Map.of</code>, <code>Map.copyOf</code>, <code>Map.ofEntries</code>, and <code>Map.entry</code>.
+  </li>
 </ul>
+<h2>How to fix it</h2>
+<p>Replace instances of value-based classes with a new object instance to synchronize on.</p>
+<h2>Code examples</h2>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 private static final Boolean bLock = Boolean.FALSE;
 private static final Integer iLock = Integer.valueOf(0);
 private static final String sLock = "LOCK";
@@ -25,20 +32,20 @@ private static final List&lt;String&gt; listLock = List.of("a", "b", "c", "d");
 public void doSomething() {
 
   synchronized(bLock) {  // Noncompliant
-    // ...
+      ...
   }
   synchronized(iLock) {  // Noncompliant
-    // ...
+      ...
   }
   synchronized(sLock) {  // Noncompliant
-    // ...
+      ...
   }
   synchronized(listLock) {  // Noncompliant
-    // ...
+      ...
   }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 private static final Object lock1 = new Object();
 private static final Object lock2 = new Object();
 private static final Object lock3 = new Object();
@@ -46,22 +53,24 @@ private static final Object lock4 = new Object();
 
 public void doSomething() {
 
-  synchronized(lock1) {
-    // ...
+  synchronized(lock1) { // Compliant
+      ...
   }
-  synchronized(lock2) {
-    // ...
+  synchronized(lock2) { // Compliant
+      ...
   }
-  synchronized(lock3) {
-    // ...
+  synchronized(lock3) { // Compliant
+      ...
   }
-  synchronized(lock4) {
-    // ...
+  synchronized(lock4) { // Compliant
+      ...
   }
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/1zdGBQ">CERT, LCK01-J.</a> - Do not synchronize on objects that may be reused </li>
-  <li> <a href="https://openjdk.java.net/jeps/390">JEP-390.</a> - JEP 390: Warnings for Value-Based Classes </li>
+  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/1zdGBQ">Do not synchronize on objects that may be reused - CERT, LCK01-J.</a> </li>
+  <li> <a href="https://openjdk.java.net/jeps/390">JEP 390: Warnings for Value-Based Classes - OpenJDK</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/doc-files/ValueBased.html">Value-based Classes - Java SE 17 API
+  Documentation</a> </li>
 </ul>
 

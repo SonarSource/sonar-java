@@ -1,5 +1,5 @@
 {
-  "title": "Parentheses should be removed from a single lambda input parameter when its type is inferred",
+  "title": "Parentheses should be removed from a single lambda parameter when its type is inferred",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

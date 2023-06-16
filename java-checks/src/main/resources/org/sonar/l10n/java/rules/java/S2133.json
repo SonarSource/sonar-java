@@ -1,5 +1,5 @@
 {
-  "title": "Objects should not be created only to \"getClass\"",
+  "title": "Objects should not be created only to invoke \"getClass\"",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -13,5 +13,5 @@
   "ruleSpecification": "RSPEC-2133",
   "sqKey": "S2133",
   "scope": "All",
-  "quickfix": "unknown"
+  "quickfix": "targeted"
 }

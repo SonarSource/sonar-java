@@ -1,19 +1,20 @@
 <h2>Why is this an issue?</h2>
-<p>From the official Oracle Javadoc:</p>
-<blockquote>
-  <p>NOTE: The functionality of this Enumeration interface is duplicated by the Iterator interface. In addition, Iterator adds an optional remove
-  operation, and has shorter method names. New implementations should consider using Iterator in preference to Enumeration.</p>
-</blockquote>
+<p>As documented in <code>Enumeration</code> 's Javadoc, you should favor the <code>Iterator</code> interface over <code>Enumeration</code>.
+<code>Iterator</code> offers a similar contract to <code>Enumeration</code> with the addition of a method for removal and shorter method names.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-public class MyClass implements Enumeration {  // Non-Compliant
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class MyClass implements Enumeration {  // Noncompliant
   /* ... */
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class MyClass implements Iterator {     // Compliant
   /* ... */
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Enumeration.html">docs.oracle.com</a> - Enumeration </li>
+</ul>
 

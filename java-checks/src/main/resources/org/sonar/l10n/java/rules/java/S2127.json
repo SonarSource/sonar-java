@@ -1,5 +1,5 @@
 {
-  "title": "\"Double.longBitsToDouble\" should not be used for \"int\"",
+  "title": "\"Double.longBitsToDouble\" should take \"long\" as argument",
   "type": "BUG",
   "status": "ready",
   "remediation": {

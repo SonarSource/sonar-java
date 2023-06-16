@@ -1,5 +1,5 @@
 {
-  "title": "Silly String operations should not be made",
+  "title": "String operations with predictable outcomes should be avoided",
   "type": "BUG",
   "status": "ready",
   "remediation": {

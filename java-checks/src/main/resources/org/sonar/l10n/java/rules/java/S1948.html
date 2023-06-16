@@ -1,50 +1,94 @@
+<p>This rule raises an issue on a non-transient and non-serializable field within a serializable class, if said class does not have
+<code>writeObject</code> and <code>readObject</code> methods defined.</p>
 <h2>Why is this an issue?</h2>
-<p>Fields in a <code>Serializable</code> class must themselves be either <code>Serializable</code> or <code>transient</code> even if the class is
-never explicitly serialized or deserialized. For instance, under load, most J2EE application frameworks flush objects to disk, and an allegedly
-<code>Serializable</code> object with non-transient, non-serializable data members could cause program crashes, and open the door to attackers. In
-general a <code>Serializable</code> class is expected to fulfil its contract and not have an unexpected behaviour when an instance is serialized.</p>
-<p>This rule raises an issue on non-<code>Serializable</code> fields, and on collection fields when they are not <code>private</code> (because they
-could be assigned non-<code>Serializable</code> values externally), and when they are assigned non-<code>Serializable</code> types within the
-class.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>By contract, fields in a <code>Serializable</code> class must themselves be either <code>Serializable</code> or <code>transient</code>. Even if the
+class is never explicitly serialized or deserialized, it is not safe to assume that this cannot happen. For instance, under load, most J2EE
+application frameworks flush objects to disk.</p>
+<p>An object that implements <code>Serializable</code> but contains non-transient, non-serializable data members (and thus violates the contract)
+could cause application crashes and open the door to attackers. In general, a <code>Serializable</code> class is expected to fulfil its contract and
+not exhibit unexpected behaviour when an instance is serialized.</p>
+<p>This rule raises an issue on:</p>
+<ul>
+  <li> non-<code>Serializable</code> fields, </li>
+  <li> collection fields when they are not <code>private</code> (because they could be assigned non-<code>Serializable</code> values externally),
+  </li>
+  <li> when a field is assigned a non-<code>Serializable</code> type within the class. </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Consider the following scenario.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Address {
-  //...
+    ...
 }
 
 public class Person implements Serializable {
   private static final long serialVersionUID = 1905122041950251207L;
 
   private String name;
-  private Address address;  // Noncompliant; Address isn't serializable
+  private Address address;  // Noncompliant, Address is not serializable
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<p>How to fix this issue depends on the application’s needs. If the field’s value should be preserved during serialization and deserialization, you
+may want to make the field’s value serializable.</p>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class Address implements Serializable {
   private static final long serialVersionUID = 2405172041950251807L;
+
+    ...
 }
 
 public class Person implements Serializable {
   private static final long serialVersionUID = 1905122041950251207L;
 
   private String name;
-  private Address address;
+  private Address address; // Compliant, Address is serializable
 }
 </pre>
-<h3>Exceptions</h3>
-<p>The alternative to making all members <code>serializable</code> or <code>transient</code> is to implement special methods which take on the
-responsibility of properly serializing and de-serializing the object. This rule ignores classes which implement the following methods:</p>
-<pre>
- private void writeObject(java.io.ObjectOutputStream out)
-     throws IOException
- private void readObject(java.io.ObjectInputStream in)
-     throws IOException, ClassNotFoundException;
+<p>If the field’s value does not need to be preserved during serialization and deserialization, mark it as <code>transient</code>. The field will be
+ignored when the object is serialized. After deserialization, the field will be set to the default value corresponding to its type (e.g.,
+<code>null</code> for object references).</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class Address {
+    ...
+}
+
+public class Person implements Serializable {
+  private static final long serialVersionUID = 1905122041950251207L;
+
+  private String name;
+  private transient Address address; // Compliant, the field is transient
+}
+</pre>
+<p>The alternative to making all members serializable or <code>transient</code> is to implement special methods which take on the responsibility of
+properly serializing and de-serializing the object <code>writeObject</code> and <code>readObject</code>. These methods can be used to properly
+(de-)serialize an object, even though it contains fields that are not transient or serializable. Hence, this rule does not raise issues on fields of
+classes which implement these methods.</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class Address {
+    ...
+}
+
+public class Person implements Serializable {
+  private static final long serialVersionUID = 1905122041950251207L;
+
+  private String name;
+  private Address address; // Compliant, writeObject and readObject handle this field
+
+  private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+    // Appropriate serialization logic here
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+    // Appropriate deserialization logic here
+  }
+}
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://cwe.mitre.org/data/definitions/594">MITRE, CWE-594</a> - Saving Unserializable Objects to Disk </li>
-  <li> <a href="https://docs.oracle.com/javase/6/docs/api/java/io/Serializable.html">Oracle Java 6, Serializable</a> </li>
-  <li> <a href="https://docs.oracle.com/javase/7/docs/api/java/io/Serializable.html">Oracle Java 7, Serializable</a> </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/594">Saving Unserializable Objects to Disk - MITRE, CWE-594</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Serializable.html">Interface Serializable - Java SE 11 API
+  Documentation</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Serializable.html">Interface Serializable - Java SE 17 API
+  Documentation</a> </li>
 </ul>
 

@@ -1,13 +1,42 @@
+<p>This rule raises an issue when the <code>StringBuilder</code> or <code>StringBuffer</code> constructor is called with a single character as an
+argument.</p>
 <h2>Why is this an issue?</h2>
-<p>Instantiating a <code>StringBuilder</code> or a <code>StringBuffer</code> with a character is misleading because most Java developers would expect
-the character to be the initial value of the <code>StringBuffer</code>.</p>
-<p>What actually happens is that the int representation of the character is used to determine the initial size of the <code>StringBuffer</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-StringBuffer foo = new StringBuffer('x');   //equivalent to StringBuffer foo = new StringBuffer(120);
+<p>When a developer uses the <code>StringBuilder</code> or <code>StringBuffer</code> constructor with a single character as an argument, the likely
+intention is to create an instance with the character as the initial string value.</p>
+<p>However, this is not what happens because of the absence of a dedicated <code>StringBuilder(char)</code> or <code>StringBuffer(char)</code>
+constructor. Instead, <code>StringBuilder(int)</code> or <code>StringBuffer(int)</code> is invoked, which results in an instance with the provided
+<code>int</code> value as the initial capacity of the <code>StringBuilder</code> or <code>StringBuffer</code>.</p>
+<p>The reason behind this behavior lies in the automatic widening of <code>char</code> expressions to <code>int</code> when required. Consequently,
+the UTF-16 code point value of the character (for example, <code>65</code> for the character <code>'A'</code>) is interpreted as an <code>int</code>
+to specify the initial capacity.</p>
+<h2>How to fix it</h2>
+<p>If the argument is a <code>char</code> literal, use a string literal instead:</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+StringBuffer foo = new StringBuffer('x'); // Noncompliant, replace with String
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-StringBuffer foo = new StringBuffer("x");
+<pre data-diff-id="1" data-diff-type="compliant">
+StringBuffer foo = new StringBuffer("x"); // Compliant
 </pre>
+<p>If the argument is it is a non-literal <code>char</code> expression, convert it to <code>String</code> using the <code>String.valueOf()</code>
+method:</p>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+StringBuffer foo(char firstChar) {
+  return new StringBuffer(firstChar);                 // Noncompliant
+}
+</pre>
+<pre data-diff-id="2" data-diff-type="compliant">
+StringBuffer foo(char firstChar) {
+  return new StringBuffer(String.valueOf(firstChar)); // Compliant
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se10/html/jls-5.html#jls-5.1.2">Oracle - Java Language Specification, section 5.1.2. Widening
+  Primitive Conversion</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.w3schools.com/java/java_type_casting.asp">W3schools - Java Type Casting</a> </li>
+</ul>
 

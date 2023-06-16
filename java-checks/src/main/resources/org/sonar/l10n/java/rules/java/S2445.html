@@ -5,7 +5,7 @@ synchronized on the new value, to enter the block at the same time.</p>
 <p>The story is very similar for synchronizing on parameters; two different threads running the method in parallel could pass two different object
 instances in to the method as parameters, completely undermining the synchronization.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 private String color = "red";
 
 private void doSomething(){
@@ -20,7 +20,7 @@ private void doSomething(){
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 private String color = "red";
 private final Object lockObj = new Object();
 

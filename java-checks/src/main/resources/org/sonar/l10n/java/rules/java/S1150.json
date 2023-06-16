@@ -1,5 +1,5 @@
 {
-  "title": "Enumeration should not be implemented",
+  "title": "\"Enumeration\" should not be implemented",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

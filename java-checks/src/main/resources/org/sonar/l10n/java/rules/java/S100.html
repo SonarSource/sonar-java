@@ -1,11 +1,11 @@
 <h2>Why is this an issue?</h2>
-<p>Shared naming conventions allow teams to collaborate efficiently. This rule checks that all method names match a provided regular expression.</p>
-<h3>Noncompliant code example</h3>
-<p>With default provided regular expression <code>^[a-z][a-zA-Z0-9]*$</code>:</p>
+<p>Shared naming conventions allow teams to collaborate efficiently.</p>
+<p>This rule raises an issue when a method name does not match a provided regular expression.</p>
+<p>For example, with the default provided regular expression <code>^[a-z][a-zA-Z0-9]*$</code>, the method:</p>
 <pre>
-public int DoSomething(){...}
+public int DoSomething(){...} // Noncompliant
 </pre>
-<h3>Compliant solution</h3>
+<p>should be renamed to</p>
 <pre>
 public int doSomething(){...}
 </pre>
@@ -13,6 +13,6 @@ public int doSomething(){...}
 <p>Overriding methods are excluded.</p>
 <pre>
 @Override
-public int Do_Something(){...}
+public int Do_Something(){...} // Compliant by exception
 </pre>
 

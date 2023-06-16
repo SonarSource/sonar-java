@@ -1,41 +1,62 @@
 <h2>Why is this an issue?</h2>
-<p>Non-static initializers are rarely used, and can be confusing for most developers because they only run when new class instances are created. When
-possible, non-static initializers should be refactored into standard constructors or field initializers.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>Non-static initializers, also known as instance initializers, are blocks of code within a class that is executed when an instance of the class is
+created. They are executed when an object of the class is created just before the constructor is called. Non-static initializers are useful when you
+want to perform some common initialization logic for all objects of a class. They allow you to initialize instance variables in a concise and
+centralized manner, without having to repeat the same initialization code in each constructor.</p>
+<p>While non-static initializers may have some limited use cases, they are rarely used and can be confusing for most developers because they only run
+when new class instances are created.</p>
+<h2>How to fix it</h2>
+<p>Non-static initializers should be refactored into standard constructors or field initializers when possible.</p>
+<p>In most cases, the use of constructors, overloaded constructors, or factory methods is preferable for initializing instance variables. These
+approaches provide more explicit and controlled initialization, separate concerns, allow for better error handling, and make the code easier to
+understand and maintain.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class MyClass {
   private static final Map&lt;String, String&gt; MY_MAP = new HashMap&lt;String, String&gt;() {
-
-    // Noncompliant - HashMap should be extended only to add behavior, not for initialization
     {
       put("a", "b");
     }
-
-  };
+  }; // Noncompliant - HashMap should be extended only to add behavior, not for initialization
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<p>Using static initialization block:</p>
+<pre data-diff-id="1" data-diff-type="compliant">
 class MyClass {
-  private static final Map&lt;String, String&gt; MY_MAP = new HashMap&lt;String, String&gt;();
+  private static final Map&lt;String, String&gt; MY_MAP = new HashMap&lt;&gt;();
 
   static {
-    MY_MAP.put("a", "b");
+    MY_MAP.put("a", "b");  // Compliant
+  }
+}
+</pre>
+<p>or using constructor:</p>
+<pre>
+class MyClass {
+  private static final Map&lt;String, String&gt; MY_MAP = new HashMap&lt;&gt;();
+
+  public MyClass() {
+    MY_MAP.put("a", "b");  // Compliant
   }
 }
 </pre>
 <p>or using Java 9 <code>Map.of</code>:</p>
 <pre>
 class MyClass {
-  // Compliant
-  private static final Map&lt;String, String&gt; MY_MAP = java.util.Map.of("a", "b");
+  private static final Map&lt;String, String&gt; MY_MAP = java.util.Map.of("a", "b");   // Compliant
 }
 </pre>
-<p>or using Guava:</p>
+<p>or using Guava <code>ImmutableMap.of</code>:</p>
 <pre>
 class MyClass {
-  // Compliant
-  private static final Map&lt;String, String&gt; MY_MAP = ImmutableMap.of("a", "b");
+  private static final Map&lt;String, String&gt; MY_MAP = com.google.common.collect.ImmutableMap.of("a", "b");   // Compliant
 }
 </pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/java-static-instance-initializer-blocks">Static vs. Instance Initializer Block in Java</a> </li>
+</ul>
 

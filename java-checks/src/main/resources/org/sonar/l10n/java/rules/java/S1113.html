@@ -1,20 +1,31 @@
 <h2>Why is this an issue?</h2>
-<p>The <code>Object.finalize()</code> method is called on an object by the garbage collector when it determines that there are no more references to
-the object. But there is absolutely no warranty that this method will be called AS SOON AS the last references to the object are removed. It can be
-few microseconds to few minutes later. So when system resources need to be disposed by an object, it’s better to not rely on this asynchronous
-mechanism to dispose them.</p>
+<p>Before it reclaims storage from an object that is no longer referenced, the garbage collector calls <code>finalize()</code> on the object.</p>
+<p>But there is no guarantee that this method will be called as soon as the last references to the object are removed.</p>
+<p>It can be few microseconds to few minutes later.</p>
+<p>For this reason relying on overriding the <code>finalize()</code> method to release resources or to update the state of the program is highly
+discouraged.</p>
+<h3>What is the potential impact?</h3>
+<p>More unexpected issues can be caused by relying on the <code>finalize()</code> method to perform important operations on the application state:</p>
+<ul>
+  <li> The JVM might terminate without ever calling this method on a particular object, leaving an unexpected or incomplete state of the program </li>
+  <li> Uncaught exceptions will be ignored inside this method, making it harder to detect issues that could have been logged otherwise </li>
+  <li> Finalizer methods can also be invoked concurrently, even on single-threaded applications, making it hard to maintain desired program invariants
+  </li>
+</ul>
 <h3>Noncompliant code example</h3>
 <pre>
 public class MyClass {
-  ...
+
+  @Override
   protected void finalize() {
     releaseSomeResources();    // Noncompliant
   }
-  ...
+
 }
 </pre>
 <h2>Resources</h2>
 <ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html#jls-12.6">docs.oracle.com</a> - Finalization of Class Instances </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/4jZGBQ">CERT, MET12-J.</a> - Do not use finalizers </li>
 </ul>
 

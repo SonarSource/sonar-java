@@ -1,5 +1,5 @@
 {
-  "title": "String.valueOf() should not be appended to a String",
+  "title": "\"String.valueOf()\" should not be appended to a \"String\"",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -13,5 +13,5 @@
   "ruleSpecification": "RSPEC-1153",
   "sqKey": "S1153",
   "scope": "All",
-  "quickfix": "unknown"
+  "quickfix": "targeted"
 }

@@ -1,27 +1,27 @@
 <h2>Why is this an issue?</h2>
 <p>Early classes of the Java API, such as <code>Vector</code>, <code>Hashtable</code> and <code>StringBuffer</code>, were synchronized to make them
-thread-safe. Unfortunately, synchronization has a big negative impact on performance, even when using these collections from a single thread.</p>
-<p>It is better to use their new unsynchronized replacements:</p>
+thread-safe. However, synchronization has a significant negative impact on performance, even when using these collections from a single thread.</p>
+<p>It is often best to use their non-synchronized counterparts:</p>
 <ul>
   <li> <code>ArrayList</code> or <code>LinkedList</code> instead of <code>Vector</code> </li>
   <li> <code>Deque</code> instead of <code>Stack</code> </li>
   <li> <code>HashMap</code> instead of <code>Hashtable</code> </li>
   <li> <code>StringBuilder</code> instead of <code>StringBuffer</code> </li>
 </ul>
-<p>Even when used in synchronized context, you should think twice before using it, since it’s usage can be tricky. If you are confident the usage is
-legitimate, you can safely ignore this warning.</p>
+<p>Even when used in synchronized contexts, you should think twice before using their synchronized counterparts, since their usage can be costly. If
+you are confident the usage is legitimate, you can safely ignore this warning.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-Vector cats = new Vector();
+<pre data-diff-id="1" data-diff-type="noncompliant">
+Vector&lt;Cat&gt; cats = new Vector&lt;&gt;();
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-ArrayList cats = new ArrayList();
+<pre data-diff-id="1" data-diff-type="compliant">
+ArrayList&lt;Cat&gt; cats = new ArrayList&lt;&gt;();
 </pre>
 <h3>Exceptions</h3>
-<p>Use of those synchronized classes is ignored in the signatures of overriding methods.</p>
+<p>Usage of these synchronized classes is ignored in the signatures of overriding methods.</p>
 <pre>
 @Override
-public Vector getCats() {...}
+public Vector getCats() {...} // Compliant
 </pre>
 
