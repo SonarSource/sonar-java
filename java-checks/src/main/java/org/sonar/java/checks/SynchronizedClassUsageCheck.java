@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +31,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 @Rule(key = "S1149")
 public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
@@ -81,7 +82,6 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     tree.accept(new DeprecatedTypeVisitor());
   }
 
-
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
@@ -117,6 +117,8 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   private class DeprecatedTypeVisitor extends BaseTreeVisitor {
 
+    private Deque<Set<String>> overridingMethodTypes = new ArrayDeque<>();
+
     @Override
     public void visitClass(ClassTree tree) {
       TypeTree superClass = tree.superClass();
@@ -130,18 +132,32 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethod(MethodTree tree) {
       TypeTree returnTypeTree = tree.returnType();
-      if (isNotOverriding(tree) || returnTypeTree == null) {
-        if (returnTypeTree != null) {
+      boolean isConstructor = tree.is(Tree.Kind.CONSTRUCTOR);
+      if (isOverriding(tree) && !isConstructor) {
+        overridingMethodTypes.push(collectOverridingMethodExclusions(tree, returnTypeTree));
+      } else {
+        overridingMethodTypes.push(Collections.emptySet());
+        if (!isConstructor) {
           reportIssueOnDeprecatedType(returnTypeTree, returnTypeTree.symbolType());
         }
         scan(tree.parameters());
       }
       scan(tree.block());
+      overridingMethodTypes.pop();
     }
 
-    private boolean isNotOverriding(MethodTree tree) {
+    private Set<String> collectOverridingMethodExclusions(MethodTree methodTree, TypeTree returnType) {
+      var methodTypes = new HashSet<String>();
+      methodTypes.add(returnType.symbolType().fullyQualifiedName());
+      methodTree.parameters().stream()
+        .map(param -> param.type().symbolType().fullyQualifiedName())
+        .forEach(methodTypes::add);
+      return methodTypes;
+    }
+
+    private boolean isOverriding(MethodTree tree) {
       // In case it can not be determined (isOverriding returns null), return false to avoid FP.
-      return Boolean.FALSE.equals(tree.isOverriding());
+      return Boolean.TRUE.equals(tree.isOverriding());
     }
 
     @Override
@@ -159,7 +175,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     }
 
     private boolean reportIssueOnDeprecatedType(Tree tree, Type type) {
-      if (visited.contains(tree)) {
+      if (visited.contains(tree) || isAllowedByOverridingSignature(type)) {
         return false;
       }
       visited.add(tree);
@@ -168,6 +184,10 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
         return true;
       }
       return false;
+    }
+
+    private boolean isAllowedByOverridingSignature(Type type) {
+      return !overridingMethodTypes.isEmpty() && overridingMethodTypes.peek().contains(type.fullyQualifiedName());
     }
 
     private boolean isDeprecatedType(Type symbolType) {
@@ -180,5 +200,6 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
       }
       return false;
     }
+
   }
 }

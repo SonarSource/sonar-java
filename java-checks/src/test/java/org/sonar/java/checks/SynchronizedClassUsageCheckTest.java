@@ -22,19 +22,20 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SynchronizedClassUsageCheckTest {
-
+  
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SynchronizedClassUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageCheck.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SynchronizedClassUsageByAPICheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageByAPICheck.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .verifyIssues();
   }
@@ -42,12 +43,12 @@ class SynchronizedClassUsageCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SynchronizedClassUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageCheck.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SynchronizedClassUsageByAPICheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageByAPICheck.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();

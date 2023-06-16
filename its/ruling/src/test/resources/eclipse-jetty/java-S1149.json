@@ -6,9 +6,6 @@
 298,
 310,
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java':[
-1283,
-],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java':[
 45,
 286,
