@@ -26,8 +26,9 @@ import org.sonar.java.checks.MethodOnlyCallsSuperCheck;
 import org.sonar.java.checks.ServletInstanceFieldCheck;
 import org.sonar.java.checks.TooManyParametersCheck;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -60,6 +61,7 @@ public class SpringFilter extends BaseTreeVisitorIssueFilter {
   @Override
   public Set<Class<? extends JavaCheck>> filteredRules() {
     return Set.of(
+      /* S100_ */ BadMethodNameCheck.class,
       /* S107_ */ TooManyParametersCheck.class,
       /* S1185 */ MethodOnlyCallsSuperCheck.class,
       /* S1258 */ AtLeastOneConstructorCheck.class,
@@ -81,15 +83,34 @@ public class SpringFilter extends BaseTreeVisitorIssueFilter {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    MethodSymbol symbol = tree.symbol();
+    Symbol.MethodSymbol symbol = tree.symbol();
+    Tree reportTree = tree.simpleName();
     if (tree.is(Tree.Kind.CONSTRUCTOR)) {
       SymbolMetadata ownerMetadata = symbol.owner().metadata();
-      excludeLinesIfTrue(S107_CLASS_ANNOTATION_EXCEPTIONS.stream().anyMatch(ownerMetadata::isAnnotatedWith), tree.simpleName(), TooManyParametersCheck.class);
+      excludeLinesIfTrue(S107_CLASS_ANNOTATION_EXCEPTIONS.stream().anyMatch(ownerMetadata::isAnnotatedWith), reportTree, TooManyParametersCheck.class);
     } else {
       SymbolMetadata methodMetadata = symbol.metadata();
-      excludeLinesIfTrue(S107_METHOD_ANNOTATION_EXCEPTIONS.stream().anyMatch(methodMetadata::isAnnotatedWith), tree.simpleName(), TooManyParametersCheck.class);
+      excludeLinesIfTrue(S107_METHOD_ANNOTATION_EXCEPTIONS.stream().anyMatch(methodMetadata::isAnnotatedWith), reportTree, TooManyParametersCheck.class);
+      excludeLinesIfTrue(isRepositoryPropertyExpression(symbol), reportTree, BadMethodNameCheck.class);
     }
     super.visitMethod(tree);
+  }
+
+  /**
+   * This methods requires semantic information to take a decision and filter out issues.
+   * The knowledge of being in a SpringData context can not be inferred from only tokens; it needs to understand the interfaces that the owning class implements.
+   *
+   * As a consequence, in case of missing semantic (degraded environment), S100 (BadMethodNameCheck) will still raise issues on SpringData methods.
+   * These issues will be considered FPs by the user, but can not be eliminated without introducing way too many FN for the rule.
+   *
+   * @param symbol the symbol of the method under analysis
+   * @return true if the method is understood as being a repository property expression, containing an underscore character in the middle of its name. Returns false otherwise.
+   */
+  private static boolean isRepositoryPropertyExpression(Symbol.MethodSymbol symbol) {
+    String name = symbol.name();
+    int underscorePosition = name.indexOf('_');
+    boolean isSeparatorInMethodName = underscorePosition > 0 && underscorePosition < name.length() - 1;
+    return isSeparatorInMethodName && symbol.owner().type().isSubtypeOf("org.springframework.data.repository.Repository");
   }
 
   private static boolean hasAutowiredField(ClassTree tree) {

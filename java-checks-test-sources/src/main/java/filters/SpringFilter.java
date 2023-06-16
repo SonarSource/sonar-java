@@ -1,9 +1,11 @@
 package filters;
 
+import java.util.List;
 import javax.servlet.http.HttpServlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,39 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 public class SpringFilter {
+
+  static class S100 {
+    static class S100_1 implements org.springframework.data.repository.Repository<Person, Long> {
+      List<Person> findByAddress_ZipCode(ZipCode zipCode) { // NoIssue
+        return List.of();
+      }
+
+      public void invalidName_() {} // WithIssue
+      public void _invalidName() {} // WithIssue
+    }
+
+    static class S100_2 {
+      List<Person> findByAddress_ZipCode(ZipCode zipCode) { // WithIssue
+        return List.of();
+      }
+    }
+
+    static class S100_3 implements PersonRepository {
+      @Override
+      public List<Person> findByAddress_ZipCode(Address address, ZipCode zipCode) {
+        return List.of();
+      }
+    }
+
+    interface PersonRepository extends org.springframework.data.repository.Repository<Person, Long> {
+      @Query("select p from Person where p.address=?1 and p.zipcode=?2")
+      List<Person> findByAddress_ZipCode(Address address, ZipCode zipCode); // NoIssue
+    }
+
+    interface Address {}
+    interface Person {}
+    interface ZipCode {}
+  }
 
   static class S107 {
 

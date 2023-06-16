@@ -1,6 +1,20 @@
 package filters;
 
+import java.util.List;
+
 public class SpringFilter {
+
+  static class S100 implements Repository<Person, Long> {
+    static class S100_1  {
+      // FP in case of missing semantic - 'Repository' is not resolved
+      List<Person> findByAddress_ZipCode(ZipCode zipCode) { // WithIssue
+        return List.of();
+      }
+    }
+
+    interface Person {}
+    interface ZipCode {}
+  }
 
   static class S1185 {
     abstract static class S1185_1 {
