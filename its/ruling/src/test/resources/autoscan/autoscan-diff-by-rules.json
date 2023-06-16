@@ -162,12 +162,6 @@
     "falsePositives": 0
   },
   {
-    "ruleKey": "S1114",
-    "hasTruePositives": true,
-    "falseNegatives": 0,
-    "falsePositives": 0
-  },
-  {
     "ruleKey": "S1116",
     "hasTruePositives": true,
     "falseNegatives": 0,
@@ -585,12 +579,6 @@
     "ruleKey": "S1607",
     "hasTruePositives": false,
     "falseNegatives": 11,
-    "falsePositives": 0
-  },
-  {
-    "ruleKey": "S1610",
-    "hasTruePositives": true,
-    "falseNegatives": 4,
     "falsePositives": 0
   },
   {
