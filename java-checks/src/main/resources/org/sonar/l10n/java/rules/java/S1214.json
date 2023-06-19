@@ -1,5 +1,5 @@
 {
-  "title": "Constants should not be defined in interfaces",
+  "title": "Interfaces should not solely consist of constants",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

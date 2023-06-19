@@ -17,7 +17,6 @@
   "quickfix": "unknown",
   "securityStandards": {
     "CERT": [
-      "EXP19-C.",
       "EXP52-J."
     ]
   }

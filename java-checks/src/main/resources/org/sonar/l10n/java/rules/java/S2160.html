@@ -1,69 +1,61 @@
+<p>This rule raises an issue when a subclass of a class that overrides <code>Object.equals</code> introduces new fields but does not also override the
+<code>Object.equals</code> method.</p>
 <h2>Why is this an issue?</h2>
-<p>Extend a class that overrides <code>equals</code> and add fields without overriding <code>equals</code> in the subclass, and you run the risk of
-non-equivalent instances of your subclass being seen as equal, because only the superclass fields will be considered in the equality test.</p>
-<p>This rule looks for classes that do all of the following:</p>
+<p>When a class overrides <code>Object.equals</code>, this indicates that the class not just considers object identity as equal (the default
+implementation of <code>Object.equals</code>) but implements another logic for what is considered equal in the context of this class. Usually (but not
+necessarily), the semantics of <code>equals</code> in this case is that two objects are equal when their state is equal field by field.</p>
+<p>Because of this, adding new fields to a subclass of a class that overrides <code>Object.equals</code> but not updating the implementation of
+<code>equals</code> in the subclass is most likely an error.</p>
+<h2>How to fix it</h2>
+<p>Consider the following example:</p>
+<pre>
+class Foo {
+
+  final int a;
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == null) return false;
+    if (getClass() != other.getClass()) return false;
+    return a == ((Foo) other).a;
+  }
+}
+</pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class Bar extends Foo { // Noncompliant, `equals` ignores the value of `b`
+  final int b;
+}
+</pre>
+<p>Override the <code>equals</code> method in the subclass to incorporate the new fields into the comparison:</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Bar extends Foo { // Compliant, `equals` now also considers `b`
+
+  final int b;
+
+  @Override
+  public boolean equals(Object other) {
+    if (!super.equals(other)) return false;
+    return b == ((Bar) other).b;
+  }
+}
+</pre>
+<p>In case the new fields should not be part of the comparison because they are, for example, auxiliary variables not contributing to the object value
+(), still override the method to make the point clear that this was not just forgotten:</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Bar extends Foo { // Compliant, we do explicitly not want to take `b` into account
+
+  final int b;
+
+  @Override
+  public boolean equals(Object other) {
+    return super.equals(other);
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li> extend classes that override <code>equals</code>. </li>
-  <li> do not themselves override <code>equals</code>. </li>
-  <li> add fields. </li>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals-java.lang.Object-">Object.equals - Java SE 8 API
+  Specification</a> </li>
 </ul>
-<h3>Noncompliant code example</h3>
-<pre>
-public class Fruit {
-  private Season ripe;
-
-  public boolean equals(Object obj) {
-    if (obj == this) {
-      return true;
-    }
-    if (this.class != obj.class) {
-      return false;
-    }
-    Fruit fobj = (Fruit) obj;
-    if (ripe.equals(fobj.getRipe()) {
-      return true;
-    }
-    return false;
-  }
-}
-
-public class Raspberry extends Fruit {  // Noncompliant; instances will use Fruit's equals method
-  private Color ripeColor;
-}
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-public class Fruit {
-  private Season ripe;
-
-  public boolean equals(Object obj) {
-    if (obj == this) {
-      return true;
-    }
-    if (this.class != obj.class) {
-      return false;
-    }
-    Fruit fobj = (Fruit) obj;
-    if (ripe.equals(fobj.getRipe()) {
-      return true;
-    }
-    return false;
-  }
-}
-
-public class Raspberry extends Fruit {
-  private Color ripeColor;
-
-  public boolean equals(Object obj) {
-    if (! super.equals(obj)) {
-      return false;
-    }
-    Raspberry fobj = (Raspberry) obj;
-    if (ripeColor.equals(fobj.getRipeColor()) {  // added fields are tested
-      return true;
-    }
-    return false;
-  }
-}
-</pre>
 

@@ -1,30 +1,44 @@
 <h2>Why is this an issue?</h2>
-<p>Creating a new <code>Random</code> object each time a random value is needed is inefficient and may produce numbers which are not random depending
-on the JDK. For better efficiency and randomness, create a single <code>Random</code>, then store, and reuse it.</p>
-<p>The <code>Random()</code> constructor tries to set the seed with a distinct value every time. However there is no guarantee that the seed will be
-random or even uniformly distributed. Some JDK will use the current time as seed, which makes the generated numbers not random at all.</p>
+<p>Creating a new <code>Random</code> object each time a random value is needed is inefficient and may produce numbers that are not random, depending
+on the JDK. For better efficiency and randomness, create a single <code>Random</code>, store it, and reuse it.</p>
+<p>The <code>Random()</code> constructor tries to set the seed with a distinct value every time. However, there is no guarantee that the seed will be
+randomly or uniformly distributed. Some JDK will use the current time as seed, making the generated numbers not random.</p>
 <p>This rule finds cases where a new <code>Random</code> is created each time a method is invoked.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public void doSomethingCommon() {
-  Random rand = new Random();  // Noncompliant; new instance created with each invocation
-  int rValue = rand.nextInt();
-  //...
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-private Random rand = SecureRandom.getInstanceStrong();  // SecureRandom is preferred to Random
-
-public void doSomethingCommon() {
-  int rValue = this.rand.nextInt();
-  //...
-</pre>
 <h3>Exceptions</h3>
-<p>A class which uses a <code>Random</code> in its constructor or in a static <code>main</code> function and nowhere else will be ignored by this
-rule.</p>
+<p>This rule doesn’t apply to classes that use a <code>Random</code> in their constructors or the static <code>main</code> function and nowhere
+else.</p>
+<h2>How to fix it</h2>
+<p>Define and reuse the <code>Random</code> object.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class MyClass {
+
+    public void doSomethingCommon() {
+      Random random = new Random();        // Noncompliant - new instance created with each invocation
+      int rValue = random.nextInt();
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class MyClass {
+    private Random random = new Random();  // Compliant
+
+    public void doSomethingCommon() {
+      int rValue = this.random.nextInt();
+    }
+}
+</pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/Random.html">Oracle Java SE - Random</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
 <ul>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
   Misconfiguration </li>
+  <li> <a href="https://www.baeldung.com/java-generating-random-numbers">Baeldung - generating random number</a> </li>
 </ul>
 

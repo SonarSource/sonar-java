@@ -1,32 +1,27 @@
 <h2>Why is this an issue?</h2>
-<p>While it is technically correct to use a <code>Thread</code> where a <code>Runnable</code> is called for, the semantics of the two objects are
-different, and mixing them is a bad practice that will likely lead to headaches in the future.</p>
-<p>The crux of the issue is that <code>Thread</code> is a larger concept than <code>Runnable</code>. A <code>Runnable</code> is an object whose
-running should be managed. A <code>Thread</code> expects to manage the running of itself or other <code>Runnables</code>.</p>
+<p>The semantics of <code>Thread</code> and <code>Runnable</code> are different, and while it is technically correct to use <code>Thread</code> where
+a <code>Runnable</code> is expected, it is a bad practice to do so.</p>
+<p>The crux of the issue is that <code>Thread</code> is a larger concept than <code>Runnable</code>. A <code>Runnable</code> represents a task. A
+<code>Thread</code> represents a task and its execution management (ie: how it should behave when started, stopped, resumed, …​). It is both a task
+and a lifecycle management.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-	public static void main(String[] args) {
-		Thread r =new Thread() {
-			int p;
-			@Override
-			public void run() {
-				while(true)
-					System.out.println("a");
-			}
-		};
-		new Thread(r).start();  // Noncompliant
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public static void main(String[] args) {
+	Thread runnable = new Thread() {
+		@Override
+		public void run() { /* ... */ }
+	};
+	new Thread(runnable).start();  // Noncompliant
+}
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-	public static void main(String[] args) {
-		Runnable r =new Runnable() {
-			int p;
-			@Override
-			public void run() {
-				while(true)
-					System.out.println("a");
-			}
-		};
-		new Thread(r).start();
+<pre data-diff-id="1" data-diff-type="compliant">
+public static void main(String[] args) {
+	Runnable runnable = new Runnable() {
+		@Override
+		public void run() { /* ... */ }
+	};
+	new Thread(runnable).start();
+}
 </pre>
 

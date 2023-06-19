@@ -1,16 +1,13 @@
 <h2>Why is this an issue?</h2>
-<p>Exceptions are meant to represent the application’s state at the point at which an error occurred.</p>
-<p>Making all fields in an <code>Exception</code> class <code>final</code> ensures that this state:</p>
-<ul>
-  <li> Will be fully defined at the same time the <code>Exception</code> is instantiated. </li>
-  <li> Won’t be updated or corrupted by a questionable error handler. </li>
-</ul>
-<p>This will enable developers to quickly understand what went wrong.</p>
+<p>When a class has all <code>final</code> fields, the compiler ensures that the object’s state remains constant. It also enforces a clear design
+intent of immutability, making the class easier to reason about and use correctly.</p>
+<p>Exceptions are meant to represent the application’s state at the point at which an error occurred. Making all fields in an <code>Exception</code>
+class <code>final</code> ensures that these class fields do not change after initialization.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class MyException extends Exception {
 
-  private int status;                               // Noncompliant
+  private int status;                        // Noncompliant
 
   public MyException(String message) {
     super(message);
@@ -27,10 +24,10 @@ public class MyException extends Exception {
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class MyException extends Exception {
 
-  private final int status;
+  private final int status;                  // Compliant
 
   public MyException(String message, int status) {
     super(message);
@@ -43,4 +40,8 @@ public class MyException extends Exception {
 
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> Effective Java 3rd Edition, Joshua Bloch - Exceptions - Item 76 : Strive for failure atomicity </li>
+</ul>
 

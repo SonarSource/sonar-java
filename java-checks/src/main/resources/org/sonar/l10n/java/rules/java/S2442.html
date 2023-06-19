@@ -1,19 +1,25 @@
 <h2>Why is this an issue?</h2>
 <p><code>java.util.concurrent.locks.Lock</code> offers far more powerful and flexible locking operations than are available with
-<code>synchronized</code> blocks. So synchronizing on a <code>Lock</code> throws away the power of the object, and is just silly. Instead, such
-objects should be locked and unlocked using <code>tryLock()</code> and <code>unlock()</code>.</p>
+<code>synchronized</code> blocks. So synchronizing on a <code>Lock</code> instance throws away the power of the object, as it overrides its better
+locking mechanisms. Instead, such objects should be locked and unlocked using one of their <code>lock</code> and <code>unlock</code> method
+variants.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 Lock lock = new MyLockImpl();
 synchronized(lock) {  // Noncompliant
-  //...
+  // ...
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 Lock lock = new MyLockImpl();
-lock.tryLock();
-//...
+if (lock.tryLock()) {
+  try {
+    // ...
+  } finally {
+    lock.unlock();
+  }
+}
 </pre>
 <h2>Resources</h2>
 <ul>

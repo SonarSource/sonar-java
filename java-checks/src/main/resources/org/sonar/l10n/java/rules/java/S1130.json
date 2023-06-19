@@ -1,5 +1,5 @@
 {
-  "title": "\"throws\" declarations should not be superfluous",
+  "title": "Exceptions in \"throws\" clauses should not be superfluous",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

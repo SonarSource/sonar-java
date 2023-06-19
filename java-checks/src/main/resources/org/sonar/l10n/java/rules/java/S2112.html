@@ -1,32 +1,41 @@
 <h2>Why is this an issue?</h2>
-<p>The <code>equals</code> and <code>hashCode</code> methods of <code>java.net.URL</code> both may trigger a name service (usually DNS) lookup to
-resolve the host name or IP address. Depending on the configuration, and network status, that can take a long time. <code>URI</code> on the other hand
-makes no such calls and should be used instead unless the specific <code>URL</code> functionality is required.</p>
-<p>In general it is better to use the <code>URI</code> class until access to the resource is actually needed, at which point you can just convert the
+<p>The <code>equals</code> and <code>hashCode</code> methods of <code>java.net.URL</code> may trigger a name service lookup (typically DNS) to resolve
+the hostname or IP address. Depending on the configuration, and network status, this lookup can be time-consuming.</p>
+<p>On the other hand, the <code>URI</code> class does not perform such lookups and is a better choice unless you specifically require the
+functionality provided by <code>URL</code>.</p>
+<p>In general, it is better to use the <code>URI</code> class until access to the resource is actually needed, at which point you can convert the
 <code>URI</code> to a <code>URL</code> using <code>URI.toURL()</code>.</p>
 <p>This rule checks for uses of <code>URL</code> 's in <code>Map</code> and <code>Set</code> , and for explicit calls to the <code>equals</code> and
-<code>hashCode</code> methods.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<code>hashCode</code> methods. It suggests reconsidering the use of <code>URL</code> in such scenarios to avoid potential performance issues related
+to name service lookups.</p>
+<h2>How to fix it</h2>
+<p>Use the <code>URI</code> class until access to the resource is actually needed.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public void checkUrl(URL url) {
-  Set&lt;URL&gt; sites = new HashSet&lt;URL&gt;();  // Noncompliant
+  Set&lt;URL&gt; sites = new HashSet&lt;URL&gt;();               // Noncompliant
 
   URL homepage = new URL("http://sonarsource.com");  // Compliant
-  if (homepage.equals(url)) { // Noncompliant
+  if (homepage.equals(url)) {                        // Noncompliant
     // ...
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public void checkUrl(URL url) {
-  Set&lt;URI&gt; sites = new HashSet&lt;URI&gt;();  // Compliant
+  Set&lt;URI&gt; sites = new HashSet&lt;URI&gt;();               // Compliant
 
   URI homepage = new URI("http://sonarsource.com");  // Compliant
   URI uri = url.toURI();
-  if (homepage.equals(uri)) {  // Compliant
+  if (homepage.equals(uri)) {                        // Compliant
     // ...
   }
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/net/URL.html">Oracle Java SE - java.net.URL</a> </li>
+</ul>
 

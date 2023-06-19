@@ -1,16 +1,35 @@
 <h2>Why is this an issue?</h2>
-<p><code>java.util.concurrent.ScheduledThreadPoolExecutor</code>'s pool is sized with <code>corePoolSize</code>, so setting <code>corePoolSize</code>
-to zero means the executor will have no threads and run nothing.</p>
-<p>This rule detects instances where <code>corePoolSize</code> is set to zero, via either its setter or the object constructor.</p>
+<p><code>ThreadPoolExecutor</code> is an object that efficiently manages and controls the execution of multiple tasks in a thread pool. A thread pool
+is a collection of pre-initialized threads ready to execute tasks. Instead of creating a new thread for each task, which can be costly in terms of
+system resources, a thread pool reuses existing threads.</p>
+<p><code>java.util.concurrent.ScheduledThreadPoolExecutor</code> is an extension of <code>ThreadPoolExecutor</code> that can additionally schedule
+commands to run after a given delay or to execute periodically.</p>
+<p><code>ScheduledThreadPoolExecutor</code> 's pool is sized with <code>corePoolSize</code>, so setting <code>corePoolSize</code> to zero means the
+executor will have no threads and run nothing. <code>corePoolSize</code> should have a value greater than zero and valid for your tasks.</p>
+<p>This rule detects instances where <code>corePoolSize</code> is set to zero via its setter or the object constructor.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public void do(){
 
-  ScheduledThreadPoolExecutor stpe1 = new ScheduledThreadPoolExecutor(0); // Noncompliant
+  int poolSize = 5; // value greater than 0
 
-  ScheduledThreadPoolExecutor stpe2 = new ScheduledThreadPoolExecutor(POOL_SIZE);
-  stpe2.setCorePoolSize(0);  // Noncompliant
+  ScheduledThreadPoolExecutor threadPool1 = new ScheduledThreadPoolExecutor(0); // Noncompliant
 
-  ...
+  ScheduledThreadPoolExecutor threadPool2 = new ScheduledThreadPoolExecutor(poolSize);
+  threadPool2.setCorePoolSize(0);  // Noncompliant
+}
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/concurrent/ScheduledThreadPoolExecutor.html">Oracle Java SE -
+  ScheduledThreadPoolExecutor</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://engineering.zalando.com/posts/2019/04/how-to-set-an-ideal-thread-pool-size.html">Zalando - How to set an ideal thread pool
+  size</a> </li>
+  <li> <a href="https://www.baeldung.com/java-threadpooltaskexecutor-core-vs-max-poolsize">Baeldung - ThreadPoolTaskExecutor corePoolSize vs.
+  maxPoolSize</a> </li>
+</ul>
 

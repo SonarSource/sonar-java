@@ -1,16 +1,18 @@
 <h2>Why is this an issue?</h2>
 <p>Rather than creating a boxed primitive from a <code>String</code> to extract the primitive value, use the relevant <code>parse</code> method
-instead. It will be clearer and more efficient.</p>
+instead. Using <code>parse</code> makes the code more efficient and the intent of the developer clearer.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-String myNum = "12.2";
-
-float f = (new Float(myNum)).floatValue();  // Noncompliant; creates &amp; discards a Float
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String myNum = "42.0";
+float myFloat = new Float(myNum);  // Noncompliant
+float myFloatValue = (new Float(myNum)).floatValue();  // Noncompliant
+int myInteger = Integer.valueOf(myNum); // Noncompliant
+int myIntegerValue = Integer.valueOf(myNum).intValue(); // Noncompliant
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-String myNum = "12.2";
-
+<pre data-diff-id="1" data-diff-type="compliant">
+String myNum = "42.0";
 float f = Float.parseFloat(myNum);
+int myInteger = Integer.parseInt(myNum);
 </pre>
 

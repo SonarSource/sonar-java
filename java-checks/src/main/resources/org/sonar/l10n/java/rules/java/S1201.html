@@ -1,9 +1,16 @@
 <h2>Why is this an issue?</h2>
-<p>"equals" as a method name should be used exclusively to override <code>Object.equals(Object)</code> to prevent any confusion.</p>
-<p>It is tempting to overload the method to take a specific class instead of <code>Object</code> as parameter, to save the class comparison check.
-However, this will not work as expected when that is the only override.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>In Java, the <code>Object.equals()</code> method is used for object comparison, and it is typically overridden in classes to provide a custom
+equality check based on your criteria for equality.</p>
+<p>The default implementation of <code>equals()</code> provided by the <code>Object</code> class compares the memory references of the two objects,
+that means it checks if the objects are actually the same instance in memory.</p>
+<p>The "equals" as a method name should be used exclusively to override <code>Object.equals(Object)</code> to prevent confusion.</p>
+<p>It is important to note that when you override <code>equals()</code>, you should also override the <code>hashCode()</code> method to maintain the
+contract between <code>equals()</code> and <code>hashCode()</code>.</p>
+<h2>How to fix it</h2>
+<p>Either override <code>Object.equals(Object)</code> or rename the method.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class MyClass {
   private int foo = 1;
 
@@ -17,27 +24,18 @@ class MyClass {
     System.out.println(o1.equals(o2));  // Prints "false" because o2 an Object not a MyClass
   }
 }
-
-class MyClass2 {
-  public boolean equals(MyClass2 o) {  // Ignored; `boolean equals(Object)` also present
-    //..
-  }
-
-  public boolean equals(Object o) {
-    //...
-  }
-}
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 class MyClass {
   private int foo = 1;
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(Object o) {  // Compliant
     if (this == o) {
         return true;
     }
+
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
@@ -45,18 +43,12 @@ class MyClass {
     MyClass other = (MyClass)o;
     return this.foo == other.foo;
   }
-
-  /* ... */
-}
-
-class MyClass2 {
-  public boolean equals(MyClass2 o) {
-    //..
-  }
-
-  public boolean equals(Object o) {
-    //...
-  }
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)">Oracle SDK -
+  Object.equals(Object)</a> </li>
+</ul>
 

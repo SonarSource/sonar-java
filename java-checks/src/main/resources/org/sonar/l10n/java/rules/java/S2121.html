@@ -1,25 +1,41 @@
 <h2>Why is this an issue?</h2>
-<p>Creating a substring from 0 to the end is silly. You’ll end up with the same string you started with. Using the value of <code>String.length</code>
-as either the start or end of a substring has similarly predictable results.</p>
-<p>Calling <code>String.contains</code> with the argument being identical to the String on which contains is invoked doesn’t make sense.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-String speech = "Now is the time for all good people to come to the aid of their country.";
+<p>Operations performed on a string with predictable outcomes should be avoided. For example:</p>
+<ul>
+  <li> checking if a string contains itself </li>
+  <li> comparing a string with itself </li>
+  <li> matching a string against itself </li>
+  <li> creating a substring from 0 to the end of the string </li>
+  <li> creating a substring from the end of the string </li>
+  <li> replacing a string with itself </li>
+  <li> replacing a substring with the exact substring </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Avoid performing the operation that has a predictable outcome.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String speech = "SonarQube is the best static code analysis tool."
 
-String s1 = speech.substring(0); // Noncompliant. Yields the whole string
-String s2 = speech.substring(speech.length()); // Noncompliant. Yields "";
-String s3 = speech.substring(5,speech.length()); // Noncompliant. Use the 1-arg version instead
+String s1 = speech.substring(0); // Noncompliant - yields the whole string
+String s2 = speech.substring(speech.length()); // Noncompliant - yields "";
+String s3 = speech.substring(5, speech.length()); // Noncompliant - use the 1-arg version instead
 
-if (speech.contains(speech)) { // Noncompliant
- // always true
+if (speech.contains(speech)) { // Noncompliant - always true
+    // ...
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-String speech = "Now is the time for all good people to come to the aid of their country.";
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+String speech = "SonarQube is the best static code analysis tool."
 
 String s1 = speech;
 String s2 = "";
 String s3 = speech.substring(5);
+
+// ...
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html">Oracle Java SE - String</a> </li>
+</ul>
 

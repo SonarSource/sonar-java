@@ -1,18 +1,18 @@
 <h2>Why is this an issue?</h2>
 <p>Overriding or shadowing a variable declared in an outer scope can strongly impact the readability, and therefore the maintainability, of a piece of
 code. Further, it could lead maintainers to introduce bugs because they think they’re using one variable but are really using another.</p>
-<h3>Noncompliant code example</h3>
 <pre>
 class Foo {
   public int myField;
 
   public void doSomething() {
-    int myField = 0;
+    int myField = 0; // Noncompliant
     ...
   }
 }
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/display/c/DCL01-C.+Do+not+reuse+variable+names+in+subscopes">CERT, DCL01-C.</a> - Do not reuse
   variable names in subscopes </li>

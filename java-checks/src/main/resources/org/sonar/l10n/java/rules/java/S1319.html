@@ -1,29 +1,39 @@
-<h2>Why is this an issue?</h2>
-<p>The purpose of the Java Collections API is to provide a well defined hierarchy of interfaces in order to hide implementation details.</p>
-<p>Implementing classes must be used to instantiate new collections, but the result of an instantiation should ideally be stored in a variable whose
-type is a Java Collection interface.</p>
-<p>This rule raises an issue when an implementation class:</p>
+<p>This rule raises an issue when a collection implementation class from <code>java.util.*</code> is used:</p>
 <ul>
-  <li> is returned from a <code>public</code> method. </li>
-  <li> is accepted as an argument to a <code>public</code> method. </li>
-  <li> is exposed as a <code>public</code> member. </li>
+  <li> as a return type of a <code>public</code> method. </li>
+  <li> as an argument type of a <code>public</code> method. </li>
+  <li> as the type of a <code>public</code> field. </li>
 </ul>
-<h3>Noncompliant code example</h3>
-<pre>
+<h2>Why is this an issue?</h2>
+<p>The Java Collections API offers a well-structured hierarchy of interfaces designed to hide collection implementation details. For the various
+collection data structures like lists, sets, and maps, specific interfaces (<code>java.util.List</code>, <code>java.util.Set</code>,
+<code>java.util.Map</code>) cover the essential features.</p>
+<p>When passing collections as method parameters, return values, or when exposing fields, it is generally recommended to use these interfaces instead
+of the implementing classes. The implementing classes, such as <code>java.util.LinkedList</code>, <code>java.util.ArrayList</code>, and
+<code>java.util.HasMap</code>, should only be used for collection instantiation. They provide finer control over the performance characteristics of
+those structures, and developers choose them depending on their use case.</p>
+<p>For example, if fast random element access is essential, <code>java.util.ArrayList</code> should be instantiated. If inserting elements at a random
+position into a list is crucial, a <code>java.util.LinkedList</code> should be preferred. However, this is an implementation detail your API should
+not expose.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Employees {
-  private HashSet&lt;Employee&gt; employees = new HashSet&lt;Employee&gt;();  // Noncompliant - "employees" should have type "Set" rather than "HashSet"
+  public final HashSet&lt;Employee&gt; employees   // Noncompliant, field type should be "Set"
+    = new HashSet&lt;Employee&gt;();
 
-  public HashSet&lt;Employee&gt; getEmployees() {                       // Noncompliant
+  public HashSet&lt;Employee&gt; getEmployees() {  // Noncompliant, return type should be "Set"
     return employees;
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class Employees {
-  private Set&lt;Employee&gt; employees = new HashSet&lt;Employee&gt;();      // Compliant
+  public final Set&lt;Employee&gt; employees       // Compliant
+    = new HashSet&lt;Employee&gt;();
 
-  public Set&lt;Employee&gt; getEmployees() {                           // Compliant
+  public Set&lt;Employee&gt; getEmployees() {      // Compliant
     return employees;
   }
 }

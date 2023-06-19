@@ -1,19 +1,25 @@
 <h2>Why is this an issue?</h2>
-<p>If you have no intention of writting an <code>HttpSession</code> object to file, then storing non-<code>serializable</code> objects in it may not
-seem like a big deal. But whether or not you explicitly serialize the session, it may be written to disk anyway, as the server manages its memory use
-in a process called "passivation". Further, some servers automatically write their active sessions out to file at shutdown &amp; deserialize any such
-sessions at startup.</p>
-<p>The point is, that even though <code>HttpSession</code> does not <code>extend Serializable</code>, you must nonetheless assume that it will be
-serialized, and understand that if you’ve stored non-serializable objects in the session, errors will result.</p>
+<p><code>HttpSession</code> s are managed by web servers and can be serialized and stored on disk as the server manages its memory use in a process
+called "passivation" (and later restored during "activation").</p>
+<p>Even though <code>HttpSession</code> does not extend <code>Serializable</code>, you must nonetheless assume that it will be serialized. If
+non-serializable objects are stored in the session, serialization might fail.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Address {
   //...
 }
 
-//...
 HttpSession session = request.getSession();
 session.setAttribute("address", new Address());  // Noncompliant; Address isn't serializable
+</pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class Address implements Serializable {
+  //...
+}
+
+HttpSession session = request.getSession();
+session.setAttribute("address", new Address());
 </pre>
 <h2>Resources</h2>
 <ul>

@@ -1,8 +1,8 @@
 <h2>Why is this an issue?</h2>
+<p>Altering or bypassing the accessibility of classes, methods, or fields through reflection violates the encapsulation principle. This can break the
+internal contracts of the accessed target and lead to maintainability issues and runtime errors.</p>
 <p>This rule raises an issue when reflection is used to change the visibility of a class, method or field, and when it is used to directly update a
-field value. Altering or bypassing the accessibility of classes, methods, or fields violates the encapsulation principle and could lead to run-time
-errors.</p>
-<h3>Noncompliant code example</h3>
+field value.</p>
 <pre>
 public void makeItPublic(String methodName) throws NoSuchMethodException {
 
@@ -14,7 +14,9 @@ public void setItAnyway(String fieldName, int value) {
 }
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
+  <li> <a href="https://en.wikipedia.org/wiki/Encapsulation_(computer_programming)">Wikipedia definition of Encapsulation</a> </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/_jZGBQ">CERT, SEC05-J.</a> - Do not use reflection to increase accessibility of classes,
   methods, or fields </li>
 </ul>

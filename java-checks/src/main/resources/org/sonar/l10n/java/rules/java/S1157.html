@@ -2,19 +2,25 @@
 <p>Using <code>toLowerCase()</code> or <code>toUpperCase()</code> to make case insensitive comparisons is inefficient because it requires the creation
 of temporary, intermediate <code>String</code> objects.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-boolean result1 = foo.toUpperCase().equals(bar);             // Noncompliant
-boolean result2 = foo.equals(bar.toUpperCase());             // Noncompliant
-boolean result3 = foo.toLowerCase().equals(bar.LowerCase()); // Noncompliant
+<pre data-diff-id="1" data-diff-type="noncompliant">
+private void compareStrings(String foo, String bar){
+    boolean result1 = foo.toUpperCase().equals(bar);               // Noncompliant
+    boolean result2 = foo.equals(bar.toUpperCase());               // Noncompliant
+    boolean result3 = foo.toLowerCase().equals(bar.toLowerCase()); // Noncompliant
+}
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-boolean result = foo.equalsIgnoreCase(bar);                  // Compliant
+<pre data-diff-id="1" data-diff-type="compliant">
+private void compareStrings(String foo, String bar){
+    boolean result1 = foo.equalsIgnoreCase(bar);                    // Compliant
+}
 </pre>
 <h3>Exceptions</h3>
-<p>No issue will be raised when a locale is specified because the result could be different from "equalsIgnoreCase". (e.g.: using the Turkish
-locale)</p>
+<p>No issue will be raised when a locale is specified because the result could be different from <code>equalsIgnoreCase()</code>. (e.g.: using the
+Turkish locale)</p>
 <pre>
-boolean result1 = foo.toUpperCase(locale).equals(bar);             // Compliant
+private void compareStrings(String foo, String bar, java.util.Locale locale){
+    boolean result1 = foo.toUpperCase(locale).equals(bar);         // Compliant
+}
 </pre>
 

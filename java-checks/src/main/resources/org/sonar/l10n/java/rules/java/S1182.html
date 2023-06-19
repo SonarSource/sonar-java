@@ -1,6 +1,6 @@
 <h2>Why is this an issue?</h2>
 <p><code>Cloneable</code> is the marker <code>Interface</code> that indicates that <code>clone()</code> may be called on an object. Overriding
-<code>clone()</code> without implementing <code>Cloneable</code> can be useful if you want to control how subclasses clone themselves, but otherwise,
+<code>clone()</code> without implementing <code>Cloneable</code> can be helpful if you want to control how subclasses clone themselves, but otherwise,
 it’s probably a mistake.</p>
 <p>The usual convention for <code>Object.clone()</code> according to Oracle’s Javadoc is:</p>
 <ol>
@@ -12,13 +12,17 @@ it’s probably a mistake.</p>
 <ol>
   <li> <code>super.clone()</code> returns a new object instance </li>
   <li> <code>super.clone()</code> returns an object of the same type as the one <code>clone()</code> was called on </li>
-  <li> <code>Object.clone()</code> performs a shallow copy of the object’s state </li>
+  <li> <code>Object.clone()</code> performs a shallow copy of the object’s state. </li>
 </ol>
-<h3>Noncompliant code example</h3>
-<pre>
-class BaseClass {  // Noncompliant; should implement Cloneable
+<h2>How to fix it</h2>
+<p>Ensure that the <code>clone()</code> method calls <code>super.clone()</code> and implement <code>Cloneable</code> in the class or remove the clone
+method.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class BaseClass {  // Noncompliant - should implement Cloneable
   @Override
-  public Object clone() throws CloneNotSupportedException {    // Noncompliant; should return the super.clone() instance
+  public Object clone() throws CloneNotSupportedException {    // Noncompliant - should return the super.clone() instance
     return new BaseClass();
   }
 }
@@ -38,8 +42,8 @@ class Application {
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 class BaseClass implements Cloneable {
   @Override
   public Object clone() throws CloneNotSupportedException {    // Compliant

@@ -1,34 +1,83 @@
+<p>This rule raises an issue when an interface consists only of constant definitions without other members.</p>
 <h2>Why is this an issue?</h2>
-<p>According to Joshua Bloch, author of "Effective Java":</p>
-<blockquote>
-  <p>The constant interface pattern is a poor use of interfaces.</p>
-  <p>That a class uses some constants internally is an implementation detail.</p>
-  <p>Implementing a constant interface causes this implementation detail to leak into the class’s exported API. It is of no consequence to the users
-  of a class that the class implements a constant interface. In fact, it may even confuse them. Worse, it represents a commitment: if in a future
-  release the class is modified so that it no longer needs to use the constants, it still must implement the interface to ensure binary compatibility.
-  If a nonfinal class implements a constant interface,</p>
-  <p>all of its subclasses will have their namespaces polluted by the constants in the interface.</p>
-</blockquote>
-<p>This rule raises an issue when an interface consists solely of fields, without any other members.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-interface Status {                      // Noncompliant
-   int OPEN = 1;
-   int CLOSED = 2;
+<p>An interface that consists solely of constant definitions is a bad practice. The purpose of interfaces is to provide an API, not implementation
+details. That is, they should provide functions in the first place and constants only to assist these functions, for example, as possible
+arguments.</p>
+<p>If an interface contains constants only, move them either to somewhere else, or replace the interface with an <em>Enum</em> or a final class with a
+private constructor.</p>
+<h2>How to fix it</h2>
+<p>If the concrete value of the constants is not essential, and they serve as mere identifiers, replace the interface with an <code>enum</code> like
+in the following example:</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public interface Status { // Noncompliant, enum should be used
+  int OPEN = 1;
+  int CLOSED = 2;
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-public enum Status {                    // Compliant
+<pre data-diff-id="1" data-diff-type="compliant">
+public enum Status {      // Compliant
   OPEN,
-  CLOSED;
+  CLOSED
 }
 </pre>
-<p>or</p>
-<pre>
-public final class Status {             // Compliant
-   public static final int OPEN = 1;
-   public static final int CLOSED = 2;
+<p>In some cases, enums are not a suitable option because the concrete constant value is important. Then you should check whether it is appropriate to
+move them to a specific existing class, for example, if that class is the primary user of the constants:</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+interface AuxiliaryConstants { // Noncompliant, implementation detail of WordPacker
+  int BITS_PER_WORD = 16;
+  int WORD_MASK = (1 &lt;&lt; BITS_PER_WORD) - 1;
+  int HI_WORD_BK_MASK = ~(WORD_MASK &lt;&lt; BITS_PER_WORD);
+}
+
+class WordPacker {
+  public static int getHiWord(int value) {
+    return (value &gt;&gt;&gt; AuxiliaryConstants.BITS_PER_WORD);
+  }
+
+  public static int setHiWord(int value, int wordValue) {
+    return (value &amp; AuxiliaryConstants.HI_WORD_BK_MASK) |
+      (wordValue &lt;&lt; AuxiliaryConstants.BITS_PER_WORD);
+  }
 }
 </pre>
+<pre data-diff-id="1" data-diff-type="compliant">
+class WordPacker { // Compliant
+  private static final int BITS_PER_WORD = 16;
+  private static final int WORD_MASK = (1 &lt;&lt; BITS_PER_WORD) - 1;
+  private static final int HI_WORD_BK_MASK = ~(WORD_MASK &lt;&lt; BITS_PER_WORD);
+
+  public static int getHiWord(int value) {
+      return (value &gt;&gt;&gt; BITS_PER_WORD);
+  }
+
+  public static int setHiWord(int value, int wordValue) {
+    return (value &amp; HI_WORD_BK_MASK) | (wordValue &lt;&lt; BITS_PER_WORD);
+  }
+}
+</pre>
+<p>If this is not the case and several classes are using the constants equally, you should use a final class with a private constructor. Unlike
+interfaces, they can neither be inherited from nor instantiated.</p>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+public interface ColorTheme { // Noncomplient, final class should be used
+  int COLOR_ERROR = 0xff0000;   // red
+  int COLOR_WARNING = 0xffff00; // yellow
+  int COLOR_OK = 0x00cf00;      // green
+}
+</pre>
+<pre data-diff-id="3" data-diff-type="compliant">
+public final class ColorTheme { // Compliant
+  public static final int COLOR_ERROR = 0xff0000;   // red
+  public static final int COLOR_WARNING = 0xffff00; // yellow
+  public static final int COLOR_OK = 0x00cf00;      // green
+
+  private ColorTheme() {}
+}
+</pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://dzone.com/articles/reasons-why-the-constant-interface-pattern-is-disc">Mohammad Nadeem - Why the Constant Interface Pattern
+  Should Be Discouraged</a> </li>
+  <li> Joshua Bloch - Effective Java, ISBN 9780134686097 </li>
+</ul>
 

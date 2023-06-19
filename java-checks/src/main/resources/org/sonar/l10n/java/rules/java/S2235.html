@@ -1,33 +1,31 @@
 <h2>Why is this an issue?</h2>
-<p>According to Oracle Javadoc:</p>
-<blockquote>
-  <p><code>IllegalMonitorStateException</code> is thrown when a thread has attempted to wait on an object’s monitor or to notify other threads waiting
-  on an object’s monitor without owning the specified monitor.</p>
-</blockquote>
-<p>In other words, this exception can be thrown only in case of bad design because <code>Object.wait(...)</code>, <code>Object.notify()</code> and
-<code>Object.notifyAll()</code> methods should never be called on an object whose monitor is not held.</p>
+<p>The <code>IllegalMonitorStateException</code> is an exception that occurs when a thread tries to perform an operation on an object’s monitor that
+it does not own. This exception is typically thrown when a method like <code>wait()</code>, <code>notify()</code>, or <code>notifyAll()</code> is
+called outside a synchronized block or method.</p>
+<p><code>IllegalMonitorStateException</code> is specifically designed to be an unchecked exception to point out a programming mistake. This exception
+serves as a reminder for developers to rectify their code by correctly acquiring and releasing locks using synchronized blocks or methods. It also
+emphasizes the importance of calling monitor-related methods on the appropriate objects to ensure proper synchronization.</p>
+<p>Catching and handling this exception can mask underlying synchronization issues and lead to unpredictable behavior.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-public void doSomething(){
-  ...
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public void doSomething() {
   try {
-    ...
     anObject.notify();
-    ...
-  } catch(IllegalMonitorStateException e) {
-    ...
+  } catch(IllegalMonitorStateException e) { // Noncompliant
   }
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-public void doSomething(){
-  ...
+<pre data-diff-id="1" data-diff-type="compliant">
+public void doSomething() {
   synchronized(anObject) {
-    ...
     anObject.notify();
-    ...
   }
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/IllegalMonitorStateException.html">Oracle Java SE -
+  IllegalMonitorStateException</a> </li>
+</ul>
 

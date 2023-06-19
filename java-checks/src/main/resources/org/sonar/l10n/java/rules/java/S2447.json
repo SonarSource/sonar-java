@@ -1,5 +1,5 @@
 {
-  "title": "Null should not be returned from a \"Boolean\" method",
+  "title": "\"null\" should not be returned from a \"Boolean\" method",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

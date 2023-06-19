@@ -1,21 +1,27 @@
 <h2>Why is this an issue?</h2>
-<p>Method/constructor references are commonly agreed to be more readable than lambdas in most situations, and are therefore preferred.</p>
-<p>However, method references are sometimes less concise than lambdas. In such cases, it might be fine to keep the lambda if it is better for
-readability. This choice is ultimately up to the programmer. Therefore, this rule only raises issues on lambda functions that could be replaced by
-shorter method references.</p>
-<p><code>null</code> checks can be replaced with references to the <code>Objects::isNull</code> and <code>Objects::nonNull</code> methods,
-<code>casts</code> can be replaced with <code>SomeClass.class::cast</code> and <code>instanceof</code> can be replaced with
-<code>SomeClass.class::isInstance</code>.</p>
-<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>Method or constructor references are more readable than lambda expressions in many situations, and may therefore be preferred.</p>
+<p>However, method references are sometimes less concise than lambdas. In such cases, it might be preferrable to keep the lambda expression for better
+readability. Therefore, this rule only raises issues on lambda expressions where the replacement method reference is shorter.</p>
+<p>This rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>, as lambda expressions were
+introduced in Java 8.</p>
+<h2>How to fix it</h2>
+<p>Refer to the called method by its reference instead of wrapping it in a lambda expression.</p>
+<p>For instance:</p>
+<ul>
+  <li> <code>null</code> checks can be replaced with references to <code>Objects::isNull</code> and <code>Objects::nonNull</code> </li>
+  <li> Casts can be replaced with <code>SomeClass.class::cast</code> </li>
+  <li> <code>instanceof</code> can be replaced with <code>SomeClass.class::isInstance</code> </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class A {
   void process(List&lt;A&gt; list) {
     list.stream()
-      .filter(a -&gt; a instanceof B)
-      .map(a -&gt; (B) a)
-      .map(b -&gt; b.&lt;String&gt;getObject())
-      .forEach(b -&gt; { System.out.println(b); });
+      .filter(myListValue -&gt; myListValue instanceof B)     // Noncompliant
+      .map(listValueToMap -&gt; (B) listValueToMap)           // Noncompliant
+      .map(bValueToMap -&gt; bValueToMap.&lt;String&gt;getObject()) // Noncompliant
+      .forEach(o -&gt; System.out.println(o));                // Noncompliant
   }
 }
 
@@ -25,15 +31,15 @@ class B extends A {
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 class A {
   void process(List&lt;A&gt; list) {
     list.stream()
-      .filter(B.class::isInstance)
-      .map(B.class::cast)            // Note: keeping the lambda would also be compliant here, since it is shorter
-      .map(B::&lt;String&gt;getObject)
-      .forEach(System.out::println);
+      .filter(B.class::isInstance)   // Compliant
+      .map(B.class::cast)            // Compliant
+      .map(B::&lt;String&gt;getObject)     // Compliant
+      .forEach(System.out::println); // Compliant
   }
 }
 
@@ -43,4 +49,8 @@ class B extends A {
   }
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">Method References - The Java™ Tutorials</a> </li>
+</ul>
 

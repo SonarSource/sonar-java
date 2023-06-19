@@ -1,15 +1,45 @@
+<p>This rule raises an issue when a finalizer assign <code>null</code> to fields of the instance it is called on.</p>
 <h2>Why is this an issue?</h2>
-<p>There is no point in setting class fields to <code>null</code> in a finalizer. If this this is a hint to the garbage collector, it is unnecessary -
-the object will be garbage collected anyway - and doing so may actually cause extra work for the garbage collector.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>In the Java object lifecycle, the <code>finalize</code> method for an instance is called after the garbage collector has determined that the
+instance can be removed from the object heap. Therefore, it is unnecessary to implement a finalizer to set instance fields explicitly to
+<code>null</code> to tell the garbage collector that the instance no longer needs them.</p>
+<p>In the worst case, implementing <code>finalize</code> is even counterproductive because it might accidentally create new references from other
+(living) objects on the heap to the collectible instance, thus, reviving it.</p>
+<p><strong>Important note about finalizers:</strong></p>
+<p>There are no guarantees when the Java Runtime will call the <code>finalize</code> method or whether it will be called at all.</p>
+<p>Using finalizers is, therefore, a bad practice. They should never be used to free resources, such as closing streams, freeing locks, or freeing
+native system resources. Consider other freeing mechanisms instead, such as an explicit <code>close</code>, <code>unlock</code>, or <code>free</code>
+method in your class.</p>
+<h2>How to fix it</h2>
+<p>Remove assignments from your finalizer that assign <code>null</code> to fields of the instance the finalizer is called on. When this leaves you
+with an empty finalizer body, remove the finalizer.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Foo {
   private String name;
 
   @Override
   void finalize() {
-    name = null;  // Noncompliant; completely unnecessary
+    name = null;  // Noncompliant, instance will be removed anyway
   }
 }
 </pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class Foo { // Compliant
+  private String name;
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#finalize--">Java SE 8 API Specification - Object.finalize</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://howtodoinjava.com/java/basics/why-not-to-use-finalize-method-in-java">Java finalize() – Why We Should Not Use It? - Lokesh
+  Gupta</a> </li>
+  <li> <a href="https://www.baeldung.com/java-finalize">A Guide to the finalize Method in Java - Baeldung</a> </li>
+</ul>
 

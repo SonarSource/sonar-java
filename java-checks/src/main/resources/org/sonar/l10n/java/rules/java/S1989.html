@@ -1,33 +1,47 @@
 <h2>Why is this an issue?</h2>
-<p>Even though the signatures for methods in a servlet include <code>throws IOException, ServletException</code>, it’s a bad idea to let such
-exceptions be thrown. Failure to catch exceptions in a servlet could leave a system in a vulnerable state, possibly resulting in denial-of-service
-attacks, or the exposure of sensitive information because when a servlet throws an exception, the servlet container typically sends debugging
-information back to the user. And that information could be very valuable to an attacker.</p>
-<p>This rule checks all exceptions in methods named "do*" are explicitly handled in servlet classes.</p>
-<h3>Noncompliant code example</h3>
+<p>Servlets are components in Java web development, responsible for processing HTTP requests and generating responses. In this context, exceptions are
+used to handle and manage unexpected errors or exceptional conditions that may occur during the execution of a servlet.</p>
+<p>Catching exceptions within the servlet allows us to convert them into meaningful, user-friendly messages. Otherwise, failing to catch exceptions
+will propagate them to the servlet container, where the default error-handling mechanism may impact the overall security and stability of the
+server.</p>
+<p>Possible security problems are:</p>
+<ol>
+  <li> <strong>Vulnerability to denial-of-service attacks:</strong> Not caught exceptions can leave the servlet container in an unstable state, which
+  can exhaust the available resources and make the system unavailable in the worst cases. </li>
+  <li> <strong>Exposure of sensitive information:</strong> Exceptions handled by the servlet container, by default, expose detailed error messages or
+  debugging information to the user, which may contain sensitive data such as stack traces, database connection, or system configuration. </li>
+</ol>
+<p>Unfortunately, servlet method signatures do not force developers to handle <code>IOException</code> and <code>ServletException</code>:</p>
 <pre>
-public void doGet(HttpServletRequest request, HttpServletResponse response)
-  throws IOException, ServletException {
-  String ip = request.getRemoteAddr();
-  InetAddress addr = InetAddress.getByName(ip); // Noncompliant; getByName(String) throws UnknownHostException
+public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+}
+</pre>
+<p>To prevent this risk, this rule enforces all exceptions to be caught within the "do*" methods of servlet classes.</p>
+<h2>How to fix it</h2>
+<p>Surround all method calls that may throw an exception with a <code>try/catch</code> block.</p>
+<h3>Code examples</h3>
+<p>In the following example, the <code>getByName</code> method may throw an <code>UnknownHostException</code>.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+  InetAddress addr = InetAddress.getByName(request.getRemoteAddr()); // Noncompliant
   //...
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-public void doGet(HttpServletRequest request, HttpServletResponse response)
-  throws IOException, ServletException {
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
   try {
-    String ip = request.getRemoteAddr();
-    InetAddress addr = InetAddress.getByName(ip);
+    InetAddress addr = InetAddress.getByName(request.getRemoteAddr());
     //...
   }
-  catch (UnknownHostException uhex) {
+  catch (UnknownHostException ex) {  // Compliant
     //...
   }
 }
 </pre>
 <h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
 <ul>
   <li> <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data
   Exposure </li>

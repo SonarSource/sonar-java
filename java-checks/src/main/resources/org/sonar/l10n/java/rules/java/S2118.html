@@ -1,36 +1,42 @@
 <h2>Why is this an issue?</h2>
-<p>Nothing in a non-serializable class will be written out to file, and attempting to serialize such a class will result in an exception being thrown.
-Only a class that <code>implements Serializable</code> or one that extends such a class can successfully be serialized (or de-serialized).</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public class Vegetable {  // neither implements Serializable nor extends a class that does
-  //...
+<p>Serialization is a platform-independent mechanism for writing the state of an object into a byte-stream. For serializing the object, we call the
+<code>writeObject()</code> method of <code>java.io.ObjectOutputStream</code> class. Only classes that implement <code>Serializable</code> or extend a
+class that does it can successfully be serialized (or de-serialized).</p>
+<p>Attempting to write a class with the <code>writeObject</code> method of the <code>ObjectOutputStream</code> class that does not implement
+<code>Serializable</code> or extends a class that implements it, will throw an <code>IOException</code>.</p>
+<h2>How to fix it</h2>
+<p>The object class passed as an argument to the <code>writeObject</code> must implement <code>Serializable</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class Vegetable {
+  // ...
 }
 
 public class Menu {
-  public void meal() throws IOException {
-    Vegetable veg;
-    //...
-    FileOutputStream fout = new FileOutputStream(veg.getName());
-    ObjectOutputStream oos = new ObjectOutputStream(fout);
-    oos.writeObject(veg);  // Noncompliant. Nothing will be written
+  public void meal(ObjectOutputStream oos) throws IOException {
+    Vegetable veg = new Vegetable();
+    oos.writeObject(veg);  // Noncompliant
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-public class Vegetable implements Serializable {  // can now be serialized
-  //...
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class Vegetable implements Serializable {
+  // ...
 }
 
 public class Menu {
-  public void meal() throws IOException {
-    Vegetable veg;
-    //...
-    FileOutputStream fout = new FileOutputStream(veg.getName());
-    ObjectOutputStream oos = new ObjectOutputStream(fout);
+  public void meal(ObjectOutputStream oos) throws IOException {
+    Vegetable veg = new Vegetable();
     oos.writeObject(veg);
   }
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/io/Serializable.html">Oracle Java SE - Serializable</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/io/ObjectOutputStream.html">Oracle Java SE - ObjectOutputStream</a>
+  </li>
+</ul>
 

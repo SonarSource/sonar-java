@@ -1,8 +1,8 @@
 <h2>Why is this an issue?</h2>
-<p>Throwing an exception from within a finally block will mask any exception which was previously thrown in the <code>try</code> or <code>catch</code>
-block, and the masked’s exception message and stack trace will be lost.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>If an exception is already being thrown within the <code>try</code> block or caught in a <code>catch</code> block, throwing another exception in
+the <code>finally</code> block will override the original exception. This means that the original exception’s message and stack trace will be lost,
+potentially making it challenging to diagnose and troubleshoot the root cause of the problem.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 try {
   /* some work which end up throwing an exception */
   throw new IllegalArgumentException();
@@ -11,8 +11,7 @@ try {
   throw new RuntimeException();       // Noncompliant; masks the IllegalArgumentException
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 try {
   /* some work which end up throwing an exception */
   throw new IllegalArgumentException();
