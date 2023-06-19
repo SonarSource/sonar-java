@@ -1,5 +1,5 @@
 {
-  "title": "\"Iterator.hasNext\" should not call \"Iterator.next\"",
+  "title": "\"Iterator.hasNext()\" should not call \"Iterator.next()\"",
   "type": "BUG",
   "status": "ready",
   "remediation": {
