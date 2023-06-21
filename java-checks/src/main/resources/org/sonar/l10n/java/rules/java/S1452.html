@@ -1,20 +1,52 @@
 <h2>Why is this an issue?</h2>
-<p>It is highly recommended <strong>not</strong> to use wildcard types as return types. Because the type inference rules are fairly complex it is
-unlikely the user of that API will know how to use it correctly.</p>
-<p>Let’s take the example of method returning a "List&lt;? extends Animal&gt;". Is it possible on this list to add a Dog, a Cat, …​ we simply don’t
-know. And neither does the compiler, which is why it will not allow such a direct use. The use of wildcard types should be limited to method
-parameters.</p>
-<p>This rule raises an issue when a method returns a wildcard type.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-List&lt;? extends Animal&gt; getAnimals(){...}
+<p>A return type containing wildcards cannot be narrowed down in any context. This indicates that the developer’s intention was likely something
+else.</p>
+<p>The core problem lies in type variance. Expressions at an input position, such as arguments passed to a method, can have a more specific type than
+the type expected by the method, which is called <em>covariance</em>. Expressions at an output position, such as a variable that receives the return
+result from a method, can have a more general type than the method’s return type, which is called <em>contravariance</em>. This can be traced back to
+the Liskov substitution principle.</p>
+<p>In Java, type parameters of a generic type are invariant by default due to their potential occurrence in both input and output positions at the
+same time. A classic example of this is the methods <code>T get()</code> (output position) and <code>add(T element)</code> (input position) in
+interface <code>java.util.List</code>. We could construct cases with invalid typing in <code>List</code> if <code>T</code> were not invariant.</p>
+<p>Wildcards can be employed to achieve covariance or contravariance in situations where the type parameter appears in one position only:</p>
+<ul>
+  <li> <code>&lt;? extends Foo&gt;</code> for covariance (input positions) </li>
+  <li> <code>&lt;? super Foo&gt;</code> for contravariance (output positions) </li>
+</ul>
+<p>However, covariance is ineffective for the return type of a method since it is not an input position. Making it contravariant also has no effect
+since it is the receiver of the return value which must be contravariant (use-site variance in Java). Consequently, a return type containing wildcards
+is generally a mistake.</p>
+<h2>How to fix it</h2>
+<p>The solution to this problem depends on the original intention of the developer. Given the examples:</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+List&lt;? extends Animal&gt; getAnimals() { ... } // Noncompliant, wildcard with no use
+List&lt;? super Plant&gt; getLifeforms() { ... }  // Noncompliant, wildcard with no use
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-List&lt;Animal&gt; getAnimals(){...}
+<p>You can remove the wildcards to make the types invariant:</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+List&lt;Animal&gt; getAnimals() { ... }           // Compliant, using invariant type instead
+List&lt;Plant&gt; getLifeforms() { ... }          // Compliant, using invariant type instead
 </pre>
-<p>or</p>
-<pre>
-List&lt;Dog&gt; getAnimals(){...}
+<p>Or replace them with a super- or subtypes (still invariant):</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+List&lt;Dog&gt; getAnimals() { ... }              // Compliant, using subtype instead
+List&lt;Lifeform&gt; getLifeforms() { ... }       // Compliant, using supertype instead
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/extra/generics/wildcards.html">The Java™ Tutorials - Wildcards</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://medium.com/javarevisited/variance-in-java-and-scala-63af925d21dc">Sinisa Louc - A Complete Guide to Variance in Java and
+  Scala</a> </li>
+  <li> <a href="https://kotlinexpertise.com/kotlin-generics-and-variance-vs-java">Kotlin Expertise Blog - Kotlin Generics and Variance (Compared to
+  Java)</a> </li>
+  <li> <a href="https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)">Wikipedia - Covariance and contravariance (computer
+  science)</a> </li>
+  <li> <a href="https://schneide.blog/2015/05/11/declaration-site-and-use-site-variance-explained/">Schneide Blog - Declaration-site and use-site
+  variance explained</a> </li>
+  <li> <a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle">Wikipedia - Liskov substitution principle</a> </li>
+</ul>
 

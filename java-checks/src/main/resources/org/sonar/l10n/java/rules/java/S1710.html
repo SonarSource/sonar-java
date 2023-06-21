@@ -1,10 +1,12 @@
 <h2>Why is this an issue?</h2>
-<p>Before Java 8 if you needed to use multiple instances of the same annotation, they had to be wrapped in a container annotation. With Java 8, that’s
-no longer necessary, allowing for cleaner, more readable code.</p>
-<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-@SomeAnnotations({  // Noncompliant
+<p>Before Java 8, a container annotation was required as wrapper to use multiple instances of the same annotation. As of Java 8, this is no longer
+necessary. Instead, these annotations should be used directly without a wrapper, resulting in cleaner and more readable code.</p>
+<p>This rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code> as repeating annotations were
+introduced is Java 8.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@SomeAnnotations({  // Noncompliant, wrapper annotations are not necessary in Java 8+
   @SomeAnnotation(..a..),
   @SomeAnnotation(..b..),
   @SomeAnnotation(..c..),
@@ -13,8 +15,8 @@ public class SomeClass {
   ...
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 @SomeAnnotation(..a..)
 @SomeAnnotation(..b..)
 @SomeAnnotation(..c..)
@@ -22,4 +24,8 @@ public class SomeClass {
   ...
 }
 </pre>
+<h2>References</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/annotations/repeating.html">Repeating Annotations - The Java™ Tutorials</a> </li>
+</ul>
 

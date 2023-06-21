@@ -1,15 +1,12 @@
 {
   "title": "\"super.finalize()\" should be called at the end of \"Object.finalize()\" implementations",
   "type": "BUG",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "tags": [
-    "cwe",
-    "cert"
-  ],
+  "tags": [],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-1114",
   "sqKey": "S1114",

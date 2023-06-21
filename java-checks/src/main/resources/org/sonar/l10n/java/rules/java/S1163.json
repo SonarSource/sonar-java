@@ -15,7 +15,7 @@
   "ruleSpecification": "RSPEC-1163",
   "sqKey": "S1163",
   "scope": "Main",
-  "quickfix": "unknown",
+  "quickfix": "infeasible",
   "securityStandards": {
     "CERT": [
       "ERR05-J."

@@ -1,7 +1,10 @@
 <h2>Why is this an issue?</h2>
-<p>When a parent class references a member of a subclass during its own initialization, the results might not be what you expect because the child
-class might not have been initialized yet. This could create what is known as an "initialisation cycle", or even a deadlock in some extreme cases.</p>
-<p>To make things worse, these issues are very hard to diagnose so it is highly recommended you avoid creating this kind of dependencies.</p>
+<p>Referencing a static member of a subclass from its parent during class initialization, makes the code more fragile and prone to future bugs. The
+execution of the program will rely heavily on the order of initialization of classes and their static members.</p>
+<h3>What is the potential impact?</h3>
+<p>This could create what is known as an "initialization cycle", or even a deadlock in some extreme cases. Additionally, if the order of the static
+class members is changed, the behavior of the program might change. These issues can be very hard to diagnose so it is highly recommended to avoid
+creating this kind of dependencies.</p>
 <h3>Noncompliant code example</h3>
 <pre>
 class Parent {
@@ -23,7 +26,7 @@ class Child extends Parent {
 <ul>
   <li> <a href="https://www.securecoding.cert.org/confluence/display/java/DCL00-J.+Prevent+class+initialization+cycles">CERT, DCL00-J.</a> - Prevent
   class initialization cycles </li>
-  <li> Java Language Specifications - <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-12.html#jls-12.4">Section 12.4: Initialization of
-  Classes and Interfaces</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html#jls-12.4">Section 12.4: Initialization of Classes and Interfaces</a> -
+  Java Language Specification </li>
 </ul>
 

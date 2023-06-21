@@ -1,19 +1,37 @@
 <h2>Why is this an issue?</h2>
-<p>While <code>hashCode</code> and <code>toString</code> are available on arrays, they are largely useless. <code>hashCode</code> returns the array’s
-"identity hash code", and <code>toString</code> returns nearly the same value. Neither method’s output actually reflects the array’s contents.
-Instead, you should pass the array to the relevant static <code>Arrays</code> method.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public static void main( String[] args )
-{
-    String argStr = args.toString(); // Noncompliant
-    int argHash = args.hashCode(); // Noncompliant
+<p>The purpose of the <code>hashCode</code> method is to return a hash code based on the contents of the object. Similarly, the purpose of the
+<code>toString</code> method is to provide a textual representation of the object’s contents.</p>
+<p>Calling <code>hashCode()</code> and <code>toString()</code> directly on array instances should be avoided because the default implementations
+provided by the <code>Object</code> class do not provide meaningful results for arrays. <code>hashCode()</code> returns the array’s "identity hash
+code", and <code>toString()</code> returns nearly the same value. Neither method’s output reflects the array’s contents.</p>
+<h2>How to fix it</h2>
+<p>Use relevant static <code>Arrays</code> method.</p>
+<ul>
+  <li> <code>Arrays.hashCode</code> or <code>Arrays.deepHashCode</code> </li>
+  <li> <code>Arrays.toString</code> or <code>Arrays.deepToString</code> </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public static void main(String[] args) {
+    String argStr = args.toString();       // Noncompliant
+    int argHash = args.hashCode();         // Noncompliant
+}
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-public static void main( String[] args )
-{
-    String argStr = Arrays.toString(args);
-    int argHash = Arrays.hashCode(args);
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public static void main(String[] args) {
+    String argStr = Arrays.toString(args); // Compliant
+    int argHash = Arrays.hashCode(args);   // Compliant
+}
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/Arrays.html">Oracle Java SE - Arrays API</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://github.com/google/error-prone/blob/master/docs/bugpattern/ArrayHashCode.md">Error Prone - ArrayHashCode</a> </li>
+</ul>
 

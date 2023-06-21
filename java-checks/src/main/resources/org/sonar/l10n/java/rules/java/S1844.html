@@ -1,25 +1,29 @@
 <h2>Why is this an issue?</h2>
-<p>From the Java API documentation:</p>
-<blockquote>
-  <p><code>Condition</code> factors out the <code>Object</code> monitor methods (<code>wait</code>, <code>notify</code> and <code>notifyAll</code>)
-  into distinct objects to give the effect of having multiple wait-sets per object, by combining them with the use of arbitrary Lock implementations.
-  Where a <code>Lock</code> replaces the use of <code>synchronized</code> methods and statements, a <code>Condition</code> replaces the use of the
-  <code>Object</code> monitor methods.</p>
-</blockquote>
-<p>The purpose of implementing the <code>Condition</code> interface is to gain access to its more nuanced <code>await</code> methods. Therefore,
-calling the method <code>Object.wait(...)</code> on a class implementing the <code>Condition</code> interface is silly and confusing.</p>
+<p>The <code>java.util.concurrent.locks.Condition</code> interface provides an alternative to the <code>Object</code> monitor methods
+(<code>wait</code>, <code>notify</code> and <code>notifyAll</code>). Hence, the purpose of implementing said interface is to gain access to its more
+nuanced <code>await</code> methods.</p>
+<p>Consequently, calling the method <code>Object.wait</code> on a class implementing the <code>Condition</code> interface is contradictory and should
+be avoided. Use <code>Condition.await</code> instead.</p>
+<h2>Code examples</h2>
 <h3>Noncompliant code example</h3>
-<pre>
-final Lock lock = new ReentrantLock();
-final Condition notFull  = lock.newCondition();
-...
-notFull.wait();
+<pre data-diff-id="1" data-diff-type="noncompliant">
+void doSomething(Condition condition) {
+    condition.wait(); // Noncompliant, Object.wait is called
+
+        ...
+}
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-final Lock lock = new ReentrantLock();
-final Condition notFull  = lock.newCondition();
-...
-notFull.await();
+<pre data-diff-id="1" data-diff-type="compliant">
+void doSomething(Condition condition) {
+    condition.await(); // Compliant, Condition.await is called
+
+        ...
+}
 </pre>
+<h2>References</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/locks/Condition.html">Interface Condition - Java™ Platform SE 8, API
+  Specification</a> </li>
+</ul>
 

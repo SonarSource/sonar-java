@@ -1,5 +1,5 @@
 {
-  "title": "Boxing and unboxing should not be immediately reversed",
+  "title": "Unnecessary boxing and unboxing should be avoided",
   "type": "BUG",
   "status": "ready",
   "remediation": {

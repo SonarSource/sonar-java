@@ -4,7 +4,7 @@ be extended, should not have public constructors.</p>
 <p>Java adds an implicit public constructor to every class which does not define at least one explicitly. Hence, at least one non-public constructor
 should be defined.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class StringUtils { // Noncompliant
 
   public static String concatenate(String s1, String s2) {
@@ -14,7 +14,7 @@ class StringUtils { // Noncompliant
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 class StringUtils { // Compliant
 
   private StringUtils() {

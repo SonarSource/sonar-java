@@ -1,22 +1,26 @@
+<p>Control structures are code statements that impact the program’s control flow (e.g., if statements, for loops, etc.)</p>
 <h2>Why is this an issue?</h2>
-<p>While not technically incorrect, the omission of curly braces can be misleading, and may lead to the introduction of errors during maintenance.</p>
-<h3>Noncompliant code example</h3>
+<p>While not technically incorrect, the omission of curly braces can be misleading and may lead to the introduction of errors during maintenance.</p>
+<p>In the following example, the two calls seem to be attached to the <code>if</code> statement, but only the first one is, and
+<code>checkSomething</code> will always be executed:</p>
 <pre>
 if (condition)  // Noncompliant
   executeSomething();
+  checkSomething();
 </pre>
-<h3>Compliant solution</h3>
+<p>Adding curly braces improves the code readability and its robustness:</p>
 <pre>
 if (condition) {
   executeSomething();
+  checkSomething();
 }
 </pre>
+<p>The rule raises an issue when a control structure has no curly braces.</p>
 <h3>Exceptions</h3>
-<p>When the body of an <code>if</code> statement is a single <code>return</code>, <code>break</code> or <code>continue</code> and is on the same
-line.</p>
+<p>The rule doesn’t raise an issue when the body of an <code>if</code> statement is a single <code>return</code>, <code>break</code>, or
+<code>continue</code> and is on the same line.</p>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/g9YxBQ">CERT, EXP19-C.</a> - Use braces for the body of an if, for, or while statement </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/MzZGBQ">CERT, EXP52-J.</a> - Use braces for the body of an if, for, or while statement </li>
 </ul>
 

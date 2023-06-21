@@ -1,18 +1,34 @@
 <h2>Why is this an issue?</h2>
-<p>According to the Java Language Specification:</p>
-<blockquote>
-  <p>Unnamed packages are provided by the Java platform principally for convenience when developing small or temporary applications or when just
-  beginning development.</p>
-</blockquote>
-<p>To enforce this best practice, classes located in default package can no longer be accessed from named ones since Java 1.4.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public class MyClass { /* ... */ }
+<p>Java packages serve two purposes:</p>
+<ol>
+  <li> Structure — Packages give a structure to the set of classes of your project. It is a bad practice to put all classes flat into the source
+  directory of a project without a package structure. A structure helps to mentally break down a project into smaller parts, simplifying readers'
+  understanding of how components are connected and how they interact. </li>
+  <li> Avoiding name clashes — a class part of the <em>default package</em> if no explicit package name is specified. This can easily cause name
+  collisions when other projects define a class of the same name. </li>
+</ol>
+<p>When no package is explicitly specified for the classes in your project, this makes the project harder to understand and may cause name collisions
+with other projects. Also, classes located in the default package not be accessed from classes within named packages since Java 1.4.</p>
+<h2>How to fix it</h2>
+<p>Move your class to a package directory and explicitly state the package’s name at the top of the class. If your project does not have a package
+structure, think of a structure that fits your needs. The package names should be unique to your project. You can find some best practices when
+choosing package names in the Ressources section below.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class MyClass { /* ... */ } // Noncompliant, no package spacified
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-package org.example;
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+package org.example; // Compliant
 
 public class MyClass{ /* ... */ }
 </pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/java-packages">Baeldung - Guide to Java Packages</a> </li>
+  <li> <a
+  href="https://www.tutorialspoint.com/what-are-the-best-practices-to-keep-in-mind-while-using-packages-in-java#:~:text=Naming%20conventions%20and%20best%20practices%20for%20packages">tutorialspoint - What are the best practices to keep in mind while using packages in Java?</a> </li>
+</ul>
 

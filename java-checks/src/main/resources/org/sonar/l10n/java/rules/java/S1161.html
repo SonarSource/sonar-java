@@ -1,28 +1,27 @@
 <h2>Why is this an issue?</h2>
-<p>Using the <code>@Override</code> annotation is useful for two reasons :</p>
-<ul>
-  <li> It elicits a warning from the compiler if the annotated method doesn’t actually override anything, as in the case of a misspelling. </li>
-  <li> It improves the readability of the source code by making it obvious that methods are overridden. </li>
-</ul>
+<p>While not mandatory, using the <code>@Override</code> annotation on compliant methods improves readability by making it explicit that methods are
+overriden.</p>
+<p>A compliant method either overrides a parent method or implements an interface or abstract method.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class ParentClass {
-  public boolean doSomething(){...}
+  public boolean doSomething(){/*...*/}
 }
 class FirstChildClass extends ParentClass {
-  public boolean doSomething(){...}  // Noncompliant
+  public boolean doSomething(){/*...*/}  // Noncompliant
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 class ParentClass {
-  public boolean doSomething(){...}
+  public boolean doSomething(){/*...*/}
 }
 class FirstChildClass extends ParentClass {
   @Override
-  public boolean doSomething(){...}  // Compliant
+  public boolean doSomething(){/*...*/}  // Compliant
 }
 </pre>
 <h3>Exceptions</h3>
-<p>This rule is relaxed when overriding a method from the <code>Object</code> class like <code>toString()</code>, <code>hashCode()</code>, …​</p>
+<p>This rule does not raise issues when overriding methods from <code>Object</code> (eg: <code>equals()</code>, <code>hashCode()</code>,
+<code>toString()</code>, …​).</p>
 

@@ -1,13 +1,14 @@
 <h2>Why is this an issue?</h2>
-<p>There are two possible syntaxes for a lambda having only one input parameter with an inferred type: with and without parentheses around that single
-parameter. The simpler syntax, without parentheses, is more compact and readable than the one with parentheses, and is therefore preferred.</p>
-<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
+<p>Lambda expressions with only one argument with an inferred type (i.e., no explicit type declaration) can be written without parentheses around that
+single parameter. This syntax is simpler, more compact and readable than using parentheses and is therefore preferred.</p>
+<p>This rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>, as lambda expressions were
+introduced in Java 8.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 (x) -&gt; x * 2
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 x -&gt; x * 2
 </pre>
 

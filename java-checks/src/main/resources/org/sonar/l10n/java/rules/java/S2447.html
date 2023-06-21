@@ -1,12 +1,38 @@
 <h2>Why is this an issue?</h2>
-<p>While <code>null</code> is technically a valid <code>Boolean</code> value, that fact, and the distinction between <code>Boolean</code> and
-<code>boolean</code> is easy to forget. So returning <code>null</code> from a <code>Boolean</code> method is likely to cause problems with callers'
-code.</p>
+<p>Callers of a <code>Boolean</code> method may be expecting to receive <code>true</code> or <code>false</code> in response. But <code>Boolean</code>
+objects can take <code>null</code> as a possible value. <code>Boolean</code> methods should not return <code>null</code> unless the code is annotated
+appropriately. With the proper annotation, the caller is aware that the returned value could be null.</p>
 <h3>Noncompliant code example</h3>
 <pre>
 public Boolean isUsable() {
   // ...
   return null;  // Noncompliant
+}
+
+public void caller() {
+  if (isUsable()) { // A NullPointerException might occur here
+    // ...
+  }
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre>
+@javax.annotation.Nullable
+public Boolean isUsable() {
+  // ...
+  return null;
+}
+
+@javax.annotation.CheckForNull
+public Boolean isUsable() {
+  // ...
+  return null;
+}
+
+public void caller() {
+  if (Boolean.True.equals(isUsable())) { // This caller knows to check and avoid ambiguity
+    // ...
+  }
 }
 </pre>
 <h2>Resources</h2>

@@ -1,5 +1,5 @@
 {
-  "title": "Non-serializable classes should not be written",
+  "title": "\"writeObject\" argument must implement \"Serializable\"",
   "type": "BUG",
   "status": "ready",
   "remediation": {

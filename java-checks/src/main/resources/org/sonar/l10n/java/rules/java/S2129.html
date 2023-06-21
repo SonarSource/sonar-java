@@ -1,9 +1,9 @@
 <h2>Why is this an issue?</h2>
-<p>Constructors for <code>String</code>, <code>BigInteger</code>, <code>BigDecimal</code> and the objects used to wrap primitives should never be
-used. Doing so is less clear and uses more memory than simply using the desired value in the case of strings, and using <code>valueOf</code> for
-everything else.</p>
+<p>Calling constructors for <code>String</code>, <code>BigInteger</code>, <code>BigDecimal</code> and the objects used to wrap primitives is less
+efficient and less clear than relying on autoboxing or <code>valueOf</code>.</p>
+<p>Consider simplifying when possible for more efficient and cleaner code.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 String empty = new String(); // Noncompliant; yields essentially "", so just use that.
 String nonempty = new String("Hello world"); // Noncompliant
 Double myDouble = new Double(1.1); // Noncompliant; use valueOf
@@ -12,19 +12,26 @@ Boolean bool = new Boolean(true); // Noncompliant
 BigInteger bigInteger1 = new BigInteger("3"); // Noncompliant
 BigInteger bigInteger2 = new BigInteger("9223372036854775807"); // Noncompliant
 BigInteger bigInteger3 = new BigInteger("111222333444555666777888999"); // Compliant, greater than Long.MAX_VALUE
+BigDecimal bigDecimal = new BigDecimal("42.0"); // Compliant (see Exceptions section)
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 String empty = "";
 String nonempty = "Hello world";
-Double myDouble = Double.valueOf(1.1);
-Integer integer = Integer.valueOf(1);
-Boolean bool = Boolean.valueOf(true);
+Double myDouble = 1.1;
+Integer integer = 1;
+Boolean bool = true;
 BigInteger bigInteger1 = BigInteger.valueOf(3);
 BigInteger bigInteger2 = BigInteger.valueOf(9223372036854775807L);
 BigInteger bigInteger3 = new BigInteger("111222333444555666777888999");
+BigDecimal bigDecimal = new BigDecimal("42.0");
 </pre>
 <h3>Exceptions</h3>
-<p><code>BigDecimal</code> constructor with <code>double</code> argument is ignored as using <code>valueOf</code> instead might change resulting
-value. See {rule:java:S2111} .</p>
+<p><code>BigDecimal</code> constructor with a <code>double</code> argument is ignored as using <code>valueOf</code> instead might change the resulting
+value. See {rule:java:S2111}.</p>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html">Oracle - Learning the Java Language</a> - Autoboxing and Unboxing
+  </li>
+</ul>
 

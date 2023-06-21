@@ -1,10 +1,27 @@
 <h2>Why is this an issue?</h2>
-<p><code>Double.longBitsToDouble</code> expects a 64-bit, <code>long</code> argument. Pass it a smaller value, such as an <code>int</code> and the
-mathematical conversion into a <code>double</code> simply won’t work as anticipated because the layout of the bits will be interpreted incorrectly, as
-if a child were trying to use an adult’s gloves.</p>
+<p><code>Double.longBitsToDouble</code> converts the bit pattern into its corresponding floating-point representation. The method expects a 64-bit
+long argument to interpret the bits as a double value correctly.</p>
+<p>When the argument is a smaller data type, the cast to <code>long</code> may lead to a different value than expected due to the interpretation of
+the most significant bit, which, in turn, results in <code>Double.longBitsToDouble</code> returning an incorrect value.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-int i = 42;
-double d = Double.longBitsToDouble(i);  // Noncompliant
+<pre data-diff-id="1" data-diff-type="noncompliant">
+int i = 0x80003800;
+Double.longBitsToDouble(i);   // Noncompliant - NaN
 </pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+long i = 0x80003800L;
+Double.longBitsToDouble(i);   // Compliant - 1.0610049784E-314
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Double.html#doubleToLongBits(double)">Oracle Java SE -
+  Double.doubleToLongBits</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">Wikipedia - Double Precision floating point format</a> </li>
+  <li> <a href="https://en.wikipedia.org/wiki/Single-precision_floating-point_format">Wikipedia - Single Precision floating point format</a> </li>
+</ul>
 

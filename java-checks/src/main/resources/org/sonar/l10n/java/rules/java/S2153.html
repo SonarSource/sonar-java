@@ -1,55 +1,55 @@
 <h2>Why is this an issue?</h2>
-<p>Boxing is the process of putting a primitive value into an analogous object, such as creating an <code>Integer</code> to hold an <code>int</code>
-value. Unboxing is the process of retrieving the primitive value from such an object.</p>
-<p>Since the original value is unchanged during boxing and unboxing, there’s no point in doing either when not needed. This also applies to autoboxing
-and auto-unboxing (when Java implicitly handles the primitive/object transition for you).</p>
+<p>Boxing is the process of putting a primitive value into a wrapper object, such as creating an <code>Integer</code> to hold an <code>int</code>
+value. Unboxing is the process of retrieving the primitive value from such an object. Since the original value is unchanged during boxing and
+unboxing, there is no point in doing either when not needed.</p>
+<p>Instead, you should rely on Java’s implicit boxing/unboxing to convert from the primitive type to the wrapper type and vice versa, for better
+readability.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-public void examineInt(int a) {
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public void examinePrimitiveInt(int a) {
   //...
 }
 
-public void examineInteger(Integer a) {
+public void examineBoxedInteger(Integer a) {
   // ...
 }
 
 public void func() {
-  int i = 0;
-  Integer iger1 = Integer.valueOf(0);
+  int primitiveInt = 0;
+  Integer boxedInt = Integer.valueOf(0);
   double d = 1.0;
 
-  int dIntValue = new Double(d).intValue(); // Noncompliant
+  int dIntValue = Double.valueOf(d).intValue(); // Noncompliant; should be replaced with a simple cast
 
-  examineInt(new Integer(i).intValue()); // Noncompliant; explicit box/unbox
-  examineInt(Integer.valueOf(i));  // Noncompliant; boxed int will be auto-unboxed
+  examinePrimitiveInt(boxedInt.intValue()); // Noncompliant; unnecessary unboxing
+  examinePrimitiveInt(Integer.valueOf(primitiveInt));  // Noncompliant; boxed int will be auto-unboxed
 
-  examineInteger(i); // Compliant; value is boxed but not then unboxed
-  examineInteger(iger1.intValue()); // Noncompliant; unboxed int will be autoboxed
-
-  Integer iger2 = new Integer(iger1); // Noncompliant; unnecessary unboxing, value can be reused
+  examineBoxedInteger(Integer.valueOf(primitiveInt)); // Noncompliant; unnecessary boxing
+  examineBoxedInteger(boxedInt.intValue()); // Noncompliant; unboxed int will be autoboxed
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-public void examineInt(int a) {
+<pre data-diff-id="1" data-diff-type="compliant">
+public void examinePrimitiveInt(int a) {
   //...
 }
 
-public void examineInteger(Integer a) {
+public void examineBoxedInteger(Integer a) {
   // ...
 }
 
 public void func() {
-  int i = 0;
-  Integer iger1 = Integer.valueOf(0);
+  int primitiveInt = 0;
+  Integer boxedInt = Integer.valueOf(0);
   double d = 1.0;
 
   int dIntValue = (int) d;
 
-  examineInt(i);
+  examinePrimitiveInt(primitiveInt);
+  examinePrimitiveInt(boxedInt);
 
-  examineInteger(i);
-  examineInteger(iger1);
+  examineBoxedInteger(primitiveInt);
+  examineBoxedInteger(boxedInt);
 }
 </pre>
 

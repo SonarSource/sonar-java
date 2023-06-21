@@ -1,29 +1,31 @@
 <h2>Why is this an issue?</h2>
-<p>Naming a method <code>tostring</code>, <code>hashcode</code> or <code>equal</code> is either:</p>
-<ul>
-  <li> A bug in the form of a typo. Overriding <code>toString</code>, <code>Object.hashCode()</code> (note the camelCasing) or
-  <code>Object.equals</code> (note the 's' on the end) was meant, and the application does not behave as expected. </li>
-  <li> Done on purpose. The name however will confuse every other developer, who may not notice the naming difference, or who will think it is a bug.
-  </li>
-</ul>
-<p>In both cases, the method should be renamed.</p>
-<h3>Noncompliant code example</h3>
+<p>Due to the similar name with the methods <code>Object.toString</code>, <code>Object.hashCode</code> and <code>Object.equals</code>, there is a
+significant likelihood that a developer intended to override one of these methods but made a spelling error.</p>
+<p>Even if no such error exists and the naming was done on purpose, these method names can be misleading. Readers might not notice the difference, or
+if they do, they may falsely assume that the developer made a mistake.</p>
+<h2>How to fix it</h2>
+<p>If you intended to override one of the methods <code>Object.toString</code>, <code>Object.hashCode</code>, or <code>Object.equals</code>, correct
+the spelling. Also, you should add the <code>@Override</code> modifier, which causes a compiler error message in case the annotated method does not
+override anything.</p>
+<p>If the naming was done on purpose, you should rename the methods to be more distinctive.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre>
-public int hashcode() { /* ... */ }  // Noncompliant
+public int hashcode() { /* ... */ }             // Noncompliant
 
-public String tostring() { /* ... */ } // Noncompliant
+public String tostring() { /* ... */ }          // Noncompliant
 
 public boolean equal(Object obj) { /* ... */ }  // Noncompliant
 </pre>
-<h3>Compliant solution</h3>
+<h4>Compliant solution</h4>
 <pre>
 @Override
-public int hashCode() { /* ... */ }
+public int hashCode() { /* ... */ }             // Compliant
 
 @Override
-public String toString() { /* ... */ }
+public String toString() { /* ... */ }          // Compliant
 
 @Override
-public boolean equals(Object obj) { /* ... */ }
+public boolean equals(Object obj) { /* ... */ } // Compliant
 </pre>
 

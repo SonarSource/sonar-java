@@ -1,33 +1,23 @@
 <h2>Why is this an issue?</h2>
-<p>Running finalizers on JVM exit is disabled by default. It can be enabled with <code>System.runFinalizersOnExit</code> and
-<code>Runtime.runFinalizersOnExit</code>, but both methods are deprecated because they are inherently unsafe.</p>
-<p>According to the Oracle Javadoc:</p>
-<blockquote>
-  <p>It may result in finalizers being called on live objects while other threads are concurrently manipulating those objects, resulting in erratic
-  behavior or deadlock.</p>
-</blockquote>
-<p>If you really want to execute something when the virtual machine begins its shutdown sequence, you should attach a shutdown hook.</p>
+<p>Enabling <code>runFinalizersOnExit</code> is unsafe as it might result in erratic behavior and deadlocks on application exit.</p>
+<p>Indeed, finalizers might be force-called on live objects while other threads are concurrently manipulating them.</p>
+<p>Instead, if you want to execute something when the virtual machine begins its shutdown sequence, you should attach a shutdown hook.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public static void main(String [] args) {
-  ...
   System.runFinalizersOnExit(true);  // Noncompliant
-  ...
 }
 
 protected void finalize(){
-  doSomething();
+  doShutdownOperations();
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 public static void main(String [] args) {
-  Runtime.addShutdownHook(new Runnable() {
-    public void run(){
-      doSomething();
-    }
-  });
-  //...
+  Thread myThread = new Thread( () -&gt; { doShutdownOperations(); });
+  Runtime.getRuntime().addShutdownHook(myThread);
+}
 </pre>
 <h2>Resources</h2>
 <ul>

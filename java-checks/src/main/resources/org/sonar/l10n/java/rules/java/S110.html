@@ -1,10 +1,10 @@
 <h2>Why is this an issue?</h2>
-<p>Inheritance is certainly one of the most valuable concepts in object-oriented programming. It’s a way to compartmentalize and reuse code by
-creating collections of attributes and behaviors called classes which can be based on previously created classes. But abusing this concept by creating
-a deep inheritance tree can lead to very complex and unmaintainable source code. Most of the time too deep of an inheritance tree is due to bad object
-oriented design which leads to a systematic use of 'inheritance' when 'composition' would be better suited.</p>
-<p>This rule raises an issue when the inheritance tree, starting from <code>Object</code> has a greater depth than is allowed.</p>
-<p>For the parameter of the rule, the following rules are applied:</p>
+<p>Inheritance is one of the most valuable concepts in object-oriented programming. It’s a way to categorize and reuse code by creating collections of
+attributes and behaviors called classes, which can be based on previously created classes.</p>
+<p>But abusing this concept by creating a deep inheritance tree can lead to complex and unmaintainable source code. Often, an inheritance tree
+becoming too deep is the symptom of systematic use of "inheritance" when other approaches like "composition" would be better suited.</p>
+<p>This rule raises an issue when the inheritance tree, starting from <code>Object</code>, has a greater depth than is allowed.</p>
+<p>The rule has one parameter to filter out classes of the count of inheritance. The following rules apply to define this parameter:</p>
 <ul>
   <li> <code>?</code> matches a single character </li>
   <li> <code>*</code> matches zero or more characters </li>
@@ -12,11 +12,11 @@ oriented design which leads to a systematic use of 'inheritance' when 'compositi
 </ul>
 <p>Examples:</p>
 <ul>
-  <li> <code>java.fwk.AbstractFwkClass</code> will stop count when AbstractFwkClassclass is reached. </li>
-  <li> <code>java.fwk.*</code> will stop count when any member of java.fwkPackage package is reached. </li>
-  <li> <code>java.fwk.**</code> same as above, but including sub-packages. </li>
+  <li> <code>java.fwk.AbstractFwkClass</code>: the count stops when AbstractFwkClass class is reached. </li>
+  <li> <code>java.fwk.*</code>: any member of java.fwkPackage package is reached. </li>
+  <li> <code>java.fwk.**</code>: same as above, but including sub-packages. </li>
 </ul>
-<p>Exceptions:</p>
+<h2>Exceptions:</h2>
 <p>The rule stops counting when it encounters a class from one of the following packages (or sub-packages):</p>
 <ul>
   <li> <code>android.**</code> </li>
@@ -26,4 +26,8 @@ oriented design which leads to a systematic use of 'inheritance' when 'compositi
   <li> <code>org.eclipse.**</code> </li>
   <li> <code>org.springframework.**</code> </li>
 </ul>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<p><a href="https://en.wikipedia.org/wiki/Composition_over_inheritance">Composition over inheritance: difference between composition and inheritance
+in object-oriented programming</a></p>
 

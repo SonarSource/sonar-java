@@ -1,6 +1,13 @@
 <h2>Why is this an issue?</h2>
-<p>According to the official javadoc documentation, this Object.finalize() is called by the garbage collector on an object when garbage collection
-determines that there are no more references to the object. Calling this method explicitly breaks this contract and so is misleading.</p>
+<p>Before it reclaims storage from an object that is no longer referenced, the garbage collector calls <code>finalize()</code> on the object.</p>
+<p>This is a good time to release resources held by the object.</p>
+<p>Because the general contract is that the <code>finalize</code> method should only be called once per object, calling this method explicitly is
+misleading and does not respect this contract.</p>
+<h3>What is the potential impact?</h3>
+<p>An explicit call to an object’s finalize method will perform operations that most likely were supposed to be performed only when the object was not
+referenced anymore by any thread.</p>
+<p>Since it is an acceptable practice to override the finalize method in any subclass of <code>Object</code>, by invoking it explicitly, we will run
+code that was designed to only be ran at a different time.</p>
 <h3>Noncompliant code example</h3>
 <pre>
 public void dispose() throws Throwable {
@@ -9,6 +16,7 @@ public void dispose() throws Throwable {
 </pre>
 <h2>Resources</h2>
 <ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html#jls-12.6">docs.oracle.com</a> - Finalization of Class Instances </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/586">MITRE, CWE-586</a> - Explicit Call to Finalize() </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/4jZGBQ">CERT, MET12-J.</a> - Do not use finalizers </li>
 </ul>

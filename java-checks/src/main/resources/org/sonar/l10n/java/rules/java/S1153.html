@@ -2,15 +2,11 @@
 <p>Appending <code>String.valueOf()</code> to a <code>String</code> decreases the code readability.</p>
 <p>The argument passed to <code>String.valueOf()</code> should be directly appended instead.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-public void display(int i){
-  System.out.println("Output is " + String.valueOf(i));    // Noncompliant
-}
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String message = "Output is " + String.valueOf(12);
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-public void display(int i){
-  System.out.println("Output is " + i);                    // Compliant
-}
+<pre data-diff-id="1" data-diff-type="compliant">
+String message = "Output is " + 12;
 </pre>
 

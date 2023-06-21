@@ -1,28 +1,31 @@
 <h2>Why is this an issue?</h2>
-<p><code>notify</code> and <code>notifyAll</code> both wake up sleeping threads, but <code>notify</code> only rouses one, while <code>notifyAll</code>
-rouses all of them. Since <code>notify</code> might not wake up the right thread, <code>notifyAll</code> should be used instead.</p>
+<p><code>notify</code> and <code>notifyAll</code> both wake up sleeping threads waiting on the object’s monitor, but <code>notify</code> only wakes up
+one single thread, while <code>notifyAll</code> wakes them all up. Unless you do not care which specific thread is woken up, <code>notifyAll</code>
+should be used instead.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-class MyThread extends Thread{
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class MyThread implements Runnable {
+  Object lock = new Object();
 
   @Override
-  public void run(){
-    synchronized(this){
+  public void run() {
+    synchronized(lock) {
       // ...
-      notify();  // Noncompliant
+      lock.notify();  // Noncompliant
     }
   }
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-class MyThread extends Thread{
+<pre data-diff-id="1" data-diff-type="compliant">
+class MyThread implements Runnable {
+  Object lock = new Object();
 
   @Override
-  public void run(){
-    synchronized(this){
+  public void run() {
+    synchronized(lock) {
       // ...
-      notifyAll();
+      lock.notifyAll();
     }
   }
 }

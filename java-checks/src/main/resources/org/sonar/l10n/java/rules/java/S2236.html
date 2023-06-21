@@ -1,17 +1,20 @@
 <h2>Why is this an issue?</h2>
-<p>The methods <code>wait(...)</code>, <code>notify()</code> and <code>notifyAll()</code> are available on a <code>Thread</code> instance, but only
-because all classes in Java extend <code>Object</code> and therefore automatically inherit those methods. But there are two very good reasons for not
-calling them on a <code>Thread</code>:</p>
-<ul>
-  <li> Internally, the JVM relies on these methods to change the state of the Thread (<code>BLOCKED</code>, <code>WAITING</code>, …​), so calling them
-  will corrupt the behavior of the JVM. </li>
-  <li> It is not clear (perhaps even to the original coder) what is really expected. For instance, it is waiting for the execution of the Thread to
-  suspended, or is it the acquisition of the object monitor that is waited for? </li>
-</ul>
+<p>In Java, the <code>Thread</code> class represents a thread of execution. Synchronization between threads is typically achieved using objects or
+shared resources.</p>
+<p>The methods <code>wait(…​)</code>, <code>notify()</code>, and <code>notifyAll()</code> are related to the underlying object’s monitor and are
+designed to be called on objects that act as locks or monitors for synchronization. These methods are available on Java <code>Object</code> and,
+therefore, automatically inherited by all objects, including <code>Thread.</code></p>
+<p>Calling these methods on a <code>Thread</code> may corrupt the behavior of the JVM, which relies on them to change the state of the thread
+(<code>BLOCKED,</code> <code>WAITING,</code>…​).</p>
 <h3>Noncompliant code example</h3>
 <pre>
 Thread myThread = new Thread(new RunnableJob());
 ...
-myThread.wait(2000);
+myThread.wait(); // Noncompliant
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Thread.html">Oracle Java SE - Thread</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Object.html">Oracle Java SE - Object</a> </li>
+</ul>
 

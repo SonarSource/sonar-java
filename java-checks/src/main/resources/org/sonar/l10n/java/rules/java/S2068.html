@@ -27,14 +27,14 @@ and for variable names that match any of the patterns from the provided list.</p
 String username = "steve";
 String password = "blue";
 Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
-                  "user=" + uname + "&amp;password=" + password); // Sensitive
+                  "user=" + username + "&amp;password=" + password); // Sensitive
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
 String username = getEncryptedUser();
 String password = getEncryptedPassword();
 Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
-                  "user=" + uname + "&amp;password=" + password);
+                  "user=" + username + "&amp;password=" + password);
 </pre>
 <h2>See</h2>
 <ul>

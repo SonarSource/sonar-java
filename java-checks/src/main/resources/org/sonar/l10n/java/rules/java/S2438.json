@@ -1,5 +1,5 @@
 {
-  "title": "\"Threads\" should not be used where \"Runnables\" are expected",
+  "title": "\"Thread\" should not be used where a \"Runnable\" argument is expected",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
