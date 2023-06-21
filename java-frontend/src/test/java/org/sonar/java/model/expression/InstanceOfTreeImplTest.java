@@ -31,6 +31,8 @@ import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
+import org.sonar.plugins.java.api.tree.PatternTree;
+import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -69,34 +71,28 @@ class InstanceOfTreeImplTest {
 
   @Test
   void test_PatternInstanceOfTree_not_TypePattern() {
+    // todo failing on pattern matching for instanceof when variable is declared
     InstanceOfTreeImpl ioti = instanceOf("o instanceof Rectangle(int a, var b) r");
     assertThat(ioti).is(Tree.Kind.PATTERN_INSTANCE_OF);
 
     PatternInstanceOfTree piot = ioti;
     assertThat(piot.expression()).isNotNull();
     assertThat(piot.instanceofKeyword()).isNotNull();
-    assertThat(piot.pattern())
-      // FIXME bug in ecj (java 19 support): only supports TypePatterns. should be RecordPattern
-      .is(Tree.Kind.TYPE_PATTERN)
-      .isNotNull();
-    // should be null
-    assertThat(piot.variable()).isNotNull();
+    assertThat(piot.pattern()).is(Tree.Kind.RECORD_PATTERN).isNotNull();
   }
 
   @Test
   void test_PatternInstanceOfTree_not_TypePattern_without_variable() {
     InstanceOfTreeImpl ioti = instanceOf("o instanceof Rectangle(int a, var b)");
-    assertThat(ioti).is(Tree.Kind.INSTANCE_OF);
+    assertThat(ioti).is(Tree.Kind.PATTERN_INSTANCE_OF);
 
-    InstanceOfTree iot = ioti;
+    PatternInstanceOfTree iot = ioti;
     assertThat(iot.expression()).isNotNull();
     assertThat(iot.instanceofKeyword()).isNotNull();
-    TypeTree type = iot.type();
-    assertThat(type)
-      // FIXME bug in ecj (java 19 support): only supports Identifer. should be RecordPattern
-      .is(Tree.Kind.IDENTIFIER)
-      .isNotNull();
-    // Should not be an identifier but a pattern deconstructor
+    PatternTree pattern = iot.pattern();
+    assertThat(pattern).is(Tree.Kind.RECORD_PATTERN);
+    TypeTree type = ((RecordPatternTree)pattern).type();
+    assertThat(type).is(Tree.Kind.IDENTIFIER).isNotNull();
     assertThat(((IdentifierTree) type)).hasName("Rectangle");
   }
 

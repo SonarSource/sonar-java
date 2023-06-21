@@ -261,6 +261,7 @@ class AbstractPatternTreeTest {
 
   @Test
   void test_base_tree_visitor() {
+    // todo failing on pattern matching for switch-case when variable is declared
     String code = "switch (shape) {\n"
       + "      case null -> \"null case\";\n"
       + "      case Triangle(int a, var b, int c) r when a + b < 42 -> String.format(\"Big trangle\");\n"
@@ -319,17 +320,19 @@ class AbstractPatternTreeTest {
 
   @Test
   void test_record_pattern_in_instanceof() {
+    // todo failing on pattern matching for instanceof when variable is declared
     String code = "(shape instanceof Triangle(int a, int b, int c) t) ? new Object() : new Object()";
     ConditionalExpressionTree conditionalExpressionTree = conditionalExpressionTree("Shape shape", code);
     assertThat(conditionalExpressionTree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
     ExpressionTree instanceOfexpression = ((ParenthesizedTree) conditionalExpressionTree.condition()).expression();
     assertThat(instanceOfexpression).is(Tree.Kind.PATTERN_INSTANCE_OF);
     PatternTree pattern = ((PatternInstanceOfTree) instanceOfexpression).pattern();
-    assertThat(pattern).is(Tree.Kind.TYPE_PATTERN);
+    assertThat(pattern).is(Tree.Kind.RECORD_PATTERN);
   }
 
   @Test
   void test_record_pattern_in_switch() {
+    // todo failing on pattern matching for switch-case when variable is declared
     String code = "switch (shape) { case Triangle(int a, int b, int c) t -> new Object(); default -> null; }";
     SwitchExpressionTree switchCase = switchExpressionTree("Shape shape", code);
     assertThat(switchCase).is(Tree.Kind.SWITCH_EXPRESSION);

@@ -953,6 +953,7 @@ class CFGTest {
   // FIXME add tests for jdk 17
   @Test
   void switch_with_pattern() {
+    // todo failing on pattern matching for switch-case when variable is declared
     final CFG cfg = buildCFG("  static int switch_array_default_null_pattern(Object o) {\n"
       + "    return switch (o) {\n"
       // array type pattern
