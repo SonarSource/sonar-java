@@ -61,7 +61,7 @@ public class KnownCapacityHashBasedCollectionCheck extends AbstractMethodDetecti
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isJava19Compatible();
+    return version.isJava20Compatible();
   }
 
   private static String getIssueMessage(NewClassTree newClassTree) {

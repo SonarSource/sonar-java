@@ -602,10 +602,10 @@ class JavaFrontendTest {
 
   @Test
   void test_preview_feature_in_max_supported_version_not_enabled_by_default() throws IOException {
-    // When the actual version match the maximum supported version (currently 19), we do not enable the preview features flag 
+    // When the actual version match the maximum supported version (currently 20), we do not enable the preview features flag
     // by default anymore, and we should expect issues parsing preview feature syntax
     logTester.setLevel(LoggerLevel.DEBUG);
-    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "19"),
+    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "20"),
       SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());
