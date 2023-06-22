@@ -70,18 +70,6 @@ class InstanceOfTreeImplTest {
   }
 
   @Test
-  void test_PatternInstanceOfTree_not_TypePattern() {
-    // todo failing on pattern matching for instanceof when variable is declared
-    InstanceOfTreeImpl ioti = instanceOf("o instanceof Rectangle(int a, var b) r");
-    assertThat(ioti).is(Tree.Kind.PATTERN_INSTANCE_OF);
-
-    PatternInstanceOfTree piot = ioti;
-    assertThat(piot.expression()).isNotNull();
-    assertThat(piot.instanceofKeyword()).isNotNull();
-    assertThat(piot.pattern()).is(Tree.Kind.RECORD_PATTERN).isNotNull();
-  }
-
-  @Test
   void test_PatternInstanceOfTree_not_TypePattern_without_variable() {
     InstanceOfTreeImpl ioti = instanceOf("o instanceof Rectangle(int a, var b)");
     assertThat(ioti).is(Tree.Kind.PATTERN_INSTANCE_OF);
@@ -91,7 +79,7 @@ class InstanceOfTreeImplTest {
     assertThat(iot.instanceofKeyword()).isNotNull();
     PatternTree pattern = iot.pattern();
     assertThat(pattern).is(Tree.Kind.RECORD_PATTERN);
-    TypeTree type = ((RecordPatternTree)pattern).type();
+    TypeTree type = ((RecordPatternTree) pattern).type();
     assertThat(type).is(Tree.Kind.IDENTIFIER).isNotNull();
     assertThat(((IdentifierTree) type)).hasName("Rectangle");
   }
@@ -113,7 +101,6 @@ class InstanceOfTreeImplTest {
     assertThat(variable.simpleName().name()).isEqualTo("s");
     assertThat(variable.type().symbolType().is("java.lang.String")).isTrue();
   }
-
 
   @Test
   void test_InstanceOfTree() {

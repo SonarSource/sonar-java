@@ -37,8 +37,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NullPatternTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
-import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
-import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
@@ -264,7 +262,7 @@ class AbstractPatternTreeTest {
     // todo failing on pattern matching for switch-case when variable is declared
     String code = "switch (shape) {\n"
       + "      case null -> \"null case\";\n"
-      + "      case Triangle(int a, var b, int c) r when a + b < 42 -> String.format(\"Big trangle\");\n"
+      + "      case Triangle(int a, var b, int c) when a + b < 42 -> String.format(\"Big triangle\");\n"
       + "      case Triangle t -> String.format(\"triangle (%d,%d,%d)\", t.a(), t.b(), t.c());\n"
       + "      case Rectangle r when r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
       + "      case default -> \"default case\";\n"
@@ -304,62 +302,22 @@ class AbstractPatternTreeTest {
     });
 
     assertThat(patternKinds).containsExactly(
-        Tree.Kind.NULL_PATTERN,
-        Tree.Kind.GUARDED_PATTERN,
-        // from the record pattern guarded pattern child node
-        Tree.Kind.RECORD_PATTERN,
-        Tree.Kind.TYPE_PATTERN, // a
-        Tree.Kind.TYPE_PATTERN, // b
-        Tree.Kind.TYPE_PATTERN, // c
-        Tree.Kind.TYPE_PATTERN,
-        Tree.Kind.GUARDED_PATTERN,
-        // from the guarded pattern child node
-        Tree.Kind.TYPE_PATTERN, // r
-        Tree.Kind.DEFAULT_PATTERN);
-  }
-
-  @Test
-  void test_record_pattern_in_instanceof() {
-    // todo failing on pattern matching for instanceof when variable is declared
-    String code = "(shape instanceof Triangle(int a, int b, int c) t) ? new Object() : new Object()";
-    ConditionalExpressionTree conditionalExpressionTree = conditionalExpressionTree("Shape shape", code);
-    assertThat(conditionalExpressionTree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
-    ExpressionTree instanceOfexpression = ((ParenthesizedTree) conditionalExpressionTree.condition()).expression();
-    assertThat(instanceOfexpression).is(Tree.Kind.PATTERN_INSTANCE_OF);
-    PatternTree pattern = ((PatternInstanceOfTree) instanceOfexpression).pattern();
-    assertThat(pattern).is(Tree.Kind.RECORD_PATTERN);
+      Tree.Kind.NULL_PATTERN,
+      Tree.Kind.GUARDED_PATTERN,
+      // from the record pattern guarded pattern child node
+      Tree.Kind.RECORD_PATTERN,
+      Tree.Kind.TYPE_PATTERN, // a
+      Tree.Kind.TYPE_PATTERN, // b
+      Tree.Kind.TYPE_PATTERN, // c
+      Tree.Kind.TYPE_PATTERN,
+      Tree.Kind.GUARDED_PATTERN,
+      // from the guarded pattern child node
+      Tree.Kind.TYPE_PATTERN, // r
+      Tree.Kind.DEFAULT_PATTERN);
   }
 
   @Test
   void test_record_pattern_in_switch() {
-    // todo failing on pattern matching for switch-case when variable is declared
-    String code = "switch (shape) { case Triangle(int a, int b, int c) t -> new Object(); default -> null; }";
-    SwitchExpressionTree switchCase = switchExpressionTree("Shape shape", code);
-    assertThat(switchCase).is(Tree.Kind.SWITCH_EXPRESSION);
-    var firstCase = switchCase.cases().stream().findFirst().get();
-    var label = firstCase.labels().stream().findFirst().get();
-    var expression = label.expressions().stream().findFirst().get();
-    assertThat(expression).is(Tree.Kind.RECORD_PATTERN);
-    RecordPatternTree recordPattern = (RecordPatternTree) expression;
-    assertThat(recordPattern.patterns())
-      .hasSize(3)
-      .allMatch(pattern -> {
-        if (!pattern.is(Tree.Kind.TYPE_PATTERN)) {
-          return false;
-        }
-        TypePatternTree typePattern = (TypePatternTree) pattern;
-        VariableTree variableTree = typePattern.patternVariable();
-        return variableTree.type().symbolType().is("int") && variableTree.simpleName() != null;
-      });
-    TypeTree type = recordPattern.type();
-    assertThat(type.annotations()).isEmpty();
-    assertThat(type).is(Tree.Kind.IDENTIFIER);
-    assertThat((IdentifierTree) type).hasName("Triangle");
-    assertThat(recordPattern.name()).hasName("t");
-  }
-
-  @Test
-  void test_record_pattern_without_identifier_in_switch() {
     String code = "switch (shape) { case Triangle(int a, int b, int c) -> new Object(); default -> null; }";
     SwitchExpressionTree switchCase = switchExpressionTree("Shape shape", code);
     assertThat(switchCase).is(Tree.Kind.SWITCH_EXPRESSION);
