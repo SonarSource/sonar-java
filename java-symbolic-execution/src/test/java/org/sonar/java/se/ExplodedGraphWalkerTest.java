@@ -113,9 +113,9 @@ class ExplodedGraphWalkerTest {
       })
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
-      assertThat(steps[0])
-        .isPositive()
-        .isGreaterThan(steps[1]);
+    assertThat(steps[0])
+      .isPositive()
+      .isGreaterThan(steps[1]);
   }
 
   @Test
@@ -174,7 +174,7 @@ class ExplodedGraphWalkerTest {
       .onFile(TestUtils.nonCompilingTestSourcesPath("symbolicexecution/engine/SwitchWithPatterns.java"))
       .withChecks(seChecks())
       .withClassPath(SETestUtils.CLASS_PATH)
-      .withJavaVersion(19, true)
+      .withJavaVersion(20, true)
       .verifyNoIssues();
   }
 
@@ -310,8 +310,8 @@ class ExplodedGraphWalkerTest {
           } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
             fail("loop execution should be limited");
           }
-          }
-        })
+        }
+      })
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
   }
@@ -375,8 +375,8 @@ class ExplodedGraphWalkerTest {
           } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
             assertThat(exception.getMessage()).startsWith("reached limit of 16000 steps for method");
           }
-          }
-        })
+        }
+      })
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
   }
@@ -406,8 +406,8 @@ class ExplodedGraphWalkerTest {
           } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
             assertThat(exception.getMessage()).startsWith("reached maximum number of 10000 branched states");
           }
-          }
-        })
+        }
+      })
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
   }
@@ -552,8 +552,8 @@ class ExplodedGraphWalkerTest {
             egw.visitMethod(methodTree, null);
             assertThat(egw.checkerDispatcher.methodYield).isNull();
           }
-          }
-        })
+        }
+      })
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
   }
@@ -684,20 +684,20 @@ class ExplodedGraphWalkerTest {
   @Test
   void eg_walker_factory_default_checks() throws IOException {
     List<String> nonDefaultChecks = Stream.of(
-      CustomUnclosedResourcesCheck.class,
-      ConditionalUnreachableCodeCheck.class,
-      BooleanGratuitousExpressionsCheck.class,
-      InvariantReturnCheck.class,
-      StreamNotConsumedCheck.class,
-      MapComputeIfAbsentOrPresentCheck.class,
-      ObjectOutputStreamCheck.class,
-      MinMaxRangeCheck.class,
-      ParameterNullnessCheck.class,
-      XxeProcessingCheck.class,
-      DenialOfServiceXMLCheck.class,
-      AllowXMLInclusionCheck.class,
-      XmlParserLoadsExternalSchemasCheck.class,
-      XmlValidatedSignatureCheck.class)
+        CustomUnclosedResourcesCheck.class,
+        ConditionalUnreachableCodeCheck.class,
+        BooleanGratuitousExpressionsCheck.class,
+        InvariantReturnCheck.class,
+        StreamNotConsumedCheck.class,
+        MapComputeIfAbsentOrPresentCheck.class,
+        ObjectOutputStreamCheck.class,
+        MinMaxRangeCheck.class,
+        ParameterNullnessCheck.class,
+        XxeProcessingCheck.class,
+        DenialOfServiceXMLCheck.class,
+        AllowXMLInclusionCheck.class,
+        XmlParserLoadsExternalSchemasCheck.class,
+        XmlValidatedSignatureCheck.class)
       .map(Class::getSimpleName)
       .collect(Collectors.toList());
     // Compute the list of SEChecks defined in package
@@ -764,7 +764,7 @@ class ExplodedGraphWalkerTest {
   }
 
   private static JavaFileScanner[] seChecks() {
-    return new SECheck[]{
+    return new SECheck[] {
       new NullDereferenceCheck(),
       new DivisionByZeroCheck(),
       new ConditionalUnreachableCodeCheck(),

@@ -2,7 +2,7 @@ package symbolicexecution.checks;
 
 public class ConditionAlwaysTrueOrFalseCheckWithPattern {
 
-  public void instanceOfPatternMathing() {
+  public void instanceOfPatternMatching() {
     Object object = new Object();
     // Java 16 pattern matching instance of
     if (object instanceof String s) { // Compliant

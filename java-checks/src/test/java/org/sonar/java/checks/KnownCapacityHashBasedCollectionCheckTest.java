@@ -29,9 +29,9 @@ class KnownCapacityHashBasedCollectionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
+      .withJavaVersion(20, true)
       .onFile(mainCodeSourcesPath("checks/KnownCapacityHashBasedCollectionCheckSample.java"))
       .withCheck(new KnownCapacityHashBasedCollectionCheck())
-      .withJavaVersion(19)
       .verifyIssues();
   }
 

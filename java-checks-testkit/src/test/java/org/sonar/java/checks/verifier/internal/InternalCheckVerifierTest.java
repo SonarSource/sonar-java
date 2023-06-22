@@ -197,7 +197,7 @@ class InternalCheckVerifierTest {
           String.format("Preview features can only be enabled when the version == latest supported Java version (%d != %d)", desiredJavaVersion, JavaVersionImpl.MAX_SUPPORTED)
         );
     }
-    
+
     @Test
     void preview_features_disabled_by_default() {
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
@@ -222,13 +222,12 @@ class InternalCheckVerifierTest {
 
       Throwable noExceptionThrown = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .withCheck(NO_EFFECT_CHECK)
-        .withJavaVersion(19, true)
+        .withJavaVersion(20, true)
         .onFile(TEST_FILE_WITH_PREVIEW_FEATURES)
         .verifyNoIssues());
 
       assertThat(noExceptionThrown).isNull();
     }
-
 
     @Test
     void setting_multiple_times_one_files_fails() {
@@ -736,8 +735,8 @@ class InternalCheckVerifierTest {
       assertThat(e)
         .isInstanceOf(AssertionError.class)
         .hasMessageContaining("[Quick Fix] Wrong description for issue on line 1.")
-        .hasMessageContaining(  "Expected: {{Description}}")
-        .hasMessageContaining(    "but was:     {{wrong}}");
+        .hasMessageContaining("Expected: {{Description}}")
+        .hasMessageContaining("but was:     {{wrong}}");
     }
 
     @Test
@@ -758,7 +757,7 @@ class InternalCheckVerifierTest {
         .isInstanceOf(AssertionError.class)
         .hasMessageContaining("[Quick Fix] Wrong number of edits for issue on line 1.")
         .hasMessageContaining("Expected: {{1}}")
-        .hasMessageContaining(    "but was:     {{2}}");
+        .hasMessageContaining("but was:     {{2}}");
     }
 
     @Test
@@ -779,7 +778,7 @@ class InternalCheckVerifierTest {
         .isInstanceOf(AssertionError.class)
         .hasMessageContaining("[Quick Fix] Wrong text replacement of edit 1 for issue on line 1.")
         .hasMessageContaining("Expected: {{Replacement}}")
-        .hasMessageContaining( "but was:     {{Wrong}}");
+        .hasMessageContaining("but was:     {{Wrong}}");
     }
 
     @Test
@@ -1068,7 +1067,7 @@ class InternalCheckVerifierTest {
     }
   }
 
-  @Rule(key="NoEffectEndOfAnalysisCheck")
+  @Rule(key = "NoEffectEndOfAnalysisCheck")
   private static class NoEffectEndOfAnalysisCheck implements JavaFileScanner, EndOfAnalysis {
     @Override
     public void endOfAnalysis(ModuleScannerContext context) {
@@ -1130,7 +1129,7 @@ class InternalCheckVerifierTest {
       report(context, 4, msgs);
 
       if (flipOrder) {
-        msgs = new String[]{msg2, msg1};
+        msgs = new String[] {msg2, msg1};
       }
       report(context, 7, msgs);
     }

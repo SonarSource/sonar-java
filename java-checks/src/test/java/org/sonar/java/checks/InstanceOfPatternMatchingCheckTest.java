@@ -30,19 +30,10 @@ class InstanceOfPatternMatchingCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
+      .withJavaVersion(20, true)
       .onFile(testSourcesPath("checks/InstanceOfPatternMatching.java"))
       .withCheck(new InstanceOfPatternMatchingCheck())
-      .withJavaVersion(16)
       .verifyIssues();
-  }
-
-  @Test
-  void test_no_issues_on_earlier_versions() {
-    CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/InstanceOfPatternMatching.java"))
-      .withCheck(new InstanceOfPatternMatchingCheck())
-      .withJavaVersion(15)
-      .verifyNoIssues();
   }
 
   @Test

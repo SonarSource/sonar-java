@@ -19,7 +19,9 @@
  */
 package org.sonar.java.se.checks;
 
+import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.SECheckVerifier;
@@ -185,6 +187,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   void test_pattern_matching() {
     SECheckVerifier.newVerifier()
+      .withJavaVersion(20, true)
       .onFile(mainCodeSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheckWithPattern.java"))
       .withChecks(new ConditionalUnreachableCodeCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
