@@ -143,7 +143,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>18500000</maxsize>
+                  <maxsize>25500000</maxsize>
                   <minsize>17000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
@@ -166,7 +166,7 @@
             <configuration>
               <shadedArtifactAttached>false</shadedArtifactAttached>
               <createDependencyReducedPom>false</createDependencyReducedPom>
-              <minimizeJar>true</minimizeJar>
+              <minimizeJar>false</minimizeJar>
               <filters>
                 <filter>
                   <artifact>*:*</artifact>
@@ -212,6 +212,27 @@
                 <!-- this is needed because org.apache.el.ExpressionFactoryImpl is instantiated with reflection -->
                 <filter>
                   <artifact>org.apache.tomcat.embed:tomcat-embed-el</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <!-- because of ClassNotFoundException: org.eclipse.core.runtime.IAdaptable -->
+                <filter>
+                  <artifact>org.eclipse.platform:org.eclipse.equinox.common</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <!-- because of ClassNotFoundException: org.osgi.framework.BundleActivator -->
+                <filter>
+                  <artifact>org.eclipse.platform:org.eclipse.osgi</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <!-- because of ClassNotFoundException: org.osgi.service.prefs.BackingStoreException -->
+                <filter>
+                  <artifact>org.osgi:org.osgi.service.prefs</artifact>
                   <includes>
                     <include>**</include>
                   </includes>

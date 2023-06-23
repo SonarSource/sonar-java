@@ -45,13 +45,12 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class AutoScanTest {
 
@@ -103,6 +102,8 @@ public class AutoScanTest {
       .setProperty("sonar.projectKey", PROJECT_KEY)
       .setProperty("sonar.projectName", PROJECT_NAME)
       // common properties
+      .setProperty("sonar.java.source", "20")
+      .setProperty("sonar.java.enablePreview", "true")
       .setProperty("sonar.cpd.exclusions", "**/*")
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("sonar.internal.analysis.failFast", "true")
@@ -123,7 +124,8 @@ public class AutoScanTest {
       .setSourceEncoding("UTF-8")
       .setSourceDirs("src/main/java/")
       .setTestDirs("src/test/java/")
-      .setProperty("sonar.java.source", "17")
+      .setProperty("sonar.java.source", "20")
+      .setProperty("sonar.java.enablePreview", "true")
       // common properties
       .setProperty("sonar.cpd.exclusions", "**/*")
       .setProperty("sonar.skipPackageDesign", "true")
@@ -176,19 +178,20 @@ public class AutoScanTest {
     List<IssueDiff> knownDiffs = GSON.fromJson(Files.readString(pathFor("src/test/resources/autoscan/" + DIFF_FILE + ".json")), GSON_LIST_ISSUE_DIFF_TYPE);
     IssueDiff knownTotal = IssueDiff.total(knownDiffs);
 
-    assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs);
-    assertThat(newTotal).isEqualTo(knownTotal);
-    assertThat(rulesCausingFPs).hasSize(5);
-    assertThat(rulesNotReporting).hasSize(7);
-    assertThat(rulesSilenced).hasSize(69);
-
+    SoftAssertions assertions = new SoftAssertions();
+    assertions.assertThat(newDiffs).as("newDiffs").containsExactlyInAnyOrderElementsOf(knownDiffs);
+    assertions.assertThat(newTotal).as("newTotal").isEqualTo(knownTotal);
+    assertions.assertThat(rulesCausingFPs).as("rulesCausingFPs").hasSize(5);
+    assertions.assertThat(rulesNotReporting).as("rulesNotReporting").hasSize(7);
+    assertions.assertThat(rulesSilenced).as("rulesSilenced").hasSize(65);
     /**
      * 4. Check total number of differences (FPs + FNs)
      *
      * No differences would mean that we find the same issues with and without the bytecode and libraries
      */
     String differences = Files.readString(pathFor(TARGET_ACTUAL + PROJECT_KEY + "-no-binaries_differences"));
-    assertThat(differences).isEqualTo("Issues differences: 3265");
+    assertions.assertThat(differences).as("differences").isEqualTo("Issues differences: 3191");
+    assertions.assertAll();
   }
 
   private static Path pathFor(String path) {
