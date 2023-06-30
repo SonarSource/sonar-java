@@ -517,6 +517,7 @@ public final class CheckList {
     OutputStreamOverrideWriteCheck.class,
     OverrideAnnotationCheck.class,
     OverwrittenKeyCheck.class,
+    PackagePrivateComponentUsageCheck.class,
     PasswordEncoderCheck.class,
     PersistentEntityUsedAsRequestParameterCheck.class,
     PopulateBeansCheck.class,
