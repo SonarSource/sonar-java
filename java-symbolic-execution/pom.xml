@@ -157,7 +157,7 @@
                 <artifactItem>
                   <groupId>com.google.guava</groupId>
                   <artifactId>guava</artifactId>
-                  <version>26.0-jre</version>
+                  <version>32.1.1-jre</version>
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
