@@ -207,7 +207,7 @@ class ChangeMethodContractCheck_FromExternalDependency {
 
     @Override
     @javax.annotation.Nonnull
-    public String apply(@lombok.NonNull String s) { // Noncompliant [[sc=48;ec=49]] {{Fix the incompatibility of the annotation @NonNull to honor @Nullable of the overridden method.}}
+    public String apply(@lombok.NonNull String s) { // Noncompliant [[sc=48;ec=49]] {{Fix the incompatibility of the annotation @NonNull to honor @Nonnull(when=UNKNOWN) via meta-annotation of the overridden method.}}
       return null;
     }
 
