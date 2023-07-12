@@ -36,6 +36,19 @@ class NonNullSetToNullCheckTest {
   }
 
   @Test
+  void test_jspecify() {
+    SECheckVerifier.newVerifier()
+      .onFile(testSourcesPath("symbolicexecution/checks/jspecify/JspecNonNullSetToNullCheck.java"))
+      .withCheck(new NonNullSetToNullCheck())
+      .verifyIssues();
+
+    SECheckVerifier.newVerifier()
+    .onFile(testSourcesPath("symbolicexecution/checks/jspecify/nullmarked/JspecNonNullSetToNullCheck.java"))
+    .withCheck(new NonNullSetToNullCheck())
+    .verifyIssues();
+  }
+
+  @Test
   void test_non_null_api() {
     SECheckVerifier.newVerifier()
       .onFile(testSourcesPath("symbolicexecution/checks/NonNullSetToNullCheck/packageNonNull/NonNullSetToNullCheck.java"))

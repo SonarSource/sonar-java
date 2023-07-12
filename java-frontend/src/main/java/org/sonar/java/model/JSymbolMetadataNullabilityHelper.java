@@ -76,7 +76,8 @@ public class JSymbolMetadataNullabilityHelper {
     // From the documentation (https://wiki.eclipse.org/JDT_Core/Null_Analysis):
     // For any variable whose type is annotated with @Nullable [...] It is illegal to dereference such a variable for either field or method access.
     "org.eclipse.jdt.annotation.Nullable",
-    "org.eclipse.jgit.annotations.Nullable");
+    "org.eclipse.jgit.annotations.Nullable",
+    "org.jspecify.annotations.Nullable");
 
   /**
    * List of "weak" annotations, when something can be null, but it may be fine to not check it.
@@ -130,7 +131,8 @@ public class JSymbolMetadataNullabilityHelper {
     "org.jmlspecs.annotation.NonNull",
     "org.netbeans.api.annotations.common.NonNull",
     "org.springframework.lang.NonNull",
-    "reactor.util.annotation.NonNull");
+    "reactor.util.annotation.NonNull",
+    "org.jspecify.annotations.NonNull");
 
   /**
    * Can have different type depending on the argument "when" value:
@@ -151,6 +153,12 @@ public class JSymbolMetadataNullabilityHelper {
    * Only applicable to package.
    */
   private static final String ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API = "org.springframework.lang.NonNullApi";
+
+  /**
+   * Target parameters, fields and return values.
+   * Applicable to package, class and method.
+   */
+  private static final String ORG_JSPECIFY_NULL_MARKED = "org.jspecify.annotations.NullMarked";
 
   /**
    * Target parameters only.
@@ -209,6 +217,9 @@ public class JSymbolMetadataNullabilityHelper {
     configureAnnotation(ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API, NON_NULL,
       Arrays.asList(METHOD, PARAMETER), Collections.singletonList(PACKAGE));
 
+    configureAnnotation(ORG_JSPECIFY_NULL_MARKED, NON_NULL,
+      Arrays.asList(METHOD, PARAMETER, FIELD), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
+
     configureAnnotation(JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT, NON_NULL,
       Collections.singletonList(PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
     configureAnnotation(JAVAX_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT, WEAK_NULLABLE,
@@ -229,6 +240,7 @@ public class JSymbolMetadataNullabilityHelper {
     KNOWN_ANNOTATIONS.add(JAVAX_ANNOTATION_NONNULL);
     KNOWN_ANNOTATIONS.add(COM_MONGO_DB_LANG_NON_NULL_API);
     KNOWN_ANNOTATIONS.add(ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API);
+    KNOWN_ANNOTATIONS.add(ORG_JSPECIFY_NULL_MARKED);
     KNOWN_ANNOTATIONS.add(JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT);
     KNOWN_ANNOTATIONS.add(JAVAX_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT);
     KNOWN_ANNOTATIONS.add(ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS);
