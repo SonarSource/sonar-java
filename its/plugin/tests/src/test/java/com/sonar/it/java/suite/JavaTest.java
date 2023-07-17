@@ -175,9 +175,12 @@ public class JavaTest {
 
     TestUtils.provisionProject(orchestrator, projectKey, "java-version-aware-visitor", "java", "java-version-aware-visitor");
 
-    // no java version specified. maven scanner gets maven default version : java 5.
     orchestrator.executeBuild(build);
-    assertThat(getMeasureAsInteger(projectKey, "violations")).isZero();
+    // if not specifying java version, it gets the maven default compiling version - JDK may vary
+    // for mvn 3.8.x: java 5 -> 0 issue
+    // for mvn 3.9.y: java 8 -> 1 issue
+    int numberIssuesWithoutJavaVersionSet = getMeasureAsInteger(projectKey, "violations");
+    assertThat(numberIssuesWithoutJavaVersionSet).isIn(0, 1);
 
     // invalid java version. got issue on java 6 code
     build.setProperty(sonarJavaSource, "jdk_1.6");
@@ -186,17 +189,20 @@ public class JavaTest {
     assertThat(buildResult.getLastStatus()).isZero();
     // build logs should contains warning related to sources
     assertThat(buildResult.getLogs()).contains("Invalid java version");
-    assertThat(getMeasureAsInteger(projectKey, "violations")).isEqualTo(1);
+    int numberIssuesWithInvalidJDKVersion = getMeasureAsInteger(projectKey, "violations");
+    assertThat(numberIssuesWithInvalidJDKVersion).isEqualTo(1);
 
     // upper version. got issue on java 8 code
     build.setProperty(sonarJavaSource, "1.8");
     orchestrator.executeBuild(build);
-    assertThat(getMeasureAsInteger(projectKey, "violations")).isEqualTo(1);
+    int numberIssuesWithJava8 = getMeasureAsInteger(projectKey, "violations");
+    assertThat(numberIssuesWithJava8).isEqualTo(1);
 
     // lower version. no issue on java 6 code
     build.setProperty(sonarJavaSource, "1.6");
     orchestrator.executeBuild(build);
-    assertThat(getMeasureAsInteger(projectKey, "violations")).isZero();
+    int numberIssuesWithJava6 = getMeasureAsInteger(projectKey, "violations");
+    assertThat(numberIssuesWithJava6).isZero();
 
     SonarScanner scan = SonarScanner.create(TestUtils.projectDir("java-version-aware-visitor"))
       .setProperty("sonar.projectKey", "org.example:example-scanner")
