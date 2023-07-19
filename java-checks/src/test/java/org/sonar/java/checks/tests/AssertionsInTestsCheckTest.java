@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.slf4j.event.Level;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +37,7 @@ class AssertionsInTestsCheckTest {
   private AssertionsInTestsCheck check = new AssertionsInTestsCheck();
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @BeforeEach
   void setup() {
@@ -73,7 +73,7 @@ class AssertionsInTestsCheckTest {
       .onFile(testCodeSourcesPath("checks/tests/AssertionsInTestsCheck/" + framework + ".java"))
       .withCheck(check)
       .verifyIssues();
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains(
+    assertThat(logTester.logs(Level.WARN)).contains(
       "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'blabla'",
       "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'bla# '",
       "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ' #bla'");
@@ -103,7 +103,7 @@ class AssertionsInTestsCheckTest {
       .onFile(testCodeSourcesPath("checks/tests/AssertionsInTestsCheck/Junit3.java"))
       .withCheck(check)
       .verifyIssues();
-    assertThat(logTester.logs(LoggerLevel.WARN))
+    assertThat(logTester.logs(Level.WARN))
       .doesNotContain("Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ''");
   }
 }

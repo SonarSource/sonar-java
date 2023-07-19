@@ -30,8 +30,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.slf4j.event.Level;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -50,7 +50,7 @@ import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 class JTypeTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void isArray() {
@@ -278,7 +278,7 @@ class JTypeTest {
     // should catch the NullPointerException
     assertThat(stringType.isSubtypeOf(objectType)).isFalse();
 
-    assertThat(logTester.logs(LoggerLevel.DEBUG))
+    assertThat(logTester.logs(Level.DEBUG))
       .containsExactly("NullPointerException while resolving isSubTypeCompatible()");
   }
 

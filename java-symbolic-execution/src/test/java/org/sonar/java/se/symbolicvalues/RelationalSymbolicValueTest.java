@@ -32,24 +32,24 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
+import org.slf4j.event.Level;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -67,7 +67,7 @@ import static org.sonar.java.se.symbolicvalues.SymbolicValue.NULL_LITERAL;
 class RelationalSymbolicValueTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(LoggerLevel.DEBUG);
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   ConstraintManager constraintManager = new ConstraintManager();
   SymbolicValue a = new SymbolicValue() {
@@ -516,12 +516,12 @@ class RelationalSymbolicValueTest {
 
   @Test
   void too_many_relationship_should_stop_se_engine() throws Exception {
-    logTester.setLevel(LoggerLevel.TRACE);
+    logTester.setLevel(Level.TRACE);
     SETestUtils.createSymbolicExecutionVisitor("src/test/files/se/ExceedTransitiveLimit.java", new NullDereferenceCheck());
     String exceptionMessage = "reached maximum number of transitive relations generated for method hashCode in class ExceedTransitiveLimit";
-    assertThat(logTester.logs(LoggerLevel.DEBUG))
+    assertThat(logTester.logs(Level.DEBUG))
       .contains("Could not complete symbolic execution: " + exceptionMessage);
-    assertThat(logTester.logs(LoggerLevel.TRACE))
+    assertThat(logTester.logs(Level.TRACE))
       .hasSize(1)
       .allMatch(trace -> trace.startsWith("org.sonar.java.se.ExplodedGraphWalker$MaximumStepsReachedException: " + exceptionMessage));
   }

@@ -35,6 +35,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -42,13 +45,10 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
+import org.sonar.api.testfixtures.log.LogAndArguments;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
@@ -66,10 +66,10 @@ import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class SanityTest {
 
-  private static final Logger LOG = Loggers.get(SanityTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SanityTest.class);
 
   @RegisterExtension
-  public final LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public final LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   private static final String TARGET_CLASSES = "target/test-classes";
   private static final String TEST_FILES_EXTRA_CLASSES = "src/test/resources/";
@@ -106,7 +106,7 @@ class SanityTest {
   @Test
   @EnabledIfSystemProperty(named = "force.sanity.test", matches = "true")
   void test() throws Exception {
-    logTester.setLevel(LoggerLevel.WARN);
+    logTester.setLevel(Level.WARN);
 
     List<JavaCheck> checks = getJavaCheckInstances();
     assertThat(checks).isNotEmpty();
@@ -124,7 +124,7 @@ class SanityTest {
       fail(String.format("Should have been able to execute all the rules on all the test files. %d file(s) made at least 1 rule fail.", exceptions.size()));
     }
 
-    List<LogAndArguments> errorLogs = logTester.getLogs(LoggerLevel.ERROR);
+    List<LogAndArguments> errorLogs = logTester.getLogs(Level.ERROR);
     List<LogAndArguments> parsingErrors = errorLogs.stream()
       .filter(SanityTest::isParseError)
       .collect(Collectors.toList());

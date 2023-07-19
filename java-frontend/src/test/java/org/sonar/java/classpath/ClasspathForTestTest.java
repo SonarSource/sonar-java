@@ -24,11 +24,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.TestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +41,7 @@ class ClasspathForTestTest {
   private ClasspathForTest javaTestClasspath;
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -73,7 +73,7 @@ class ClasspathForTestTest {
 
     String warning = "Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. "
       + "Verify your configuration, as you might end up with less precise results.";
-    assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(warning);
+    assertThat(logTester.logs(Level.WARN)).containsExactly(warning);
   }
 
   @Test
@@ -90,7 +90,7 @@ class ClasspathForTestTest {
 
     String warning = "Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. "
       + "Verify your configuration, as you might end up with less precise results.";
-    assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(warning);
+    assertThat(logTester.logs(Level.WARN)).containsExactly(warning);
   }
 
   @Test
@@ -102,7 +102,7 @@ class ClasspathForTestTest {
 
     javaTestClasspath.logSuspiciousEmptyLibraries();
 
-    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+    assertThat(logTester.logs(Level.WARN)).isEmpty();
   }
 
   @Test

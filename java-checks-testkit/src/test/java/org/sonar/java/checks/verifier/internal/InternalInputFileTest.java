@@ -21,7 +21,6 @@ package org.sonar.java.checks.verifier.internal;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
@@ -47,6 +46,7 @@ class InternalInputFileTest {
     assertThat(inputFile.type()).isEqualTo(InputFile.Type.TEST);
     assertThat(inputFile.charset()).isEqualTo(StandardCharsets.UTF_8);
     assertThat(inputFile.contents()).isEmpty();
+    assertThat(inputFile.md5Hash()).isEqualTo("d41d8cd98f00b204e9800998ecf8427e");
     assertThat(inputFile.isEmpty()).isTrue();
     assertThat(inputFile.language()).isEqualTo("java");
     assertThat(inputFile.lines()).isEqualTo(-1);
@@ -85,6 +85,7 @@ class InternalInputFileTest {
     try (InputStream is = inputFile.inputStream()) {
       assertThat(is).isNotNull();
     }
+    assertThat(inputFile.md5Hash()).isEqualTo("1fdb524f7ce4ddf2fdc9b3e900f0c4ae");
     assertThat(inputFile.isEmpty()).isFalse();
     assertThat(inputFile.language()).isEqualTo("java");
     assertThat(inputFile.lines()).isEqualTo(1);

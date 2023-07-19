@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
+import org.sonar.java.model.InputFileUtils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -38,6 +39,7 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
   private final File file;
   private final String moduleKey;
   private final String contents;
+  private final String md5;
   private final int numberLines;
   private final InputFile.Type type;
   private final Status status;
@@ -49,6 +51,7 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
     this.numberLines = -1;
     this.type = type;
     this.status = Status.SAME;
+    this.md5 = InputFileUtils.md5Hash(this);
   }
 
   private InternalInputFile(String moduleKey, File file, Status status) {
@@ -58,6 +61,7 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
     this.numberLines = contents.split("(\r)?\n|\r").length;
     this.type = InputFile.Type.MAIN;
     this.status = status;
+    this.md5 = InputFileUtils.md5Hash(this);
   }
 
   private static String readFile(File file) {
@@ -113,6 +117,11 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
   @Override
   public String contents() throws IOException {
     return contents;
+  }
+
+  @Override
+  public String md5Hash() {
+    return md5;
   }
 
   @Override

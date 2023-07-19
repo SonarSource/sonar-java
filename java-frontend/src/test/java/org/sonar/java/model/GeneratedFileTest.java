@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -30,15 +29,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.plugins.java.api.SourceMap;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -50,13 +52,13 @@ class GeneratedFileTest {
   private GeneratedFile actual;
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
   private DefaultFileSystem fs;
 
   @BeforeEach
   public void setUp() throws Exception {
     expected = tmp.resolve("file.jsp");
-    Files.write(expected, "content".getBytes(StandardCharsets.UTF_8));
+    Files.write(expected, "content".getBytes(UTF_8));
     fs = new DefaultFileSystem(tmp);
     actual = new GeneratedFile(expected);
   }
@@ -70,12 +72,19 @@ class GeneratedFileTest {
     assertEquals(expected.toFile(), actual.file());
     assertEquals(expected.toUri(), actual.uri());
     assertEquals("file.jsp", actual.filename());
-    assertEquals("content", actual.contents());
+    String computedContent = actual.contents();
+    String cachedContent = actual.contents();
+    assertEquals("content", computedContent);
+    assertSame(computedContent, cachedContent);
+    String computedMd5Hash = actual.md5Hash();
+    String cachedMd5Hash = actual.md5Hash();
+    assertEquals("9a0364b9e99bb480dd25e1f0284c8555", computedMd5Hash);
+    assertSame(computedMd5Hash, cachedMd5Hash);
     try (InputStream is = actual.inputStream()) {
       assertEquals("content", IOUtils.toString(is));
     }
     assertFalse(actual.isEmpty());
-    assertEquals(StandardCharsets.UTF_8, actual.charset());
+    assertEquals(UTF_8, actual.charset());
     assertEquals(expected.toString(), actual.key());
     assertTrue(actual.isFile());
     assertEquals("java", actual.language());

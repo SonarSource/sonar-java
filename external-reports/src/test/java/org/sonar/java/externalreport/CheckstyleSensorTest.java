@@ -33,14 +33,14 @@ import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.ExternalIssue;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.externalreport.ExternalReportTestUtils.onlyOneLogElement;
@@ -57,7 +57,7 @@ class CheckstyleSensorTest {
   public final TemporaryFolder tmp = new TemporaryFolder();
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void checkstyle_rules_definition() {
@@ -127,7 +127,7 @@ class CheckstyleSensorTest {
     assertThat(third.primaryLocation().message()).isEqualTo("Missing a Javadoc comment.");
     assertThat(third.primaryLocation().textRange().start().line()).isEqualTo(1);
 
-    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
   }
 
   @Test
@@ -141,8 +141,8 @@ class CheckstyleSensorTest {
   void no_issues_with_invalid_report_path() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting("invalid-path.txt");
     assertThat(externalIssues).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
-    assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.WARN)))
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
+    assertThat(onlyOneLogElement(logTester.logs(Level.WARN)))
       .startsWith("Checkstyle report not found: ")
       .endsWith("invalid-path.txt");
   }
@@ -152,7 +152,7 @@ class CheckstyleSensorTest {
   void no_issues_with_invalid_report(String fileName) throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting(fileName);
     assertThat(externalIssues).isEmpty();
-    assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
+    assertThat(onlyOneLogElement(logTester.logs(Level.ERROR)))
       .startsWith("Failed to import external issues report:")
       .endsWith(fileName);
   }
@@ -170,11 +170,11 @@ class CheckstyleSensorTest {
     assertThat(first.primaryLocation().message()).isEqualTo("Error at file level with an unknown rule key.");
     assertThat(first.primaryLocation().textRange()).isNull();
 
-    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
-    assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.WARN)))
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
+    assertThat(onlyOneLogElement(logTester.logs(Level.WARN)))
       .startsWith("No input file found for '")
       .endsWith("not-existing-file.java'. No checkstyle issues will be imported on this file.");
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactlyInAnyOrder(
+    assertThat(logTester.logs(Level.DEBUG)).containsExactlyInAnyOrder(
       "Unexpected error without message for rule: 'com.puppycrawl.tools.checkstyle.checks.ArrayTypeStyleCheck'",
       "Unexpected rule key without 'com.puppycrawl.tools.checkstyle.checks.' prefix: 'invalid-format'");
   }

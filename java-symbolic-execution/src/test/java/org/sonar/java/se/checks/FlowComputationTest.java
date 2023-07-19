@@ -23,8 +23,8 @@ import java.io.File;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.slf4j.event.Level;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.JParserTestUtils;
@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class FlowComputationTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void test() throws Exception {
@@ -148,13 +148,13 @@ class FlowComputationTest {
 
   @Test
   void avoid_visiting_equivalent_paths() throws Exception {
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationNoOverflowWhenMergingPaths.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).doesNotContain("Flow was not able to complete");
+    assertThat(logTester.logs(Level.DEBUG)).doesNotContain("Flow was not able to complete");
   }
 
   @Test

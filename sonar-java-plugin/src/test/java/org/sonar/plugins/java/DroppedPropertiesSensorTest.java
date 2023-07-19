@@ -26,12 +26,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +42,7 @@ class DroppedPropertiesSensorTest {
   public TemporaryFolder tmp = new TemporaryFolder();
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void test() throws Exception {
@@ -54,7 +54,7 @@ class DroppedPropertiesSensorTest {
     sensor.execute(contextTester);
 
     String msg = "Property 'sonar.jacoco.reportPaths' is no longer supported. Use JaCoCo's xml report and sonar-jacoco plugin.";
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains(msg);
+    assertThat(logTester.logs(Level.WARN)).contains(msg);
     assertThat(analysisWarnings).containsExactly(msg);
   }
 
@@ -68,7 +68,7 @@ class DroppedPropertiesSensorTest {
     DroppedPropertiesSensor sensor = new DroppedPropertiesSensor(analysisWarnings::add);
     sensor.execute(contextTester);
 
-    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+    assertThat(logTester.logs(Level.WARN)).isEmpty();
     assertThat(analysisWarnings).isEmpty();
   }
 
@@ -84,7 +84,7 @@ class DroppedPropertiesSensorTest {
     sensor.execute(contextTester);
 
     String msg = "Property 'sonar.jacoco.itReportPath' is no longer supported. Use JaCoCo's xml report and sonar-jacoco plugin.";
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains(msg);
+    assertThat(logTester.logs(Level.WARN)).contains(msg);
     assertThat(analysisWarnings).containsExactly(msg);
   }
 
@@ -95,7 +95,7 @@ class DroppedPropertiesSensorTest {
     DroppedPropertiesSensor sensor = new DroppedPropertiesSensor(analysisWarnings::add);
     sensor.execute(contextTester);
 
-    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+    assertThat(logTester.logs(Level.WARN)).isEmpty();
     assertThat(analysisWarnings).isEmpty();
   }
 

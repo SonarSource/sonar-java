@@ -26,10 +26,10 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.checks.helpers.HashCacheTestHelper;
@@ -51,7 +51,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class UselessPackageInfoCheckTest {
 
   @RegisterExtension
-  public final LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public final LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   private ReadCache readCache;
   private InternalWriteCache writeCache;
@@ -175,7 +175,7 @@ class UselessPackageInfoCheckTest {
 
   @Test
   void write_cache_multiple_writes() {
-    logTester.setLevel(LoggerLevel.TRACE);
+    logTester.setLevel(Level.TRACE);
     verifier
       .addFiles(InputFile.Status.SAME,
         mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
@@ -184,13 +184,13 @@ class UselessPackageInfoCheckTest {
 
     verifier.verifyNoIssues();
     verifier.verifyNoIssues();
-    assertThat(logTester.logs(LoggerLevel.TRACE))
+    assertThat(logTester.logs(Level.TRACE))
       .anyMatch(msg -> msg.matches("Could not store data to cache key '[^']+': .+"));
   }
 
   @Test
   void emptyCache() throws NoSuchAlgorithmException, IOException {
-    logTester.setLevel(LoggerLevel.TRACE);
+    logTester.setLevel(Level.TRACE);
     String filePath = mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java");
     ReadCache populatedReadCache = HashCacheTestHelper.internalReadCacheFromFile(filePath);
     verifier
@@ -199,7 +199,7 @@ class UselessPackageInfoCheckTest {
       .withCache(populatedReadCache, new InternalWriteCache().bind(populatedReadCache))
       .verifyNoIssues();
 
-    assertThat(logTester.logs(LoggerLevel.TRACE).stream()
+    assertThat(logTester.logs(Level.TRACE).stream()
       .filter(msg -> msg.matches("Cache miss for key '[^']+'")))
       .hasSize(1);
   }

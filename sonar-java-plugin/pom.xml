@@ -110,6 +110,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.sonarsource.api.plugin</groupId>
+      <artifactId>sonar-plugin-api-test-fixtures</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api-impl</artifactId>
       <scope>test</scope>
@@ -126,7 +131,7 @@
           <skipDependenciesPackaging>true</skipDependenciesPackaging>
           <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
           <sonarLintSupported>true</sonarLintSupported>
-          <sonarQubeMinVersion>8.9</sonarQubeMinVersion>
+          <sonarQubeMinVersion>9.9</sonarQubeMinVersion>
           <jreMinVersion>11</jreMinVersion>
         </configuration>
       </plugin>

@@ -37,14 +37,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.model.GeneratedFile;
 
 import static java.util.Arrays.asList;
@@ -74,7 +74,7 @@ class JasperTest {
   Path workDir;
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
   private Path jspFile;
   private final File springJar = Paths.get("target/test-jars/spring-webmvc-5.2.3.RELEASE.jar").toFile();
   private final File jstlJar = Paths.get("target/test-jars/jstl-1.2.jar").toFile();
@@ -186,7 +186,7 @@ class JasperTest {
     Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, asList(jee6Jar, jstlJar));
 
     assertThat(generatedFiles).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).matches(logs -> logs.stream().anyMatch(line ->
+    assertThat(logTester.logs(Level.DEBUG)).matches(logs -> logs.stream().anyMatch(line ->
       line.startsWith("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp. Error:\njava.lang.ClassFormatError")));
   }
 
@@ -199,7 +199,7 @@ class JasperTest {
     InputFile generatedFile = generatedFiles.iterator().next();
     List<String> generatedCode = Files.readAllLines(generatedFile.path());
     assertThat(generatedCode).contains("      out.write(\"<html>\\n<body>\\n<h2>Hello World!</h2>\\n</body>\\n</html>\");");
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("WEB-INF directory not found, will use basedir as context root");
+    assertThat(logTester.logs(Level.DEBUG)).contains("WEB-INF directory not found, will use basedir as context root");
   }
 
   @Test
@@ -207,10 +207,10 @@ class JasperTest {
     SensorContextTester ctx = jspContext("<%=");
     Collection<GeneratedFile> inputFiles = new Jasper().generateFiles(ctx, emptyList());
     assertThat(inputFiles).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.DEBUG))
+    assertThat(logTester.logs(Level.DEBUG))
       .matches(logs -> logs.stream().anyMatch(line ->
         line.startsWith("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp.")));
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Some JSP pages failed to transpile. Enable debug log for details.");
+    assertThat(logTester.logs(Level.WARN)).contains("Some JSP pages failed to transpile. Enable debug log for details.");
   }
 
   @Test
@@ -240,7 +240,7 @@ class JasperTest {
     doThrow(new IllegalStateException()).when(jasper).getJasperOptions(any(), any());
     Collection<GeneratedFile> generatedFiles = jasper.generateFiles(ctx, emptyList());
     assertThat(generatedFiles).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Failed to transpile JSP files.");
+    assertThat(logTester.logs(Level.WARN)).contains("Failed to transpile JSP files.");
   }
 
   /**
@@ -299,7 +299,7 @@ class JasperTest {
       stream().collect(Collectors.toMap(GeneratedFile::filename, f -> f));
 
     assertThat(generatedFiles).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.DEBUG))
+    assertThat(logTester.logs(Level.DEBUG))
       .matches(logs -> logs.stream().anyMatch(line ->
       line.startsWith("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp. Error:\norg.apache.jasper.JasperException:")));
 

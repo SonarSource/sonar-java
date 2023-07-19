@@ -24,15 +24,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.config.Configuration;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.api.utils.log.Loggers;
+import org.sonar.api.testfixtures.log.LogAndArguments;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
@@ -41,7 +39,7 @@ import static org.mockito.Mockito.mock;
 
 class CacheContextImplTest {
   @RegisterExtension
-  LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void isCacheEnabled_returns_true_when_context_implements_isCacheEnabled_and_is_true() {
@@ -91,12 +89,11 @@ class CacheContextImplTest {
 
   @Test
   void of_logs_at_debug_level_when_the_api_is_not_supported() {
-    Logger logger = Loggers.get(CacheContextImpl.class);
-    logger.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     SensorContext sensorContext = mock(SensorContext.class);
     doThrow(new NoSuchMethodError("bim")).when(sensorContext).isCacheEnabled();
     CacheContextImpl.of(sensorContext);
-    List<String> logs = logTester.getLogs(LoggerLevel.DEBUG).stream()
+    List<String> logs = logTester.getLogs(Level.DEBUG).stream()
       .map(LogAndArguments::getFormattedMsg)
       .collect(Collectors.toList());
     assertThat(logs)

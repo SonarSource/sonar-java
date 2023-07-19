@@ -38,6 +38,7 @@ import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.event.Level;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
@@ -54,10 +55,9 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
+import org.sonar.api.testfixtures.log.LogAndArguments;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
@@ -100,7 +100,7 @@ class JavaFrontendTest {
   public TemporaryFolder temp = new TemporaryFolder();
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   private FileLinesContext fileLinesContext;
   private ClasspathForMain javaClasspath;
@@ -161,7 +161,7 @@ class JavaFrontendTest {
     settings.setProperty("sonar.java.fileByFile", "true");
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+    assertThat(logTester.logs(Level.INFO)).containsExactly(
       "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
@@ -173,7 +173,7 @@ class JavaFrontendTest {
   void scanning_empty_project_should_be_logged_in_file_by_file_sonarlint() throws Exception {
     scan(new MapSettings(), SONARLINT_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+    assertThat(logTester.logs(Level.INFO)).containsExactly(
       "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
@@ -186,7 +186,7 @@ class JavaFrontendTest {
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+    assertThat(logTester.logs(Level.INFO)).containsExactly(
       "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
@@ -200,7 +200,7 @@ class JavaFrontendTest {
     settings.setProperty("sonar.internal.analysis.autoscan", "true");
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+    assertThat(logTester.logs(Level.INFO)).containsExactly(
       "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main and Test\" source files to scan."
     );
@@ -229,7 +229,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+    List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
       .collect(Collectors.toList());
     assertThat(logs)
@@ -265,7 +265,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+    List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
       .collect(Collectors.toList());
     assertThat(logs)
@@ -301,7 +301,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+    List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
       .collect(Collectors.toList());
     assertThat(logs)
@@ -336,7 +336,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+    List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
       .collect(Collectors.toList());
     assertThat(logs)
@@ -371,7 +371,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+    List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
       .collect(Collectors.toList());
     assertThat(logs)
@@ -399,7 +399,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+    List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
       .collect(Collectors.toList());
     assertThat(logs)
@@ -446,7 +446,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .doesNotContain("Using ECJ batch to parse source files.")
-      .contains("Java \"Main\" source files AST scan");
+      .contains("2 source files to be analyzed");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
@@ -579,7 +579,7 @@ class JavaFrontendTest {
     InputFile brokenFile = mock(InputFile.class);
     when(brokenFile.charset()).thenThrow(new NullPointerException());
     scan(settings, SONARQUBE_RUNTIME, Collections.singletonList(brokenFile));
-    assertThat(logTester.logs(LoggerLevel.ERROR)).
+    assertThat(logTester.logs(Level.ERROR)).
       containsExactly("Batch Mode failed, analysis of Java Files stopped.");
   }
 
@@ -604,7 +604,7 @@ class JavaFrontendTest {
   void test_preview_feature_in_max_supported_version_not_enabled_by_default() throws IOException {
     // When the actual version match the maximum supported version (currently 19), we do not enable the preview features flag 
     // by default anymore, and we should expect issues parsing preview feature syntax
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "19"),
       SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
@@ -616,14 +616,14 @@ class JavaFrontendTest {
   void test_sealed_classes_in_java_16_log_message() throws IOException {
     // When the actual version is lower than the maximum supported version (currently 19),
     // we can not guarantee that we are still parsing preview features the same way (it may have evolved) and log a message.
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "16"),
       SONARLINT_RUNTIME, "sealed class Shape permits Circle { } final class Circle extends Shape { }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
-    assertTrue(logTester.logs(LoggerLevel.WARN).stream().noneMatch(l -> l.endsWith("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.")));
-    assertTrue(logTester.logs(LoggerLevel.WARN).stream().anyMatch(l -> l.endsWith("Use of preview features have been detected during analysis. Enable DEBUG mode to see them.")));
+    assertTrue(logTester.logs(Level.WARN).stream().noneMatch(l -> l.endsWith("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.")));
+    assertTrue(logTester.logs(Level.WARN).stream().anyMatch(l -> l.endsWith("Use of preview features have been detected during analysis. Enable DEBUG mode to see them.")));
     // We should keep this message or we won't have anything actionable in the debug logs to understand the warning
-    assertTrue(logTester.logs(LoggerLevel.DEBUG).stream().anyMatch(l -> l.replace("\r\n", "\n").endsWith("Use of preview features:\n" +
+    assertTrue(logTester.logs(Level.DEBUG).stream().anyMatch(l -> l.replace("\r\n", "\n").endsWith("Use of preview features:\n" +
       "- The Java feature 'Sealed Types' is only available with source level 17 and above")));
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
@@ -631,7 +631,7 @@ class JavaFrontendTest {
 
   @Test
   void test_java17_feature() throws IOException {
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "17"),
       SONARLINT_RUNTIME, "sealed class Shape permits Circle { } final class Circle extends Shape { }");
     String allLogs = String.join("\n", logTester.logs());
@@ -643,7 +643,7 @@ class JavaFrontendTest {
   @Test
   void test_scan_as_autoscan_uses_a_single_batch() throws IOException {
     MapSettings settings = new MapSettings().setProperty(SonarComponents.SONAR_AUTOSCAN, true);
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends A {}");
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
@@ -655,7 +655,7 @@ class JavaFrontendTest {
   void test_scan_as_batch_uses_configured_batch_size_when_below_threshold() throws IOException {
     MapSettings settings = new MapSettings()
       .setProperty(SonarComponents.SONAR_BATCH_SIZE_KEY, 1);
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends A {}");
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
@@ -668,7 +668,7 @@ class JavaFrontendTest {
     long overTheTopBatchSize = 9_223_372_036_855_038L;
     MapSettings settings = new MapSettings()
       .setProperty(SonarComponents.SONAR_BATCH_SIZE_KEY, overTheTopBatchSize);
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends A {}");
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
@@ -681,7 +681,7 @@ class JavaFrontendTest {
   void test_scan_as_batch_effectively_splits_scans_in_batches() throws IOException {
     MapSettings settings = new MapSettings()
       .setProperty(SonarComponents.SONAR_BATCH_SIZE_KEY, 0);
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends A {}");
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)

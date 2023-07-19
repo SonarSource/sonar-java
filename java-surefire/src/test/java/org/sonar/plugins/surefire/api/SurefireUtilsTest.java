@@ -23,18 +23,18 @@ import java.io.File;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.scan.filesystem.PathResolver;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SurefireUtilsTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void should_get_report_paths_from_property() {
@@ -44,7 +44,7 @@ class SurefireUtilsTest {
     DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/resources/org/sonar/plugins/surefire/api/SurefireUtilsTest/shouldGetReportsPathFromProperty"));
     PathResolver pathResolver = new PathResolver();
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
 
     List<File> directories = SurefireUtils.getReportsDirectories(settings.asConfig(), fs, pathResolver);
 
@@ -57,7 +57,7 @@ class SurefireUtilsTest {
     assertThat(directory2)
       .exists()
       .isDirectory();
-    assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
   }
 
   @Test
@@ -66,7 +66,7 @@ class SurefireUtilsTest {
     DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/resources/org/sonar/plugins/surefire/api/SurefireUtilsTest"));
     PathResolver pathResolver = new PathResolver();
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
 
     List<File> directories = SurefireUtils.getReportsDirectories(settings.asConfig(), fs, pathResolver);
 
@@ -75,6 +75,6 @@ class SurefireUtilsTest {
     assertThat(directory.getCanonicalPath()).endsWith("target"+File.separator+"surefire-reports");
     assertThat(directory).doesNotExist();
     assertThat(directory.isDirectory()).isFalse();
-    assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
   }
 }

@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -41,9 +42,8 @@ import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
@@ -52,7 +52,6 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.VisitorsBridge;
@@ -63,13 +62,14 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JavaFrontendIntegrationTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   private SensorContextTester context;
   private SonarComponents sonarComponents;
@@ -131,8 +131,8 @@ class JavaFrontendIntegrationTest {
 
     scanner.scan(Collections.singletonList(inputFile));
 
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
+    assertThat(logTester.logs(Level.ERROR)).hasSize(1);
+    assertThat(logTester.logs(Level.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
   }
 
   /**
@@ -154,8 +154,8 @@ class JavaFrontendIntegrationTest {
     } catch (Exception e) {
       Fail.fail("Should have been an AnalysisException");
     }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
+    assertThat(logTester.logs(Level.ERROR)).hasSize(1);
+    assertThat(logTester.logs(Level.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
   }
 
   /**
@@ -172,8 +172,8 @@ class JavaFrontendIntegrationTest {
     } catch (Exception e) {
       Fail.fail("Exception should be swallowed when property is not set");
     }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
+    assertThat(logTester.logs(Level.ERROR)).hasSize(1);
+    assertThat(logTester.logs(Level.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
   }
 
   private VisitorsBridge visitorsBridgeWithSymbolicExecution(SECheck... seChecks) {

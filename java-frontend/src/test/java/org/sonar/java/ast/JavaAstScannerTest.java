@@ -33,15 +33,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.issue.NoSonarFilter;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.AnalysisException;
-import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
@@ -58,6 +57,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -76,7 +76,7 @@ import static org.mockito.Mockito.when;
 class JavaAstScannerTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
   private SensorContextTester context;
 
   @BeforeEach
@@ -170,13 +170,13 @@ class JavaAstScannerTest {
   @Test
   void test_should_use_java_version() {
     scanWithJavaVersion(16, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
-    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
   }
 
   @Test
   void test_should_log_fail_parsing_with_incorrect_version() {
     scanWithJavaVersion(8, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
-    assertThat(logTester.logs(LoggerLevel.ERROR)).containsExactly(
+    assertThat(logTester.logs(Level.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
       "Parse error at line 3 column 12: Switch Expressions are supported from Java 14 onwards only"
     );
@@ -240,14 +240,14 @@ class JavaAstScannerTest {
     InputFile scannedFile = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
 
     scanner.scan(Collections.singletonList(scannedFile));
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$CheckThrowingException -  on file '"
+    assertThat(logTester.logs(Level.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$CheckThrowingException -  on file '"
       + scannedFile.toString()
       + "', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource.com/");
     logTester.clear();
     scanner.setVisitorBridge(new VisitorsBridge(new AnnotatedCheck(new NullPointerException("foo"))));
     scannedFile = TestUtils.inputFile("src/test/resources/AstScannerParseError.txt");
     scanner.scan(Collections.singletonList(scannedFile));
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(3).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$AnnotatedCheck - AnnotatedCheck on file '"
+    assertThat(logTester.logs(Level.ERROR)).hasSize(3).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$AnnotatedCheck - AnnotatedCheck on file '"
       + scannedFile.toString()
       + "', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource.com/");
   }
@@ -264,7 +264,7 @@ class JavaAstScannerTest {
       assertThat(e)
         .isInstanceOf(StackOverflowError.class)
         .hasMessage("boom");
-      List<String> errorLogs = logTester.logs(LoggerLevel.ERROR);
+      List<String> errorLogs = logTester.logs(Level.ERROR);
       assertThat(errorLogs).hasSize(1);
       assertThat(errorLogs.get(0)).startsWith("A stack overflow error occurred while analyzing file");
     }
@@ -278,13 +278,13 @@ class JavaAstScannerTest {
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).hasSize(3)
+    assertThat(logTester.logs(Level.INFO)).hasSize(3)
       .contains("1/1 source file has been analyzed");
-    assertThat(logTester.logs(LoggerLevel.ERROR)).containsExactly(
+    assertThat(logTester.logs(Level.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
       "Parse error at line 3 column 12: Switch Expressions are supported from Java 14 onwards only"
     );
-    assertThat(logTester.logs(LoggerLevel.WARN))
+    assertThat(logTester.logs(Level.WARN))
       // two files, only one log
       .hasSize(1)
       // skipping start of logs which contains path, and depends of OS
@@ -300,8 +300,8 @@ class JavaAstScannerTest {
         TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java"),
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
-    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
+    assertThat(logTester.logs(Level.WARN)).isEmpty();
   }
 
   @Test
@@ -312,8 +312,8 @@ class JavaAstScannerTest {
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
     // When the java version is not set, we use the maximum version supported, able to parse module info.
-    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
+    assertThat(logTester.logs(Level.WARN)).isEmpty();
   }
 
   @Test

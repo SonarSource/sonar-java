@@ -31,13 +31,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogAndArguments;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
 import org.sonar.java.JavaVersionAwareVisitor;
@@ -76,7 +76,7 @@ import static org.mockito.Mockito.verify;
 class VisitorsBridgeTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   private SonarComponents sonarComponents = null;
 
@@ -140,8 +140,8 @@ class VisitorsBridgeTest {
     } catch (Exception e) {
       Fail.fail("Should have been an AnalysisException");
     }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
+    assertThat(logTester.logs(Level.ERROR)).hasSize(1);
+    assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("JFS_ThrowingNPEJavaFileScanner - JFS");
   }
 
@@ -154,8 +154,8 @@ class VisitorsBridgeTest {
       e.printStackTrace();
       Fail.fail("Exception should be swallowed when property is not set");
     }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
+    assertThat(logTester.logs(Level.ERROR)).hasSize(1);
+    assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("JFS_ThrowingNPEJavaFileScanner - JFS");
   }
 
@@ -172,8 +172,8 @@ class VisitorsBridgeTest {
     } catch (Exception e) {
       Fail.fail("Should have been an AnalysisException");
     }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
+    assertThat(logTester.logs(Level.ERROR)).hasSize(1);
+    assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("SV1_ThrowingNPEVisitingClass - SV1");
   }
 
@@ -191,8 +191,8 @@ class VisitorsBridgeTest {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
     }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(4);
-    assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
+    assertThat(logTester.logs(Level.ERROR)).hasSize(4);
+    assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder(
         "SV1_ThrowingNPEVisitingClass - SV1",
         "SV2_ThrowingNPELeavingClass - SV2",
@@ -212,8 +212,8 @@ class VisitorsBridgeTest {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
     }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
+    assertThat(logTester.logs(Level.ERROR)).hasSize(1);
+    assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsOnly("IV1_ThrowingNPEVisitingClass - IV1");
   }
 
@@ -229,8 +229,8 @@ class VisitorsBridgeTest {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
     }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(2);
-    assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
+    assertThat(logTester.logs(Level.ERROR)).hasSize(2);
+    assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder(
         "SV1_ThrowingNPEVisitingClass - SV1",
         "IV1_ThrowingNPEVisitingClass - IV1");
@@ -245,7 +245,7 @@ class VisitorsBridgeTest {
       e.printStackTrace();
       Fail.fail("No exception should be raised");
     }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
   }
 
   @Test
@@ -414,9 +414,9 @@ class VisitorsBridgeTest {
       Collections.emptyList(),
       null
     );
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
     visitorsBridge.endOfAnalysis();
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
   }
 
   @Test
@@ -429,11 +429,11 @@ class VisitorsBridgeTest {
       sonarComponents
     );
 
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
     visitorsBridge.visitFile(null, false);
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
     visitorsBridge.endOfAnalysis();
-    List<LogAndArguments> logsAfterEndOfAnalysis = logTester.getLogs(LoggerLevel.INFO);
+    List<LogAndArguments> logsAfterEndOfAnalysis = logTester.getLogs(Level.INFO);
     assertThat(logsAfterEndOfAnalysis).hasSize(1);
     assertThat(logsAfterEndOfAnalysis.get(0).getFormattedMsg())
       .isEqualTo("Did not optimize analysis for any files, performed a full analysis for all 1 files.");
@@ -449,11 +449,11 @@ class VisitorsBridgeTest {
       sonarComponents
     );
 
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
     visitorsBridge.visitFile(null, true);
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
     visitorsBridge.endOfAnalysis();
-    List<LogAndArguments> logsAfterEndOfAnalysis = logTester.getLogs(LoggerLevel.INFO);
+    List<LogAndArguments> logsAfterEndOfAnalysis = logTester.getLogs(Level.INFO);
     assertThat(logsAfterEndOfAnalysis).hasSize(1);
     assertThat(logsAfterEndOfAnalysis.get(0).getFormattedMsg())
       .isEqualTo("Optimized analysis for 1 of 1 files.");
@@ -591,7 +591,7 @@ class VisitorsBridgeTest {
         scanner.getClass().getCanonicalName()
       );
 
-      List<LogAndArguments> warningLogs = logTester.getLogs(LoggerLevel.WARN);
+      List<LogAndArguments> warningLogs = logTester.getLogs(Level.WARN);
       assertThat(warningLogs).hasSize(1);
       assertThat(warningLogs.get(0).getFormattedMsg()).isEqualTo(expectedLogMessage);
     }

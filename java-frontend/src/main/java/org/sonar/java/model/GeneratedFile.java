@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import org.sonar.java.annotations.VisibleForTesting;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +36,7 @@ import javax.annotation.CheckForNull;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.SourceMap.Location;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -47,6 +47,8 @@ import static java.lang.Math.min;
 public class GeneratedFile implements InputFile {
 
   private final Path path;
+  private String contents = null;
+  private String md5 = null;
 
   @VisibleForTesting
   final List<SmapFile> smapFiles = new ArrayList<>();
@@ -193,7 +195,18 @@ public class GeneratedFile implements InputFile {
 
   @Override
   public String contents() throws IOException {
-    return new String(Files.readAllBytes(path), charset());
+    if (contents == null) {
+      contents = new String(Files.readAllBytes(path), charset());
+    }
+    return contents;
+  }
+
+  @Override
+  public String md5Hash() {
+    if (md5 == null) {
+      md5 = InputFileUtils.md5Hash(this);
+    }
+    return md5;
   }
 
   @Override

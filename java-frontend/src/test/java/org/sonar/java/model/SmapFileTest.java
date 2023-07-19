@@ -26,11 +26,11 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.entry;
 class SmapFileTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @TempDir
   public Path temporaryFolder;
@@ -116,7 +116,7 @@ class SmapFileTest {
       "invalid line info\n",
       null, null);
 
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Invalid line info invalid line info");
+    assertThat(logTester.logs(Level.WARN)).contains("Invalid line info invalid line info");
   }
 
   @Test

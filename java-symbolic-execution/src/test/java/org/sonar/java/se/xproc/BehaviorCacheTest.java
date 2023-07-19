@@ -32,9 +32,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
@@ -67,15 +67,15 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
 import static org.sonar.java.se.utils.SETestUtils.getMethodBehavior;
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BehaviorCacheTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester  = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester  = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void method_behavior_cache_should_be_filled_and_cleanup() {
@@ -105,7 +105,7 @@ class BehaviorCacheTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
     assertThat(sev.behaviorCache.behaviors.values()).allMatch(MethodBehavior::isVisited);
-    List<String> debugLogs = logTester.logs(LoggerLevel.DEBUG);
+    List<String> debugLogs = logTester.logs(Level.DEBUG);
     assertThat(debugLogs).containsOnlyOnce("Could not complete symbolic execution: reached limit of 16000 steps for method plop#24 in class ComputeBehaviorOnce");
   }
 
@@ -199,7 +199,7 @@ class BehaviorCacheTest {
 
     assertThat(behaviorCache.behaviors).isEmpty();
     assertThat(behaviorCache.hardcodedBehaviors()).hasSize(233);
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnly("[SE] Loaded 233 hardcoded method behaviors.");
+    assertThat(logTester.logs(Level.DEBUG)).containsOnly("[SE] Loaded 233 hardcoded method behaviors.");
   }
 
   @Test
@@ -344,7 +344,7 @@ class BehaviorCacheTest {
     Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors
       .loadHardcodedBehaviors(() -> Collections.singletonList((InputStream) null));
     assertThat(result).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("[SE] Unable to load hardcoded method behaviors. Defaulting to no hardcoded method behaviors.");
+    assertThat(logTester.logs(Level.DEBUG)).containsOnlyOnce("[SE] Unable to load hardcoded method behaviors. Defaulting to no hardcoded method behaviors.");
   }
 
   @Test
@@ -352,7 +352,7 @@ class BehaviorCacheTest {
     Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors
       .loadHardcodedBehaviors(() -> Collections.singletonList(BehaviorCacheTest.class.getResourceAsStream("invalid.json")));
     assertThat(result).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.ERROR)).containsOnlyOnce("[SE] Unable to load hardcoded method behaviors. Defaulting to no hardcoded method behaviors.");
+    assertThat(logTester.logs(Level.ERROR)).containsOnlyOnce("[SE] Unable to load hardcoded method behaviors. Defaulting to no hardcoded method behaviors.");
   }
 
   private static void verifyNoIssueOnFile(String fileName) {

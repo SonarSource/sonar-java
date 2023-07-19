@@ -28,6 +28,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.fs.internal.DefaultTextPointer;
@@ -40,8 +41,7 @@ import org.sonar.api.batch.sensor.issue.ExternalIssue;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +55,7 @@ class PmdSensorTest {
   private static final PmdSensor sensor = new PmdSensor();
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void test_descriptor() {
@@ -101,8 +101,8 @@ class PmdSensorTest {
   void invalid_report_path() throws IOException {
     List<ExternalIssue> externalIssues = execute("invalid-path.txt");
     assertThat(externalIssues).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
-    assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.WARN)))
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
+    assertThat(onlyOneLogElement(logTester.logs(Level.WARN)))
       .startsWith("PMD report not found: ")
       .endsWith("invalid-path.txt");
   }
@@ -111,17 +111,17 @@ class PmdSensorTest {
   void not_xml_report() throws IOException {
     List<ExternalIssue> externalIssues = execute("hello.txt");
     assertThat(externalIssues).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Failed to import external issues report:");
+    assertThat(logTester.logs(Level.ERROR).get(0)).startsWith("Failed to import external issues report:");
   }
 
   @Test
   void skip_issue_on_invalid_priority() throws IOException {
     List<ExternalIssue> externalIssues = execute("invalid-severity.xml");
     assertThat(externalIssues).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.WARN).get(0))
+    assertThat(logTester.logs(Level.WARN).get(0))
       .contains("Can't import issue at line 8")
       .contains("invalid-severity.xml");
-    assertThat(logTester.logs(LoggerLevel.WARN).get(1))
+    assertThat(logTester.logs(Level.WARN).get(1))
       .contains("Can't import issue at line 9")
       .contains("invalid-severity.xml");
   }
@@ -134,7 +134,7 @@ class PmdSensorTest {
     assertThat(secondIssueRange).isNotNull();
     assertThat(secondIssueRange.start().line()).isEqualTo(4);
     assertThat(secondIssueRange.end().line()).isEqualTo(4);
-    assertThat(logTester.logs(LoggerLevel.WARN).get(0))
+    assertThat(logTester.logs(Level.WARN).get(0))
       .contains("Can't import issue at line 9")
       .contains("invalid-text-range.xml");
   }
@@ -182,8 +182,8 @@ class PmdSensorTest {
       .hasRemediationEffort(5)
       .verify();
 
-    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly("No input file found for unknown-file.java. No PMD issue will be imported on this file.");
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
+    assertThat(logTester.logs(Level.WARN)).containsExactly("No input file found for unknown-file.java. No PMD issue will be imported on this file.");
   }
 
   private List<ExternalIssue> execute(@Nullable String fileName) throws IOException {
