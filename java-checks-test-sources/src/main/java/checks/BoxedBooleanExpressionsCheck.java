@@ -7,6 +7,20 @@ import javax.validation.constraints.NotNull;
 
 class BoxedBooleanExpressionsCheck {
 
+  String foo(Object value) {
+    if (value == null) return "";
+    return (Boolean) value ? "1" : "0"; // Compliant
+  }
+
+  String foo(String value) {
+    if (value == null) return "";
+    return Boolean.parseBoolean(value) ? "1" : "0"; // Compliant
+  }
+
+  String foo2(Object value) {
+    return (Boolean) value ? "1" : "0"; // Noncompliant
+  }
+
   void emptyFor(Boolean B) {
     for (;;) {
       foo();

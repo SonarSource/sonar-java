@@ -49,6 +49,7 @@ import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
@@ -60,7 +61,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   private static final String MESSAGE = "Use a primitive boolean expression here.";
   private static final String MESSAGE_QUICKFIX = "Use a primitive boolean expression";
 
-  private static final MethodMatchers OPTIONAL_ORELSE = MethodMatchers.create()
+  private static final MethodMatchers OPTIONAL_OR_ELSE = MethodMatchers.create()
     .ofTypes("java.util.Optional").names("orElse").addParametersMatcher(ANY).build();
 
   private static final String BOOLEAN = "java.lang.Boolean";
@@ -171,6 +172,10 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
       Optional<IfStatementTree> ifStatementWithFirstUsage = getParentConditionalBranch(firstUsage);
       return ifStatementWithNullCheck.equals(ifStatementWithFirstUsage);
     }
+    if (boxedBoolean.is(Kind.TYPE_CAST)) {
+      TypeCastTree typeCast = (TypeCastTree) boxedBoolean;
+      return isFirstUsageANullCheck(typeCast.expression());
+    }
     return false;
   }
 
@@ -247,7 +252,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   }
 
   private static boolean isOptionalInvocation(MethodInvocationTree mit) {
-    return OPTIONAL_ORELSE.matches(mit) && !mit.arguments().get(0).is(Kind.NULL_LITERAL);
+    return OPTIONAL_OR_ELSE.matches(mit) && !mit.arguments().get(0).is(Kind.NULL_LITERAL);
   }
 
   private static boolean isAnnotatedNonnull(MethodInvocationTree mit) {
@@ -260,7 +265,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   }
 
   private static List<JavaQuickFix> getQuickFix(ExpressionTree tree, ExpressionTree boxedBoolean) {
-    if (tree.is(Kind.METHOD_INVOCATION) && OPTIONAL_ORELSE.matches((MethodInvocationTree) tree)) {
+    if (tree.is(Kind.METHOD_INVOCATION) && OPTIONAL_OR_ELSE.matches((MethodInvocationTree) tree)) {
       // We do not suggest a quick fix when we have an optional
       return Collections.emptyList();
     }
