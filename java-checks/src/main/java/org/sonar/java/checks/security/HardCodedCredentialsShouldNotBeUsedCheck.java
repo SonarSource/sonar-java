@@ -25,8 +25,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.CredentialMethod;
@@ -46,7 +46,7 @@ import static org.sonar.java.checks.helpers.HardcodedStringExpressionChecker.isE
 public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor {
   public static final String CREDENTIALS_METHODS_FILE = "/org/sonar/java/checks/security/S6437-methods.json";
 
-  private static final Logger LOG = Loggers.get(HardCodedCredentialsShouldNotBeUsedCheck.class);
+  private static final Logger LOG = LoggerFactory.getLogger(HardCodedCredentialsShouldNotBeUsedCheck.class);
 
   private static final String ISSUE_MESSAGE = "Revoke and change this password, as it is compromised.";
 

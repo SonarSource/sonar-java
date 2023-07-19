@@ -31,12 +31,12 @@ import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ASTUtils {
 
-  private static final Logger LOG = Loggers.get(ASTUtils.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ASTUtils.class);
 
   private static final IAnnotationBinding[] NO_ANNOTATIONS = new IAnnotationBinding[0];
 

@@ -21,17 +21,17 @@ package org.sonar.java.externalreport;
 
 import java.io.File;
 import java.util.function.BiConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.issue.NewExternalIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
 public final class ExternalIssueUtils {
 
-  private static final Logger LOG = Loggers.get(ExternalIssueUtils.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ExternalIssueUtils.class);
 
   private ExternalIssueUtils() {
     // utility class

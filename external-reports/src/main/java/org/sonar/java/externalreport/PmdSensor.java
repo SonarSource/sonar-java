@@ -21,11 +21,11 @@ package org.sonar.java.externalreport;
 
 import java.io.File;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
@@ -33,7 +33,7 @@ import static org.sonar.java.externalreport.ExternalIssueUtils.importIfExist;
 
 public class PmdSensor implements Sensor {
 
-  private static final Logger LOG = Loggers.get(PmdSensor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PmdSensor.class);
 
   public static final String REPORT_PROPERTY_KEY = "sonar.java.pmd.reportPaths";
 

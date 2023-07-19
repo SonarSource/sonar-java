@@ -33,17 +33,17 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 import org.sonarsource.analyzer.commons.xml.SafeStaxParserFactory;
 
 public class SpotBugsXmlReportReader {
 
-  private static final Logger LOG = Loggers.get(SpotBugsXmlReportReader.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SpotBugsXmlReportReader.class);
 
   private static final QName TYPE_ATTRIBUTE = new QName("type");
   private static final QName SOURCE_PATH_ATTRIBUTE = new QName("sourcepath");

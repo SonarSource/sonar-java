@@ -26,18 +26,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.scan.filesystem.PathResolver;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 
 /**
  * @since 2.4
  */
 public final class SurefireUtils {
 
-  private static final Logger LOGGER = Loggers.get(SurefireUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SurefireUtils.class);
   /**
    * @since 4.11
    */

@@ -24,10 +24,10 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.CheckList;
 import org.sonarsource.analyzer.commons.BuiltInQualityProfileJsonLoader;
@@ -40,7 +40,7 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
 
 
-  private static final Logger LOG = Loggers.get(JavaSonarWayProfile.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JavaSonarWayProfile.class);
 
   static final String SECURITY_RULES_CLASS_NAME = "com.sonar.plugins.security.api.JavaRules";
   static final String DBD_RULES_CLASS_NAME = "com.sonarsource.plugins.dbd.api.JavaRules";

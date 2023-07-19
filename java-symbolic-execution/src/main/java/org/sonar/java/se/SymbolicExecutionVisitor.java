@@ -23,8 +23,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JUtils;
@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class SymbolicExecutionVisitor extends SubscriptionVisitor {
-  private static final Logger LOG = Loggers.get(SymbolicExecutionVisitor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SymbolicExecutionVisitor.class);
 
   @VisibleForTesting
   public final BehaviorCache behaviorCache;

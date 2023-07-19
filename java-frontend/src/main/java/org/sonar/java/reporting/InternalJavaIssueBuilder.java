@@ -27,14 +27,14 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.fix.NewInputFileEdit;
 import org.sonar.api.batch.sensor.issue.fix.NewQuickFix;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.Preconditions;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -49,7 +49,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
   private static final String FLOWS_NAME = "flows";
   private static final String SECONDARIES_NAME = "secondaries";
 
-  private static final Logger LOG = Loggers.get(InternalJavaIssueBuilder.class);
+  private static final Logger LOG = LoggerFactory.getLogger(InternalJavaIssueBuilder.class);
 
   private final InputFile inputFile;
   @Nullable

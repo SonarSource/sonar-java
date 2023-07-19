@@ -19,20 +19,19 @@
  */
 package org.sonar.java.caching;
 
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class ContentHashCache {
 
-  private static final Logger LOG = Loggers.get(ContentHashCache.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ContentHashCache.class);
   private static final String CONTENT_HASH_KEY = String.format("java:contentHash:%s:", FileHashingUtils.HASH_ALGORITHM);
   private static final String HASH_COMPUTE_FAIL_MSG = "Failed to compute content hash for file %s";
 
@@ -53,15 +52,15 @@ public class ContentHashCache {
   public boolean hasSameHashCached(InputFile inputFile) {
     if (!enabled) {
       if (inputFile.status() == InputFile.Status.SAME) {
-        LOG.trace(() -> "Cache is disabled. File status is: " + inputFile.status() + ". File can be skipped.");
+        LOG.trace("Cache is disabled. File status is: {}. File can be skipped.", inputFile.status());
         return true;
       }
-      LOG.trace(() -> "Cache is disabled. File status is: " + inputFile.status() + ". File can't be skipped.");
+      LOG.trace("Cache is disabled. File status is: {}. File can't be skipped.", inputFile.status());
       return false;
     }
     String cacheKey = getCacheKey(inputFile);
     try {
-      LOG.trace(() -> "Reading cache for the file " + inputFile.key());
+      LOG.trace("Reading cache for the file {}", inputFile.key());
       byte[] cachedHash = readCache.read(cacheKey).readAllBytes();
       byte[] fileHash = FileHashingUtils.inputFileContentHash(inputFile);
       boolean isHashEqual = MessageDigest.isEqual(fileHash, cachedHash);
@@ -82,7 +81,7 @@ public class ContentHashCache {
 
   public boolean contains(InputFile inputFile) {
     if (!enabled) {
-      LOG.trace(() -> "Cannot lookup cached hashes when the cache is disabled (" + inputFile.key() + ").");
+      LOG.trace("Cannot lookup cached hashes when the cache is disabled ({}).", inputFile.key());
       return false;
     }
     return readCache.contains(getCacheKey(inputFile));
@@ -90,10 +89,10 @@ public class ContentHashCache {
 
   public boolean writeToCache(InputFile inputFile) {
     if (!enabled) {
-      LOG.trace(() -> "Cannot write hashes to the cache when the cache is disabled (" + inputFile.key() + ").");
+      LOG.trace("Cannot write hashes to the cache when the cache is disabled ({}).", inputFile.key());
       return false;
     }
-    LOG.trace(() -> "Writing to the cache for file " + inputFile.key());
+    LOG.trace("Writing to the cache for file {}", inputFile.key());
     String cacheKey = getCacheKey(inputFile);
     try {
       writeCache.write(cacheKey, FileHashingUtils.inputFileContentHash(inputFile));
@@ -107,7 +106,7 @@ public class ContentHashCache {
   }
 
   private void copyFromPrevious(InputFile inputFile) {
-    LOG.trace(() -> "Copying cache from previous for file " + inputFile.key());
+    LOG.trace("Copying cache from previous for file {}", inputFile.key());
     writeCache.copyFromPrevious(getCacheKey(inputFile));
   }
 

@@ -25,11 +25,11 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
@@ -37,7 +37,7 @@ import static org.sonar.java.externalreport.ExternalIssueUtils.importIfExist;
 
 public class SpotBugsSensor implements Sensor {
 
-  private static final Logger LOG = Loggers.get(SpotBugsSensor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SpotBugsSensor.class);
 
   public static final String SPOTBUGS_KEY = "spotbugs";
   private static final String SPOTBUGS_NAME = "SpotBugs";

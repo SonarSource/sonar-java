@@ -23,18 +23,17 @@ import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-import org.sonar.api.utils.log.Profiler;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisWarningsWrapper;
 
 public class ClasspathForMain extends AbstractClasspath {
 
-  private static final Logger LOG = Loggers.get(ClasspathForMain.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ClasspathForMain.class);
 
   private final AnalysisWarningsWrapper analysisWarnings;
   private boolean hasSuspiciousEmptyLibraries = false;
@@ -53,7 +52,6 @@ public class ClasspathForMain extends AbstractClasspath {
   protected void init() {
     if (!initialized) {
       validateLibraries = fs.hasFiles(fs.predicates().all());
-      Profiler profiler = Profiler.create(LOG).startInfo("JavaClasspath initialization");
       initialized = true;
       binaries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_BINARIES));
 
@@ -79,7 +77,6 @@ public class ClasspathForMain extends AbstractClasspath {
 
       elements.addAll(binaries);
       elements.addAll(libraries);
-      profiler.stopInfo();
     }
   }
 

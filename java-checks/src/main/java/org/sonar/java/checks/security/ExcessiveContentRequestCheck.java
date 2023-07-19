@@ -28,15 +28,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.AnalysisException;
-import org.sonar.java.model.DefaultModuleScannerContext;
-import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.DefaultModuleScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -46,6 +45,7 @@ import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -124,7 +124,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   public static final String CACHE_KEY_INSTANTIATE = "java:S5693:instantiate";
   public static final String CACHE_KEY_SET_MAXIMUM_SIZE = "java:S5693:maximumSize";
 
-  private static final Logger LOGGER = Loggers.get(ExcessiveContentRequestCheck.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExcessiveContentRequestCheck.class);
 
   private final List<AnalyzerMessage> multipartConstructorIssues = new ArrayList<>();
   private boolean sizeSetSomewhere = false;
@@ -141,7 +141,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     // Check if results have been cached previously for this unchanged file
     Optional<CachedResult> cachedEntry = loadFromPreviousAnalysis(cacheContext, unchangedFile);
     if (cachedEntry.isEmpty()) {
-      LOGGER.trace(() -> String.format(String.format("No cached data for rule java:S5693 on file %s", unchangedFile)));
+      LOGGER.trace("No cached data for rule java:S5693 on file {}", unchangedFile);
       return false;
     }
     boolean inputFileSetsMaximumSize = cachedEntry.get().setMaximumSize;
@@ -297,7 +297,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     try {
       return Optional.ofNullable(CachedResult.fromBytes(rawValue));
     } catch (IllegalArgumentException ignored) {
-      LOGGER.trace(() -> String.format("Cached entry is unreadable for rule java:S5693 on file %s", inputFile));
+      LOGGER.trace("Cached entry is unreadable for rule java:S5693 on file {}", inputFile);
       return Optional.empty();
     }
   }

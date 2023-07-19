@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.java.annotations.VisibleForTesting;
 
 public class ProgressMonitor implements IProgressMonitor, Runnable {
@@ -65,7 +65,7 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
   }
 
   public ProgressMonitor(BooleanSupplier isCanceled, AnalysisProgress analysisProgress) {
-    this(isCanceled, Loggers.get(ProgressMonitor.class), TimeUnit.SECONDS.toMillis(10), analysisProgress);
+    this(isCanceled, LoggerFactory.getLogger(ProgressMonitor.class), TimeUnit.SECONDS.toMillis(10), analysisProgress);
   }
 
   @Override

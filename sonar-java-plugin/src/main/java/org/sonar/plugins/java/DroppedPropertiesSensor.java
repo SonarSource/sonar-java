@@ -22,16 +22,16 @@ package org.sonar.plugins.java;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.notifications.AnalysisWarnings;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 
 public class DroppedPropertiesSensor implements Sensor {
 
-  private static final Logger LOG = Loggers.get(DroppedPropertiesSensor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DroppedPropertiesSensor.class);
 
   private static final String REPORT_PATHS_PROPERTY = "sonar.jacoco.reportPaths";
   private static final String REPORT_PATH_PROPERTY = "sonar.jacoco.reportPath";

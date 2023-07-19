@@ -20,18 +20,17 @@
 package org.sonar.java.caching;
 
 import java.io.IOException;
-import javax.annotation.CheckForNull;
-import org.sonar.api.batch.sensor.cache.ReadCache;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-import org.sonar.plugins.java.api.caching.JavaReadCache;
-
 import java.io.InputStream;
 import java.util.Objects;
+import javax.annotation.CheckForNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 
 public class JavaReadCacheImpl implements JavaReadCache {
-  private static final Logger LOG = Loggers.get(JavaReadCacheImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JavaReadCacheImpl.class);
 
   private ReadCache readCache;
 
@@ -60,7 +59,7 @@ public class JavaReadCacheImpl implements JavaReadCache {
         duration.stop();
       }
     } else {
-      LOG.trace(() -> String.format("Cache miss for key '%s'", key));
+      LOG.trace("Cache miss for key '{}'", key);
       duration.stop();
       return null;
     }

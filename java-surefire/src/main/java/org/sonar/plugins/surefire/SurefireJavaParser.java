@@ -30,13 +30,13 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.surefire.data.UnitTestClassReport;
@@ -48,7 +48,7 @@ import org.sonar.plugins.surefire.data.UnitTestIndex;
 @ScannerSide
 public class SurefireJavaParser {
 
-  private static final Logger LOGGER = Loggers.get(SurefireJavaParser.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SurefireJavaParser.class);
   private final JavaResourceLocator javaResourceLocator;
 
   public SurefireJavaParser(JavaResourceLocator javaResourceLocator) {

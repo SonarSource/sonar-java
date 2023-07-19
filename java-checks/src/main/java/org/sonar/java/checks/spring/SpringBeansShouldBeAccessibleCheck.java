@@ -32,18 +32,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultModuleScannerContext;
-import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.DefaultModuleScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -54,7 +54,7 @@ import org.sonarsource.analyzer.commons.collections.SetUtils;
 @Rule(key = "S4605")
 public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisitor implements EndOfAnalysis {
 
-  private static final Logger LOG = Loggers.get(SpringBeansShouldBeAccessibleCheck.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SpringBeansShouldBeAccessibleCheck.class);
 
   private static final String MESSAGE_FORMAT = "'%s' is not reachable by @ComponentScan or @SpringBootApplication. "
     + "Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.";
@@ -159,7 +159,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     try {
       context.getCacheContext().getWriteCache().write(cacheKey, data);
     } catch (IllegalArgumentException e) {
-      LOG.trace(() -> String.format("Tried to write multiple times to cache key '%s'. Ignoring writes after the first.", cacheKey));
+      LOG.trace("Tried to write multiple times to cache key '{}'. Ignoring writes after the first.", cacheKey);
     }
   }
 

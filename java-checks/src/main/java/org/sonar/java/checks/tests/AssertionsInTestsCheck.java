@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.AbstractAssertionVisitor;
@@ -46,7 +46,7 @@ import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Logger LOG = Loggers.get(AssertionsInTestsCheck.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AssertionsInTestsCheck.class);
 
   @RuleProperty(
     key = "customAssertionMethods",
