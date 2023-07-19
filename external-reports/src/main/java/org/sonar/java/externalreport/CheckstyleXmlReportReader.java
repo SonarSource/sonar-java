@@ -28,16 +28,16 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.xml.SafeStaxParserFactory;
 
 class CheckstyleXmlReportReader {
 
-  private static final Logger LOG = Loggers.get(CheckstyleXmlReportReader.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CheckstyleXmlReportReader.class);
 
   private static final QName CHECKSTYLE = new QName("checkstyle");
   private static final QName FILE = new QName("file");

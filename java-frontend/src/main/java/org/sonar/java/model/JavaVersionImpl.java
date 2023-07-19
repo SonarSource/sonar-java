@@ -20,13 +20,13 @@
 package org.sonar.java.model;
 
 import java.util.Locale;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.plugins.java.api.JavaVersion;
 
 public class JavaVersionImpl implements JavaVersion {
 
-  private static final Logger LOG = Loggers.get(JavaVersionImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JavaVersionImpl.class);
 
   private static final int JAVA_6 = 6;
   private static final int JAVA_7 = 7;

@@ -21,9 +21,9 @@ package org.sonar.java.caching;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
@@ -35,7 +35,7 @@ public class CacheContextImpl implements CacheContext {
    */
   public static final String SONAR_CACHING_ENABLED_KEY = "sonar.java.caching.enabled";
 
-  private static final Logger LOGGER = Loggers.get(CacheContextImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CacheContextImpl.class);
 
   private final boolean isCacheEnabled;
   private final JavaReadCache readCache;
@@ -54,12 +54,12 @@ public class CacheContextImpl implements CacheContext {
         boolean cacheEnabled =
           (context.config() == null ? Optional.<Boolean>empty() : context.config().getBoolean(SONAR_CACHING_ENABLED_KEY))
             .map(flag -> {
-              LOGGER.debug(() -> "Forcing caching behavior. Caching will be enabled: " + flag);
+              LOGGER.debug("Forcing caching behavior. Caching will be enabled: {}", flag);
               return flag;
             })
             .orElse(context.isCacheEnabled());
 
-        LOGGER.trace(() -> "Caching is enabled: " + cacheEnabled);
+        LOGGER.trace("Caching is enabled: {}", cacheEnabled);
 
         if (cacheEnabled) {
           return new CacheContextImpl(
@@ -69,7 +69,7 @@ public class CacheContextImpl implements CacheContext {
           );
         }
       } catch (NoSuchMethodError error) {
-        LOGGER.debug(() -> String.format("Missing cache related method from sonar-plugin-api: %s.", error.getMessage()));
+        LOGGER.debug("Missing cache related method from sonar-plugin-api: {}.", error.getMessage());
       }
     }
 

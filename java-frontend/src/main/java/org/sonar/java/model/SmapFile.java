@@ -31,11 +31,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 
 import static java.lang.Integer.parseInt;
 
@@ -54,7 +54,7 @@ public class SmapFile {
     "(?<outputStartLine>\\d+)" +
     "(?:,(?<outputIncrement>\\d+))?");
 
-  private static final Logger LOG = Loggers.get(SmapFile.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SmapFile.class);
 
   private final Path generatedFile;
   private final Map<Integer, FileInfo> fileSection;

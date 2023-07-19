@@ -24,13 +24,13 @@ import java.time.Clock;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
 
 public class ExecutionTimeReport {
-  private static final Logger LOG = Loggers.get(ExecutionTimeReport.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ExecutionTimeReport.class);
 
   private static final int MAX_REPORTED_FILES = 10;
   private static final long MIN_REPORTED_ANALYSIS_TIME_MS = 1000;

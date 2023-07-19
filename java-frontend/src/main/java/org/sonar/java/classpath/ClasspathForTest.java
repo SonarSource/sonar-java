@@ -22,16 +22,15 @@ package org.sonar.java.classpath;
 import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-import org.sonar.api.utils.log.Profiler;
 
 public class ClasspathForTest extends AbstractClasspath {
 
-  private static final Logger LOG = Loggers.get(ClasspathForTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ClasspathForTest.class);
 
   private boolean hasSuspiciousEmptyLibraries = false;
   private boolean alreadyReported = false;
@@ -44,7 +43,6 @@ public class ClasspathForTest extends AbstractClasspath {
   protected void init() {
     if (!initialized) {
       validateLibraries = fs.hasFiles(fs.predicates().all());
-      Profiler profiler = Profiler.create(LOG).startInfo("JavaTestClasspath initialization");
       initialized = true;
       binaries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_BINARIES));
 
@@ -56,7 +54,6 @@ public class ClasspathForTest extends AbstractClasspath {
 
       elements.addAll(binaries);
       elements.addAll(libraries);
-      profiler.stopInfo();
     }
   }
 

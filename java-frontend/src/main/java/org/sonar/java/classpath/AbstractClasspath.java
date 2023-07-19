@@ -42,12 +42,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
@@ -57,7 +57,7 @@ public abstract class AbstractClasspath {
 
   private static final char UNIX_SEPARATOR = '/';
   private static final char WINDOWS_SEPARATOR = '\\';
-  private static final Logger LOG = Loggers.get(AbstractClasspath.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AbstractClasspath.class);
   protected final Configuration settings;
   protected final FileSystem fs;
   private final InputFile.Type fileType;

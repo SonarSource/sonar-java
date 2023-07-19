@@ -22,18 +22,18 @@ package org.sonar.java.checks;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 
 public abstract class AbstractPackageInfoChecker implements JavaFileScanner, EndOfAnalysis {
-  private static final Logger LOG = Loggers.get(AbstractPackageInfoChecker.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AbstractPackageInfoChecker.class);
   private static final String CACHE_KEY_PREFIX = "java:S1228;S4032:package:";
 
   private static String cacheKey(InputFile inputFile) {
@@ -82,7 +82,7 @@ public abstract class AbstractPackageInfoChecker implements JavaFileScanner, End
     try {
       context.getCacheContext().getWriteCache().write(cacheKey, packageName.getBytes(StandardCharsets.UTF_8));
     } catch (IllegalArgumentException e) {
-      LOG.trace(() -> String.format("Could not store data to cache key '%s': %s", cacheKey, e.getMessage()));
+      LOG.trace("Could not store data to cache key '{}': {}", cacheKey, e.getMessage());
     }
   }
 }

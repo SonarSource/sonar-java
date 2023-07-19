@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
@@ -38,8 +40,6 @@ import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.AnnotationUtils;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
@@ -60,7 +60,7 @@ import org.sonarsource.performance.measure.PerformanceMeasure;
 @Phase(name = Phase.Name.PRE)
 public class JavaSensor implements Sensor {
 
-  private static final Logger LOG = Loggers.get(JavaSensor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JavaSensor.class);
 
   private static final String PERFORMANCE_MEASURE_ACTIVATION_PROPERTY = "sonar.java.performance.measure";
   private static final String PERFORMANCE_MEASURE_FILE_PATH_PROPERTY = "sonar.java.performance.measure.path";

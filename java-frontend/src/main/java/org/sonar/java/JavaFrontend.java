@@ -34,10 +34,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-import org.sonar.api.utils.log.Profiler;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
@@ -57,7 +56,7 @@ import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
 
 public class JavaFrontend {
 
-  private static final Logger LOG = Loggers.get(JavaFrontend.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JavaFrontend.class);
   private static final String BATCH_ERROR_MESSAGE = "Batch Mode failed, analysis of Java Files stopped.";
 
   private final JavaVersion javaVersion;
@@ -407,14 +406,12 @@ public class JavaFrontend {
   private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {
     if (CollectionUtils.size(files) > 0) {
       Duration mainDuration = PerformanceMeasure.start(descriptor);
-      Profiler profiler = Profiler.create(LOG).startInfo(String.format("Java \"%s\" source files AST scan", descriptor));
 
       action.accept(files);
 
-      profiler.stopInfo();
       mainDuration.stop();
     } else {
-      LOG.info(String.format("No \"%s\" source files to scan.", descriptor));
+      LOG.info("No \"{}\" source files to scan.", descriptor);
     }
   }
 }

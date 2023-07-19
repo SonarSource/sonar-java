@@ -32,14 +32,13 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.AnnotationUtils;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
-import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.java.JavaVersionAwareVisitor;
@@ -58,6 +57,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -66,7 +66,7 @@ import org.sonarsource.performance.measure.PerformanceMeasure;
 
 public class VisitorsBridge {
 
-  private static final Logger LOG = Loggers.get(VisitorsBridge.class);
+  private static final Logger LOG = LoggerFactory.getLogger(VisitorsBridge.class);
 
   private final Iterable<? extends JavaCheck> visitors;
   private final List<JavaFileScanner> allScanners;

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.xproc;
 
-import org.sonar.java.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.InputStream;
@@ -36,8 +35,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -45,7 +45,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 public class BehaviorCache {
 
-  private static final Logger LOG = Loggers.get(BehaviorCache.class);
+  private static final Logger LOG = LoggerFactory.getLogger(BehaviorCache.class);
 
   private SymbolicExecutionVisitor sev;
 

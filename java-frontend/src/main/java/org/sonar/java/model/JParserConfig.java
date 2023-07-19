@@ -39,9 +39,9 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.ExecutionTimeReport;
 import org.sonar.java.ProgressMonitor;
@@ -54,7 +54,7 @@ public abstract class JParserConfig {
 
   public static final JavaVersion MAXIMUM_SUPPORTED_JAVA_VERSION = new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED, true);
 
-  private static final Logger LOG = Loggers.get(JParserConfig.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JParserConfig.class);
 
   private static final String MAXIMUM_ECJ_WARNINGS = "42000";
   private static final Set<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));

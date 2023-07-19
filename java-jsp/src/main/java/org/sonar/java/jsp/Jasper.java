@@ -48,6 +48,8 @@ import org.apache.jasper.compiler.JspRuntimeContext;
 import org.apache.jasper.compiler.SmapStratum;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.jasper.servlet.JspCServletContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
@@ -55,8 +57,6 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.scanner.ScannerSide;
 import org.sonar.api.utils.PathUtils;
 import org.sonar.api.utils.WildcardPattern;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.SmapFile;
@@ -66,7 +66,7 @@ public class Jasper {
 
   private static final String SONAR_EXCLUSIONS_PROPERTY = "sonar.exclusions";
 
-  private static final Logger LOG = Loggers.get(Jasper.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Jasper.class);
 
   public Collection<GeneratedFile> generateFiles(SensorContext sensorContext, List<File> javaClasspath) {
     List<String> sonarExclusions = Arrays.asList(sensorContext.config().getStringArray(SONAR_EXCLUSIONS_PROPERTY));

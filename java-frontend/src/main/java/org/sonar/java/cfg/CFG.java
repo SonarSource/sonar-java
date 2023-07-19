@@ -33,8 +33,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.java.Preconditions;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
@@ -96,7 +96,7 @@ import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class CFG implements ControlFlowGraph {
 
-  private static final Logger LOG = Loggers.get(CFG.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CFG.class);
 
   private final boolean ignoreBreakAndContinue;
   @Nullable

@@ -27,18 +27,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
-  private static final Logger LOG = Loggers.get(DefaultJavaResourceLocator.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultJavaResourceLocator.class);
 
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
