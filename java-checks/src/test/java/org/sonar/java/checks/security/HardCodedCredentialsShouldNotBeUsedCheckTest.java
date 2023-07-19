@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.slf4j.event.Level;
+import org.sonar.api.testfixtures.log.LogAndArguments;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
@@ -34,13 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class HardCodedCredentialsShouldNotBeUsedCheckTest {
   @RegisterExtension
-  final LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  final LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void uses_empty_collection_when_methods_cannot_be_loaded() {
     var check = new HardCodedCredentialsShouldNotBeUsedCheck("non-existing-file.json");
     assertThat(check.getMethods()).isEmpty();
-    List<String> logs = logTester.getLogs(LoggerLevel.ERROR).stream()
+    List<String> logs = logTester.getLogs(Level.ERROR).stream()
       .map(LogAndArguments::getFormattedMsg)
       .collect(Collectors.toList());
     assertThat(logs)

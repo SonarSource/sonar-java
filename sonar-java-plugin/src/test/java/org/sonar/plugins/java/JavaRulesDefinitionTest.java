@@ -51,7 +51,7 @@ class JavaRulesDefinitionTest {
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
-    assertThat(repository.name()).isEqualTo("SonarQube");
+    assertThat(repository.name()).isEqualTo("Sonar");
     assertThat(repository.language()).isEqualTo("java");
     assertThat(repository.rules()).hasSize(CheckList.getChecks().size());
 
@@ -86,7 +86,7 @@ class JavaRulesDefinitionTest {
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
-    assertThat(repository.name()).isEqualTo("SonarQube");
+    assertThat(repository.name()).isEqualTo("Sonar");
     assertThat(repository.language()).isEqualTo("java");
     assertThat(repository.rules()).hasSize(CheckList.getChecks().size());
     Locale.setDefault(defaultLocale);

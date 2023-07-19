@@ -48,8 +48,9 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
@@ -83,7 +84,7 @@ import static org.sonar.java.model.JParserTestUtils.parse;
 class JParserTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void should_throw_RecognitionException_in_case_of_syntax_error() {

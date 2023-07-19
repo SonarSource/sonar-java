@@ -48,6 +48,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.event.Level;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
@@ -71,10 +72,9 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.testfixtures.log.LogAndArguments;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.check.Rule;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -134,7 +134,7 @@ class SonarComponentsTest {
   private SensorContext context;
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @BeforeEach
   void setUp() {
@@ -797,18 +797,18 @@ class SonarComponentsTest {
   @ParameterizedTest
   @MethodSource("fileCanBeSkipped_only_logs_on_first_call_input")
   void fileCanBeSkipped_only_logs_on_the_first_call(SonarComponents sonarComponents, InputFile inputFile, String logMessage) throws IOException {
-    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
 
     SensorContext contextMock = mock(SensorContext.class);
     sonarComponents.setSensorContext(contextMock);
     when(inputFile.contents()).thenReturn("");
     sonarComponents.fileCanBeSkipped(inputFile);
-    List<LogAndArguments> logs = logTester.getLogs(LoggerLevel.INFO);
+    List<LogAndArguments> logs = logTester.getLogs(Level.INFO);
     assertThat(logs).hasSize(1);
     assertThat(logs.get(0).getRawMsg()).isEqualTo(logMessage);
 
     sonarComponents.fileCanBeSkipped(inputFile);
-    logs = logTester.getLogs(LoggerLevel.INFO);
+    logs = logTester.getLogs(Level.INFO);
     assertThat(logs).hasSize(1);
     assertThat(logs.get(0).getRawMsg()).isEqualTo(logMessage);
   }
@@ -875,7 +875,7 @@ class SonarComponentsTest {
     private SonarComponents sonarComponents;
 
     @RegisterExtension
-    public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+    public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
     @BeforeEach
     void beforeEach() {
@@ -893,9 +893,9 @@ class SonarComponentsTest {
       // triggers log
       sonarComponents.logUndefinedTypes();
 
-      assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
+      assertThat(logTester.logs(Level.WARN)).containsExactly("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
 
-      List<String> debugLogs = logTester.logs(LoggerLevel.DEBUG);
+      List<String> debugLogs = logTester.logs(Level.DEBUG);
       assertThat(debugLogs).hasSize(1);
 
       String list = debugLogs.get(0);
@@ -923,9 +923,9 @@ class SonarComponentsTest {
       // triggers log
       sonarComponents.logUndefinedTypes();
 
-      assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
+      assertThat(logTester.logs(Level.WARN)).containsExactly("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
 
-      List<String> debugLogs = logTester.logs(LoggerLevel.DEBUG);
+      List<String> debugLogs = logTester.logs(Level.DEBUG);
       assertThat(debugLogs).hasSize(1);
 
       assertThat(debugLogs.get(0))
@@ -939,7 +939,7 @@ class SonarComponentsTest {
     void suspicious_empty_libraries_should_be_logged() {
       logUndefinedTypesWithOneMainAndOneTest();
 
-      assertThat(logTester.logs(LoggerLevel.WARN))
+      assertThat(logTester.logs(Level.WARN))
         .contains("Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. Verify your configuration, as you might end up with less precise results.")
         .contains("Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. Verify your configuration, as you might end up with less precise results.");
     }
@@ -951,7 +951,7 @@ class SonarComponentsTest {
 
       logUndefinedTypesWithOneMainAndOneTest();
 
-      assertThat(logTester.logs(LoggerLevel.WARN))
+      assertThat(logTester.logs(Level.WARN))
         .contains("Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. Verify your configuration, as you might end up with less precise results.")
         .doesNotContain("Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. Verify your configuration, as you might end up with less precise results.");
     }

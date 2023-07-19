@@ -33,6 +33,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
+import org.slf4j.event.Level;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.InputFile;
@@ -52,11 +53,9 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.CheckList;
@@ -74,7 +73,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JspCodeVisitor;
-import org.sonarsource.performance.measure.PerformanceMeasure;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
@@ -104,7 +102,7 @@ class JavaSensorTest {
   public final TemporaryFolder tmp = new TemporaryFolder();
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void test_toString() throws IOException {
@@ -133,8 +131,8 @@ class JavaSensorTest {
     JavaSensor jss = new JavaSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
 
     jss.execute(context);
-    // argument 120 refers to the comment on line #120 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(121));
+    // argument 119 refers to the comment on line #119 in this file
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(119));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
@@ -281,17 +279,17 @@ class JavaSensorTest {
   @Test
   void info_log_when_no_SE_rules_enabled() throws IOException {
     assertJasperIsInvoked(new MapSettings());
-    assertThat(logTester.logs(LoggerLevel.INFO)).contains("No rules with 'symbolic-execution' tag were enabled,"
+    assertThat(logTester.logs(Level.INFO)).contains("No rules with 'symbolic-execution' tag were enabled,"
       + " the Symbolic Execution Engine will not run during the analysis.");
   }
 
   @Test
   void performance_measure_should_not_be_activated_by_default() throws IOException {
-    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     MapSettings settings = new MapSettings();
     Path workDir = tmp.newFolder().toPath();
     executeJavaSensorForPerformanceMeasure(settings, workDir);
-    String debugLogs = String.join("\n", logTester.logs(LoggerLevel.DEBUG));
+    String debugLogs = String.join("\n", logTester.logs(Level.DEBUG));
     assertThat(debugLogs).doesNotContain("Performance Measures:");
     Path performanceFile = workDir.resolve("sonar.java.performance.measure.json");
     assertThat(performanceFile).doesNotExist();
@@ -299,12 +297,12 @@ class JavaSensorTest {
 
   @Test
   void performance_measure_should_log_in_debug_mode() throws IOException {
-    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.performance.measure", "true");
     Path workDir = tmp.newFolder().toPath();
     executeJavaSensorForPerformanceMeasure(settings, workDir);
-    String debugLogs = String.join("\n", logTester.logs(LoggerLevel.DEBUG));
+    String debugLogs = String.join("\n", logTester.logs(Level.DEBUG));
     assertThat(debugLogs).contains("Performance Measures:\n{ \"name\": \"JavaSensor\"");
     Path performanceFile = workDir.resolve("sonar.java.performance.measure.json");
     assertThat(performanceFile).exists();
@@ -313,14 +311,14 @@ class JavaSensorTest {
 
   @Test
   void custom_performance_measure_file_path_can_be_provided() throws IOException {
-    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     MapSettings settings = new MapSettings();
     Path workDir = tmp.newFolder().toPath();
     Path customPerformanceFile = workDir.resolve("custom.performance.measure.json");
     settings.setProperty("sonar.java.performance.measure", "true");
     settings.setProperty("sonar.java.performance.measure.path", customPerformanceFile.toString());
     executeJavaSensorForPerformanceMeasure(settings, workDir);
-    String debugLogs = String.join("\n", logTester.logs(LoggerLevel.DEBUG));
+    String debugLogs = String.join("\n", logTester.logs(Level.DEBUG));
     assertThat(debugLogs).contains("{ \"name\": \"JavaSensor\"");
     Path defaultPerformanceFile = workDir.resolve("sonar.java.performance.measure.json");
     assertThat(defaultPerformanceFile).doesNotExist();
@@ -330,13 +328,13 @@ class JavaSensorTest {
 
   @Test
   void custom_performance_measure_file_path_can_be_empty() throws IOException {
-    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.performance.measure", "true");
     settings.setProperty("sonar.java.performance.measure.path", "");
     Path workDir = tmp.newFolder().toPath();
     executeJavaSensorForPerformanceMeasure(settings, workDir);
-    String debugLogs = String.join("\n", logTester.logs(LoggerLevel.DEBUG));
+    String debugLogs = String.join("\n", logTester.logs(Level.DEBUG));
     assertThat(debugLogs).contains("{ \"name\": \"JavaSensor\"");
     Path defaultPerformanceFile = workDir.resolve("sonar.java.performance.measure.json");
     assertThat(defaultPerformanceFile).exists();
@@ -350,8 +348,8 @@ class JavaSensorTest {
     settings.setProperty("sonar.java.enablePreview", "True");
     Path workDir = tmp.newFolder().toPath();
     executeJavaSensorForPerformanceMeasure(settings, workDir);
-    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
-    List<String> infoLogs = logTester.logs(LoggerLevel.INFO);
+    assertThat(logTester.logs(Level.WARN)).isEmpty();
+    List<String> infoLogs = logTester.logs(Level.INFO);
     assertThat(infoLogs).contains("Configured Java source version (sonar.java.source): " + JavaVersionImpl.MAX_SUPPORTED +
       ", preview features enabled (sonar.java.enablePreview): true");
   }
@@ -364,11 +362,11 @@ class JavaSensorTest {
     settings.setProperty("sonar.java.enablePreview", "True");
     Path workDir = tmp.newFolder().toPath();
     executeJavaSensorForPerformanceMeasure(settings, workDir);
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains(
+    assertThat(logTester.logs(Level.WARN)).contains(
       "sonar.java.enablePreview is set but will be discarded as the Java version is less than the max supported version (" +
         version + " < " + JavaVersionImpl.MAX_SUPPORTED + ")"
     );
-    List<String> infoLogs = logTester.logs(LoggerLevel.INFO);
+    List<String> infoLogs = logTester.logs(Level.INFO);
     assertThat(infoLogs).contains("Configured Java source version (sonar.java.source): " + version +
       ", preview features enabled (sonar.java.enablePreview): false");
   }
@@ -380,10 +378,10 @@ class JavaSensorTest {
     settings.setProperty("sonar.java.enablePreview", "true");
     Path workDir = tmp.newFolder().toPath();
     executeJavaSensorForPerformanceMeasure(settings, workDir);
-    assertThat(logTester.logs(LoggerLevel.WARN)).noneMatch(
+    assertThat(logTester.logs(Level.WARN)).noneMatch(
       log -> log.startsWith("sonar.java.enablePreview is set but will be discarded as the Java version is less than the max supported version")
     );
-    List<String> infoLogs = logTester.logs(LoggerLevel.INFO);
+    List<String> infoLogs = logTester.logs(Level.INFO);
     assertThat(infoLogs).noneMatch(log -> log.startsWith("Configured Java source version (sonar.java.source):"));
   }
   

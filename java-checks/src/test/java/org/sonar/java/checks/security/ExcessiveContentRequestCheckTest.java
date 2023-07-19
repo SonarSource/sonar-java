@@ -23,10 +23,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogAndArguments;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.checks.helpers.HashCacheTestHelper;
@@ -61,7 +61,7 @@ import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPa
 class ExcessiveContentRequestCheckTest {
 
   @RegisterExtension
-  LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Nested
   class Caching {
@@ -94,7 +94,7 @@ class ExcessiveContentRequestCheckTest {
 
     @Test
     void no_issue_raised_on_unchanged_files_with_empty_cache() throws IOException, NoSuchAlgorithmException {
-      logTester.setLevel(LoggerLevel.TRACE);
+      logTester.setLevel(Level.TRACE);
       var check = spy(new ExcessiveContentRequestCheck());
 
       verifier
@@ -112,7 +112,7 @@ class ExcessiveContentRequestCheckTest {
       verify(check, times(3)).leaveFile(any());
 
       assertThat(writeCache.getData()).containsAllEntriesOf(expectedFinalCacheState);
-      List<String> logs = logTester.getLogs(LoggerLevel.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
+      List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
       assertThat(logs).
         contains(
           "No cached data for rule java:S5693 on file " + safeSourceFile,
@@ -199,7 +199,7 @@ class ExcessiveContentRequestCheckTest {
       IllegalArgumentException expectedException = new IllegalArgumentException("boom");
       doThrow(expectedException).when(spyOnWriteCache).write(any(), any(byte[].class));
 
-      logTester.setLevel(LoggerLevel.TRACE);
+      logTester.setLevel(Level.TRACE);
 
       verifier
         .addFiles(InputFile.Status.SAME, safeSourceFile)
@@ -211,7 +211,7 @@ class ExcessiveContentRequestCheckTest {
         .isInstanceOf(AnalysisException.class)
         .hasRootCause(expectedException);
 
-      assertThat(logTester.getLogs(LoggerLevel.TRACE))
+      assertThat(logTester.getLogs(Level.TRACE))
         .map(LogAndArguments::getFormattedMsg)
         .contains(
           "Failed to write to cache for file " + safeSourceFile
@@ -226,7 +226,7 @@ class ExcessiveContentRequestCheckTest {
       IllegalArgumentException expectedException = new IllegalArgumentException("boom");
       doThrow(expectedException).when(spyOnWriteCache).copyFromPrevious(computeCacheKey(safeSourceFile));
 
-      logTester.setLevel(LoggerLevel.TRACE);
+      logTester.setLevel(Level.TRACE);
 
       verifier
         .addFiles(InputFile.Status.SAME, safeSourceFile)
@@ -243,7 +243,7 @@ class ExcessiveContentRequestCheckTest {
         .isInstanceOf(AnalysisException.class)
         .hasRootCause(expectedException);
 
-      assertThat(logTester.getLogs(LoggerLevel.TRACE))
+      assertThat(logTester.getLogs(Level.TRACE))
         .map(LogAndArguments::getFormattedMsg)
         .contains(
           "Failed to copy from previous cache for file " + safeSourceFile
@@ -257,7 +257,7 @@ class ExcessiveContentRequestCheckTest {
       readCache.put(computeCacheKey(safeSourceFile), new byte[0]);
       readCache.put(computeCacheKey(sanitizerSourceFile), new byte[2]);
 
-      logTester.setLevel(LoggerLevel.TRACE);
+      logTester.setLevel(Level.TRACE);
 
       verifier
         .addFiles(InputFile.Status.SAME, unsafeSourceFile, safeSourceFile, sanitizerSourceFile)
@@ -272,7 +272,7 @@ class ExcessiveContentRequestCheckTest {
       verify(check, times(3)).scanWithoutParsing(any());
       verify(check, times(3)).leaveFile(any());
 
-      List<String> logs = logTester.getLogs(LoggerLevel.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
+      List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
 
       assertThat(logs).contains(
         "Cached entry is unreadable for rule java:S5693 on file " + unsafeSourceFile,

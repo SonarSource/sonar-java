@@ -82,7 +82,7 @@
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
     <sonar.version>9.5.0.56709</sonar.version>
-    <sonar.plugin.api.version>9.13.0.360</sonar.plugin.api.version>
+    <sonar.plugin.api.version>10.0.0.695</sonar.plugin.api.version>
     <sonarlint.plugin.api.version>8.18.0.70939</sonarlint.plugin.api.version>
     <analyzer.commons.version>2.5.0.1358</analyzer.commons.version>
     <orchestrator.version>3.40.0.183</orchestrator.version>
@@ -109,6 +109,12 @@
         <artifactId>sonar-plugin-api</artifactId>
         <version>${sonar.plugin.api.version}</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.sonarsource.api.plugin</groupId>
+        <artifactId>sonar-plugin-api-test-fixtures</artifactId>
+        <version>${sonar.plugin.api.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.sonarsource.sonarlint.core</groupId>

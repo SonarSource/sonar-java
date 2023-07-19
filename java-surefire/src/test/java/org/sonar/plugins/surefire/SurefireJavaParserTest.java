@@ -27,12 +27,12 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +48,7 @@ class SurefireJavaParserTest {
   private SurefireJavaParser parser;
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @BeforeEach
   public void before() {
@@ -193,8 +193,8 @@ class SurefireJavaParserTest {
   void should_log_missing_resource_with_debug_level() throws Exception {
     parser = new SurefireJavaParser(mock(JavaResourceLocator.class));
     parser.collect(mockContext(), getDirs("resourceNotFound"), true);
-    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Resource not found: org.sonar.Foo");
+    assertThat(logTester.logs(Level.WARN)).isEmpty();
+    assertThat(logTester.logs(Level.DEBUG)).contains("Resource not found: org.sonar.Foo");
   }
 
   private static List<File> getDirs(String... directoryNames) throws URISyntaxException {

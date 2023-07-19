@@ -29,14 +29,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.config.internal.MultivalueProperty;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.System2;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.TestUtils;
@@ -57,7 +57,7 @@ class ClasspathForMainTest {
   private ClasspathForMain javaClasspath;
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @BeforeEach
   void setup() throws Exception {
@@ -115,7 +115,7 @@ class ClasspathForMainTest {
     String warning = "Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. "
       + "Verify your configuration, as you might end up with less precise results.";
     verify(analysisWarnings).addUnique(warning);
-    assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(warning);
+    assertThat(logTester.logs(Level.WARN)).containsExactly(warning);
   }
 
   @Test
@@ -133,7 +133,7 @@ class ClasspathForMainTest {
     String warning = "Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. "
       + "Verify your configuration, as you might end up with less precise results.";
     verify(analysisWarnings, times(1)).addUnique(warning);
-    assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(warning);
+    assertThat(logTester.logs(Level.WARN)).containsExactly(warning);
   }
 
   @Test
@@ -145,7 +145,7 @@ class ClasspathForMainTest {
 
     javaClasspath.logSuspiciousEmptyLibraries();
 
-    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+    assertThat(logTester.logs(Level.WARN)).isEmpty();
   }
 
   @Test
@@ -304,7 +304,7 @@ class ClasspathForMainTest {
 
   @Test
   void wildcard_directory_should_resolve_libs_in_that_dir() {
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/**/*.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(3);
@@ -312,7 +312,7 @@ class ClasspathForMainTest {
     assertThat(jar).exists();
     assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar");
 
-    assertThat(logTester.logs(LoggerLevel.DEBUG))
+    assertThat(logTester.logs(Level.DEBUG))
       .hasSize(2)
       .allMatch(debug -> (debug.startsWith("Property 'sonar.java.libraries' resolved with:") && debug.contains("world.jar") && debug.contains("hello.jar"))
         || debug.equals("Property 'sonar.java.jdkHome' resolved with:" + System.lineSeparator() + "[]"));
@@ -418,7 +418,7 @@ class ClasspathForMainTest {
       javaClasspath = new ClasspathForMainForSonarLint(settings.asConfig(), fs);
       javaClasspath.getElements();
 
-      logTester.logs(LoggerLevel.WARN).contains("sonar.java.binaries is empty, please double check your configuration");
+      logTester.logs(Level.WARN).contains("sonar.java.binaries is empty, please double check your configuration");
     } catch (AnalysisException ise) {
       fail("Analysis exception was raised but analysis should not fail");
     }
@@ -456,13 +456,11 @@ class ClasspathForMainTest {
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void by_default_no_jdk_is_set(boolean debugEnabled) {
-    if (debugEnabled) {
-      logTester.setLevel(LoggerLevel.DEBUG);
-    }
+    logTester.setLevel(debugEnabled ? Level.DEBUG : Level.INFO);
     List<File> elements = createJavaClasspath().getElements();
 
     assertThat(elements).isEmpty();
-    List<String> logs = logTester.logs(LoggerLevel.DEBUG);
+    List<String> logs = logTester.logs(Level.DEBUG);
     if (debugEnabled) {
       assertThat(logs).containsExactlyInAnyOrder(
         "Property 'sonar.java.jdkHome' resolved with:" + System.lineSeparator() + "[]",
@@ -483,7 +481,7 @@ class ClasspathForMainTest {
     List<File> elements = createJavaClasspath().getElements();
 
     assertThat(elements).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.WARN).stream())
+    assertThat(logTester.logs(Level.WARN).stream())
       .filteredOn(warn -> warn.startsWith(expectedWarning))
       .hasSize(1);
   }
@@ -491,7 +489,7 @@ class ClasspathForMainTest {
   @ParameterizedTest
   @CsvSource(value = {"jdk_classic,rt.jar", "jdk_modular,jrt-fs.jar"})
   void should_include_jdk_in_libraries_when_specified(String jdkFolder, String expectedJar) {
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     String pathToJdk = "src/test/jdk/" + jdkFolder;
     settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, pathToJdk);
 
@@ -500,7 +498,7 @@ class ClasspathForMainTest {
     assertThat(elements)
       .hasSize(1)
       .allMatch(file -> file.getName().equals(expectedJar));
-    assertThat(logTester.logs(LoggerLevel.DEBUG))
+    assertThat(logTester.logs(Level.DEBUG))
       .hasSize(3)
       .allMatch(debug -> (debug.startsWith("Property 'sonar.java.jdkHome' set with:") && debug.contains(jdkFolder))
         || (debug.startsWith("Property 'sonar.java.jdkHome' resolved with:") && debug.contains(expectedJar))

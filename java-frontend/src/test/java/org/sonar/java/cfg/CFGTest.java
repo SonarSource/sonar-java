@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.slf4j.event.Level;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -48,12 +48,64 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.java.cfg.CFGTestUtils.buildCFG;
 import static org.sonar.java.cfg.CFGTestUtils.buildCFGFromLambda;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.*;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.ARRAY_ACCESS_EXPRESSION;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSERT_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSIGNMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.BOOLEAN_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.BREAK_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CASE_GROUP;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CHAR_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CONDITIONAL_AND;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CONDITIONAL_EXPRESSION;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CONDITIONAL_OR;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CONTINUE_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.DEFAULT_PATTERN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.DO_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.FOR_EACH_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.FOR_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.GREATER_THAN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.GUARDED_PATTERN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.IF_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.INSTANCE_OF;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.INT_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.LAMBDA_EXPRESSION;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.LESS_THAN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.LOGICAL_COMPLEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.MEMBER_SELECT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_REFERENCE;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.MULTIPLY_ASSIGNMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_ARRAY;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_CLASS;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_PATTERN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.PATTERN_INSTANCE_OF;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.PLUS;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.PLUS_ASSIGNMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.POSTFIX_INCREMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.PREFIX_INCREMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.RECORD;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.RECORD_PATTERN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.RETURN_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.STRING_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.SWITCH_EXPRESSION;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.SWITCH_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.SYNCHRONIZED_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.THROW_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.TRY_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.TYPE_CAST;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.TYPE_PATTERN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.UNARY_MINUS;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.VARIABLE;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.WHILE_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.YIELD_STATEMENT;
 
 class CFGTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   static CFGChecker checker(BlockChecker... checkers) {
     return new CFGChecker(checkers);
@@ -3086,11 +3138,11 @@ class CFGTest {
   }
 
   void assertCompleteSemantic(String code, boolean hasCompleteSemantic, String... debugLogs) {
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(Level.DEBUG);
     logTester.clear();
     CFG cfg = buildCFG(code);
     assertThat(cfg.hasCompleteSemantic()).isEqualTo(hasCompleteSemantic);
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactly(debugLogs);
+    assertThat(logTester.logs(Level.DEBUG)).containsExactly(debugLogs);
   }
 
   private void build_partial_cfg(String breakOrContinue) {

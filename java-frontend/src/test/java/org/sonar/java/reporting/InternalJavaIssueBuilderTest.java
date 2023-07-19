@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -35,6 +37,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
@@ -52,8 +55,7 @@ import org.sonar.api.batch.sensor.issue.fix.QuickFix;
 import org.sonar.api.batch.sensor.issue.fix.TextEdit;
 import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
@@ -78,7 +80,7 @@ import static org.mockito.Mockito.when;
 class InternalJavaIssueBuilderTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   private static final File JAVA_FILE = new File("src/test/files/api/JavaFileInternalJavaIssueBuilderTest.java");
   private static final JavaCheck CHECK = new JavaCheck() {
@@ -297,17 +299,19 @@ class InternalJavaIssueBuilderTest {
 
   @Test
   void test_sonar_component_is_null() {
+    logTester.setLevel(Level.TRACE);
     InternalJavaIssueBuilder builder = new InternalJavaIssueBuilder(inputFile, null);
     builder.forRule(CHECK)
       .onTree(compilationUnitTree.types().get(0))
       .withMessage("msg")
       .report();
 
-    assertThat(logTester.logs(LoggerLevel.TRACE)).containsExactly("SonarComponents is not set - discarding issue");
+    assertThat(logTester.logs(Level.TRACE)).containsExactly("SonarComponents is not set - discarding issue");
   }
 
   @Test
   void test_sonar_rule_key_not_registered() {
+    logTester.setLevel(Level.TRACE);
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.getRuleKey(any())).thenReturn(Optional.empty());
     InternalJavaIssueBuilder builder = new InternalJavaIssueBuilder(inputFile, sonarComponents);
@@ -316,7 +320,7 @@ class InternalJavaIssueBuilderTest {
       .withMessage("msg")
       .report();
 
-    assertThat(logTester.logs(LoggerLevel.TRACE)).containsExactly("Rule not enabled - discarding issue");
+    assertThat(logTester.logs(Level.TRACE)).containsExactly("Rule not enabled - discarding issue");
   }
 
   @Test
@@ -456,7 +460,7 @@ class InternalJavaIssueBuilderTest {
       assertThat(issue.quickFixes()).isEmpty();
 
       assertThat(logTester.logs()).hasSize(1);
-      assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly("Could not report quick fixes for rule: test:key. java.lang.RuntimeException: Exception message");
+      assertThat(logTester.logs(Level.WARN)).containsExactly("Could not report quick fixes for rule: test:key. java.lang.RuntimeException: Exception message");
     }
 
     @Test
@@ -517,6 +521,8 @@ class InternalJavaIssueBuilderTest {
     private final DefaultSonarLintIssue parent = new DefaultSonarLintIssue(null, null, null);
     private final SensorContextTester context;
     private boolean isQuickFixAvailable = false;
+    @Nullable
+    private List<String> codeVariants = null;
     private boolean saved;
 
     MockSonarLintIssue(SensorContextTester context) {
@@ -629,8 +635,21 @@ class InternalJavaIssueBuilderTest {
       return parent.quickFixes();
     }
 
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public List<String> codeVariants() {
+      return codeVariants;
+    }
+
     @Override
     public NewIssue setRuleDescriptionContextKey(String ruleDescriptionContextKey) {
+      return this;
+    }
+
+    @Override
+    public NewIssue setCodeVariants(@org.jetbrains.annotations.Nullable Iterable<String> iterable) {
+      codeVariants = iterable == null ? null : StreamSupport.stream(iterable.spliterator(), false)
+        .collect(Collectors.toList());
       return this;
     }
   }
