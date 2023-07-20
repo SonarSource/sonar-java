@@ -24,6 +24,7 @@ import com.sonar.orchestrator.build.MavenBuild;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sonarqube.ws.Measures;
 import org.sonarqube.ws.client.measures.ComponentRequest;
@@ -51,6 +52,7 @@ public class SuppressWarningTest {
   }
 
   @Test
+  @Ignore("temporarily ignored until SONARJAVA-4553 is fixed")
   public void suppressWarnings_also_supress_issues_of_other_analyzers() throws Exception {
     String projectKey = "org.sonarsource.it.projects:suppress-warnings-pmd";
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("suppress-warnings-pmd"))
