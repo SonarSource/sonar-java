@@ -19,15 +19,13 @@
  */
 package org.sonar.samples.java;
 
-import java.util.Arrays;
-import java.util.List;
-import org.sonar.api.SonarPlugin;
+import org.sonar.api.Plugin;
 
-public class JavaExtensionPlugin extends SonarPlugin {
+public class JavaExtensionPlugin implements Plugin {
 
   @Override
-  public List getExtensions() {
-    return Arrays.asList(
+  public void define(Context context) {
+    context.addExtensions(
       JavaExtensionRulesDefinition.class,
       JavaExtensionsCheckRegistrar.class,
       StartableExtension.class);
