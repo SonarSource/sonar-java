@@ -43,7 +43,7 @@ This project already contains examples of custom rules. Our goal will be to add 
 A custom plugin is a Maven project, and before diving into code, it is important to notice a few relevant lines related to the configuration of your soon-to-be-released custom plugin. 
 The root of a Maven project is a file named `pom.xml`.
 
-In our case, we have three of them:
+In our case, we have two of them:
 * `pom.xml`: use a snapshot version of the Java Analyzer
 * `pom_SQ_9_9_LTS.xml`: self-contained `pom` file, configured with dependencies matching SonarQube `9.9 LTS` requirements
 
