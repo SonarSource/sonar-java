@@ -1,5 +1,5 @@
 {
-  "title": "\"String\" calls should not go beyond their bounds",
+  "title": "Indexes to passed to \"String\" operations should be within the string\u0027s bounds",
   "type": "BUG",
   "status": "ready",
   "remediation": {

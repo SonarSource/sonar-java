@@ -1,20 +1,30 @@
 <h2>Why is this an issue?</h2>
-<p>A <code>readObject</code> method is written when a <code>Serializable</code> object needs special handling to be rehydrated from file. It should be
-the case that the object being created by <code>readObject</code> is only visible to the thread that invoked the method, and the
-<code>synchronized</code> keyword is not needed, and using <code>synchronized</code> anyway is just confusing. If this is not the case, the method
-should be refactored to make it the case.</p>
+<p>The <code>readObject</code> method is implemented when a <code>Serializable</code> object requires special handling to be reconstructed from a
+file. The object created by <code>readObject</code> is accessed only by the thread that called the method, thus using the <code>synchronized</code>
+keyword in this context is unnecessary and causes confusion.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 private synchronized void readObject(java.io.ObjectInputStream in)
      throws IOException, ClassNotFoundException { // Noncompliant
   //...
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 private void readObject(java.io.ObjectInputStream in)
      throws IOException, ClassNotFoundException { // Compliant
   //...
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/io/Serializable.html">Oracle SDK 20 - Serializable</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/io/ObjectInputStream.html">Oracle SDK 20 - ObjectInputStream</a>
+  </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/java-serialization">Serialization in Java</a> </li>
+</ul>
 

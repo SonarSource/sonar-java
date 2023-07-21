@@ -1,9 +1,12 @@
 <h2>Why is this an issue?</h2>
-<p>Using <code>Thread.sleep</code> in a test is just generally a bad idea. It creates brittle tests that can fail unpredictably depending on
-environment ("Passes on my machine!") or load. Don’t rely on timing (use mocks) or use libraries such as <code>Awaitility</code> for asynchroneous
-testing.</p>
+<p>In asynchronous testing, the test code is written in a way that allows it to wait for the asynchronous operation to complete before continuing with
+the test.</p>
+<p>Using <code>Thread.sleep</code> in this case can cause flaky tests, slow test execution, and inaccurate test results. It creates brittle tests that
+can fail unpredictably depending on the environment or load.</p>
+<p>Use mocks or libraries such as <code>Awaitility</code> instead. These tools provide features such as timeouts, assertions, and error handling to
+make it easier to write and manage asynchronous tests.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 @Test
 public void testDoTheThing(){
 
@@ -15,7 +18,7 @@ public void testDoTheThing(){
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 @Test
 public void testDoTheThing(){
 
@@ -34,4 +37,15 @@ private Callable&lt;Boolean&gt; didTheThing() {
   };
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Thread.html">Oracle SE 20 - Thread</a> </li>
+  <li> <a href="http://www.awaitility.org/">Awaitility</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/java-thread-sleep-vs-awaitility-await">Baeldung - Thread.sleep() vs Awaitility.await()</a> </li>
+  <li> <a href="https://www.baeldung.com/awaitility-testing">Baeldung - Awaitility testing</a> </li>
+</ul>
 

@@ -1,34 +1,42 @@
 <h2>Why is this an issue?</h2>
-<p>The <code>readResolve()</code> method allows final tweaks to the state of an object during deserialization. Non-final classes which implement
-<code>readResolve()</code>, should not set its visibility to <code>private</code> since it will then be unavailable to child classes.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>Developers may want to add some logic to handle deserialized objects before they are returned to the caller. This can be achieved by implementing
+the <code>readResolve</code> method.</p>
+<p>Non-final classes implementing <code>readResolve</code> should not set its visibility to <code>private</code> as this would make it unavailable to
+child classes. Instead, mark <code>readResolve</code> as <code>protected</code>, allowing it to be inherited.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Fruit implements Serializable {
   private static final long serialVersionUID = 1;
 
-  private Object readResolve() throws ObjectStreamException  // Noncompliant
+  private Object readResolve() throws ObjectStreamException // Noncompliant, `readResolve` should not be private
   {...}
 
   //...
 }
 
-public class Raspberry extends Fruit implements Serializable {  // No access to parent's readResolve() method
+public class Raspberry extends Fruit implements Serializable { // This class has no access to the parent's "readResolve" method
   //...
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class Fruit implements Serializable {
   private static final long serialVersionUID = 1;
 
-  protected Object readResolve() throws ObjectStreamException
+  protected Object readResolve() throws ObjectStreamException // Compliant, `readResolve` is protected
   {...}
 
   //...
 }
 
-public class Raspberry extends Fruit implements Serializable {
+public class Raspberry extends Fruit implements Serializable { // This class has access to the parent's "readResolve"
   //...
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/platform/serialization/spec/input.html#a5903">Java Object Serialization Specification - Object
+  Input Classes</a> </li>
+</ul>
 

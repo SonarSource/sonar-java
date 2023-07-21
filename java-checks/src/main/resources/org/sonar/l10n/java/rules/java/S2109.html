@@ -1,19 +1,42 @@
 <h2>Why is this an issue?</h2>
-<p>The writer of an annotation can set one of three retention policies for it:</p>
+<p>Denoted by the "@" symbol, annotations are metadata that can be added to classes, methods, and variables for various purposes such as
+documentation, code analysis, and runtime processing.</p>
+<p>Annotations have retention policies that determine in which context they are retained and available for use. There are three retention policies for
+annotations:</p>
 <ul>
-  <li> <code>RetentionPolicy.SOURCE</code> - these annotations are dropped during compilation, E.G. <code>@Override</code>,
-  <code>@SuppressWarnings</code>. </li>
-  <li> <code>RetentionPolicy.CLASS</code> - these annotations are present in a compiled class but not loaded into the JVM at runtime. This is the
-  default. </li>
-  <li> <code>RetentionPolicy.RUNTIME</code> - these annotations are present in the class file and loaded into the JVM. </li>
+  <li> <code>RetentionPolicy.SOURCE</code> - Annotations are only available during compilation and code analysis. They are not included in the
+  compiled class file and are not available at runtime. E.G. <code>@Override</code>, <code>@SuppressWarnings</code> </li>
+  <li> <code>RetentionPolicy.CLASS</code> - Annotations are included in the compiled class file providing information to the compiler, but they are
+  not retained by the JVM at runtime. This is the default retention policy. E.G. <code>@PreviewFeature</code> </li>
+  <li> <code>RetentionPolicy.RUNTIME</code> - Annotations are included in the compiled class file and available at runtime. They can be accessed and
+  used by the program through reflection. E.G. <code>@FunctionalInterface</code>, <code>@Deprecated</code> </li>
 </ul>
-<p>Only annotations that have been given a <code>RUNTIME</code> retention policy will be available to reflection. Testing for annotations with any
-other retention policy is simply an error, since the test will always return false.</p>
-<p>This rule checks that reflection is not used to detect annotations that do not have <code>RUNTIME</code> retention.</p>
-<h3>Noncompliant code example</h3>
+<p>It is important to understand that only annotations having the <code>RUNTIME</code> retention policy can be accessed at runtime using reflection.
+For example, the following if condition is true when the method argument is the <code>java.util.function.Function</code> class:</p>
 <pre>
-Method m = String.class.getMethod("getBytes", new Class[] {int.class,
-int.class, byte[].class, int.class});
-if (m.isAnnotationPresent(Override.class)) {  // Noncompliant; test will always return false, even when @Override is present in the code
+void execute(Class&lt;?&gt; cls) {
+  if (cls.isAnnotationPresent(FunctionalInterface.class)) {
+    // ...
+  }
+}
 </pre>
+<p>Therefore, it is an issue to use reflection in combination with annotations with the <code>SOURCE</code> or <code>CLASS</code> retention policy
+because they are not present at runtime. For example, in the JVM source code, the <code>hashCode()</code> method of the <code>Integer</code> class has
+the <code>@Override</code> annotation. However, the following if condition will always be false even if the method argument is the
+<code>Integer#hashCode()</code> method because <code>@Override</code> has the <code>SOURCE</code> retention policy:</p>
+<pre>
+void execute(Method method) {
+  if (method.isAnnotationPresent(Override.class)) { // Noncompliant, if condition will always be false because
+                                                    // @Override is declared with @Retention(RetentionPolicy.SOURCE)
+    // ...
+  }
+}
+</pre>
+<p>This rule detects improper reflective access on annotations having the <code>SOURCE</code> or <code>CLASS</code> retention policy.</p>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/RetentionPolicy.html">Oracle SDK -
+  java.lang.annotation.RetentionPolicy</a> </li>
+</ul>
 

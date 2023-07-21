@@ -4,28 +4,20 @@
 by 0, and shifting it by 33 is the same as shifting it by 1.</p>
 <p>Similarly, when shifting 64-bit integers, the runtime uses the lowest 6 bits of the shift count operand and shifting <code>long</code> by 64 is the
 same as shifting it by 0, and shifting it by 65 is the same as shifting it by 1.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public int shift(int a) {
   int x = a &gt;&gt; 32; // Noncompliant
   return a &lt;&lt; 48;  // Noncompliant
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public int shift(int a) {
   int x = a &gt;&gt; 31;
   return a &lt;&lt; 16;
 }
-</pre>
-<h3>Exceptions</h3>
-<p>This rule doesn’t raise an issue when the shift by zero is obviously for cosmetic reasons:</p>
-<ul>
-  <li> When the value shifted is a literal. </li>
-  <li> When there is a similar shift at the same position on line before or after. E.g.: </li>
-</ul>
-<pre>
-bytes[loc+0] = (byte)(value &gt;&gt; 8);
-bytes[loc+1] = (byte)(value &gt;&gt; 0);
 </pre>
 

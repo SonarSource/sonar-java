@@ -1,10 +1,17 @@
 <h2>Why is this an issue?</h2>
-<p>The purpose of synchronization is to ensure that only one thread executes a given block of code at a time. There’s no real problem with marking
-<code>writeObject</code> <code>synchronized</code>, but it’s highly suspicious if this serialization-related method is the only
-<code>synchronized</code> code in a <code>class</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public class RubberBall {
+<p>Synchronization is a mechanism used when multithreading in Java to ensure that only one thread executes a given block of code at a time. This is
+done to avoid bugs that can occur when multiple threads share a given state and try to manipulate simultaneously.</p>
+<p>Object serialization is not thread-safe by default. In a multithreaded environment, one option is to mark <code>writeObject</code> with
+<code>synchronized</code> to improve thread safety. It is highly suspicious, however, if <code>writeObject</code> is the only
+<code>synchronized</code> method in a class. It may indicate that serialization is not required, as multithreading is not used. Alternatively, it
+could also suggest that other methods in the same class have been forgotten to be made thread-safe.</p>
+<h2>How to fix it</h2>
+<p>Consider whether this class is used in a multithreaded context. If it is, ask yourself whether other methods in this class should also be marked as
+<code>synchronized</code>. Otherwise, remove the <code>synchronized</code> modifier from this method.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class RubberBall implements Serializable {
 
   private Color color;
   private int diameter;
@@ -17,19 +24,19 @@ public class RubberBall {
     // ...
   }
 
-  private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Noncompliant
+  private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Noncompliant, "writeObject" is the only synchronized method in this class
     // ...
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-public class RubberBall {
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class RubberBall implements Serializable {
 
   private Color color;
   private int diameter;
 
-   public RubberBall(Color color, int diameter) {
+  public RubberBall(Color color, int diameter) {
     // ...
   }
 
@@ -37,9 +44,15 @@ public class RubberBall {
     // ...
   }
 
-  private void writeObject(ObjectOutputStream stream) throws IOException {
+  private void writeObject(ObjectOutputStream stream) throws IOException { // Compliant, no methods in this class are synchronized
     // ...
   }
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Serializable.html">Java SE 17 &amp; JDK 17 - Serializable
+  Javadoc</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html">The Java™ Tutorials - Synchronized Methods</a> </li>
+</ul>
 

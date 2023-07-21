@@ -1,16 +1,74 @@
 <h2>Why is this an issue?</h2>
-<p>While most <code>compareTo</code> methods return -1, 0, or 1, some do not, and testing the result of a <code>compareTo</code> against a specific
-value other than 0 could result in false negatives.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-if (myClass.compareTo(arg) == -1) {  // Noncompliant
-  // ...
+<p>Assuming that a comparator or <code>compareTo</code> method always returns -1 or 1 if the first operand is less than or greater than the second is
+incorrect.</p>
+<p>The specifications for both methods, <code>Comparator.compare</code> and <code>Comparable.compareTo</code>, state that their return value is "a
+negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object." Even if a specific
+comparator always returns -1, 0, or 1, this is only an implementation detail, not the API contract developers can rely on.</p>
+<h2>How to fix it</h2>
+<p>Replace</p>
+<ul>
+  <li> <code>== -1</code> with <code>&lt; 0</code> (the first operand is less than the second) </li>
+  <li> <code>== 1</code> with <code>&gt; 0</code> (the first operand is greater than the second) </li>
+  <li> <code>!= -1</code> with <code>&gt;= 0</code> (the first operand is greater than or equal to the second) </li>
+  <li> <code>!= 1</code> with <code>&lt;= 0</code> (the first operand is less than or equal to the second) </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class Main {
+
+  boolean isAGreaterThanB(Comparable&lt;Integer&gt; a, Integer b) {
+    return a.compareTo(b) == 1; // Noncompliant, check for constant return value
+  }
+
+  public static void main(String[] args) {
+    ByteComparator comparator = new ByteComparator();
+    if (comparator.compare((byte) 23, (byte) 42) == -1) { // Noncompliant, check for constant return value
+      System.out.println("23 &lt; 42");
+    } else {
+      System.out.println("23 &gt;= 42");
+    }
+  }
+
+  static class ByteComparator implements Comparator&lt;Byte&gt; {
+    @Override
+    public int compare(Byte a, Byte b) {
+      return a - b;
+    }
+  }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-if (myClass.compareTo(arg) &lt; 0) {
-  // ...
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class Main {
+
+  boolean isAGreaterThanB(Comparable&lt;Integer&gt; a, Integer b) {
+    return a.compareTo(b) &gt; 0; // Compliant, check for positive return value
+  }
+
+  public static void main(String[] args) {
+    ByteComparator comparator = new ByteComparator();
+    if (comparator.compare((byte) 23, (byte) 42) &lt; 0) { // Compliant, check for negative return value
+      System.out.println("23 &lt; 42");
+    } else {
+      System.out.println("23 &gt;= 42");
+    }
+  }
+
+  static class ByteComparator implements Comparator&lt;Byte&gt; {
+    @Override
+    public int compare(Byte a, Byte b) {
+      return a - b;
+    }
+  }
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html#compareTo-T-">Java SE 8 API Specification:
+  Comparable.compareTo</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html#compare-T-T-">Java SE 8 API Specification: Comparator.compare</a>
+  </li>
+</ul>
 

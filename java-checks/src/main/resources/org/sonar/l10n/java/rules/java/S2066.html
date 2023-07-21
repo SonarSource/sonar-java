@@ -1,28 +1,33 @@
 <h2>Why is this an issue?</h2>
-<p>Serializing a non-<code>static</code> inner class will result in an attempt at serializing the outer class as well. If the outer class is not
-serializable, then serialization will fail, resulting in a runtime error.</p>
-<p>Making the inner class <code>static</code> (i.e. "nested") avoids this problem, therefore inner classes should be <code>static</code> if possible.
-However, you should be aware that there are semantic differences between an inner class and a nested one:</p>
+<p>Non-static inner classes contain a reference to an instance of the outer class. Hence, serializing a non-static inner class will result in an
+attempt at serializing the outer class as well. If the outer class is not serializable, serialization will fail, resulting in a runtime error.</p>
+<p>Making the inner class <code>static</code> (i.e., "nested") avoids this problem, as no reference to an instance of the outer class is required.
+Serializing the inner class can be done independently of the outer class. Hence, inner classes implementing <code>Serializable</code> should be
+<code>static</code> if the outer class does not implement <code>Serializable</code>.</p>
+<p>Be aware of the semantic differences between an inner class and a nested one:</p>
 <ul>
   <li> an inner class can only be instantiated within the context of an instance of the outer class. </li>
   <li> a nested (<code>static</code>) class can be instantiated independently of the outer class. </li>
 </ul>
-<h3>Noncompliant code example</h3>
-<pre>
+<h2>How to fix it</h2>
+<p>Make the inner class <code>static</code> or make the outer class <code>Serializable</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Pomegranate {
   // ...
 
-  public class Seed implements Serializable {  // Noncompliant; serialization will fail
+  public class Seed implements Serializable {  // Noncompliant, serialization will fail due to the outer class not being serializable
     // ...
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class Pomegranate {
   // ...
 
-  public static class Seed implements Serializable {
+  public static class Seed implements Serializable { // Compliant, the outer class will not be serialized and hence cannot be the cause for a failure at runtime
     // ...
   }
 }

@@ -1,15 +1,19 @@
 <h2>Why is this an issue?</h2>
-<p>The use of the <code>ZonedDateTime</code> class introduced in Java 8 to truncate a date can be significantly faster than the <code>DateUtils</code>
-class from Commons Lang.</p>
+<p>The <code>ZonedDateTime</code> is an immutable representation of a date-time with a time-zone, introduced in Java 8. This class stores all date and
+time fields, to a precision of nanoseconds, and a time zone, with a zone offset used to handle ambiguous local date times.</p>
+<p>Date truncation to a specific time unit means setting the values up to the specific time unit to zero while keeping the values of the larger time
+units unchanged.</p>
+<p>The <code>ZonedDateTime</code> class provides a <code>truncatedTo</code> method that allows truncating the date in a significantly faster way than
+the <code>DateUtils</code> class from Commons Lang.</p>
 <p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public Date trunc(Date date) {
   return DateUtils.truncate(date, Calendar.SECOND);  // Noncompliant
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 public Date trunc(Date date) {
   Instant instant = date.toInstant();
   ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
@@ -18,4 +22,10 @@ public Date trunc(Date date) {
   return Date.from(truncatedInstant);
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/time/ZonedDateTime.html#truncatedTo(java.time.temporal.TemporalUnit)">Oracle
+  SDK 20 - ZonedDateTime#truncatedTo</a> </li>
+</ul>
 

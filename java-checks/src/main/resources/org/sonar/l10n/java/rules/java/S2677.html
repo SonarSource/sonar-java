@@ -1,14 +1,13 @@
 <h2>Why is this an issue?</h2>
-<p>When a method is called that returns data read from some data source, that data should be stored rather than thrown away. Any other course of
-action is surely a bug.</p>
-<p>This rule raises an issue when the return value of any of the following is ignored or merely null-checked: <code>BufferedReader.readLine()</code>,
-<code>Reader.read()</code>, and these methods in any child classes.</p>
+<p>The <code>Reader.read()</code> and the <code>BufferedReader.readLine()</code> are used for reading data from a data source. The return value of
+these methods is the data read from the data source, or <code>null</code> when the end of the data source is reached. If the return value is ignored,
+the data read from the source is thrown away and may indicate a bug.</p>
+<p>This rule raises an issue when the return values of <code>Reader.read()</code> and <code>BufferedReader.readLine()</code> and their subclasses are
+ignored or merely null-checked.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public void doSomethingWithFile(String fileName) {
-  BufferedReader buffReader = null;
-  try {
-    buffReader = new BufferedReader(new FileReader(fileName));
+  try(BufferedReader buffReader = new BufferedReader(new FileReader(fileName))) {
     while (buffReader.readLine() != null) { // Noncompliant
       // ...
     }
@@ -18,11 +17,9 @@ public void doSomethingWithFile(String fileName) {
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 public void doSomethingWithFile(String fileName) {
-  BufferedReader buffReader = null;
-  try {
-    buffReader = new BufferedReader(new FileReader(fileName));
+  try(BufferedReader buffReader = new BufferedReader(new FileReader(fileName))) {
     String line = null;
     while ((line = buffReader.readLine()) != null) {
       // ...
@@ -32,4 +29,10 @@ public void doSomethingWithFile(String fileName) {
   }
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/io/Reader.html#read()">Oracle SDK 20 - Reader.read()</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/io/BufferedReader.html#readLine()">Oracle SDK 20 -
+  BufferedReader.readLine()</a> </li>
+</ul>
 

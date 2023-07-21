@@ -1,16 +1,48 @@
 <h2>Why is this an issue?</h2>
-<p>While it’s perfectly legal to give a class the same simple name as a class in another package that it extends or interface it implements, it’s
-confusing and could cause problems in the future.</p>
-<h3>Noncompliant code example</h3>
+<p>Two classes can have the same simple name if they are in two different packages.</p>
 <pre>
-package my.mypackage;
+package org.foo.domain;
 
-public class Foo implements a.b.Foo { // Noncompliant
+public class User {
+  // ..
+}
 </pre>
-<h3>Compliant solution</h3>
 <pre>
-package my.mypackage;
+package org.foo.presentation;
 
-public class FooJr implements a.b.Foo {
+public class User {
+  // ..
+}
 </pre>
+<p>However, this becomes an issue when a class has the same name as the superclass it extends or the interfaces it implements, also known as class
+name shadowing. It is problematic because it can be unclear which class is being referred to in the code, leading to ambiguity and potential bugs.</p>
+<p>Therefore, it is recommended to use unique and descriptive class names that do not conflict with the names of the superclass or interfaces.</p>
+<p>This rule raises an issue when a class name shadows its superclass or interface names.</p>
+<h2>How to fix it</h2>
+<p>Rename the class using a more descriptive name.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+package org.foo.presentation;
+
+public class User implements org.foo.domain.User { // Noncompliant
+  // ...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+package org.foo.presentation;
+
+import org.foo.domain.User;
+
+public class UserView implements User { // Compliant
+  // ...
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html#jls-6.4.1">Java SE Specifications &gt; Java Language Specification &gt;
+  6.4.1. Shadowing</a> </li>
+</ul>
 

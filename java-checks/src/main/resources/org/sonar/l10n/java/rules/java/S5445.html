@@ -1,33 +1,88 @@
+<p>Temporary files are considered insecurely created when the file existence check is performed separately from the actual file creation. Such a
+situation can occur when creating temporary files using normal file handling functions or when using dedicated temporary file handling functions that
+are not atomic.</p>
 <h2>Why is this an issue?</h2>
-<p>Using <code>File.createTempFile</code> as the first step in creating a temporary directory causes a race condition and is inherently unreliable and
-insecure. Instead, <code>Files.createTempDirectory</code> (Java 7+) should be used.</p>
-<p>This rule raises an issue when the following steps are taken in immediate sequence:</p>
+<p>Creating temporary files in a non-atomic way introduces race condition issues in the application’s behavior. Indeed, a third party can create a
+given file between when the application chooses its name and when it creates it.</p>
+<p>In such a situation, the application might use a temporary file that it does not entirely control. In particular, this file’s permissions might be
+different than expected. This can lead to trust boundary issues.</p>
+<h3>What is the potential impact?</h3>
+<p>Attackers with control over a temporary file used by a vulnerable application will be able to modify it in a way that will affect the application’s
+logic. By changing this file’s Access Control List or other operating system-level properties, they could prevent the file from being deleted or
+emptied. They may also alter the file’s content before or while the application uses it.</p>
+<p>Depending on why and how the affected temporary files are used, the exploitation of a race condition in an application can have various
+consequences. They can range from sensitive information disclosure to more serious application or hosting infrastructure compromise.</p>
+<h4>Information disclosure</h4>
+<p>Because attackers can control the permissions set on temporary files and prevent their removal, they can read what the application stores in them.
+This might be especially critical if this information is sensitive.</p>
+<p>For example, an application might use temporary files to store users' session-related information. In such a case, attackers controlling those
+files can access session-stored information. This might allow them to take over authenticated users' identities and entitlements.</p>
+<h4>Attack surface extension</h4>
+<p>An application might use temporary files to store technical data for further reuse or as a communication channel between multiple components. In
+that case, it might consider those files part of the trust boundaries and use their content without additional security validation or sanitation. In
+such a case, an attacker controlling the file content might use it as an attack vector for further compromise.</p>
+<p>For example, an application might store serialized data in temporary files for later use. In such a case, attackers controlling those files'
+content can change it in a way that will lead to an insecure deserialization exploitation. It might allow them to execute arbitrary code on the
+application hosting server and take it over.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<p>The following code example is vulnerable to a race condition attack because it creates a temporary file using an unsafe API function.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import java.io.File;
+import java.io.IOException;
+
+protected void Example() throws IOException {
+    File tempDir;
+    tempDir = File.createTempFile("", ".");
+    tempDir.delete();
+    tempDir.mkdir();  // Noncompliant
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+protected void Example() throws IOException {
+    Path tempPath = Files.createTempDirectory("");
+    File tempDir = tempPath.toFile();
+}
+</pre>
+<h3>How does this work?</h3>
+<p>Applications should create temporary files so that no third party can read or modify their content. It requires that the files' name, location, and
+permissions are carefully chosen and set. This can be achieved in multiple ways depending on the applications' technology stacks.</p>
+<h4>Use a secure API function</h4>
+<p>Temporary files handling APIs generally provide secure functions to create temporary files. In most cases, they operate in an atomical way,
+creating and opening a file with a unique and unpredictable name in a single call. Those functions can often be used to replace less secure
+alternatives without requiring important development efforts.</p>
+<p>Here, the example compliant code uses the safer <code>Files.createTempDirectory</code> function to manage the creation of temporary
+directories.</p>
+<h4>Strong security controls</h4>
+<p>Temporary files can be created using unsafe functions and API as long as strong security controls are applied. Non-temporary file-handling
+functions and APIs can also be used for that purpose.</p>
+<p>In general, applications should ensure that attackers can not create a file before them. This turns into the following requirements when creating
+the files:</p>
 <ul>
-  <li> call to <code>File.createTempFile</code> </li>
-  <li> delete resulting file </li>
-  <li> call <code>mkdir</code> on the File object </li>
+  <li> Files should be created in a non-public directory. </li>
+  <li> File names should be unique. </li>
+  <li> File names should be unpredictable. They should be generated using a cryptographically secure random generator. </li>
+  <li> File creation should fail if a target file already exists. </li>
 </ul>
-<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>7</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-File tempDir;
-tempDir = File.createTempFile("", ".");
-tempDir.delete();
-tempDir.mkdir();  // Noncompliant
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-Path tempPath = Files.createTempDirectory("");
-File tempDir = tempPath.toFile();
-</pre>
+<p>Moreover, when possible, it is recommended that applications destroy temporary files after they have finished using them.</p>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li> <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">OWASP Top 10 2021 Category A1</a> - Broken Access Control </li>
-  <li> <a href="https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities">OWASP Top 10 2017 Category A9</a> -
+  <li> <a href="https://owasp.org/www-community/vulnerabilities/Insecure_Temporary_File">OWASP</a> - Insecure Temporary File </li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li> <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">OWASP</a> - Top 10 2021 - A01:2021 - Broken Access Control </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities">OWASP</a> - Top 10 2017 - A9:2017 -
   Using Components with Known Vulnerabilities </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/377">MITRE, CWE-377</a> - Insecure Temporary File </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/379">MITRE, CWE-379</a> - Creation of Temporary File in Directory with Incorrect Permissions
+  <li> <a href="https://cwe.mitre.org/data/definitions/377">MITRE</a> - CWE-377: Insecure Temporary File </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/379">MITRE</a> - CWE-379: Creation of Temporary File in Directory with Incorrect Permissions
   </li>
-  <li> <a href="https://owasp.org/www-community/vulnerabilities/Insecure_Temporary_File">OWASP, Insecure Temporary File</a> </li>
 </ul>
 

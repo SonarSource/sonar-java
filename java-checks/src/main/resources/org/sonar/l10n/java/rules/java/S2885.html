@@ -1,18 +1,44 @@
 <h2>Why is this an issue?</h2>
-<p>Not all classes in the standard Java library were written to be thread-safe. Using them in a multi-threaded manner is highly likely to cause data
-problems or exceptions at runtime.</p>
-<p>This rule raises an issue when an instance of <code>Calendar</code>, <code>DateFormat</code>, <code>javax.xml.xpath.XPath</code>, or
-<code>javax.xml.validation.SchemaFactory</code> is marked <code>static</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>When an object is marked as <code>static</code>, it means that it belongs to the class rather than any class instance. This means there is only one
+copy of the static object in memory, regardless of how many class instances are created. Static objects are shared among all instances of the class
+and can be accessed using the class name rather than an instance of the class.</p>
+<p>A data type is considered thread-safe if it can be used correctly by multiple threads, regardless of how those threads are executed, without
+requiring additional coordination from the calling code. In other words, a thread-safe data type can be accessed and modified by multiple threads
+simultaneously without causing any issues or requiring extra work from the programmer to ensure correct behavior.</p>
+<p>Non-thread-safe objects are objects that are not designed to be used in a multi-threaded environment and can lead to race conditions and data
+inconsistencies when accessed by multiple threads simultaneously. Using them in a multi-threaded manner is highly likely to cause data problems or
+exceptions at runtime.</p>
+<p>When a non-thread-safe object is marked as static in a multi-threaded environment, it can cause issues because the non-thread-safe object will be
+shared across different instances of the containing class.</p>
+<p>This rule raises an issue when any of the following instances and their subtypes are marked as <code>static</code>:</p>
+<ul>
+  <li> <code>java.util.Calendar</code>, </li>
+  <li> <code>java.text.DateFormat</code>, </li>
+  <li> <code>javax.xml.xpath.XPath</code>, or </li>
+  <li> <code>javax.xml.validation.SchemaFactory</code>. </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Remove the <code>static</code> keyword from non-thread-safe fields.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class MyClass {
-  private static SimpleDateFormat format = new SimpleDateFormat("HH-mm-ss");  // Noncompliant
   private static Calendar calendar = Calendar.getInstance();  // Noncompliant
+  private static SimpleDateFormat format = new SimpleDateFormat("HH-mm-ss");  // Noncompliant
+}
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class MyClass {
-  private SimpleDateFormat format = new SimpleDateFormat("HH-mm-ss");
   private Calendar calendar = Calendar.getInstance();
+  private SimpleDateFormat format = new SimpleDateFormat("HH-mm-ss");
+}
 </pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://web.mit.edu/6.005/www/fa14/classes/18-thread-safety/">MIT - Thread safety</a> </li>
+  <li> <a href="https://www.baeldung.com/java-thread-safety">Baeldung - Thread safety</a> </li>
+  <li> <a href="https://www.baeldung.com/java-static">Baeldung - Static</a> </li>
+</ul>
 

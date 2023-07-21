@@ -1,12 +1,15 @@
 {
-  "title": "Neither \"Math.abs\" nor negation should be used on numbers that could be \"MIN_VALUE\"",
+  "title": "\"Math.abs\" and negation should not be used on numbers that could be \"MIN_VALUE\"",
   "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "tags": [],
+  "tags": [
+    "bug",
+    "suspicious"
+  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2676",
   "sqKey": "S2676",
