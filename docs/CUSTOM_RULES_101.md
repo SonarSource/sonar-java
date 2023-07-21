@@ -657,7 +657,7 @@ Your rule should now be visible (with all the other sample rules).
 
 Once activated (not sure how? see [quality-profiles](https://docs.sonarqube.org/latest/instance-administration/quality-profiles/)), the only step remaining is to analyze one of your projects!
 
-When encountering a method returning the same type as its parameter, the issue will now raise an issue, as visible in the following picture:
+When encountering a method returning the same type as its parameter, the custom rule will now raise an issue, as visible in the following picture:
 
 ![Issues](resources/issues.png)
 
