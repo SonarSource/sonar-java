@@ -1,18 +1,31 @@
 <h2>Why is this an issue?</h2>
-<p><code>transient</code> is used to mark fields in a <code>Serializable</code> class which will not be written out to file (or stream). In a class
-that does not implement <code>Serializable</code>, this modifier is simply wasted keystrokes, and should be removed.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-class Vegetable {  // does not implement Serializable
-  private transient Season ripe;  // Noncompliant
-  // ...
-}
-</pre>
-<h3>Compliant solution</h3>
-<pre>
+<p>Fields marked as <code>transient</code> in a <code>Serializable</code> class will be ignored during serialization and consequently not written out
+to a file (or stream).</p>
+<p>This can be useful in situations such as where the content of a field can be recomputed from other fields. To reduce the output size, this field
+can be marked as <code>transient</code> and recomputed when a given object is deserialized.</p>
+<p>Since <code>transient</code> is very specific to classes that implement <code>Serializable</code>, it is superfluous in classes that do not.</p>
+<p>This rule raises an issue when a field is marked as <code>transient</code>, even though the containing class does not implement
+<code>Serializable</code>.</p>
+<h2>How to fix it</h2>
+<p>Ask yourself whether this class should be serializable. If yes, ensure it implements <code>Serializable</code> and provides any additional logic
+required to serialize and deserialize an instance of this type. Otherwise, remove the <code>transient</code> modifier from this field.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class Vegetable {
-  private Season ripe;
+  private transient Season ripe; // Noncompliant, the "Vegetable" class does not implement "Serializable" but the field is marked as "transient"
   // ...
 }
 </pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Vegetable {
+  private Season ripe; // Compliant, the field is not marked as "transient"
+  // ...
+}
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://www.baeldung.com/java-transient-keyword">Baeldung - The transient Keyword in Java</a> </li>
+</ul>
 

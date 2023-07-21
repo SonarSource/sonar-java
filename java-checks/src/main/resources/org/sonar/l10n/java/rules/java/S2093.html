@@ -1,44 +1,59 @@
 <h2>Why is this an issue?</h2>
-<p>Java 7 introduced the try-with-resources statement, which guarantees that the resource in question will be closed. Since the new syntax is closer
-to bullet-proof, it should be preferred over the older <code>try</code>/<code>catch</code>/<code>finally</code> version.</p>
-<p>This rule checks that <code>close</code>-able resources are opened in a try-with-resources statement.</p>
-<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>7</code>.</p>
-<h3>Noncompliant code example</h3>
+<p>Many resources in Java need be closed after they have been used. If they are not, the garbage collector cannot reclaim the resources' memory, and
+they are still considered to be in use by the operating system. Such resources are considered to be leaked, which can lead to performance issues.</p>
+<p>Java 7 introduced the try-with-resources statement, which guarantees that the resource in question will be closed.</p>
 <pre>
+try (InputStream input = Files.newInputStream(path)) {
+  // "input" will be closed after the execution of this block
+}
+</pre>
+<p>This syntax is safer than the traditional method using <code>try</code>, <code>catch</code>, and <code>finally</code> and hence should be
+preferred.</p>
+<p>This rule raises an issue if a closeable resources is not opened using a try-with-resources statement.</p>
+<p>This rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>7</code> as the close-with-resources
+statement was unavailable prior to Java 7.</p>
+<h2>How to fix it</h2>
+<p>Use the try-with-resources syntax by moving the <code>Closable</code> variable declarations after the <code>try</code> keyword surrounded by
+parentheses and separated by <code>;</code>:</p>
+<pre>
+try (/* resources declarations */) {
+  // resources usage ...
+}
+</pre>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 FileReader fr = null;
 BufferedReader br = null;
-try {
+
+try { // Noncompliant, the FileReader and BufferedReader are instantiated without try-with-resources
   fr = new FileReader(fileName);
   br = new BufferedReader(fr);
   return br.readLine();
 } catch (...) {
+  ...
 } finally {
-  if (br != null) {
+
+  if (br != null) { // br has to be closed manually
     try {
       br.close();
     } catch(IOException e){...}
   }
-  if (fr != null ) {
+
+  if (fr != null ) { // fr has to be closed manually
     try {
       br.close();
     } catch(IOException e){...}
   }
+
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-try (
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+try ( // Compliant, all resources are instantiated within a try-with-resources statement and hence automatically closed after use
     FileReader fr = new FileReader(fileName);
     BufferedReader br = new BufferedReader(fr)
   ) {
-  return br.readLine();
-}
-catch (...) {}
-</pre>
-<p>or</p>
-<pre>
-try (BufferedReader br =
-        new BufferedReader(new FileReader(fileName))) { // no need to name intermediate resources if you don't want to
   return br.readLine();
 }
 catch (...) {}
@@ -47,5 +62,7 @@ catch (...) {}
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/6DZGBQ">CERT, ERR54-J.</a> - Use a try-with-resources statement to safely handle closeable
   resources </li>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html">The Java™ Tutorials - The try-with-resources
+  Statement</a> </li>
 </ul>
 

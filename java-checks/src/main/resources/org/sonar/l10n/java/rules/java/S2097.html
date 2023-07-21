@@ -1,24 +1,75 @@
 <h2>Why is this an issue?</h2>
-<p>Because the <code>equals</code> method takes a generic <code>Object</code> as a parameter, any type of object may be passed to it. The method
-should not assume it will only be used to test objects of its class type. It must instead check the parameter’s type.</p>
-<h3>Noncompliant code example</h3>
+<p>The <code>Object#equals(Object obj)</code> method is used to compare two objects to see if they are equal.</p>
+<p>The <code>obj</code> parameter’s type is <code>Object</code>, this means that an object of any type can be passed as a parameter to this
+method.</p>
+<p>Any class overriding <code>Object#equals(Object obj)</code> should respect this contract, accept any object as an argument, and return
+<code>false</code> when the argument’s type differs from the expected type. The <code>obj</code> parameter’s type can be checked using
+<code>instanceof</code> or by comparing the <code>getClass()</code> value:</p>
 <pre>
-public boolean equals(Object obj) { // Noncompliant
-  MyClass mc = (MyClass)obj;
-  // ...
-}
-</pre>
-<h3>Compliant solution</h3>
-<pre>
+@Override
 public boolean equals(Object obj) {
-  if (obj == null)
+  // ...
+  if (this.getClass() != obj.getClass()) {
     return false;
-
-  if (this.getClass() != obj.getClass())
-    return false;
-
-  MyClass mc = (MyClass)obj;
+  }
   // ...
 }
 </pre>
+<p>However, it is an issue to assume that the <code>equals</code> method will only be used to compare objects of the same type. Casting the
+<code>obj</code> parameter without a prior test will throw a <code>ClassCastException</code> instead of returning false.</p>
+<pre>
+public class MyClass {
+  @Override
+  public boolean equals(Object obj) {
+    MyClass that = (MyClass) obj; // may throw a ClassCastException
+    // ...
+  }
+  // ...
+}
+</pre>
+<p>This rule raises an issue when <code>obj</code> parameter’s type has not been tested before a cast operation.</p>
+<h2>How to fix it</h2>
+<p>Ensure the <code>obj</code> parameter’s type is checked by comparing <code>this.getClass()</code> and <code>obj.getClass()</code>, or use the
+<code>instanceof</code> operator to test `obj’s type.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class MyClass {
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    MyClass that = (MyClass) obj; // Noncompliant, may throw a ClassCastException
+    // ...
+  }
+  // ...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class MyClass {
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || this.getClass() != obj.getClass()) {
+      return false;
+    }
+    MyClass that = (MyClass) obj; // Compliant, obj's type is MyClass
+    // ...
+  }
+  // ...
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)">Oracle SDK -
+  java.lang.Object#equals(Object obj)</a> </li>
+</ul>
 

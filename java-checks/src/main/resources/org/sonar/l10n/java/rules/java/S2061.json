@@ -1,5 +1,5 @@
 {
-  "title": "Custom serialization method signatures should meet requirements",
+  "title": "Custom serialization methods should have required signatures",
   "type": "BUG",
   "status": "ready",
   "remediation": {

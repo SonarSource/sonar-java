@@ -1,27 +1,27 @@
 <h2>Why is this an issue?</h2>
-<p>According to <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.9">the Java Language Specification-8.9</a>:</p>
-<blockquote>
-  <p>Nested enum types are implicitly <code>static</code>.</p>
-</blockquote>
-<p>So there’s no need to declare them <code>static</code> explicitly.</p>
+<p>In Java, an enum is a special data type that allows you to define a set of constants. Nested enum types, also known as inner enum types, are enum
+types that are defined within another class or interface.</p>
+<p>Nested enum types are implicitly static, so there is no need to declare them <code>static</code> explicitly.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Flower {
   static enum Color { // Noncompliant; static is redundant here
     RED, YELLOW, BLUE, ORANGE
   }
-
   // ...
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class Flower {
   enum Color { // Compliant
     RED, YELLOW, BLUE, ORANGE
   }
-
   // ...
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se20/html/jls-8.html#jls-8.9">Java Language Specification-8.9</a> </li>
+</ul>
 

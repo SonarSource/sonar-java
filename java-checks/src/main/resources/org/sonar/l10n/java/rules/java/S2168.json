@@ -7,9 +7,11 @@
     "constantCost": "20min"
   },
   "tags": [
+    "cert",
     "cwe",
+    "design",
     "multi-threading",
-    "cert"
+    "singleton"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2168",

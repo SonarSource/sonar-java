@@ -1,9 +1,21 @@
 <h2>Why is this an issue?</h2>
-<p>If a <code>for</code> loop’s condition is false before the first loop iteration, the loop will never be executed. Such loops are almost always
-bugs, particularly when the initial value and stop conditions are hard-coded.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-for (int i = 10; i &lt; 10; i++) {  // Noncompliant
-  // ...
+<p>A <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/for.html"><code>for</code></a> loop is a fundamental programming construct
+used to execute a block of code repeatedly. However, if the loop’s condition is false before the first iteration, the loop will never execute.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+for (int i = 0; i &lt; 0; i++) {  // Noncompliant: the condition is always false, and the loop will never execute
+    // ...
+}
 </pre>
+<p>Rewrite the loop to ensure the condition evaluates to <code>true</code> at least once.</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+for (int i = 0; i &lt; 10; i++) {  // Compliant: the condition is true at least once, the loop will execute
+    // ...
+}
+</pre>
+<p>This bug has the potential to cause unexpected outcomes as the loop might contain critical code that needs to be executed.</p>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/for.html">The <code>for</code> statement</a> </li>
+</ul>
 

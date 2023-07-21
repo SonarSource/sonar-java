@@ -1,30 +1,140 @@
 <h2>Why is this an issue?</h2>
-<p>By contract, a servlet container creates one instance of each servlet and then a dedicated thread is attached to each new incoming HTTP request to
-process the request. So all threads share the servlet instances and by extension their instance fields. To prevent any misunderstanding and unexpected
-behavior at runtime, all servlet fields should then be either <code>static</code> and/or <code>final</code>, or simply removed.</p>
-<p>With Struts 1.X, the same constraint exists on <code>org.apache.struts.action.Action</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public class MyServlet extends HttpServlet {
-  private String userName;  //As this field is shared by all users, it's obvious that this piece of information should be managed differently
-  ...
-}
-</pre>
-<p>or</p>
-<pre>
-public class MyAction extends Action {
-  private String userName;  //Same reason
-  ...
-}
-</pre>
+<p>The <code>processHttpRequest</code> method and methods called from it can be executed by multiple threads within the same servlet instance, and
+state changes to the instance caused by these methods are, therefore, not threadsafe.</p>
+<p>This is due to the servlet container creating only one instance of each servlet (<code>javax.servlet.http.HttpServlet</code>) and attaching a
+dedicated thread to each incoming HTTP request. The same problem exists for <code>org.apache.struts.action.Action</code> but with different
+methods.</p>
+<p>To prevent unexpected behavior, avoiding mutable states in servlets is recommended. Mutable instance fields should either be refactored into local
+variables or made immutable by declaring them <code>final</code>.</p>
 <h3>Exceptions</h3>
 <ul>
   <li> Fields annotated with <code>@javax.inject.Inject</code>, <code>@javax.ejb.EJB</code>,
   <code>@org.springframework.beans.factory.annotation.Autowired</code>, <code>@javax.annotation.Resource</code> </li>
   <li> Fields initialized in <code>init()</code> or <code>init(ServletConfig config)</code> methods </li>
 </ul>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>If the field is never modified, declare it <code>final</code>.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class MyServlet extends HttpServlet {
+  String apiVersion = "0.9.1"; // Noncompliant, field changes are not thread-safe
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class MyServlet extends HttpServlet {
+  final String apiVersion = "0.9.1"; // Compliant, field cannot be changed
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<p>If a field is modified within instance methods, refactor it into a local variable. That variable can be passed as an argument to other functions if
+needed.</p>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+public class MyServlet extends HttpServlet {
+
+  String userName; // Noncompliant, field changes are not thread-safe
+
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    userName = req.getParameter("userName"); // Different threads may write concurrently to userName
+    resp.getOutputStream().print(getGreeting());
+  }
+
+  public String getGreeting() { // Unpredictable value in field userName
+    return "Hello "+userName+"!";
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+public class MyServlet extends HttpServlet {
+
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    String userName = req.getParameter("userName"); // Compliant, local variable instead instance field
+    resp.getOutputStream().print(getGreeting(userName));
+  }
+
+  public String getGreeting(String userName) { // Compliant, method argument instead instance field
+    return "Hello "+userName+"!";
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<p>If you still prefer instance state over local variables, consider using <code>ThreadLocal</code> fields. These fields provide a separate instance
+of their value for each thread.</p>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+public class MyServlet extends HttpServlet {
+
+  String userName; // Noncompliant, field changes are not thread-safe
+
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    userName = req.getParameter("userName"); // Different threads may write concurrently to userName
+    resp.getOutputStream().print(getGreeting());
+  }
+
+  public String getGreeting() { // Unpredictable value in field userName
+    return "Hello "+userName+"!";
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+public class MyServlet extends HttpServlet {
+
+  final ThreadLocal&lt;String&gt; userName = new ThreadLocal&lt;&gt;(); // Compliant, field itself does not change
+
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    userName.set(req.getParameter("userName")); // Compliant, own value provided for every thread
+    resp.getOutputStream().print(getGreeting());
+  }
+
+  public String getGreeting() {
+    return "Hello "+userName.get()+"!"; // Compliant, own value provided for every thread
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<p>If you have a use case that requires a shared instance state between threads, declare the corresponding fields as <code>static</code> to indicate
+your intention and awareness that there is only one instance of the servlet. However, the <code>static</code> modifier alone does not ensure thread
+safety. Make sure also to take countermeasures against possible race conditions.</p>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+public class MyServlet extends HttpServlet {
+
+  public long timestampLastRequest; // Noncompliant, field changes are not thread-safe
+
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    timestampLastRequest = System.currentTimeMillis();
+    resp.getOutputStream().print(timestampLastRequest); // Race condition
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="4" data-diff-type="compliant">
+public class MyServlet extends HttpServlet {
+
+  public static long timestampLastRequest; // Compliant, sharing state is our intention
+
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    long timestamp;
+    synchronized (this) {
+      timestamp = timestampLastRequest; // No race condition, synchronized get &amp; set
+      timestampLastRequest = System.currentTimeMillis();
+    }
+    resp.getOutputStream().print(timestamp);
+  }
+}
+</pre>
 <h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/2TZGBQ">CERT, MSC11-J.</a> - Do not let session information leak within a servlet </li>
+  <li> <a href="https://www.devinline.com/2013/08/how-to-make-thread-safe-servlet.html">Nikhil Ranjan: How to make thread safe servlet ?</a> </li>
+  <li> <a href="https://objectcomputing.com/resources/publications/sett/april-2000-tips-for-creating-thread-safe-code-avoiding-race-conditions">Object
+  Computing: Tips for creating thread-safe code</a> </li>
 </ul>
 

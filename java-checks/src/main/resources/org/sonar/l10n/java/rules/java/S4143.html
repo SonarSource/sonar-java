@@ -1,6 +1,6 @@
 <h2>Why is this an issue?</h2>
 <p>Storing a value inside a collection at a given key or index and then unconditionally overwriting it without reading the initial value is a case of
-"dead store".</p>
+a "dead store".</p>
 <pre>
 letters.put("a", "Apple");
 letters.put("a", "Boy");  // Noncompliant
@@ -8,5 +8,6 @@ letters.put("a", "Boy");  // Noncompliant
 towns[i] = "London";
 towns[i] = "Chicago";  // Noncompliant
 </pre>
-<p>At best it is redundant and will confuse the reader, most often it is an error and not what the developer intended to do.</p>
+<p>This practice is redundant and will cause confusion for the reader. More importantly, it is often an error and not what the developer intended to
+do.</p>
 

@@ -1,17 +1,37 @@
-<h2>Why is this an issue?</h2>
-<p>An LDAP client authenticates to an LDAP server with a "bind request" which provides, among other, a <a
-href="https://web.archive.org/web/20220922153922/https://ldapwiki.com/wiki/Simple%20Authentication">simple authentication method</a>.</p>
-<p>Simple authentication in LDAP can be used with three different mechanisms:</p>
+<p>Lightweight Directory Access Protocol (LDAP) servers provide two main authentication methods: the <em>SASL</em> and <em>Simple</em> ones. The
+<em>Simple Authentication</em> method also breaks down into three different mechanisms:</p>
 <ul>
-  <li> <em>Anonymous Authentication Mechanism</em> by performing a bind request with a username and password value of zero length. </li>
-  <li> <em>Unauthenticated Authentication Mechanism</em> by performing a bind request with a password value of zero length. </li>
-  <li> <em>Name/Password Authentication Mechanism</em> by performing a bind request with a password value of non-zero length. </li>
+  <li> <em>Anonymous</em> Authentication </li>
+  <li> <em>Unauthenticated</em> Authentication </li>
+  <li> <em>Name/Password</em> Authentication </li>
 </ul>
-<p>Anonymous binds and unauthenticated binds allow access to information in the LDAP directory without providing a password, their use is therefore
-strongly discouraged.</p>
-<h3>Noncompliant code example</h3>
-<p>This rule raises an issue when an LDAP connection is created with <code>Context.SECURITY_AUTHENTICATION</code> set to <code>"none"</code>.</p>
-<pre>
+<p>A server that accepts either the <em>Anonymous</em> or <em>Unauthenticated</em> mechanisms will accept connections from clients not providing
+credentials.</p>
+<h2>Why is this an issue?</h2>
+<p>When configured to accept the Anonymous or Unauthenticated authentication mechanism, an LDAP server will accept connections from clients that do
+not provide a password or other authentication credentials. Such users will be able to read or modify part or all of the data contained in the hosted
+directory.</p>
+<h3>What is the potential impact?</h3>
+<p>An attacker exploiting unauthenticated access to an LDAP server can access the data that is stored in the corresponding directory. The impact
+varies depending on the permission obtained on the directory and the type of data it stores.</p>
+<h4>Authentication bypass</h4>
+<p>If attackers get write access to the directory, they will be able to alter most of the data it stores. This might include sensitive technical data
+such as user passwords or asset configurations. Such an attack can typically lead to an authentication bypass on applications and systems that use the
+affected directory as an identity provider.</p>
+<p>In such a case, all users configured in the directory might see their identity and privileges taken over.</p>
+<h4>Sensitive information leak</h4>
+<p>If attackers get read-only access to the directory, they will be able to read the data it stores. That data might include security-sensitive pieces
+of information.</p>
+<p>Typically, attackers might get access to user account lists that they can use in further intrusion steps. For example, they could use such lists to
+perform password spraying, or related attacks, on all systems that rely on the affected directory as an identity provider.</p>
+<p>If the directory contains some Personally Identifiable Information, an attacker accessing it might represent a violation of regulatory requirements
+in some countries. For example, this kind of security event would go against the European GDPR law.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<p>The following code indicates an anonymous LDAP authentication vulnerability because it binds to a remote server using an Anonymous Simple
+authentication mechanism.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 // Set up the environment for creating the initial context
 Hashtable&lt;String, Object&gt; env = new Hashtable&lt;String, Object&gt;();
 env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -23,29 +43,33 @@ env.put(Context.SECURITY_AUTHENTICATION, "none"); // Noncompliant
 // Create the initial context
 DirContext ctx = new InitialDirContext(env);
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 // Set up the environment for creating the initial context
 Hashtable&lt;String, Object&gt; env = new Hashtable&lt;String, Object&gt;();
 env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-env.put(Context.PROVIDER_URL, "ldap://localhost:389/o=JNDITutorial");
+env.put(Context.PROVIDER_URL, "ldap://localhost:389/o=Example");
 
 // Use simple authentication
 env.put(Context.SECURITY_AUTHENTICATION, "simple");
-env.put(Context.SECURITY_PRINCIPAL, "cn=S. User, ou=NewHires, o=JNDITutorial");
+env.put(Context.SECURITY_PRINCIPAL, "cn=local, ou=Unit, o=Example");
 env.put(Context.SECURITY_CREDENTIALS, getLDAPPassword());
 
 // Create the initial context
 DirContext ctx = new InitialDirContext(env);
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://datatracker.ietf.org/doc/html/rfc4513#section-5">RFC 4513 - Lightweight Directory Access Protocol (LDAP): Authentication
+  Methods and Security Mechanisms</a> - Bind operations </li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li> <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">OWASP Top 10 2021 Category A7</a> - Identification and
   Authentication Failures </li>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">OWASP Top 10 2017 Category A2</a> - Broken Authentication
   </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/521">MITRE, CWE-521</a> - Weak Password Requirements </li>
-  <li> <a href="https://web.archive.org/web/20220922153922/https://ldapwiki.com/wiki/Simple%20Authentication">ldapwiki.com</a>- Simple Authentication
-  </li>
 </ul>
 

@@ -1,11 +1,21 @@
 <h2>Why is this an issue?</h2>
-<p>While some <code>TestRule</code> classes have the desired effect without ever being directly referenced by a test, several others do not, and
-there’s no reason to leave them cluttering up the file if they’re not in use.</p>
-<p>This rule raises an issue when <code>Test</code> class fields of the following types aren’t used by any of the test methods:
-<code>TemporaryFolder</code>, and <code>TestName</code>.</p>
-<p>This rule also applies to the JUnit 5 equivalent classes: <code>TempDir</code>, and <code>TestInfo</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>JUnit rules are predefined classes that extend the behavior of JUnit tests, allowing to add new functionalities, such as managing resources,
+modifying test behavior, and handling exceptions.</p>
+<p>Unused JUnit rules can lead to confusion when reading the test code, making tests harder to understand and maintain. Having unused rules can also
+slow down the test suite, as JUnit has to process the rules even though they are not being used. Some <code>TestRule</code> classes have the desired
+effect without being directly referenced by a test, while others do not. There’s no reason to leave them cluttering the file if they’re not in
+use.</p>
+<p>The rule raises an issue when in a <code>Test</code> class, there is no method referencing a declared <code>TestRule</code> of the following
+types:</p>
+<ul>
+  <li> <code>TemporaryFolder</code> and <code>TestName</code> in JUnit </li>
+  <li> <code>TempDir</code> and <code>TestInfo</code> in JUnit 5 </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Remove the unused <code>TestRule</code> field that is expected to be referenced inside a test method.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class ProjectDefinitionTest {
 
   @Rule
@@ -19,8 +29,8 @@ public class ProjectDefinitionTest {
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class ProjectDefinitionTest {
 
   @Test
@@ -31,4 +41,14 @@ public class ProjectDefinitionTest {
   }
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://junit.org/junit4/javadoc/4.12/org/junit/Rule.html">Junit API - Rule</a> </li>
+  <li> <a href="https://github.com/junit-team/junit4/wiki/Rules">Junit - Rules</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/junit-4-rules">Junit 4 Rules</a> </li>
+</ul>
 

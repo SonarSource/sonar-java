@@ -1,12 +1,46 @@
 <h2>Why is this an issue?</h2>
-<p>JUnit assertions should not be made from the <code>run</code> method of a <code>Runnable</code>, because failed assertions result in
-<code>AssertionError</code>s being thrown. If the error is thrown from a thread other than the one that ran the test, the thread will exit but the
-test won’t fail.</p>
-<h3>Noncompliant code example</h3>
+<p>JUnit assertions should not be made from the <code>run</code> method of a <code>Runnable</code>, because their failure may not be detected in the
+test that initiated them. Failed assertions throw assertion errors. However, if the error is thrown from another thread than the one that initiated
+the test, the thread will exit but the test will not fail.</p>
+<h2>How to fix it</h2>
+<p>Assertions in <code>Runnable</code> tasks should be extracted or executed by the main thread to make the whole test fail.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre>
-public void run() {
-  // ...
-  Assert.assertEquals(expected, actual);  // Noncompliant
+class RunnableWithAnAssertion extends Thread {
+  @Override
+  public void run() {
+    Assert.assertEquals(expected, actual);  // Noncompliant
+  }
+
+  @Test
+  void test() {
+    RunnableWithAnAssertion otherThread = new RunnableWithAnAssertion();
+    otherThread.start(); // The assertion in the run method above will be executed by other thread than the current one
+    // ...
+    // Perform some actions that do not make the test fail
+    // ...
+    Assert.assertTrue(true);
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre>
+class RunnableWithAnAssertion extends Thread {
+  @Override
+  public void run() {
+    Assert.assertEquals(expected, actual);  // Noncompliant
+  }
+
+  @Test
+  void test() {
+    RunnableWithAnAssertion otherThread = new RunnableWithAnAssertion();
+    otherThread.run();
+    // ...
+    // The failed assertions in the run method will prevent us from reaching the assertion below
+    // ...
+    Assert.assertTrue(true);
+  }
 }
 </pre>
 

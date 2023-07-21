@@ -1,17 +1,24 @@
 <h2>Why is this an issue?</h2>
-<p>Shared naming conventions allow teams to collaborate efficiently. This rule checks that static non-final field names match a provided regular
-expression.</p>
+<p>The Java Language Specification defines a set of rules called naming conventions that apply to Java programs. These conventions provide
+recommendations for naming packages, classes, methods, and variables.</p>
+<p>By following shared naming conventions, teams can collaborate more efficiently.</p>
+<p>This rule checks that static non-final field names match a provided regular expression.</p>
 <h3>Noncompliant code example</h3>
-<p>With the default regular expression <code>^[a-z][a-zA-Z0-9]*$</code>:</p>
-<pre>
-public final class MyClass {
-   private static String foo_bar;
+<p>The default regular expression applied by the rule is <code>^[a-z][a-zA-Z0-9]*$</code>:</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class MyClass {
+   private static String foo_bar; // Noncompliant
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-class MyClass {
+<pre data-diff-id="1" data-diff-type="compliant">
+public class MyClass {
    private static String fooBar;
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://www.oreilly.com/library/view/java-8-pocket/9781491901083/ch01.html">O’Reilly - Java 8 in pocket - Naming Conventions</a> </li>
+  <li> <a href="https://www.educative.io/answers/what-are-the-naming-conventions-in-java">Educative - Naming conventions in Java</a> </li>
+</ul>
 

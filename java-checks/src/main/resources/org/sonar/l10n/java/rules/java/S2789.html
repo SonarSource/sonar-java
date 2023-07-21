@@ -1,8 +1,19 @@
 <h2>Why is this an issue?</h2>
-<p>The concept of <code>Optional</code> is that it will be used when <code>null</code> could cause errors. In a way, it replaces <code>null</code>,
-and when <code>Optional</code> is in use, there should never be a question of returning or receiving <code>null</code> from a call.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p><code>Optional</code> acts as a container object that may or may not contain a non-null value. It is introduced in Java 8 to help avoid
+<code>NullPointerException</code>. It provides methods to check if a value is present and retrieve the value if it is present.</p>
+<p><code>Optional</code> is used instead of <code>null</code> values to make the code more readable and avoid potential errors.</p>
+<p>It is a bad practice to use <code>null</code> with <code>Optional</code> because it is unclear whether a value is present or not, leading to
+confusion and potential <code>NullPointerException</code> errors.</p>
+<h2>How to fix it</h2>
+<p>There are a few ways to fix this issue:</p>
+<ul>
+  <li> Avoid returning <code>null</code> from a method whose return type is <code>Optional</code>. </li>
+  <li> Remove the null-check of an <code>Optional</code> and use <code>Optional</code> methods instead, like <code>isPresent()</code> or
+  <code>ifPresent()</code>. </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public void doSomething () {
   Optional&lt;String&gt; optional = getOptional();
   if (optional != null) {  // Noncompliant
@@ -18,8 +29,8 @@ public Optional&lt;String&gt; getOptional() {
   return null;  // Noncompliant
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public void doSomething () {
   Optional&lt;String&gt; optional = getOptional();
   optional.ifPresent(
@@ -34,4 +45,13 @@ public Optional&lt;String&gt; getOptional() {
   return Optional.empty();
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/Optional.html">Oracle SDK 20 - Optional</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/java-optional">Java Optional Guide</a> </li>
+</ul>
 

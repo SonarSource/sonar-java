@@ -1,22 +1,45 @@
 <h2>Why is this an issue?</h2>
-<p><code>AtomicInteger</code>, and <code>AtomicLong</code> extend <code>Number</code>, but they’re distinct from <code>Integer</code> and
-<code>Long</code> and should be handled differently. <code>AtomicInteger</code> and <code>AtomicLong</code> are designed to support lock-free,
-thread-safe programming on single variables. As such, an <code>AtomicInteger</code> will only ever be "equal" to itself. Instead, you should
-<code>.get()</code> the value and make comparisons on it.</p>
-<p>This applies to all the atomic, seeming-primitive wrapper classes: <code>AtomicInteger</code>, <code>AtomicLong</code>, and
-<code>AtomicBoolean</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-AtomicInteger aInt1 = new AtomicInteger(0);
-AtomicInteger aInt2 = new AtomicInteger(0);
+<p>The <code>equals</code> method in <code>AtomicInteger</code> and <code>AtomicLong</code> returns <code>true</code> only if two instances are
+identical, not if they represent the same number value.</p>
+<p>This is because <code>equals</code> is not part of the API contract of these classes, and they do not override the method inherited from
+<code>java.lang.Object</code>. Although both classes implement the <code>Number</code> interface, assertions about <code>equals</code> comparing
+number values are not part of that interface either. Only the API contract of implementing classes like <code>Integer</code>, <code>Long</code>,
+<code>Float</code>, <code>BigInteger</code>, etc., provides such assertions.</p>
+<h2>How to fix it</h2>
+<ul>
+  <li> To compare the number value of two instances <code>a</code> and <code>b</code> of <code>AtomicInteger</code> or <code>AtomicLong</code>, use
+  <code>a.get() == b.get()</code> instead of <code>a.equals(b)</code>. </li>
+  <li> If you want to check for object identity, use <code>a == b</code> instead of <code>a.equals(b)</code> to clarify your intention. </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+Boolean isSameNumberValue(AtomicLong a, AtomicLong b) {
+  return a.equals(b); // Noncompliant, this is true only if a == b
+}
 
-if (aInt1.equals(aInt2)) { ... }  // Noncompliant
+Boolean isSameReference(AtomicLong a, AtomicLong b) {
+  return a.equals(b); // Noncompliant, because misleading
+}
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-AtomicInteger aInt1 = new AtomicInteger(0);
-AtomicInteger aInt2 = new AtomicInteger(0);
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+Boolean isSameNumberValue(AtomicLong a, AtomicLong b) {
+  return a.get() == b.get(); // Compliant
+}
 
-if (aInt1.get() == aInt2.get()) { ... }
+Boolean isSameReference(AtomicLong a, AtomicLong b) {
+  return a == b; // Compliant
+}
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/package-summary.html">Java SE 8 API Specification: Package
+  "java.util.concurrent.atomic"</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://programming.guide/java/atomicinteger-equals.html">Programming.Guide: AtomicInteger and equals / Comparable</a> </li>
+</ul>
 

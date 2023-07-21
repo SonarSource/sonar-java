@@ -1,117 +1,153 @@
+<p>This vulnerability allows the usage of external entities in XML.</p>
 <h2>Why is this an issue?</h2>
-<p>XML standard allows the use of entities, declared in the DOCTYPE of the document, which can be <a
-href="https://www.w3.org/TR/xml/#sec-internal-ent">internal</a> or <a href="https://www.w3.org/TR/xml/#sec-external-ent">external</a>.</p>
-<p>When parsing the XML file, the content of the external entities is retrieved from an external storage such as the file system or network, which may
-lead, if no restrictions are put in place, to arbitrary file disclosures or <a
-href="https://owasp.org/www-community/attacks/Server_Side_Request_Forgery">server-side request forgery (SSRF)</a> vulnerabilities.</p>
-<p>It’s recommended to limit resolution of external entities by using one of these solutions:</p>
-<ul>
-  <li> If DOCTYPE is not necessary, completely disable all DOCTYPE declarations. </li>
-  <li> If external entities are not necessary, completely disable their declarations. </li>
-  <li> If external entities are necessary then:
-    <ul>
-      <li> Use XML processor features, if available, to authorize only required protocols (eg: https). </li>
-      <li> And use an entity resolver (and optionally an XML Catalog) to resolve only trusted entities. </li>
-    </ul>  </li>
-</ul>
-<h3>Noncompliant code example</h3>
-<p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a>, <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInput</a>, <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">Transformer</a> and <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> JAPX factories:</p>
+<p>External Entity Processing allows for XML parsing with the involvement of external entities. However, when this functionality is enabled without
+proper precautions, it can lead to a vulnerability known as XML External Entity (XXE) attack.</p>
+<h3>What is the potential impact?</h3>
+<h4>Exposing sensitive data</h4>
+<p>One significant danger of XXE vulnerabilities is the potential for sensitive data exposure. By crafting malicious XML payloads, attackers can
+reference external entities that contain sensitive information, such as system files, database credentials, or configuration files. When these
+entities are processed during XML parsing, the attacker can extract the contents and gain unauthorized access to sensitive data. This poses a severe
+threat to the confidentiality of critical information.</p>
+<h4>Exhausting system resources</h4>
+<p>Another consequence of XXE vulnerabilities is the potential for denial-of-service attacks. By exploiting the ability to include external entities,
+attackers can construct XML payloads that cause resource exhaustion. This can overwhelm the system’s memory, CPU, or other critical resources, leading
+to system unresponsiveness or crashes. A successful DoS attack can disrupt the availability of services and negatively impact the user experience.</p>
+<h4>Forging requests</h4>
+<p>XXE vulnerabilities can also enable Server-Side Request Forgery (SSRF) attacks. By leveraging the ability to include external entities, an attacker
+can make the vulnerable application send arbitrary requests to other internal or external systems. This can result in unintended actions, such as
+retrieving data from internal resources, scanning internal networks, or attacking other systems. SSRF attacks can lead to severe consequences,
+including unauthorized data access, system compromise, or even further exploitation within the network infrastructure.</p>
+<h2>How to fix it in Java SE</h2>
+<h3>Code examples</h3>
+<p>The following code contains examples of XML parsers that have external entity processing enabled. As a result, the parsers are vulnerable to XXE
+attacks if an attacker can control the XML file that is processed.</p>
+<h4>Noncompliant code example</h4>
 <pre>
 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant
-
-SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant
-
-XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
-
-TransformerFactory factory = javax.xml.transform.TransformerFactory.newInstance();  // Noncompliant
-
-SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);  // Noncompliant
 </pre>
-<p>For <a href="https://dom4j.github.io/">Dom4j</a> library:</p>
+<h4>Compliant solution</h4>
+<p>Protection from XXE can be done in several different ways. Choose one depending on how the affected parser object is used in your code.</p>
+<p><strong>1.</strong> The first way is to completely disable <code>DOCTYPE</code> declarations:</p>
 <pre>
-SAXReader xmlReader = new SAXReader(); // Noncompliant
-</pre>
-<p>For <a href="http://www.jdom.org/">Jdom2</a> library:</p>
-<pre>
-SAXBuilder builder = new SAXBuilder(); // Noncompliant
-</pre>
-<h3>Compliant solution</h3>
-<p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a>, <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInput</a>, <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">Transformer</a> and <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> JAPX factories:</p>
-<pre>
-DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-// to be compliant, completely disable DOCTYPE declaration:
+// Applicable to:
+// - DocumentBuilderFactory
+// - SAXParserFactory
+// - SchemaFactory
 factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-// or completely disable external entities declarations:
+
+// For XMLInputFactory:
+factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+</pre>
+<p><strong>2.</strong> Disable external entity declarations completely:</p>
+<pre>
+// Applicable to:
+// - DocumentBuilderFactory
+// - SAXParserFactory
 factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
 factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-// or prohibit the use of all protocols by external entities:
+
+// For XMLInputFactory:
+factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+</pre>
+<p><strong>3.</strong> Prohibit the use of all protocols by external entities:</p>
+<pre>
+// `setAttribute` variant, applicable to:
+// - DocumentBuilderFactory
+// - TransformerFactory
 factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-// or disable entity expansion but keep in mind that this doesn't prevent fetching external entities
-// and this solution is not correct for OpenJDK &lt; 13 due to a bug: https://bugs.openjdk.java.net/browse/JDK-8206132
-factory.setExpandEntityReferences(false);
 
+// `setProperty` variant, applicable to:
+// - XMLInputFactory
+// - SchemaFactory
+factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 
-SAXParserFactory factory = SAXParserFactory.newInstance();
-// to be compliant, completely disable DOCTYPE declaration:
-factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-// or completely disable external entities declarations:
-factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-// or prohibit the use of all protocols by external entities:
-SAXParser parser = factory.newSAXParser(); // Noncompliant
+// For SAXParserFactory, the prohibition is done on child objects:
+SAXParser parser = factory.newSAXParser();
 parser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 parser.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-
-XMLInputFactory factory = XMLInputFactory.newInstance();
-// to be compliant, completely disable DOCTYPE declaration:
-factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-// or completely disable external entities declarations:
-factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
-// or prohibit the use of all protocols by external entities:
-factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-
-TransformerFactory factory = javax.xml.transform.TransformerFactory.newInstance();
-// to be compliant, prohibit the use of all protocols by external entities:
-factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-
-SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-// to be compliant, completely disable DOCTYPE declaration:
-factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-// or prohibit the use of all protocols by external entities:
-factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 </pre>
-<p>For <a href="https://dom4j.github.io/">Dom4j</a> library:</p>
+<h3>How does this work?</h3>
+<h4>Disable external entities</h4>
+<p>The most effective approach to prevent XXE vulnerabilities is to disable external entity processing entirely, unless it is explicitly required for
+specific use cases. By default, XML parsers should be configured to reject the processing of external entities. This can be achieved by setting the
+appropriate properties or options in your XML parser library or framework.</p>
+<p>If external entity processing is necessary for certain scenarios, adopt a whitelisting approach to restrict the entities that can be resolved
+during XML parsing. Create a list of trusted external entities and disallow all others. This approach ensures that only known and safe entities are
+processed.<br> You should rely on features provided by your XML parser to restrict the external entities.</p>
+<h3>Going the extra mile</h3>
+<h4>Disable entity expansion</h4>
+<p>Specifically for <code>DocumentBuilderFactory</code>, it is possible to disable the entity expansion. Note, however, that this does not prevent the
+retrieval of external entities.</p>
 <pre>
-SAXReader xmlReader = new SAXReader();
-xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+factory.setExpandEntityReferences(false);
 </pre>
-<p>For <a href="http://www.jdom.org/">Jdom2</a> library:</p>
-<pre>
-SAXBuilder builder = new SAXBuilder();
-builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+<h2>How to fix it in Dom4j</h2>
+<h3>Code examples</h3>
+<p>The following code contains examples of XML parsers that have external entity processing enabled. As a result, the parsers are vulnerable to XXE
+attacks if an attacker can control the XML file that is processed.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import org.dom4j.io.SAXReader;
+
+public void decode() {
+    SAXReader xmlReader = new SAXReader(); // Noncompliant
+}
 </pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import org.dom4j.io.SAXReader;
+
+public void decode() {
+    SAXReader xmlReader = new SAXReader();
+    xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+}
+</pre>
+<h3>How does this work?</h3>
+<h4>Disable external entities</h4>
+<p>The most effective approach to prevent XXE vulnerabilities is to disable external entity processing entirely, unless it is explicitly required for
+specific use cases. By default, XML parsers should be configured to reject the processing of external entities. This can be achieved by setting the
+appropriate properties or options in your XML parser library or framework.</p>
+<p>If external entity processing is necessary for certain scenarios, adopt a whitelisting approach to restrict the entities that can be resolved
+during XML parsing. Create a list of trusted external entities and disallow all others. This approach ensures that only known and safe entities are
+processed.<br> You should rely on features provided by your XML parser to restrict the external entities.</p>
+<h2>How to fix it in Jdom2</h2>
+<h3>Code examples</h3>
+<p>The following code contains examples of XML parsers that have external entity processing enabled. As a result, the parsers are vulnerable to XXE
+attacks if an attacker can control the XML file that is processed.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import org.jdom2.input.SAXBuilder;
+
+public void decode() {
+    SAXBuilder builder = new SAXBuilder(); // Noncompliant
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import org.jdom2.input.SAXBuilder;
+
+public void decode() {
+    SAXBuilder builder = new SAXBuilder();
+    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+}
+</pre>
+<h3>How does this work?</h3>
+<h4>Disable external entities</h4>
+<p>The most effective approach to prevent XXE vulnerabilities is to disable external entity processing entirely, unless it is explicitly required for
+specific use cases. By default, XML parsers should be configured to reject the processing of external entities. This can be achieved by setting the
+appropriate properties or options in your XML parser library or framework.</p>
+<p>If external entity processing is necessary for certain scenarios, adopt a whitelisting approach to restrict the entities that can be resolved
+during XML parsing. Create a list of trusted external entities and disallow all others. This approach ensures that only known and safe entities are
+processed.<br> You should rely on features provided by your XML parser to restrict the external entities.</p>
 <h2>Resources</h2>
+<h3>Standards</h3>
 <ul>
   <li> <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">OWASP Top 10 2021 Category A5</a> - Security Misconfiguration </li>
-  <li> <a
-  href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-8CD65EF5-D113-4D5C-A564-B875C8625FAC">Oracle Java Documentation</a> - XML External Entity Injection Attack </li>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A4_2017-XML_External_Entities_(XXE)">OWASP Top 10 2017 Category A4</a> - XML External
   Entities (XXE) </li>
-  <li> <a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java">OWASP XXE Prevention Cheat
-  Sheet</a> </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/611">MITRE, CWE-611</a> - Information Exposure Through XML External Entity Reference </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/827">MITRE, CWE-827</a> - Improper Control of Document Type Definition </li>
 </ul>

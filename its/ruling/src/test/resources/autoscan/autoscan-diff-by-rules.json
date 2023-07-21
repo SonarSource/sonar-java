@@ -978,12 +978,6 @@
     "falsePositives": 0
   },
   {
-    "ruleKey": "S2165",
-    "hasTruePositives": true,
-    "falseNegatives": 0,
-    "falsePositives": 0
-  },
-  {
     "ruleKey": "S2166",
     "hasTruePositives": true,
     "falseNegatives": 0,

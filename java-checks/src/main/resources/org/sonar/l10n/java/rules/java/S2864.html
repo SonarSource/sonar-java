@@ -1,8 +1,12 @@
 <h2>Why is this an issue?</h2>
-<p>When only the keys from a map are needed in a loop, iterating the <code>keySet</code> makes sense. But when both the key and the value are needed,
-it’s more efficient to iterate the <code>entrySet</code>, which will give access to both the key and value, instead.</p>
+<p><code>Map</code> is an object that maps keys to values. A map cannot contain duplicate keys, which means each key can map to at most one value.</p>
+<p>When both the key and the value are needed, it is more efficient to iterate the <code>entrySet()</code>, which will give access to both instead of
+iterating over the <code>keySet()</code> and then getting the value.</p>
+<p>If the <code>entrySet()</code> method is not iterated when both the key and value are needed, it can lead to unnecessary lookups. This is because
+each lookup requires two operations: one to retrieve the key and another to retrieve the value. By iterating the <code>entrySet()</code> method, the
+key-value pair can be retrieved in a single operation, which can improve performance.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public void doSomethingWithMap(Map&lt;String,Object&gt; map) {
   for (String key : map.keySet()) {  // Noncompliant; for each key the value is retrieved
     Object value = map.get(key);
@@ -11,7 +15,7 @@ public void doSomethingWithMap(Map&lt;String,Object&gt; map) {
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 public void doSomethingWithMap(Map&lt;String,Object&gt; map) {
   for (Map.Entry&lt;String,Object&gt; entry : map.entrySet()) {
     String key = entry.getKey();
@@ -20,4 +24,13 @@ public void doSomethingWithMap(Map&lt;String,Object&gt; map) {
   }
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/Map.html">Oracle SE 20 - Map</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/java-map-entries-methods">Baeldung - Java Map methods</a> </li>
+</ul>
 

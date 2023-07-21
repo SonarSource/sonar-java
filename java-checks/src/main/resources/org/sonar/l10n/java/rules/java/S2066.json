@@ -1,5 +1,5 @@
 {
-  "title": "\"Serializable\" inner classes of non-serializable classes should be \"static\"",
+  "title": "\"Serializable\" inner classes of non-serializable outer classes should be \"static\"",
   "type": "BUG",
   "status": "ready",
   "remediation": {

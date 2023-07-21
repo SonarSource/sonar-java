@@ -14,25 +14,39 @@
   "sqKey": "S3329",
   "scope": "Main",
   "securityStandards": {
+    "CERT": [
+      "MSC61-J."
+    ],
     "CWE": [
-      329
+      327,
+      780
     ],
     "OWASP": [
+      "A6",
       "A3"
     ],
     "OWASP Mobile": [
       "M5"
     ],
     "MASVS": [
-      "MSTG-CRYPTO-6"
+      "MSTG-CRYPTO-3"
     ],
     "OWASP Top 10 2021": [
       "A2"
     ],
+    "PCI DSS 3.2": [
+      "4.1",
+      "6.5.3",
+      "6.5.4"
+    ],
+    "PCI DSS 4.0": [
+      "4.2.1",
+      "6.2.4"
+    ],
     "ASVS 4.0": [
-      "2.3.1",
-      "2.6.2",
-      "2.9.2"
+      "2.9.3",
+      "6.2.2",
+      "8.3.7"
     ]
   },
   "quickfix": "unknown"

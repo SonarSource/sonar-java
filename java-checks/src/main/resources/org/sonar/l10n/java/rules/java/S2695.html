@@ -1,9 +1,18 @@
 <h2>Why is this an issue?</h2>
-<p>The parameters in a <code>PreparedStatement</code> are indexed beginning at 1, not 0, so using any "set" method of a <code>PreparedStatement</code>
-with a number less than 1 is a bug, as is using an index higher than the number of parameters. The same indexing style also applies to
+<p><code>PreparedStatement</code> is an object that represents a precompiled SQL statement, that can be used to execute the statement multiple times
+efficiently.</p>
+<p><code>ResultSet</code> is the Java representation of the result set of a database query obtained from a <code>Statement</code> object. A default
+<code>ResultSet</code> object is not updatable and has a cursor that moves forward only.</p>
+<p>The parameters in <code>PreparedStatement</code> and <code>ResultSet</code> are indexed beginning at 1, not 0. When an invalid index is passed to
+the <code>PreparedStatement</code> or <code>ResultSet</code> methods, an <code>IndexOutOfBoundsException</code> is thrown. This can cause the program
+to crash or behave unexpectedly, leading to a poor user experience.</p>
+<p>This rule raises an issue for the <code>get</code> methods in <code>PreparedStatement</code> and the <code>set</code> methods in
 <code>ResultSet</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<h2>How to fix it</h2>
+<p>Ensure the index passed to the <code>PreparedStatement</code> and <code>ResultSet</code> methods is valid.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 PreparedStatement ps = con.prepareStatement("SELECT fname, lname FROM employees where hireDate &gt; ? and salary &lt; ?");
 ps.setDate(0, date);  // Noncompliant
 ps.setDouble(3, salary);  // Noncompliant
@@ -14,8 +23,8 @@ while (rs.next()) {
   // ...
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 PreparedStatement ps = con.prepareStatement("SELECT fname, lname FROM employees where hireDate &gt; ? and salary &lt; ?");
 ps.setDate(1, date);
 ps.setDouble(2, salary);
@@ -26,4 +35,13 @@ while (rs.next()) {
   // ...
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.sql/java/sql/PreparedStatement.html">Oracle SDK 20 - PreparedStatement</a>
+  </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.sql/java/sql/ResultSet.html">Oracle SDK 20 - ResultSet</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.sql/java/sql/Connection.html#prepareStatement(java.lang.String)">Oracle SDK 20
+  - Connection#prepareStatement</a> </li>
+</ul>
 

@@ -1,9 +1,17 @@
 <h2>Why is this an issue?</h2>
-<p>When one part of a getter/setter pair is <code>synchronized</code> the other part should be too. Failure to synchronize both sides of a pair may
-result in inconsistent behavior at runtime as callers access an inconsistent method state.</p>
-<p>This rule raises an issue when either the method or the contents of one method in a getter/setter pair are synchrnoized but the other is not.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>A synchronized method is a method marked with the <code>synchronized</code> keyword, meaning it can only be accessed by one thread at a time. If
+multiple threads try to access the synchronized method simultaneously, they will be blocked until the method is available.</p>
+<p>Synchronized methods prevent race conditions and data inconsistencies in multi-threaded environments. Ensuring that only one thread can access a
+method at a time, prevents multiple threads from modifying the same data simultaneously, and causing conflicts.</p>
+<p>When one part of a getter/setter pair is <code>synchronized</code> the other should be too. Failure to synchronize both sides may result in
+inconsistent behavior at runtime as callers access an inconsistent method state.</p>
+<p>This rule raises an issue when either the method or the contents of one method in a getter/setter pair are synchronized, but the other is not.</p>
+<h2>How to fix it</h2>
+<p>Synchronize both <code>get</code> and <code>set</code> methods by marking the method with the <code>synchronize</code> keyword or using a
+<code>synchronize</code> block inside them.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Person {
   String name;
   int age;
@@ -27,8 +35,8 @@ public class Person {
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class Person {
   String name;
   int age;
@@ -55,7 +63,18 @@ public class Person {
 }
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html">Oracle Java - Synchronized Methods</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se20/html/jls-8.html#jls-8.4.3.6">Oracle SE 20 - Synchronized Methods</a> </li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/4jdGBQ">CERT, VNA01-J.</a> - Ensure visibility of shared references to immutable objects </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://web.mit.edu/6.005/www/fa14/classes/18-thread-safety/">MIT - Thread safety</a> </li>
+  <li> <a href="https://www.baeldung.com/java-thread-safety">Baeldung - Thread safety</a> </li>
 </ul>
 

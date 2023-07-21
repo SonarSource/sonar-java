@@ -1,40 +1,61 @@
+<p>This vulnerability increases the likelihood that attackers are able to compute the cleartext of password hashes.</p>
 <h2>Why is this an issue?</h2>
-<p>In cryptography, a "salt" is an extra piece of data which is included when hashing a password. This makes <code>rainbow-table attacks</code> more
-difficult. Using a cryptographic hash function without an unpredictable salt increases the likelihood that an attacker could successfully find the
-hash value in databases of precomputed hashes (called <code>rainbow-tables</code>).</p>
-<p>This rule raises an issue when a hashing function which has been specifically designed for hashing passwords, such as <code>PBKDF2</code>, is used
-with a non-random, reused or too short salt value. It does not raise an issue on base hashing algorithms such as <code>sha1</code> or <code>md5</code>
-as they should not be used to hash passwords.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<ul>
-  <li> Use hashing functions generating their own secure salt or generate a secure random value of at least 16 bytes. </li>
-  <li> The salt should be unique by user password. </li>
-</ul>
-<h3>Noncompliant code example</h3>
-<p>Below, the hashed password use a predictable salt:</p>
-<pre>
-byte[] salt = "notrandom".getBytes();
+<p>During the process of password hashing, an additional component, known as a "salt," is often integrated to bolster the overall security. This salt,
+acting as a defensive measure, primarily wards off certain types of attacks that leverage pre-computed tables to crack passwords.</p>
+<p>However, potential risks emerge when the salt is deemed insecure. This can occur when the salt is consistently the same across all users or when it
+is too short or predictable. In scenarios where users share the same password and salt, their password hashes will inevitably mirror each other.
+Similarly, a short salt heightens the probability of multiple users unintentionally having identical salts, which can potentially lead to identical
+password hashes. These identical hashes streamline the process for potential attackers to recover clear-text passwords. Thus, the emphasis on
+implementing secure, unique, and sufficiently lengthy salts in password-hashing functions is vital.</p>
+<h3>What is the potential impact?</h3>
+<p>Despite best efforts, even well-guarded systems might have vulnerabilities that could allow an attacker to gain access to the hashed passwords.
+This could be due to software vulnerabilities, insider threats, or even successful phishing attempts that give attackers the access they need.</p>
+<p>Once the attacker has these hashes, they will likely attempt to crack them using a couple of methods. One is brute force, which entails trying
+every possible combination until the correct password is found. While this can be time-consuming, having the same salt for all users or a short salt
+can make the task significantly easier and faster.</p>
+<p>If multiple users have the same password and the same salt, their password hashes would be identical. This means that if an attacker successfully
+cracks one hash, they have effectively cracked all identical ones, granting them access to multiple accounts at once.</p>
+<p>A short salt, while less critical than a shared one, still increases the odds of different users having the same salt. This might create clusters
+of password hashes with identical salt that can then be attacked as explained before.</p>
+<p>With short salts, the probability of a collision between two users' passwords and salts couple might be low depending on the salt size. The shorter
+the salt, the higher the collision probability. In any case, using longer, cryptographically secure salt should be preferred.</p>
+<h2>How to fix it in Java SE</h2>
+<h3>Code examples</h3>
+<p>The following code contains examples of hard-coded salts.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import javax.crypto.spec.PBEParameterSpec;
 
-PBEParameterSpec cipherSpec = new PBEParameterSpec(salt, 10000); // Noncompliant, predictable salt
-PBEKeySpec spec = new PBEKeySpec(chars, salt, 10000, 256); // Noncompliant, predictable salt
+public void hash() {
+    byte[] salt = "salty".getBytes();
+    PBEParameterSpec cipherSpec = new PBEParameterSpec(salt, 10000); // Noncompliant
+}
 </pre>
-<h3>Compliant solution</h3>
-<p>Use <code>java.security.SecureRandom</code> to generate an unpredictable salt:</p>
-<pre>
-SecureRandom random = new SecureRandom();
-byte[] salt = new byte[16];
-random.nextBytes(salt);
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import java.security.SecureRandom;
+import javax.crypto.spec.PBEParameterSpec;
 
-PBEParameterSpec cipherSpec = new PBEParameterSpec(salt, 10000); // Compliant
-PBEKeySpec spec = new PBEKeySpec(chars, salt, 10000, 256); // Compliant
+public void hash() {
+    SecureRandom random = new SecureRandom();
+    byte[] salt = new byte[16];
+    random.nextBytes(salt);
+
+    PBEParameterSpec cipherSpec = new PBEParameterSpec(salt, 10000);
+}
 </pre>
+<h3>How does this work?</h3>
+<p>This code ensures that each user’s password has a unique salt value associated with it. It generates a salt randomly and with a length that
+provides the required security level. It uses a salt length of at least 16 bytes (128 bits), as recommended by industry standards.</p>
+<p>Here, the compliant code example ensures the salt is random and has a sufficient length by calling the <code>nextBytes</code> method from the
+<code>SecureRandom</code> class with a salt buffer of 16 bytes. This class implements a cryptographically secure pseudo-random number generator.</p>
 <h2>Resources</h2>
+<h3>Standards</h3>
 <ul>
-  <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
-  <li> <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data
+  <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP</a> Top 10:2021 A02:2021 - Cryptographic Failures </li>
+  <li> <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP</a> - Top 10 2017 - A03:2017 - Sensitive Data
   Exposure </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/759">MITRE, CWE-759</a> - Use of a One-Way Hash without a Salt </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/760">MITRE, CWE-760</a> - Use of a One-Way Hash with a Predictable Salt </li>
-  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/759">CWE</a> - CWE-759: Use of a One-Way Hash without a Salt </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/760">CWE</a> - CWE-760: Use of a One-Way Hash with a Predictable Salt </li>
 </ul>
 

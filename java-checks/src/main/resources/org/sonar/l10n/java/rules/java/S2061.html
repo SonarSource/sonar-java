@@ -1,52 +1,49 @@
 <h2>Why is this an issue?</h2>
-<p>Writers of <code>Serializable</code> classes can choose to let Java’s automatic mechanisms handle serialization and deserialization, or they can
-choose to handle it themselves by implementing specific methods. However, if the signatures of those methods are not exactly what is expected, they
-will be ignored and the default serialization mechanisms will kick back in.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>Java offers a built-in serialization mechanism for classes that implement the <code>Serializable</code> interface. The developer can either rely on
+Java’s default serialization and deserialization logic or implement custom methods for these tasks. The JVM will use methods such as
+<code>readObject</code> and <code>writeObject</code> to execute custom behavior. This only works, however, if these methods match exactly the expected
+signatures. If they do not, the JVM will fall back to the default logic, resulting in unexpected behavior at runtime, while the developer believes
+that the default logic has been overidden.</p>
+<p>This rule raises an issue if an implementation of <code>writeObject</code>, <code>readObject</code>, <code>readObjectNoData</code>,
+<code>writeReplace</code>, or <code>readResolve</code> has an incorrect access modifier, return type, or is not static when it should be (and
+vice-versa).</p>
+<h2>How to fix it</h2>
+<p>Ensure that the serialization-related method’s signatures match exactly those required by the JVM.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Watermelon implements Serializable {
-  // ...
-  void writeObject(java.io.ObjectOutputStream out)// Noncompliant; not private
+
+  void writeObject(java.io.ObjectOutputStream out)         // Noncompliant, "writeObject" needs to be private, which it is not here
         throws IOException
   {...}
 
-  private void readObject(java.io.ObjectInputStream in)
+  static Object readResolve() throws ObjectStreamException // Noncompliant, "readResolve" should not be static
   {...}
 
-  public void readObjectNoData()  // Noncompliant; not private
-  {...}
-
-  static Object readResolve() throws ObjectStreamException  // Noncompliant; this method may have any access modifier, may not be static
-
-  Watermelon writeReplace() throws ObjectStreamException // Noncompliant; this method may have any access modifier, but must return Object
+  Watermelon writeReplace() throws ObjectStreamException   // Noncompliant, "writeReplace" must return "java.lang.Object"
   {...}
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class Watermelon implements Serializable {
-  // ...
-  private void writeObject(java.io.ObjectOutputStream out)
+
+  private void writeObject(java.io.ObjectOutputStream out)    // Compliant, method declared as private
         throws IOException
   {...}
 
-  private void readObject(java.io.ObjectInputStream in)
-        throws IOException, ClassNotFoundException
+  protected Object readResolve() throws ObjectStreamException // Compliant, method is not static
   {...}
 
-  private void readObjectNoData()
-        throws ObjectStreamException
+  private Object writeReplace() throws ObjectStreamException  // Compliant, method returns "java.lang.Object"
   {...}
-
-  protected Object readResolve() throws ObjectStreamException
-  {...}
-
-  private Object writeReplace() throws ObjectStreamException
-  {...}
+}
 </pre>
 <h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/WTdGBQ">CERT, SER01-J.</a> - Do not deviate from the proper signatures of serialization methods
   </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Serializable.html">Oracle SDK - java.io.Serializable</a> </li>
 </ul>
 
