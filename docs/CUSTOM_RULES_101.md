@@ -635,7 +635,7 @@ $ mvn clean install -f pom_SQ_9_9_LTS.xml
 [INFO] ------------------------------------------------------------------------
 ```
 
-Then, grab the jar file `java-custom-rules-example-1.0.0-SNAPSHOT.jar` from the `target` folder of the project, and move it to the extensions folder of your SonarQube instance, which will be located at `$SONAR_HOME/lib/extensions`.
+Then, grab the jar file `java-custom-rules-example-1.0.0-SNAPSHOT.jar` from the `target` folder of the project, and move it to the extensions folder of your SonarQube instance, which will be located at `$SONAR_HOME/extensions/plugins`.
 
 >
 > :exclamation: **SonarQube Java Plugin compatible version**
