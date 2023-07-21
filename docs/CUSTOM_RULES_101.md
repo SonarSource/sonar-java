@@ -88,7 +88,7 @@ Other tags such as `<groupId>`, `<artifactId>`, `<version>`, `<name>`, and `<des
 ```
 
 In the code snippet below, it is important to note that the **entry point of the plugin** is provided as the `<pluginClass>` in the configuration of the sonar-packaging-maven plugin, using the fully qualified name of the java class `MyJavaRulesPlugin`.
-You must change this configuration if you refactor your code, rename, or move the class extending `org.sonar.api.SonarPlugin`.
+You must change this configuration if you refactor your code, rename, or move the class implementing `org.sonar.api.Plugin`.
 The property `<sonarQubeMinVersion>` also guarantees compatibility with the SonarQube instance you target.
 
 ```xml
