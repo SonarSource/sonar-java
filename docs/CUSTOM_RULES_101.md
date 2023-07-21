@@ -638,7 +638,7 @@ $ mvn clean install -f pom_SQ_9_9_LTS.xml
 Then, grab the jar file `java-custom-rules-example-1.0.0-SNAPSHOT.jar` from the `target` folder of the project, and move it to the extensions folder of your SonarQube instance, which will be located at `$SONAR_HOME/lib/extensions`.
 
 >
-> Exclamation: **SonarQube Java Plugin compatible version**
+> :exclamation: **SonarQube Java Plugin compatible version**
 >
 > Before going further, be sure to have the adequate version of the SonarQube Java Analyzer with your SonarQube instance. 
 > The dependency over the Java Analyzer of our custom plugin is defined in its `pom`, as seen in the first chapter of this tutorial. 
