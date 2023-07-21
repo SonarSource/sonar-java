@@ -23,19 +23,19 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BoxedBooleanExpressionsCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/BoxedBooleanExpressionsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/BoxedBooleanExpressionsCheck.java"))
       .withCheck(new BoxedBooleanExpressionsCheck())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/BoxedBooleanExpressionsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/BoxedBooleanExpressionsCheck.java"))
       .withCheck(new BoxedBooleanExpressionsCheck())
       .withoutSemantic()
       .verifyNoIssues();
@@ -44,7 +44,7 @@ class BoxedBooleanExpressionsCheckTest {
   @Test
   void test_quick_fixes() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/BoxedBooleanExpressionsCheckWithQuickFixes.java"))
+      .onFile(mainCodeSourcesPath("checks/BoxedBooleanExpressionsCheckWithQuickFixes.java"))
       .withCheck(new BoxedBooleanExpressionsCheck())
       .withQuickFixes()
       .verifyIssues();
