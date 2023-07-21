@@ -602,7 +602,7 @@ public class MyJavaRulesDefinition implements RulesDefinition {
 ## Testing a custom plugin
 
 >
-> Exclamation: **Prerequisite**
+> :exclamation: **Prerequisite**
 >
 > For this chapter, you will need a local instance of SonarQube. 
 > If you don't have a SonarQube platform installed on your machine, now is the time to download its latest version from [HERE](https://www.sonarqube.org/downloads/)!
