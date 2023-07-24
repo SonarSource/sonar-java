@@ -914,6 +914,17 @@ class SonarComponentsTest {
     }
 
     @Test
+    void remove_info_and_warning_from_log_related_to_undefined_types() {
+      logTester.setLevel(Level.ERROR);
+      String source = generateSource(26);
+      sonarComponents.collectUndefinedTypes(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.logUndefinedTypes();
+
+      assertThat(logTester.logs(Level.WARN)).isEmpty();
+      assertThat(logTester.logs(Level.DEBUG)).isEmpty();
+    }
+
+    @Test
     void log_all_undefined_types_if_less_than_threshold() {
       String source = generateSource(1);
 

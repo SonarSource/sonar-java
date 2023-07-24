@@ -550,10 +550,12 @@ public class SonarComponents {
     final String suffix = moreThanMax ? (delimiter + "...") : "";
 
     LOG.warn(warningMessage);
-    LOG.debug(messagesList
-      .stream()
-      .limit(maxLines)
-      .collect(Collectors.joining(delimiter, prefix, suffix)));
+    if (LOG.isDebugEnabled()) {
+      LOG.debug(messagesList
+        .stream()
+        .limit(maxLines)
+        .collect(Collectors.joining(delimiter, prefix, suffix)));
+    }
   }
 
   public SensorContext context() {

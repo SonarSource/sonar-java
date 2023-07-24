@@ -192,7 +192,7 @@ public class JavaFrontend {
       try {
         if (!files.isEmpty()) {
           scanInBatches(context, files);
-        } else {
+        } else if (LOG.isInfoEnabled()) {
           LOG.info("No \"{}\" source files to scan.", context.descriptor());
         }
       } finally {

@@ -65,7 +65,7 @@ public class BehaviorCache {
   Map<String, MethodBehavior> hardcodedBehaviors() {
     if (hardcodedBehaviors == null) {
       hardcodedBehaviors = HardcodedMethodBehaviors.load();
-      LOG.debug(String.format("[SE] Loaded %d hardcoded method behaviors.", hardcodedBehaviors.size()));
+      LOG.debug("[SE] Loaded {} hardcoded method behaviors.", hardcodedBehaviors.size());
     }
     return hardcodedBehaviors;
   }

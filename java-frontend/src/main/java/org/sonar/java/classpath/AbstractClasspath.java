@@ -100,8 +100,8 @@ public abstract class AbstractClasspath {
     LOG.debug("Property '{}' set with: {}", ClasspathProperties.SONAR_JAVA_JDK_HOME, path);
     File file = new File(path);
     if (!file.exists() || !file.isDirectory()) {
-      String warning = "Invalid value for '%s' property, defaulting to runtime JDK.%nConfigured location does not exists: '%s'";
-      LOG.warn(String.format(warning, ClasspathProperties.SONAR_JAVA_JDK_HOME, file.getAbsolutePath()));
+      LOG.warn("Invalid value for '{}' property, defaulting to runtime JDK.{}Configured location does not exists: '{}'",
+        ClasspathProperties.SONAR_JAVA_JDK_HOME, System.lineSeparator(), file.getAbsolutePath());
       return Optional.empty();
     }
     return Optional.of(file);

@@ -117,8 +117,8 @@ public class ExecutionTimeReport {
       end();
     }
     long analysisEndTimeMS = clock.millis() - analysisStartTimeMS;
-    if (analysisEndTimeMS >= MIN_TOTAL_ANALYSIS_TIME_TO_REPORT_MS && !recordedOrderedExecutionTime.isEmpty()) {
-      LOG.info("{}{}{}", message, System.lineSeparator(), toString());
+    if (LOG.isInfoEnabled() && analysisEndTimeMS >= MIN_TOTAL_ANALYSIS_TIME_TO_REPORT_MS && !recordedOrderedExecutionTime.isEmpty()) {
+      LOG.info("{}{}{}", message, System.lineSeparator(), this);
     }
   }
 
