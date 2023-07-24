@@ -1,20 +1,65 @@
 <h2>Why is this an issue?</h2>
-<p>It is the sign, rather than the magnitude of the value returned from <code>compareTo</code> that matters. Returning <code>Integer.MIN_VALUE</code>
-does <em>not</em> convey a higher degree of inequality, and doing so can cause errors because the return value of <code>compareTo</code> is sometimes
-inversed, with the expectation that negative values become positive. However, inversing <code>Integer.MIN_VALUE</code> yields
-<code>Integer.MIN_VALUE</code> rather than <code>Integer.MAX_VALUE</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public int compareTo(MyClass) {
+<p>The <code>Comparable.compareTo</code> method returns a negative integer, zero, or a positive integer to indicate whether the object is less than,
+equal to, or greater than the parameter. The sign of the return value or whether it is zero is what matters, not its magnitude.</p>
+<p>Returning a positive or negative constant value other than the basic ones (-1, 0, or 1) provides no additional information to the caller. Moreover,
+it could potentially confuse code readers who are trying to understand its purpose.</p>
+<h2>How to fix it</h2>
+<p>Replace any positive constant return value with 1. Replace any negative constant return value with -1.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public int compareTo(Name name) {
   if (condition) {
-    return Integer.MIN_VALUE;  // Noncompliant
+    return Integer.MIN_VALUE; // Noncompliant
   }
+}
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-public int compareTo(MyClass) {
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public int compareTo(Name name) {
   if (condition) {
-    return -1;
+    return -1; // Compliant
   }
+}
 </pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+public int compareTo(Name name) {
+  if (condition) {
+    return 42; // Noncompliant
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+public int compareTo(Name name) {
+  if (condition) {
+    return 1; // Compliant
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<p>It is compliant to return other values than -1, 0 or 1 if they are not constants.</p>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+public int compareTo(Name name) {
+  if (condition) {
+    return 42; // Noncompliant
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+public int compareTo(Name name) {
+  if (condition) {
+    return hashCode() - name.hashCode(); // Compliant, not a constant
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html#compareTo-T-">Java SE 8 API Specification:
+  Comparable.compareTo</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html#MIN_VALUE">Java SE 8 API Specification: Integer.MIN_VALUE</a> </li>
+</ul>
 
