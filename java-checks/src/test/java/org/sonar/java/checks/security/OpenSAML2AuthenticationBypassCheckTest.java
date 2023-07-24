@@ -22,14 +22,14 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class OpenSAML2AuthenticationBypassCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/OpenSAML2AuthenticationBypassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/OpenSAML2AuthenticationBypassCheck.java"))
       .withCheck(new OpenSAML2AuthenticationBypassCheck())
       .verifyIssues();
   }

@@ -22,14 +22,14 @@ package org.sonar.java.checks.spring;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SpringRequestMappingMethodCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/spring/SpringRequestMappingMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/SpringRequestMappingMethodCheck.java"))
       .withCheck(new SpringRequestMappingMethodCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class SpringRequestMappingMethodCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/spring/SpringRequestMappingMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/SpringRequestMappingMethodCheck.java"))
       .withCheck(new SpringRequestMappingMethodCheck())
       .withoutSemantic()
       .verifyNoIssues();

@@ -79,9 +79,9 @@ public class ExecutionTimeReport {
   public void end() {
     long currentAnalysisTime = clock.millis() - currentFileStartTimeMS;
     if (LOG.isTraceEnabled()) {
-      LOG.trace("Analysis time of " + currentFile + " (" + currentAnalysisTime + "ms)");
+      LOG.trace("Analysis time of {} ({}ms)", currentFile, currentAnalysisTime);
     } else if (currentAnalysisTime >= MIN_REPORTED_ANALYSIS_TIME_MS && LOG.isDebugEnabled()) {
-      LOG.debug("Analysis time of " + currentFile + " (" + currentAnalysisTime + "ms)");
+      LOG.debug("Analysis time of {} ({}ms)", currentFile, currentAnalysisTime);
     }
     if (currentAnalysisTime >= minRecordedOrderedExecutionTime) {
       long currentFileLengthInBytes;
@@ -117,8 +117,8 @@ public class ExecutionTimeReport {
       end();
     }
     long analysisEndTimeMS = clock.millis() - analysisStartTimeMS;
-    if (analysisEndTimeMS >= MIN_TOTAL_ANALYSIS_TIME_TO_REPORT_MS && !recordedOrderedExecutionTime.isEmpty()) {
-      LOG.info(message + System.lineSeparator() + toString());
+    if (LOG.isInfoEnabled() && analysisEndTimeMS >= MIN_TOTAL_ANALYSIS_TIME_TO_REPORT_MS && !recordedOrderedExecutionTime.isEmpty()) {
+      LOG.info("{}{}{}", message, System.lineSeparator(), this);
     }
   }
 

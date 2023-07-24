@@ -162,7 +162,9 @@ public class JavaAstScanner {
 
   void logMisconfiguredVersion(String inputFile, JavaVersion javaVersion) {
     if (!reportedMisconfiguredVersion) {
-      LOG.warn(String.format(LOG_WARN_MISCONFIGURED_JAVA_VERSION, inputFile, JavaVersion.SOURCE_VERSION, javaVersion.asInt()));
+      if (LOG.isWarnEnabled()) {
+        LOG.warn(String.format(LOG_WARN_MISCONFIGURED_JAVA_VERSION, inputFile, JavaVersion.SOURCE_VERSION, javaVersion.asInt()));
+      }
       reportedMisconfiguredVersion = true;
     }
   }

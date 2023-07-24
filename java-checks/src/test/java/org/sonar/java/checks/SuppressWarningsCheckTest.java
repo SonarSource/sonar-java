@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SuppressWarningsCheckTest {
 
@@ -69,7 +69,7 @@ class SuppressWarningsCheckTest {
   @Test
   void former_squid_repository_keys_are_still_supported() throws Exception {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SuppressWarningsCheck/former_squid_rule_keys.java"))
+      .onFile(mainCodeSourcesPath("checks/SuppressWarningsCheck/former_squid_rule_keys.java"))
       .withCheck(getCheck("squid:S1068, java:S115"))
       .verifyIssues();
   }

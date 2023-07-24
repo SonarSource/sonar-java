@@ -121,7 +121,7 @@ public class PmdXmlReportReader {
       issueMessage = new StringBuilder();
     } catch (RuntimeException e) {
       int lineNumber = element.getLocation().getLineNumber();
-      LOG.warn("Can't import issue at line " + lineNumber + " in " + reportFile + ": " + e.getMessage());
+      LOG.warn("Can't import issue at line {} in {}: {}", lineNumber, reportFile, e.getMessage());
       issue = null;
     }
   }

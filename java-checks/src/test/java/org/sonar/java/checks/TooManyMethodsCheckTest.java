@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class TooManyMethodsCheckTest {
 
@@ -32,7 +32,7 @@ class TooManyMethodsCheckTest {
     TooManyMethodsCheck check = new TooManyMethodsCheck();
     check.maximumMethodThreshold = 4;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/TooManyMethodsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TooManyMethodsCheck.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -43,7 +43,7 @@ class TooManyMethodsCheckTest {
     check.maximumMethodThreshold = 4;
     check.countNonPublic = false;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/TooManyMethodsCheckOnlyPublic.java"))
+      .onFile(mainCodeSourcesPath("checks/TooManyMethodsCheckOnlyPublic.java"))
       .withCheck(check)
       .verifyIssues();
   }

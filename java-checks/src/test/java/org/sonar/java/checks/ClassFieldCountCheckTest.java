@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ClassFieldCountCheckTest {
 
@@ -31,7 +31,7 @@ class ClassFieldCountCheckTest {
   @Test
   void simple_case() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ClassFieldCountCheck/SimpleDefaultCase.java"))
+      .onFile(mainCodeSourcesPath("checks/ClassFieldCountCheck/SimpleDefaultCase.java"))
       .withCheck(new ClassFieldCountCheck())
       .verifyIssues();
   }

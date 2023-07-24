@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class DateFormatWeekYearCheckTest {
 
   @Test
   void test() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(testSourcesPath("/checks/DateFormatWeekYearCheck.java"))
+      .onFile(mainCodeSourcesPath("/checks/DateFormatWeekYearCheck.java"))
       .withCheck(new DateFormatWeekYearCheck())
       .withQuickFixes()
       .verifyIssues();

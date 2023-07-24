@@ -294,6 +294,22 @@ class JavaAstScannerTest {
   }
 
   @Test
+  void remove_info_ro_warning_log_related_to_module_info() {
+    logTester.setLevel(Level.ERROR);
+    scanWithJavaVersion(8,
+      Arrays.asList(
+        TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java"),
+        TestUtils.inputFile("src/test/resources/module-info.java")
+      ));
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
+    assertThat(logTester.logs(Level.WARN)).isEmpty();
+    assertThat(logTester.logs(Level.ERROR)).containsExactly(
+      "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
+      "Parse error at line 3 column 12: Switch Expressions are supported from Java 14 onwards only"
+    );
+  }
+
+  @Test
   void test_module_info_no_warning_with_recent_java_version() {
     scanWithJavaVersion(16,
       Arrays.asList(

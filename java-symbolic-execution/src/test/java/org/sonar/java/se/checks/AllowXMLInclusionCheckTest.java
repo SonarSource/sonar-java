@@ -36,7 +36,7 @@ class AllowXMLInclusionCheckTest {
   @Test
   void document_builder_factory() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_DocumentBuilderFactory.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_DocumentBuilderFactory.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -45,7 +45,7 @@ class AllowXMLInclusionCheckTest {
   @Test
   void sax_builder() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SAXBuilder.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SAXBuilder.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -54,7 +54,7 @@ class AllowXMLInclusionCheckTest {
   @Test
   void sax_parser_factory() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SAXParserFactory.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SAXParserFactory.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -63,7 +63,7 @@ class AllowXMLInclusionCheckTest {
   @Test
   void sax_reader() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SAXReader.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SAXReader.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -72,7 +72,7 @@ class AllowXMLInclusionCheckTest {
   @Test
   void schema_factory() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SchemaFactory.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SchemaFactory.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -81,7 +81,7 @@ class AllowXMLInclusionCheckTest {
   @Test
   void transformer_factory() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_TransformerFactory.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_TransformerFactory.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -90,7 +90,7 @@ class AllowXMLInclusionCheckTest {
   @Test
   void xml_input_factory() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_XMLInputFactory.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_XMLInputFactory.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

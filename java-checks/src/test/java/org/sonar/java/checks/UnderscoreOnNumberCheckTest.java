@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class UnderscoreOnNumberCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/UnderscoreOnNumberCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/UnderscoreOnNumberCheck.java"))
       .withCheck(new UnderscoreOnNumberCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class UnderscoreOnNumberCheckTest {
   @Test
   void test_java_6() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/UnderscoreOnNumberCheck_java6.java"))
+      .onFile(mainCodeSourcesPath("checks/UnderscoreOnNumberCheck_java6.java"))
       .withCheck(new UnderscoreOnNumberCheck())
       .withJavaVersion(6)
       .verifyNoIssues();

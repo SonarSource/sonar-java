@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class DebugFeatureEnabledCheckTest {
 
@@ -43,7 +43,7 @@ class DebugFeatureEnabledCheckTest {
   @Test
   void testPrintStackTrace() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/DebugFeatureEnabledCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/DebugFeatureEnabledCheck.java"))
       .withCheck(new DebugFeatureEnabledCheck())
       .verifyIssues();
   }

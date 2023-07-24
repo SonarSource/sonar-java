@@ -29,7 +29,7 @@ class DenialOfServiceXMLCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/DenialOfServiceXMLCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/DenialOfServiceXMLCheck.java"))
       .withChecks(new XxeProcessingCheck(),
         new DenialOfServiceXMLCheck())
       .withClassPath(SETestUtils.CLASS_PATH)

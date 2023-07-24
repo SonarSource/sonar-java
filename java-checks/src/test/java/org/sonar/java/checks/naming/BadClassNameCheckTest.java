@@ -22,7 +22,7 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BadClassNameCheckTest {
 
@@ -31,7 +31,7 @@ class BadClassNameCheckTest {
   @Test
   void classes() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/naming/BadClassNameNoncompliant.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/BadClassNameNoncompliant.java"))
       .withCheck(CHECK)
       .verifyIssues();
   }
@@ -39,7 +39,7 @@ class BadClassNameCheckTest {
   @Test
   void records() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/naming/BadRecordNameNoncompliant.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/BadRecordNameNoncompliant.java"))
       .withCheck(CHECK)
       .verifyIssues();
   }
@@ -49,7 +49,7 @@ class BadClassNameCheckTest {
     BadClassNameCheck check = new BadClassNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/naming/BadClassName.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/BadClassName.java"))
       .withCheck(check)
       .verifyNoIssues();
   }

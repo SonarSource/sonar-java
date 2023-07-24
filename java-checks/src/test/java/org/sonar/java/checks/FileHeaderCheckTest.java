@@ -26,7 +26,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class FileHeaderCheckTest {
 
@@ -35,70 +35,70 @@ class FileHeaderCheckTest {
     FileHeaderCheck check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2005";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Class1.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class1.java"))
       .withCheck(check)
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 20\\d\\d";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Class1.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class1.java"))
       .withCheck(check)
       .verifyIssueOnFile("Add or update the header of this file.");
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2005";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Class2.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class2.java"))
       .withCheck(check)
       .verifyIssueOnFile("Add or update the header of this file.");
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Class2.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class2.java"))
       .withCheck(check)
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\n// foo";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Class2.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class2.java"))
       .withCheck(check)
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\r\n// foo";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Class2.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class2.java"))
       .withCheck(check)
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\r// foo";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Class2.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class2.java"))
       .withCheck(check)
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\r\r// foo";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Class2.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class2.java"))
       .withCheck(check)
       .verifyIssueOnFile("Add or update the header of this file.");
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\n// foo\n\n\n\n\n\n\n\n\n\ngfoo";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Class2.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class2.java"))
       .withCheck(check)
       .verifyIssueOnFile("Add or update the header of this file.");
 
     check = new FileHeaderCheck();
     check.headerFormat = "/*foo http://www.example.org*/";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Class3.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class3.java"))
       .withCheck(check)
       .verifyNoIssues();
   }
@@ -109,12 +109,12 @@ class FileHeaderCheckTest {
     check.headerFormat = "^// copyright \\d\\d\\d";
     check.isRegularExpression = true;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Regex1.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Regex1.java"))
       .withCheck(check)
       .verifyIssueOnFile("Add or update the header of this file.");
     // Check that the regular expression is compiled once
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Regex1.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Regex1.java"))
       .withCheck(check)
       .verifyIssueOnFile("Add or update the header of this file.");
 
@@ -123,7 +123,7 @@ class FileHeaderCheckTest {
     check.isRegularExpression = true;
 
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Regex2.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Regex2.java"))
       .withCheck(check)
       .verifyIssueOnFile("Add or update the header of this file.");
 
@@ -131,7 +131,7 @@ class FileHeaderCheckTest {
     check.headerFormat = "// copyright \\d{4}\\r?\\n// mycompany";
     check.isRegularExpression = true;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Regex3.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Regex3.java"))
       .withCheck(check)
       .verifyNoIssues();
 
@@ -139,7 +139,7 @@ class FileHeaderCheckTest {
     check.headerFormat = "// copyright \\d{4}\\n// mycompany";
     check.isRegularExpression = true;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileHeaderCheck/Regex4.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Regex4.java"))
       .withCheck(check)
       .verifyIssueOnFile("Add or update the header of this file.");
   }

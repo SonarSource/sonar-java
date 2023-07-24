@@ -22,19 +22,19 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class UserEnumerationCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/UserEnumerationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/UserEnumerationCheck.java"))
       .withCheck(new UserEnumerationCheck())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/UserEnumerationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/UserEnumerationCheck.java"))
       .withCheck(new UserEnumerationCheck())
       .withoutSemantic()
       .verifyNoIssues();

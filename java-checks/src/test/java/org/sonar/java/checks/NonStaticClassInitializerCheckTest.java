@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class NonStaticClassInitializerCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/NonStaticClassInitializerCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NonStaticClassInitializerCheck.java"))
       .withCheck(new NonStaticClassInitializerCheck())
       .verifyIssues();
   }

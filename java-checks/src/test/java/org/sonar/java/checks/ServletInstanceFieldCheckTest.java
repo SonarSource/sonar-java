@@ -23,18 +23,18 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ServletInstanceFieldCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ServletInstanceFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheck.java"))
       .withCheck(new ServletInstanceFieldCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ServletInstanceFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheck.java"))
       .withCheck(new ServletInstanceFieldCheck())
       .withoutSemantic()
       .verifyNoIssues();

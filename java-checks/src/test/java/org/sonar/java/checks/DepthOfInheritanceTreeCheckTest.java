@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class DepthOfInheritanceTreeCheckTest {
 
   @Test
   void defaults() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckOk.java"))
+      .onFile(mainCodeSourcesPath("checks/DepthOfInheritanceTreeCheckOk.java"))
       .withCheck(new DepthOfInheritanceTreeCheck())
       .verifyNoIssues();
   }
@@ -40,7 +40,7 @@ class DepthOfInheritanceTreeCheckTest {
     DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(2);
 
-    String filename = testSourcesPath("checks/DepthOfInheritanceTreeCheck.java");
+    String filename = mainCodeSourcesPath("checks/DepthOfInheritanceTreeCheck.java");
 
     CheckVerifier.newVerifier()
       .onFile(filename)
@@ -61,7 +61,7 @@ class DepthOfInheritanceTreeCheckTest {
     check.setFilteredClasses("java.lang.Object");
 
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckFiltered.java"))
+      .onFile(mainCodeSourcesPath("checks/DepthOfInheritanceTreeCheckFiltered.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -73,7 +73,7 @@ class DepthOfInheritanceTreeCheckTest {
     check.setFilteredClasses("checks.Dit_C");
 
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckIntermediateMatching.java"))
+      .onFile(mainCodeSourcesPath("checks/DepthOfInheritanceTreeCheckIntermediateMatching.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -83,7 +83,7 @@ class DepthOfInheritanceTreeCheckTest {
     DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(1);
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckFrameworkExclusion.java"))
+      .onFile(mainCodeSourcesPath("checks/DepthOfInheritanceTreeCheckFrameworkExclusion.java"))
       .withCheck(check)
       .verifyIssues();
 

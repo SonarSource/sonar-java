@@ -22,13 +22,13 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class StringMethodsWithLocaleCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StringMethodsWithLocaleCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringMethodsWithLocaleCheck.java"))
       .withCheck(new StringMethodsWithLocaleCheck())
       .verifyIssues();
   }

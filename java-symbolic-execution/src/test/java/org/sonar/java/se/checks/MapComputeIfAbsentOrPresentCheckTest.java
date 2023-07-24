@@ -24,14 +24,14 @@ import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class MapComputeIfAbsentOrPresentCheckTest {
 
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheck.java"))
       .withCheck(new MapComputeIfAbsentOrPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

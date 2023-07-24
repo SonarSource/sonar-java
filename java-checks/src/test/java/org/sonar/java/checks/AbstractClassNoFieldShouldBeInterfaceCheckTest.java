@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class AbstractClassNoFieldShouldBeInterfaceCheckTest {
 
@@ -43,7 +43,7 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   @Test
   void test_with_java_7() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath(TEST_FILE))
+      .onFile(mainCodeSourcesPath(TEST_FILE))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withJavaVersion(7)
       .verifyNoIssues();
@@ -52,7 +52,7 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   @Test
   void test_with_java_8() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath(TEST_FILE))
+      .onFile(mainCodeSourcesPath(TEST_FILE))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withJavaVersion(8)
       .verifyIssues();

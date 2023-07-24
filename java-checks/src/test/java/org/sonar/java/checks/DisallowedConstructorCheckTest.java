@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class DisallowedConstructorCheckTest {
 
@@ -43,7 +43,7 @@ class DisallowedConstructorCheckTest {
     disallowedConstructorCheck.setClassName("checks.DisallowedConstructorCheck.A");
     disallowedConstructorCheck.setAllOverloads(true);
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DisallowedConstructorCheck/detected_all_overload.java"))
+      .onFile(mainCodeSourcesPath("checks/DisallowedConstructorCheck/detected_all_overload.java"))
       .withCheck(disallowedConstructorCheck)
       .verifyIssues();
   }

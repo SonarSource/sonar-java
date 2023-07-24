@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class EmptyLineRegexCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/EmptyLineRegexCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/EmptyLineRegexCheck.java"))
       .withCheck(new EmptyLineRegexCheck())
       .verifyIssues();
   }

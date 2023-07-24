@@ -22,18 +22,18 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ConstructorInjectionCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ConstructorInjectionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ConstructorInjectionCheck.java"))
       .withCheck(new ConstructorInjectionCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ConstructorInjectionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ConstructorInjectionCheck.java"))
       .withCheck(new ConstructorInjectionCheck())
       .withoutSemantic()
       .verifyNoIssues();

@@ -22,13 +22,13 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class StaticFieldUpdateInConstructorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StaticFieldUpdateInConstructorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StaticFieldUpdateInConstructorCheck.java"))
       .withCheck(new StaticFieldUpdateInConstructorCheck())
       .verifyIssues();
   }

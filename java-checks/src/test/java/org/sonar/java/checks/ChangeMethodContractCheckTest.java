@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ChangeMethodContractCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/S2638_ChangeMethodContractCheck/noPackageInfo/ChangeMethodContractCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/S2638_ChangeMethodContractCheck/noPackageInfo/ChangeMethodContractCheck.java"))
       .withCheck(new ChangeMethodContractCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class ChangeMethodContractCheckTest {
   @Test
   void test_package_level_annotations() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/S2638_ChangeMethodContractCheck/nonNullApi/ChangeMethodContractCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/S2638_ChangeMethodContractCheck/nonNullApi/ChangeMethodContractCheck.java"))
       .withCheck(new ChangeMethodContractCheck())
       .verifyIssues();
   }
@@ -46,7 +46,7 @@ class ChangeMethodContractCheckTest {
   @Test
   void test_package_level_annotations_nullable_api() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/S2638_ChangeMethodContractCheck/nullableApi/ChangeMethodContractCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/S2638_ChangeMethodContractCheck/nullableApi/ChangeMethodContractCheck.java"))
       .withCheck(new ChangeMethodContractCheck())
       .verifyIssues();
   }

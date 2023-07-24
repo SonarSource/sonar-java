@@ -23,13 +23,13 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class VisibleForTestingUsageCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
+      .onFile(mainCodeSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
       .withCheck(new VisibleForTestingUsageCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class VisibleForTestingUsageCheckTest {
   @Test
   void test_no_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
+      .onFile(mainCodeSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
       .withCheck(new VisibleForTestingUsageCheck())
       .withoutSemantic()
       .verifyNoIssues();

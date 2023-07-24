@@ -35,14 +35,6 @@ public class TestUtils {
   private static final String NON_COMPILING_TEST_SOURCES_DIR = PROJECT_LOCATION + "src/main/files/non-compiling/";
 
   /**
-   * @deprecated use {@link #mainCodeSourcesPath(String)}, {@link #testCodeSourcesPath(String)} instead
-   */
-  @Deprecated(forRemoval = true)
-  public static String testSourcesPath(String path) {
-    return getFileFrom(path, MAIN_CODE_SOURCES_DIR);
-  }
-
-  /**
    * To be used when testing rules targeting MAIN code.
    */
   public static String mainCodeSourcesPath(String path) {

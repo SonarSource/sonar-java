@@ -23,7 +23,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class LDAPAuthenticatedConnectionCheckTest {
 
@@ -33,7 +33,7 @@ class LDAPAuthenticatedConnectionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/LDAPAuthenticatedConnectionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/LDAPAuthenticatedConnectionCheck.java"))
       .withCheck(new LDAPAuthenticatedConnectionCheck())
       // FIXME should not requires an empty classpath
       .withClassPath(Collections.emptyList())

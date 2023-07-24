@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class LongBitsToDoubleOnIntCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/LongBitsToDoubleOnIntCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/LongBitsToDoubleOnIntCheck.java"))
       .withCheck(new LongBitsToDoubleOnIntCheck())
       .verifyIssues();
   }

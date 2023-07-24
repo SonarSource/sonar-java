@@ -25,14 +25,14 @@ import org.sonar.java.se.utils.SETestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class LocksNotUnlockedCheckTest {
 
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheck.java"))
       .withCheck(new LocksNotUnlockedCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -41,7 +41,7 @@ class LocksNotUnlockedCheckTest {
   @Test
   void object_constraint_cache_issues() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheckCache.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheckCache.java"))
       .withCheck(new LocksNotUnlockedCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SimpleClassNameCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SimpleClassNameCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SimpleClassNameCheck.java"))
       .withCheck(new SimpleClassNameCheck())
       .verifyIssues();
   }
@@ -46,7 +46,7 @@ class SimpleClassNameCheckTest {
   @Test
   void test_file_with_wildcard_import() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SimpleClassNameCheckWithWildCard.java"))
+      .onFile(mainCodeSourcesPath("checks/SimpleClassNameCheckWithWildCard.java"))
       .withCheck(new SimpleClassNameCheck())
       .verifyNoIssues();
   }

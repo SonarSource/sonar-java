@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class AnnotationDefaultArgumentCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AnnotationDefaultArgumentCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AnnotationDefaultArgumentCheck.java"))
       .withCheck(new AnnotationDefaultArgumentCheck())
       .verifyIssues();
   }

@@ -24,14 +24,14 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ImmediateReverseBoxingCheckTest {
 
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/ImmediateReverseBoxingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ImmediateReverseBoxingCheck.java"))
       .withCheck(new ImmediateReverseBoxingCheck())
       .withQuickFixes()
       .verifyIssues();

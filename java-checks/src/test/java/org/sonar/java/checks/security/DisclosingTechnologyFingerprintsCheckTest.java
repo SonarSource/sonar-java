@@ -22,14 +22,14 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class DisclosingTechnologyFingerprintsCheckTest {
   
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/DisclosingTechnologyFingerprints.java"))
+      .onFile(mainCodeSourcesPath("checks/security/DisclosingTechnologyFingerprints.java"))
       .withCheck(new DisclosingTechnologyFingerprintsCheck())
       .verifyIssues();
   }

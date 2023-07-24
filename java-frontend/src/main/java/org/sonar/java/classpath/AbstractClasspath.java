@@ -100,8 +100,8 @@ public abstract class AbstractClasspath {
     LOG.debug("Property '{}' set with: {}", ClasspathProperties.SONAR_JAVA_JDK_HOME, path);
     File file = new File(path);
     if (!file.exists() || !file.isDirectory()) {
-      String warning = "Invalid value for '%s' property, defaulting to runtime JDK.%nConfigured location does not exists: '%s'";
-      LOG.warn(String.format(warning, ClasspathProperties.SONAR_JAVA_JDK_HOME, file.getAbsolutePath()));
+      LOG.warn("Invalid value for '{}' property, defaulting to runtime JDK.{}Configured location does not exists: '{}'",
+        ClasspathProperties.SONAR_JAVA_JDK_HOME, System.lineSeparator(), file.getAbsolutePath());
       return Optional.empty();
     }
     return Optional.of(file);
@@ -123,7 +123,7 @@ public abstract class AbstractClasspath {
       for (String pathPattern : fileNames) {
         Set<File> libraryFilesForPattern = getFilesForPattern(baseDir.toPath(), pathPattern, isLibraryProperty);
         if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaSources) {
-          LOG.error("Invalid value for '" + property + "' property.");
+          LOG.error("Invalid value for '{}' property.", property);
           String message = "No files nor directories matching '" + pathPattern + "'";
           throw new IllegalStateException(message);
         }
@@ -201,7 +201,7 @@ public abstract class AbstractClasspath {
     if (pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip") || pathPattern.endsWith(".aar")) {
       return Collections.singleton(file);
     }
-    LOG.debug("File " + file.getAbsolutePath() + " was ignored from java classpath");
+    LOG.debug("File {} was ignored from java classpath", file.getAbsolutePath());
     validateLibraries = false;
     return Collections.emptySet();
   }

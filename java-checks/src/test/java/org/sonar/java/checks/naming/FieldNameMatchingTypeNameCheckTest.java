@@ -22,14 +22,14 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class FieldNameMatchingTypeNameCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/naming/FieldNameMatchingTypeNameCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/FieldNameMatchingTypeNameCheck.java"))
       .withCheck(new FieldNameMatchingTypeNameCheck())
       .verifyIssues();
   }

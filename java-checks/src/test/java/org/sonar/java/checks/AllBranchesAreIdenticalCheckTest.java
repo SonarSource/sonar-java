@@ -24,14 +24,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class AllBranchesAreIdenticalCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AllBranchesAreIdentical.java"))
+      .onFile(mainCodeSourcesPath("checks/AllBranchesAreIdentical.java"))
       .withCheck(new AllBranchesAreIdenticalCheck())
       .verifyIssues();
   }

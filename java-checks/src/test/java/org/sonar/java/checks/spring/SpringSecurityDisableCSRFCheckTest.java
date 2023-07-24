@@ -22,14 +22,14 @@ package org.sonar.java.checks.spring;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SpringSecurityDisableCSRFCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/spring/SpringSecurityDisableCSRFCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/SpringSecurityDisableCSRFCheck.java"))
       .withCheck(new SpringSecurityDisableCSRFCheck())
       .verifyIssues();
   }

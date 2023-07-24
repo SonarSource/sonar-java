@@ -72,7 +72,7 @@ public class SurefireJavaParser {
   private static File[] getReports(File dir, boolean reportDirSetByUser) {
     if (!dir.isDirectory()) {
       if(reportDirSetByUser) {
-        LOGGER.error("Reports path not found or is not a directory: " + dir.getAbsolutePath());
+        LOGGER.error("Reports path not found or is not a directory: {}", dir.getAbsolutePath());
       }
       return new File[0];
     }
@@ -82,7 +82,7 @@ public class SurefireJavaParser {
       unitTestResultFiles = findXMLFilesStartingWith(dir, "TESTS-");
     }
     if(unitTestResultFiles.length == 0) {
-      LOGGER.warn("Reports path contains no files matching TEST-.*.xml : "+dir.getAbsolutePath());
+      LOGGER.warn("Reports path contains no files matching TEST-.*.xml : {}", dir.getAbsolutePath());
     }
     return unitTestResultFiles;
   }

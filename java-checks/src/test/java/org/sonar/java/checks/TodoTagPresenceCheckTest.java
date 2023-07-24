@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class TodoTagPresenceCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/TodoTagPresenceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TodoTagPresenceCheck.java"))
       .withCheck(new TodoTagPresenceCheck())
       .verifyIssues();
   }

@@ -36,7 +36,7 @@ class TestUtilsTest {
 
   @Test
   void checkTestResourcesPath() {
-    assertThat(TestUtils.testSourcesPath("Dummy.java"))
+    assertThat(TestUtils.mainCodeSourcesPath("Dummy.java"))
       .endsWith("Dummy.java");
   }
 
@@ -62,7 +62,7 @@ class TestUtilsTest {
   void checkNonExistingTestResourcesPath() {
     assertThrows(IllegalStateException.class, () -> TestUtils.nonCompilingTestSourcesPath("NonExisting.java"),
       "Path 'NonExisting.java' should exist.");
-    assertThrows(IllegalStateException.class, () -> TestUtils.testSourcesPath("NonExisting.java"),
+    assertThrows(IllegalStateException.class, () -> TestUtils.mainCodeSourcesPath("NonExisting.java"),
       "Path 'NonExisting.java' should exist.");
   }
 

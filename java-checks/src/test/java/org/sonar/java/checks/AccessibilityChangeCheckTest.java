@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class AccessibilityChangeCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AccessibilityChangeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AccessibilityChangeCheck.java"))
       .withCheck(new AccessibilityChangeCheck())
       .withJavaVersion(15)
       .verifyIssues();
@@ -39,7 +39,7 @@ class AccessibilityChangeCheckTest {
   @Test
   void test_with_record_support() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AccessibilityChangeCheckWithRecordSupport.java"))
+      .onFile(mainCodeSourcesPath("checks/AccessibilityChangeCheckWithRecordSupport.java"))
       .withCheck(new AccessibilityChangeCheck())
       .withJavaVersion(16)
       .verifyIssues();

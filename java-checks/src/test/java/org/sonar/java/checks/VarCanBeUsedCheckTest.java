@@ -24,11 +24,11 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class VarCanBeUsedCheckTest {
 
-  private static final String TEST_FILE = testSourcesPath("checks/VarCanBeUsedCheck.java");
+  private static final String TEST_FILE = mainCodeSourcesPath("checks/VarCanBeUsedCheck.java");
 
   @Test
   void test() {

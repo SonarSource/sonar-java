@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ModulusEqualityCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ModulusEqualityCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ModulusEqualityCheck.java"))
       .withCheck(new ModulusEqualityCheck())
       .verifyIssues();
   }

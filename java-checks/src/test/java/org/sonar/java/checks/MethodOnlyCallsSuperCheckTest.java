@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class MethodOnlyCallsSuperCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
       .withCheck(new MethodOnlyCallsSuperCheck())
       .verifyIssues();
 
@@ -43,7 +43,7 @@ class MethodOnlyCallsSuperCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
       .withCheck(new MethodOnlyCallsSuperCheck())
       .withoutSemantic()
       .verifyIssues();

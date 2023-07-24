@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class TestsInSeparateFolderCheckTest {
 
   @Test
   void tests_in_production() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/TestsInProductionFile.java"))
+      .onFile(mainCodeSourcesPath("checks/TestsInProductionFile.java"))
       .withCheck(new TestsInSeparateFolderCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class TestsInSeparateFolderCheckTest {
   @Test
   void no_tests_in_production() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/NoTestsInProductionFile.java"))
+      .onFile(mainCodeSourcesPath("checks/NoTestsInProductionFile.java"))
       .withCheck(new TestsInSeparateFolderCheck())
       .verifyNoIssues();
   }

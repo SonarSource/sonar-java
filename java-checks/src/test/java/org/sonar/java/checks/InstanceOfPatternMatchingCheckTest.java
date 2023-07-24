@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class InstanceOfPatternMatchingCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/InstanceOfPatternMatching.java"))
+      .onFile(mainCodeSourcesPath("checks/InstanceOfPatternMatching.java"))
       .withCheck(new InstanceOfPatternMatchingCheck())
       .withJavaVersion(16)
       .verifyIssues();
@@ -39,7 +39,7 @@ class InstanceOfPatternMatchingCheckTest {
   @Test
   void test_no_issues_on_earlier_versions() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/InstanceOfPatternMatching.java"))
+      .onFile(mainCodeSourcesPath("checks/InstanceOfPatternMatching.java"))
       .withCheck(new InstanceOfPatternMatchingCheck())
       .withJavaVersion(15)
       .verifyNoIssues();

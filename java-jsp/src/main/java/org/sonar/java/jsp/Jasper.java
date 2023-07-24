@@ -105,7 +105,8 @@ public class Jasper {
           errorTranspiling = true;
           StringWriter w = new StringWriter();
           e.printStackTrace(new PrintWriter(w));
-          LOG.debug("Error transpiling {}. Error:\n{}", jsp, w.toString());
+          String stackTrace = w.toString();
+          LOG.debug("Error transpiling {}. Error:\n{}", jsp, stackTrace);
         }
       }
       if (errorTranspiling) {

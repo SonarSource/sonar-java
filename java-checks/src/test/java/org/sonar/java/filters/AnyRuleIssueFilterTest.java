@@ -40,11 +40,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class AnyRuleIssueFilterTest {
 
-  private static final InputFile INPUT_FILE = TestUtils.inputFile(testSourcesPath("filters/AnyRuleIssueFilter.java"));
+  private static final InputFile INPUT_FILE = TestUtils.inputFile(mainCodeSourcesPath("filters/AnyRuleIssueFilter.java"));
   private static final String REPOSITORY_KEY = "walrus";
   private static final String RULE_KEY = "S42";
   private AnyRuleIssueFilter filter;

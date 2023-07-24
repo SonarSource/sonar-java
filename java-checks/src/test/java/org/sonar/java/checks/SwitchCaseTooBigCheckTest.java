@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SwitchCaseTooBigCheckTest {
 
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SwitchCaseTooBigCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchCaseTooBigCheck.java"))
       .withCheck(new SwitchCaseTooBigCheck())
       .verifyIssues();
   }
@@ -40,7 +40,7 @@ class SwitchCaseTooBigCheckTest {
     SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
     check.max = 6;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SwitchCaseTooBigCheckCustom.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchCaseTooBigCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -50,7 +50,7 @@ class SwitchCaseTooBigCheckTest {
     SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
     check.max = 0;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SwitchCaseTooBigCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchCaseTooBigCheck.java"))
       .withCheck(new SwitchCaseTooBigCheck())
       .verifyIssues();
   }

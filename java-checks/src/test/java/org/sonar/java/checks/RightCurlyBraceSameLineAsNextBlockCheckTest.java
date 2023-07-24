@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class RightCurlyBraceSameLineAsNextBlockCheckTest {
 
   @Test
   void detected() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/RightCurlyBraceSameLineAsNextBlockCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RightCurlyBraceSameLineAsNextBlockCheck.java"))
       .withCheck(new RightCurlyBraceSameLineAsNextBlockCheck())
       .withQuickFixes()
       .verifyIssues();

@@ -22,11 +22,11 @@ package org.sonar.java.checks.spring;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SpringConfigurationWithAutowiredFieldsCheckTest {
 
-  private static final String FILE = testSourcesPath("checks/spring/SpringConfigurationWithAutowiredFieldsCheck.java");
+  private static final String FILE = mainCodeSourcesPath("checks/spring/SpringConfigurationWithAutowiredFieldsCheck.java");
 
   @Test
   void test() {

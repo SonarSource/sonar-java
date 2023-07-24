@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ThreadLocalWithInitialCheckTest {
   @Test
@@ -36,7 +36,7 @@ class ThreadLocalWithInitialCheckTest {
   @Test
   void no_issue_prior_to_java_8() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ThreadLocalWithInitialCheck_java7.java"))
+      .onFile(mainCodeSourcesPath("checks/ThreadLocalWithInitialCheck_java7.java"))
       .withCheck(new ThreadLocalWithInitialCheck())
       .withJavaVersion(7)
       .verifyNoIssues();

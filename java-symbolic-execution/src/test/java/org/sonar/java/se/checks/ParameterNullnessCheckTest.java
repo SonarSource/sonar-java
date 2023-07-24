@@ -28,7 +28,7 @@ class ParameterNullnessCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/ParameterNullnessCheck/noDefault/ParameterNullnessCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/ParameterNullnessCheck/noDefault/ParameterNullnessCheck.java"))
       .withCheck(new ParameterNullnessCheck())
       .verifyIssues();
   }
@@ -36,7 +36,7 @@ class ParameterNullnessCheckTest {
   @Test
   void test_package_annotation() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/ParameterNullnessCheck/packageNonNull/ParameterNullnessCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/ParameterNullnessCheck/packageNonNull/ParameterNullnessCheck.java"))
       .withCheck(new ParameterNullnessCheck())
       .verifyIssues();
   }

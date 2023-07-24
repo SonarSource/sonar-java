@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class DeprecatedArgumentsCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DeprecatedArgumentsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/DeprecatedArgumentsCheck.java"))
       .withCheck(new DeprecatedArgumentsCheck())
       .withJavaVersion(9)
       .verifyIssues();
@@ -38,7 +38,7 @@ class DeprecatedArgumentsCheckTest {
   @Test
   void test_java8() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/MissingDeprecatedCheckJava9.java"))
+      .onFile(mainCodeSourcesPath("checks/MissingDeprecatedCheckJava9.java"))
       .withCheck(new DeprecatedArgumentsCheck())
       .withJavaVersion(8)
       .verifyNoIssues();

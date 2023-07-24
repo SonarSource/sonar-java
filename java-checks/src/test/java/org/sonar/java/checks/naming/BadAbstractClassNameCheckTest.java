@@ -22,7 +22,7 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BadAbstractClassNameCheckTest {
 
@@ -30,11 +30,11 @@ class BadAbstractClassNameCheckTest {
   void test() {
     BadAbstractClassNameCheck check = new BadAbstractClassNameCheck();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/naming/BadAbstractClassName.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/BadAbstractClassName.java"))
       .withCheck(check)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/naming/BadAbstractClassName.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/BadAbstractClassName.java"))
       .withCheck(check)
       .verifyIssues();
   }

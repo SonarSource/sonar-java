@@ -28,7 +28,7 @@ class IteratorNextExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("checks/IteratorNextExceptionCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/IteratorNextExceptionCheck.java"))
       .withCheck(new IteratorNextExceptionCheck())
       .verifyIssues();
   }

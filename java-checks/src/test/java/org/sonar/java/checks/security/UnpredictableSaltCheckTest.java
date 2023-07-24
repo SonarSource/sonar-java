@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class UnpredictableSaltCheckTest {
   
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/UnpredictableSaltCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/UnpredictableSaltCheck.java"))
       .withCheck(new UnpredictableSaltCheck())
       .verifyIssues();
   }

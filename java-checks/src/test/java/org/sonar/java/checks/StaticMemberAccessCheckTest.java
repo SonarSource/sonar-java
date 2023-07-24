@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class StaticMemberAccessCheckTest {
 
@@ -33,7 +33,7 @@ class StaticMemberAccessCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath(FILE_NAME))
+      .onFile(mainCodeSourcesPath(FILE_NAME))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
   }
@@ -41,7 +41,7 @@ class StaticMemberAccessCheckTest {
   @Test
   void quick_fixes() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/StaticMemberAccessQuickFixes.java"))
+      .onFile(mainCodeSourcesPath("checks/StaticMemberAccessQuickFixes.java"))
       .withCheck(new StaticMemberAccessCheck())
       .withQuickFixes()
       .verifyIssues();

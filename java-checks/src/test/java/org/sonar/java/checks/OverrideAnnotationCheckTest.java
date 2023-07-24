@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class OverrideAnnotationCheckTest {
 
@@ -39,7 +39,7 @@ class OverrideAnnotationCheckTest {
   @Test
   void quickfixes() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/OverrideAnnotationCheck_QuickFixes.java"))
+      .onFile(mainCodeSourcesPath("checks/OverrideAnnotationCheck_QuickFixes.java"))
       .withCheck(new OverrideAnnotationCheck())
       .withQuickFixes()
       .verifyIssues();

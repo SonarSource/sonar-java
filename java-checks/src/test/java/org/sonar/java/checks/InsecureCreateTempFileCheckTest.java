@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class InsecureCreateTempFileCheckTest {
 
   @Test
   void no_version() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/InsecureCreateTempFileCheck_no_version.java"))
+      .onFile(mainCodeSourcesPath("checks/InsecureCreateTempFileCheck_no_version.java"))
       .withCheck(new InsecureCreateTempFileCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class InsecureCreateTempFileCheckTest {
   @Test
   void java_7() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/InsecureCreateTempFileCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InsecureCreateTempFileCheck.java"))
       .withCheck(new InsecureCreateTempFileCheck())
       .withJavaVersion(7)
       .verifyIssues();

@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class IndentationCheckTest {
 
@@ -47,7 +47,7 @@ class IndentationCheckTest {
   @Test
   void assume_tab_is_indentation_level() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/IndentationCheck_tab.java"))
+      .onFile(mainCodeSourcesPath("checks/IndentationCheck_tab.java"))
       .withCheck(new IndentationCheck())
       .verifyIssues();
   }
@@ -55,7 +55,7 @@ class IndentationCheckTest {
   @Test
   void tolerates_line_breaking_control_characters() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/IndentationCheckWithControlCharacters.java"))
+      .onFile(mainCodeSourcesPath("checks/IndentationCheckWithControlCharacters.java"))
       .withCheck(new IndentationCheck())
       .verifyNoIssues();
   }

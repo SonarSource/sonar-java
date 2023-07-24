@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class EqualsParametersMarkedNonNullCheckTest {
 
   @Test
   void detected() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(testSourcesPath("checks/EqualsParametersMarkedNonNullCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/EqualsParametersMarkedNonNullCheck.java"))
       .withCheck(new EqualsParametersMarkedNonNullCheck())
       .withQuickFixes()
       .verifyIssues();

@@ -23,13 +23,13 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SwitchDefaultLastCaseCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SwitchDefaultLastCaseCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchDefaultLastCaseCheck.java"))
       .withCheck(new SwitchDefaultLastCaseCheck())
       .verifyIssues();
   }

@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class RestrictedIdentifiersUsageCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
       .withCheck(new RestrictedIdentifiersUsageCheck())
       .withJavaVersion(14)
       .verifyIssues();
@@ -48,7 +48,7 @@ class RestrictedIdentifiersUsageCheckTest {
   @Test
   void test_no_version() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
       .withCheck(new RestrictedIdentifiersUsageCheck())
       .verifyIssues();
   }

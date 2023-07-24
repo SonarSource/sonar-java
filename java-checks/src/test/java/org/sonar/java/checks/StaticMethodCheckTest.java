@@ -24,14 +24,14 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class StaticMethodCheckTest {
 
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/StaticMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StaticMethodCheck.java"))
       .withCheck(new StaticMethodCheck())
       .withQuickFixes()
       .verifyIssues();

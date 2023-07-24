@@ -199,7 +199,7 @@ public abstract class JParserConfig {
           InputFile lastInputFile = inputs.get(new File(sourceFilePaths.get(sourceFilePaths.size() - 1)));
           action.accept(lastInputFile, new Result(e));
         } else {
-          LOG.warn("Unexpected " + e.getClass().getName() + ": " + e.getMessage());
+          LOG.warn("Unexpected {}: {}", e.getClass().getName(), e.getMessage());
         }
       } finally {
         // ExecutionTimeReport will not include the parsing time by file when using batch mode.

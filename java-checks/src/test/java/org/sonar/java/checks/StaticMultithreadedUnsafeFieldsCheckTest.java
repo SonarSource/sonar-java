@@ -23,7 +23,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class StaticMultithreadedUnsafeFieldsCheckTest {
 
@@ -33,7 +33,7 @@ class StaticMultithreadedUnsafeFieldsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StaticMultithreadedUnsafeFields.java"))
+      .onFile(mainCodeSourcesPath("checks/StaticMultithreadedUnsafeFields.java"))
       .withCheck(new StaticMultithreadedUnsafeFieldsCheck())
       // FIXME should not requires an empty classpath
       .withClassPath(Collections.emptyList())

@@ -22,14 +22,14 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class WebViewJavaScriptSupportCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/WebViewJavaScriptSupportCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/WebViewJavaScriptSupportCheck.java"))
       .withCheck(new WebViewJavaScriptSupportCheck())
       .verifyIssues();
   }
