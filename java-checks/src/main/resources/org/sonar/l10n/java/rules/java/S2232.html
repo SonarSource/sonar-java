@@ -1,20 +1,41 @@
 <h2>Why is this an issue?</h2>
-<p>There are several reasons to avoid <code>ResultSet.isLast()</code>. First, support for this method is optional for <code>TYPE_FORWARD_ONLY</code>
-result sets. Second, it can be expensive (the driver may need to fetch the next row to answer the question). Finally, the specification is not clear
-on what should be returned when the <code>ResultSet</code> is empty, so some drivers may return the opposite of what is expected.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-stmt.executeQuery("SELECT name, address FROM PERSON");
-ResultSet rs = stmt.getResultSet();
-while (! rs.isLast()) { // Noncompliant
-  // process row
+<p>There are several reasons to avoid using this method:</p>
+<ol>
+  <li> It is optionally available only for result sets of type <code>ResultSet.TYPE_FORWARD_ONLY</code>. Database drivers will throw an exception if
+  not supported. </li>
+  <li> The method can be expensive to execute as the database driver may need to fetch ahead one row to determine whether the current row is the last
+  in the result set. The documentation of the method explicitly mentions this fact. </li>
+  <li> What "the cursor is on the last row" means for an empty <code>ResultSet</code> is unclear. Database drivers may return <code>true</code> or
+  <code>false</code> in this case . </li>
+</ol>
+<p><code>ResultSet.next()</code> is a good alternative to <code>ResultSet.isLast()</code> as it does not have the mentioned issues. It is always
+supported and, as per specification, returns <code>false</code> for empty result sets.</p>
+<h2>How to fix it</h2>
+<p>Refactor your code to use <code>ResultSet.next()</code> instead of <code>ResultSet.isLast()</code>. Be cautious of its different semantics and side
+effects on cursor positioning in the result set. Verify that your program logic is still valid under these side effects and otherwise adjust it.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+ResultSet results = stmt.executeQuery("SELECT name, address FROM PERSON");
+StringBuilder sb = new StringBuilder();
+while (results.next() &amp;&amp; !results.isLast()) { // Noncompliant
+  sb.append(results.getString("name") + ", ");
 }
+sb.append(results.getString("name"));
+String formattedNames = sb.toString();
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-ResultSet rs = stmt.executeQuery("SELECT name, address FROM PERSON");
-while (rs.next()) {
-  // process row
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+ResultSet results = stmt.executeQuery("SELECT name, address FROM PERSON");
+List&lt;String&gt; names = new ArrayList&lt;&gt;();
+while (results.next()) { // Compliant, and program logic refactored
+  names.add(results.getString("name"));
 }
+String formattedNames =  names.stream().collect(Collectors.joining(", "));
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html#isLast--">Java SE 8 API Specification: ResultSet.isLast()</a> </li>
+</ul>
 

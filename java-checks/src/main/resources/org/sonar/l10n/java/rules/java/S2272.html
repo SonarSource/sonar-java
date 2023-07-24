@@ -4,26 +4,30 @@ when the iteration has no more elements. Any other behavior when the iteration i
 <code>Iterator</code>.</p>
 <h3>Noncompliant code example</h3>
 <pre>
-public class MyIterator implements Iterator&lt;String&gt;{
+public class MyIterator implements Iterator&lt;String&gt; {
   ...
-  public String next(){
-    if(!hasNext()){
+  public String next() {
+    if (!hasNext()) {
       return null;
     }
-    ...
+    // ...
   }
 }
 </pre>
 <h3>Compliant solution</h3>
 <pre>
-public class MyIterator implements Iterator&lt;String&gt;{
+public class MyIterator implements Iterator&lt;String&gt; {
   ...
-  public String next(){
-    if(!hasNext()){
+  public String next() {
+    if (!hasNext()) {
       throw new NoSuchElementException();
     }
-    ...
+    // ...
   }
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html#next--">JavaDoc 8 - java.util.Iterator</a> </li>
+</ul>
 

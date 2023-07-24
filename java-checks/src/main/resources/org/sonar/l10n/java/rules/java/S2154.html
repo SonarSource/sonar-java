@@ -1,17 +1,49 @@
 <h2>Why is this an issue?</h2>
-<p>If wrapped primitive values (e.g. <code>Integers</code> and <code>Floats</code>) are used in a ternary operator (e.g. <code>a?b:c</code>), both
-values will be unboxed and coerced to a common type, potentially leading to unexpected results. To avoid this, add an explicit cast to a compatible
-type.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>Using boxed values in a ternary operator does not simply return one operand or the other based on the condition. Instead, the values are unboxed
+and coerced to a common type, which can result in a loss of precision when converting one operand from <code>int</code> to <code>float</code> or from
+<code>long</code> to <code>double</code>.</p>
+<p>While this behavior is expected for arithmetic operations, it may be unexpected for the ternary operator. To avoid confusion or unexpected
+behavior, cast to a compatible type explicitly.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>Cast one of both operands to a common supertype (e.g., <code>Number</code>) to prevent auto-unboxing and, thus, type coercion.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 Integer i = 123456789;
 Float f = 1.0f;
-Number n = condition ? i : f;  // Noncompliant; i is coerced to float. n = 1.23456792E8
+Number n1 = condition ? i : f;  // Noncompliant, unexpected precision loss, n1 = 1.23456792E8
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 Integer i = 123456789;
 Float f = 1.0f;
-Number n = condition ? (Number) i : f;  // n = 123456789
+Number n1 = condition ? (Number) i : f; // Compliant, cast to Number prevents unboxing
+Number n2 = condition ? i : (Number) f; // Compliant, cast to Number prevents unboxing
 </pre>
+<h4>Noncompliant code example</h4>
+<p>If type coercion was your intention, clarify this by casting the operand that would be coerced to the corresponding type explicitly.</p>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+Integer i = 123456789;
+Float f = 1.0f;
+Number n1 = condition ? i : f;  // Noncompliant, unexpected precision loss, n1 = 1.23456792E8
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+Integer i = 123456789;
+Float f = 1.0f;
+Number n = condition ? (float) i : f; // Compliant, intentional type coercion with precision loss
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/op2.html">The Java Tutorials: Equality, Relational, and Conditional
+  Operators</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html">The Java Tutorials: Autoboxing and Unboxing</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-5.html">The Java® Language Specification Java SE 7 Edition: Chapter 5.
+  Conversions and Promotions</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.geeksforgeeks.org/coercion-in-java/">GeeksforGeeks: Coercion in Java</a> </li>
+</ul>
 
