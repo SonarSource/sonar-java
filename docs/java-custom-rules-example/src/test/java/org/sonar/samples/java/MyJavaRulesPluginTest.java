@@ -28,7 +28,7 @@ class MyJavaRulesPluginTest {
 
     @Override
     public Version getApiVersion() {
-      return Version.create(8, 9);
+      return Version.create(9, 9);
     }
 
     @Override
