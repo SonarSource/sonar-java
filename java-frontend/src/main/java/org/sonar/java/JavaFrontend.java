@@ -193,7 +193,7 @@ public class JavaFrontend {
         if (!files.isEmpty()) {
           scanInBatches(context, files);
         } else {
-          LOG.info(String.format("No \"%s\" source files to scan.", context.descriptor()));
+          LOG.info("No \"{}\" source files to scan.", context.descriptor());
         }
       } finally {
         context.endOfAnalysis();
@@ -216,11 +216,11 @@ public class JavaFrontend {
     AnalysisProgress analysisProgress = new AnalysisProgress(allInputFiles.size());
     long batchModeSizeInKB = getBatchModeSizeInKB();
     if (batchModeSizeInKB < 0L || batchModeSizeInKB >= Long.MAX_VALUE / 1_000L) {
-      LOG.info(logUsingBatch + " in a single batch.");
+      LOG.info("{} in a single batch.", logUsingBatch);
       scanBatch(context, allInputFiles, analysisProgress);
     } else {
       long batchSize = batchModeSizeInKB * 1_000L;
-      LOG.info(logUsingBatch + " with batch size " + batchModeSizeInKB + " KB.");
+      LOG.info("{} with batch size {} KB.", logUsingBatch, batchModeSizeInKB);
       BatchGenerator generator = new BatchGenerator(allInputFiles.iterator(), batchSize);
       while (generator.hasNext()) {
         List<InputFile> batch = generator.next();

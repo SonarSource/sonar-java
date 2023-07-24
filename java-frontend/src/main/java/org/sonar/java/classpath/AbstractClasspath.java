@@ -123,7 +123,7 @@ public abstract class AbstractClasspath {
       for (String pathPattern : fileNames) {
         Set<File> libraryFilesForPattern = getFilesForPattern(baseDir.toPath(), pathPattern, isLibraryProperty);
         if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaSources) {
-          LOG.error("Invalid value for '" + property + "' property.");
+          LOG.error("Invalid value for '{}' property.", property);
           String message = "No files nor directories matching '" + pathPattern + "'";
           throw new IllegalStateException(message);
         }
@@ -201,7 +201,7 @@ public abstract class AbstractClasspath {
     if (pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip") || pathPattern.endsWith(".aar")) {
       return Collections.singleton(file);
     }
-    LOG.debug("File " + file.getAbsolutePath() + " was ignored from java classpath");
+    LOG.debug("File {} was ignored from java classpath", file.getAbsolutePath());
     validateLibraries = false;
     return Collections.emptySet();
   }

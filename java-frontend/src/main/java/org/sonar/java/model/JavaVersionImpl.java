@@ -63,9 +63,9 @@ public class JavaVersionImpl implements JavaVersion {
       int versionAsInt = convertJavaVersionString(javaVersion);
       return new JavaVersionImpl(versionAsInt);
     } catch (NumberFormatException e) {
-      LOG.warn("Invalid java version (got \"" + javaVersion + "\"). "
+      LOG.warn("Invalid java version (got \"{}\"). "
         + "The version will be ignored. Accepted formats are \"1.X\", or simply \"X\" "
-        + "(for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)");
+        + "(for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)", javaVersion);
       return new JavaVersionImpl();
     }
   }
@@ -76,9 +76,9 @@ public class JavaVersionImpl implements JavaVersion {
       int versionAsInt = convertJavaVersionString(javaVersion);
       return new JavaVersionImpl(versionAsInt, previewFeaturesEnabled);
     } catch (NumberFormatException e) {
-      LOG.warn("Invalid java version (got \"" + javaVersion + "\"). "
+      LOG.warn("Invalid java version (got \"{}\"). "
         + "The version will be ignored. Accepted formats are \"1.X\", or simply \"X\" "
-        + "(for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)");
+        + "(for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)", javaVersion);
       return new JavaVersionImpl();
     }
   }
