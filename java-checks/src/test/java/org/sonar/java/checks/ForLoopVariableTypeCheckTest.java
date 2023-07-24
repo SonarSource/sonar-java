@@ -24,14 +24,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ForLoopVariableTypeCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ForLoopVariableTypeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ForLoopVariableTypeCheck.java"))
       .withCheck(new ForLoopVariableTypeCheck())
       .verifyIssues();
   }
@@ -39,7 +39,7 @@ class ForLoopVariableTypeCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ForLoopVariableTypeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ForLoopVariableTypeCheck.java"))
       .withCheck(new ForLoopVariableTypeCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();

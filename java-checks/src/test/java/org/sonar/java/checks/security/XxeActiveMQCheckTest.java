@@ -22,14 +22,14 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class XxeActiveMQCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/XxeActiveMQCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/XxeActiveMQCheck.java"))
       .withCheck(new XxeActiveMQCheck())
       .verifyIssues();
   }

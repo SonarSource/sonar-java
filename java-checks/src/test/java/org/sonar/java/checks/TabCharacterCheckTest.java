@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class TabCharacterCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/TabCharacter.java"))
+      .onFile(mainCodeSourcesPath("checks/TabCharacter.java"))
       .withCheck(new TabCharacterCheck())
       .verifyIssueOnFile("Replace all tab characters in this file by sequences of white-spaces.");
   }
@@ -37,7 +37,7 @@ class TabCharacterCheckTest {
   @Test
   void test2() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/NonEmptyFile.java"))
+      .onFile(mainCodeSourcesPath("checks/NonEmptyFile.java"))
       .withCheck(new TabCharacterCheck())
       .verifyNoIssues();
   }

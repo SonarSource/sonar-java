@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class PreparedStatementAndResultSetCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/PreparedStatementAndResultSetCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PreparedStatementAndResultSetCheck.java"))
       .withCheck(new PreparedStatementAndResultSetCheck())
       .verifyIssues();
   }

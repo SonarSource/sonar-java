@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ThreadRunCheckTest {
 
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/ThreadRunCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ThreadRunCheck.java"))
       .withCheck(new ThreadRunCheck())
       .withQuickFixes()
       .verifyIssues();

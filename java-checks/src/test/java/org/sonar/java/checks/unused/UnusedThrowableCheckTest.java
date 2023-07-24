@@ -29,7 +29,7 @@ class UnusedThrowableCheckTest {
   @Test
   void test() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(TestUtils.testSourcesPath("checks/unused/UnusedThrowableCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/unused/UnusedThrowableCheck.java"))
       .withCheck(new UnusedThrowableCheck())
       .withQuickFixes()
       .verifyIssues();

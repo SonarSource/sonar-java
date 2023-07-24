@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class NestedIfStatementsCheckTest {
 
@@ -33,7 +33,7 @@ class NestedIfStatementsCheckTest {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     assertThat(check.max).isEqualTo(3);
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/NestedIfStatementsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NestedIfStatementsCheck.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -43,7 +43,7 @@ class NestedIfStatementsCheckTest {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     check.max = 4;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/NestedIfStatementsCheckCustom.java"))
+      .onFile(mainCodeSourcesPath("checks/NestedIfStatementsCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();
   }

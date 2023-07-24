@@ -22,14 +22,14 @@ package org.sonar.java.checks.regex;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class UnusedGroupNamesCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/UnusedGroupNamesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/UnusedGroupNamesCheck.java"))
       .withCheck(new UnusedGroupNamesCheck())
       .verifyIssues();
   }

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class MethodTooBigCheckTest {
 
@@ -37,7 +37,7 @@ class MethodTooBigCheckTest {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 4;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/MethodTooBigCheckCustom4.java"))
+      .onFile(mainCodeSourcesPath("checks/MethodTooBigCheckCustom4.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -47,7 +47,7 @@ class MethodTooBigCheckTest {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 5;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/MethodTooBigCheckCustom5.java"))
+      .onFile(mainCodeSourcesPath("checks/MethodTooBigCheckCustom5.java"))
       .withCheck(check)
       .verifyIssues();
   }

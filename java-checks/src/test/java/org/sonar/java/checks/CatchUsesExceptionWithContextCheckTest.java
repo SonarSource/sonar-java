@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class CatchUsesExceptionWithContextCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CatchUsesExceptionWithContextCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CatchUsesExceptionWithContextCheck.java"))
       .withCheck(new CatchUsesExceptionWithContextCheck())
       .verifyIssues();
   }
@@ -46,7 +46,7 @@ class CatchUsesExceptionWithContextCheckTest {
   @Test
   void no_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CatchUsesExceptionWithContextCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CatchUsesExceptionWithContextCheck.java"))
       .withCheck(new CatchUsesExceptionWithContextCheck())
       .withoutSemantic()
       .verifyNoIssues();
@@ -57,7 +57,7 @@ class CatchUsesExceptionWithContextCheckTest {
     CatchUsesExceptionWithContextCheck check = new CatchUsesExceptionWithContextCheck();
     check.exceptionsCommaSeparated = "-";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CatchUsesExceptionWithContextCheckAllExceptions.java"))
+      .onFile(mainCodeSourcesPath("checks/CatchUsesExceptionWithContextCheckAllExceptions.java"))
       .withCheck(check)
       .verifyIssues();
   }

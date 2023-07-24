@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class RecordInsteadOfClassCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/RecordInsteadOfClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RecordInsteadOfClassCheck.java"))
       .withCheck(new RecordInsteadOfClassCheck())
       .withJavaVersion(16)
       .verifyIssues();

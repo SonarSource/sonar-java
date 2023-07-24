@@ -22,14 +22,14 @@ package org.sonar.java.checks.regex;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class RedosCheckTest {
 
   @Test
   void test_java_version_unset() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RedosCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RedosCheck.java"))
       .withCheck(new RedosCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class RedosCheckTest {
   void test_java_version_9() {
     CheckVerifier.newVerifier()
       .withJavaVersion(9)
-      .onFile(testSourcesPath("checks/regex/RedosCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RedosCheck.java"))
       .withCheck(new RedosCheck())
       .verifyIssues();
   }
@@ -47,7 +47,7 @@ class RedosCheckTest {
   void test_java_version_8() {
     CheckVerifier.newVerifier()
       .withJavaVersion(8)
-      .onFile(testSourcesPath("checks/regex/RedosCheckJava8.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RedosCheckJava8.java"))
       .withCheck(new RedosCheck())
       .verifyIssues();
   }

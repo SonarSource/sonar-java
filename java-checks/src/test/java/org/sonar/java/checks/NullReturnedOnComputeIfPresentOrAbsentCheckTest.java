@@ -22,13 +22,13 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class NullReturnedOnComputeIfPresentOrAbsentCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/NullReturnedOnComputeIfPresentOrAbsent.java"))
+      .onFile(mainCodeSourcesPath("checks/NullReturnedOnComputeIfPresentOrAbsent.java"))
       .withCheck(new NullReturnedOnComputeIfPresentOrAbsentCheck())
       .verifyIssues();
   }

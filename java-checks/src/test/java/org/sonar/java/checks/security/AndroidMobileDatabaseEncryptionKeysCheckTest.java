@@ -22,14 +22,14 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class AndroidMobileDatabaseEncryptionKeysCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/AndroidMobileDatabaseEncryptionKeysCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/AndroidMobileDatabaseEncryptionKeysCheck.java"))
       .withCheck(new AndroidMobileDatabaseEncryptionKeysCheck())
       .verifyIssues();
   }

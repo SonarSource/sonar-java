@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class MismatchPackageDirectoryCheckTest {
 
   @Test
   void correctMatch() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/mismatchPackage/Matching.java"))
+      .onFile(mainCodeSourcesPath("checks/mismatchPackage/Matching.java"))
       .withCheck(new MismatchPackageDirectoryCheck())
       .verifyNoIssues();
   }

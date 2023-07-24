@@ -46,7 +46,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.regex.AbstractRegexCheck.getLiterals;
 
 class AbstractRegexCheckTest {
@@ -228,7 +228,7 @@ class AbstractRegexCheckTest {
       }
     }
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/AbstractRegexCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/AbstractRegexCheck.java"))
       .withCheck(new IssueOnAllRegexCheck())
       .verifyIssues();
   }

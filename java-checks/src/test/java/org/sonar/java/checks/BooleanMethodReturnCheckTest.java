@@ -28,7 +28,7 @@ class BooleanMethodReturnCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("checks/BooleanMethodReturnCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/BooleanMethodReturnCheck.java"))
       .withCheck(new BooleanMethodReturnCheck())
       .verifyIssues();
   }

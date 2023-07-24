@@ -22,7 +22,7 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class VerifiedServerHostnamesCheckTest {
 
@@ -31,7 +31,7 @@ class VerifiedServerHostnamesCheckTest {
   @Test
   void hostname_verifier() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath(TEST_FOLDER + "HostnameVerifier.java"))
+      .onFile(mainCodeSourcesPath(TEST_FOLDER + "HostnameVerifier.java"))
       .withCheck(new VerifiedServerHostnamesCheck())
       .verifyIssues();
   }
@@ -39,7 +39,7 @@ class VerifiedServerHostnamesCheckTest {
   @Test
   void java_mail_session() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath(TEST_FOLDER + "JavaMailSession.java"))
+      .onFile(mainCodeSourcesPath(TEST_FOLDER + "JavaMailSession.java"))
       .withCheck(new VerifiedServerHostnamesCheck())
       .verifyIssues();
   }
@@ -47,7 +47,7 @@ class VerifiedServerHostnamesCheckTest {
   @Test
   void apache_common_email() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath(TEST_FOLDER + "ApacheCommonEmail.java"))
+      .onFile(mainCodeSourcesPath(TEST_FOLDER + "ApacheCommonEmail.java"))
       .withCheck(new VerifiedServerHostnamesCheck())
       .verifyIssues();
   }

@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class DefaultPackageCheckTest {
 
   @Test
   void without_package() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/EmptyFile.java"))
+      .onFile(mainCodeSourcesPath("checks/EmptyFile.java"))
       .withCheck(new DefaultPackageCheck())
       .verifyIssueOnFile("Move this file to a named package.");
   }
@@ -37,7 +37,7 @@ class DefaultPackageCheckTest {
   @Test
   void with_package() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/WithPackage.java"))
+      .onFile(mainCodeSourcesPath("checks/WithPackage.java"))
       .withCheck(new DefaultPackageCheck())
       .verifyNoIssues();
   }

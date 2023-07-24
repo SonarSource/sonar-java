@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class UnusedTypeParameterCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/unused/UnusedTypeParameterCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedTypeParameterCheck.java"))
       .withCheck(new UnusedTypeParameterCheck())
       .verifyIssues();
   }

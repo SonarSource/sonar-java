@@ -22,18 +22,18 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class PasswordEncoderCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/PasswordEncoder.java"))
+      .onFile(mainCodeSourcesPath("checks/security/PasswordEncoder.java"))
       .withCheck(new PasswordEncoderCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/PasswordEncoder.java"))
+      .onFile(mainCodeSourcesPath("checks/security/PasswordEncoder.java"))
       .withCheck(new PasswordEncoderCheck())
       .withoutSemantic()
       .verifyNoIssues();

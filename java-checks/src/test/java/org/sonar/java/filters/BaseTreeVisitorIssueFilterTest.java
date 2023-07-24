@@ -42,11 +42,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BaseTreeVisitorIssueFilterTest {
 
-  private static final InputFile INPUT_FILE = TestUtils.inputFile(testSourcesPath("filters/BaseTreeVisitorIssueFilter.java"));
+  private static final InputFile INPUT_FILE = TestUtils.inputFile(mainCodeSourcesPath("filters/BaseTreeVisitorIssueFilter.java"));
   private static final String REPOSITORY_KEY = "octopus";
   private static final String RULE_KEY = "S42";
   private BaseTreeVisitorIssueFilter filter;

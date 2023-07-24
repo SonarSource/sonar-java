@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class DiamondOperatorCheckTest {
 
   @Test
   void test_no_version() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(testSourcesPath("checks/DiamondOperatorCheck_no_version.java"))
+      .onFile(mainCodeSourcesPath("checks/DiamondOperatorCheck_no_version.java"))
       .withCheck(new DiamondOperatorCheck())
       .withQuickFixes()
       .verifyIssues();
@@ -39,7 +39,7 @@ class DiamondOperatorCheckTest {
   @Test
   void test_with_java_7() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DiamondOperatorCheck_java_7.java"))
+      .onFile(mainCodeSourcesPath("checks/DiamondOperatorCheck_java_7.java"))
       .withCheck(new DiamondOperatorCheck())
       .withJavaVersion(7)
       .verifyIssues();
@@ -49,7 +49,7 @@ class DiamondOperatorCheckTest {
   void test_with_java_8() {
     // take into account ternary operators
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DiamondOperatorCheck_java_8.java"))
+      .onFile(mainCodeSourcesPath("checks/DiamondOperatorCheck_java_8.java"))
       .withCheck(new DiamondOperatorCheck())
       .withJavaVersion(8)
       .verifyIssues();

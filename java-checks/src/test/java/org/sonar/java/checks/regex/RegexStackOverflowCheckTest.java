@@ -22,7 +22,7 @@ package org.sonar.java.checks.regex;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class RegexStackOverflowCheckTest {
 
@@ -30,19 +30,19 @@ class RegexStackOverflowCheckTest {
   void testWithDefaultMax() {
     RegexStackOverflowCheck check = new RegexStackOverflowCheck();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithHighStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithHighStackConsumption.java"))
       .withCheck(check)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithMediumStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithMediumStackConsumption.java"))
       .withCheck(check)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithLowStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithLowStackConsumption.java"))
       .withCheck(check)
       .verifyNoIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithConstantStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithConstantStackConsumption.java"))
       .withCheck(check)
       .verifyNoIssues();
   }
@@ -52,19 +52,19 @@ class RegexStackOverflowCheckTest {
     RegexStackOverflowCheck check = new RegexStackOverflowCheck();
     check.setMaxStackConsumptionFactor(0);
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithHighStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithHighStackConsumption.java"))
       .withCheck(check)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithMediumStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithMediumStackConsumption.java"))
       .withCheck(check)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithLowStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithLowStackConsumption.java"))
       .withCheck(check)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithConstantStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithConstantStackConsumption.java"))
       .withCheck(check)
       .verifyNoIssues();
   }
@@ -74,19 +74,19 @@ class RegexStackOverflowCheckTest {
     RegexStackOverflowCheck check = new RegexStackOverflowCheck();
     check.setMaxStackConsumptionFactor(7);
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithHighStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithHighStackConsumption.java"))
       .withCheck(check)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithMediumStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithMediumStackConsumption.java"))
       .withCheck(check)
       .verifyNoIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithLowStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithLowStackConsumption.java"))
       .withCheck(check)
       .verifyNoIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithConstantStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithConstantStackConsumption.java"))
       .withCheck(check)
       .verifyNoIssues();
   }
@@ -96,19 +96,19 @@ class RegexStackOverflowCheckTest {
     RegexStackOverflowCheck check = new RegexStackOverflowCheck();
     check.setMaxStackConsumptionFactor(20);
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithHighStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithHighStackConsumption.java"))
       .withCheck(check)
       .verifyNoIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithMediumStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithMediumStackConsumption.java"))
       .withCheck(check)
       .verifyNoIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithLowStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithLowStackConsumption.java"))
       .withCheck(check)
       .verifyNoIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithConstantStackConsumption.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexStackOverflowCheckWithConstantStackConsumption.java"))
       .withCheck(check)
       .verifyNoIssues();
   }

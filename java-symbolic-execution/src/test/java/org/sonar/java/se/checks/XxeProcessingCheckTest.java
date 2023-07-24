@@ -29,7 +29,7 @@ class XxeProcessingCheckTest {
   @Test
   void Xml_input_factory() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_XmlInputFactory.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_XmlInputFactory.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -38,7 +38,7 @@ class XxeProcessingCheckTest {
   @Test
   void document_builder_factory() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_DocumentBuilderFactory.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_DocumentBuilderFactory.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -47,7 +47,7 @@ class XxeProcessingCheckTest {
   @Test
   void sax_parser() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SaxParser.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SaxParser.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -56,7 +56,7 @@ class XxeProcessingCheckTest {
   @Test
   void schema_factory() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SchemaFactory_Validator.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SchemaFactory_Validator.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -65,7 +65,7 @@ class XxeProcessingCheckTest {
   @Test
   void transformer_factory() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_TransformerFactory.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_TransformerFactory.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -74,7 +74,7 @@ class XxeProcessingCheckTest {
   @Test
   void xml_reader() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_XmlReader.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_XmlReader.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -83,7 +83,7 @@ class XxeProcessingCheckTest {
   @Test
   void sax_builder() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SaxBuilder.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SaxBuilder.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -92,7 +92,7 @@ class XxeProcessingCheckTest {
   @Test
   void sax_reader() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SaxReader.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SaxReader.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -101,7 +101,7 @@ class XxeProcessingCheckTest {
   @Test
   void document_builder_factory_java_11() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_DocumentBuilderFactory_version_11.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_DocumentBuilderFactory_version_11.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .withJavaVersion(11)
@@ -111,7 +111,7 @@ class XxeProcessingCheckTest {
   @Test
   void document_builder_factory_java_13() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_DocumentBuilderFactory_version_13.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_DocumentBuilderFactory_version_13.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .withJavaVersion(13)

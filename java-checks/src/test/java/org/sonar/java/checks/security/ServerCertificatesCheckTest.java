@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ServerCertificatesCheckTest {
 
@@ -32,7 +32,7 @@ class ServerCertificatesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath(TEST_FILE))
+      .onFile(mainCodeSourcesPath(TEST_FILE))
       .withCheck(new ServerCertificatesCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
@@ -44,7 +44,7 @@ class ServerCertificatesCheckTest {
   @Test
   void test_no_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath(TEST_FILE))
+      .onFile(mainCodeSourcesPath(TEST_FILE))
       .withCheck(new ServerCertificatesCheck())
       .withoutSemantic()
       .verifyIssues();

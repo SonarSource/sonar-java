@@ -29,7 +29,7 @@ class ReturnEmptyArrayNotNullCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("checks/ReturnEmptyArrayNotNullCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ReturnEmptyArrayNotNullCheck.java"))
       .withCheck(new ReturnEmptyArrayNotNullCheck())
       .verifyIssues();
   }
@@ -37,13 +37,13 @@ class ReturnEmptyArrayNotNullCheckTest {
   @Test
   void quick_fixes() {
     InternalCheckVerifier.newInstance()
-      .onFile(TestUtils.testSourcesPath("checks/ReturnEmptyArrayNotNullCheckWithQuickFixes.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ReturnEmptyArrayNotNullCheckWithQuickFixes.java"))
       .withCheck(new ReturnEmptyArrayNotNullCheck())
       .withQuickFixes()
       .verifyIssues();
 
     InternalCheckVerifier.newInstance()
-      .onFile(TestUtils.testSourcesPath("checks/ReturnEmptyArrayNotNullCheckWithQuickFixesAndImports.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ReturnEmptyArrayNotNullCheckWithQuickFixesAndImports.java"))
       .withCheck(new ReturnEmptyArrayNotNullCheck())
       .withQuickFixes()
       .verifyIssues();

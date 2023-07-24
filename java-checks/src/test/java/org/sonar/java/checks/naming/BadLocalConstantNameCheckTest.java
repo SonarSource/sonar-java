@@ -22,7 +22,7 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BadLocalConstantNameCheckTest {
 
@@ -39,7 +39,7 @@ class BadLocalConstantNameCheckTest {
     BadLocalConstantNameCheck check = new BadLocalConstantNameCheck();
     check.format = "^[A-Z][A-Z0-9]*$";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheckOtherPattern.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheckOtherPattern.java"))
       .withCheck(check)
       .verifyIssues();
   }

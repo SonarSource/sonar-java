@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SwitchWithTooManyCasesCheckTest {
 
   @Test
   void defaultValue() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SwitchWithTooManyCasesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchWithTooManyCasesCheck.java"))
       .withCheck(new SwitchWithTooManyCasesCheck())
       .verifyIssues();
   }
@@ -40,7 +40,7 @@ class SwitchWithTooManyCasesCheckTest {
     SwitchWithTooManyCasesCheck check = new SwitchWithTooManyCasesCheck();
     check.maximumCases = 5;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SwitchWithTooManyCasesCheckCustom.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchWithTooManyCasesCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();
   }

@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class StringToStringCheckTest {
 
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/StringToString.java"))
+      .onFile(mainCodeSourcesPath("checks/StringToString.java"))
       .withCheck(new StringToStringCheck())
       .withQuickFixes()
       .verifyIssues();
@@ -38,7 +38,7 @@ class StringToStringCheckTest {
   @Test
   void testTextBlocks() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/TextBlockToString.java"))
+      .onFile(mainCodeSourcesPath("checks/TextBlockToString.java"))
       .withCheck(new StringToStringCheck())
       .withQuickFixes()
       .verifyIssues();

@@ -22,11 +22,11 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class DateUtilsTruncateCheckTest {
 
-  private static final String FILENAME = testSourcesPath("checks/DateUtilsTruncateCheck.java");
+  private static final String FILENAME = mainCodeSourcesPath("checks/DateUtilsTruncateCheck.java");
 
   @Test
   void java8() {
@@ -49,7 +49,7 @@ class DateUtilsTruncateCheckTest {
   @Test
   void unknown_version() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DateUtilsTruncateCheck_no_version.java"))
+      .onFile(mainCodeSourcesPath("checks/DateUtilsTruncateCheck_no_version.java"))
       .withCheck(new DateUtilsTruncateCheck())
       .verifyIssues();
   }

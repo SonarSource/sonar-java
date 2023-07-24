@@ -22,14 +22,14 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class EmptyDatabasePasswordCheckTest {
 
   @Test
   void test() throws Exception {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/EmptyDatabasePasswordCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/EmptyDatabasePasswordCheck.java"))
       .withCheck(new EmptyDatabasePasswordCheck())
       .verifyIssues();
   }

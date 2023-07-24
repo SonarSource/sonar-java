@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class InvariantReturnCheckTest {
 
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/InvariantReturnCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/InvariantReturnCheck.java"))
       .withCheck(new InvariantReturnCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

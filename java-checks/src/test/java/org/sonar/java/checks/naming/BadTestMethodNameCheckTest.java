@@ -22,7 +22,7 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BadTestMethodNameCheckTest {
 
@@ -45,7 +45,7 @@ class BadTestMethodNameCheckTest {
     BadTestMethodNameCheck check = new BadTestMethodNameCheck();
     check.format = "^test_sonar[A-Z][a-zA-Z0-9]*$";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/naming/BadTestMethodNameCheckCustom.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/BadTestMethodNameCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();
   }

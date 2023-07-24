@@ -23,16 +23,16 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ReplaceGuavaWithJavaCheckTest {
 
-  private static final String FILENAME = testSourcesPath("checks/ReplaceGuavaWithJavaCheck.java");
+  private static final String FILENAME = mainCodeSourcesPath("checks/ReplaceGuavaWithJavaCheck.java");
 
   @Test
   void test_with_java_7() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ReplaceGuavaWithJavaCheck_java7.java"))
+      .onFile(mainCodeSourcesPath("checks/ReplaceGuavaWithJavaCheck_java7.java"))
       .withCheck(new ReplaceGuavaWithJavaCheck())
       .withJavaVersion(7)
       .verifyNoIssues();
@@ -69,7 +69,7 @@ class ReplaceGuavaWithJavaCheckTest {
   @Test
   void test_no_version() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ReplaceGuavaWithJavaCheck_no_version.java"))
+      .onFile(mainCodeSourcesPath("checks/ReplaceGuavaWithJavaCheck_no_version.java"))
       .withCheck(new ReplaceGuavaWithJavaCheck())
       .verifyIssues();
   }

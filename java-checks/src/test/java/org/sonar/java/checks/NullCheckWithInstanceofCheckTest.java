@@ -22,13 +22,13 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class NullCheckWithInstanceofCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/NullCheckWithInstanceofCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NullCheckWithInstanceofCheck.java"))
       .withCheck(new NullCheckWithInstanceofCheck())
       .verifyIssues();
   }

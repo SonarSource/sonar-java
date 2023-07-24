@@ -21,13 +21,13 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class CollectorsToListCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CollectorsToList.java"))
+      .onFile(mainCodeSourcesPath("checks/CollectorsToList.java"))
       .withCheck(new CollectorsToListCheck())
       .withJavaVersion(16)
       .verifyIssues();
@@ -36,7 +36,7 @@ class CollectorsToListCheckTest {
   @Test
   void test_no_issues_for_older_versions() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CollectorsToList.java"))
+      .onFile(mainCodeSourcesPath("checks/CollectorsToList.java"))
       .withCheck(new CollectorsToListCheck())
       .withJavaVersion(15)
       .verifyNoIssues();
@@ -45,7 +45,7 @@ class CollectorsToListCheckTest {
   @Test
   void test_no_issues_for_unknown_versions() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CollectorsToList.java"))
+      .onFile(mainCodeSourcesPath("checks/CollectorsToList.java"))
       .withCheck(new CollectorsToListCheck())
       .verifyNoIssues();
   }

@@ -23,18 +23,18 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SpecializedFunctionalInterfacesCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"))
       .withCheck(new SpecializedFunctionalInterfacesCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"))
       .withCheck(new SpecializedFunctionalInterfacesCheck())
       .withoutSemantic()
       .verifyIssues();

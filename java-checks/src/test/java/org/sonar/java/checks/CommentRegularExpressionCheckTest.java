@@ -22,11 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class CommentRegularExpressionCheckTest {
 
@@ -46,7 +45,7 @@ class CommentRegularExpressionCheckTest {
     CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
     check.regularExpression = "";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CommentRegularExpressionCheck2.java"))
+      .onFile(mainCodeSourcesPath("checks/CommentRegularExpressionCheck2.java"))
       .withCheck(check)
       .verifyNoIssues();
   }

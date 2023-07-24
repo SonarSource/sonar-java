@@ -22,14 +22,14 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class JWTWithStrongCipherCheckTest {
 
   @Test
   void test_Jwtk_library() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/JWTWithStrongCipherCheck/JWTWithStrongCipherCheckJwtkTest.java"))
+      .onFile(mainCodeSourcesPath("checks/security/JWTWithStrongCipherCheck/JWTWithStrongCipherCheckJwtkTest.java"))
       .withCheck(new JWTWithStrongCipherCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class JWTWithStrongCipherCheckTest {
   @Test
   void test_auth0_library() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/JWTWithStrongCipherCheck/JWTWithStrongCipherCheckAuth0Test.java"))
+      .onFile(mainCodeSourcesPath("checks/security/JWTWithStrongCipherCheck/JWTWithStrongCipherCheckAuth0Test.java"))
       .withCheck(new JWTWithStrongCipherCheck())
       .verifyIssues();
   }

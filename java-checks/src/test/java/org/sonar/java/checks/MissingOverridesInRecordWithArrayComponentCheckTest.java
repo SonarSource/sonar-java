@@ -27,7 +27,7 @@ class MissingOverridesInRecordWithArrayComponentCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("checks/MissingOverridesInRecordWithArrayComponentCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/MissingOverridesInRecordWithArrayComponentCheck.java"))
       .withChecks(new MissingOverridesInRecordWithArrayComponentCheck())
       .verifyIssues();
   }

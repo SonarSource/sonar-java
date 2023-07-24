@@ -23,13 +23,13 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SerialVersionUidInRecordCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/serialization/SerialVersionUidInRecordCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/SerialVersionUidInRecordCheck.java"))
       .withCheck(new SerialVersionUidInRecordCheck())
       .verifyIssues();
   }

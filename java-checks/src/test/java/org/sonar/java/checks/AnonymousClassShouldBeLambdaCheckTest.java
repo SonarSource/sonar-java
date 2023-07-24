@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class AnonymousClassShouldBeLambdaCheckTest {
@@ -30,7 +30,7 @@ class AnonymousClassShouldBeLambdaCheckTest {
   @Test
   void java8() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AnonymousClassShouldBeLambdaCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AnonymousClassShouldBeLambdaCheck.java"))
       .withCheck(new AnonymousClassShouldBeLambdaCheck())
       .withJavaVersion(8)
       .verifyIssues();
@@ -39,7 +39,7 @@ class AnonymousClassShouldBeLambdaCheckTest {
   @Test
   void java7() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AnonymousClassShouldBeLambdaCheck_java7.java"))
+      .onFile(mainCodeSourcesPath("checks/AnonymousClassShouldBeLambdaCheck_java7.java"))
       .withCheck(new AnonymousClassShouldBeLambdaCheck())
       .withJavaVersion(7)
       .verifyNoIssues();
@@ -48,7 +48,7 @@ class AnonymousClassShouldBeLambdaCheckTest {
   @Test
   void unknown_version() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AnonymousClassShouldBeLambdaCheck_no_version.java"))
+      .onFile(mainCodeSourcesPath("checks/AnonymousClassShouldBeLambdaCheck_no_version.java"))
       .withCheck(new AnonymousClassShouldBeLambdaCheck())
       .verifyIssues();
   }

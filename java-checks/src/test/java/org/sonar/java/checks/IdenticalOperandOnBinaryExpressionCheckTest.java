@@ -28,7 +28,7 @@ class IdenticalOperandOnBinaryExpressionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("checks/IdenticalOperandOnBinaryExpression.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/IdenticalOperandOnBinaryExpression.java"))
       .withCheck(new IdenticalOperandOnBinaryExpressionCheck())
       .verifyIssues();
   }

@@ -22,14 +22,14 @@ package org.sonar.java.checks.serialization;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class NonSerializableWriteCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/serialization/NonSerializableWriteCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/NonSerializableWriteCheck.java"))
       .withCheck(new NonSerializableWriteCheck())
       .verifyIssues();
   }

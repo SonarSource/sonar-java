@@ -28,7 +28,6 @@ import org.sonar.java.se.utils.SETestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class ConditionAlwaysTrueOrFalseCheckTest {
 
@@ -44,7 +43,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   void test_boolean_wrapper() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/BooleanWrapper.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/BooleanWrapper.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -53,7 +52,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   void test_nullability_annotations() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/NullabilityAnnotationsAlwaysTrueOrFalse.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullabilityAnnotationsAlwaysTrueOrFalse.java"))
       .withCheck(new BooleanGratuitousExpressionsCheck())
       .verifyIssues();
   }
@@ -61,7 +60,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   void test_unreachable_vs_gratuitous() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/UnreachableOrGratuitous.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/UnreachableOrGratuitous.java"))
       .withCheck(new ConditionalUnreachableCodeCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -88,7 +87,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   void resetFields_ThreadSleepCalls() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/ThreadSleepCall.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/ThreadSleepCall.java"))
       .withCheck(new AssertNoAlwaysTrueOrFalseExpression())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
@@ -110,7 +109,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
         assertThat(issues).hasSize(2);
         assertThat(issues).allMatch(issue -> issue.flows.size() == 20);
       })
-      .onFile(testSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheckMaxReturnedFlows.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheckMaxReturnedFlows.java"))
       .withChecks(new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -120,7 +119,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   void reporting_getting_wrong_parent() {
     // Checks flow iterating through the correct parent
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheckParentLoop.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheckParentLoop.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -130,7 +129,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   void ensure_branching_statements_dont_cause_exception() {
     // Checks flow iterating through the correct parent
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseNoExceptionOnBranchingStatementsLogicalAndOrTestCase.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseNoExceptionOnBranchingStatementsLogicalAndOrTestCase.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -139,7 +138,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   void test_transitivity() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/Transitivity.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/Transitivity.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -167,7 +166,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   void test_binary_expressions_always_not_null() {
     SECheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/BinaryExpressionNotNull.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/BinaryExpressionNotNull.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

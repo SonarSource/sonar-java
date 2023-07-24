@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class StringConcatToTextBlockCheckTest {
 
   @Test
   void java15() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StringConcatToTextBlockCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringConcatToTextBlockCheck.java"))
       .withCheck(new StringConcatToTextBlockCheck())
       .withJavaVersion(15)
       .verifyIssues();
@@ -38,7 +38,7 @@ class StringConcatToTextBlockCheckTest {
   @Test
   void java8() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StringConcatToTextBlockCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringConcatToTextBlockCheck.java"))
       .withCheck(new StringConcatToTextBlockCheck())
       .withJavaVersion(8)
       .verifyNoIssues();
@@ -47,7 +47,7 @@ class StringConcatToTextBlockCheckTest {
   @Test
   void unknown_version() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StringConcatToTextBlockCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringConcatToTextBlockCheck.java"))
       .withCheck(new StringConcatToTextBlockCheck())
       .verifyNoIssues();
   }
