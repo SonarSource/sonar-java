@@ -5,8 +5,8 @@
 package org.sonar.samples.java.checks;
 
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -26,7 +26,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 @Rule(key = "SecurityAnnotationMandatory")
 public class SecurityAnnotationMandatoryRule extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SecurityAnnotationMandatoryRule.class);
+  private static final Logger LOGGER = Loggers.get(SecurityAnnotationMandatoryRule.class);
 
   private static final String DEFAULT_VALUE = "MySecurityAnnotation";
 

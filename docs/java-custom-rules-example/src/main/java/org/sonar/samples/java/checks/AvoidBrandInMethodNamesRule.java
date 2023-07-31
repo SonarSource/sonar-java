@@ -5,8 +5,8 @@
 package org.sonar.samples.java.checks;
 
 import java.util.Locale;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -17,7 +17,7 @@ import org.sonar.samples.java.utils.PrinterVisitor;
 @Rule(key = "AvoidBrandInMethodNames")
 public class AvoidBrandInMethodNamesRule extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AvoidBrandInMethodNamesRule.class);
+  private static final Logger LOGGER = Loggers.get(AvoidBrandInMethodNamesRule.class);
 
   private JavaFileScannerContext context;
 
