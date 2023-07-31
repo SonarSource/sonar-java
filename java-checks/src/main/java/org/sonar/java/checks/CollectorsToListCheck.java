@@ -65,7 +65,7 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
 
   private static final MethodMatchers COLLECTIONS_MUTATOR_METHODS = MethodMatchers.create()
       .ofSubTypes("java.util.Collections")
-      .names("shuffle", "copy", "swap", "fill", "sort", "rotate")
+      .names("addAll", "copy", "fill", "replaceAll", "reverse", "rotate", "shuffle",  "sort", "swap")
       .withAnyParameters()
       .build();
 

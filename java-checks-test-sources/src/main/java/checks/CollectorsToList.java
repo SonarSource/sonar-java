@@ -42,12 +42,33 @@ public class CollectorsToList {
 
   void compliant_collections_methods() {
     var myMutableList = Stream.of("A", "B", "C")
-      .collect(Collectors.toList());
+      .collect(Collectors.toList()); // Compliant
     Collections.shuffle(myMutableList);
 
     var myMutableList2 = Stream.of("A", "B")
-      .collect(Collectors.toList());
+      .collect(Collectors.toList()); // Compliant
     Collections.rotate(myMutableList2, 2);
+
+    var myMutableList3 = Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Compliant
+    Collections.addAll(myMutableList3, "D", "E");
+
+    var myMutableList4 = Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Compliant
+    Collections.replaceAll(myMutableList4, "B", "D");
+
+    var myMutableList5 = Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Compliant
+    Collections.reverse(myMutableList5);
+  }
+
+  void noncompliant_collections_methods() {
+    var myMutableList = Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Noncompliant, below methods do not modify the list
+    Collections.max(myMutableList);
+    Collections.frequency(myMutableList, "A");
+    Collections.synchronizedList(myMutableList);
+    Collections.unmodifiableList(myMutableList);
   }
 
   private List<String> memberList;
