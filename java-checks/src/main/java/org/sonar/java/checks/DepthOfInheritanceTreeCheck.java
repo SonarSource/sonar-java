@@ -45,6 +45,7 @@ public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements Java
     "com.intellij.**",
     "com.persistit.**",
     "javax.swing.**",
+    "javafx.scene.**",
     "org.eclipse.**",
     "org.springframework.**"
   );

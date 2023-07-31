@@ -3,6 +3,7 @@ package checks;
 import javax.swing.*;
 import org.eclipse.equinox.log.LogPermission;
 import org.springframework.dao.DataAccessException;
+import javafx.scene.layout.BorderPane;
 
 public class DepthOfInheritanceTreeCheckFrameworkExclusion {
   class MyJFrame extends JFrame {
@@ -12,6 +13,10 @@ public class DepthOfInheritanceTreeCheckFrameworkExclusion {
     public MyLogPermission(String name, String actions) {
       super(name, actions);
     }
+  }
+
+  public class MyBorderPane extends BorderPane { // Compliant, package javafx.scene.** is excluded
+    // empty
   }
 
   class MyDataAccessException extends DataAccessException {
@@ -31,5 +36,4 @@ public class DepthOfInheritanceTreeCheckFrameworkExclusion {
       super(msg);
     }
   }
-
 }
