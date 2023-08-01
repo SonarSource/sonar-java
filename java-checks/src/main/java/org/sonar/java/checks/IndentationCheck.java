@@ -151,17 +151,27 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
 
     boolean isBlock = bodySize > 0 && body.get(0).is(Kind.BLOCK);
     SyntaxToken separatorToken = ListUtils.getLast(labels).colonOrArrowToken();
-    int nextSameLineOffset = Position.endOf(separatorToken).columnOffset() + 1;
+    int nextOffsetInLine = Position.endOf(separatorToken).columnOffset() + 1;
 
     if (isBlock) {
       expectedLevel -= indentationLevel;
-      checkIndentation(body.get(0), nextSameLineOffset);
+      checkIndentation(body.get(0), nextOffsetInLine);
       newBody = body.subList(1, bodySize);
     }
-    checkIndentation(newBody);
+
+    if (bodySize == 1 && "->".equals(separatorToken.text())) {
+      checkSameOrNextLineIndentation(Position.startOf(separatorToken).line(), nextOffsetInLine, body.get(0));
+    } else {
+      checkIndentation(newBody);
+    }
+
     if (isBlock) {
       expectedLevel += indentationLevel;
     }
+  }
+
+  private void checkSameOrNextLineIndentation(int curLine, int nextOffsetInLine, StatementTree statement) {
+    checkIndentation(statement, Position.startOf(statement).line() == curLine ? nextOffsetInLine : expectedLevel);
   }
 
   private void adjustBlockForExceptionalParents(Tree parent) {

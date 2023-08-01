@@ -1,7 +1,7 @@
 import java.util.stream.IntStream;
 
 class TestSwitch {
-  enum Color { RED, GREEN, BLUE, CYAN, MAGENTA }
+  enum Color { RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, BLACK, WHITE }
   public static void foo(Color color) {
     switch(kind) {
       case RED -> { System.out.println("red"); } // Compliant
@@ -11,6 +11,13 @@ class TestSwitch {
       case BLUE ->  { // Noncompliant
         System.out.println("blue");
       }
+      case CYAN -> System.out.println("cyan"); // Compliant
+      case MAGENTA ->System.out.println("magenta"); // Noncompliant
+      case YELLOW ->  System.out.println("yellow"); // Noncompliant
+      case BLACK ->
+        System.out.println("black"); // Compliant
+      case WHITE ->
+          System.out.println("white"); // Noncompliant
     }
   }
 }
