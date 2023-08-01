@@ -19,8 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.JavaTree;
@@ -92,10 +95,11 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitBlock(BlockTree tree) {
     newBlock();
-    adjustBlockForExceptionalParents(tree.parent());
+    int oldExpectedLevel = expectedLevel;
+    adjustBlockForExceptionalParents(tree);
     checkIndentation(tree.body());
     super.visitBlock(tree);
-    restoreBlockForExceptionalParents(tree.parent());
+    expectedLevel = oldExpectedLevel;
     leaveNode(tree);
   }
 
@@ -146,14 +150,51 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
       excludeIssueAtLine = LineUtils.startLine(previousCaseLabelTree.lastToken());
     }
     List<StatementTree> body = tree.body();
+
+    if (body.size() == 1 && body.get(0).is(Kind.BLOCK)) {
+      checkCaseGroupSingleBlock(tree);
+    } else {
+      checkCaseGroupMixedStatements(tree);
+    }
+  }
+
+  private void checkCaseGroupSingleBlock(CaseGroupTree tree) {
+    List<StatementTree> body = tree.body();
+    SyntaxToken separatorToken = ListUtils.getLast(tree.labels()).colonOrArrowToken();
+    int nextOffsetInLine = Position.endOf(separatorToken).columnOffset() + 1;
+
+    BlockTree block = (BlockTree) body.get(0);
+    Position openBracePosition = Position.startOf(block.openBraceToken());
+    Position separatorPosition = Position.endOf(separatorToken);
+    if (openBracePosition.line() == separatorPosition.line()) {
+      // `{` is on same line -> one additional indentation for inner block and `}` is optional
+      checkIndentation(block.openBraceToken(), nextOffsetInLine);
+      if (block.body().isEmpty()) {
+        checkIndentationWithOptionalAllowed(block.closeBraceToken(), expectedLevel - indentationLevel);
+      } else {
+        boolean isAdditionalIndentation = checkIndentationWithOptionalAllowed(block.body().get(0), expectedLevel);
+        checkIndentation(block.closeBraceToken(), isAdditionalIndentation ? expectedLevel : expectedLevel - indentationLevel);
+      }
+    } else {
+      // `{` is on next line -> one additional indentation is optional, inner block and `}` must have same indentation
+      boolean isAdditionalIndentation = checkIndentationWithOptionalAllowed(block.openBraceToken(), expectedLevel - indentationLevel);
+      int x = isAdditionalIndentation ? expectedLevel : expectedLevel - indentationLevel;
+      if (!block.body().isEmpty()) {
+        checkIndentation(block.body().get(0), x + indentationLevel);
+      }
+      checkIndentation(block.closeBraceToken(), x);
+    }
+  }
+
+  private void checkCaseGroupMixedStatements(CaseGroupTree tree) {
+    List<StatementTree> body = tree.body();
+    SyntaxToken separatorToken = ListUtils.getLast(tree.labels()).colonOrArrowToken();
+    int nextOffsetInLine = Position.endOf(separatorToken).columnOffset() + 1;
     List<StatementTree> newBody = body;
     int bodySize = body.size();
 
-    boolean isBlock = bodySize > 0 && body.get(0).is(Kind.BLOCK);
-    SyntaxToken separatorToken = ListUtils.getLast(labels).colonOrArrowToken();
-    int nextOffsetInLine = Position.endOf(separatorToken).columnOffset() + 1;
-
-    if (isBlock) {
+    int oldExpectedLevel = expectedLevel;
+    if (bodySize > 0 && body.get(0).is(Kind.BLOCK)) {
       expectedLevel -= indentationLevel;
       checkIndentation(body.get(0), nextOffsetInLine);
       newBody = body.subList(1, bodySize);
@@ -165,24 +206,18 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
       checkIndentation(newBody);
     }
 
-    if (isBlock) {
-      expectedLevel += indentationLevel;
-    }
+    expectedLevel = oldExpectedLevel;
   }
 
   private void checkSameOrNextLineIndentation(int curLine, int nextOffsetInLine, StatementTree statement) {
     checkIndentation(statement, Position.startOf(statement).line() == curLine ? nextOffsetInLine : expectedLevel);
   }
 
-  private void adjustBlockForExceptionalParents(Tree parent) {
-    if (parent.is(Kind.CASE_GROUP)) {
-      expectedLevel -= indentationLevel;
-    }
-  }
-
-  private void restoreBlockForExceptionalParents(Tree parent) {
-    if (parent.is(Kind.CASE_GROUP)) {
-      expectedLevel += indentationLevel;
+  private void adjustBlockForExceptionalParents(BlockTree tree) {
+    if (Objects.requireNonNull(tree.parent()).is(Kind.CASE_GROUP)) {
+      expectedLevel = tree.body().isEmpty() ?
+        getIndentation(Position.startOf(tree.closeBraceToken())) + indentationLevel :
+        getIndentation(Position.startOf(tree.body().get(0)));
     }
   }
 
@@ -194,6 +229,37 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
 
   private void checkIndentation(Tree tree, int expectedLevel) {
     Position treeStart = Position.startOf(tree);
+    if (getIndentation(treeStart) != expectedLevel) {
+      addIssue(tree, expectedLevel);
+    }
+    excludeIssueAtLine = LineUtils.startLine(tree.lastToken());
+  }
+
+  private boolean checkIndentationWithOptionalAllowed(Tree tree, int expectedLevel) {
+    Position treeStart = Position.startOf(tree);
+    int level = getIndentation(treeStart);
+    boolean isAdditinalIndentation = level == expectedLevel + indentationLevel;
+
+    if (level != expectedLevel && !isAdditinalIndentation) {
+      addIssue(tree, expectedLevel, expectedLevel + indentationLevel);
+    }
+    excludeIssueAtLine = LineUtils.startLine(tree.lastToken());
+    return isAdditinalIndentation;
+  }
+
+  void addIssue(Tree tree, Integer... expectedLevels) {
+    Position treeStart = Position.startOf(tree);
+    String messageAfter = Arrays.stream(expectedLevels).map(Object::toString).collect(Collectors.joining(" or "));
+    if (!isExcluded(tree, treeStart.line())) {
+      int level = getIndentation(treeStart);
+      String message = "Make this line start after " + messageAfter + " spaces instead of " +
+        level + " in order to indent the code consistently. (Indentation level is at " + indentationLevel + ".)";
+      context.addIssue(((JavaTree) tree).getLine(), this, message);
+      isBlockAlreadyReported = true;
+    }
+  }
+
+  private int getIndentation(Position treeStart) {
     String line = fileLines.get(treeStart.lineOffset());
     int level = treeStart.columnOffset();
     int indentLength = Math.min(treeStart.columnOffset(), /* defensive programming */ line.length());
@@ -202,13 +268,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
         level += indentationLevel - 1;
       }
     }
-    if (level != expectedLevel && !isExcluded(tree, treeStart.line())) {
-      String message = "Make this line start after " + expectedLevel + " spaces instead of " +
-        level + " in order to indent the code consistently. (Indentation level is at " + indentationLevel + ".)";
-      context.addIssue(((JavaTree) tree).getLine(), this, message);
-      isBlockAlreadyReported = true;
-    }
-    excludeIssueAtLine = LineUtils.startLine(tree.lastToken());
+    return level;
   }
 
   private boolean isExcluded(Tree node, int nodeLine) {

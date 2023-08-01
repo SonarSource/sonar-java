@@ -1,9 +1,14 @@
 import java.util.stream.IntStream;
 
 class TestSwitch {
-  enum Color { RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, BLACK, WHITE }
-  public static void foo(Color color) {
-    switch(kind) {
+  enum Color {
+    RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, BLACK, WHITE,
+    ORANGE, BROWN, LIME, PURPLE, GREY, CRIMSON, NAVY, OLIVE,
+    FUCHSIA, MAROON, AQUA, TEAL, SILVER, AZURE, BEIGE
+  }
+
+  public static void testArrowCases(Color color) {
+    switch(color) {
       case RED -> { System.out.println("red"); } // Compliant
       case GREEN -> { // Compliant
         System.out.println("green");
@@ -20,7 +25,151 @@ class TestSwitch {
           System.out.println("white"); // Noncompliant
     }
   }
+
+  public static void testBlockIndentation(Color color) {
+    switch(color) {
+      case RED: { System.out.println("red"); } // Compliant
+      case GREEN: { // Compliant
+        System.out.println("green");
+      }
+      case BLUE:  { // Noncompliant
+        System.out.println("blue");
+      }
+      case CYAN: {} // Compliant
+      case MAGENTA: { // Compliant
+      }
+      case YELLOW: {
+          System.out.println("yellow"); // Compliant
+        } // Compliant
+      case BLACK: {
+          System.out.println("black");
+      } // Noncompliant
+      case WHITE: {
+        System.out.println("white"); // Compliant
+      }
+      case ORANGE: {} // Compliant
+      case BROWN: {
+      } // Compliant
+      case LIME: {
+        } // Compliant
+      case PURPLE: {
+          } // Noncompliant {{Make this line start after 6 or 8 spaces instead of 10 in order to indent the code consistently. (Indentation level is at 2.)}}
+      case GREY:
+      { // Compliant
+        System.out.println("grey");
+      }
+      case CRIMSON:
+      {
+        System.out.println("crimson"); // Compliant
+          System.out.println("not red"); // Noncompliant
+        System.out.println("not blue"); // Compliant
+      }
+      case NAVY:
+      {
+          System.out.println("navy"); // Noncompliant
+      }
+      case OLIVE:
+      {
+          System.out.println("olive"); // Noncompliant
+        }
+      case FUCHSIA:
+        { // Compliant
+          System.out.println("fuchsia");
+        }
+      case MAROON:
+      {
+        System.out.println("maroon");
+        } // Noncompliant
+      case AQUA:
+      {
+      } // Compliant
+      case TEAL:
+      {
+        } // Noncompliant
+      case SILVER:
+        {
+        } // Compliant
+      case AZURE:
+        {
+          } // Noncompliant
+      case BEIGE:
+          { // Noncompliant
+          }
+    }
+  }
+
+  public static void testBlockIndentationArrowCases(Color color) {
+    switch(color) {
+      case RED -> { System.out.println("red"); } // Compliant
+      case GREEN -> { // Compliant
+        System.out.println("green");
+      }
+      case BLUE ->  { // Noncompliant
+        System.out.println("blue");
+      }
+      case CYAN -> {} // Compliant
+      case MAGENTA -> { // Compliant
+      }
+      case YELLOW -> {
+          System.out.println("yellow"); // Compliant
+        } // Compliant
+      case BLACK -> {
+          System.out.println("black");
+      } // Noncompliant
+      case WHITE -> {
+        System.out.println("white"); // Compliant
+      }
+      case ORANGE -> {} // Compliant
+      case BROWN -> {
+      } // Compliant
+      case LIME -> {
+        } // Compliant
+      case PURPLE -> {
+          } // Noncompliant
+      case GREY ->
+      { // Compliant
+        System.out.println("grey");
+      }
+      case CRIMSON ->
+      {
+        System.out.println("crimson"); // Compliant
+      }
+      case NAVY ->
+      {
+          System.out.println("navy"); // Noncompliant
+      }
+      case OLIVE ->
+      {
+          System.out.println("olive"); // Noncompliant
+        }
+      case FUCHSIA ->
+        { // Compliant
+          System.out.println("fuchsia");
+        }
+      case MAROON ->
+      {
+        System.out.println("maroon");
+        } // Noncompliant
+      case AQUA ->
+      {
+      } // Compliant
+      case TEAL ->
+      {
+        } // Noncompliant
+      case SILVER ->
+        {
+        } // Compliant
+      case AZURE ->
+        {
+          } // Noncompliant
+      case BEIGE ->
+          { // Noncompliant
+          }
+    }
+  }
 }
+
+// TODO: check empty brackets
 
 class Foo {
   int a;                          // Compliant
@@ -231,7 +380,7 @@ class Baz {
       new Object().toString();
       break;
       case 4:
-      { // Noncompliant {{Make this line start after 14 spaces instead of 6 in order to indent the code consistently. (Indentation level is at 2.)}}
+      { // Compliant
         new Object().toString();
         break;
       }
