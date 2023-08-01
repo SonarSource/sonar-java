@@ -23,23 +23,24 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 @DeprecatedRuleKey(ruleKey = "IndentationCheck", repositoryKey = "squid")
 @Rule(key = "S1120")
@@ -147,13 +148,18 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     List<StatementTree> body = tree.body();
     List<StatementTree> newBody = body;
     int bodySize = body.size();
-    if (bodySize > 0 && body.get(0).is(Kind.BLOCK)) {
+
+    boolean isBlock = bodySize > 0 && body.get(0).is(Kind.BLOCK);
+    SyntaxToken separatorToken = ListUtils.getLast(labels).colonOrArrowToken();
+    int nextSameLineOffset = Position.endOf(separatorToken).columnOffset() + 1;
+
+    if (isBlock) {
       expectedLevel -= indentationLevel;
-      checkIndentation(body.get(0), Position.startOf(ListUtils.getLast(labels).colonOrArrowToken()).columnOffset() + 2);
+      checkIndentation(body.get(0), nextSameLineOffset);
       newBody = body.subList(1, bodySize);
     }
     checkIndentation(newBody);
-    if (bodySize > 0 && body.get(0).is(Kind.BLOCK)) {
+    if (isBlock) {
       expectedLevel += indentationLevel;
     }
   }
@@ -187,9 +193,9 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
       }
     }
     if (level != expectedLevel && !isExcluded(tree, treeStart.line())) {
-      var message = new StringBuilder("Make this line start after ").append(expectedLevel).append(" spaces instead of ")
-        .append(level).append(" in order to indent the code consistently. (Indentation level is at ").append(indentationLevel).append(".)");
-      context.addIssue(((JavaTree) tree).getLine(), this, message.toString());
+      String message = "Make this line start after " + expectedLevel + " spaces instead of " +
+        level + " in order to indent the code consistently. (Indentation level is at " + indentationLevel + ".)";
+      context.addIssue(((JavaTree) tree).getLine(), this, message);
       isBlockAlreadyReported = true;
     }
     excludeIssueAtLine = LineUtils.startLine(tree.lastToken());

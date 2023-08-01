@@ -1,5 +1,20 @@
 import java.util.stream.IntStream;
 
+class TestSwitch {
+  enum Color { RED, GREEN, BLUE, CYAN, MAGENTA }
+  public static void foo(Color color) {
+    switch(kind) {
+      case RED -> { System.out.println("red"); } // Compliant
+      case GREEN -> { // Compliant
+        System.out.println("green");
+      }
+      case BLUE ->  { // Noncompliant
+        System.out.println("blue");
+      }
+    }
+  }
+}
+
 class Foo {
   int a;                          // Compliant
    int b;                         // Noncompliant {{Make this line start after 2 spaces instead of 3 in order to indent the code consistently. (Indentation level is at 2.)}}
