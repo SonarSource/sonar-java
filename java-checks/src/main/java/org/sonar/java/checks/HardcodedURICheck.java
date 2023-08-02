@@ -136,6 +136,9 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
       return false;
     }
     String stringLiteral = LiteralUtils.trimQuotes(((LiteralTree) newExpr).value());
+    if(stringLiteral.contains("*") || stringLiteral.contains("$")) {
+      return false;
+    }
     return URI_PATTERN.matcher(stringLiteral).find();
   }
 

@@ -11,6 +11,10 @@ class HardcodedURICheck {
     String path() default "/";
   }
 
+  static final String PATH_WITH_EXPANSION_PATTERN = "/.*+\\.[a-z0-9]{2,4}$"; // Compliant
+  static final String PATH_WITH_PATTERN_WITH_DOLLAR = "/.{2,4}$"; // Compliant
+  static final String PATH_WITH_PATTERN_WITH_STAR = "/.*\\.[a-z0-9]"; // Compliant
+
   String fileName = "//my-network-drive/folder/file.txt"; // Noncompliant
   String[] stuffs = new String[1];
 
