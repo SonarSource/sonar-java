@@ -43,7 +43,7 @@ class BadMethodNameCheckTest {
   }
 
   @Test
-  void test2() {
+  void testWithCustomNameFormat() {
     BadMethodNameCheck check = new BadMethodNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
     CheckVerifier.newVerifier()

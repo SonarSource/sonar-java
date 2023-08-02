@@ -65,11 +65,11 @@ public class BadMethodNameCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private boolean isExcluded(MethodTree methodTree) {
+  private static boolean isExcluded(MethodTree methodTree) {
     return !Boolean.FALSE.equals(methodTree.isOverriding()) || isExcludedByAnnotation(methodTree);
   }
 
-  private boolean isExcludedByAnnotation(MethodTree methodTree) {
+  private static boolean isExcludedByAnnotation(MethodTree methodTree) {
     return methodTree.modifiers().annotations().stream().anyMatch(
       // use simple name, so we have no FP on missing semantics
       it -> "AttributeDefinition".equals(it.annotationType().symbolType().name())
