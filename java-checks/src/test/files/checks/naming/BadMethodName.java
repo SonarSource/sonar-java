@@ -19,4 +19,9 @@ class BadMethodName {
   public String toString() { //Overrides from object
     return "...";
   }
+
+  @AttributeDefinition(
+    name = "Sling resource types",
+    description = "Sling Resource Type to bind the downloads to.")
+  String[] sling_servlet_resourceTypes(); // Compliant
 }
