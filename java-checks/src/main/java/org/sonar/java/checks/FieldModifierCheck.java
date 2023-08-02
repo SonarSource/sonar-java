@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -44,9 +45,21 @@ public class FieldModifierCheck extends IssuableSubscriptionVisitor {
     classTree.members().stream()
       .filter(FieldModifierCheck::isConsentWithCheck)
       .forEach(member -> {
-        IdentifierTree simpleName = ((VariableTree) member).simpleName();
-        reportIssue(simpleName, "Explicitly declare the visibility for \"" + simpleName.name() + "\".");
+        VariableTree variableTree = (VariableTree) member;
+        if (!hasModifierComment(variableTree)) {
+          IdentifierTree simpleName = variableTree.simpleName();
+          reportIssue(simpleName, "Explicitly declare the visibility for \"" + simpleName.name() + "\".");
+        }
       });
+  }
+
+  private static boolean hasModifierComment(VariableTree variableTree) {
+    for (SyntaxTrivia syntaxTrivia : variableTree.type().lastToken().trivias()) {
+      if (syntaxTrivia.comment().contains("modifier")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean isConsentWithCheck(Tree member) {
