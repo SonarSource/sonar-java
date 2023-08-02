@@ -1,4 +1,8 @@
-class BadMethodName {
+package checks;
+
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+
+class BadMethodName extends Bad {
   public BadMethodName() {
   }
 
@@ -23,5 +27,11 @@ class BadMethodName {
   @AttributeDefinition(
     name = "Sling resource types",
     description = "Sling Resource Type to bind the downloads to.")
-  String[] sling_servlet_resourceTypes(); // Compliant
+  String[] sling_servlet_resourceTypes() { // Compliant
+    return new String[0];
+  }
+}
+
+abstract class Bad {
+  abstract void BadButOverrides(); // Noncompliant
 }
