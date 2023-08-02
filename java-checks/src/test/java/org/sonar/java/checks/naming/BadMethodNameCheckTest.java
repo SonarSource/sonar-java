@@ -34,6 +34,15 @@ class BadMethodNameCheckTest {
   }
 
   @Test
+  void testWithoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/BadMethodName.java"))
+      .withCheck(new BadMethodNameCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
+  @Test
   void test2() {
     BadMethodNameCheck check = new BadMethodNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
