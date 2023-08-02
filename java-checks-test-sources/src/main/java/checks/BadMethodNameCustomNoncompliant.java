@@ -1,5 +1,7 @@
-class BadMethodName {
-  public BadMethodName() {
+package checks;
+
+class BadMethodNameCustomNoncompliant extends Bad {
+  public BadMethodNameCustomNoncompliant() {
   }
 
   void Bad() { // Noncompliant {{Rename this method name to match the regular expression '^[A-Z0-9]*$'.}}

@@ -37,9 +37,9 @@ public class BadMethodNameCheck extends IssuableSubscriptionVisitor {
   private static final String DEFAULT_FORMAT = "^[a-z][a-zA-Z0-9]*$";
 
   @RuleProperty(
-      key = "format",
-      description = "Regular expression used to check the method names against.",
-      defaultValue = "" + DEFAULT_FORMAT)
+    key = "format",
+    description = "Regular expression used to check the method names against.",
+    defaultValue = DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
@@ -57,16 +57,22 @@ public class BadMethodNameCheck extends IssuableSubscriptionVisitor {
     super.setContext(context);
   }
 
-
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (isNotOverriden(methodTree) && !pattern.matcher(methodTree.simpleName().name()).matches()) {
+    if (!isExcluded(methodTree) && !pattern.matcher(methodTree.simpleName().name()).matches()) {
       reportIssue(methodTree.simpleName(), "Rename this method name to match the regular expression '" + format + "'.");
     }
   }
 
-  private static boolean isNotOverriden(MethodTree methodTree) {
-    return Boolean.FALSE.equals(methodTree.isOverriding());
+  private static boolean isExcluded(MethodTree methodTree) {
+    return !Boolean.FALSE.equals(methodTree.isOverriding()) || isExcludedByAnnotation(methodTree);
+  }
+
+  private static boolean isExcludedByAnnotation(MethodTree methodTree) {
+    return methodTree.modifiers().annotations().stream().anyMatch(
+      // use simple name, so we have no FP on missing semantics
+      it -> "AttributeDefinition".equals(it.annotationType().symbolType().name())
+    );
   }
 }

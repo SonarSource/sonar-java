@@ -1,5 +1,7 @@
-class BadMethodName {
-  public BadMethodName() {
+package checks;
+
+class BadMethodNameCustom extends Bad {
+  public BadMethodNameCustom() {
   }
 
   void Bad() {

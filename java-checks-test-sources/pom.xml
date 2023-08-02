@@ -515,6 +515,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.metatype.annotations</artifactId>
+      <version>1.4.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.equinox</groupId>
       <artifactId>common</artifactId>
       <version>3.6.200-v20130402-1505</version>
