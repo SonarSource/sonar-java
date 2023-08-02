@@ -51,6 +51,7 @@ public class PmdSensor implements Sensor {
   public void describe(SensorDescriptor descriptor) {
     descriptor
       .onlyWhenConfiguration(conf -> conf.hasKey(REPORT_PROPERTY_KEY))
+      .onlyOnLanguage(LANGUAGE_KEY)
       .name("Import of PMD issues");
   }
 
