@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -55,7 +56,7 @@ public class FieldModifierCheck extends IssuableSubscriptionVisitor {
 
   private static boolean hasModifierComment(VariableTree variableTree) {
     for (SyntaxTrivia syntaxTrivia : variableTree.type().lastToken().trivias()) {
-      if (syntaxTrivia.comment().contains("modifier")) {
+      if (syntaxTrivia.comment().toLowerCase(Locale.ROOT).contains("modifier")) {
         return true;
       }
     }
