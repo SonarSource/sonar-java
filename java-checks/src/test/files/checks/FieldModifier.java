@@ -1,4 +1,23 @@
 class A {
+  // intentionally don't have modifier
+  int b; // Compliant
+  // comment
+  int a; // Noncompliant
+
+  // modifier
+  // comment
+  int c; // Compliant
+
+  // comment2
+  // comment
+  int d; // Noncompliant
+
+  // Modifier for visibility intentionally ommitted.
+  int abc;  // Compliant
+
+  // modifierIsIntentionallyOmmited
+  int ab; // Compliant
+
   int member; // Noncompliant [[sc=7;ec=13]] {{Explicitly declare the visibility for "member".}}
   public int member2;
   private int member3;
