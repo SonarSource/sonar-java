@@ -71,7 +71,7 @@ public class ContentHashCache {
       }
       return isHashEqual;
     } catch (IllegalArgumentException e) {
-      LOG.warn(String.format("Could not find key %s in the cache", cacheKey));
+      LOG.trace(String.format("Could not find key %s in the cache", cacheKey));
       writeToCache(inputFile);
     } catch (IOException | NoSuchAlgorithmException e) {
       LOG.warn(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
@@ -98,7 +98,7 @@ public class ContentHashCache {
       writeCache.write(cacheKey, FileHashingUtils.inputFileContentHash(inputFile));
       return true;
     } catch (IllegalArgumentException e) {
-      LOG.warn(String.format("Tried to write multiple times to cache key %s. Ignoring writes after the first.", cacheKey));
+      LOG.trace(String.format("Tried to write multiple times to cache key %s. Ignoring writes after the first.", cacheKey));
     } catch (IOException | NoSuchAlgorithmException e) {
       LOG.warn(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
     }

@@ -63,15 +63,21 @@ class ContentHashCacheTest {
   }
 
   @Test
-  void hasSameHashCached_returns_false_when_content_hash_file_is_not_in_read_cache() {
-    logTester.setLevel(Level.TRACE);
+  void hasSameHashCached_returns_false_when_content_hash_file_is_not_in_read_cache_with_proper_logging() {
+    String[] messages = new String[]{
+      "Could not find key java:contentHash:MD5:" + inputFile.key() + " in the cache",
+      "Reading cache for the file " + inputFile.key(),
+      "Writing to the cache for file " + inputFile.key()
+    };
+    assertThat(hasSameHashCached_returns_false_when_content_hash_file_is_not_in_read_cache(Level.TRACE)).contains(messages);
+    assertThat(hasSameHashCached_returns_false_when_content_hash_file_is_not_in_read_cache(Level.WARN)).doesNotContain(messages);
+  }
+
+  private List<String> hasSameHashCached_returns_false_when_content_hash_file_is_not_in_read_cache(Level level) {
+    logTester.setLevel(level);
     ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTesterWithEmptyCache(true));
     Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile));
-
-    List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
-    assertThat(logs).
-      contains("Reading cache for the file " + inputFile.key(),
-        "Writing to the cache for file " + inputFile.key());
+    return logTester.getLogs(level).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
   }
 
   @Test
@@ -176,19 +182,26 @@ class ContentHashCacheTest {
   }
 
   @Test
-  void writeToCache_returns_false_when_writing_to_cache_throws_exception() throws IOException, NoSuchAlgorithmException {
-    logTester.setLevel(Level.WARN);
+  void writeToCache_returns_false_when_writing_to_cache_throws_exception_with_proper_logging() throws IOException,
+    NoSuchAlgorithmException {
+    String message = "Tried to write multiple times to cache key java:contentHash:MD5:" + inputFile.key() + ". Ignoring writes after the " +
+      "first.";
+    assertThat(writeToCache_returns_false_when_writing_to_cache_throws_exception(Level.TRACE)).contains(message);
+    assertThat(writeToCache_returns_false_when_writing_to_cache_throws_exception(Level.WARN)).doesNotContain(message);
+  }
+
+  private List<String> writeToCache_returns_false_when_writing_to_cache_throws_exception(Level level) throws IOException,
+    NoSuchAlgorithmException {
+    logTester.setLevel(level);
     SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
     sensorContext.setCacheEnabled(true);
     WriteCache writeCache = mock(WriteCache.class);
     sensorContext.setNextCache(writeCache);
-    doThrow(new IllegalArgumentException()).when(writeCache).write("java:contentHash:MD5:" + inputFile.key(), FileHashingUtils.inputFileContentHash(file.getPath()));
+    doThrow(new IllegalArgumentException()).when(writeCache).write("java:contentHash:MD5:" + inputFile.key(),
+      FileHashingUtils.inputFileContentHash(file.getPath()));
     ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
     Assertions.assertFalse(contentHashCache.writeToCache(inputFile));
-
-    List<String> logs = logTester.getLogs(Level.WARN).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
-    assertThat(logs).
-      contains("Tried to write multiple times to cache key java:contentHash:MD5:" + inputFile.key() + ". Ignoring writes after the first.");
+    return logTester.getLogs(level).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
   }
 
   @Test
