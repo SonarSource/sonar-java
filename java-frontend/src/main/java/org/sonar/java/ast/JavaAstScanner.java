@@ -130,7 +130,8 @@ public class JavaAstScanner {
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
       visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
-      collectUndefinedTypes(ast.sema.undefinedTypes());
+      // TODO keep track of file name for better logging SONARJAVA-4559
+      collectUndefinedTypes(inputFile.filename(), ast.sema.undefinedTypes());
       cleanUp.accept(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);
@@ -155,6 +156,12 @@ public class JavaAstScanner {
   }
 
   private void collectUndefinedTypes(Set<JProblem> undefinedTypes) {
+    if (sonarComponents != null) {
+      sonarComponents.collectUndefinedTypes(undefinedTypes);
+    }
+  }
+
+  private void collectUndefinedTypes(String filename, Set<JProblem> undefinedTypes) {
     if (sonarComponents != null) {
       sonarComponents.collectUndefinedTypes(undefinedTypes);
     }

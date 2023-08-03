@@ -884,6 +884,31 @@ class SonarComponentsTest {
     }
 
     @Test
+    void filename_is_prepended_to_undefined_types_logs() {
+      String source = generateSource(26);
+      String filename = "org/sonarsource/package/MyFile.java";
+      sonarComponents.collectUndefinedTypes(
+        filename,
+        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes()
+      );
+      sonarComponents.logUndefinedTypes();
+
+      assertThat(logTester.logs(Level.WARN)).containsExactly("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
+
+      List<String> debugLogs = logTester.logs(Level.DEBUG);
+      assertThat(debugLogs).hasSize(1);
+
+      List<String> debugLines = Arrays.stream(debugLogs.get(0)
+          .split("\\n"))
+        .skip(1)
+        .filter(line -> !"- ...".equals(line))
+        .collect(Collectors.toList());
+      assertThat(debugLines)
+        .hasSize(50)
+        .allMatch(line -> line.startsWith("- org/sonarsource/package/MyFile.java - "));
+    }
+
+    @Test
     void log_only_50_undefined_types() {
       String source = generateSource(26);
 

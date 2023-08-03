@@ -105,7 +105,8 @@ public class SonarComponents {
 
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
-  private final Set<JProblem> undefinedTypes = new HashSet<>();
+  private final HashMap<String, Set<JProblem>> undefinedTypes = new HashMap<>();
+  private final static String FILENAME_FREE_JPROBLEM = "FILENAME_FREE_JPROBLEM";
 
   private final CheckFactory checkFactory;
   @Nullable
@@ -495,44 +496,57 @@ public class SonarComponents {
   }
 
   public void collectUndefinedTypes(Set<JProblem> undefinedTypes) {
-    this.undefinedTypes.addAll(undefinedTypes);
+    collectUndefinedTypes(FILENAME_FREE_JPROBLEM, undefinedTypes);
+  }
+
+  public void collectUndefinedTypes(String filename, Set<JProblem> jProblems) {
+    this.undefinedTypes.computeIfAbsent(filename, key -> new HashSet<>())
+      .addAll(jProblems);
   }
 
   public void logUndefinedTypes() {
-    if (!undefinedTypes.isEmpty()) {
-      javaClasspath.logSuspiciousEmptyLibraries();
-      if (!isAutoScan()) {
-        // In autoscan, test + main code are analyzed in the same batch, and we do not make the distinction between
-        // test and main libraries, everything is inside "sonar.java.libraries", it is expected to let the test property empty.
-        javaTestClasspath.logSuspiciousEmptyLibraries();
-      }
-      logUndefinedTypes(LOGGED_MAX_NUMBER_UNDEFINED_TYPES);
-
-      // clear the set so only new undefined types will be logged
-      undefinedTypes.clear();
+    if (undefinedTypes.isEmpty()) {
+      return;
     }
+    javaClasspath.logSuspiciousEmptyLibraries();
+    if (!isAutoScan()) {
+      // In autoscan, test + main code are analyzed in the same batch, and we do not make the distinction between
+      // test and main libraries, everything is inside "sonar.java.libraries", it is expected to let the test property empty.
+      javaTestClasspath.logSuspiciousEmptyLibraries();
+    }
+    logUndefinedTypes(LOGGED_MAX_NUMBER_UNDEFINED_TYPES);
+
+    // clear the set so only new undefined types will be logged
+    undefinedTypes.clear();
   }
 
   private void logUndefinedTypes(int maxLines) {
-    logParserMessages(
-      undefinedTypes.stream()
-        .filter(m -> m.type() == JProblem.Type.UNDEFINED_TYPE),
-      maxLines,
-      "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.",
-      "Unresolved imports/types:"
-    );
-    logParserMessages(
-      undefinedTypes.stream()
-        .filter(m -> m.type() == JProblem.Type.PREVIEW_FEATURE_USED),
-      maxLines,
-      "Use of preview features have been detected during analysis. Enable DEBUG mode to see them.",
-      "Use of preview features:"
-    );
+    HashSet<JProblem> allProblems = undefinedTypes.values().stream()
+      .collect(HashSet::new, Set::addAll, Set::addAll);
+    for (String filename: undefinedTypes.keySet()) {
+      logParserMessages(
+        filename,
+        allProblems.stream()
+          .filter(m -> m.type() == JProblem.Type.UNDEFINED_TYPE),
+        maxLines,
+        "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.",
+        "Unresolved imports/types:"
+      );
+      logParserMessages(
+        filename,
+        allProblems.stream()
+          .filter(m -> m.type() == JProblem.Type.PREVIEW_FEATURE_USED),
+        maxLines,
+        "Use of preview features have been detected during analysis. Enable DEBUG mode to see them.",
+        "Use of preview features:"
+      );
+    }
   }
 
-  private static void logParserMessages(Stream<JProblem> messages, int maxLines, String warningMessage, String debugMessage) {
+  private static void logParserMessages(@Nullable String filemane, Stream<JProblem> messages, int maxLines, String warningMessage, String debugMessage) {
     final List<String> messagesList = messages
       .map(Object::toString)
+      .map(message -> filemane != null ? filemane + " - " + message : message)
       .sorted()
       .collect(Collectors.toList());
     int messagesListSize = messagesList.size();
@@ -561,4 +575,5 @@ public class SonarComponents {
   public SensorContext context() {
     return context;
   }
+
 }
