@@ -1,10 +1,7 @@
 <h2>Why is this an issue?</h2>
 <p>Spring <code>@Component</code>, <code>@Controller</code>, <code>@Service</code>, and <code>@Repository</code> classes are singletons by default,
 meaning only one instance of the class is ever instantiated in the application. Typically such a class might have a few <code>static</code> members,
-such as a logger, but all non-<code>static</code> members should be managed by Spring. That is, they should have one of these annotations:
-<code>@Resource</code>, <code>@Inject</code>, <code>@Autowired</code> or <code>@Value</code>.</p>
-<p>Having non-injected members in one of these classes could indicate an attempt to manage state. Because they are singletons, such an attempt is
-almost guaranteed to eventually expose data from User1’s session to User2.</p>
+such as a logger, but all non-<code>static</code> members should be managed by Spring.</p>
 <p>This rule raises an issue when a singleton <code>@Component</code>, <code>@Controller</code>, <code>@Service</code>, or <code>@Repository</code>,
 not annotated with <code>@ConfigurationProperties</code>, has non-<code>static</code> members that are not annotated with one of:</p>
 <ul>
@@ -13,7 +10,11 @@ not annotated with <code>@ConfigurationProperties</code>, has non-<code>static</
   <li> <code>javax.annotation.Inject</code> </li>
   <li> <code>javax.annotation.Resource</code> </li>
 </ul>
-<h3>Noncompliant code example</h3>
+<h2>How to fix it</h2>
+<p>Add one of these annotations to all non-<code>static</code> members: <code>@Resource</code>, <code>@Inject</code>, <code>@Autowired</code> or
+<code>@Value</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre>
 @Controller
 public class HelloWorld {

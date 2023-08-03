@@ -1,6 +1,6 @@
 {
   "title": "Members of Spring components should be injected",
-  "type": "VULNERABILITY",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -13,10 +13,5 @@
   "ruleSpecification": "RSPEC-3749",
   "sqKey": "S3749",
   "scope": "Main",
-  "securityStandards": {
-    "OWASP": [
-      "A3"
-    ]
-  },
   "quickfix": "unknown"
 }
