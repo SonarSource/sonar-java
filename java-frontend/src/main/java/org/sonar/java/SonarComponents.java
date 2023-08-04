@@ -110,7 +110,7 @@ public class SonarComponents {
 
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
-  private final HashMap<String, Set<JProblem>> undefinedTypes = new HashMap<>();
+  private final Map<String, Set<JProblem>> undefinedTypes = new HashMap<>();
 
   private final CheckFactory checkFactory;
   @Nullable
