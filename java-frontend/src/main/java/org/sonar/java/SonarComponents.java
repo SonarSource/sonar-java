@@ -95,6 +95,11 @@ public class SonarComponents {
    * Setting it to true or false, forces the behavior from the analyzer independently of the server.
    */
   public static final String SONAR_CAN_SKIP_UNCHANGED_FILES_KEY = "sonar.java.skipUnchanged";
+  /**
+   * When logging jproblems reported by the ECJ parser, messages should be prefixed with the related filename.
+   * When this filename is missing, this constant should be used instead.
+   */
+  private static final String JPROBLEM_WITHOUT_FILENAME = "No file specified";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
@@ -106,7 +111,6 @@ public class SonarComponents {
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
   private final HashMap<String, Set<JProblem>> undefinedTypes = new HashMap<>();
-  private final static String FILENAME_FREE_JPROBLEM = "No file specified";
 
   private final CheckFactory checkFactory;
   @Nullable
@@ -496,7 +500,7 @@ public class SonarComponents {
   }
 
   public void collectUndefinedTypes(Set<JProblem> undefinedTypes) {
-    collectUndefinedTypes(FILENAME_FREE_JPROBLEM, undefinedTypes);
+    collectUndefinedTypes(JPROBLEM_WITHOUT_FILENAME, undefinedTypes);
   }
 
   public void collectUndefinedTypes(String filename, Set<JProblem> jProblems) {

@@ -898,8 +898,7 @@ class SonarComponentsTest {
       List<String> debugLogs = logTester.logs(Level.DEBUG);
       assertThat(debugLogs).hasSize(1);
 
-      List<String> debugLines = Arrays.stream(debugLogs.get(0)
-          .split("\\n"))
+      List<String> debugLines = Arrays.stream(debugLogs.get(0).split("\\n"))
         .skip(1)
         .filter(line -> !"- ...".equals(line))
         .collect(Collectors.toList());
