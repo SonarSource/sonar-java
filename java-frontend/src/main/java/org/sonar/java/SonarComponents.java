@@ -106,7 +106,7 @@ public class SonarComponents {
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
   private final HashMap<String, Set<JProblem>> undefinedTypes = new HashMap<>();
-  private final static String FILENAME_FREE_JPROBLEM = "FILENAME_FREE_JPROBLEM";
+  private final static String FILENAME_FREE_JPROBLEM = "No file specified";
 
   private final CheckFactory checkFactory;
   @Nullable
@@ -543,10 +543,10 @@ public class SonarComponents {
     }
   }
 
-  private static void logParserMessages(@Nullable String filemane, Stream<JProblem> messages, int maxLines, String warningMessage, String debugMessage) {
+  private static void logParserMessages(String filename, Stream<JProblem> messages, int maxLines, String warningMessage, String debugMessage) {
     final List<String> messagesList = messages
       .map(Object::toString)
-      .map(message -> filemane != null ? filemane + " - " + message : message)
+      .map(message -> filename + " - " + message)
       .sorted()
       .collect(Collectors.toList());
     int messagesListSize = messagesList.size();

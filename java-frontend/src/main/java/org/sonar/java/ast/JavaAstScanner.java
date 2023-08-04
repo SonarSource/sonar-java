@@ -155,15 +155,9 @@ public class JavaAstScanner {
     ast.sema.getEnvironmentCleaner().run();
   }
 
-  private void collectUndefinedTypes(Set<JProblem> undefinedTypes) {
-    if (sonarComponents != null) {
-      sonarComponents.collectUndefinedTypes(undefinedTypes);
-    }
-  }
-
   private void collectUndefinedTypes(String filename, Set<JProblem> undefinedTypes) {
     if (sonarComponents != null) {
-      sonarComponents.collectUndefinedTypes(undefinedTypes);
+      sonarComponents.collectUndefinedTypes(filename, undefinedTypes);
     }
   }
 
