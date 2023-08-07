@@ -1,12 +1,6 @@
 {
   "title": "\"ScheduledThreadPoolExecutor\" should not have 0 core threads",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "HIGH"
-    },
-    "attribute": "LOGICAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

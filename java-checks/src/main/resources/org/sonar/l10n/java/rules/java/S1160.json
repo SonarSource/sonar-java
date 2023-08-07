@@ -1,12 +1,6 @@
 {
   "title": "Public methods should throw at most one checked exception",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
-    },
-    "attribute": "FOCUSED"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

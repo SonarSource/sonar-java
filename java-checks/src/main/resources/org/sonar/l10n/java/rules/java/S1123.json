@@ -1,12 +1,6 @@
 {
   "title": "Deprecated elements should have both the annotation and the Javadoc tag",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
-    },
-    "attribute": "CLEAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

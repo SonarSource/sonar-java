@@ -1,12 +1,6 @@
 {
   "title": "XML parsers should not be vulnerable to Denial of Service attacks",
   "type": "VULNERABILITY",
-  "code": {
-    "impacts": {
-      "SECURITY": "MEDIUM"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,12 +1,6 @@
 {
   "title": "Mobile database encryption keys should not be disclosed",
   "type": "VULNERABILITY",
-  "code": {
-    "impacts": {
-      "SECURITY": "MEDIUM"
-    },
-    "attribute": "TRUSTWORTHY"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

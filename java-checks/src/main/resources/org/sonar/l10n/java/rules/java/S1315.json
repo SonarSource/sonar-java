@@ -1,12 +1,6 @@
 {
   "title": "Track uses of \"CHECKSTYLE:OFF\" suppression comments",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "CONVENTIONAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

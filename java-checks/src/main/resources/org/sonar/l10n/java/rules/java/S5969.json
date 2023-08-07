@@ -1,12 +1,6 @@
 {
   "title": "Mocking all non-private methods of a class should be avoided",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "HIGH"
-    },
-    "attribute": "FOCUSED"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,12 +1,6 @@
 {
   "title": "Passwords should not be stored in plain-text or with a fast hashing algorithm",
   "type": "VULNERABILITY",
-  "code": {
-    "impacts": {
-      "SECURITY": "HIGH"
-    },
-    "attribute": "TRUSTWORTHY"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

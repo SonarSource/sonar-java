@@ -1,12 +1,6 @@
 {
   "title": "Cipher Block Chaining IVs should be unpredictable",
   "type": "VULNERABILITY",
-  "code": {
-    "impacts": {
-      "SECURITY": "HIGH"
-    },
-    "attribute": "TRUSTWORTHY"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

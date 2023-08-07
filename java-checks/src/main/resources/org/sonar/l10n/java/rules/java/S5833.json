@@ -1,12 +1,6 @@
 {
   "title": "AssertJ methods setting the assertion context should come before an assertion",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "LOGICAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,12 +1,6 @@
 {
   "title": "Avoid using boxed \"Boolean\" types directly in boolean expressions",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

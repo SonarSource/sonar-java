@@ -1,12 +1,6 @@
 {
   "title": "\"default\" clauses should be last",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "HIGH"
-    },
-    "attribute": "FORMATTED"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

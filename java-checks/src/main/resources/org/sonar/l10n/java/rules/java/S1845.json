@@ -1,12 +1,6 @@
 {
   "title": "Methods and field names should not be the same or differ only by capitalization",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "HIGH"
-    },
-    "attribute": "IDENTIFIABLE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

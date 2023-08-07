@@ -1,12 +1,6 @@
 {
   "title": "Catches should be combined",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "DISTINCT"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

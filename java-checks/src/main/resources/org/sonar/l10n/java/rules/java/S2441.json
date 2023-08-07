@@ -1,12 +1,6 @@
 {
   "title": "Non-serializable objects should not be stored in \"javax.servlet.http.HttpSession\" instances",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

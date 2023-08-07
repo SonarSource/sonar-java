@@ -1,12 +1,6 @@
 {
   "title": "Classes should not be coupled to too many other classes (Single Responsibility Principle)",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
-    },
-    "attribute": "FOCUSED"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,12 +1,6 @@
 {
   "title": "Indexes to passed to \"String\" operations should be within the string\u0027s bounds",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "LOGICAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,12 +1,6 @@
 {
   "title": "Array designators \"[]\" should be on the type, not the variable",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "FORMATTED"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,12 +1,6 @@
 {
   "title": "Exceptions should not be thrown from servlet methods",
   "type": "VULNERABILITY",
-  "code": {
-    "impacts": {
-      "SECURITY": "LOW"
-    },
-    "attribute": "CONVENTIONAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

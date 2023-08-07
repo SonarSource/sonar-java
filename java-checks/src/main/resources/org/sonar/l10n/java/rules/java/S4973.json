@@ -1,12 +1,6 @@
 {
   "title": "Strings and Boxed types should be compared using \"equals()\"",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "LOGICAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

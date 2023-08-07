@@ -1,12 +1,6 @@
 {
   "title": "\"SecureRandom\" seeds should not be predictable",
   "type": "VULNERABILITY",
-  "code": {
-    "impacts": {
-      "SECURITY": "HIGH"
-    },
-    "attribute": "LOGICAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

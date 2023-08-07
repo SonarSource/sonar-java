@@ -1,12 +1,6 @@
 {
   "title": "Insecure temporary file creation methods should not be used",
   "type": "VULNERABILITY",
-  "code": {
-    "impacts": {
-      "SECURITY": "HIGH"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

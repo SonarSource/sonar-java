@@ -1,12 +1,6 @@
 {
   "title": "\"InterruptedException\" and \"ThreadDeath\" should not be ignored",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

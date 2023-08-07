@@ -1,12 +1,6 @@
 {
   "title": "The names of methods with boolean return values should start with \"is\" or \"has\"",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
-    },
-    "attribute": "IDENTIFIABLE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

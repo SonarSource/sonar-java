@@ -1,12 +1,6 @@
 {
   "title": "Related \"if\/else if\" statements should not have the same condition",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "LOGICAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

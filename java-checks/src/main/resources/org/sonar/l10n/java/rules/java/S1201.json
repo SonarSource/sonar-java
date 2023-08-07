@@ -1,12 +1,6 @@
 {
   "title": "\"equals\" method overrides should accept \"Object\" parameters",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "CLEAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,12 +1,6 @@
 {
   "title": "Non-existent operators like \"\u003d+\" should not be used",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "CLEAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

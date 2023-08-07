@@ -1,12 +1,6 @@
 {
   "title": "Custom getter method should not be used to override record\u0027s getter behavior",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
-    },
-    "attribute": "CLEAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

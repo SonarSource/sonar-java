@@ -1,12 +1,6 @@
 {
   "title": "\"StringBuilder\" and \"StringBuffer\" should not be instantiated with a character ",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "CLEAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

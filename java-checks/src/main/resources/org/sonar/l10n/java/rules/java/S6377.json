@@ -1,12 +1,6 @@
 {
   "title": "XML signatures should be validated securely",
   "type": "VULNERABILITY",
-  "code": {
-    "impacts": {
-      "SECURITY": "MEDIUM"
-    },
-    "attribute": "CONVENTIONAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

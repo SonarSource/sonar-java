@@ -1,12 +1,6 @@
 {
   "title": "OpenSAML2 should be configured to prevent authentication bypass",
   "type": "VULNERABILITY",
-  "code": {
-    "impacts": {
-      "SECURITY": "MEDIUM"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
