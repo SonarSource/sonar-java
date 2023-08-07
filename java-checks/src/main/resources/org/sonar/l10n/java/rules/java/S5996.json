@@ -1,6 +1,12 @@
 {
   "title": "Regex boundaries should not be used in a way that can never be matched",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

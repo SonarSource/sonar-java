@@ -1,6 +1,12 @@
 {
   "title": "\"Stream.toList()\" method should be used instead of \"collectors\" when unmodifiable list needed",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

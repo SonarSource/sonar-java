@@ -1,7 +1,13 @@
 {
   "title": "XML parsers should not load external schemas",
   "type": "VULNERABILITY",
-  "status": "ready",
+  "code": {
+    "impacts": {
+      "SECURITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  },
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"

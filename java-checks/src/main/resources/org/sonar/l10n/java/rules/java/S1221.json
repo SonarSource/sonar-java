@@ -1,6 +1,12 @@
 {
   "title": "Methods should not be named \"tostring\", \"hashcode\" or \"equal\"",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

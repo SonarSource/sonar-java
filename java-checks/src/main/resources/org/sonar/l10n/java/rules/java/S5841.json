@@ -1,6 +1,12 @@
 {
   "title": "AssertJ assertions \"allMatch\" and \"doesNotContains\" should also test for emptiness",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

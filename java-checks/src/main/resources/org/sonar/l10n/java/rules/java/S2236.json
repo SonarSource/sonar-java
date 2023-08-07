@@ -1,6 +1,12 @@
 {
   "title": "Methods \"wait(...)\", \"notify()\" and \"notifyAll()\" should not be called on Thread instances",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

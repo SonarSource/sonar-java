@@ -1,6 +1,12 @@
 {
   "title": "Character classes should be preferred over reluctant quantifiers in regular expressions",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

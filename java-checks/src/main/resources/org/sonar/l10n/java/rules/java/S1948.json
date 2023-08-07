@@ -1,6 +1,12 @@
 {
   "title": "Fields in a \"Serializable\" class should either be transient or serializable",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

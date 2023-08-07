@@ -1,6 +1,12 @@
 {
   "title": "Source code should be indented consistently",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "FORMATTED"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,6 +1,12 @@
 {
   "title": "Classes should not depend on an excessive number of classes (aka Monster Class)",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "MODULAR"
+  },
   "status": "beta",
   "remediation": {
     "func": "Constant\/Issue",

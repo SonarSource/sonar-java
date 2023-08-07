@@ -1,6 +1,12 @@
 {
   "title": "\"private\" and \"final\" methods that don\u0027t access instance data should be \"static\"",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

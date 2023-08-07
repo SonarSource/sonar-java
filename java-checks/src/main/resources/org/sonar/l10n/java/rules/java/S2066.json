@@ -1,6 +1,12 @@
 {
   "title": "\"Serializable\" inner classes of non-serializable outer classes should be \"static\"",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,6 +1,12 @@
 {
   "title": "Interfaces should not solely consist of constants",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "MODULAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

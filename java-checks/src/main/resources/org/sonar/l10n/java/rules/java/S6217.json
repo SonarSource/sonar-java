@@ -1,6 +1,12 @@
 {
   "title": "Permitted types of a sealed class should be omitted if they are declared in the same file",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

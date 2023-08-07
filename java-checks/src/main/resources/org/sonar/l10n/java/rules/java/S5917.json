@@ -1,6 +1,12 @@
 {
   "title": "DateTimeFormatters should not use mismatched year and week numbers",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,6 +1,12 @@
 {
   "title": "Exceptions should be either logged or rethrown but not both",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "DISTINCT"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

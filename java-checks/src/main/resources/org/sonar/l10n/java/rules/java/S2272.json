@@ -1,6 +1,12 @@
 {
   "title": "\"Iterator.next()\" methods should throw \"NoSuchElementException\"",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

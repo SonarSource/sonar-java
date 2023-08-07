@@ -1,6 +1,12 @@
 {
   "title": "\"Object.wait(...)\" and \"Condition.await(...)\" should be called inside a \"while\" loop",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

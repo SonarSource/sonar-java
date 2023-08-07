@@ -1,6 +1,12 @@
 {
   "title": "Persistent entities should not be used as arguments of \"@RequestMapping\" methods",
   "type": "VULNERABILITY",
+  "code": {
+    "impacts": {
+      "SECURITY": "HIGH"
+    },
+    "attribute": "CONVENTIONAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
