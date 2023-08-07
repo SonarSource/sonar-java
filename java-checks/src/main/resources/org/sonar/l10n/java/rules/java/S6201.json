@@ -1,6 +1,12 @@
 {
   "title": "Pattern Matching for \"instanceof\" operator should be used instead of simple \"instanceof\" + cast",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

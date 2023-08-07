@@ -1,6 +1,12 @@
 {
   "title": "Class members annotated with \"@VisibleForTesting\" should not be accessed from production code",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "CONVENTIONAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

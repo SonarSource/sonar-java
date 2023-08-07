@@ -1,6 +1,12 @@
 {
   "title": "The default unnamed package should not be used",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "MODULAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

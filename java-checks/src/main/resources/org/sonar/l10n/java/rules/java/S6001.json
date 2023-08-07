@@ -1,6 +1,12 @@
 {
   "title": "Back references in regular expressions should only refer to capturing groups that are matched before the reference",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

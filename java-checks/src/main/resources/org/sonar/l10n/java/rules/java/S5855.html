@@ -1,15 +1,17 @@
+<p>This rule raises an issue when multiple branches of a regex alternative match the same input.</p>
 <h2>Why is this an issue?</h2>
 <p>If an alternative in a regular expression only matches things that are already matched by another alternative, that alternative is redundant and
 serves no purpose.</p>
 <p>In the best case this means that the offending subpattern is merely redundant and should be removed. In the worst case it’s a sign that this regex
 does not match what it was intended to match and should be reworked.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-"[ab]|a"   // The "|a" is redundant because "[ab]" already matches "a"
-".*|a"     // .* matches everything, so any other alternative is redundant
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+"[ab]|a"   // Noncompliant: the "|a" is redundant because "[ab]" already matches "a"
+".*|a"     // Noncompliant: .* matches everything, so any other alternative is redundant
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 "[ab]"
 ".*"
 </pre>

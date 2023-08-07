@@ -1,6 +1,12 @@
 {
   "title": "Assignment of lazy-initialized members should be the last step with double-checked locking",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

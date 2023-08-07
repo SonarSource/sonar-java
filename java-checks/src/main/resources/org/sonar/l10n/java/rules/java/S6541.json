@@ -1,6 +1,12 @@
 {
   "title": "Methods should not perform too many tasks (aka Brain method)",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "FOCUSED"
+  },
   "status": "beta",
   "remediation": {
     "func": "Constant\/Issue",

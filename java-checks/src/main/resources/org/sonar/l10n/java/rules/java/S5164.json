@@ -1,6 +1,12 @@
 {
   "title": "\"ThreadLocal\" variables should be cleaned up when no longer used ",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

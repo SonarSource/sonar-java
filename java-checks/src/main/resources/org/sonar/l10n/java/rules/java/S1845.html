@@ -1,3 +1,4 @@
+<p>This rule raises an issue when there is a method and a field in a class with names that differ only by capitalization.</p>
 <h2>Why is this an issue?</h2>
 <p>Looking at the set of methods in a class, including superclass methods, and finding two methods or fields that differ only by capitalization is
 confusing to users of the class. It is similarly confusing to have a method and a field which differ only in capitalization or a method and a field
@@ -7,8 +8,9 @@ added a new method with nearly the same name.</p>
 <p>Otherwise, this situation simply indicates poor naming. Method names should be action-oriented, and thus contain a verb, which is unlikely in the
 case where both a method and a member have the same name (with or without capitalization differences). However, renaming a public method could be
 disruptive to callers. Therefore renaming the member is the recommended action.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Car{
 
   public DriveTrain drive;
@@ -26,8 +28,8 @@ public class MyCar extends Car{
   public void driveFast(){...} //Huh?
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class Car{
 
   private DriveTrain drive;

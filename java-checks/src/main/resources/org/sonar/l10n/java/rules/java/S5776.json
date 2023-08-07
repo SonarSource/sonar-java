@@ -1,6 +1,12 @@
 {
   "title": "Exception testing via JUnit ExpectedException rule should not be mixed with other assertions",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,6 +1,12 @@
 {
   "title": "Dissimilar primitive wrappers should not be used with the ternary operator without explicit casting",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

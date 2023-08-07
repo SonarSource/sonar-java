@@ -1,6 +1,12 @@
 {
   "title": "\"toString()\" and \"clone()\" methods should not return null",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

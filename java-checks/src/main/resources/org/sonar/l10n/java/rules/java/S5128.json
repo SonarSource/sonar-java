@@ -1,6 +1,12 @@
 {
   "title": "\"Bean Validation\" (JSR 380) should be properly configured",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,6 +1,12 @@
 {
   "title": "Primitive wrappers should not be instantiated only for \"toString\" or \"compareTo\" calls",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,6 +1,12 @@
 {
   "title": "Derived exceptions should not hide their parents\u0027 catch blocks",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

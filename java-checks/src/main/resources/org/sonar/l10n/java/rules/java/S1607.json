@@ -1,6 +1,12 @@
 {
   "title": "JUnit4 @Ignored and JUnit5 @Disabled annotations should be used to disable tests and should provide a rationale",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "TESTED"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

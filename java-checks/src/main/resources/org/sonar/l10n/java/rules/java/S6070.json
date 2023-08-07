@@ -1,6 +1,12 @@
 {
   "title": "The regex escape sequence \\cX should only be used with characters in the @-_ range",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

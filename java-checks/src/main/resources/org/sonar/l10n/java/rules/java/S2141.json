@@ -1,6 +1,12 @@
 {
   "title": "Classes that don\u0027t define \"hashCode()\" should not be used in hashes",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
