@@ -1,12 +1,6 @@
 {
   "title": "\"Random\" objects should be reused",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "HIGH"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

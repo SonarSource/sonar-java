@@ -1,12 +1,6 @@
 {
   "title": "Whitespace for text block indent should be consistent",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
-    },
-    "attribute": "FORMATTED"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

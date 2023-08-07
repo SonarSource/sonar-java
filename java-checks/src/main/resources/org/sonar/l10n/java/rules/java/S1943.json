@@ -1,12 +1,6 @@
 {
   "title": "Classes and methods that rely on the default system encoding should not be used",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "CONVENTIONAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,12 +1,6 @@
 {
   "title": "Files opened in append mode should not be used with \"ObjectOutputStream\"",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "HIGH"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

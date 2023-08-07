@@ -1,12 +1,6 @@
 {
   "title": "JUnit5 test classes and methods should not be silently ignored",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "TESTED"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

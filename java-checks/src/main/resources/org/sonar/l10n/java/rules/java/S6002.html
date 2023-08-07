@@ -1,20 +1,14 @@
-<p>This rule raises an issue when a regex lookahead contradicts the rest of the regex.</p>
 <h2>Why is this an issue?</h2>
 <p>Lookahead assertions are a regex feature that makes it possible to look ahead in the input without consuming it. It is often used at the end of
 regular expressions to make sure that substrings only match when they are followed by a specific pattern.</p>
-<p>For example, the following pattern will match an "a" only if it is directly followed by a "b". This does not consume the "b" in the process:</p>
-<pre>
-Pattern.compile("a(?=b)");
-</pre>
-<p>However, lookaheads can also be used in the middle (or at the beginning) of a regex. In that case there is the possibility that what comes after
-the lookahead contradicts the pattern inside the lookahead. Since the lookahead does not consume input, this makes the lookahead impossible to match
-and is a sign that there’s a mistake in the regular expression that should be fixed.</p>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
+<p>However, they can also be used in the middle (or at the beginning) of a regex. In that case there is the possibility that what comes after the
+lookahead does not match the pattern inside the lookahead. This makes the lookahead impossible to match and is a sign that there’s a mistake in the
+regular expression that should be fixed.</p>
+<h3>Noncompliant code example</h3>
 <pre>
 Pattern.compile("(?=a)b"); // Noncompliant, the same character can't be equal to 'a' and 'b' at the same time
 </pre>
-<h4>Compliant solution</h4>
+<h3>Compliant solution</h3>
 <pre>
 Pattern.compile("(?&lt;=a)b");
 Pattern.compile("a(?=b)");

@@ -1,12 +1,6 @@
 {
   "title": "Subclasses that add fields to classes that override \"equals\" should also override \"equals\"",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

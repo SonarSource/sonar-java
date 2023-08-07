@@ -1,12 +1,6 @@
 {
   "title": "\"private\" methods called only by inner classes should be moved to those classes",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "CLEAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

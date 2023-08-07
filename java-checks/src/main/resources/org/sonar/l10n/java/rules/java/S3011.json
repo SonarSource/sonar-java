@@ -1,12 +1,6 @@
 {
   "title": "Reflection should not be used to increase accessibility of classes, methods, or fields",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
-    },
-    "attribute": "MODULAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

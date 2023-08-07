@@ -1,12 +1,6 @@
 {
   "title": "Raw byte values should not be used in bitwise operations in combination with shifts",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "LOGICAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

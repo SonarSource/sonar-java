@@ -1,12 +1,10 @@
-<p>This rule raises an issue when an overriding method changes a contract defined in a superclass.</p>
 <h2>Why is this an issue?</h2>
 <p>Because a subclass instance may be cast to and treated as an instance of the superclass, overriding methods should uphold the aspects of the
 superclass contract that relate to the Liskov Substitution Principle. Specifically, if the parameters or return type of the superclass method are
 marked with any of the following: <code>@Nullable</code>, <code>@CheckForNull</code>, <code>@NotNull</code>, <code>@NonNull</code>, and
 <code>@Nonnull</code>, then subclass parameters are not allowed to tighten the contract, and return values are not allowed to loosen it.</p>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<h3>Noncompliant code example</h3>
+<pre>
 public class Fruit {
 
   private Season ripe;
@@ -23,45 +21,17 @@ public class Fruit {
 
 public class Raspberry extends Fruit {
 
-  public void setRipe(@NotNull Season ripe) {  // Noncompliant: the ripe argument annotated as @Nullable in parent class
+  public void setRipe(@NotNull Season ripe) {  // Noncompliant
     this.ripe = ripe;
   }
 
-  public @Nullable Integer getProtein() {  // Noncompliant: the return type annotated as @NotNull in parent class
+  public @Nullable Integer getProtein() {  // Noncompliant
     return null;
   }
 }
 </pre>
-<h4>Compliant solution</h4>
-<pre data-diff-id="1" data-diff-type="compliant">
-public class Fruit {
-
-  private Season ripe;
-  private String color;
-
-  public void setRipe(@Nullable Season ripe) {
-    this.ripe = ripe;
-  }
-
-  public @NotNull Integer getProtein() {
-    return 12;
-  }
-}
-
-public class Raspberry extends Fruit {
-
-  public void setRipe(@Nullable Season ripe) {
-    this.ripe = ripe;
-  }
-
-  public @NotNull Integer getProtein() {
-    return 12;
-  }
-}
-</pre>
 <h2>Resources</h2>
-<h3>Documentation</h3>
 <ul>
-  <li> SOLID - <a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle">Wikipedia - Liskov substitution principle</a> </li>
+  <li> <a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle">Wikipedia - Liskov substitution principle</a> </li>
 </ul>
 

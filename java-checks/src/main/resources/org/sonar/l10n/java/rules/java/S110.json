@@ -1,12 +1,6 @@
 {
   "title": "Inheritance tree of classes should not be too deep",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
-    },
-    "attribute": "FOCUSED"
-  },
   "status": "ready",
   "remediation": {
     "func": "Linear with offset",

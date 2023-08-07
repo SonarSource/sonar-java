@@ -1,12 +1,6 @@
 {
   "title": "\u0027serialVersionUID\u0027 field should not be set to \u00270L\u0027 in records",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "CLEAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

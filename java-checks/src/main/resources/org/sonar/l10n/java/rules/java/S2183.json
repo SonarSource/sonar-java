@@ -1,12 +1,6 @@
 {
   "title": "Ints and longs should not be shifted by zero or more than their number of bits-1",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "LOW"
-    },
-    "attribute": "CLEAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

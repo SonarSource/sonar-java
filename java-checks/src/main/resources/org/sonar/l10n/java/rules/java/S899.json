@@ -1,12 +1,6 @@
 {
   "title": "Return values should not be ignored when they contain the operation status code",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "LOW"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

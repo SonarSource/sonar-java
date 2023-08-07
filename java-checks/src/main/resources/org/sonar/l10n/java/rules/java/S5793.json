@@ -1,12 +1,6 @@
 {
   "title": "Migrate your tests from JUnit4 to the new JUnit5 annotations",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "CONVENTIONAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

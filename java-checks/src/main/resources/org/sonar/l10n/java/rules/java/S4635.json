@@ -1,12 +1,6 @@
 {
   "title": "String offset-based methods should be preferred for finding substrings from offsets",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "HIGH"
-    },
-    "attribute": "EFFICIENT"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

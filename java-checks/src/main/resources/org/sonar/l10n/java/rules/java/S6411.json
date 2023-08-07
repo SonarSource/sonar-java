@@ -1,12 +1,6 @@
 {
   "title": "Types used as keys in Maps should implement Comparable",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
-    },
-    "attribute": "EFFICIENT"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

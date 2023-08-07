@@ -1,12 +1,6 @@
 {
   "title": "An open curly brace should be located at the end of a line",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "FORMATTED"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

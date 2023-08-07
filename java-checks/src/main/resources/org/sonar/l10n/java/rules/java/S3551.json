@@ -1,12 +1,6 @@
 {
   "title": "Overrides should match their parent class methods in synchronization",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "MODULAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

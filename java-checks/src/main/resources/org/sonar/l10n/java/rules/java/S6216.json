@@ -1,12 +1,6 @@
 {
   "title": "Reflection should not be used to increase accessibility of records\u0027 fields",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "LOGICAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,12 +1,6 @@
 {
   "title": "Regexes containing characters subject to normalization should use the CANON_EQ flag",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

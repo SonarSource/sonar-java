@@ -1,12 +1,6 @@
 {
   "title": "\"Object.finalize()\" should remain protected (versus public) when overriding",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "HIGH"
-    },
-    "attribute": "MODULAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

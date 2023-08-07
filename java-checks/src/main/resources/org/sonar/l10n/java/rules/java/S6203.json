@@ -1,11 +1,5 @@
 {
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "FOCUSED"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

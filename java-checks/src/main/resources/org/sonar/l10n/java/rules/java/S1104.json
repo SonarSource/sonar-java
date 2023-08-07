@@ -1,12 +1,6 @@
 {
   "title": "Class variable fields should not have public accessibility",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "MODULAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

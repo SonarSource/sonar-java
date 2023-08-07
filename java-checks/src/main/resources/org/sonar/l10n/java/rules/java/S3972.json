@@ -1,12 +1,6 @@
 {
   "title": "Conditionals should start on new lines",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "HIGH"
-    },
-    "attribute": "FORMATTED"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

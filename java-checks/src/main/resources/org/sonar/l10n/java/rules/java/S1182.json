@@ -1,12 +1,6 @@
 {
   "title": "Classes that override \"clone\" should be \"Cloneable\" and call \"super.clone()\"",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "LOW"
-    },
-    "attribute": "CLEAR"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

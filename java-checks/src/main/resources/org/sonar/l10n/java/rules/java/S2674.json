@@ -1,12 +1,6 @@
 {
   "title": "The value returned from a stream read should be checked",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "LOW"
-    },
-    "attribute": "COMPLETE"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
