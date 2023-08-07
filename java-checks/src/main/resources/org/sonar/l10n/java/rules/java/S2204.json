@@ -1,6 +1,12 @@
 {
   "title": "\".equals()\" should not be used to test the values of \"Atomic\" classes",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,6 +1,12 @@
 {
   "title": "An iteration on a Collection should be performed on the type handled by the Collection",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,6 +1,12 @@
 {
   "title": "\"Serializable\" inner classes of \"Serializable\" classes should be static",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

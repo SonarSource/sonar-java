@@ -1,6 +1,12 @@
 {
   "title": "\"wait\", \"notify\" and \"notifyAll\" should only be called when a lock is obviously held on an object",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

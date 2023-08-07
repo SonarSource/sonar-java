@@ -1,6 +1,12 @@
 {
   "title": "Chained AssertJ assertions should be simplified to the corresponding dedicated assertion",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

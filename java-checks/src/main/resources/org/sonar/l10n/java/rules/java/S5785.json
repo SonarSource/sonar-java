@@ -1,6 +1,12 @@
 {
   "title": "JUnit assertTrue\/assertFalse should be simplified to the corresponding dedicated assertion",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

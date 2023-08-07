@@ -1,6 +1,12 @@
 {
   "title": "Records should be used instead of ordinary classes when representing immutable data structure",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,6 +1,12 @@
 {
   "title": "Methods setUp() and tearDown() should be correctly annotated starting with JUnit4",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "CONVENTIONAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

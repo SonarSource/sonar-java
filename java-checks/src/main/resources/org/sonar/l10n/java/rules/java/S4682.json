@@ -1,6 +1,12 @@
 {
   "title": "\"@CheckForNull\" or \"@Nullable\" should not be used on primitive types",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

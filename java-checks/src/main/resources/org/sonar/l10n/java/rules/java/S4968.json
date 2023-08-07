@@ -1,6 +1,12 @@
 {
   "title": "The upper bound of type variables and wildcards should not be \"final\" ",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

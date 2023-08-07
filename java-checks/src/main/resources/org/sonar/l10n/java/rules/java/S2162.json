@@ -1,6 +1,12 @@
 {
   "title": "\"equals\" methods should be symmetric and work for subclasses",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

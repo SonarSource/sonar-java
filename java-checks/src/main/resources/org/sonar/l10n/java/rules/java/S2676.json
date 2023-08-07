@@ -1,6 +1,12 @@
 {
   "title": "\"Math.abs\" and negation should not be used on numbers that could be \"MIN_VALUE\"",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

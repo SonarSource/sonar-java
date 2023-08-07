@@ -1,6 +1,12 @@
 {
   "title": "\"notifyAll()\" should be preferred over \"notify()\"",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,6 +1,12 @@
 {
   "title": "Classes extending java.lang.Thread should provide a specific \"run\" behavior",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

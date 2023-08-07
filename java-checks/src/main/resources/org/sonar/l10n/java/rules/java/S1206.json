@@ -1,6 +1,12 @@
 {
   "title": "\"equals(Object obj)\" and \"hashCode()\" should be overridden in pairs",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

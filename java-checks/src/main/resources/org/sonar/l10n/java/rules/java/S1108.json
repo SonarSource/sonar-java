@@ -1,6 +1,12 @@
 {
   "title": "Close curly brace and the next \"else\", \"catch\" and \"finally\" keywords should be on two different lines",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "FORMATTED"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

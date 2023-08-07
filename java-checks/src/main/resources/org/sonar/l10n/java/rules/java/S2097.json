@@ -1,6 +1,12 @@
 {
   "title": "\"equals(Object obj)\" should test the argument\u0027s type",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

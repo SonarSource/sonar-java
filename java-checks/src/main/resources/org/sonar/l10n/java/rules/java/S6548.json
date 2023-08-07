@@ -1,6 +1,12 @@
 {
   "title": "The Singleton design pattern should be used with care",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "MODULAR"
+  },
   "status": "beta",
   "remediation": {
     "func": "Constant\/Issue",
