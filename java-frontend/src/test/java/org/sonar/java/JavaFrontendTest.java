@@ -623,10 +623,8 @@ class JavaFrontendTest {
     assertTrue(logTester.logs(Level.WARN).stream().noneMatch(l -> l.endsWith("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.")));
     assertTrue(logTester.logs(Level.WARN).stream().anyMatch(l -> l.endsWith("Use of preview features have been detected during analysis. Enable DEBUG mode to see them.")));
     // We should keep this message or we won't have anything actionable in the debug logs to understand the warning
-    assertThat(logTester.logs(Level.DEBUG).stream())
-      .hasSize(1)
-      .map(l -> l.replace("\r\n", "\n"))
-      .allMatch(l -> l.startsWith("Use of preview features:\n") && l.endsWith("- The Java feature 'Sealed Types' is only available with source level 17 and above"));
+    assertTrue(logTester.logs(Level.DEBUG).stream().anyMatch(l -> l.replace("\r\n", "\n").endsWith("Use of preview features:\n" +
+      "- The Java feature 'Sealed Types' is only available with source level 17 and above")));
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
