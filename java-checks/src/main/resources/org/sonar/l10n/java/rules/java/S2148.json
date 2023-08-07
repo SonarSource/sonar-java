@@ -1,6 +1,12 @@
 {
   "title": "Underscores should be used to make large numbers readable",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "FORMATTED"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

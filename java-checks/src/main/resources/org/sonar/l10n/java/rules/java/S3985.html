@@ -1,12 +1,24 @@
+<p>This rule raises an issue when a private nested class is never used.</p>
 <h2>Why is this an issue?</h2>
 <p><code>private</code> classes that are never used are dead code: unnecessary, inoperative code that should be removed. Cleaning out dead code
 decreases the size of the maintained codebase, making it easier to understand the program and preventing bugs from being introduced.</p>
+<h3>Code examples</h3>
 <h3>Noncompliant code example</h3>
-<pre>
-public class Foo
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class TopLevel
 {
-  ...
-  private class MyUnusedPrivateClass {...} // Noncompliant
+  private class Nested {...} // Noncompliant: Nested is never used
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class TopLevel
+{
+  void doSomething() {
+    Nested a = new Nested();
+    ...
+  }
+  private class Nested {...}
 }
 </pre>
 

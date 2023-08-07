@@ -1,6 +1,12 @@
 {
   "title": "\"PreparedStatement\" and \"ResultSet\" methods should be called with valid indices",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

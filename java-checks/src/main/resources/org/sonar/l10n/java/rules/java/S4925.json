@@ -1,6 +1,12 @@
 {
   "title": "\"Class.forName()\" should not load JDBC 4.0+ drivers",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

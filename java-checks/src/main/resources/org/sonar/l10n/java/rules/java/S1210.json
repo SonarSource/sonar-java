@@ -1,6 +1,12 @@
 {
   "title": "\"equals(Object obj)\" should be overridden along with the \"compareTo(T obj)\" method",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,6 +1,12 @@
 {
   "title": "Spring\u0027s ModelAndViewAssert assertions should be used instead of other assertions",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

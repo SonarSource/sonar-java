@@ -1,6 +1,12 @@
 {
   "title": "\"@SpringBootApplication\" and \"@ComponentScan\" should not be used in the default package",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

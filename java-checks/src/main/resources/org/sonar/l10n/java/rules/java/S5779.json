@@ -1,6 +1,12 @@
 {
   "title": "Assertion methods should not be used within the try block of a try-catch catching an Error",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

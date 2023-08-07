@@ -1,6 +1,12 @@
 {
   "title": "Case insensitive Unicode regular expressions should enable the \"UNICODE_CASE\" flag",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

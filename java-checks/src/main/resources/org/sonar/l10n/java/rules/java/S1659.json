@@ -1,6 +1,12 @@
 {
   "title": "Multiple variables should not be declared on the same line",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "FORMATTED"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

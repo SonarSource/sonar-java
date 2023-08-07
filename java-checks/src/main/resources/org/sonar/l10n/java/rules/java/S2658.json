@@ -1,6 +1,12 @@
 {
   "title": "Classes should not be loaded dynamically",
   "type": "VULNERABILITY",
+  "code": {
+    "impacts": {
+      "SECURITY": "HIGH"
+    },
+    "attribute": "CONVENTIONAL"
+  },
   "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",

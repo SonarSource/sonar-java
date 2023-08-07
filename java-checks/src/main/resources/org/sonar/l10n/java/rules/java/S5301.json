@@ -1,6 +1,12 @@
 {
   "title": "\"ActiveMQConnectionFactory\" should not be vulnerable to malicious code deserialization",
   "type": "VULNERABILITY",
+  "code": {
+    "impacts": {
+      "SECURITY": "LOW"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

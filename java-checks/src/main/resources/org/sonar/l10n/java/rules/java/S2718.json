@@ -1,6 +1,12 @@
 {
   "title": "\"DateUtils.truncate\" from Apache Commons Lang library should not be used",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "EFFICIENT"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

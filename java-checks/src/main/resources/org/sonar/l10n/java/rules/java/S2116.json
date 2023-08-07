@@ -1,6 +1,12 @@
 {
   "title": "\"hashCode\" and \"toString\" should not be called on array instances",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "COMPLETE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

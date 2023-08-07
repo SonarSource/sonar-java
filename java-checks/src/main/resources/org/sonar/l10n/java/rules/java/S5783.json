@@ -1,6 +1,12 @@
 {
   "title": "Only one method invocation is expected when testing checked exceptions",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

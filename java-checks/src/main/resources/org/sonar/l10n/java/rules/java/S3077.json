@@ -1,6 +1,12 @@
 {
   "title": "Non-primitive fields should not be \"volatile\"",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

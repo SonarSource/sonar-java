@@ -1,6 +1,12 @@
 {
   "title": "Spring \"@Controller\" classes should not use \"@Scope\"",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "EFFICIENT"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

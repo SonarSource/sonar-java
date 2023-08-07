@@ -1,6 +1,12 @@
 {
   "title": "Tests should be kept in a dedicated source directory",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "MODULAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

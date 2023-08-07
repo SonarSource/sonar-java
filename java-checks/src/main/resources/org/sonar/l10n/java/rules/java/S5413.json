@@ -1,6 +1,12 @@
 {
   "title": "\u0027List.remove()\u0027 should not be used in ascending \u0027for\u0027 loops",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

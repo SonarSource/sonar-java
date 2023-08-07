@@ -1,6 +1,12 @@
 {
   "title": "\"wait(...)\" should be used instead of \"Thread.sleep(...)\" when a lock is held",
   "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

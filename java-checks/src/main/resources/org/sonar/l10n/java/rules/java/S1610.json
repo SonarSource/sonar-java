@@ -1,6 +1,12 @@
 {
   "title": "Abstract classes without fields should be converted to interfaces",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  },
   "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",

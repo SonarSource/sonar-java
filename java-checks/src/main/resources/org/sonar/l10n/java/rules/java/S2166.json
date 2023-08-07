@@ -1,6 +1,12 @@
 {
   "title": "Classes named like \"Exception\" should extend \"Exception\" or a subclass",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "IDENTIFIABLE"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
