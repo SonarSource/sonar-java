@@ -95,16 +95,12 @@ public class AutoScanTest {
      */
     String correctConfigIssues = absolutePathFor(TARGET_ACTUAL + PROJECT_KEY + "-mvn");
 
-    // Build the project ahead of the analysis
-    ProjectBuilder builder = new ProjectBuilder(Path.of(PROJECT_LOCATION));
-    Path jdk = builder.build();
 
     MavenBuild mavenBuild = MavenBuild.create()
       .setPom(FileLocation.of(PROJECT_LOCATION + "pom.xml").getFile().getCanonicalFile())
       .addSonarGoal()
       .addArgument("-DskipTests")
       .addArgument("-Panalyze-tests")
-      .setProperty("sonar.jdkHome", jdk.toString())
       .setProperty("sonar.projectKey", PROJECT_KEY)
       .setProperty("sonar.projectName", PROJECT_NAME)
       // common properties

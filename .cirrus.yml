@@ -203,6 +203,7 @@ autoscan_task:
   ruling_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
+    - mvn clean compile -Pjava-checks-test-sources
     - cd its/ruling
     - mvn package -Pit-ruling -Dtest=org.sonar.java.it.AutoScanTest -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
@@ -222,6 +223,7 @@ autoscan_win_task:
     - source set_maven_build_version $BUILD_NUMBER
     - init_git_submodules its/sources
     - git submodule update --init --recursive
+    - mvn clean compile -Pjava-checks-test-sources
     - cd its/ruling
     - mvn package -Pit-ruling -Dtest=org.sonar.java.it.AutoScanTest -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
