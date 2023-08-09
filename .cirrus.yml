@@ -165,7 +165,7 @@ ruling_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
-    - mvn package -Pit-ruling -Dtest=org.sonar.java.it.JavaRulingTest -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
   on_failure:
     actual_artifacts:
@@ -184,7 +184,7 @@ ruling_win_task:
     - init_git_submodules its/sources
     - git submodule update --init --recursive
     - cd its/ruling
-    - mvn package -Pit-ruling -Dtest=org.sonar.java.it.JavaRulingTest -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 autoscan_task:
@@ -205,7 +205,7 @@ autoscan_task:
     - source set_maven_build_version $BUILD_NUMBER
     - mvn clean compile --projects java-checks-test-sources
     - cd its/autoscan
-    - mvn package -Pit-autoscan -Dtest=org.sonar.java.it.AutoScanTest -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package -Pit-autoscan -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
   on_failure:
     actual_artifacts:
@@ -225,7 +225,7 @@ autoscan_win_task:
     - git submodule update --init --recursive
     - mvn clean compile --projects java-checks-test-sources
     - cd its/autoscan
-    - mvn package -Pit-autoscan -Dtest=org.sonar.java.it.AutoScanTest -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package -Pit-autoscan -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 promote_task:
