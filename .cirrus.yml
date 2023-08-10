@@ -209,7 +209,7 @@ autoscan_task:
   cleanup_before_cache_script: cleanup_maven_repository
   on_failure:
     actual_artifacts:
-      path: "${CIRRUS_WORKING_DIR}/its/ruling/target/actual/**/*"
+      path: "${CIRRUS_WORKING_DIR}/its/autoscan/target/actual/**/*"
 
 autoscan_win_task:
   depends_on:
