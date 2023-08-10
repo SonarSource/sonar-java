@@ -95,7 +95,6 @@ public class AutoScanTest {
      */
     String correctConfigIssues = absolutePathFor(TARGET_ACTUAL + PROJECT_KEY + "-mvn");
 
-
     MavenBuild mavenBuild = MavenBuild.create()
       .setPom(FileLocation.of(PROJECT_LOCATION + "pom.xml").getFile().getCanonicalFile())
       .addSonarGoal()
