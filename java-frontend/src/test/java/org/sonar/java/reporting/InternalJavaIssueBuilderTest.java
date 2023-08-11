@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -54,6 +55,7 @@ import org.sonar.api.batch.sensor.issue.fix.NewQuickFix;
 import org.sonar.api.batch.sensor.issue.fix.QuickFix;
 import org.sonar.api.batch.sensor.issue.fix.TextEdit;
 import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
+import org.sonar.api.issue.impact.SoftwareQuality;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.SonarComponents;
@@ -557,6 +559,11 @@ class InternalJavaIssueBuilderTest {
     }
 
     @Override
+    public NewIssue overrideImpact(SoftwareQuality softwareQuality, org.sonar.api.issue.impact.Severity severity) {
+      throw new IllegalStateException("Not supposed to be tested");
+    }
+
+    @Override
     public NewIssue at(NewIssueLocation primaryLocation) {
       parent.at(primaryLocation);
       return this;
@@ -611,6 +618,11 @@ class InternalJavaIssueBuilderTest {
     }
 
     @Override
+    public Map<SoftwareQuality, org.sonar.api.issue.impact.Severity> overridenImpacts() {
+      throw new IllegalStateException("Not supposed to be tested");
+    }
+
+    @Override
     public IssueLocation primaryLocation() {
       throw new IllegalStateException("Not supposed to be tested");
     }
@@ -652,6 +664,8 @@ class InternalJavaIssueBuilderTest {
         .collect(Collectors.toList());
       return this;
     }
+
+
   }
 
 }
