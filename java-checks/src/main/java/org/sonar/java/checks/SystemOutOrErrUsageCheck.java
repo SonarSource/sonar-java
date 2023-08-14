@@ -40,8 +40,12 @@ public class SystemOutOrErrUsageCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MemberSelectExpressionTree mset = (MemberSelectExpressionTree) tree;
-    if (isOutOrErr(mset) && isSystem(mset.expression())) {
-      reportIssue(tree, "Replace this use of System.out or System.err by a logger.");
+    String name = mset.identifier().name();
+
+    if ("out".equals(name) && isSystem(mset.expression())) {
+      reportIssue(tree, "Replace this use of System.out by a logger.");
+    } else if ("err".equals(name) && isSystem(mset.expression())) {
+      reportIssue(tree, "Replace this use of System.err by a logger.");
     }
   }
 
@@ -53,9 +57,5 @@ public class SystemOutOrErrUsageCheck extends IssuableSubscriptionVisitor {
       identifierTree = ((MemberSelectExpressionTree) expression).identifier();
     }
     return identifierTree != null && "System".equals(identifierTree.name());
-  }
-
-  private static boolean isOutOrErr(MemberSelectExpressionTree mset) {
-    return "out".equals(mset.identifier().name()) || "err".equals(mset.identifier().name());
   }
 }
