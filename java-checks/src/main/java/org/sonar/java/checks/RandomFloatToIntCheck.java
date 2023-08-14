@@ -63,11 +63,9 @@ public class RandomFloatToIntCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     TypeCastTree castTree = (TypeCastTree) tree;
-    if(castTree.type().symbolType().is("int")) {
+    if (castTree.type().symbolType().is("int")) {
       castTree.expression().accept(new RandomDoubleVisitor("nextInt()"));
-    }
-
-    if(castTree.type().symbolType().is("long")) {
+    } else if (castTree.type().symbolType().is("long")) {
       castTree.expression().accept(new RandomDoubleVisitor("nextLong()"));
     }
   }
