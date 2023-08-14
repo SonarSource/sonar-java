@@ -1,8 +1,8 @@
 class A {
 
   void f() {
-    System.out.println("");                  // Noncompliant {{Replace this use of System.out or System.err by a logger.}}
-    System.err.println("");                  // Noncompliant [[sc=5;ec=15]]
+    System.out.println("");                  // Noncompliant {{Replace this use of System.out by a logger.}}
+    System.err.println("");                  // Noncompliant [[sc=5;ec=15]] {{Replace this use of System.err by a logger.}}
 
     f(System.out);                           // Noncompliant
 
