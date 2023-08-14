@@ -64,18 +64,27 @@ public class RandomFloatToIntCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     TypeCastTree castTree = (TypeCastTree) tree;
     if(castTree.type().symbolType().is("int")) {
-      castTree.expression().accept(new RandomDoubleVisitor());
+      castTree.expression().accept(new RandomDoubleVisitor("nextInt()"));
+    }
+
+    if(castTree.type().symbolType().is("long")) {
+      castTree.expression().accept(new RandomDoubleVisitor("nextLong()"));
     }
   }
 
   private class RandomDoubleVisitor extends BaseTreeVisitor {
+    private final String methodToCall;
+
+    public RandomDoubleVisitor(String methodToCall){
+      this.methodToCall = methodToCall;
+    }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (MATH_RANDOM_METHOD_MATCHER.matches(tree)) {
-        reportIssue(tree.methodSelect(), "Use \"java.util.Random.nextInt()\" instead.");
+        reportIssue(tree.methodSelect(), "Use \"java.util.Random."+methodToCall+"\" instead.");
       } else if (METHOD_MATCHERS.matches(tree)) {
-        reportIssue(tree.methodSelect(), "Use \"nextInt()\" instead.");
+        reportIssue(tree.methodSelect(), "Use \""+methodToCall+"\" instead.");
       }
       super.visitMethodInvocation(tree);
     }
