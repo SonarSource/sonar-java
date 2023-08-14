@@ -7,6 +7,8 @@ class SystemOutOrErrUsageCheck {
   void f() {
     System.out.println("");                  // Noncompliant {{Replace this use of System.out by a logger.}}
     System.err.println("");                  // Noncompliant [[sc=5;ec=15]] {{Replace this use of System.err by a logger.}}
+    K.out();
+    K.err();
 
 
     g(System.out);                           // Noncompliant
@@ -19,6 +21,11 @@ class SystemOutOrErrUsageCheck {
 
   void g(PrintStream stream){
 
+  }
+
+  class K {
+    static void out(){};
+    static void err(){};
   }
 
 }
