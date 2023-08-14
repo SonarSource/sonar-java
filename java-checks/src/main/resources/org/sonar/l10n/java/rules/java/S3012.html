@@ -1,44 +1,66 @@
 <h2>Why is this an issue?</h2>
-<p>Using a loop to copy an array or a subset of an array is simply wasted code when there are built-in functions to do it for you. Instead, use
-<code>Arrays.copyOf</code> to copy an entire array into another array, use <code>System.arraycopy</code> to copy only a subset of an array into
-another array, and use <code>Arrays.asList</code> to feed the constructor of a new list with an array.</p>
-<p>Note that <code>Arrays.asList</code> simply puts a <code>Collections</code> wrapper around the original array, so further steps are required if a
-non-fixed-size <code>List</code> is desired.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public void makeCopies(String[] source) {
-
-  this.array = new String[source.length];
-  this.list = new ArrayList(source.length);
-
-  for (int i = 0; i &lt; source.length; i++) {
-    this.array[i] = source[i]; // Noncompliant
-  }
-
-  for (String s : source) {
-    this.list.add(s); // Noncompliant
-  }
-}
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-public void makeCopies(String[] source) {
-  this.array = Arrays.copyOf(source, source.length);
-  Collections.addAll(this.list, source);
-}
-</pre>
+<p>The JDK provides a set of built-in methods to copy the contents of an array into another array. Using a loop to perform the same operation is less
+clear, more verbose and should be avoided.</p>
 <h3>Exceptions</h3>
-<p>Rule detects only the most idiomatic patterns, it will not consider loops with non-trivial control flow. For example, array elements that are
-copied conditionally are ignored.</p>
+<p>The rule detects only the most idiomatic patterns, it will not consider loops with non-trivial control flow. For example, loops that copy array
+elements conditionally are ignored.</p>
+<h2>How to fix it</h2>
+<p>You can use:</p>
+<ul>
+  <li> <code>Arrays.copyOf</code> to copy an entire array into another array </li>
+  <li> <code>System.arraycopy</code> to copy only a subset of an array into another array </li>
+  <li> <code>Arrays.asList</code> to create a new list with the contents of the array </li>
+  <li> <code>Collections.addAll</code> to add the elements of a collection into another collection </li>
+</ul>
+<p>Note that <code>Arrays.asList</code> returns a fixed-size <code>List</code>, so further steps are required if a non-fixed-size <code>List</code> is
+needed.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public void copyArray(String[] source){
+  String[] array = new String[source.length];
+  for (int i = 0; i &lt; source.length; i++) {
+    array[i] = source[i]; // Noncompliant
+  }
+}
+
+public void copyList(List&lt;String&gt; source) {
+  List&lt;String&gt; list = new ArrayList&lt;&gt;();
+  for (String s : source) {
+    list.add(s); // Noncompliant
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public void copyArray(String[] source){
+  String[] array = Arrays.copyOf(source, source.length);
+}
+
+public void copyList(List&lt;String&gt; source) {
+  List&lt;String&gt; list = new ArrayList&lt;&gt;();
+  Collections.addAll(list, source);
+}
+</pre>
 <pre>
-public int[] getCopy(int[] source) {
+public void makeCopiesConditional(int[] source) {
   int[] dest = new int[source.length];
   for (int i = 0; i &lt; source.length; i++) {
     if (source[i] &gt; 10) {
-      dest[i] = source[i];  // Compliant
+      dest[i] = source[i];  // Compliant, since the array elements are conditionally copied to the dest array
     }
   }
-  return dest;
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a
+  href="https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#copyOf-T:A-int-:~:text=1.6-,copyOf,-public%20static%C2%A0byte">docs.oracle</a>
+  - Arrays.copyOf documentation </li>
+  <li> <a
+  href="https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#asList-T…​-:~:text=1.6-,asList,-%40SafeVarargs%0Apublic%20static">docs.oracle</a> - Arrays.asList documentation </li>
+  <li> <a
+  href="https://docs.oracle.com/javase/8/docs/api/java/lang/System.html#arraycopy-java.lang.Object-int-java.lang.Object-int-int-:~:text=1.5-,arraycopy,-public%20static%C2%A0void">docs.oracle</a> - System.arraycopy documentation </li>
+</ul>
 

@@ -1,19 +1,35 @@
 <h2>Why is this an issue?</h2>
-<p>There is little valid reason to use the methods of the <code>ThreadGroup</code> class. Some are deprecated (<code>allowThreadSuspension()</code>,
-<code>resume()</code>, <code>stop()</code>, and <code>suspend()</code>), some are obsolete, others aren’t thread-safe, and still others are insecure
-(<code>activeCount()</code>, <code>enumerate()</code>) . For these reasons, any use of <code>ThreadGroup</code> is suspicious and should be
-avoided.</p>
-<h3>Compliant solution</h3>
+<p>The <code>ThreadGroup</code> class contains many deprecated methods like <code>allowThreadSuspension</code>, <code>resume</code>,
+<code>stop</code>, and <code>suspend</code>. Also, some of the non-deprecated methods are obsolete or not thread-safe, and still others are insecure
+(<code>activeCount</code>, <code>enumerate</code>). For these reasons, any use of <code>ThreadGroup</code> is suspicious and should be avoided.</p>
+<h2>How to fix it</h2>
+<p>Instead, use implementations of <code>java.util.concurrent.ExecutorService</code> to safely manage groups of threads.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre>
-ThreadFactory threadFactory = Executors.defaultThreadFactory();
-ThreadPoolExecutor executorPool = new ThreadPoolExecutor(3, 10, 5, TimeUnit.SECONDS, new ArrayBlockingQueue&lt;Runnable&gt;(2), threadFactory);
+class NetworkHandler {
 
-for (int i = 0; i &lt; 10; i++) {
-  executorPool.execute(new JobThread("Job: " + i));
+  void startThreadInGroup(ThreadGroup tg) { // Noncompliant, use an ExecutorService instead, which is more secure
+    Thread thread = new Thread(tg, "controller");
+    thread.start();
+  }
+
 }
+</pre>
+<h4>Compliant solution</h4>
+<pre>
+class NetworkHandler {
 
-System.out.println(executorPool.getActiveCount()); // Compliant
-executorPool.shutdown();
+  void handleThreadsProperly() {
+    ThreadFactory threadFactory = Executors.defaultThreadFactory();
+    ThreadPoolExecutor executorPool = new ThreadPoolExecutor(3, 10, 5, TimeUnit.SECONDS, new ArrayBlockingQueue&lt;Runnable&gt;(2), threadFactory);
+    for (int i = 0; i &lt; 10; i++) {
+      executorPool.execute(new Thread("Job: " + i));
+    }
+    executorPool.shutdown();
+  }
+
+}
 </pre>
 <h2>Resources</h2>
 <ul>

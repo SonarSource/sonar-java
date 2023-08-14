@@ -1,5 +1,5 @@
 {
-  "title": "Arrays should not be copied using loops",
+  "title": "Arrays and lists should not be copied using loops",
   "type": "CODE_SMELL",
   "code": {
     "impacts": {

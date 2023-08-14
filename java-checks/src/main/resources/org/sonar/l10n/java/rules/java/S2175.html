@@ -1,9 +1,10 @@
 <h2>Why is this an issue?</h2>
-<p>The <code>java.util.Collection</code> API has methods that accept <code>Object</code> parameters such as <code>Collection.remove(Object o)</code>,
-and <code>Collection.contains(Object o)</code>. When the actual type of the object provided to these methods is not consistent with the type declared
-on the <code>Collection</code> instantiation, those methods will always return <code>false</code> or <code>null</code>. This is most likely unintended
-and hides a design problem.</p>
-<p>This rule raises an issue when the type of the argument of the following APIs is unrelated to the type used for the <code>Collection</code>
+<p>The <code>java.util.Collection</code> type and its subtypes provide methods to access and modify collections such as <code>Collection.remove(Object
+o)</code> and <code>Collection.contains(Object o)</code>. Some of these methods accept arguments of type <code>java.lang.Object</code> and will
+compare said argument with objects already in the collection.</p>
+<p>If the actual type of the argument is unrelated to the type of object contained in the collection, these methods will always return
+<code>false</code>, <code>null</code>, or <code>-1</code>. This behavior is most likely unintended and can be indicative of a design issue.</p>
+<p>This rule raises an issue when the type of the argument provided to one of the following methods is unrelated to the type used for the collection
 declaration:</p>
 <ul>
   <li> <code>Collection.remove(Object o)</code> </li>
@@ -18,29 +19,39 @@ declaration:</p>
   <li> <code>Map.remove(Object key)</code> </li>
   <li> <code>Map.remove(Object key, Object value)</code> </li>
 </ul>
-<h3>Noncompliant code example</h3>
-<pre>
-public class S2175 {
+<h2>How to fix it</h2>
+<p>Ask yourself what the purpose of this method call is. Check whether the provided argument and collection are correct in this context and for the
+desired purpose. Remove unnecessary calls and otherwise provide an argument of which the type is compatible with the list content’s type.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+void removeFromMap(Map&lt;Integer, Object&gt; map, String strKey) {
+  map.remove(strKey); // Noncompliant, this call will remove nothing and always return 'null' because 'map' is handling only Integer keys and String cannot be cast to Integer.
+}
 
-  public static void main(String[] args) {
-    String foo = "42";
-    Map&lt;Integer, Object&gt; map = new HashMap&lt;&gt;();
-    map.remove(foo); // Noncompliant; will return 'null' for sure because 'map' is handling only Integer keys
-
+void listContains(List&lt;String&gt; list, Integer integer) {
+  if (list.contains(integer)) { // Noncompliant; always false as the list only contains Strings, not integers.
     // ...
-
-    List&lt;String&gt; list = new ArrayList&lt;String&gt;();
-    Integer integer = Integer.valueOf(1);
-    if (list.contains(integer)) { // Noncompliant; always false.
-      list.remove(integer); // Noncompliant; list.add(integer) doesn't compile, so this will always return 'false'
-    }
   }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+void removeFromMap(Map&lt;Integer, Object&gt; map, String strKey) {
+  map.remove(Integer.parseInt(strKey)); // Compliant, strKey is parsed into an Integer before trying to remove it from the map.
+}
 
+void listContains(List&lt;String&gt; list, Integer integer) {
+  if (list.contains(integer.toString())) { // Compliant, 'integer' is converted to a String before checking if the list contains it.
+    // ...
+  }
 }
 </pre>
 <h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/uDdGBQ">CERT, EXP04-J.</a> - Do not pass arguments to certain Java Collections Framework methods
   that are a different type than the collection parameter type </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html">Java SE 17 &amp; JDK 17</a> - Collection
+  interface </li>
 </ul>
 

@@ -8,7 +8,7 @@ commands to run after a given delay or to execute periodically.</p>
 executor will have no threads and run nothing. <code>corePoolSize</code> should have a value greater than zero and valid for your tasks.</p>
 <p>This rule detects instances where <code>corePoolSize</code> is set to zero via its setter or the object constructor.</p>
 <h3>Noncompliant code example</h3>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<pre>
 public void do(){
 
   int poolSize = 5; // value greater than 0

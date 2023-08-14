@@ -19,7 +19,7 @@ can manipulate the content of the token and grant themselves permissions they sh
 <h3>Code examples</h3>
 <p>The following code contains examples of JWT encoding and decoding without a strong cipher algorithm.</p>
 <h4>Noncompliant code example</h4>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<pre data-diff-id="11" data-diff-type="noncompliant">
 import io.jsonwebtoken.Jwts;
 
 public void encode() {
@@ -28,7 +28,7 @@ public void encode() {
         .compact(); // Noncompliant
 }
 </pre>
-<pre data-diff-id="2" data-diff-type="noncompliant">
+<pre data-diff-id="12" data-diff-type="noncompliant">
 import io.jsonwebtoken.Jwts;
 
 public void decode() {
@@ -39,7 +39,7 @@ public void decode() {
 }
 </pre>
 <h4>Compliant solution</h4>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre data-diff-id="11" data-diff-type="compliant">
 import io.jsonwebtoken.Jwts;
 
 public void encode() {
@@ -51,7 +51,7 @@ public void encode() {
 </pre>
 <p>When using <code>Jwts.parser()</code>, make sure to call <code>parseClaimsJws</code> instead of <code>parse</code> as it throws exceptions for
 invalid or missing signatures.</p>
-<pre data-diff-id="2" data-diff-type="compliant">
+<pre data-diff-id="12" data-diff-type="compliant">
 import io.jsonwebtoken.Jwts;
 
 public void decode() {

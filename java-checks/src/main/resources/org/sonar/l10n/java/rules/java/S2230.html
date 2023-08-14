@@ -8,7 +8,7 @@ method is annotated as <code>@Transactional</code>.</p>
 <p>Make the method public or remove the <code>@Transactional</code> annotation.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 @Transactional  // Noncompliant
 void doTheThing(ArgClass arg) {
   // ...
@@ -20,7 +20,7 @@ private void doTheOtherThing(ArgClass arg) {
 }
 </pre>
 <h4>Compliant solution</h4>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 @Transactional
 public void doTheThing(ArgClass arg) {
   // ...

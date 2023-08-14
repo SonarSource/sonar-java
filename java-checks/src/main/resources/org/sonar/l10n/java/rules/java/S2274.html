@@ -1,14 +1,21 @@
 <h2>Why is this an issue?</h2>
-<p>According to the documentation of the Java <code>Condition</code> interface:</p>
+<p>In a multithreaded environment, the <code>Object.wait(…​)</code>, as well as <code>Condition.await(…​)</code> and similar methods are used to pause
+the execution of a thread until the thread is awakened. A thread is typically awakened when it is notified, signaled, or interrupted, usually because
+of an event in another thread requiring some subsequent action by the waiting thread.</p>
+<p>However, a thread may be awakened despite the desired condition not being met or the desired event not having happened. This is referred to as
+"spurious wakeups" and may be caused by underlying platform semantics. In other words, a thread may be awakened due to reasons that have nothing to do
+with the business logic. Hence, the assumption that the desired condition is met or the desired event occurred after a thread is awakened does not
+always hold.</p>
+<p>According to the documentation of the Java <code>Condition</code> interface [1]:</p>
 <blockquote>
   <p>When waiting upon a <code>Condition</code>, a "spurious wakeup" is permitted to occur, in general, as a concession to the underlying platform
   semantics. This has little practical impact on most application programs as a Condition should always be waited upon in a loop, testing the state
   predicate that is being waited for. An implementation is free to remove the possibility of spurious wakeups but it is recommended that applications
   programmers always assume that they can occur and so always wait in a loop.</p>
 </blockquote>
-<p>The same advice is also found for the <code>Object.wait(...)</code> method:</p>
+<p>The same advice is also found for the <code>Object.wait(…​)</code> method [2]:</p>
 <blockquote>
-  <p>waits should always occur in loops, like this one:</p>
+  <p>[…​] waits should always occur in loops, like this one:</p>
   <pre>
 synchronized (obj) {
   while (&lt;condition does not hold&gt;){
@@ -18,26 +25,33 @@ synchronized (obj) {
 }
 </pre>
 </blockquote>
-<h3>Noncompliant code example</h3>
-<pre>
+<h2>How to fix it</h2>
+<p>Make sure that the desired condition is actually true after being awakened. This can be accomplished by calling the <code>wait</code> or
+<code>await</code> methods inside a loop that checks said condition.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 synchronized (obj) {
   if (!suitableCondition()){
-    obj.wait(timeout);   //the thread can wake up even if the condition is still false
+    obj.wait(timeout); // Noncompliant, the thread can be awakened even though the condition is still false
   }
-   ... // Perform action appropriate to condition
+   ... // Perform some logic that is appropriate for when the condition is true
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 synchronized (obj) {
   while (!suitableCondition()){
-    obj.wait(timeout);
+    obj.wait(timeout); // Compliant, the condition is checked in a loop, so the action below will only occur if the condition is true
   }
-   ... // Perform action appropriate to condition
+   ... // Perform some logic that is appropriate for when the condition is true
 }
 </pre>
 <h2>Resources</h2>
-<ul>
+<ol>
+  <li> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Condition.html">Java SE 17 &amp; JDK 17</a> -
+  Condition </li>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#wait--">Java Platform SE 8</a> - Object#wait </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/EzdGBQ">CERT THI03-J.</a> - Always invoke wait() and await() methods inside a loop </li>
-</ul>
+</ol>
 

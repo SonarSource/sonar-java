@@ -1,5 +1,5 @@
 {
-  "title": "\"wait\", \"notify\" and \"notifyAll\" should only be called when a lock is obviously held on an object",
+  "title": "\"Object.wait()\", \"Object.notify()\" and \"Object.notifyAll()\" should only be called from synchronized code",
   "type": "BUG",
   "code": {
     "impacts": {

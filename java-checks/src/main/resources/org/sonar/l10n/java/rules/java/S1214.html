@@ -22,7 +22,7 @@ public enum Status {      // Compliant
 </pre>
 <p>In some cases, enums are not a suitable option because the concrete constant value is important. Then you should check whether it is appropriate to
 move them to a specific existing class, for example, if that class is the primary user of the constants:</p>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<pre data-diff-id="2" data-diff-type="noncompliant">
 interface AuxiliaryConstants { // Noncompliant, implementation detail of WordPacker
   int BITS_PER_WORD = 16;
   int WORD_MASK = (1 &lt;&lt; BITS_PER_WORD) - 1;
@@ -40,7 +40,7 @@ class WordPacker {
   }
 }
 </pre>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre data-diff-id="2" data-diff-type="compliant">
 class WordPacker { // Compliant
   private static final int BITS_PER_WORD = 16;
   private static final int WORD_MASK = (1 &lt;&lt; BITS_PER_WORD) - 1;

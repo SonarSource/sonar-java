@@ -26,11 +26,11 @@ rewritten using expression notation.</p>
 (a, b) -&gt; a + b             // Compliant
 </pre>
 <h4>Noncompliant code example</h4>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<pre data-diff-id="2" data-diff-type="noncompliant">
 x -&gt; {System.out.println(x+1);} // Noncompliant, replace code block with statement
 </pre>
 <h4>Compliant solution</h4>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre data-diff-id="2" data-diff-type="compliant">
 x -&gt; System.out.println(x+1)    // Compliant
 </pre>
 
