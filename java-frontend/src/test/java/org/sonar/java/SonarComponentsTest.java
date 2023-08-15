@@ -121,6 +121,8 @@ class SonarComponentsTest {
   private static final String LOG_MESSAGE_FILES_CANNOT_BE_SKIPPED = "The Java analyzer cannot skip unchanged files in this context. A full analysis is performed for all files.";
   private static final String LOG_MESSAGE_CANNOT_DETERMINE_IF_FILES_CAN_BE_SKIPPED = "Cannot determine whether the context allows skipping unchanged files: canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}";
 
+  private static final String DEFAULT_PATH = Path.of("src", "main", "java", "com", "acme", "Source.java").toString();
+
   @Mock
   private FileLinesContextFactory fileLinesContextFactory;
 
@@ -888,7 +890,7 @@ class SonarComponentsTest {
       String source = generateSource(26);
 
       // artificially populated the semantic errors with 26 unknown types and 52 errors
-      sonarComponents.collectUndefinedTypes(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.collectUndefinedTypes(DEFAULT_PATH, ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
 
       // triggers log
       sonarComponents.logUndefinedTypes();
@@ -917,7 +919,7 @@ class SonarComponentsTest {
     void remove_info_and_warning_from_log_related_to_undefined_types() {
       logTester.setLevel(Level.ERROR);
       String source = generateSource(26);
-      sonarComponents.collectUndefinedTypes(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.collectUndefinedTypes(DEFAULT_PATH, ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
       sonarComponents.logUndefinedTypes();
 
       assertThat(logTester.logs(Level.WARN)).isEmpty();
@@ -929,7 +931,7 @@ class SonarComponentsTest {
       String source = generateSource(1);
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
-      sonarComponents.collectUndefinedTypes(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.collectUndefinedTypes(DEFAULT_PATH, ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
 
       // triggers log
       sonarComponents.logUndefinedTypes();
@@ -975,7 +977,7 @@ class SonarComponentsTest {
       fs.add(TestUtils.emptyInputFile("fooTest.java", InputFile.Type.TEST));
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
-      sonarComponents.collectUndefinedTypes(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.collectUndefinedTypes(DEFAULT_PATH, ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
 
       // Call these methods to initiate Main and Test ClassPath
       sonarComponents.getJavaClasspath();

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -105,7 +104,7 @@ public class SonarComponents {
 
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
-  private final Set<JProblem> undefinedTypes = new HashSet<>();
+  private final Map<JProblem, List<String>> problemsToFilePaths = new HashMap<>();
 
   private final CheckFactory checkFactory;
   @Nullable
@@ -494,35 +493,39 @@ public class SonarComponents {
     return context.project();
   }
 
-  public void collectUndefinedTypes(Set<JProblem> undefinedTypes) {
-    this.undefinedTypes.addAll(undefinedTypes);
+  public void collectUndefinedTypes(String pathToFile, Set<JProblem> undefinedTypes) {
+    undefinedTypes.stream().forEach(problem ->{
+      List<String> filesAffectedByProblem = problemsToFilePaths.computeIfAbsent(problem, key -> new ArrayList<>());
+      filesAffectedByProblem.add(pathToFile);
+    });
   }
 
   public void logUndefinedTypes() {
-    if (!undefinedTypes.isEmpty()) {
-      javaClasspath.logSuspiciousEmptyLibraries();
-      if (!isAutoScan()) {
-        // In autoscan, test + main code are analyzed in the same batch, and we do not make the distinction between
-        // test and main libraries, everything is inside "sonar.java.libraries", it is expected to let the test property empty.
-        javaTestClasspath.logSuspiciousEmptyLibraries();
-      }
-      logUndefinedTypes(LOGGED_MAX_NUMBER_UNDEFINED_TYPES);
-
-      // clear the set so only new undefined types will be logged
-      undefinedTypes.clear();
+    if (problemsToFilePaths.isEmpty()) {
+      return;
     }
+    javaClasspath.logSuspiciousEmptyLibraries();
+    if (!isAutoScan()) {
+      // In autoscan, test + main code are analyzed in the same batch, and we do not make the distinction between
+      // test and main libraries, everything is inside "sonar.java.libraries", it is expected to let the test property empty.
+      javaTestClasspath.logSuspiciousEmptyLibraries();
+    }
+    logUndefinedTypes(LOGGED_MAX_NUMBER_UNDEFINED_TYPES);
+
+    // clear the set so only new undefined types will be logged
+    problemsToFilePaths.clear();
   }
 
   private void logUndefinedTypes(int maxLines) {
     logParserMessages(
-      undefinedTypes.stream()
+      problemsToFilePaths.keySet().stream()
         .filter(m -> m.type() == JProblem.Type.UNDEFINED_TYPE),
       maxLines,
       "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.",
       "Unresolved imports/types:"
     );
     logParserMessages(
-      undefinedTypes.stream()
+      problemsToFilePaths.keySet().stream()
         .filter(m -> m.type() == JProblem.Type.PREVIEW_FEATURE_USED),
       maxLines,
       "Use of preview features have been detected during analysis. Enable DEBUG mode to see them.",
