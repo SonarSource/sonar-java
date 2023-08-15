@@ -24,6 +24,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -63,9 +64,10 @@ public class RandomFloatToIntCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     TypeCastTree castTree = (TypeCastTree) tree;
-    if (castTree.type().symbolType().is("int")) {
+    Type castToType = castTree.type().symbolType();
+    if (castToType.is("int")) {
       castTree.expression().accept(new RandomDoubleVisitor("nextInt()"));
-    } else if (castTree.type().symbolType().is("long")) {
+    } else if (castToType.is("long")) {
       castTree.expression().accept(new RandomDoubleVisitor("nextLong()"));
     }
   }
