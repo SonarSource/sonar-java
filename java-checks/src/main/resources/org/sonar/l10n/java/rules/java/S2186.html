@@ -6,7 +6,7 @@ the test, the thread will exit but the test will not fail.</p>
 <p>Assertions in <code>Runnable</code> tasks should be extracted or executed by the main thread to make the whole test fail.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class RunnableWithAnAssertion extends Thread {
   @Override
   public void run() {
@@ -25,7 +25,7 @@ class RunnableWithAnAssertion extends Thread {
 }
 </pre>
 <h4>Compliant solution</h4>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 class RunnableWithAnAssertion extends Thread {
   @Override
   public void run() {

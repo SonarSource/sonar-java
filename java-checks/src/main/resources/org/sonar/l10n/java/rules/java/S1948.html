@@ -47,7 +47,7 @@ public class Person implements Serializable {
 <p>If the field’s value does not need to be preserved during serialization and deserialization, mark it as <code>transient</code>. The field will be
 ignored when the object is serialized. After deserialization, the field will be set to the default value corresponding to its type (e.g.,
 <code>null</code> for object references).</p>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre>
 public class Address {
     ...
 }
@@ -63,7 +63,7 @@ public class Person implements Serializable {
 properly serializing and de-serializing the object <code>writeObject</code> and <code>readObject</code>. These methods can be used to properly
 (de-)serialize an object, even though it contains fields that are not transient or serializable. Hence, this rule does not raise issues on fields of
 classes which implement these methods.</p>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre>
 public class Address {
     ...
 }

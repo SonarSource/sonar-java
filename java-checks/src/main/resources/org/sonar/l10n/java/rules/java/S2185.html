@@ -1,11 +1,11 @@
 <h2>Why is this an issue?</h2>
-<p>Certain math operations are just silly and should not be performed because their results are predictable.</p>
-<p>In particular, <code>anyValue % 1</code> is silly because it will always return 0.</p>
-<p>Casting a non-floating-point value to floating-point and then passing it to <code>Math.round</code>, <code>Math.ceil</code>, or
-<code>Math.floor</code> is silly because the result will always be the original value.</p>
-<p>These operations are silly with any constant value: <code>Math.abs</code>, <code>Math.ceil</code>, <code>Math.floor</code>, <code>Math.rint</code>,
-<code>Math.round</code>.</p>
-<p>And these oprations are silly with certain constant values:</p>
+<p>Some mathematical operations are unnecessary and should not be performed because their results are predictable.</p>
+<p>For instance, <code>anyValue % 1</code> will always return 0, as any integer value can be divided by 1 without remainder.</p>
+<p>Similarly, casting a non-floating-point to a floating-point value and then passing it to <code>Math.round</code>, <code>Math.ceil</code>, or
+<code>Math.floor</code> is also unnecessary, as the result will always be the original value.</p>
+<p>The following operations are unnecessary when given any constant value: <code>Math.abs</code>, <code>Math.ceil</code>, <code>Math.floor</code>,
+<code>Math.rint</code>, <code>Math.round</code>. Instead, use the result of the operation directly.</p>
+<p>The following operations are unnecessary with certain constants and can be replaced by the result of the operation directly:</p>
 <table>
   <colgroup>
     <col style="width: 50%;">
@@ -92,12 +92,24 @@
     </tr>
   </tbody>
 </table>
-<h3>Noncompliant code example</h3>
-<pre>
+<h2>How to fix it</h2>
+<p>Ask yourself if the questionable operation represents the desired calculation or if a value used is erroneous. If the calculation is correct,
+replace it with the result to avoid having to perform the unnecessary operation at runtime.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public void doMath(int a) {
-  double floor = Math.floor((double)a); // Noncompliant
-  double ceiling = Math.ceil(4.2);  // Noncompliant
-  double arcTan = Math.atan(0.0);  // Noncompliant
+  double res1 = Math.floor((double)a); // Noncompliant, the result will always be equal to '(double) a'
+  double res2 = Math.ceil(4.2);        // Noncompliant, the result will always be 5.0
+  double res3 = Math.atan(0.0);        // Noncompliant, the result will always be 0.0
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public void doMath(int a) {
+  double res1 = a;    // Compliant
+  double res2 = 5.0;  // Compliant
+  double res3 = 0.0;  // Compliant
 }
 </pre>
 

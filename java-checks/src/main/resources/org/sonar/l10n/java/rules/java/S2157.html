@@ -41,7 +41,7 @@ class Foo implements Cloneable { // Compliant
 <code>Foo.value</code> field is not required to be explicitly copied in the overridden function.</p>
 <p>If you require another copy behavior for some or all of the fields, for example, deep copy or certain invariants that need to be true for a field,
 these fields must be patched after <code>super.clone()</code>:</p>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre>
 class Entity implements Cloneable {
 
   public int id; // unique per instance
@@ -62,7 +62,7 @@ class Entity implements Cloneable {
 </pre>
 <p>Be aware that the <code>Cloneable</code> / <code>Object.clone</code> approach has several drawbacks. You might, therefore, also consider resorting
 to other solutions, such as a custom <code>copy</code> method or a copy constructor:</p>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre>
 class Entity implements Cloneable {
 
   public int id; // unique per instance

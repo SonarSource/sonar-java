@@ -28,7 +28,7 @@ List&lt;Animal&gt; getAnimals() { ... }           // Compliant, using invariant 
 List&lt;Plant&gt; getLifeforms() { ... }          // Compliant, using invariant type instead
 </pre>
 <p>Or replace them with a super- or subtypes (still invariant):</p>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre>
 List&lt;Dog&gt; getAnimals() { ... }              // Compliant, using subtype instead
 List&lt;Lifeform&gt; getLifeforms() { ... }       // Compliant, using supertype instead
 </pre>

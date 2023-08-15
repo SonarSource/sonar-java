@@ -79,7 +79,7 @@ keytool -import -alias myserver -file myserver.crt -keystore cacerts
 <p>The hostname validation gets disabled by overriding <code>javax.net.ssl.HostnameVerifier.verify()</code> with an empty implementation. It is highly
 recommended to use the original implementation.</p>
 <h4>Noncompliant code example</h4>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<pre data-diff-id="21" data-diff-type="noncompliant">
 import java.io.InputStream;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
@@ -101,7 +101,7 @@ public InputStream doRequest() {
 }
 </pre>
 <h4>Compliant solution</h4>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre data-diff-id="21" data-diff-type="compliant">
 import java.io.InputStream;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
@@ -138,7 +138,7 @@ keytool -import -alias myserver -file myserver.crt -keystore cacerts
 <p>The hostname validation gets disabled because <code>mail.smtp.ssl.checkserveridentity</code> is omitted. To enable validation, set it to
 <code>true</code>.</p>
 <h4>Noncompliant code example</h4>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<pre data-diff-id="11" data-diff-type="noncompliant">
 import java.util.Properties;
 
 public Properties prepareEmailConnection() {
@@ -154,7 +154,7 @@ public Properties prepareEmailConnection() {
 }
 </pre>
 <h4>Compliant solution</h4>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre data-diff-id="11" data-diff-type="compliant">
 import java.util.Properties;
 
 public Properties prepareEmailConnection() {

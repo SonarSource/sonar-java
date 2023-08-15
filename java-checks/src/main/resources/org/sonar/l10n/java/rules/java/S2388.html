@@ -1,40 +1,44 @@
 <h2>Why is this an issue?</h2>
-<p>When an inner class extends another class, and both its outer class and its parent class have a method with the same name, calls to that method can
-be confusing. The compiler will resolve the call to the superclass method, but maintainers may be confused, so the superclass method should be called
-explicitly, using <code>super.</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>An inner class that extends another type can call methods from both the outer class and parent type directly, without prepending
+<code>super.</code> or <code>Outer.this.</code>.</p>
+<p>When both the outer and parent classes contain a method with the same name, the compiler will resolve an unqualified call to the parent type’s
+implementation. The maintainer or a future reader may confuse the method call as calling the outer class’s implementation, even though it really calls
+the super type’s.</p>
+<p>To make matters worse, the maintainer sees the outer class’s implementation in the same file as the call in the inner class, while the parent type
+is often declared in another file. The maintainer may not even be aware of the ambiguity present, as they do not see the parent’s implementation.</p>
+<h2>How to fix it</h2>
+<p>Explicitly call the super type’s method by prepending <code>super.</code> to the method call. If the intention was to call the outer class’s
+implementation, prepend <code>Outer.this.</code> instead.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Parent {
   public void foo() { ... }
 }
 
 public class Outer {
-
   public void foo() { ... }
 
   public class Inner extends Parent {
-
-    public void doTheThing() {
-      foo();  // Noncompliant; was Outer.this.foo() intended instead?
+    public void doSomething() {
+      foo();  // Noncompliant, it is not explicit if Outer#foo or Parent#foo is the intended implementation to be called.
       // ...
     }
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class Parent {
   public void foo() { ... }
 }
 
 public class Outer {
-
   public void foo() { ... }
 
   public class Inner extends Parent {
-
-    public void doTheThing() {
-      super.foo();
+    public void doSomething() {
+      super.foo(); // Compliant, it is explicit that Parent#foo is the desired implementation to be called.
       // ...
     }
   }

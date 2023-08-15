@@ -1,16 +1,29 @@
 <h2>Why is this an issue?</h2>
-<p>Java 7 introduced the diamond operator (<code>&lt;&gt;</code>) to reduce the verbosity of generics code. For instance, instead of having to declare
-a <code>List</code>'s type in both its declaration and its constructor, you can now simplify the constructor declaration with <code>&lt;&gt;</code>,
-and the compiler will infer the type.</p>
-<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>7</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-List&lt;String&gt; strings = new ArrayList&lt;String&gt;();  // Noncompliant
-Map&lt;String,List&lt;Integer&gt;&gt; map = new HashMap&lt;String,List&lt;Integer&gt;&gt;();  // Noncompliant
+<p>Java uses angular brackets (<code>&lt;</code> and <code>&gt;</code>) to provide a specific type (the "type argument") to a generic type. For
+instance, <code>List</code> is a generic type, so a list containing strings can be declared with <code>List&lt;String&gt;</code>.</p>
+<p>Prior to Java 7, the type argument had to be provided explicitly for every occurrence where generics were used. This often caused redundancy, as
+the type argument would have to be provided both when a field is declared and initialized.</p>
+<p>Java 7 introduced the diamond operator (<code>&lt;&gt;</code>) to reduce the code’s verbosity in some situations. The type argument between the
+angular brackets should be omitted if the compiler can infer it.</p>
+<p>Since the diamond operator was only introduced in Java 7, this rule is automatically disabled when the project’s <code>sonar.java.source</code> is
+lower than <code>7</code>.</p>
+<h2>How to fix it</h2>
+<p>The type argument should be omitted in the initialization if it is already present in the declaration of a field or variable.</p>
+<p>For instance, a field with type <code>List&lt;String&gt;</code> can be initialized with <code>ArrayList&lt;&gt;()</code>, as the compiler will
+infer that <code>ArrayList&lt;String&gt;()</code> is the actually desired call.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+List&lt;String&gt; strings = new ArrayList&lt;String&gt;();                       // Noncompliant, the compiler can infer the type argument of the constructor invocation
+Map&lt;String,List&lt;Integer&gt;&gt; map = new HashMap&lt;String,List&lt;Integer&gt;&gt;();  // Noncompliant, the compiler can also infer complex type arguments
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-List&lt;String&gt; strings = new ArrayList&lt;&gt;();
-Map&lt;String,List&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;();
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+List&lt;String&gt; strings = new ArrayList&lt;&gt;();        // Compliant, the compiler will infer the type argument
+Map&lt;String,List&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;(); // Compliant, the compiler will infer the type argument
 </pre>
+<h2>References</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/generics/genTypeInference.html">The Java™ Tutorials</a> - Type Inference (Generics) </li>
+</ul>
 

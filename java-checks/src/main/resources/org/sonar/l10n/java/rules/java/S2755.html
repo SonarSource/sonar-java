@@ -117,7 +117,7 @@ processed.<br> You should rely on features provided by your XML parser to restri
 <p>The following code contains examples of XML parsers that have external entity processing enabled. As a result, the parsers are vulnerable to XXE
 attacks if an attacker can control the XML file that is processed.</p>
 <h4>Noncompliant code example</h4>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<pre data-diff-id="11" data-diff-type="noncompliant">
 import org.jdom2.input.SAXBuilder;
 
 public void decode() {
@@ -125,7 +125,7 @@ public void decode() {
 }
 </pre>
 <h4>Compliant solution</h4>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre data-diff-id="11" data-diff-type="compliant">
 import org.jdom2.input.SAXBuilder;
 
 public void decode() {

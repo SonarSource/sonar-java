@@ -1,43 +1,39 @@
 <h2>Why is this an issue?</h2>
-<p>By contract, the method <code>Object.wait(...)</code>, <code>Object.notify()</code> and <code>Object.notifyAll()</code> should be called by a
-thread that is the owner of the object’s monitor. If this is not the case an <code>IllegalMonitorStateException</code> exception is thrown. This rule
-reinforces this constraint by making it mandatory to call one of these methods only inside a <code>synchronized</code> method or statement.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-private void removeElement() {
+<p>The <code>Object.wait(…​)</code>, <code>Object.notify()</code> and <code>Object.notifyAll()</code> methods are used in multithreaded environments
+to coordinate interdependent tasks that are performed by different threads. These methods are not thread-safe and by contract, they require the
+invoking <code>Thread</code> to own the object’s monitor. If a thread invokes one of these methods without owning the object’s monitor an
+<code>IllegalMonitorStateException</code> is thrown.</p>
+<h2>How to fix it</h2>
+<p>To become the owner of an object’s monitor Java provides the <code>synchronized</code> keyword. In other words, calling
+<code>Object.wait(…​)</code>, <code>Object.notify()</code> and <code>Object.notifyAll()</code> on a given object should only be done from code
+synchronized on the same object.</p>
+<p>For example, the call to <code>someObject.wait(…​)</code> should be wrapped in a <code>synchronized(someObject){ …​ }</code> block. If
+<code>wait</code> or <code>notify</code> are invoked on <code>this</code>, then the entire method can be marked as <code>synchronized</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+private void performSomeAction(Object syncValue) {
   while (!suitableCondition()){
-    obj.wait();
+    syncValue.wait(); // Noncompliant, not being inside a `synchronized` block, this will raise an IllegalMonitorStateException
   }
-  ... // Perform removal
+  ... // Perform some action
 }
 </pre>
-<p>or</p>
-<pre>
-private void removeElement() {
-  while (!suitableCondition()){
-    wait();
-  }
-  ... // Perform removal
-}
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-private void removeElement() {
-  synchronized(obj) {
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+private void performSomeAction(Object syncValue) {
+  synchronized(syncValue) {
     while (!suitableCondition()){
-      obj.wait();
+      syncValue.wait(); // Compliant, the `synchronized` block guarantees ownership of syncValue's monitor
     }
-    ... // Perform removal
+    ... // Perform some action
   }
 }
 </pre>
-<p>or</p>
-<pre>
-private synchronized void removeElement() {
-  while (!suitableCondition()){
-    wait();
-  }
-  ... // Perform removal
-}
-</pre>
+<h2>References</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html">Java Documentation</a> - Synchronized methods </li>
+  <li> <a href="https://docs.oracle.com/javase%2F7%2Fdocs%2Fapi%2F%2F/java/lang/Object.html#wait()">Java Documentation</a> - java.lang.Object class
+  and its methods </li>
+</ul>
 

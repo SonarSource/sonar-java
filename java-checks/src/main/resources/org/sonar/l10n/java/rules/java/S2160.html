@@ -41,7 +41,7 @@ class Bar extends Foo { // Compliant, `equals` now also considers `b`
 </pre>
 <p>In case the new fields should not be part of the comparison because they are, for example, auxiliary variables not contributing to the object value
 (), still override the method to make the point clear that this was not just forgotten:</p>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre>
 class Bar extends Foo { // Compliant, we do explicitly not want to take `b` into account
 
   final int b;

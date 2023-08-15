@@ -1,25 +1,30 @@
 <h2>Why is this an issue?</h2>
-<p>If <code>Thread.sleep(...)</code> is called when the current thread holds a lock, it could lead to performance and scalability issues, or even
-worse to deadlocks because the execution of the thread holding the lock is frozen. It’s better to call <code>wait(...)</code> on the monitor object to
-temporarily release the lock and allow other threads to run.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>In a multithreaded environment, a thread may need to wait for a particular condition to become true. One way of pausing execution in Java is
+<code>Thread.sleep(…​)</code>.</p>
+<p>If a thread that holds a lock calls <code>Thread.sleep(…​)</code>, no other thread can acquire said lock. This can lead to performance and
+scalability issues, in the worst case leading to deadlocks.</p>
+<h2>How to fix it</h2>
+<p>Call <code>wait(…​)</code> on the monitor object instead of using <code>Thread.sleep(…​)</code>. While <code>wait(…​)</code> is executed, the lock
+is temporarily released and hence other threads can run in the meantime.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public void doSomething(){
   synchronized(monitor) {
     while(notReady()){
-      Thread.sleep(200);
+      Thread.sleep(200); // Noncompliant, any other thread synchronizing on monitor is blocked from running while the first thread sleeps.
     }
     process();
   }
   ...
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public void doSomething(){
   synchronized(monitor) {
     while(notReady()){
-      monitor.wait(200);
+      monitor.wait(200); // Compliant, the current monitor is released.
     }
     process();
   }

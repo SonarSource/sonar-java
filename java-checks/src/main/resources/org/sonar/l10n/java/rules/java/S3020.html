@@ -1,17 +1,27 @@
 <h2>Why is this an issue?</h2>
-<p>Given no arguments, the <code>Collections.toArray</code> method returns an <code>Object []</code>, which will cause a
-<code>ClassCastException</code> at runtime if you try to cast it to an array of the proper class. Instead, pass an array of the correct type in to the
-call.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>The <code>Collection.toArray()</code> method returns an <code>Object[]</code> when no arguments are provided to it. This can lead to a
+<code>ClassCastException</code> at runtime if you try to cast the returned array to an array of a specific type. Instead, use this method by providing
+an array of the desired type as the argument.</p>
+<p>Note that passing a <code>new T[0]</code> array of length zero as the argument is more efficient than a pre-sized array <code>new
+T[size]</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public String [] getStringArray(List&lt;String&gt; strings) {
-  return (String []) strings.toArray();  // Noncompliant; ClassCastException thrown
+  return (String []) strings.toArray();  // Noncompliant, a ClassCastException will be thrown here
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public String [] getStringArray(List&lt;String&gt; strings) {
-  return strings.toArray(new String[0]);
+  return strings.toArray(new String[0]); // Compliant, the toArray method will return an array of the desired type, and we can remove the casting operation
+}
+public String [] getPresizedStringArray(List&lt;String&gt; strings) {
+  return strings.toArray(new String[strings.size()]); // Compliant, but slightly less efficient than the previous example
 }
 </pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html#toArray-T:A-">docs.oracle</a> - Collection.toArray() </li>
+</ul>
 

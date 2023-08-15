@@ -3,7 +3,7 @@
 when the iteration has no more elements. Any other behavior when the iteration is done could lead to unexpected behavior for users of this
 <code>Iterator</code>.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class MyIterator implements Iterator&lt;String&gt; {
   ...
   public String next() {
@@ -15,7 +15,7 @@ public class MyIterator implements Iterator&lt;String&gt; {
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class MyIterator implements Iterator&lt;String&gt; {
   ...
   public String next() {
