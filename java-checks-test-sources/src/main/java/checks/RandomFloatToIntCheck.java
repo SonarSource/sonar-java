@@ -52,7 +52,14 @@ class RandomFloatToIntCheck {
   float rand23 = (float) org.apache.commons.lang3.RandomUtils.nextFloat();
   int rand24 = (int) org.apache.commons.lang3.RandomUtils.nextInt() * 50;
   int rand25 = (int)org.apache.commons.lang3.RandomUtils.nextFloat(); // Noncompliant; will always be 0;
+
+  void testLong(){
+    int randInt = (int) r.nextDouble() * 50; // Noncompliant [[sc=25;ec=37]]
+    long randLong = (long) r.nextDouble() * 50; // Noncompliant [[sc=28;ec=40]] {{Use "nextLong()" instead.}}
+  }
+
 }
 
 class RandomFloatToIntCheckFoo {
+
 }
