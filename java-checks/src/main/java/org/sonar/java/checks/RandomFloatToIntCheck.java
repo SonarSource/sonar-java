@@ -82,9 +82,9 @@ public class RandomFloatToIntCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (MATH_RANDOM_METHOD_MATCHER.matches(tree)) {
-        reportIssue(tree.methodSelect(), "Use \"java.util.Random."+methodToCall+"\" instead.");
+        reportIssue(tree.methodSelect(), "Use \"java.util.Random." + methodToCall + "\" instead.");
       } else if (METHOD_MATCHERS.matches(tree)) {
-        reportIssue(tree.methodSelect(), "Use \""+methodToCall+"\" instead.");
+        reportIssue(tree.methodSelect(), "Use \"" + methodToCall + "\" instead.");
       }
       super.visitMethodInvocation(tree);
     }
