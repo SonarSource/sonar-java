@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class ThreadAsRunnableArgumentCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ThreadAsRunnableArgumentCheck.java")
+      .onFile(mainCodeSourcesPath("checks/ThreadAsRunnableArgumentCheck.java"))
       .withCheck(new ThreadAsRunnableArgumentCheck())
       .verifyIssues();
   }

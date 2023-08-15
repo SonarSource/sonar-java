@@ -1,6 +1,7 @@
-class A {
+package checks;
+class ThreadAsRunnableArgumentCheck {
 
-  A(int i) {
+  ThreadAsRunnableArgumentCheck (int i) {
   }
 
   public void foo() {
@@ -20,7 +21,7 @@ class A {
     };
     new Thread(r).start(); // Compliant
 
-    new A(0);
+    new ThreadAsRunnableArgumentCheck (0);
 
     MyClass m = new MyClass(myThread); // Noncompliant
     m.foo(myThread); // Noncompliant
@@ -39,24 +40,29 @@ class A {
     return new Thread() {
     };
   }
+  class MyThread extends Thread {
+  }
+
+  class MyClass {
+    MyClass(Runnable r) {
+    }
+
+    MyClass(int i, String s) {
+    }
+
+    MyClass(int i, Runnable... runners) {
+    }
+
+    void bar(Thread thread) {
+
+    }
+
+    void foo(Runnable r) {
+    }
+
+    void qix(Runnable... runners) {
+    }
+  }
 }
 
-class MyThread extends Thread {
-}
 
-class MyClass {
-  MyClass(Runnable r) {
-  }
-
-  MyClass(int i, String s) {
-  }
-
-  MyClass(int i, Runnable... runners) {
-  }
-
-  void foo(Runnable r) {
-  }
-
-  void qix(Runnable... runners) {
-  }
-}
