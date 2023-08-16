@@ -1,9 +1,15 @@
 package checks.serialization;
 
-import com.google.common.collect.*;
-import org.apache.wicket.markup.html.panel.GenericPanel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.stereotype.Component;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableMultiset;
+import com.google.common.collect.ImmutableRangeMap;
+import com.google.common.collect.ImmutableRangeSet;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableTable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,10 +18,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-
 import java.util.Set;
-import javax.inject.Inject;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.Stateful;
+import javax.inject.Inject;
+import org.apache.wicket.markup.html.panel.GenericPanel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.stereotype.Component;
 
 class Address {
 }
@@ -452,4 +462,16 @@ class GuavaImmutable implements Serializable {
   ImmutableRangeSet<String> immutableRangeSet; // Compliant
   ImmutableTable<String, String, String> immutableTable; // Compliant
   ImmutableMultimap<String, String> immutableMultimap; // Compliant
+}
+
+@Stateful
+class ResourceAnnotationMakesClassSerializable implements Serializable
+{
+  @Resource
+  private Object first; // Compliant
+  @javax.annotation.Resource
+  private Object second; // Compliant
+
+  @jakarta.annotation.Resource
+  private Object third; // Compliant
 }
