@@ -494,7 +494,7 @@ public class SonarComponents {
   }
 
   public void collectUndefinedTypes(String pathToFile, Set<JProblem> undefinedTypes) {
-    undefinedTypes.stream().forEach(problem ->{
+    undefinedTypes.stream().forEach(problem -> {
       List<String> filesAffectedByProblem = problemsToFilePaths.computeIfAbsent(problem, key -> new ArrayList<>());
       filesAffectedByProblem.add(pathToFile);
     });
@@ -518,46 +518,50 @@ public class SonarComponents {
 
   private void logUndefinedTypes(int maxLines) {
     logParserMessages(
-      problemsToFilePaths.keySet().stream()
-        .filter(m -> m.type() == JProblem.Type.UNDEFINED_TYPE),
+      problemsToFilePaths.entrySet().stream()
+        .filter(entry -> entry.getKey().type() == JProblem.Type.UNDEFINED_TYPE),
       maxLines,
       "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.",
       "Unresolved imports/types:"
     );
     logParserMessages(
-      problemsToFilePaths.keySet().stream()
-        .filter(m -> m.type() == JProblem.Type.PREVIEW_FEATURE_USED),
+      problemsToFilePaths.entrySet().stream()
+        .filter(entry -> entry.getKey().type() == JProblem.Type.PREVIEW_FEATURE_USED),
       maxLines,
       "Use of preview features have been detected during analysis. Enable DEBUG mode to see them.",
       "Use of preview features:"
     );
   }
 
-  private static void logParserMessages(Stream<JProblem> messages, int maxLines, String warningMessage, String debugMessage) {
-    final List<String> messagesList = messages
-      .map(Object::toString)
-      .sorted()
+  private static void logParserMessages(Stream<Map.Entry<JProblem, List<String>>> messages, int maxProblems, String warningMessage, String debugMessage) {
+    final String problemDelimiter = System.lineSeparator() + "- ";
+    final List<List<String>> messagesList = messages
+      .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
+      .limit(maxProblems + 1L)
+      .map(entry -> {
+        List<String> paths = entry.getValue();
+        List<String> problemAndPaths = new ArrayList<>(paths.size() + 1);
+        problemAndPaths.add(problemDelimiter + entry.getKey().toString());
+        paths.forEach(path -> problemAndPaths.add("  * " + path));
+        return problemAndPaths;
+      })
       .collect(Collectors.toList());
-    int messagesListSize = messagesList.size();
-    if (messagesListSize == 0) {
+
+    if (messagesList.isEmpty()) {
       return;
     }
-    final boolean moreThanMax = messagesListSize > maxLines;
-
-    if (moreThanMax) {
-      debugMessage += " (Limited to " + maxLines + ")";
-    }
-
-    final String delimiter = System.lineSeparator() + "- ";
-    final String prefix = debugMessage + delimiter;
-    final String suffix = moreThanMax ? (delimiter + "...") : "";
 
     LOG.warn(warningMessage);
     if (LOG.isDebugEnabled()) {
+      final boolean moreThanMax = messagesList.size() > maxProblems;
+      String firstLine = moreThanMax ? (debugMessage + " (Limited to " + maxProblems + ")") : debugMessage;
+      String lastLine = moreThanMax ? (System.lineSeparator() + problemDelimiter + "...") : "";
       LOG.debug(messagesList
         .stream()
-        .limit(maxLines)
-        .collect(Collectors.joining(delimiter, prefix, suffix)));
+        .limit(maxProblems)
+        .flatMap(List::stream)
+        .collect(Collectors.joining(System.lineSeparator(), firstLine, lastLine))
+      );
     }
   }
 

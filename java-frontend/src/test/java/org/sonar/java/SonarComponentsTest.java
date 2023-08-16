@@ -969,6 +969,42 @@ class SonarComponentsTest {
         .doesNotContain("Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. Verify your configuration, as you might end up with less precise results.");
     }
 
+    @Test
+    void log_problems_with_list_of_paths_of_files_affected() {
+      String source = generateSource(1);
+
+      // Add one test and one main file
+      InputFile mainFile = TestUtils.emptyInputFile("fooMain.java", InputFile.Type.MAIN);
+      fs.add(mainFile);
+      InputFile testFile = TestUtils.emptyInputFile("fooTest.java", InputFile.Type.TEST);
+      fs.add(testFile);
+
+      // artificially populated the semantic errors with 1 unknown types and 2 errors
+      sonarComponents.collectUndefinedTypes(mainFile.toString(), ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.collectUndefinedTypes(testFile.toString(), ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.logUndefinedTypes();
+
+      List<String> debugMessage = logTester.logs(Level.DEBUG);
+      assertThat(debugMessage).hasSize(1);
+
+      List<String> linesInDebugMessage = debugMessage.stream()
+        .map(line -> Arrays.asList(line.split(System.lineSeparator())))
+        .flatMap(List::stream)
+        .collect(Collectors.toList());
+
+      assertThat(linesInDebugMessage)
+        .containsExactly(
+          "Unresolved imports/types:",
+          "- A cannot be resolved to a type",
+          "  * fooMain.java",
+          "  * fooTest.java",
+          "",
+          "- The import org.package01 cannot be resolved",
+          "  * fooMain.java",
+          "  * fooTest.java"
+        );
+    }
+
     private void logUndefinedTypesWithOneMainAndOneTest() {
       String source = generateSource(1);
 
