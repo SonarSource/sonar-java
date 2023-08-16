@@ -51,6 +51,13 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 public class SerializableFieldInSerializableClassCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVAX_INJECT = "javax.inject.Inject";
+  private static final String[] EXCLUDED_ANNOTATIONS = new String[]{
+    "jakarta.annotation.Resource",
+    "javax.annotation.Resource",
+    "javax.ejb.EJB",
+    JAVAX_INJECT,
+    "org.apache.wicket.spring.injection.annot.SpringBean"
+  };
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -157,7 +164,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
       return true;
     }
     SymbolMetadata metadata = member.symbol().metadata();
-    return isAnnotatedWith(metadata, JAVAX_INJECT, "javax.ejb.EJB", "org.apache.wicket.spring.injection.annot.SpringBean", "javax.annotation.Resource", "jakarta.annotation.Resource");
+    return isAnnotatedWith(metadata, EXCLUDED_ANNOTATIONS);
   }
 
   private static boolean isAnnotatedWith(SymbolMetadata metadata, String... fullyQualifiedNames) {
