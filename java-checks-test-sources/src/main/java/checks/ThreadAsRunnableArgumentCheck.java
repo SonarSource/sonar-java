@@ -7,7 +7,7 @@ class ThreadAsRunnableArgumentCheck {
   public void foo() {
     Thread t = new Thread() {
     };
-    new Thread(t).start(); // Noncompliant [[sc=16;ec=17]] {{Replace Thread "t" with an instance of Runnable.}}
+    new Thread(t).start(); // Noncompliant [[sc=16;ec=17]] {{Replace "t" of type Thread with an instance of Runnable.}}
 
     new Thread(bar()).start(); // Noncompliant [[sc=16;ec=21]]
 
@@ -28,7 +28,7 @@ class ThreadAsRunnableArgumentCheck {
     m = new MyClass(0, new MyThread()); // Noncompliant
     // Noncompliant@+1
     m = new MyClass(0, myThread, r, new MyThread()); // Noncompliant because of arg1 and arg3
-    m = new MyClass(0, new Thread[] {myThread, new MyThread()}); // Noncompliant {{Replace Thread[] "argument 2" with an instance of Runnable[].}}
+    m = new MyClass(0, new Thread[] {myThread, new MyThread()}); // Noncompliant {{Replace "argument 2" of type Thread[] with an instance of Runnable[].}}
     m = new MyClass(0); // Compliant
     m = new MyClass(0, new Runnable[] {}); // Compliant
     m = new MyClass(0, null, r, null); // Compliant

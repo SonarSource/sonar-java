@@ -92,7 +92,7 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
 
   private static String getMessage(ExpressionTree argument, Type providedType, int index) {
     String array = providedType.isArray() ? "[]" : "";
-    return MessageFormat.format("Replace Thread{1} \"{0}\" with an instance of Runnable{1}.", getArgName(argument, index), array);
+    return MessageFormat.format("Replace \"{0}\" of type Thread{1} with an instance of Runnable{1}.", getArgName(argument, index), array);
   }
 
   private static String getArgName(ExpressionTree tree, int index) {
