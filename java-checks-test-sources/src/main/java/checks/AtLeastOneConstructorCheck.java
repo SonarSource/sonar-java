@@ -1,5 +1,5 @@
-import org.springframework.beans.factory.annotation.Autowired;
-import java.lang.Object;
+package checks;
+
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -11,25 +11,24 @@ import javax.inject.Inject;
 import javax.jws.WebService;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebServlet;
-
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.component.annotations.Configuration;
 import org.codehaus.plexus.component.annotations.Requirement;
 
-class A { // Noncompliant [[sc=7;ec=8;secondary=21]] {{Add a constructor to the class, or provide default values.}}
+class WithoutConstructor { // Noncompliant [[sc=7;ec=25;secondary=+1]] {{Add a constructor to the class, or provide default values.}}
   private int field;
 }
 
-class B {
+class WitConstructor {
   private int field;
 
-  B() {
+  WitConstructor() {
     field = 0;
   }
 }
 
-class C {
+class CreateObject {
   public int field;
   private static int field2;
   void foo() {
@@ -39,24 +38,24 @@ class C {
   }
 }
 
-enum Enum { // Noncompliant [[secondary=44]] {{Add a constructor to the enum, or provide default values.}}
+enum Enum { // Noncompliant [[secondary=+2]] {{Add a constructor to the enum, or provide default values.}}
   A;
   private int field;
 }
 
-abstract class D {
+abstract class AbstractD {
   private int field;
 }
 
-class E {
+class Initialized {
   private int field = 5;
 }
 
 class myEJB  {
   @EJB
-  private MyObject foo; // injection via EJB
+  private Object foo; // injection via EJB
   @Resource
-  private MyObject foo2; // injection via EJB
+  private Object foo2; // injection via EJB
 }
 
 class MyService {}
@@ -65,7 +64,7 @@ class Inject1 {
   @Inject
   private MyService myService;
 }
-class Inject2 { // Noncompliant [[secondary=71]]
+class Inject2 { // Noncompliant [[secondary=+3]]
   @Inject
   private MyService myService;
   private MyService myService2;
@@ -80,28 +79,31 @@ class ABuilder { // Compliant, Builder pattern are excluded
   }
 }
 
+abstract class AbstractMojo {}
+
 @Mojo(name = "myMojo")
-public class MyMojo extends AbstractMojo { // Compliant, Mojo don't requires specific constructor
+class MyMojo extends AbstractMojo { // Compliant, Mojo don't requires specific constructor
   @Parameter(property = "project", readonly = true, required = true)
-  private MavenProject project;
+  private Object project;
   private int field;
 }
 
-public class MyMojo2 extends AbstractMojo { // Compilant, skip autowired fileds
+class MyMojo2 extends AbstractMojo { // Compilant, skip autowired fileds
   @Parameter(property = "project", readonly = true, required = true)
-  private MavenProject project;
-  @org.apache.maven.plugins.annotations.Component( role = MyComponentExtension.class)
-  private MyComponent component;
+  private Object project;
+  @org.apache.maven.plugins.annotations.Component( role = Object.class)
+  private Object component;
 }
 
-@org.codehaus.plexus.component.annotations.Component( role = MyComponent.class, hint = "hint-value" )
-public class MyComponentImplementation implements MyComponent { // Compliant, Component  don't requires specific constructor
+interface MyComponent {}
+@org.codehaus.plexus.component.annotations.Component( role = Object.class, hint = "hint-value" )
+class MyComponentImplementation implements MyComponent { // Compliant, Component  don't requires specific constructor
   @Requirement
   private boolean InjectedComponent;
   private int field;
 }
 
-public class MyComponentImplementation2 implements MyComponent { // Compliant, skip autowired fileds
+class MyComponentImplementation2 implements MyComponent { // Compliant, skip autowired fileds
   @Requirement
   private boolean InjectedComponent;
   @Configuration("test")
@@ -109,41 +111,41 @@ public class MyComponentImplementation2 implements MyComponent { // Compliant, s
 }
 
 @ManagedBean
-public class MyManagedBean { // Compliant, Java EE Bean managed by application server
+class MyManagedBean { // Compliant, Java EE Bean managed by application server
   private Object field;
 }
 
 @MessageDriven
-public class MyMessageDriven { // Compliant, Java EE Bean managed by application server
+class MyMessageDriven { // Compliant, Java EE Bean managed by application server
   private Object field;
 }
 
 @Singleton
-public class MySingleton { // Compliant, Java EE Bean managed by application server
+class MySingleton { // Compliant, Java EE Bean managed by application server
   private Object field;
 }
 
 @Stateful
-public class MyStateful { // Compliant, Java EE Bean managed by application server
+class MyStateful { // Compliant, Java EE Bean managed by application server
   private Object field;
 }
 
 @Stateless
-public class MyStateless { // Compliant, Java EE Bean managed by application server
+class MyStateless { // Compliant, Java EE Bean managed by application server
   private Object field;
 }
 
 @WebService
-public class MyWebService { // Compliant, Java EE Bean managed by application server
+class MyWebService { // Compliant, Java EE Bean managed by application server
   private Object field;
 }
 
 @WebFilter
-public class MyWebFilter { // Compliant, Java EE Bean managed by application server
+class MyWebFilter { // Compliant, Java EE Bean managed by application server
   private Object field;
 }
 
 @WebServlet
-public class MyWebServlet { // Compliant, Java EE Bean managed by application server
+class MyWebServlet { // Compliant, Java EE Bean managed by application server
   private Object field;
 }
