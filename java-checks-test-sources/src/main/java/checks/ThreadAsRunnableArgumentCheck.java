@@ -28,7 +28,7 @@ class ThreadAsRunnableArgumentCheck {
     m = new MyClass(0, new MyThread()); // Noncompliant
     // Noncompliant@+1
     m = new MyClass(0, myThread, r, new MyThread()); // Noncompliant because of arg1 and arg3
-    m = new MyClass(0, new Thread[] {myThread, new MyThread()}); // Noncompliant {{Replace Thread "Argument 2" with an instance of Runnable[].}}
+    m = new MyClass(0, new Thread[] {myThread, new MyThread()}); // Noncompliant {{Replace Thread[] "argument 2" with an instance of Runnable[].}}
     m = new MyClass(0); // Compliant
     m = new MyClass(0, new Runnable[] {}); // Compliant
     m = new MyClass(0, null, r, null); // Compliant
