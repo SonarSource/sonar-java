@@ -157,7 +157,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
       return true;
     }
     SymbolMetadata metadata = member.symbol().metadata();
-    return isAnnotatedWith(metadata, JAVAX_INJECT, "javax.ejb.EJB", "org.apache.wicket.spring.injection.annot.SpringBean");
+    return isAnnotatedWith(metadata, JAVAX_INJECT, "javax.ejb.EJB", "org.apache.wicket.spring.injection.annot.SpringBean", "javax.annotation.Resource", "jakarta.annotation.Resource");
   }
 
   private static boolean isAnnotatedWith(SymbolMetadata metadata, String... fullyQualifiedNames) {
