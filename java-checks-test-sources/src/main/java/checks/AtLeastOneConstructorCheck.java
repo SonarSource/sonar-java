@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import javax.jws.WebService;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebServlet;
+import lombok.Builder;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.component.annotations.Configuration;
@@ -148,4 +149,9 @@ class MyWebFilter { // Compliant, Java EE Bean managed by application server
 @WebServlet
 class MyWebServlet { // Compliant, Java EE Bean managed by application server
   private Object field;
+}
+
+@Builder
+class MyLombok { // Compliant, Builder pattern are excluded (Lombok builder)
+  private int field;
 }
