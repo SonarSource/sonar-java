@@ -154,4 +154,6 @@ class MyWebServlet { // Compliant, Java EE Bean managed by application server
 @Builder
 class MyLombok { // Compliant, Builder pattern are excluded (Lombok builder)
   private int field;
+
+  public int getField(){return field;}
 }
