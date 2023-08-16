@@ -50,7 +50,8 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
     "javax.servlet.annotation.WebFilter",
     "javax.servlet.annotation.WebServlet",
     "org.apache.maven.plugins.annotations.Mojo",
-    "org.codehaus.plexus.component.annotations.Component");
+    "org.codehaus.plexus.component.annotations.Component",
+    "lombok.Builder");
 
   private static final List<String> AUTOWIRED_ANNOTATIONS = Arrays.asList(
     "javax.annotation.Resource",
