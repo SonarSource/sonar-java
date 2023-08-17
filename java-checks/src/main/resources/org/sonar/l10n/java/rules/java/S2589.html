@@ -2,7 +2,7 @@
 <p>If a boolean expression doesn’t change the evaluation of the condition, then it is entirely unnecessary, and can be removed. If it is gratuitous
 because it does not match the programmer’s intent, then it’s a bug and the expression should be fixed.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="11" data-diff-type="noncompliant">
 a = true;
 if (a) { // Noncompliant
   doSomething();
@@ -15,9 +15,13 @@ if (b &amp;&amp; a) { // Noncompliant; "a" is always "true"
 if (c || !a) { // Noncompliant; "!a" is always "false"
   doSomething();
 }
+
+if (c || (!c &amp;&amp; b)) { // Noncompliant; c || (!c &amp;&amp; b) is equals to c || b
+  doSomething();
+}
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="11" data-diff-type="compliant">
 a = true;
 if (foo(a)) {
   doSomething();
@@ -28,6 +32,10 @@ if (b) {
 }
 
 if (c) {
+  doSomething();
+}
+
+if (c || b){
   doSomething();
 }
 </pre>
