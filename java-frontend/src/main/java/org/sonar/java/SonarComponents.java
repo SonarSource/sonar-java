@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -105,7 +104,7 @@ public class SonarComponents {
 
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
-  private final Set<JProblem> undefinedTypes = new HashSet<>();
+  private final Map<JProblem, List<String>> problemsToFilePaths = new HashMap<>();
 
   private final CheckFactory checkFactory;
   @Nullable
@@ -494,67 +493,76 @@ public class SonarComponents {
     return context.project();
   }
 
-  public void collectUndefinedTypes(Set<JProblem> undefinedTypes) {
-    this.undefinedTypes.addAll(undefinedTypes);
+  public void collectUndefinedTypes(String pathToFile, Set<JProblem> undefinedTypes) {
+    undefinedTypes.stream().forEach(problem -> {
+      List<String> filesAffectedByProblem = problemsToFilePaths.computeIfAbsent(problem, key -> new ArrayList<>());
+      filesAffectedByProblem.add(pathToFile);
+    });
   }
 
   public void logUndefinedTypes() {
-    if (!undefinedTypes.isEmpty()) {
-      javaClasspath.logSuspiciousEmptyLibraries();
-      if (!isAutoScan()) {
-        // In autoscan, test + main code are analyzed in the same batch, and we do not make the distinction between
-        // test and main libraries, everything is inside "sonar.java.libraries", it is expected to let the test property empty.
-        javaTestClasspath.logSuspiciousEmptyLibraries();
-      }
-      logUndefinedTypes(LOGGED_MAX_NUMBER_UNDEFINED_TYPES);
-
-      // clear the set so only new undefined types will be logged
-      undefinedTypes.clear();
+    if (problemsToFilePaths.isEmpty()) {
+      return;
     }
+    javaClasspath.logSuspiciousEmptyLibraries();
+    if (!isAutoScan()) {
+      // In autoscan, test + main code are analyzed in the same batch, and we do not make the distinction between
+      // test and main libraries, everything is inside "sonar.java.libraries", it is expected to let the test property empty.
+      javaTestClasspath.logSuspiciousEmptyLibraries();
+    }
+    logUndefinedTypes(LOGGED_MAX_NUMBER_UNDEFINED_TYPES);
+
+    // clear the set so only new undefined types will be logged
+    problemsToFilePaths.clear();
   }
 
   private void logUndefinedTypes(int maxLines) {
     logParserMessages(
-      undefinedTypes.stream()
-        .filter(m -> m.type() == JProblem.Type.UNDEFINED_TYPE),
+      problemsToFilePaths.entrySet().stream()
+        .filter(entry -> entry.getKey().type() == JProblem.Type.UNDEFINED_TYPE),
       maxLines,
       "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.",
       "Unresolved imports/types:"
     );
     logParserMessages(
-      undefinedTypes.stream()
-        .filter(m -> m.type() == JProblem.Type.PREVIEW_FEATURE_USED),
+      problemsToFilePaths.entrySet().stream()
+        .filter(entry -> entry.getKey().type() == JProblem.Type.PREVIEW_FEATURE_USED),
       maxLines,
       "Use of preview features have been detected during analysis. Enable DEBUG mode to see them.",
       "Use of preview features:"
     );
   }
 
-  private static void logParserMessages(Stream<JProblem> messages, int maxLines, String warningMessage, String debugMessage) {
-    final List<String> messagesList = messages
-      .map(Object::toString)
-      .sorted()
+  private static void logParserMessages(Stream<Map.Entry<JProblem, List<String>>> messages, int maxProblems, String warningMessage, String debugMessage) {
+    String problemDelimiter = System.lineSeparator() + "- ";
+    List<List<String>> messagesList = messages
+      .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
+      // We only consider the first `maxProblems` elements. We keep an extra one to know if we passed the threshold in later tests.
+      .limit(maxProblems + 1L)
+      .map(entry -> {
+        List<String> paths = entry.getValue();
+        List<String> problemAndPaths = new ArrayList<>(paths.size() + 1);
+        problemAndPaths.add(problemDelimiter + entry.getKey().toString());
+        paths.forEach(path -> problemAndPaths.add("  * " + path));
+        return problemAndPaths;
+      })
       .collect(Collectors.toList());
-    int messagesListSize = messagesList.size();
-    if (messagesListSize == 0) {
+
+    if (messagesList.isEmpty()) {
       return;
     }
-    final boolean moreThanMax = messagesListSize > maxLines;
-
-    if (moreThanMax) {
-      debugMessage += " (Limited to " + maxLines + ")";
-    }
-
-    final String delimiter = System.lineSeparator() + "- ";
-    final String prefix = debugMessage + delimiter;
-    final String suffix = moreThanMax ? (delimiter + "...") : "";
 
     LOG.warn(warningMessage);
     if (LOG.isDebugEnabled()) {
+      boolean moreThanMax = messagesList.size() > maxProblems;
+      String firstLine = moreThanMax ? (debugMessage + " (Limited to " + maxProblems + ")") : debugMessage;
+      String lastLine = moreThanMax ? (System.lineSeparator() + problemDelimiter + "...") : "";
       LOG.debug(messagesList
         .stream()
-        .limit(maxLines)
-        .collect(Collectors.joining(delimiter, prefix, suffix)));
+        .limit(maxProblems)
+        .flatMap(List::stream)
+        .collect(Collectors.joining(System.lineSeparator(), firstLine, lastLine))
+      );
     }
   }
 
