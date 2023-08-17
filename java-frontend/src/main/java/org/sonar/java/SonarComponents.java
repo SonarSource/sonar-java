@@ -534,9 +534,10 @@ public class SonarComponents {
   }
 
   private static void logParserMessages(Stream<Map.Entry<JProblem, List<String>>> messages, int maxProblems, String warningMessage, String debugMessage) {
-    final String problemDelimiter = System.lineSeparator() + "- ";
-    final List<List<String>> messagesList = messages
+    String problemDelimiter = System.lineSeparator() + "- ";
+    List<List<String>> messagesList = messages
       .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
+      // We only consider the first `maxProblems` elements. We keep an extra one to know if we passed the threshold in later tests.
       .limit(maxProblems + 1L)
       .map(entry -> {
         List<String> paths = entry.getValue();
@@ -553,7 +554,7 @@ public class SonarComponents {
 
     LOG.warn(warningMessage);
     if (LOG.isDebugEnabled()) {
-      final boolean moreThanMax = messagesList.size() > maxProblems;
+      boolean moreThanMax = messagesList.size() > maxProblems;
       String firstLine = moreThanMax ? (debugMessage + " (Limited to " + maxProblems + ")") : debugMessage;
       String lastLine = moreThanMax ? (System.lineSeparator() + problemDelimiter + "...") : "";
       LOG.debug(messagesList
