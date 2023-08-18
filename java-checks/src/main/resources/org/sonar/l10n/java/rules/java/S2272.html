@@ -1,11 +1,9 @@
 <h2>Why is this an issue?</h2>
-<p>By contract, any implementation of the <code>java.util.Iterator.next()</code> method should throw a <code>NoSuchElementException</code> exception
-when the iteration has no more elements. Any other behavior when the iteration is done could lead to unexpected behavior for users of this
-<code>Iterator</code>.</p>
+<p>The <code>java.util.Iterator.next()</code> method must throw a <code>NoSuchElementException</code> when there are no more elements in the
+iteration. Any other behavior is non-compliant with the API contract and may cause unexpected behavior for users.</p>
 <h3>Noncompliant code example</h3>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public class MyIterator implements Iterator&lt;String&gt; {
-  ...
   public String next() {
     if (!hasNext()) {
       return null;
@@ -17,7 +15,6 @@ public class MyIterator implements Iterator&lt;String&gt; {
 <h3>Compliant solution</h3>
 <pre data-diff-id="1" data-diff-type="compliant">
 public class MyIterator implements Iterator&lt;String&gt; {
-  ...
   public String next() {
     if (!hasNext()) {
       throw new NoSuchElementException();
@@ -27,7 +24,8 @@ public class MyIterator implements Iterator&lt;String&gt; {
 }
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html#next--">JavaDoc 8 - java.util.Iterator</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html#next--">Java SE 7 API Specification: Iterator</a> </li>
 </ul>
 

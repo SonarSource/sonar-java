@@ -1,6 +1,12 @@
 {
   "title": "Hash-based collections with known capacity should be initialized with the proper related static method.",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

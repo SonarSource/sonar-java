@@ -1,5 +1,5 @@
 {
-  "title": "\"toArray\" should be passed an array of the proper type",
+  "title": "\"Collection.toArray()\" should be passed an array of the proper type",
   "type": "BUG",
   "code": {
     "impacts": {
