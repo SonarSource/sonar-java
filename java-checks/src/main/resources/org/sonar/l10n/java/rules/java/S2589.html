@@ -16,7 +16,7 @@ if (c || !a) { // Noncompliant; "!a" is always "false"
   doSomething();
 }
 
-if (c || (!c &amp;&amp; b)) { // Noncompliant; c || (!c &amp;&amp; b) is equals to c || b
+if (c || (!c &amp;&amp; b)) { // Noncompliant; c || (!c &amp;&amp; b) is equal to c || b
   doSomething();
 }
 </pre>
@@ -35,7 +35,7 @@ if (c) {
   doSomething();
 }
 
-if (c || b){
+if (c || b) {
   doSomething();
 }
 </pre>
