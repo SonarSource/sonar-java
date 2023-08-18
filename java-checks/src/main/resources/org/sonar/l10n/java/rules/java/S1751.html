@@ -1,37 +1,57 @@
 <h2>Why is this an issue?</h2>
-<p>A loop with at most one iteration is equivalent to the use of an <code>if</code> statement to conditionally execute one piece of code. No developer
-expects to find such a use of a loop statement. If the initial intention of the author was really to conditionally execute one piece of code, an
-<code>if</code> statement should be used instead.</p>
-<p>At worst that was not the initial intention of the author and so the body of the loop should be fixed to use the nested <code>return</code>,
-<code>break</code> or <code>throw</code> statements in a more appropriate way.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-for (int i = 0; i &lt; 10; i++) { // noncompliant, loop only executes once
-  printf("i is %d", i);
+<p>A loop with at most one iteration is equivalent to an <code>if</code> statement. This can confuse developers and make the code less readable since
+loops are not meant to replace <code>if</code> statements.</p>
+<p>If the intention was to conditionally execute the block only once, an <code>if</code> statement should be used instead. Otherwise, the loop should
+be fixed so the loop block can be executed multiple times.</p>
+<p>A loop statement with at most one iteration can happen when a statement that unconditionally transfers control, such as a jump or throw statement,
+is misplaced inside the loop block.</p>
+<p>This rule arises when the following statements are misplaced:</p>
+<ul>
+  <li> <code>break</code> </li>
+  <li> <code>return</code> </li>
+  <li> <code>throw</code> </li>
+</ul>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+int i = 0;
+while(i &lt; 10) { // Noncompliant; loop only executes once
+  System.out.println("i is " + i);
+  i++;
   break;
 }
-...
-for (int i = 0; i &lt; 10; i++) { // noncompliant, loop only executes once
+</pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+for (int i = 0; i &lt; 10; i++) { // Noncompliant; loop only executes once
   if (i == x) {
     break;
   } else {
-    printf("i is %d", i);
+    System.out.println("i is " + i);
     return;
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-for (int i = 0; i &lt; 10; i++) {
-  printf("i is %d", i);
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+int i = 0;
+while (i &lt; 10) {
+  System.out.println("i is " + i);
+  i++;
 }
-...
+</pre>
+<pre data-diff-id="2" data-diff-type="compliant">
 for (int i = 0; i &lt; 10; i++) {
   if (i == x) {
     break;
   } else {
-    printf("i is %d", i);
+    System.out.println("i is " + i);
   }
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/for.html">Oracle - The for Statement</a> </li>
+</ul>
 

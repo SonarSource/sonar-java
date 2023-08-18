@@ -1,14 +1,24 @@
 <h2>Why is this an issue?</h2>
-<p>There are two classes in the Java standard library that deal with iterations: <code>Iterable&lt;T&gt;</code> and <code>Iterator&lt;T&gt;</code>. An
-<code>Iterable&lt;T&gt;</code> represents a data structure that can be the target of the "for-each loop" statement, and an
-<code>Iterator&lt;T&gt;</code> represents the state of an ongoing traversal. An <code>Iterable&lt;T&gt;</code> is generally expected to support
-multiple traversals.</p>
-<p>An <code>Iterator&lt;T&gt;</code> that also implements <code>Iterable&lt;t&gt;</code> by returning itself as its <code>iterator()</code> will not
-support multiple traversals since its state will be carried over.</p>
-<p>This rule raises an issue when the <code>iterator()</code> method of a class implementing both <code>Iterable&lt;T&gt;</code> and
-<code>Iterator&lt;t&gt;</code> returns <code>this</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>An <code>Iterable</code> should not implement the <code>Iterator</code> interface or return <code>this</code> as an <code>Iterator</code>. The
+reason is that <code>Iterator</code> represents the iteration process itself, while <code>Iterable</code> represents the object we want to iterate
+over.</p>
+<p>The <code>Iterator</code> instance encapsulates state information of the iteration process, such as the current and next element. Consequently,
+distinct iterations require distinct <code>Iterator</code> instances, for which <code>Iterable</code> provides the factory method
+<code>Iterable.iterator()</code>.</p>
+<p>This rule raises an issue when the <code>Iterable.iterator()</code> of a class implementing both <code>Iterable</code> and <code>Iterator</code>
+returns <code>this</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>The <code>Iterable.iterator()</code> method returning the same <code>Iterator</code> instance many times would have the following effects:</p>
+<ol>
+  <li> For subsequent iterations, e.g., two subsequent <code>for</code> loops with iterators over the same object, only the first one would iterate,
+  and the others would do nothing. </li>
+  <li> For nested iterations over the same object, the different iteration processes would affect each other because they only have a common, shared
+  state. </li>
+</ol>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class FooIterator implements Iterator&lt;Foo&gt;, Iterable&lt;Foo&gt; {
   private Foo[] seq;
   private int idx = 0;
@@ -27,13 +37,13 @@ class FooIterator implements Iterator&lt;Foo&gt;, Iterable&lt;Foo&gt; {
   // ...
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 class FooSequence implements Iterable&lt;Foo&gt; {
   private Foo[] seq;
 
   public Iterator&lt;Foo&gt; iterator() {
-    return new Iterator&lt;Foo&gt;() {
+    return new Iterator&lt;Foo&gt;() { // Compliant
       private int idx = 0;
 
       public boolean hasNext() {
@@ -48,4 +58,12 @@ class FooSequence implements Iterable&lt;Foo&gt; {
   // ...
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Iterable.html">Java SE 7 API Specification: java.lang.Iterable</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html">Java SE 7 API Specification: java.util.Iterator</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-14.html#jls-14.14.2">Java 7 Language Specification: The enhanced for
+  statement</a> (since Java 1.5) </li>
+</ul>
 

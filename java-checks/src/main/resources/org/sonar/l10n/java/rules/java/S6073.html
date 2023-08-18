@@ -5,34 +5,51 @@ with and without argument matchers.</p>
 <p>However, if argument matchers or captors are used only on some of the parameters, all the parameters need to have matchers as well, otherwise an
 <code>InvalidUseOfMatchersException</code> will be thrown.</p>
 <p>This rule consequently raises an issue every time matchers are not used on all the parameters of a stubbed/verified method.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 @Test
 public void myTest() {
-  given(foo.bar(anyInt(), i1, i2)).willReturn(null); // Noncompliant
-  when(foo.baz(eq(val1), val2)).thenReturn("hi"); // Noncompliant
-  doThrow(new RuntimeException()).when(foo).quux(intThat(x -&gt; x &gt;= 42), -1); // Noncompliant
-  verify(foo).bar(i1, anyInt(), i2); // Noncompliant
-  ArgumentCaptor&lt;Integer&gt; captor = ArgumentCaptor.forClass(Integer.class);
-  verify(foo).bar(captor.capture(), i1, any()); // Noncompliant
+    // Setting up mock responses
+    given(foo.bar(anyInt(), i1, i2)).willReturn(null); // Noncompliant, no matchers for "i1" and "i2"
+    when(foo.baz(eq(val1), val2)).thenReturn("hi"); // Noncompliant, no matcher for "val2"
+
+    // Simulating exceptions
+    doThrow(new RuntimeException()).when(foo).quux(intThat(x -&gt; x &gt;= 42), -1); // Noncompliant, no matcher for "-1"
+
+    // Verifying method invocations
+    verify(foo).bar(i1, anyInt(), i2); // Noncompliant, no matchers for "i1" and "i2"
+
+    // Capturing arguments for verification
+    ArgumentCaptor&lt;Integer&gt; captor = ArgumentCaptor.forClass(Integer.class);
+    verify(foo).bar(captor.capture(), i1, any()); // Noncompliant, no matchers for "i1"
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 @Test
 public void myTest() {
-  given(foo.bar(anyInt(), eq(i1), eq(i2))).willReturn(null);
-  when(foo.baz(val1, val2)).thenReturn("hi");
-  doThrow(new RuntimeException()).when(foo).quux(intThat(x -&gt; x &gt;= 42), eq(-1));
-  verify(foo).bar(eq(i1), anyInt(), eq(i2));
-  ArgumentCaptor&lt;Integer&gt; captor = ArgumentCaptor.forClass(Integer.class);
-  verify(foo).bar(captor.capture(), any(), any());
+    // Setting up mock responses
+    given(foo.bar(anyInt(), eq(i1), eq(i2))).willReturn(null); // Compliant, all arguments have matchers
+    when(foo.baz(val1, val2)).thenReturn("hi"); // Compliant, no argument has matchers
+
+    // Simulating exceptions
+    doThrow(new RuntimeException()).when(foo).quux(intThat(x -&gt; x &gt;= 42), eq(-1)); // Compliant, all arguments have matchers
+
+    // Verifying method invocations
+    verify(foo).bar(eq(i1), anyInt(), eq(i2)); // Compliant, all arguments have matchers
+
+    // Capturing arguments for verification
+    ArgumentCaptor&lt;Integer&gt; captor = ArgumentCaptor.forClass(Integer.class);
+    verify(foo).bar(captor.capture(), any(), any()); // Compliant, all arguments have matchers
 }
 </pre>
 <h2>Resources</h2>
 <ul>
   <li> <a href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#argument_matchers">Mockito documentation</a> -
   argument matchers </li>
-  <li> {rule:java:S6068} - Call to Mockito method "verify", "when" or "given" should be simplified </li>
+  <li> <a href="https://sonarsource.github.io/rspec/#/rspec/{rule:java:S6068}/java">{rule:java:S6068} - Call to Mockito method "verify", "when" or
+  "given" should be simplified</a> </li>
 </ul>
 

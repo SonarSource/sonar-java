@@ -1,49 +1,94 @@
 <h2>Why is this an issue?</h2>
-<p>When <code>List.remove()</code> is called it will shrink the list. If this is done inside the ascending loop iterating through all elements it will
-skip the element after the removed index.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>When <code>List.remove()</code> is called, the list shrinks, and the indices of all elements following the removed element are decremented by one.
+If this operation is performed within a loop that iterates through the elements in ascending order, it will cause the loop to skip the element
+immediately following the removed element.</p>
+<h2>How to fix it</h2>
+<p>There are three ways how to fix this issue:</p>
+<ol>
+  <li> Replace the loop with a call to <code>Collection.removeIf()</code>. This is the preferred solution. </li>
+  <li> Replace the ascending loop with a descending loop. Use this approach if the preferred solution is not possible due to side effects of the loop.
+  </li>
+  <li> Adjust the loop counter within the loop body after the call to <code>Collection.remove()</code>. <strong>This approach is not
+  recommended</strong>, because it will raise an issue with rule <em>{rule:java:S127} - "for" loop stop conditions should be invariant</em> </li>
+</ol>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>If the loop can be replaced with Java 8’s <code>Collection.removeIf</code> method, depending on the side effects of the loop and your Java target
+version, then this is the preferred solution for this issue.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 void removeFrom(List&lt;String&gt; list) {
-  // expected: iterate over all the elements of the list
+  // expected: iterate over all list elements
   for (int i = 0; i &lt; list.size(); i++) {
     if (list.get(i).isEmpty()) {
-      // actual: remaining elements are shifted, so the one immediately following will be skipped
-      list.remove(i); // Noncompliant
+      list.remove(i); // Noncompliant, next element is skipped
     }
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<p>You can either adjust the loop index to account for the change in the size of the list</p>
-<pre>
-static void removeFrom(List&lt;String&gt; list) {
-    // expected: iterate over all the elements of the list
-    for (int i = 0; i &lt; list.size(); i++) {
-      if (list.get(i).isEmpty()) {
-        // actual: remaining elements are shifted, so the one immediately following will be skipped
-        list.remove(i);
-        i--;
-      }
-    }
-  }
-</pre>
-<p>Or preferably it’s probably better to rely on Java 8’s <code>removeIf</code> method</p>
-<pre>
- static void removeFrom(List&lt;String&gt; list) {
-    list.removeIf(String::isEmpty);
-  }
-</pre>
-<p>&nbsp;</p>
-<h3>Exceptions</h3>
-<p>The descending loop doesn’t have this issue, because the index will be correct when we loop in descending order</p>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 void removeFrom(List&lt;String&gt; list) {
-  for (int i = list.size() - 1; i &gt;= 0; i--) {
+  list.removeIf(String::isEmpty); // Compliant
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<p>If this is not possible due to side effects of the loop, replace the ascending loop with a descending loop. Descending loops are not affected by
+decrementing the element indices after the removed element, because they have already been iterated.</p>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+void removeFrom(List&lt;String&gt; list) {
+  // expected: iterate over all list elements
+  for (int i = 0; i &lt; list.size(); i++) {
     if (list.get(i).isEmpty()) {
-      list.remove(i);
+      list.remove(i); // Noncompliant, next element is skipped
     }
   }
 }
 </pre>
-<p>&nbsp;</p>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+void removeFrom(List&lt;String&gt; list) {
+    // expected: iterate over all list elements
+    for (int i = list.size() - 1; i &gt;= 0; i--) {
+    if (list.get(i).isEmpty()) {
+      list.remove(i); // Compliant, elements after removed one have already been iterated
+    }
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<p>Another way to solve this issue is to adjust the loop counter after the call to <code>Collection.remove</code> to account for the index
+decrement.</p>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+void removeFrom(List&lt;String&gt; list) {
+  // expected: iterate over all list elements
+  for (int i = 0; i &lt; list.size(); i++) {
+    if (list.get(i).isEmpty()) {
+      list.remove(i); // Noncompliant, next element is skipped
+    }
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<p><strong>This is not recommanded</strong> because it raises an issue with rule {rule:java:S127}.</p>
+<pre data-diff-id="3" data-diff-type="compliant">
+void removeFrom(List&lt;String&gt; list) {
+  // expected: iterate over all list elements
+  for (int i = 0; i &lt; list.size(); i++) {
+    if (list.get(i).isEmpty()) {
+      list.remove(i); // Compliant due to counter adjust in next line
+      i--; // Noncompliant with S127!
+    }
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/7/docs/api/java/util/Collection.html#remove(java.lang.Object)">Java SE 7 API Specification:
+  Collection.remove</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html#removeIf-java.util.function.Predicate-">Java SE 8 API
+  Specification: Collection.removeIf</a> </li>
+  <li> <a href="https://sonarsource.github.io/rspec/#/rspec/{rule:java:S6068}/java">{rule:java:S127} - "for" loop stop conditions should be
+  invariant</a> </li>
+</ul>
 

@@ -1,24 +1,46 @@
 <h2>Why is this an issue?</h2>
-<p>A <code>for</code> loop stop condition should test the loop counter against an invariant value (i.e. one that is true at both the beginning and
-ending of every loop iteration). Ideally, this means that the stop condition is set to a local variable just before the loop begins.</p>
-<p>Stop conditions that are not invariant are slightly less efficient, as well as being difficult to understand and maintain, and likely lead to the
-introduction of errors in the future.</p>
-<p>This rule tracks three types of non-invariant stop conditions:</p>
+<p>A <code>for</code> loop termination condition should test the loop counter against an invariant value that does not change during the execution of
+the loop. Invariant termination conditions make the program logic easier to understand and maintain.</p>
+<p>This rule tracks three types of non-invariant termination conditions:</p>
 <ul>
   <li> When the loop counters are updated in the body of the <code>for</code> loop </li>
-  <li> When the stop condition depend upon a method call </li>
-  <li> When the stop condition depends on an object property, since such properties could change during the execution of the loop. </li>
+  <li> When the termination condition depends on a method call </li>
+  <li> When the termination condition depends on an object property since such properties could change during the execution of the loop. </li>
 </ul>
-<h3>Noncompliant code example</h3>
-<pre>
-for (int i = 0; i &lt; 10; i++) {
-  ...
-  i = i - 1; // Noncompliant; counter updated in the body of the loop
-  ...
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>Make the termination condition invariant by using a constant or a local variable instead of an expression that could change during the execution of
+the loop.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+for (int i = 0; i &lt; foo(); i++) { // Noncompliant, "foo()" is not an invariant
+  // ...
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-for (int i = 0; i &lt; 10; i++) {...}
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+int end = foo();
+for (int i = 0; i &lt; end; i++) { // Compliant, "end" does not change during loop execution
+  // ...
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<p>If this is impossible and the counter variable must be updated in the loop’s body, use a <code>while</code> or <code>do</code> <code>while</code>
+loop instead of a <code>for</code> loop.</p>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+for (int i = 0; i &lt; 10; i++) {
+  // ...
+  if (condition) i++; // Noncompliant, i is updated from within body
+  // ...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+int i = 0;
+while (i++ &lt; 10) { // Compliant
+  // ...
+  if (condition) sum++;
+  // ...
+}
 </pre>
 

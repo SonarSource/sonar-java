@@ -1,22 +1,44 @@
 <h2>Why is this an issue?</h2>
-<p>This rule raises an issue when an iteration over the items of a <code>Collection</code> is performed on a super-type of the type handled by the
-<code>Collection</code>.</p>
-<p>Relying on <code>Object</code> or any classes between <code>Object</code> and the real class handled by the <code>Collection</code> is not
-recommended. While it’s accepted by the language, this practice reduces readability of the code and forces to down-cast the item of the
-<code>Collection</code> to be able to call a method on it while simply using the correct type in the iteration makes things more clear and simple.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public Collection&lt;Person&gt; getPersons() { ... }
-
-for (Object item : getPersons()) { // Noncompliant
-  Person person = (Person) item; // Noncompliant; it's required to down-cast to the to correct type to use "item"
-  person.getAdress();
+<p>When iterating over an <code>Iterable</code> with a <code>for</code> loop, the iteration variable could have the same type as the type returned by
+the iterator (the item type of the <code>Iterable</code>). This rule reports when a supertype of the item type is used for the variable instead, but
+the variable is then explicitly downcast in the loop body.</p>
+<p>Using explicit type casts instead of leveraging the language’s type system is a bad practice. It disables static type checking by the compiler for
+the cast expressions, but potential errors will throw a <code>ClassCastException</code> during runtime instead.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>When declaring the iteration variable, use the item type for it instead of a supertype. Remove the explicit downcasts in the loop body.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+for (Object item : getPersons()) { // Noncompliant, iteration element is implicitly upcast here
+  Person person = (Person) item; // Noncompliant, item is explicitly downcast here
+  person.getAddress();
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 for (Person person : getPersons()) { // Compliant
-  person.getAddress() ;
+  person.getAddress();
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<p>Alternatively, use the <code>var</code> keyword to automatically infer the variable type (since Java 10).</p>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+for (Object item : getPersons()) { // Noncompliant, iteration element is implicitly upcast here
+  Person person = (Person) item; // Noncompliant, item is explicitly downcast here
+  person.getAddress();
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+for (var person : getPersons()) { // Compliant
+  person.getAddress();
+}
+</pre>
+<h4>Compliant solution</h4>
+<p>The implicit upcast in the loop header is not reported when there is no downcast in the loop body.</p>
+<pre>
+for (Object item : getPersons()) { // Compliant
+  System.out.println(item);
 }
 </pre>
 

@@ -1,11 +1,11 @@
 <h2>Why is this an issue?</h2>
-<p>Restricting the number of <code>break</code> and <code>continue</code> statements in a loop is done in the interest of good structured
-programming.</p>
-<p>Only one <code>break</code> or one <code>continue</code> statement is acceptable in a loop, since it facilitates optimal coding. If there is more
-than one, the code should be refactored to increase readability.</p>
+<p>The use of <code>break</code> and <code>continue</code> statements increases the complexity of the control flow and makes it harder to understand
+the program logic. In order to keep a good program structure, they should not be applied more than once per loop.</p>
+<p>This rule reports an issue when there is more than one <code>break</code> or <code>continue</code> statement in a loop. The code should be
+refactored to increase readability if there is more than one.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-for (int i = 1; i &lt;= 10; i++) {     // Noncompliant - 2 continue - one might be tempted to add some logic in between
+<pre data-diff-id="1" data-diff-type="noncompliant">
+for (int i = 1; i &lt;= 10; i++) {     // Noncompliant; two "continue" statements
   if (i % 2 == 0) {
     continue;
   }
@@ -13,8 +13,27 @@ for (int i = 1; i &lt;= 10; i++) {     // Noncompliant - 2 continue - one might 
   if (i % 3 == 0) {
     continue;
   }
-
-  System.out.println("i = " + i);
+  // ...
 }
 </pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+for (int i = 1; i &lt;= 10; i++) {
+  if (i % 2 == 0 || i % 3 == 0) {
+    continue;
+  }
+  // ...
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se20/html/jls-14.html#jls-14.7">Oracle - Labeled Statements</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://softwareengineering.stackexchange.com/questions/185944/java-labels-to-be-or-not-to-be/185945">StackExchange - Java labels. To
+  be or not to be</a> </li>
+  <li> <a href="https://stackoverflow.com/questions/33689466/labels-in-java-bad-practice">StackOverflow - Labels in Java - bad practice?</a> </li>
+</ul>
 
