@@ -390,16 +390,47 @@ public class DivisionByZeroCheck extends SECheck {
         return;
       }
       SymbolicValue sv = programState.getValue(symbol);
-      Number num = JUtils.constantValue(((Symbol.VariableSymbol) symbol))
-        .filter(Number.class::isInstance)
-        .map(Number.class::cast).orElse(null);
-      if (sv == null || num == null) {
+      if (sv == null) {
         return;
       }
-      if (num.intValue() == 0) {
-        addZeroConstraint(sv, ZeroConstraint.ZERO);
-      } else {
-        addZeroConstraint(sv, ZeroConstraint.NON_ZERO);
+      if (programState.getConstraint(sv, ZeroConstraint.class) != null) {
+        // no need to reassign
+        return;
+      }
+      Type type = identifier.symbolType();
+      if (type.isPrimitive() || JUtils.isPrimitiveWrapper(type)) {
+        JUtils.constantValue((Symbol.VariableSymbol) symbol)
+          .filter(Number.class::isInstance)
+          .map(Number.class::cast)
+          .ifPresent(num -> {
+            if (isZero(num, symbol.type().fullyQualifiedName())) {
+              addZeroConstraint(sv, ZeroConstraint.ZERO);
+            } else {
+              addZeroConstraint(sv, ZeroConstraint.NON_ZERO);
+            }
+          });
+      }
+    }
+
+    private static boolean isZero(Number number, String type) {
+      switch (type) {
+        case "char":
+          return number.intValue() == 0;
+        case "byte":
+          return number.byteValue() == 0;
+        case "short":
+          return number.shortValue() == 0;
+        case "int":
+          return number.intValue() == 0;
+        case "long":
+          return number.longValue() == 0L;
+        case "double":
+          return number.doubleValue() == 0.0;
+        case "float":
+          return number.floatValue() == 0.0;
+        default:
+          // should not be possible
+          return false;
       }
     }
 

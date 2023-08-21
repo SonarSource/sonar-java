@@ -50,7 +50,16 @@ class DivisionByZeroCheckTest {
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
-  
+
+  @Test
+  void primitives() {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/DivisionByZeroCheckPrimitives.java"))
+      .withCheck(new DivisionByZeroCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
   @Test
   void test_noncompiling() {
     SECheckVerifier.newVerifier()
