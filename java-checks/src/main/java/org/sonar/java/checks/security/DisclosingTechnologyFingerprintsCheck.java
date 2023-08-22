@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S5689")
 public class DisclosingTechnologyFingerprintsCheck extends IssuableSubscriptionVisitor {
   
-  private static final String MESSAGE = "Make sure disclosing the fingerprinting of this web technology is safe here.";
+  private static final String MESSAGE = "Make sure disclosing version information of this web technology is safe here.";
 
   public static final String JAVA_LANG_STRING = "java.lang.String";
   private static final MethodMatchers SET_RESPONSE_HEADERS = MethodMatchers.or(
