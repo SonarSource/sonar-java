@@ -13,6 +13,10 @@ class KnownCapacityHashBasedCollectionCheckSample {
   private static final int cap = 1;
 
   void nonCompliant() {
+    HashMap<String, String> quickFixable = new HashMap<>(100); // Noncompliant[[sc=44;ec=62;quickfixes=map]]
+    //fix@map {{Replace with "HashMap.newHashMap".}}
+    //edit@map [[sc=44;ec=57]] {{HashMap.newHashMap}}
+
     HashMap<String, String> hashMap = new HashMap<>(100); // Noncompliant[[sc=39;ec=57;]]
     HashMap<String, String> hashMap2 = new HashMap<>(100); // Noncompliant {{Replace this call to the constructor with the better suited static method HashMap.newHashMap(int numMappings)}}
     HashSet<String> hashSet2 = new HashSet<>(100); // Noncompliant {{Replace this call to the constructor with the better suited static method HashSet.newHashSet(int numMappings)}}

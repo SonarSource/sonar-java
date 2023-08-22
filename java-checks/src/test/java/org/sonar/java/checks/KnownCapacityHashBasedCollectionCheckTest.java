@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -28,10 +28,11 @@ class KnownCapacityHashBasedCollectionCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(mainCodeSourcesPath("checks/KnownCapacityHashBasedCollectionCheckSample.java"))
       .withCheck(new KnownCapacityHashBasedCollectionCheck())
       .withJavaVersion(19)
+      .withQuickFixes()
       .verifyIssues();
   }
 
@@ -40,15 +41,17 @@ class KnownCapacityHashBasedCollectionCheckTest {
 
     var check = new KnownCapacityHashBasedCollectionCheck();
 
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(mainCodeSourcesPath("checks/KnownCapacityHashBasedCollectionCheckSample.java"))
       .withCheck(check)
       .withJavaVersion(18)
+      .withQuickFixes()
       .verifyNoIssues();
 
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(mainCodeSourcesPath("checks/KnownCapacityHashBasedCollectionCheckSample.java"))
       .withCheck(check)
+      .withQuickFixes()
       .verifyNoIssues();
   }
 
