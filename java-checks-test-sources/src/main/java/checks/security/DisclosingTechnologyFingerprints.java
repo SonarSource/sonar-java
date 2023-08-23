@@ -17,15 +17,15 @@ import org.springframework.http.ResponseEntity;
 public class DisclosingTechnologyFingerprints {
   
   public String noncompliants5689httpservletresponse(HttpServletResponse response) {
-    response.addHeader("x-powered-by", "myproduct"); // Noncompliant [[sc=5;ec=52]] {{Make sure disclosing the fingerprinting of this web technology is safe here.}}
-    response.addHeader("Server", "apache"); // Noncompliant [[sc=5;ec=43]] {{Make sure disclosing the fingerprinting of this web technology is safe here.}}
+    response.addHeader("x-powered-by", "myproduct"); // Noncompliant [[sc=5;ec=52]] {{Make sure disclosing version information of this web technology is safe here.}}
+    response.addHeader("Server", "apache"); // Noncompliant [[sc=5;ec=43]] {{Make sure disclosing version information of this web technology is safe here.}}
 
     return "thymeleaf/welcome";
   }
 
   public ResponseEntity<String> noncompliants5689responseentity() {
     HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.set("x-powered-by", "myproduct"); // Noncompliant [[sc=5;ec=53]] {{Make sure disclosing the fingerprinting of this web technology is safe here.}}
+    responseHeaders.set("x-powered-by", "myproduct"); // Noncompliant [[sc=5;ec=53]] {{Make sure disclosing version information of this web technology is safe here.}}
 
     return new ResponseEntity<String>("Hello World", responseHeaders, HttpStatus.CREATED);
   }
