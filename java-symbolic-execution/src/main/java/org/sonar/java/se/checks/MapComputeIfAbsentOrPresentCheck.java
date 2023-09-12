@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;

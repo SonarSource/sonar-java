@@ -41,7 +41,7 @@ import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.IllegalRuleParameterException;
-import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;

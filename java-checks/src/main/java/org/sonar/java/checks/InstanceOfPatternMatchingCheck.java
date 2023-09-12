@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;

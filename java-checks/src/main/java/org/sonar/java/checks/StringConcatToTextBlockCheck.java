@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
-import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -64,13 +64,13 @@ public class StringConcatToTextBlockCheck extends IssuableSubscriptionVisitor im
     StringBuilder builder = new StringBuilder();
     if (concatStringLiterals(builder, tree)) {
       String content = builder.toString();
-      if (content.length() >= MINIMAL_CONTENT_LENGTH 
+      if (content.length() >= MINIMAL_CONTENT_LENGTH
         && isMultiline(content)) {
         reportIssue(tree, MESSAGE);
       }
     }
   }
-  
+
   private static boolean isMultiline(String line) {
     Matcher matcher = EOL.matcher(line);
     int matches = 0;
