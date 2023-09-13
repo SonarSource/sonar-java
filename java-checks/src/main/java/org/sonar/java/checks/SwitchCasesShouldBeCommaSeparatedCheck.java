@@ -25,7 +25,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;

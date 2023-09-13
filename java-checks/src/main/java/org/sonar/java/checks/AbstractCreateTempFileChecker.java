@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import javax.annotation.Nullable;
-import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -120,7 +120,7 @@ public abstract class AbstractCreateTempFileChecker extends BaseTreeVisitor impl
         getMessage());
     }
   }
-  
+
   @Nullable
   private State checkAndAdvanceState(MethodInvocationTree mit, State requiredState, State nextState) {
     ExpressionTree methodSelect = mit.methodSelect();

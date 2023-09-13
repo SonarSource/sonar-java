@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
