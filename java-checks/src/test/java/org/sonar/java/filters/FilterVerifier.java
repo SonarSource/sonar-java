@@ -156,7 +156,7 @@ public class FilterVerifier {
   private static SonarComponents sonarComponents(InputFile inputFile) {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     context.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));

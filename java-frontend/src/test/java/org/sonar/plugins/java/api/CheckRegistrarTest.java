@@ -19,28 +19,110 @@
  */
 package org.sonar.plugins.java.api;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.Test;
+import org.sonar.api.rule.RuleKey;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CheckRegistrarTest {
 
+  TestInternalRegistration registrarContext = new TestInternalRegistration();
+
   @Test
-  void repository_key_is_mandatory() throws Exception {
-    CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
-    List<Class<? extends JavaCheck>> checkClasses = Collections.emptyList();
-    List<Class<? extends JavaCheck>> testCheckClasses = Collections.emptyList();
-    try {
-      registrarContext.registerClassesForRepository("  ", checkClasses, testCheckClasses);
-      fail("");
-    } catch (IllegalArgumentException e) {
-      assertThat(e).hasMessage("Please specify a valid repository key to register your custom rules");
-    } catch (Exception e) {
-      fail("");
+  void repository_key_is_mandatory() {
+    assertThatThrownBy(() -> registrarContext.registerClassesForRepository("  ", emptyList(), emptyList()))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Please specify a valid repository key to register your custom rules");
+  }
+
+  @Test
+  void main_and_test_classes_registration() {
+    class MainCheckA implements JavaCheck {
     }
+    class MainCheckB implements JavaCheck {
+    }
+    class MainCheckC implements JavaCheck {
+    }
+    class TestCheckD implements JavaCheck {
+    }
+    class TestCheckE implements JavaCheck {
+    }
+    class Scanner implements JavaCheck {
+    }
+
+    registrarContext.registerClassesForRepository("my-repo", null, null);
+    registrarContext.registerClassesForRepository("my-repo",
+      List.of(MainCheckA.class, MainCheckB.class),
+      List.of(TestCheckD.class));
+    registrarContext.registerMainChecks("my-repo",
+      List.of(MainCheckC.class));
+    registrarContext.registerTestChecks("my-repo",
+      List.of(TestCheckE.class));
+    registrarContext.registerMainCheckForMultipleRules(new Scanner(),
+      List.of(RuleKey.of("repo", "S123")));
+    registrarContext.registerTestCheckForMultipleRules(new Scanner(),
+      List.of(RuleKey.of("repo", "S456")));
+    registrarContext.registerAutoScanCompatibleRules(List.of(
+      RuleKey.of("repo", "S123"),
+      RuleKey.of("repo", "S456")));
+
+    assertThat(registrarContext.repositoryKey()).isEqualTo("my-repo");
+    assertThat(registrarContext.checkClasses()).hasSize(2);
+    assertThat(registrarContext.testCheckClasses()).hasSize(1);
+
+    assertThat(registrarContext.events).containsExactly(
+      "register {} main checks in repository my-repo",
+      "register {} test checks in repository my-repo",
+      "register {MainCheckA, MainCheckB} main checks in repository my-repo",
+      "register {TestCheckD} test checks in repository my-repo",
+      "register {MainCheckC} main checks in repository my-repo",
+      "register {TestCheckE} test checks in repository my-repo",
+      "register Scanner for 1 main rules.",
+      "register Scanner for 1 test rules.",
+      "register 2 autoscan rules.");
+  }
+
+  private static class TestInternalRegistration extends CheckRegistrar.RegistrarContext {
+
+    public final List<String> events = new ArrayList<>();
+
+    @Override
+    public void registerMainChecks(String repositoryKey, Collection<?> javaCheckClassesAndInstances) {
+      super.registerMainChecks(repositoryKey, javaCheckClassesAndInstances);
+      String names = javaCheckClassesAndInstances.stream().map(o -> ((Class) o).getSimpleName()).collect(Collectors.joining(", "));
+      events.add("register {" + names + "} main checks in repository " + repositoryKey);
+    }
+
+    @Override
+    public void registerTestChecks(String repositoryKey, Collection<?> javaCheckClassesAndInstances) {
+      super.registerTestChecks(repositoryKey, javaCheckClassesAndInstances);
+      String names = javaCheckClassesAndInstances.stream().map(o -> ((Class) o).getSimpleName()).collect(Collectors.joining(", "));
+      events.add("register {" + names + "} test checks in repository " + repositoryKey);
+    }
+
+    @Override
+    public void registerMainCheckForMultipleRules(JavaCheck check, Collection<RuleKey> ruleKeys) {
+      super.registerMainCheckForMultipleRules(check, ruleKeys);
+      events.add("register " + check.getClass().getSimpleName() + " for " + ruleKeys.size() + " main rules.");
+    }
+
+    @Override
+    public void registerTestCheckForMultipleRules(JavaCheck check, Collection<RuleKey> ruleKeys) {
+      super.registerTestCheckForMultipleRules(check, ruleKeys);
+      events.add("register " + check.getClass().getSimpleName() + " for " + ruleKeys.size() + " test rules.");
+    }
+
+    @Override
+    public void registerAutoScanCompatibleRules(Collection<RuleKey> ruleKeys) {
+      super.registerAutoScanCompatibleRules(ruleKeys);
+      events.add("register " + ruleKeys.size() + " autoscan rules.");
+    }
+
   }
 }

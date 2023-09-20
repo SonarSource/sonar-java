@@ -35,6 +35,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
@@ -88,7 +89,8 @@ class JavaFrontendIntegrationTest {
       context.fileSystem(),
       Mockito.mock(ClasspathForMain.class),
       Mockito.mock(ClasspathForTest.class),
-      Mockito.mock(CheckFactory.class));
+      Mockito.mock(CheckFactory.class),
+      Mockito.mock(ActiveRules.class));
     sonarComponents.setSensorContext(context);
 
     inputFile = SETestUtils.inputFile("src/test/files/se/SimpleClass.java");

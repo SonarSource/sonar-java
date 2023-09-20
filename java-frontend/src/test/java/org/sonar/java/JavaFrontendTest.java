@@ -43,6 +43,7 @@ import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
@@ -816,7 +817,8 @@ class JavaFrontendTest {
 
     javaClasspath = mock(ClasspathForMain.class);
     javaTestClasspath = mock(ClasspathForTest.class);
-    sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
+    sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath,
+      mock(CheckFactory.class), mock(ActiveRules.class));
     sonarComponents.setSensorContext(sensorContext);
     sonarComponents.mainChecks().add(mainCodeIssueScannerAndFilter);
     sonarComponents.testChecks().add(testCodeIssueScannerAndFilter);

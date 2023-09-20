@@ -34,6 +34,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.fs.internal.DefaultTextPointer;
+import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -60,7 +61,7 @@ class SonarSymbolTableVisitorTest {
   public void setUp() {
     context = SensorContextTester.create(temp.getRoot());
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
-      mock(ClasspathForMain.class), mock(ClasspathForTest.class), mock(CheckFactory.class));
+      mock(ClasspathForMain.class), mock(ClasspathForTest.class), mock(CheckFactory.class), mock(ActiveRules.class));
     sonarComponents.setSensorContext(context);
   }
 

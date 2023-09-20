@@ -45,7 +45,7 @@ class VisitorsBridgeForTestsTest {
   @Test
   void test_semantic_disabled() {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponents.setSensorContext(context);
 
     Tree parse = JParserTestUtils.parse("class A{}");
@@ -64,7 +64,7 @@ class VisitorsBridgeForTestsTest {
   @Test
   void test_report_with_analysis_message() {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponents.setSensorContext(context);
 
     Tree parse = JParserTestUtils.parse("class A{}");
@@ -88,7 +88,7 @@ class VisitorsBridgeForTestsTest {
   @Test
   void create_InputFileScannerContext_also_sets_testContext_field() {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponents.setSensorContext(context);
     DummyVisitor javaCheck = new DummyVisitor();
     VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(javaCheck), sonarComponents, new JavaVersionImpl());

@@ -305,7 +305,7 @@ class SanityTest {
       .setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true)
       .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true));
     DefaultFileSystem fileSystem = context.fileSystem();
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null) {
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         return false;

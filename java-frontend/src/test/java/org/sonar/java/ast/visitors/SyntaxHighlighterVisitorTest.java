@@ -32,6 +32,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -67,7 +68,7 @@ class SyntaxHighlighterVisitorTest {
   public void setUp() throws Exception {
     context = SensorContextTester.create(temp.getRoot());
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
-      mock(ClasspathForMain.class), mock(ClasspathForTest.class), mock(CheckFactory.class));
+      mock(ClasspathForMain.class), mock(ClasspathForTest.class), mock(CheckFactory.class), mock(ActiveRules.class));
     sonarComponents.setSensorContext(context);
     syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents);
   }

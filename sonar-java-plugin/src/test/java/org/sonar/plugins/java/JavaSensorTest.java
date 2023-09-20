@@ -40,6 +40,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
@@ -112,7 +113,7 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 19);
+    testIssueCreation(InputFile.Type.MAIN, 18);
   }
 
   @Test
@@ -132,7 +133,7 @@ class JavaSensorTest {
 
     jss.execute(context);
     // argument 119 refers to the comment on line #119 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(119));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(120));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
@@ -165,7 +166,8 @@ class JavaSensorTest {
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
-    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory));
+    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath,
+      checkFactory, mock(ActiveRules.class)));
     sonarComponents.setSensorContext(contextTester);
 
     BadMethodNameCheck check = new BadMethodNameCheck();
@@ -432,15 +434,6 @@ class JavaSensorTest {
     );
   }
 
-  @Test
-  void extract_rule_key() {
-    @org.sonar.check.Rule(key = "123")
-    class MyRule implements JavaCheck {}
-    class MyRuleWithoutKey implements JavaCheck {}
-    assertThat(JavaSensor.getKeyFromCheck(new MyRule())).isEqualTo("123");
-    assertThat(JavaSensor.getKeyFromCheck(new MyRuleWithoutKey())).isEmpty();
-  }
-
   private SensorContextTester analyzeTwoFilesWithIssues(MapSettings settings) throws IOException {
     SensorContextTester context = SensorContextTester.create(new File("src/test/files").getAbsoluteFile())
       .setSettings(settings)
@@ -479,7 +472,7 @@ class JavaSensorTest {
     CheckFactory checkFactory = new CheckFactory(activeRulesBuilder.build());
 
     SonarComponents components = new SonarComponents(fileLinesContextFactory, fs,
-      javaClasspath, javaTestClasspath, checkFactory, checkRegistrars, null);
+      javaClasspath, javaTestClasspath, checkFactory, context.activeRules(), checkRegistrars, null);
 
     JavaSensor jss = new JavaSensor(components, fs, resourceLocator, context.config(), mock(NoSonarFilter.class), null);
     jss.execute(context);

@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -39,8 +40,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.issue.NoSonarFilter;
-import org.sonar.api.utils.AnnotationUtils;
-import org.sonar.check.Rule;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
@@ -56,6 +56,8 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonarsource.performance.measure.PerformanceMeasure;
+
+import static org.sonar.api.rules.RuleAnnotationUtils.getRuleKey;
 
 @Phase(name = Phase.Name.PRE)
 public class JavaSensor implements Sensor {
@@ -90,8 +92,8 @@ public class JavaSensor implements Sensor {
     this.settings = settings;
     this.postAnalysisIssueFilter = postAnalysisIssueFilter;
     this.jasper = jasper;
-    this.sonarComponents.registerMainCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
-    this.sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
+    this.sonarComponents.registerMainChecks(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
+    this.sonarComponents.registerTestChecks(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
   }
 
   @Override
@@ -115,23 +117,22 @@ public class JavaSensor implements Sensor {
     sensorDuration.stop();
   }
 
-  private static UnaryOperator<List<JavaCheck>> createCheckFilter(boolean isAutoScanCheckFiltering) {
+  private UnaryOperator<List<JavaCheck>> createCheckFilter(boolean isAutoScanCheckFiltering) {
     if (isAutoScanCheckFiltering) {
-      Set<String> sonarWayRuleKeys = JavaSonarWayProfile.ruleKeys();
-      Set<Class<? extends JavaCheck>> notWorkingChecks = CheckList.getJavaChecksNotWorkingForAutoScan();
+      Set<RuleKey> autoScanCompatibleRules = new HashSet<>(JavaSonarWayProfile.sonarJavaSonarWayRuleKeys());
+
+      CheckList.getJavaChecksNotWorkingForAutoScan().stream()
+        .map(checkClass -> RuleKey.of(CheckList.REPOSITORY_KEY, getRuleKey(checkClass)))
+        .forEach(autoScanCompatibleRules::remove);
+
+      autoScanCompatibleRules.addAll(sonarComponents.getAdditionalAutoScanCompatibleRuleKeys());
+
       return checks -> checks.stream()
-        .filter(c -> sonarWayRuleKeys.contains(getKeyFromCheck(c)))
-        .filter(c -> !notWorkingChecks.contains(c.getClass()))
+        .filter(check -> sonarComponents.getRuleKey(check).map(autoScanCompatibleRules::contains).orElse(false))
         .collect(Collectors.toList());
     } else {
       return UnaryOperator.identity();
     }
-  }
-
-  @VisibleForTesting
-  static String getKeyFromCheck(JavaCheck check) {
-    Rule ruleAnnotation = AnnotationUtils.getAnnotation(check.getClass(), Rule.class);
-    return ruleAnnotation != null ? ruleAnnotation.key() : "";
   }
 
   private static PerformanceMeasure.Duration createPerformanceMeasureReport(SensorContext context) {
