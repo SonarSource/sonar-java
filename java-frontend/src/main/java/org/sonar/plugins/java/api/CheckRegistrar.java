@@ -133,7 +133,7 @@ public interface CheckRegistrar {
      * defined as template in RulesDefinition will not work. And the reportIssue mechanism will not be able to find the
      * RuleKey automatically.
      */
-    public void registerMainCheckForMultipleRules(JavaCheck check, Collection<RuleKey> ruleKeys) {
+    public void registerMainSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
       // to be overridden
     }
 
@@ -142,7 +142,7 @@ public interface CheckRegistrar {
      * of the given rule key is active. In this context injection of @RuleProperty and auto instantiation of rules
      * defined as template in RulesDefinition will not work.
      */
-    public void registerTestCheckForMultipleRules(JavaCheck check, Collection<RuleKey> ruleKeys) {
+    public void registerTestSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
       // to be overridden
     }
 

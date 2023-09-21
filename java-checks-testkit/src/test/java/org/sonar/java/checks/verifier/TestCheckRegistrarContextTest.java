@@ -27,7 +27,6 @@ import org.sonar.plugins.java.api.JavaCheck;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class TestCheckRegistrarContextTest {
 
@@ -69,10 +68,10 @@ class TestCheckRegistrarContextTest {
     context.registerTestChecks("customRepo", List.of(
       rule4,
       Rule6.class));
-    context.registerMainCheckForMultipleRules(new Scanner(), List.of(
+    context.registerMainSharedCheck(new Scanner(), List.of(
       RuleKey.of("securityRepo", "R1"),
       RuleKey.of("securityRepo", "R2")));
-    context.registerTestCheckForMultipleRules(new Scanner(), List.of(
+    context.registerTestSharedCheck(new Scanner(), List.of(
       RuleKey.of("securityRepo", "R3"),
       RuleKey.of("securityRepo", "R4")));
     context.registerAutoScanCompatibleRules(List.of(

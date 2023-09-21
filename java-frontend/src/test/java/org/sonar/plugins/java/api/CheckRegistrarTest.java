@@ -65,9 +65,9 @@ class CheckRegistrarTest {
       List.of(MainCheckC.class));
     registrarContext.registerTestChecks("my-repo",
       List.of(TestCheckE.class));
-    registrarContext.registerMainCheckForMultipleRules(new Scanner(),
+    registrarContext.registerMainSharedCheck(new Scanner(),
       List.of(RuleKey.of("repo", "S123")));
-    registrarContext.registerTestCheckForMultipleRules(new Scanner(),
+    registrarContext.registerTestSharedCheck(new Scanner(),
       List.of(RuleKey.of("repo", "S456")));
     registrarContext.registerAutoScanCompatibleRules(List.of(
       RuleKey.of("repo", "S123"),
@@ -108,14 +108,14 @@ class CheckRegistrarTest {
     }
 
     @Override
-    public void registerMainCheckForMultipleRules(JavaCheck check, Collection<RuleKey> ruleKeys) {
-      super.registerMainCheckForMultipleRules(check, ruleKeys);
+    public void registerMainSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
+      super.registerMainSharedCheck(check, ruleKeys);
       events.add("register " + check.getClass().getSimpleName() + " for " + ruleKeys.size() + " main rules.");
     }
 
     @Override
-    public void registerTestCheckForMultipleRules(JavaCheck check, Collection<RuleKey> ruleKeys) {
-      super.registerTestCheckForMultipleRules(check, ruleKeys);
+    public void registerTestSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
+      super.registerTestSharedCheck(check, ruleKeys);
       events.add("register " + check.getClass().getSimpleName() + " for " + ruleKeys.size() + " test rules.");
     }
 

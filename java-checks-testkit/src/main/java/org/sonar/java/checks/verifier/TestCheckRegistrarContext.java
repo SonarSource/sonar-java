@@ -54,14 +54,14 @@ public class TestCheckRegistrarContext extends CheckRegistrar.RegistrarContext {
   }
 
   @Override
-  public void registerMainCheckForMultipleRules(JavaCheck check, Collection<RuleKey> ruleKeys) {
+  public void registerMainSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
     mainCheckClasses.add(check.getClass());
     mainCheckInstances.add(check);
     mainRuleKeys.addAll(ruleKeys);
   }
 
   @Override
-  public void registerTestCheckForMultipleRules(JavaCheck check, Collection<RuleKey> ruleKeys) {
+  public void registerTestSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
     testCheckClasses.add(check.getClass());
     testCheckInstances.add(check);
     testRuleKeys.addAll(ruleKeys);

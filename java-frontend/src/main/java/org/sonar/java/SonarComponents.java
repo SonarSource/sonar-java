@@ -239,14 +239,14 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
   @Override
-  public void registerMainCheckForMultipleRules(JavaCheck check, Collection<RuleKey> ruleKeys) {
+  public void registerMainSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
     if (hasAtLeastOneActiveRule(ruleKeys)) {
       mainChecks.add(check);
     }
   }
 
   @Override
-  public void registerTestCheckForMultipleRules(JavaCheck check, Collection<RuleKey> ruleKeys) {
+  public void registerTestSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
     if (hasAtLeastOneActiveRule(ruleKeys)) {
       testChecks.add(check);
     }

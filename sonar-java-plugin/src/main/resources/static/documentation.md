@@ -142,6 +142,21 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.25**
+
+Update custom rules registration API `CheckRegistrar.RegistrarContext` to allow:
+* Registration of JavaCheck instances (previously only classes were supported)
+  `registerMainChecks(String repositoryKey, Collection<?> javaCheckClassesAndInstances)`
+  `registerTestChecks(String repositoryKey, Collection<?> javaCheckClassesAndInstances)`
+* Registration of a JavaCheck that has no `@Rule` annotation because it does not target one but several rules.
+  `registerMainSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys)`
+  `registerTestSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys)`
+* Deprecate useless getters from the RegistrarContext class and add `TestCheckRegistrarContext` for test purpose.
+
+Add custom rules registration API `ProfileRegistrar.RegistrarContext` to allow:
+* Registration of rules in the "Sonar Way" builtin default quality profile for the Java language.
+  `registerDefaultQualityProfileRules(Collection<RuleKey> ruleKeys)`
+
 #### **7.19**
 
 All the API changes are related to the support of the preview feature of Java 19/20. These new types and methods are introduced as "deprecated" and will be marked out of deprecation with the introduction of the final features in the JDK.
