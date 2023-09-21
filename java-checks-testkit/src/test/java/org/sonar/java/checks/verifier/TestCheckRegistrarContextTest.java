@@ -114,7 +114,8 @@ class TestCheckRegistrarContextTest {
   @Test
   void should_fail_if_repository_key_is_blank() {
     TestCheckRegistrarContext context = new TestCheckRegistrarContext();
-    assertThatThrownBy(() -> context.registerMainChecks(" ", List.of(Rule1.class)))
+    List<?> checkClasses = List.of(Rule1.class);
+    assertThatThrownBy(() -> context.registerMainChecks(" ", checkClasses))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("Please specify a non blank repository key");
   }
@@ -122,7 +123,8 @@ class TestCheckRegistrarContextTest {
   @Test
   void should_fail_if_not_a_JavaCheck() {
     TestCheckRegistrarContext context = new TestCheckRegistrarContext();
-    assertThatThrownBy(() -> context.registerMainChecks("repo", List.of(Object.class)))
+    List<?> checkClasses = List.of(Object.class);
+    assertThatThrownBy(() -> context.registerMainChecks("repo", checkClasses))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Fail to instantiate class java.lang.Object");
   }

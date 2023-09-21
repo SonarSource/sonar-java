@@ -36,7 +36,8 @@ class CheckRegistrarTest {
 
   @Test
   void repository_key_is_mandatory() {
-    assertThatThrownBy(() -> registrarContext.registerClassesForRepository("  ", emptyList(), emptyList()))
+    List<Class<? extends JavaCheck>> emptyList = emptyList();
+    assertThatThrownBy(() -> registrarContext.registerClassesForRepository("  ", emptyList, emptyList))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("Please specify a valid repository key to register your custom rules");
   }

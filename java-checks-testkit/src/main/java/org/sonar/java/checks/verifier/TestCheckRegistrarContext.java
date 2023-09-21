@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.verifier;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -85,12 +86,13 @@ public class TestCheckRegistrarContext extends CheckRegistrar.RegistrarContext {
       try {
         if (javaCheckClassOrInstance instanceof Class) {
           checkClass = (Class<? extends JavaCheck>) javaCheckClassOrInstance;
-          check = checkClass.newInstance();
+          check = checkClass.getDeclaredConstructor().newInstance();
         } else {
           check = (JavaCheck) javaCheckClassOrInstance;
           checkClass = check.getClass();
         }
-      } catch (InstantiationException | IllegalAccessException | ClassCastException e) {
+      } catch (ClassCastException | NoSuchMethodException | InstantiationException | IllegalAccessException |
+               InvocationTargetException e) {
         throw new IllegalStateException(String.format("Fail to instantiate %s", javaCheckClassOrInstance), e);
       }
       RuleKey ruleKey = RuleKey.of(repositoryKey, RuleAnnotationUtils.getRuleKey(checkClass));

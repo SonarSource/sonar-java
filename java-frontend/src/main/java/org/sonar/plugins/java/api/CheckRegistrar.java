@@ -59,8 +59,8 @@ public interface CheckRegistrar {
    */
   class RegistrarContext {
     private String repositoryKey;
-    private Iterable<Class<? extends JavaCheck>> checkClasses;
-    private Iterable<Class<? extends JavaCheck>> testCheckClasses;
+    private Iterable<Class<? extends JavaCheck>> mainCheckClassList;
+    private Iterable<Class<? extends JavaCheck>> testCheckClassList;
 
     /**
      * Registers java checks for a given repository.
@@ -71,8 +71,8 @@ public interface CheckRegistrar {
     public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses, Iterable<Class<? extends JavaCheck>> testCheckClasses) {
       Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
       this.repositoryKey = repositoryKey;
-      this.checkClasses = checkClasses;
-      this.testCheckClasses = testCheckClasses;
+      this.mainCheckClassList = checkClasses;
+      this.testCheckClassList = testCheckClasses;
       registerMainChecks(repositoryKey, asCollection(checkClasses));
       registerTestChecks(repositoryKey, asCollection(testCheckClasses));
     }
@@ -94,7 +94,7 @@ public interface CheckRegistrar {
      */
     @Deprecated(since = "7.25", forRemoval = true)
     public Iterable<Class<? extends JavaCheck>> checkClasses() {
-      return checkClasses;
+      return mainCheckClassList;
     }
 
     /**
@@ -104,7 +104,7 @@ public interface CheckRegistrar {
      */
     @Deprecated(since = "7.25", forRemoval = true)
     public Iterable<Class<? extends JavaCheck>> testCheckClasses() {
-      return testCheckClasses;
+      return testCheckClassList;
     }
 
     /**
@@ -147,7 +147,8 @@ public interface CheckRegistrar {
     }
 
     /**
-     * Registers rules compatible with the autoscan context. Note: It's possible to convert checkClass to RuleKey using:
+     * Cannot be used outside of Sonar Products. Registers rules compatible with the autoscan context.
+     * Note: It's possible to convert checkClass to RuleKey using:
      * <pre>
      *   RuleKey.of(repositoryKey, RuleAnnotationUtils.getRuleKey(checkClass))
      * </pre>
