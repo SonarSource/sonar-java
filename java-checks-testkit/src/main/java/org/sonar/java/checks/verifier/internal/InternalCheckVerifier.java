@@ -658,7 +658,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     ClasspathForMain classpathForMain = new ClasspathForMain(config, fileSystem);
     ClasspathForTest classpathForTest = new ClasspathForTest(config, fileSystem);
 
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null) {
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));

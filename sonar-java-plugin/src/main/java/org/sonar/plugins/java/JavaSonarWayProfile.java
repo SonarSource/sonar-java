@@ -24,12 +24,14 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.CheckList;
+import org.sonar.plugins.java.api.ProfileRegistrar;
 import org.sonarsource.analyzer.commons.BuiltInQualityProfileJsonLoader;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
@@ -47,23 +49,46 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
   static final String SECURITY_RULE_KEYS_METHOD_NAME = "getSecurityRuleKeys";
   static final String DBD_RULE_KEYS_METHOD_NAME = "getDataflowBugDetectionRuleKeys";
   static final String GET_REPOSITORY_KEY = "getRepositoryKey";
+  static final String SECURITY_REPOSITORY_KEY = "javasecurity";
+  static final String DBD_REPOSITORY_KEY = "javabugs";
 
   static final String SONAR_WAY_PATH = "/org/sonar/l10n/java/rules/java/Sonar_way_profile.json";
 
+  private final ProfileRegistrar[] profileRegistrars;
+
+  public JavaSonarWayProfile(@Nullable ProfileRegistrar[] profileRegistrars) {
+    this.profileRegistrars = profileRegistrars;
+  }
 
   @Override
   public void define(Context context) {
     NewBuiltInQualityProfile sonarWay = context.createBuiltInQualityProfile("Sonar way", Java.KEY);
+    Set<RuleKey> ruleKeys = new HashSet<>(sonarJavaSonarWayRuleKeys());
+    if (profileRegistrars != null) {
+      for (ProfileRegistrar profileRegistrar : profileRegistrars) {
+        profileRegistrar.register(ruleKeys::addAll);
+      }
+    }
 
-    BuiltInQualityProfileJsonLoader.load(sonarWay, CheckList.REPOSITORY_KEY, SONAR_WAY_PATH);
+    // Former activation mechanism, it should be removed once sonar-security and sonar-dataflow-bug-detection
+    // support the new mechanism:
+    // <code> registrarContext.internal().registerDefaultQualityProfileRules(ruleKeys); </code>
+    // For now, it still uses reflexion if rules are not yet defined
+    if (ruleKeys.stream().noneMatch(rule -> SECURITY_REPOSITORY_KEY.equals(rule.repository()))) {
+      ruleKeys.addAll(getSecurityRuleKeys());
+    }
+    if (ruleKeys.stream().noneMatch(rule -> DBD_REPOSITORY_KEY.equals(rule.repository()))) {
+      ruleKeys.addAll(getDataflowBugDetectionRuleKeys());
+    }
 
-    getSecurityRuleKeys().forEach(key -> sonarWay.activateRule(key.repository(), key.rule()));
-    getDataflowBugDetectionRuleKeys().forEach(key -> sonarWay.activateRule(key.repository(), key.rule()));
+    ruleKeys.forEach(ruleKey -> sonarWay.activateRule(ruleKey.repository(), ruleKey.rule()));
     sonarWay.done();
   }
 
-  static Set<String> ruleKeys() {
-    return BuiltInQualityProfileJsonLoader.loadActiveKeysFromJsonProfile(SONAR_WAY_PATH);
+  static Set<RuleKey> sonarJavaSonarWayRuleKeys() {
+    return BuiltInQualityProfileJsonLoader.loadActiveKeysFromJsonProfile(SONAR_WAY_PATH).stream()
+      .map(rule -> RuleKey.of(CheckList.REPOSITORY_KEY, rule))
+      .collect(Collectors.toSet());
   }
 
   @VisibleForTesting

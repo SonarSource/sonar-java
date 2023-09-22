@@ -161,7 +161,7 @@ class SonarComponentsTest {
     DefaultFileSystem fs = context.fileSystem();
     fs.setWorkDir(workDir.toPath());
 
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(ClasspathForTest.class), checkFactory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(ClasspathForTest.class), checkFactory, context.activeRules());
 
     assertThat(sonarComponents.projectLevelWorkDir()).isEqualTo(workDir);
   }
@@ -177,7 +177,8 @@ class SonarComponentsTest {
     parentProjectDefinition.setWorkDir(workDir);
     ProjectDefinition childProjectDefinition = ProjectDefinition.create();
     parentProjectDefinition.addSubProject(childProjectDefinition);
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(ClasspathForTest.class), checkFactory, childProjectDefinition);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(ClasspathForTest.class),
+      checkFactory, context.activeRules(), childProjectDefinition);
     assertThat(sonarComponents.projectLevelWorkDir()).isEqualTo(workDir);
   }
 
@@ -193,7 +194,8 @@ class SonarComponentsTest {
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
 
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, javaTestClasspath, checkFactory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, javaTestClasspath,
+      checkFactory, context.activeRules());
     sonarComponents.setSensorContext(sensorContextTester);
 
     List<JavaCheck> visitors = sonarComponents.mainChecks();
@@ -214,7 +216,8 @@ class SonarComponentsTest {
     ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
     List<File> list = mock(List.class);
     when(javaClasspath.getElements()).thenReturn(list);
-    sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory);
+    sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath,
+      checkFactory, context.activeRules());
     assertThat(sonarComponents.getJavaClasspath()).isEqualTo(list);
   }
 
@@ -225,7 +228,7 @@ class SonarComponentsTest {
 
     when(this.checks.all()).thenReturn(Collections.singletonList(expectedCheck)).thenReturn(new ArrayList<>());
     SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, null, null,
-      null, this.checkFactory, new CheckRegistrar[]{expectedRegistrar});
+      null, this.checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     List<JavaCheck> visitors = sonarComponents.mainChecks();
@@ -244,7 +247,7 @@ class SonarComponentsTest {
 
     when(checks.all()).thenReturn(new ArrayList<>()).thenReturn(Collections.singletonList(expectedCheck));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
+      null, checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     List<JavaCheck> visitors = sonarComponents.mainChecks();
@@ -272,7 +275,7 @@ class SonarComponentsTest {
       .thenReturn(Arrays.asList(new CheckA(), new CheckB(), new CheckC()))
       .thenReturn(Arrays.asList(new CheckA(), new CheckB(), new CheckC()));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
+      null, checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     List<JavaCheck> mainChecks = sonarComponents.mainChecks();
@@ -299,7 +302,7 @@ class SonarComponentsTest {
       .thenReturn(Arrays.asList(new CheckA(), new CheckB(), new CheckC()))
       .thenReturn(Arrays.asList(new CheckC(), new CheckB(), new CheckA()));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
+      null, checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
     sonarComponents.setCheckFilter(checks -> checks.stream()
       .filter(c -> !c.getClass().getSimpleName().equals("CheckB")).collect(Collectors.toList()));
@@ -323,7 +326,7 @@ class SonarComponentsTest {
 
     when(this.checks.all()).thenReturn(Collections.singletonList(expectedCheck)).thenReturn(Collections.singletonList(expectedTestCheck));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
+      null, checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     List<JavaCheck> visitors = sonarComponents.mainChecks();
@@ -337,13 +340,101 @@ class SonarComponentsTest {
   }
 
   @Test
+  void register_shared_check_when_rules_are_active_or_not() {
+    ActiveRules activeRules = activeRules("java:S101", "java:S102");
+    CheckFactory checkFactory = new CheckFactory(activeRules);
+    SensorContextTester context = SensorContextTester.create(new File(".")).setActiveRules(activeRules);
+
+    class RuleA implements JavaCheck {
+    }
+    class RuleB implements JavaCheck {
+    }
+    class RuleC implements JavaCheck {
+    }
+    class RuleD implements JavaCheck {
+    }
+    class RuleE implements JavaCheck {
+    }
+    class RuleF implements JavaCheck {
+    }
+
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
+      null, checkFactory, activeRules, new CheckRegistrar[] {
+        ctx -> ctx.registerMainSharedCheck(new RuleA(), ruleKeys("java:S404", "java:S102")),
+        ctx -> ctx.registerMainSharedCheck(new RuleB(), ruleKeys("java:S404", "java:S500")),
+        ctx -> ctx.registerMainSharedCheck(new RuleC(), ruleKeys("java:S101", "java:S102")),
+        ctx -> ctx.registerTestSharedCheck(new RuleD(), ruleKeys("java:S404", "java:S405", "java:S406")),
+        ctx -> ctx.registerTestSharedCheck(new RuleE(), ruleKeys("java:S102")),
+        ctx -> ctx.registerTestSharedCheck(new RuleF(), List.of())
+      });
+    sonarComponents.setSensorContext(context);
+
+    assertThat(sonarComponents.mainChecks())
+      .extracting(c -> c.getClass().getSimpleName())
+      .containsExactly("RuleA", "RuleC");
+    assertThat(sonarComponents.testChecks())
+      .extracting(c -> c.getClass().getSimpleName())
+      .containsExactly("RuleE");
+  }
+
+  @Test
+  void register_custom_rule_by_instances_instead_of_classes() {
+    ActiveRules activeRules = activeRules("java:S101", "java:S102");
+    CheckFactory checkFactory = new CheckFactory(activeRules);
+    SensorContextTester context = SensorContextTester.create(new File(".")).setActiveRules(activeRules);
+    @Rule(key = "S101")
+    class RuleA implements JavaCheck {
+    }
+    @Rule(key = "S102")
+    class RuleB implements JavaCheck {
+    }
+    @Rule(key = "S103")
+    class RuleC implements JavaCheck {
+    }
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
+      null, checkFactory, activeRules, new CheckRegistrar[] {
+        ctx -> ctx.registerMainChecks("java", List.of(
+          new RuleA(),
+          new RuleC())),
+        ctx -> ctx.registerTestChecks("java", List.of(
+          new RuleB()))
+      });
+    sonarComponents.setSensorContext(context);
+
+    assertThat(sonarComponents.mainChecks())
+      .extracting(c -> c.getClass().getSimpleName())
+      .containsExactly("RuleA");
+    assertThat(sonarComponents.testChecks())
+      .extracting(c -> c.getClass().getSimpleName())
+      .containsExactly("RuleB");
+  }
+
+  @Test
+  void auto_scan_compatible_rules() {
+    ActiveRules activeRules = activeRules();
+    CheckFactory checkFactory = new CheckFactory(activeRules);
+    SensorContextTester context = SensorContextTester.create(new File(".")).setActiveRules(activeRules);
+
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
+      null, checkFactory, activeRules, new CheckRegistrar[] {
+      ctx -> ctx.registerAutoScanCompatibleRules(ruleKeys("java:S101", "java:S102")),
+      ctx -> ctx.registerAutoScanCompatibleRules(ruleKeys("javabugs:S200"))
+    });
+    sonarComponents.setSensorContext(context);
+
+    assertThat(sonarComponents.getAdditionalAutoScanCompatibleRuleKeys())
+      .extracting(RuleKey::toString)
+      .containsExactlyInAnyOrder("java:S101", "java:S102", "javabugs:S200");
+  }
+
+  @Test
   void no_issue_when_check_not_found() throws Exception {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(null);
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
+      null, checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(TestUtils.emptyInputFile("file.java"), expectedCheck, 0, "message", null);
@@ -372,7 +463,7 @@ class SonarComponentsTest {
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null,
-      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
+      null, checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(inputFile, expectedCheck, -5, "message on wrong line", null);
@@ -409,7 +500,8 @@ class SonarComponentsTest {
         + "}\n").build();
 
     SensorContextTester context = SensorContextTester.create(new File(""));
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), null, null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), null, null,
+      checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     AnalyzerMessage.TextSpan emptyTextSpan = new AnalyzerMessage.TextSpan(3, 10, 3, 10);
@@ -427,7 +519,7 @@ class SonarComponentsTest {
 
   @Test
   void cancellation() {
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     SensorContextTester context = SensorContextTester.create(new File(""));
     sonarComponents.setSensorContext(context);
 
@@ -443,7 +535,7 @@ class SonarComponentsTest {
   @Test
   void knows_if_quickfixes_are_supported() {
     SensorContextTester context = SensorContextTester.create(new File(""));
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(context);
 
     SonarRuntime sonarQube = SonarRuntimeImpl.forSonarQube(V8_9, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
@@ -463,7 +555,7 @@ class SonarComponentsTest {
   @Test
   void knows_if_quickfixes_can_be_advertised() {
     SensorContextTester context = SensorContextTester.create(new File(""));
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(context);
 
     assertTrue(sonarComponents.isSetQuickFixAvailableCompatible());
@@ -473,7 +565,7 @@ class SonarComponentsTest {
   void knows_if_quickfixes_can_not_be_advertised() {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(9, 0), SonarQubeSide.SERVER, SonarEdition.COMMUNITY));
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(context);
 
     assertFalse(sonarComponents.isSetQuickFixAvailableCompatible());
@@ -488,7 +580,7 @@ class SonarComponentsTest {
     DefaultFileSystem fileSystem = context.fileSystem();
     fileSystem.add(inputFile);
     fileSystem.setEncoding(StandardCharsets.ISO_8859_1);
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
 
     context.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
     sonarComponents.setSensorContext(context);
@@ -513,7 +605,7 @@ class SonarComponentsTest {
     InputFile unknownInputFile = TestUtils.emptyInputFile("unknown_file.java");
     fileSystem.add(unknownInputFile);
     context.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
     sonarComponents.setSensorContext(context);
 
     try {
@@ -544,7 +636,8 @@ class SonarComponentsTest {
     when(javaClasspath.getElements()).thenReturn(Collections.singletonList(someJar));
 
     File plugin = new File("target/classes");
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, mock(ClasspathForTest.class), checkFactory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, mock(ClasspathForTest.class),
+      checkFactory, context.activeRules());
     List<String> jspClassPath = sonarComponents.getJspClasspath().stream().map(File::getAbsolutePath).collect(Collectors.toList());
     assertThat(jspClassPath).containsExactly(plugin.getAbsolutePath(), someJar.getAbsolutePath());
   }
@@ -552,7 +645,7 @@ class SonarComponentsTest {
   @Test
   void autoscan_getters() {
     MapSettings settings = new MapSettings();
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
 
     // default value
@@ -587,7 +680,7 @@ class SonarComponentsTest {
   @Test
   void batch_getters() {
     MapSettings settings = new MapSettings();
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
 
     // default value
@@ -631,7 +724,7 @@ class SonarComponentsTest {
   void batch_size_dynamic_computation(long maxMemoryMB, long expectedBatchSizeKB) {
     long maxMemoryBytes = maxMemoryMB * 1_000_000;
     MapSettings settings = new MapSettings();
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
 
     LongSupplier oldValue = SonarComponents.maxMemoryInBytesProvider;
@@ -644,7 +737,7 @@ class SonarComponentsTest {
   @Test
   void file_by_file_getters() {
     MapSettings settings = new MapSettings();
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
 
     // default value
@@ -669,8 +762,8 @@ class SonarComponentsTest {
       sensorContextTester.fileSystem(),
       mock(ClasspathForMain.class),
       mock(ClasspathForTest.class),
-      checkFactory
-    );
+      checkFactory,
+      context.activeRules());
 
     IncrementalAnalysisSensorContext context = mock(IncrementalAnalysisSensorContext.class);
     when(context.canSkipUnchangedFiles()).thenReturn(true);
@@ -691,8 +784,8 @@ class SonarComponentsTest {
       sensorContextTester.fileSystem(),
       mock(ClasspathForMain.class),
       mock(ClasspathForTest.class),
-      checkFactory
-    );
+      checkFactory,
+      context.activeRules());
 
     assertThat(sonarComponents.canSkipUnchangedFiles()).isFalse();
   }
@@ -705,8 +798,8 @@ class SonarComponentsTest {
       sensorContextTester.fileSystem(),
       mock(ClasspathForMain.class),
       mock(ClasspathForTest.class),
-      checkFactory
-    );
+      checkFactory,
+      context.activeRules());
 
     IncrementalAnalysisSensorContext context = mock(IncrementalAnalysisSensorContext.class);
     when(context.canSkipUnchangedFiles()).thenThrow(new NoSuchMethodError("API version mismatch :-("));
@@ -728,9 +821,8 @@ class SonarComponentsTest {
         sensorContextTester.fileSystem(),
         mock(ClasspathForMain.class),
         mock(ClasspathForTest.class),
-        checkFactory
-      )
-    );
+        checkFactory,
+        context.activeRules()));
     SensorContext contextMock = mock(SensorContext.class);
     sonarComponents.setSensorContext(contextMock);
 
@@ -825,8 +917,7 @@ class SonarComponentsTest {
       Arguments.of(false, false, false),
       Arguments.of(false, true, false),
       Arguments.of(true, false, true),
-      Arguments.of(true, true, true)
-    );
+      Arguments.of(true, true, true));
   }
 
   @ParameterizedTest
@@ -838,8 +929,8 @@ class SonarComponentsTest {
       sensorContextTester.fileSystem(),
       mock(ClasspathForMain.class),
       mock(ClasspathForTest.class),
-      checkFactory
-    );
+      checkFactory,
+      context.activeRules());
 
     IncrementalAnalysisSensorContext context = mock(IncrementalAnalysisSensorContext.class);
     Configuration config = mock(Configuration.class);
@@ -881,7 +972,7 @@ class SonarComponentsTest {
 
     @BeforeEach
     void beforeEach() {
-      sonarComponents = new SonarComponents(null, fs, javaClasspath, javaTestClasspath, null);
+      sonarComponents = new SonarComponents(null, fs, javaClasspath, javaTestClasspath, null, null);
       sonarComponents.setSensorContext(context);
     }
 
@@ -1057,19 +1148,20 @@ class SonarComponentsTest {
     CheckFactory checkFactory = new CheckFactory(activeRules);
 
     JspCodeCheck check = new JspCodeCheck();
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, checkFactory, new CheckRegistrar[]{getRegistrar(check)});
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null,
+      checkFactory, context.activeRules(), new CheckRegistrar[] {getRegistrar(check)});
     List<JavaCheck> checks = sonarComponents.jspChecks();
     assertThat(checks)
       .isNotEmpty()
       .allMatch(JspCodeCheck.class::isInstance);
 
-    sonarComponents = new SonarComponents(null, null, null, null, checkFactory);
+    sonarComponents = new SonarComponents(null, null, null, null, checkFactory, context.activeRules());
     assertThat(sonarComponents.jspChecks()).isEmpty();
   }
 
   @Test
   void moduleKey_empty() {
-    var sonarComponents = new SonarComponents(null, null, null, null, null);
+    var sonarComponents = new SonarComponents(null, null, null, null, null, null);
     assertThat(sonarComponents.getModuleKey()).isEmpty();
   }
 
@@ -1095,5 +1187,22 @@ class SonarComponentsTest {
   //TODO Remove this extended API after the upgrade of sonar-plugin-api to 9.4
   interface IncrementalAnalysisSensorContext extends SensorContext {
     boolean canSkipUnchangedFiles();
+  }
+
+  private List<RuleKey> ruleKeys(String... repositoryAndKeys) {
+    return Arrays.stream(repositoryAndKeys)
+      .map(RuleKey::parse)
+      .collect(Collectors.toList());
+  }
+
+  private static ActiveRules activeRules(String... repositoryAndKeys) {
+    ActiveRulesBuilder activeRules = new ActiveRulesBuilder();
+    for (String repositoryAndKey : repositoryAndKeys) {
+      activeRules.addRule(new NewActiveRule.Builder()
+        .setRuleKey(RuleKey.parse(repositoryAndKey))
+        .setLanguage("java")
+        .build());
+    }
+    return activeRules.build();
   }
 }

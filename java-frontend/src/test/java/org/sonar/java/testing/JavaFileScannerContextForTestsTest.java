@@ -71,7 +71,7 @@ class JavaFileScannerContextForTestsTest {
     DefaultFileSystem fileSystem = sensorContext.fileSystem();
     fileSystem.add(inputFile);
 
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
 
     context = new JavaFileScannerContextForTests(cut, inputFile, cut.sema, sonarComponents, javaVersion, false, false, null);
   }

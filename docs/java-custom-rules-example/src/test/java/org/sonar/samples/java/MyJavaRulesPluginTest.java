@@ -22,8 +22,13 @@ class MyJavaRulesPluginTest {
 
     new MyJavaRulesPlugin().define(context);
 
-    assertThat(context.getExtensions()).hasSize(2);
+    assertThat(context.getExtensions())
+      .extracting(ext -> ((Class) ext).getSimpleName())
+      .containsExactlyInAnyOrder(
+        "MyJavaRulesDefinition",
+        "MyJavaFileCheckRegistrar");
   }
+
   public static class MockedSonarRuntime implements SonarRuntime {
 
     @Override

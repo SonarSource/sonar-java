@@ -43,7 +43,7 @@ class DefaultModuleScannerContextTest {
   @Test
   void test_addIssueOnProject_delegates_to_SonarComponents() {
     var sonarComponents = spy(
-      new SonarComponents(null, null, null, null, null)
+      new SonarComponents(null, null, null, null, null, null)
     );
     var inputComponent = mock(InputComponent.class);
     doReturn(inputComponent).when(sonarComponents).project();
@@ -100,7 +100,7 @@ class DefaultModuleScannerContextTest {
   @Test
   void test_getProject_delegates_to_SonarComponents() {
     var sonarComponents = spy(
-      new SonarComponents(null, null, null, null, null)
+      new SonarComponents(null, null, null, null, null, null)
     );
     var inputComponent = mock(InputComponent.class);
     doReturn(inputComponent).when(sonarComponents).project();
@@ -119,7 +119,7 @@ class DefaultModuleScannerContextTest {
   @Test
   void test_getWorkingDirectory_delegates_to_SonarComponents() {
     var sonarComponents = spy(
-      new SonarComponents(null, null, null, null, null)
+      new SonarComponents(null, null, null, null, null, null)
     );
     var expectedWorkDir = mock(File.class);
     doReturn(expectedWorkDir).when(sonarComponents).projectLevelWorkDir();

@@ -5,20 +5,45 @@
 package org.sonar.samples.java;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.plugins.java.api.CheckRegistrar;
+import org.sonar.api.rule.RuleKey;
+import org.sonar.java.checks.verifier.TestCheckRegistrarContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MyJavaFileCheckRegistrarTest {
 
   @Test
-  void checkNumberRules() {
-    CheckRegistrar.RegistrarContext context = new CheckRegistrar.RegistrarContext();
+  void checkRegisteredRulesKeysAndClasses() {
+    TestCheckRegistrarContext context = new TestCheckRegistrarContext();
 
     MyJavaFileCheckRegistrar registrar = new MyJavaFileCheckRegistrar();
     registrar.register(context);
 
-    assertThat(context.checkClasses()).hasSize(8);
-    assertThat(context.testCheckClasses()).hasSize(1);
+    assertThat(context.mainRuleKeys).extracting(RuleKey::toString).containsExactly(
+      "mycompany-java:SpringControllerRequestMappingEntity",
+      "mycompany-java:AvoidAnnotation",
+      "mycompany-java:AvoidBrandInMethodNames",
+      "mycompany-java:AvoidMethodDeclaration",
+      "mycompany-java:AvoidSuperClass",
+      "mycompany-java:AvoidTreeList",
+      "mycompany-java:AvoidMethodWithSameTypeInArgument",
+      "mycompany-java:SecurityAnnotationMandatory");
+
+    assertThat(context.mainCheckClasses).extracting(Class::getSimpleName).containsExactly(
+      "SpringControllerRequestMappingEntityRule",
+      "AvoidAnnotationRule",
+      "AvoidBrandInMethodNamesRule",
+      "AvoidMethodDeclarationRule",
+      "AvoidSuperClassRule",
+      "AvoidTreeListRule",
+      "MyCustomSubscriptionRule",
+      "SecurityAnnotationMandatoryRule");
+
+    assertThat(context.testRuleKeys).extracting(RuleKey::toString).containsExactly(
+      "mycompany-java:NoIfStatementInTests");
+
+    assertThat(context.testCheckClasses).extracting(Class::getSimpleName).containsExactly(
+      "NoIfStatementInTestsRule");
   }
 
 }

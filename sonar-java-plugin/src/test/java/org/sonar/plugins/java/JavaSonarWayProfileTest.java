@@ -30,6 +30,8 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.ValidationMessages;
+import org.sonar.java.SonarComponents;
+import org.sonar.plugins.java.api.ProfileRegistrar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.plugins.java.JavaSonarWayProfile.DBD_RULES_CLASS_NAME;
@@ -39,11 +41,21 @@ class JavaSonarWayProfileTest {
   @RegisterExtension
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
+  SonarComponents sonarComponents = new SonarComponents(null,null,null,null,null,null);
+
   @Test
   void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
 
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
+    ProfileRegistrar fooCustomRules = registrarContext -> registrarContext.registerDefaultQualityProfileRules(List.of(
+      RuleKey.of("javasecurity", "S6549"),
+      RuleKey.of("javasecurity", "S6287")));
+    ProfileRegistrar barCustomRules = registrarContext -> registrarContext.registerDefaultQualityProfileRules(List.of(
+      RuleKey.of("javabugs", "S6466")));
+
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(new ProfileRegistrar[] {
+      fooCustomRules,
+      barCustomRules});
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
@@ -52,13 +64,19 @@ class JavaSonarWayProfileTest {
     assertThat(activeRules.stream().filter(r -> r.repoKey().equals("common-java"))).isEmpty();
     assertThat(activeRules).as("Expected number of rules in profile").hasSizeGreaterThanOrEqualTo(268);
     assertThat(profile.name()).isEqualTo("Sonar way");
-    Set<String> keys = new HashSet<>();
+    Set<RuleKey> keys = new HashSet<>();
     for (BuiltInQualityProfilesDefinition.BuiltInActiveRule activeRule : activeRules) {
-      keys.add(activeRule.ruleKey());
+      keys.add(RuleKey.of(activeRule.repoKey(), activeRule.ruleKey()));
     }
-    //We no longer store active rules with legacy keys, only RSPEC keys are used.
-    assertThat(keys).doesNotContain("S00116")
-      .contains("S116");
+    // We no longer store active rules with legacy keys, only RSPEC keys are used.
+    assertThat(keys)
+      .doesNotContain(RuleKey.of("java", "S00116"))
+      .contains(RuleKey.of("java", "S116"))
+      .doesNotContain(RuleKey.of("java", "S6549"))
+      .doesNotContain(RuleKey.of("javasecurity", "S116"))
+      .contains(RuleKey.of("javasecurity", "S6549"))
+      .contains(RuleKey.of("javasecurity", "S6287"))
+      .contains(RuleKey.of("javabugs", "S6466"));
     assertThat(validation.hasErrors()).isFalse();
 
     // Check that we use severity from the read rule and not default one.
@@ -67,7 +85,7 @@ class JavaSonarWayProfileTest {
 
   @Test
   void should_activate_hotspots_when_supported() {
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(null);
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
