@@ -1,17 +1,26 @@
+<p>With Spring, when a request mapping method is configured to accept bean objects as arguments, the framework will automatically bind HTTP parameters
+to those objects' properties. If the targeted beans are also persistent entities, the framework will also store those properties in the storage
+backend, usually the application’s database.</p>
 <h2>Why is this an issue?</h2>
-<p>On one side, Spring MVC automatically bind request parameters to beans declared as arguments of methods annotated with
-<code>@RequestMapping</code>. Because of this automatic binding feature, it’s possible to feed some unexpected fields on the arguments of the
-<code>@RequestMapping</code> annotated methods.</p>
-<p>On the other end, persistent objects (<code>@Entity</code> or <code>@Document</code>) are linked to the underlying database and updated
-automatically by a persistence framework, such as Hibernate, JPA or Spring Data MongoDB.</p>
-<p>These two facts combined together can lead to malicious attack: if a persistent object is used as an argument of a method annotated with
-<code>@RequestMapping</code>, it’s possible from a specially crafted user input, to change the content of unexpected fields into the database.</p>
-<p>For this reason, using <code>@Entity</code> or <code>@Document</code> objects as arguments of methods annotated with <code>@RequestMapping</code>
-should be avoided.</p>
-<p>In addition to <code>@RequestMapping</code>, this rule also considers the annotations introduced in Spring Framework 4.3: <code>@GetMapping</code>,
-<code>@PostMapping</code>, <code>@PutMapping</code>, <code>@DeleteMapping</code>, <code>@PatchMapping</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>By accepting persistent entities as method arguments, the application allows clients to manipulate the object’s properties directly.</p>
+<h3>What is the potential impact?</h3>
+<p>Attackers could forge malicious HTTP requests that will alter unexpected properties of persistent objects. This can lead to unauthorized
+modifications of the entity’s state. This is known as a <strong>mass assignment</strong> attack.</p>
+<p>Depending on the affected objects and properties, the consequences can vary.</p>
+<h4>Privilege escalation</h4>
+<p>If the affected object is used to store the client’s identity or permissions, the attacker could alter it to change their entitlement on the
+application. This can lead to horizontal or vertical privilege escalation.</p>
+<h4>Security checks bypass</h4>
+<p>Because persistent objects are modified directly without prior logic, attackers could exploit this issue to bypass security measures otherwise
+enforced by the application. For example, an attacker might be able to change their e-mail address to an invalid one by directly setting it without
+going through the application’s email validation process.</p>
+<p>The same could also apply to passwords that attackers could change without complexity validation or knowledge of their current value.</p>
+<h2>How to fix it in Java EE</h2>
+<h3>Code examples</h3>
+<p>The following code is vulnerable to a mass assignment attack because it allows modifying the <code>User</code> persistent entities thanks to
+maliciously forged <code>Wish</code> object properties.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 import javax.persistence.Entity;
 
 @Entity
@@ -32,21 +41,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class WishListController {
-
-  @PostMapping(path = "/saveForLater")
-  public String saveForLater(Wish wish) {
-    session.save(wish);
-  }
+public class PurchaseOrderController {
 
   @RequestMapping(path = "/saveForLater", method = RequestMethod.POST)
-  public String saveForLater(Wish wish) {
+  public String saveForLater(Wish wish) { // Noncompliant
     session.save(wish);
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class WishDTO {
   Long productId;
   Long quantity;
@@ -59,35 +63,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class PurchaseOrderController {
 
-  @PostMapping(path = "/saveForLater")
-  public String saveForLater(WishDTO wish) {
-    Wish persistentWish = new Wish();
-    // do the mapping between "wish" and "persistentWish"
-    [...]
-    session.save(persistentWish);
-  }
-
   @RequestMapping(path = "/saveForLater", method = RequestMethod.POST)
   public String saveForLater(WishDTO wish) {
     Wish persistentWish = new Wish();
-    // do the mapping between "wish" and "persistentWish"
-    [...]
+    persistentWish.productId = wish.productId
+    persistentWish.quantity = wish.quantity
+    persistentWish.client = getClientById(with.clientId)
     session.save(persistentWish);
   }
 }
 </pre>
-<h3>Exceptions</h3>
-<p>No issue is reported when the parameter is annotated with <code>@PathVariable</code> from Spring Framework, since the lookup will be done via id,
-the object cannot be forged on client side.</p>
+<h3>How does this work?</h3>
+<p>The compliant code implements a Data Transfer Object (DTO) layer. Instead of accepting a persistent <code>Wish</code> entity as a parameter, the
+vulnerable method accepts a <code>WishDTO</code> object with a safe, minimal set of properties. It then instantiates a persistent entity and
+initializes it based on the DTO properties' values. The resulting object can safely be persisted in the database.</p>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li> <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">OWASP Top 10 2021 Category A8</a> - Software and Data
-  Integrity Failures </li>
-  <li> <a href="https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control">OWASP Top 10 2017 Category A5</a> - Broken Access Control
-  </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/915">MITRE, CWE-915</a> - Improperly Controlled Modification of Dynamically-Determined Object
-  Attributes </li>
-  <li> <a href="https://o2platform.files.wordpress.com/2011/07/ounce_springframework_vulnerabilities.pdf">Two Security Vulnerabilities in the Spring
-  Framework’s MVC by Ryan Berg and Dinis Cruz</a> </li>
+  <li> OWASP - <a href="https://cheatsheetseries.owasp.org/cheatsheets/Mass_Assignment_Cheat_Sheet.html">Mass Assignment Cheat Sheet</a> </li>
 </ul>
+<h3>Standards</h3>
+<ul>
+  <li> OWASP - <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">Top 10 2021 - Category A8 - Software and Data
+  Integrity Failures</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control">Top 10 2017 - Category A5 - Broken Access
+  Control</a> </li>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/915">CWE-915 - Improperly Controlled Modification of Dynamically-Determined Object
+  Attributes</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<p>OWASP O2 Platform Blog - <a href="https://o2platform.files.wordpress.com/2011/07/ounce_springframework_vulnerabilities.pdf">Two Security
+Vulnerabilities in the Spring Framework’s MVC</a></p>
 

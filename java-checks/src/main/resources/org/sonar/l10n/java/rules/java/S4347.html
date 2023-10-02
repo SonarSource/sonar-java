@@ -1,28 +1,67 @@
+<p>When using <code>SecureRandom</code>, it is important not to use predictable seeds. This class is used to generate cryptographically strong random
+numbers. Using a predictable seed will make its output predictable as well, which counteracts the use case of <code>SecureRandom</code>.</p>
 <h2>Why is this an issue?</h2>
-<p>The <code>java.security.SecureRandom</code> class provides a strong random number generator (RNG) appropriate for cryptography. However, seeding it
-with a constant or another predictable value will weaken it significantly. In general, it is much safer to rely on the seed provided by the
-<code>SecureRandom</code> implementation.</p>
-<p>This rule raises an issue when <code>SecureRandom.setSeed()</code> or <code>SecureRandom(byte[])</code> are called with a seed that is either one
-of:</p>
+<p><code>java.security.SecureRandom</code> is often used to generate random values for cryptographic algorithms. When a random number generator is
+used for cryptographic purposes, the generated numbers must be as random and unpredictable as possible. When <code>SecureRandom</code> is improperly
+seeded with a constant or a predictable value, its output will also be predictable.</p>
+<p>This can have severe security implications for cryptographic operations that rely on the randomness of the generated numbers. By using a
+predictable seed, an attacker can potentially guess or deduce the generated numbers, compromising the security of whatever cryptographic algorithm
+relies on <code>SecureRandom</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>It is crucial to understand that the strength of cryptographic algorithms heavily relies on the quality of the random numbers used. By improperly
+seeding the <code>SecureRandom</code> class, we introduce a significant weakness that can be exploited by attackers.</p>
+<h4>Insecure cryptographic keys</h4>
+<p>One of the primary use cases for the <code>SecureRandom</code> class is generating cryptographic keys. If an attacker can predict the seed used to
+initialize the SecureRandom instance, they may be able to derive the same keys. Depending on the use case, this can lead to multiple severe outcomes,
+such as:</p>
 <ul>
-  <li> a constant </li>
-  <li> the system time </li>
+  <li> Being able to decrypt sensitive documents, leading to privacy breaches or identity theft. </li>
+  <li> Gaining access to a private key used for signing, allowing an attacker to forge digital signatures and impersonate legitimate entities. </li>
+  <li> Bypassing authentication mechanisms that rely on public-key infrastructure (PKI), which can be abused to gain unauthorized access to systems or
+  networks. </li>
 </ul>
-<h3>Noncompliant code example</h3>
-<pre>
+<h4>Session hijacking and man-in-the-middle attack</h4>
+<p>Another scenario where this vulnerability can be exploited is in the generation of session tokens or nonces for secure communication protocols. If
+an attacker can predict the seed used to generate these tokens, they can impersonate legitimate users or intercept sensitive information.</p>
+<h2>How to fix it in Java SE</h2>
+<h3>Code examples</h3>
+<p>The following code uses a cryptographically strong random number generator to generate data that is not cryptographically strong.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 SecureRandom sr = new SecureRandom();
 sr.setSeed(123456L); // Noncompliant
 int v = sr.next(32);
-
-sr = new SecureRandom("abcdefghijklmnop".getBytes("us-ascii")); // Noncompliant
-v = sr.next(32);
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+SecureRandom sr = new SecureRandom("abcdefghijklmnop".getBytes("us-ascii")); // Noncompliant
+int v = sr.next(32);
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 SecureRandom sr = new SecureRandom();
 int v = sr.next(32);
 </pre>
+<p>This solution is available for JDK 1.8 and higher.</p>
+<pre data-diff-id="2" data-diff-type="compliant">
+SecureRandom sr = SecureRandom.getInstanceStrong();
+int v = sr.next(32);
+</pre>
+<h3>How does this work?</h3>
+<p>When the randomly generated data needs to be cryptographically strong, <code>SecureRandom</code> is the correct class to use. However, its
+documentation also cites that "any seed material passed to a <code>SecureRandom</code> object must be unpredictable". When no seed is passed by the
+user to the object, the <code>SecureRandom</code> object chooses an unpredictable seed by default. Therefore, the easiest way to fix the issue is to
+use the default constructor without any calls to <code>SecureObject.setSeed()</code>.</p>
+<p>To go the extra mile, <code>SecureObject.getInstanceStrong()</code> returns an instance of <code>SecureObject</code> that is guaranteed to use a
+strong algorithm for its number generation.</p>
+<p>If the randomly generated data is not used for cryptographic purposes and is not business critical, it may be a better choice to use
+<code>java.util.Random</code> instead. In this case, setting a predictable seed may be acceptable depending on the situation.</p>
 <h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/security/SecureRandom.html">Class
+  <code>java.security.SecureRandom</code></a> </li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security

@@ -42,7 +42,7 @@ public void doSomething(String [] strings) {
 <h4>Noncompliant code example</h4>
 <p>If the intention is to have an infinite loop or a loop terminated only by a break statement, use a <code>while</code> or a <code>do</code>
 <code>while</code> statement instead.</p>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<pre data-diff-id="3" data-diff-type="noncompliant">
 for (int i = 0; i &lt; 0; i++) { // Noncompliant, loop is not infinite
   String event = waitForNextEvent();
   if (event == "terminate") break;
@@ -50,7 +50,7 @@ for (int i = 0; i &lt; 0; i++) { // Noncompliant, loop is not infinite
 }
 </pre>
 <h4>Compliant solution</h4>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre data-diff-id="3" data-diff-type="compliant">
 while (true) { // Compliant
   String event = waitForNextEvent();
   if (event == "terminate") break;

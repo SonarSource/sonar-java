@@ -1,16 +1,64 @@
+<p>When accessing a database, an empty password should be avoided as it introduces a weakness.</p>
 <h2>Why is this an issue?</h2>
-<p>When relying on the password authentication mode for the database connection, a secure password should be chosen.</p>
-<p>This rule raises an issue when an empty password is used.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-Connection conn = DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "login", "");
+<p>When a database does not require a password for authentication, it allows anyone to access and manipulate the data stored within it. Exploiting
+this vulnerability typically involves identifying the target database and establishing a connection to it without the need for any authentication
+credentials.</p>
+<h3>What is the potential impact?</h3>
+<p>Once connected, an attacker can perform various malicious actions, such as viewing, modifying, or deleting sensitive information, potentially
+leading to data breaches or unauthorized access to critical systems. It is crucial to address this vulnerability promptly to ensure the security and
+integrity of the database and the data it contains.</p>
+<h4>Unauthorized Access to Sensitive Data</h4>
+<p>When a database lacks a password for authentication, it opens the door for unauthorized individuals to gain access to sensitive data. This can
+include personally identifiable information (PII), financial records, intellectual property, or any other confidential information stored in the
+database. Without proper access controls in place, malicious actors can exploit this vulnerability to retrieve sensitive data, potentially leading to
+identity theft, financial loss, or reputational damage.</p>
+<h4>Compromise of System Integrity</h4>
+<p>Without a password requirement, unauthorized individuals can gain unrestricted access to a database, potentially compromising the integrity of the
+entire system. Attackers can inject malicious code, alter configurations, or manipulate data within the database, leading to system malfunctions,
+unauthorized system access, or even complete system compromise. This can disrupt business operations, cause financial losses, and expose the
+organization to further security risks.</p>
+<h4>Unwanted Modifications or Deletions</h4>
+<p>The absence of a password for database access allows anyone to make modifications or deletions to the data stored within it. This poses a
+significant risk, as unauthorized changes can lead to data corruption, loss of critical information, or the introduction of malicious content. For
+example, an attacker could modify financial records, tamper with customer orders, or delete important files, causing severe disruptions to business
+processes and potentially leading to financial and legal consequences.</p>
+<p>Overall, the lack of a password configured to access a database poses a serious security risk, enabling unauthorized access, data breaches, system
+compromise, and unwanted modifications or deletions. It is essential to address this vulnerability promptly to safeguard sensitive data, maintain
+system integrity, and protect the organization from potential harm.</p>
+<h2>How to fix it in Java SE</h2>
+<h3>Code examples</h3>
+<p>The following code uses an empty password to connect to a Postgres database.</p>
+<p>The vulnerability can be fixed by using a strong password retrieved from Properties. This <code>database.password</code> property is set during
+deployment. Its value should be strong and different for each database.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="201" data-diff-type="noncompliant">
+Connection conn = DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "login", ""); // Noncompliant
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="201" data-diff-type="compliant">
 String password = System.getProperty("database.password");
 Connection conn = DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "login", password);
 </pre>
+<h3>Pitfalls</h3>
+<h4>Hard-coded passwords</h4>
+<p>It could be tempting to replace the empty password with a hard-coded one. Hard-coding passwords in the code can pose significant security risks.
+Here are a few reasons why it is not recommended:</p>
+<ol>
+  <li> Security Vulnerability: Hard-coded passwords can be easily discovered by anyone who has access to the code, such as other developers or
+  attackers. This can lead to unauthorized access to the database and potential data breaches. </li>
+  <li> Lack of Flexibility: Hard-coded passwords make it difficult to change the password without modifying the code. If the password needs to be
+  updated, it would require recompiling and redeploying the code, which can be time-consuming and error-prone. </li>
+  <li> Version Control Issues: Storing passwords in code can lead to version control issues. If the code is shared or stored in a version control
+  system, the password will be visible to anyone with access to the repository, which is a security risk. </li>
+</ol>
+<p>To mitigate these risks, it is recommended to use secure methods for storing and retrieving passwords, such as using environment variables,
+configuration files, or secure key management systems. These methods allow for better security, flexibility, and separation of sensitive information
+from the codebase.</p>
 <h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/essential/environment/properties.html">Java Properties</a> </li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li> <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">OWASP Top 10 2021 Category A7</a> - Identification and
   Authentication Failures </li>

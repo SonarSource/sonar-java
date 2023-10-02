@@ -1,23 +1,38 @@
 <h2>Why is this an issue?</h2>
-<p>When logging a message there are several important requirements which must be fulfilled:</p>
+<p>When logging a message, the following requirements should be fulfilled:</p>
 <ul>
-  <li> The user must be able to easily retrieve the logs </li>
-  <li> The format of all logged message must be uniform to allow the user to easily read the log </li>
-  <li> Logged data must actually be recorded </li>
-  <li> Sensitive data must only be logged securely </li>
+  <li> The user can easily record logged data and retrieve the logs. </li>
+  <li> The format of all logged messages is uniform and provides context about the message creator. This improves the readability of the logs. </li>
+  <li> Sensitive data is logged securely. </li>
 </ul>
-<p>If a program directly writes to the standard outputs, there is absolutely no way to comply with those requirements. That’s why defining and using a
-dedicated logger is highly recommended.</p>
+<p>Simply printing messages to <code>System.out</code> or <code>System.err</code> does not fulfill these needs. A dedicated logger should be used
+instead.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-System.out.println("My Message");  // Noncompliant
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class PrintMessage {
+  public void print() {
+    System.out.println("My Message");  // Noncompliant, output directly to System.out without a logger
+  }
+}
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-logger.log("My Message");
+<pre data-diff-id="1" data-diff-type="compliant">
+import java.util.logging.Logger;
+
+class PrintMessage {
+
+  Logger logger = Logger.getLogger(getClass().getName());
+
+  public void print() {
+    logger.info("My Message");  // Compliant, output via logger
+  }
+}
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
+  <li> <a href="https://docs.oracle.com/javase/7/docs/api/java/util/logging/Logger.html">Java SE 7 API Specification: java.util.logging.Logger</a>
+  </li>
   <li> <a href="https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/">OWASP Top 10 2021 Category A9</a> - Security Logging and
   Monitoring Failures </li>
   <li> <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data

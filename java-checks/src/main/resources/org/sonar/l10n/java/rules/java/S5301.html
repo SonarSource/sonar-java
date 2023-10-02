@@ -1,31 +1,67 @@
+<p>ActiveMQ can send/receive JMS Object messages (ObjectMessage in ActiveMQ context) to comply with JMS specifications. Internally, ActiveMQ relies on
+Java’s serialization mechanism for the marshaling and unmarshalling of the messages' payload.</p>
+<p>Applications should restrict the types that can be unserialized from JMS messages.</p>
 <h2>Why is this an issue?</h2>
-<p>ActiveMQ can send/receive JMS Object messages (named ObjectMessage in ActiveMQ context) to comply with JMS specification. Internally, ActiveMQ
-relies on Java serialization mechanism for marshaling/unmarshalling of the message payload. Deserialization based on data supplied by the user could
-lead to remote code execution attacks, where the structure of the serialized data is changed to modify the behavior of the object being
-unserialized.</p>
-<p>To limit the risk to be victim of such attack, ActiveMQ 5.12.2+ enforces developers to explicitly whitelist packages that can be exchanged using
-ObjectMessages.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>When the application does not implement controls over the JMS object types, its clients could be able to force the deserialization of arbitrary
+objects. This may lead to deserialization injection attacks.</p>
+<h3>What is the potential impact?</h3>
+<p>Attackers will be able to force the deserialization of arbitrary objects. This process will trigger the execution of magic unmarshalling methods on
+the object and its properties. With a specially crafted serialized object, the attackers can exploit those magic methods to achieve malicious
+purposes.</p>
+<p>While the exact impact depends on the types available in the execution context at the time of deserialization, such an attack can generally lead to
+the execution of arbitrary code on the application server.</p>
+<h4>Application-specific attacks</h4>
+<p>By exploiting the behavior of some of the application-defined types and objects, the attacker could manage to affect the application’s business
+logic. The exact consequences will depend on the application’s nature:</p>
+<ul>
+  <li> Payment bypass in an e-commerce application. </li>
+  <li> Privilege escalation. </li>
+  <li> Unauthorized users' data access. </li>
+</ul>
+<h4>Publicly-known exploitation</h4>
+<p>In some cases, depending on the library the application uses and their versions, there may exist publicly known deserialization attack payloads
+known as <strong>gadget chains</strong>. In general, they are designed to have severe consequences, such as:</p>
+<ul>
+  <li> Arbitrary code execution </li>
+  <li> Arbitrary file read or write </li>
+  <li> Server-side request forgery </li>
+</ul>
+<p>Those attacks are independent of the application’s own logic and from the types it specifies.</p>
+<h2>How to fix it in Java EE</h2>
+<h3>Code examples</h3>
+<p>The following code example is vulnerable to a deserialization injection attack because it allows the deserialization of arbitrary types from JMS
+messages.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 factory.setTrustAllPackages(true); // Noncompliant
-
-ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
-// no call to factory.setTrustedPackages(...);
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 factory.setTrustedPackages(Arrays.asList("org.mypackage1", "org.mypackage2"));
 </pre>
+<h3>How does this work?</h3>
+<p>The noncompliant code example calls the <code>setTrustAllPackages</code> method that explicitly allows the deserialization of arbitrary types. On
+the contrary, the compliant code example, thanks to the <code>setTrustedPackages</code> method, defines a short list of classes allowed for the
+deserialization.</p>
+<p>While defining a short list of trusted types is generally the state-of-the-art solution to avoid deserialization injection attacks, it is important
+to ensure that the allowed classes and packages can not be used to exploit the issue. In that case, a vulnerability would still be present.</p>
+<p>Note that ActiveMQ, starting with version 5.12.2, forces developers to explicitly list packages that JMS messages can contain. This limits the risk
+of successful exploitation. In versions before that one, calling the <code>ActiveMQConnectionFactory</code> constructor without further configuration
+would leave the application at risk.</p>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li> <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">OWASP Top 10 2021 Category A8</a> - Software and Data
-  Integrity Failures </li>
-  <li> <a href="https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization">OWASP Top 10 2017 Category A8</a> - Insecure
-  Deserialization </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/502">MITRE, CWE-502</a> - Deserialization of Untrusted Data </li>
-  <li> <a href="https://activemq.apache.org/objectmessage.html">ActiveMQ ObjectMessage Security Advisory</a> </li>
-  <li> <a href="https://activemq.apache.org/security-advisories.data/CVE-2015-5254-announcement.txt">CVE-2015-5254</a> </li>
+  <li> Apache ActiveMQ Documentation - <a href="https://activemq.apache.org/objectmessage.html">ObjectMessage</a> </li>
+  <li> CVE - <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-5254">CVE-2015-5254</a> </li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li> OWASP - <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">Top 10 2021 - Category A8 - Software and Data
+  Integrity Failures</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization">Top 10 2017 - Category A8 - Insecure
+  Deserialization</a> </li>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/502">CWE-502 - Deserialization of Untrusted Data</a> </li>
 </ul>
 

@@ -1,42 +1,69 @@
+<p>Spring Framework, and, more precisely, the Spring Security component, allows setting up access control checks at the URI level. This is done by
+adding request matchers to the security configuration, each authorizing access to some resources depending on the incoming request entitlement.</p>
+<p>Similarly to firewall filtering rules, the order in which those matchers are defined is security relevant.</p>
 <h2>Why is this an issue?</h2>
-<p>URL patterns configured on a <code>HttpSecurity.authorizeRequests()</code> method are considered in the order they were declared. It’s easy to make
-a mistake and declare a less restrictive configuration before a more restrictive one. Therefore, it’s required to review the order of the
-"antMatchers" declarations. The <code>/**</code> one should be the last one if it is declared.</p>
+<p>Configured URL matchers are considered in the order they are declared. Especially, for a given resource, if a looser filter is defined before a
+stricter one, only the less secure configuration will apply. No request will ever reach the stricter rule.</p>
 <p>This rule raises an issue when:</p>
 <ul>
-  <li> A pattern is preceded by another that ends with <code>**</code> and has the same beginning. E.g.: <code>/page*-admin/db/**</code> is after
-  <code>/page*-admin/**</code> </li>
-  <li> A pattern without wildcard characters is preceded by another that matches. E.g.: <code>/page-index/db</code> is after <code>/page*/**</code>
-  </li>
+  <li> A URL pattern ending with <code>**</code> precedes another one having the same prefix. E.g. <code>/admin/**</code> is defined before
+  <code>/admin/example/**</code> </li>
+  <li> A pattern without wildcard characters is preceded by another one that matches it. E.g.: <code>/page-index/db</code> is defined after
+  <code>/page*/**</code> </li>
 </ul>
-<h3>Noncompliant code example</h3>
-<pre>
-  protected void configure(HttpSecurity http) throws Exception {
+<h3>What is the potential impact?</h3>
+<p>Access control rules that have been defined but cannot be applied generally indicate an error in the filtering process. In most cases, this will
+have consequences on the application’s authorization and authentication mechanisms.</p>
+<h4>Authentication bypass</h4>
+<p>When the ignored access control rule is supposed to enforce the authentication on a resource, the consequence is a bypass of the authentication for
+that resource. Depending on the scope of the ignored rule, a single feature or whole sections of the application can be left unprotected.</p>
+<p>Attackers could take advantage of such an issue to access the affected features without prior authentication, which may impact the confidentiality
+or integrity of sensitive, business, or personal data.</p>
+<h4>Privilege escalation</h4>
+<p>When the ignored access control rule is supposed to verify the role of an authenticated user, the consequence is a privilege escalation or
+authorization bypass. An authenticated user with low privileges on the application will be able to access more critical features or sections of the
+application.</p>
+<p>This could have financial consequences if the accessed features are normally accessed by paying users. It could also impact the confidentiality or
+integrity of sensitive, business, or personal data, depending on the features.</p>
+<h2>How to fix it in Spring</h2>
+<h3>Code examples</h3>
+<p>The following code is vulnerable because it defines access control configuration in the wrong order.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
-      .antMatchers("/resources/**", "/signup", "/about").permitAll() // Compliant
+      .antMatchers("/resources/**", "/signup", "/about").permitAll()
       .antMatchers("/admin/**").hasRole("ADMIN")
-      .antMatchers("/admin/login").permitAll() // Noncompliant; the pattern "/admin/login" should appear before "/admin/**"
+      .antMatchers("/admin/login").permitAll() // Noncompliant
       .antMatchers("/**", "/home").permitAll()
-      .antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')") // Noncompliant; the pattern "/db/**" should occurs before "/**"
+      .antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')") // Noncompliant
       .and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
   }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
-      .antMatchers("/resources/**", "/signup", "/about").permitAll() // Compliant
+      .antMatchers("/resources/**", "/signup", "/about").permitAll()
       .antMatchers("/admin/login").permitAll()
-      .antMatchers("/admin/**").hasRole("ADMIN") // Compliant
+      .antMatchers("/admin/**").hasRole("ADMIN")
       .antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')")
-      .antMatchers("/**", "/home").permitAll() // Compliant; "/**" is the last one
+      .antMatchers("/**", "/home").permitAll()
       .and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
   }
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li> <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">OWASP Top 10 2021 Category A1</a> - Broken Access Control </li>
-  <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
-  Misconfiguration </li>
+  <li> Spring Documentation - <a href="https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html">Authorize
+  HttpServletRequests</a> </li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li> OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 - Category A1 - Broken Access Control</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 - Category A6 - Security
+  Misconfiguration</a> </li>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/285.html">CWE-285 - Improper Authorization</a> </li>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/287.html">CWE-287 - Improper Authentication</a> </li>
 </ul>
 

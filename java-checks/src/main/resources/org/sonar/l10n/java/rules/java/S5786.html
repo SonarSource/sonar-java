@@ -1,9 +1,26 @@
+<p>JUnit5 test classes and methods should generally have package visibility. To fix this issue, change their visibility to the default package
+visibility.</p>
 <h2>Why is this an issue?</h2>
-<p>JUnit5 is more tolerant regarding the visibilities of Test classes than JUnit4, which required everything to be <code>public</code>.</p>
-<p>In this context, JUnit5 test classes can have any visibility but <code>private</code>, however, it is recommended to use the default package
-visibility, which improves readability of code.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>JUnit5 is more tolerant regarding the visibility of test classes and methods than JUnit4, which required everything to be <code>public</code>. Test
+classes and methods can have any visibility except <code>private</code>. It is however recommended to use the default package visibility to improve
+readability.</p>
+<blockquote>
+  <p>Test classes, test methods, and lifecycle methods are not required to be <code>public</code>, but they must not be <code>private</code>.</p>
+  <p>It is generally recommended to omit the public modifier for test classes, test methods, and lifecycle methods unless there is a technical reason
+  for doing so – for example, when a test class is extended by a test class in another package. Another technical reason for making classes and
+  methods public is to simplify testing on the module path when using the Java Module System.</p>
+</blockquote>  — JUnit5 User Guide
+<h3>What is the potential impact?</h3>
+<p>The code will be non-conventional and readability can be slightly affected.</p>
+<h3>Exceptions</h3>
+<p>This rule does not raise an issue when the visibility is set to <code>private</code>, because <code>private</code> test methods and classes are
+systematically ignored by JUnit5, without a proper warning. In this case, there is also an impact on reliability and so it is handled by the rule <a
+href="https://rules.sonarsource.com/java/RSPEC-5810/">{rule:java:S5810}</a>.</p>
+<h2>How to fix it</h2>
+<p>You can simply change the visibility by removing the <code>public</code> or <code>protected</code> keywords.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 import org.junit.jupiter.api.Test;
 
 public class MyClassTest { // Noncompliant - modifier can be removed
@@ -13,8 +30,8 @@ public class MyClassTest { // Noncompliant - modifier can be removed
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 import org.junit.jupiter.api.Test;
 
 class MyClassTest {
@@ -24,11 +41,10 @@ class MyClassTest {
   }
 }
 </pre>
-<h3>Exceptions</h3>
-<p>This rule does not raise an issue about <code>private</code> visibility, because <code>private</code> test methods and classes are systematically
-ignored by JUnit5, without a proper warning. It’s not a <code>Code Smell</code> but a <code>Bug</code> handled by the rule {rule:java:S5810} .</p>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li> <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-classes-and-methods">JUnit 5 Test Classes and Methods</a> </li>
+  <li> <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-classes-and-methods">JUnit5 User Guide: Test Classes and Methods</a>
+  </li>
 </ul>
 

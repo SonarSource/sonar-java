@@ -1,73 +1,98 @@
+<p>The Security Assertion Markup Language (SAML) is a widely used standard in single sign-on systems. In a simplified version, the user authenticates
+to an Identity Provider which generates a signed SAML Response. This response is then forwarded to a Service Provider for validation and
+authentication.</p>
 <h2>Why is this an issue?</h2>
-<p>In 2018, Duo Security found a new vulnerability class that affects SAML-based single sign-on (SSO) systems and this led to the following
-vulnerabilities being disclosed: <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11427">CVE-2017-11427</a>, <a
-href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11428">CVE-2017-11428</a>, <a
-href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11429">CVE-2017-11429</a>, <a
-href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11430">CVE-2017-11430</a>, <a
-href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0489">CVE-2018-0489</a>, <a
-href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-7340">CVE-2018-7340</a>.</p>
-<p>From a specially crafted <code>&lt;SAMLResponse&gt;</code> file, an attacker having already access to the SAML system with his own account can
-bypass the authentication mechanism and be authenticated as another user.</p>
-<p>This is due to the fact that SAML protocol rely on XML format and how the underlying XML parser interprets XML comments.</p>
-<p>If an attacker manage to change the <code>&lt;NameID&gt;</code> field identifying the authenticated user with XML comments, he can exploit the
-vulnerability.</p>
-<p>Here is an example of a potential payload:</p>
-<pre>
-&lt;SAMLResponse&gt;
-  [...]
-  &lt;Subject&gt;
-    &lt;NameID&gt;admin@domain.com&lt;!----&gt;.evil.com&lt;/NameID&gt;
-  &lt;/Subject&gt;
-  [...]
-&lt;/SAMLResponse&gt;
-</pre>
-<p>The attacker will manage to generate a valid &lt;SAMLResponse&gt; content with the account "admin@domain.com.evil.com". He will modify it with XML
-comments to finally be authenticated as "admin@domain.com". To prevent this vulnerability on application using Spring Security SAML relying on
-OpenSAML2, XML comments should be ignored thanks to the property <code>ignoreComments</code> set to <code>true</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-import org.opensaml.xml.parse.BasicParserPool;
-import org.opensaml.xml.parse.ParserPool;
+<p>If the Service Provider does not manage to properly validate the incoming SAML response message signatures, attackers might be able to manipulate
+the response content without the application noticing. Especially, they might be able to alter the authentication-targeted user.</p>
+<h3>What is the potential impact?</h3>
+<p>By exploiting this vulnerability, an attacker can manipulate the SAML Response to impersonate a different user. This, in turn, can have various
+consequences on the application’s security.</p>
+<h3>Unauthorized Access</h3>
+<p>Exploiting this vulnerability allows an attacker with authenticated access to impersonate other users within the SAML-based SSO system. This can
+lead to unauthorized access to sensitive information, resources, or functionalities the attacker should not have. By masquerading as legitimate users,
+the attacker can bypass authentication mechanisms and gain unauthorized privileges, potentially compromising the entire system. By impersonating a
+user with higher privileges, the attacker can gain access to additional resources. Privilege escalation can lead to further compromise of other
+systems and unauthorized access to critical infrastructure.</p>
+<h3>Data Breaches</h3>
+<p>With the ability to impersonate other users, an attacker can gain access to sensitive data stored within the SAML-based SSO system. This includes
+personally identifiable information (PII), financial data, intellectual property, or any other confidential information. Data breaches can result in
+reputational damage, legal consequences, financial losses, and harm to individuals whose data is exposed.</p>
+<h2>How to fix it in Spring</h2>
+<h3>Code examples</h3>
+<p>The following code examples are vulnerable because they explicitly include comments in signature checks. An attacker is able to change the field
+identifying the authenticated user with XML comments.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 import org.opensaml.xml.parse.StaticBasicParserPool;
+import org.opensaml.xml.parse.ParserPool;
 
 public ParserPool parserPool() {
   StaticBasicParserPool staticBasicParserPool = new StaticBasicParserPool();
-  staticBasicParserPool.setIgnoreComments(false); // Noncompliant: comments are not ignored during parsing opening the door to exploit the vulnerability
+  staticBasicParserPool.setIgnoreComments(false); // Noncompliant
   return staticBasicParserPool;
 }
 </pre>
-<pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+import org.opensaml.xml.parse.BasicParserPool;
+import org.opensaml.xml.parse.ParserPool;
+
 public ParserPool parserPool() {
   BasicParserPool basicParserPool = new BasicParserPool();
   basicParserPool.setIgnoreComments(false); // Noncompliant
   return basicParserPool;
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import org.opensaml.xml.parse.StaticBasicParserPool;
+import org.opensaml.xml.parse.ParserPool;
+
 public ParserPool parserPool() {
-  return new StaticBasicParserPool(); // Compliant: "ignoreComments" is set to "true" in StaticBasicParserPool constructor
+  return new StaticBasicParserPool();
 }
 </pre>
-<pre>
+<pre data-diff-id="2" data-diff-type="compliant">
+import org.opensaml.xml.parse.BasicParserPool;
+import org.opensaml.xml.parse.ParserPool;
+
 public ParserPool parserPool() {
-  return new BasicParserPool();  // Compliant: "ignoreComments" is set to "true" in BasicParserPool constructor
+  return new BasicParserPool();
 }
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li> <a href="https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/">OWASP Top 10 2021 Category A6</a> - Vulnerable and Outdated
-  Components </li>
-  <li> <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">OWASP Top 10 2021 Category A7</a> - Identification and
-  Authentication Failures </li>
-  <li> <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">OWASP Top 10 2017 Category A2</a> - Broken Authentication
+  <li> OpenSAML API - <a href="https://javadoc.io/doc/org.opensaml/xmltooling/latest/org/opensaml/xml/parse/BasicParserPool.html">Class
+  BasicParserPool</a> </li>
+  <li> OpenSAML API - <a href="https://javadoc.io/doc/org.opensaml/xmltooling/latest/org/opensaml/xml/parse/StaticBasicParserPool.html">Class
+  StaticBasicParserPool</a> </li>
+  <li> W3C Recommendation - <a href="https://www.w3.org/TR/xml-c14n11/">Canonical XML Version 1.1</a> </li>
+  <li> W3C Recommendation - <a href="https://www.w3.org/TR/xmldsig-core1/">XML Signature Syntax and Processing Version 1.1</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> Cisco Duo - <a href="https://duo.com/blog/duo-finds-saml-vulnerabilities-affecting-multiple-implementations">Duo Finds SAML Vulnerabilities
+  Affecting Multiple Implementations</a> </li>
+  <li> Spring blog - <a href="https://spring.io/blog/2018/03/01/spring-security-saml-and-this-week-s-saml-vulnerability">Spring Security SAML and this
+  week’s SAML Vulnerability</a> </li>
+  <li> Spring Security SAML - <a href="https://github.com/spring-projects/spring-security-saml/issues/228">Issue #228 Multiple SAML libraries may
+  allow authentication bypass via incorrect XML canonicalization and DOM traversal</a> </li>
+  <li> CVE - <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11427">CVE-2017-11427</a> </li>
+  <li> CVE - <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11428">CVE-2017-11428</a> </li>
+  <li> CVE - <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11429">CVE-2017-11429</a> </li>
+  <li> CVE - <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11430">CVE-2017-11430</a> </li>
+  <li> CVE - <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0489">CVE-2018-0489</a> </li>
+  <li> CVE - <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-7340">CVE-2018-7340</a> </li>
+</ul>
+<h2>Standards</h2>
+<ul>
+  <li> OWASP - <a href="https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/">Top 10 2021 Category A6 - Vulnerable and Outdated
+  Components</a> </li>
+  <li> OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
+  Authentication Failures</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities">Top 10 2017 Category A9 -
+  Using Components with Known Vulnerabilities</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">Top 10 2017 Category A2 - Broken Authentication</a>
   </li>
-  <li> <a href="https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities">OWASP Top 10 2017 Category A9</a> -
-  Using Components with Known Vulnerabilities </li>
-  <li> <a href="https://duo.com/blog/duo-finds-saml-vulnerabilities-affecting-multiple-implementations">Duo Finds SAML Vulnerabilities Affecting
-  Multiple Implementations</a> </li>
-  <li> <a href="https://spring.io/blog/2018/03/01/spring-security-saml-and-this-week-s-saml-vulnerability">Spring Security SAML and this week’s SAML
-  Vulnerability</a> </li>
-  <li> <a href="https://github.com/spring-projects/spring-security-saml/issues/228">Spring Security SAML: Issue #228</a> </li>
 </ul>
 

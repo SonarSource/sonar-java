@@ -1,28 +1,49 @@
+<p>This function uses a session ID that is supplied by the client. Because of this, the ID may not be valid or might even be spoofed.</p>
 <h2>Why is this an issue?</h2>
-<p>According to the Oracle Java API, the <code>HttpServletRequest.getRequestedSessionId()</code> method:</p>
+<p>According to the API documentation of the <code>HttpServletRequest.getRequestedSessionId()</code> method:</p>
 <blockquote>
   <p>Returns the session ID specified by the client. This may not be the same as the ID of the current valid session for this request. If the client
   did not specify a session ID, this method returns null.</p>
 </blockquote>
-<p>The session ID it returns is either transmitted in a cookie or a URL parameter so by definition, nothing prevents the end-user from manually
-updating the value of this session ID in the HTTP request.</p>
-<p>Here is an example of an updated HTTP header:</p>
-<pre>
-GET /pageSomeWhere HTTP/1.1
-Host: webSite.com
-User-Agent: Mozilla/5.0
-Cookie: JSESSIONID=Hacked_Session_Value'''"&gt;
-</pre>
+<p>The session ID it returns is either transmitted through a cookie or a URL parameter. This allows an end user to manually update the value of this
+session ID in an HTTP request.</p>
 <p>Due to the ability of the end-user to manually change the value, the session ID in the request should only be used by a servlet container (e.g.
-Tomcat or Jetty) to see if the value matches the ID of an existing session. If it does not, the user should be considered unauthenticated. Moreover,
-this session ID should never be logged as is but logged using a one-way hash to prevent hijacking of active sessions.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-if (isActiveSession(request.getRequestedSessionId())) {
-  // ...
+Tomcat or Jetty) to see if the value matches the ID of an existing session. If it does not, the user should be considered unauthenticated.</p>
+<h3>What is the potential impact?</h3>
+<p>Using a client-supplied session ID to manage sessions on the server side can potentially have an impact on the security of the application.</p>
+<h4>Impersonation (through session fixation)</h4>
+<p>If an attacker succeeds in fixing a user’s session to a session identifier that they know, then they can impersonate this victim and gain access to
+their account without providing valid credentials. This can result in unauthorized actions, such as modifying personal information, making
+unauthorized transactions, or even performing malicious activities on behalf of the victim. An attacker can also manipulate the victim into performing
+actions they wouldn’t normally do, such as revealing sensitive information or conducting financial transactions on the attacker’s behalf.</p>
+<h2>How to fix it in Java EE</h2>
+<h3>Code examples</h3>
+<p>In both examples, a session ID is used to check whether a user’s session is still active. In the noncompliant example, the session ID supplied by
+the user is used. In the compliant example, the session ID defined by the server is used instead.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+if (isActiveSession(request.getRequestedSessionId())) { // Noncompliant
+    // ...
 }
 </pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+if (isActiveSession(request.getSession().getId())) {
+    // ...
+}
+</pre>
+<h3>How does this work?</h3>
+<p>The noncompliant example uses <code>HttpServletRequest.getRequestedSessionId()</code> to retrieve a session ID. This ID is then used to verify if
+the given session is still active. As this value is given by a user, this value is not guaranteed to be a valid ID.</p>
+<p>The compliant example instead uses the server’s session ID to verify if the session is active. Additionally, <code>getSession()</code> will create
+a new session if the user’s request does not contain a valid ID.</p>
 <h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Jakarta EE Documentation - <a
+  href="https://jakarta.ee/specifications/platform/10/apidocs/jakarta/servlet/http/httpservletrequest#getRequestedSessionId--"><code>HttpServletRequest</code> - <code>getRequestedSessionId</code></a> </li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li> <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">OWASP Top 10 2021 Category A4</a> - Insecure Design </li>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">OWASP Top 10 2017 Category A2</a> - Broken Authentication

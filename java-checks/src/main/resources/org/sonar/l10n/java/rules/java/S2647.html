@@ -1,23 +1,102 @@
+<p>Basic authentication is a vulnerable method of user authentication that should be avoided. It functions by transmitting a Base64 encoded username
+and password. As Base64 is easy to recognize and reverse, sensitive data may be leaked this way.</p>
 <h2>Why is this an issue?</h2>
-<p>Basic authentication’s only means of obfuscation is Base64 encoding. Since Base64 encoding is easily recognized and reversed, it offers only the
-thinnest veil of protection to your users, and should not be used.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-// Using HttpPost from Apache HttpClient
-String encoding = Base64Encoder.encode ("login:passwd");
-org.apache.http.client.methods.HttpPost httppost = new HttpPost(url);
-httppost.setHeader("Authorization", "Basic " + encoding);  // Noncompliant
-
-or
-
-// Using HttpURLConnection
-String encoding = Base64.getEncoder().encodeToString(("login:passwd").getBytes(‌"UTF‌​-8"​));
+<p>Basic authentication is a simple and widely used method of user authentication for HTTP requests. When a client sends a request to a server that
+requires authentication, the client includes the username and password (concatenated together and Base64 encoded) in the "Authorization" header of the
+HTTP request. The server verifies the credentials and grants access if they are valid. Every request sent to the server to a protected endpoint must
+include these credentials.</p>
+<p>Basic authentication is considered insecure for several reasons:</p>
+<ul>
+  <li> It transmits user credentials in plain text, making them susceptible to interception and eavesdropping. </li>
+  <li> It relies solely on the server’s ability to verify the provided credentials. There is no mechanism for additional security measures like
+  multi-factor authentication or account lockouts after multiple failed login attempts. </li>
+  <li> It does not provide a way to manage user sessions securely. The client typically includes the credentials in every request, which creates more
+  opportunities for an attacker to steal these credentials. </li>
+</ul>
+<p>These security limitations make basic authentication an insecure choice for authentication or authorization over HTTP.</p>
+<h3>What is the potential impact?</h3>
+<p>Basic authentication transmits passwords in plain text, which makes it vulnerable to interception by attackers.</p>
+<h4>Session hijacking and man-in-the-middle attack</h4>
+<p>If an attacker gains access to the network traffic, they can easily capture the username and password. Basic authentication does not provide any
+mechanism to protect against session hijacking attacks. Once a user is authenticated, the session identifier (the username and password) is sent in
+clear text with each subsequent request. If attackers can intercept one request, they can use it to impersonate the authenticated user, gaining
+unauthorized access to their account and potentially performing malicious actions.</p>
+<h4>Brute-force attacks</h4>
+<p>Basic authentication does not have any built-in protection against brute-force attacks. Attackers can repeatedly guess passwords until they find
+the correct one, especially if weak or commonly used passwords are used. This can lead to unauthorized access to user accounts and potential data
+breaches.</p>
+<h2>How to fix it in Java SE</h2>
+<h3>Code examples</h3>
+<p>The following code uses basic authentication to send out an HTTP request to a protected endpoint.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="101" data-diff-type="noncompliant">
+String encoded = Base64.getEncoder().encodeToString("login:passwd".getBytes());
 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 conn.setRequestMethod("POST");
 conn.setDoOutput(true);
-conn.setRequestProperty("Authorization", "Basic " + encoding); // Noncompliant
+conn.setRequestProperty("Authorization", "Basic " + encoded); // Noncompliant
 </pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="101" data-diff-type="compliant">
+// An access token should be retrieved before the HTTP request
+String accessToken = System.getenv("ACCESS_TOKEN");
+HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+conn.setRequestMethod("POST");
+conn.setDoOutput(true);
+conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+</pre>
+<h3>How does this work?</h3>
+<h4>Token-based authentication and OAuth</h4>
+<p>Token-based authentication is a safer alternative than basic authentication. A unique token is generated upon successful authentication and sent to
+the client, which is then included in subsequent requests. Therefore, it eliminates the need to transmit sensitive credentials with each request.
+OAuth also works by authenticating users via tokens. It gives even more flexibility on top of this by offering scopes, which limit an application’s
+access to a user’s account.</p>
+<p>Additionally, both token-based authentication and OAuth support mechanisms for token expiration, revocation, and refresh. This gives more
+flexibility than basic authentication, as compromised tokens carry much less risk than a compromised password.</p>
+<h4>SSL encryption for HTTP requests</h4>
+<p>With basic authentication, user credentials are transmitted in plain text, which makes them vulnerable to interception and eavesdropping. However,
+when HTTPS is employed, the data is encrypted before transmission, making it significantly more difficult for attackers to intercept and decipher the
+credentials. If no other form of authentication is possible for this code, then every request must be sent over HTTPS to ensure credentials are kept
+safe.</p>
+<h2>How to fix it in Apache HttpClient</h2>
+<h3>Code examples</h3>
+<p>The following code uses basic authentication to send out an HTTP request to a protected endpoint.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import org.apache.http.client.methods.HttpPost;
+
+String encoded = Base64.getEncoder().encodeToString("login:passwd".getBytes());
+HttpPost httpPost = new HttpPost("http://api.example.com/foo");
+httpPost.setHeader("Authorization", "Basic " + encoded); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import org.apache.http.client.methods.HttpPost;
+
+// An access token should be retrieved before the HTTP request
+String accessToken = System.getenv("ACCESS_TOKEN");
+HttpPost httpPost = new HttpPost("http://api.example.com/foo");
+httpPost.setHeader("Authorization", "Bearer " + accessToken);
+</pre>
+<h3>How does this work?</h3>
+<h4>Token-based authentication and OAuth</h4>
+<p>Token-based authentication is a safer alternative than basic authentication. A unique token is generated upon successful authentication and sent to
+the client, which is then included in subsequent requests. Therefore, it eliminates the need to transmit sensitive credentials with each request.
+OAuth also works by authenticating users via tokens. It gives even more flexibility on top of this by offering scopes, which limit an application’s
+access to a user’s account.</p>
+<p>Additionally, both token-based authentication and OAuth support mechanisms for token expiration, revocation, and refresh. This gives more
+flexibility than basic authentication, as compromised tokens carry much less risk than a compromised password.</p>
+<h4>SSL encryption for HTTP requests</h4>
+<p>With basic authentication, user credentials are transmitted in plain text, which makes them vulnerable to interception and eavesdropping. However,
+when HTTPS is employed, the data is encrypted before transmission, making it significantly more difficult for attackers to intercept and decipher the
+credentials. If no other form of authentication is possible for this code, then every request must be sent over HTTPS to ensure credentials are kept
+safe.</p>
 <h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> MDN web docs - <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication">HTTP authentication</a> </li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li> <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">OWASP Top 10 2021 Category A4</a> - Insecure Design </li>
   <li> <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data

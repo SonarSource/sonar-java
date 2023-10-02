@@ -1,53 +1,69 @@
+<p>The improper storage of passwords poses a significant security risk to software applications. This vulnerability arises when passwords are stored
+in plain-text or with a fast hashing algorithm. To exploit this vulnerability, an attacker typically requires access to the stored passwords.</p>
 <h2>Why is this an issue?</h2>
-<p>A user password should never be stored in clear-text, instead a hash should be produced from it using a secure algorithm:</p>
-<ul>
-  <li> not vulnerable to <code>brute force attacks</code>. </li>
-  <li> not vulnerable to <code>collision attacks</code> (see rule s4790). </li>
-  <li> and a salt should be added to the password to lower the risk of <code>rainbow table attacks</code> (see rule s2053). </li>
-</ul>
-<p>This rule raises an issue when a password is stored in clear-text or with a hash algorithm vulnerable to <code>bruce force attacks</code>. These
-algorithms, like <code>md5</code> or <code>SHA-family</code> functions are fast to compute the hash and therefore brute force attacks are possible
-(it’s easier to exhaust the entire space of all possible passwords) especially with hardware like GPU, FPGA or ASIC. Modern password hashing
-algorithms such as <code>bcrypt</code>, <code>PBKDF2</code> or <code>argon2</code> are recommended.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>Attackers who would get access to the stored passwords could reuse them without further attacks or with little additional effort. Obtaining the
+clear-text passwords, they could then gain unauthorized access to user accounts, potentially leading to various malicious activities.</p>
+<h3>What is the potential impact?</h3>
+<p>Plain-text or weakly hashed password storage poses a significant security risk to software applications.</p>
+<h4>Unauthorized Access</h4>
+<p>When passwords are stored in plain-text or with weak hashing algorithms, an attacker who gains access to the password database can easily retrieve
+and use the passwords to gain unauthorized access to user accounts. This can lead to various malicious activities, such as unauthorized data access,
+identity theft, or even financial fraud.</p>
+<h4>Credential Reuse</h4>
+<p>Many users tend to reuse passwords across multiple platforms. If an attacker obtains plain-text or weakly hashed passwords, they can potentially
+use these credentials to gain unauthorized access to other accounts held by the same user. This can have far-reaching consequences, as sensitive
+personal information or critical systems may be compromised.</p>
+<h4>Regulatory Compliance</h4>
+<p>Many industries and jurisdictions have specific regulations and standards to protect user data and ensure its confidentiality. Storing passwords in
+plain-text or with weak hashing algorithms can lead to non-compliance with these regulations, potentially resulting in legal consequences, financial
+penalties, and damage to the reputation of the software application and its developers.</p>
+<h2>How to fix it in Spring</h2>
+<p>A user password should never be stored in clear text. Instead, a hash should be produced from it using a secure algorithm. When dealing with
+password storage security, best practices recommend relying on a slow hashing algorithm, that will make brute force attacks more difficult. Using a
+hashing function with adaptable computation and memory complexity also is recommended to be able to increase the security level with time.</p>
+<p>Adding a salt to the digest computation is also recommended to prevent pre-computed table attacks (see rule {rule:java:S2053}).</p>
+<p>In general, relying on an algorithm with no known weaknesses is also a requirement. This prevents the use of the MD5 or SHA-1 algorithms.</p>
+<p>While considered strong for some use cases, some algorithms, like SHA-family functions, are too fast to compute and therefore susceptible to brute
+force attacks, especially with attack-dedicated hardware. Modern, slow, password hashing algorithms such as bcrypt, PBKDF2 or argon2 are
+recommended.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>The following code is vulnerable because it uses a legacy digest-based password encoding that is not considered secure.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 @Autowired
 public void configureGlobal(AuthenticationManagerBuilder auth, DataSource dataSource) throws Exception {
   auth.jdbcAuthentication()
     .dataSource(dataSource)
     .usersByUsernameQuery("SELECT * FROM users WHERE username = ?")
     .passwordEncoder(new StandardPasswordEncoder()); // Noncompliant
-
-  // OR
-  auth.jdbcAuthentication()
-    .dataSource(dataSource)
-    .usersByUsernameQuery("SELECT * FROM users WHERE username = ?"); // Noncompliant; default uses plain-text
-
-  // OR
-  auth.userDetailsService(...); // Noncompliant; default uses plain-text
-  // OR
-  auth.userDetailsService(...).passwordEncoder(new StandardPasswordEncoder()); // Noncompliant
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 @Autowired
 public void configureGlobal(AuthenticationManagerBuilder auth, DataSource dataSource) throws Exception {
   auth.jdbcAuthentication()
     .dataSource(dataSource)
     .usersByUsernameQuery("Select * from users where username=?")
     .passwordEncoder(new BCryptPasswordEncoder());
-
-  // or
-  auth.userDetailsService(null).passwordEncoder(new BCryptPasswordEncoder());
 }
 </pre>
+<h3>How does this work?</h3>
+<p>The <code>BCryptPasswordEncoder</code> is a password hashing function in Java that is designed to be secure and resistant to various types of
+attacks, including brute-force and rainbow table attacks. It is slow, adaptative, and automatically implements a salt.</p>
 <h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Spring Framework Security Documentation - <a
+  href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/crypto/bcrypt/BCryptPasswordEncoder.html">Class
+  BCryptPasswordEncoder</a> </li>
+  <li> <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html">OWASP CheatSheet</a> - Password Storage Cheat Sheet
+  </li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">OWASP Top 10 2021 Category A4</a> - Insecure Design </li>
-  <li> <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html">OWASP CheatSheet</a> - Password Storage Cheat Sheet
-  </li>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data
   Exposure </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/256">MITRE, CWE-256</a> - Plaintext Storage of a Password </li>
