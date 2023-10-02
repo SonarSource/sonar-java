@@ -18,7 +18,7 @@ for (int i = 0; i &lt; foo(); i++) { // Noncompliant, "foo()" is not an invarian
 }
 </pre>
 <h4>Compliant solution</h4>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<pre data-diff-id="1" data-diff-type="compliant">
 int end = foo();
 for (int i = 0; i &lt; end; i++) { // Compliant, "end" does not change during loop execution
   // ...
@@ -35,7 +35,7 @@ for (int i = 0; i &lt; 10; i++) {
 }
 </pre>
 <h4>Compliant solution</h4>
-<pre data-diff-id="3" data-diff-type="compliant">
+<pre data-diff-id="2" data-diff-type="compliant">
 int i = 0;
 while (i++ &lt; 10) { // Compliant
   // ...

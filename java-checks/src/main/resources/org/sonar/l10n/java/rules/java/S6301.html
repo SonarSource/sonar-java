@@ -1,42 +1,94 @@
+<p>When storing local data in a mobile application, it is common to use a database that can be encrypted. When encryption of this database is enabled,
+the encryption key must be protected properly.</p>
 <h2>Why is this an issue?</h2>
-<p>Storing data locally is a common task for mobile applications. There are many convenient solutions that allow storing data persistently, for
-example SQLiteDatabase and Realm. These systems can be initialized with a secret key in order to store the data encrypted.</p>
+<p>Mobile applications often need to store data (which might be sensitive) locally. For Android, there exist several libraries that simplify this
+process by offering a feature-rich database system. <a href="https://www.zetetic.net/sqlcipher/">SQLCipher</a> and <a
+href="https://realm.io/">Realm</a> are examples of such libraries. These libraries often add support for database encryption, to protect the contents
+from being read by other apps or by attackers.</p>
+<p>When using encryption for such a database, it is important that the encryption key stays secret. If this key is hardcoded in the application, then
+it should be considered compromised. The key will be known by anyone with access to the application’s binary code or source code. This means that the
+sensitive encrypted data can be decrypted by anyone having access to the binary of the mobile application.</p>
+<p>Furthermore, if the key is hardcoded, it is the same for every user. A compromise of this encryption key implicates every user of the app.</p>
 <p>The encryption key is meant to stay secret and should not be hard-coded in the application as it would mean that:</p>
-<ul>
-  <li> All user would use the same encryption key. </li>
-  <li> The encryption key would be known by anyone who as access to the source code or the application binary code. </li>
-  <li> Data stored encrypted in the database would not be protected. </li>
-</ul>
-<p>There are different approaches how the key can be provided to encrypt and decrypt the database. One of the most convinient way to is to rely on
-<code>EncryptedSharedPreferences</code> to store encryption keys. It can also be provided dynamically by the user of the application or fetched from a
-remote server.</p>
-<h3>Noncompliant code example</h3>
-<p><a href="https://www.zetetic.net/sqlcipher/sqlcipher-for-android/">SQLCipher</a></p>
-<pre>
-String key = "gb09ym9ydoolp3w886d0tciczj6ve9kszqd65u7d126040gwy86xqimjpuuc788g";
-SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("test.db", key, null); // Noncompliant
-</pre>
-<p><a href="https://github.com/realm/realm-java/">Realm</a></p>
-<pre>
+<h3>What is the potential impact?</h3>
+<p>If an attacker is able to find the encryption key for the mobile database, this can potentially have severe consequences.</p>
+<h4>Theft of sensitive data</h4>
+<p>If a mobile database is encrypted, it is likely to contain data that is sensitive for the user or the app publisher. For example, it can contain
+personally identifiable information (PII), financial data, login credentials, or other sensitive user data.</p>
+<p>By not protecting the encryption key properly, it becomes very easy for an attacker to recover it and then decrypt the mobile database. At that
+point, the theft of sensitive data might lead to identity theft, financial fraud, and other forms of malicious activities.</p>
+<h2>How to fix it in Realm</h2>
+<h3>Code examples</h3>
+<p>In the example below, a local database is opened using a hardcoded key. To fix this, the key is moved to a secure location instead and retrieved
+using a <code>getKey()</code> method.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="201" data-diff-type="noncompliant">
 String key = "gb09ym9ydoolp3w886d0tciczj6ve9kszqd65u7d126040gwy86xqimjpuuc788g";
 RealmConfiguration config = new RealmConfiguration.Builder();
     .encryptionKey(key.toByteArray()) // Noncompliant
     .build();
 Realm realm = Realm.getInstance(config);
 </pre>
-<h3>Compliant solution</h3>
-<p><a href="https://www.zetetic.net/sqlcipher/sqlcipher-for-android/">SQLCipher</a></p>
-<pre>
-SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("test.db", getKey(), null);
-</pre>
-<p><a href="https://github.com/realm/realm-java/">Realm</a></p>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="201" data-diff-type="compliant">
 RealmConfiguration config = new RealmConfiguration.Builder()
     .encryptionKey(getKey())
     .build();
 Realm realm = Realm.getInstance(config);
 </pre>
+<h3>How does this work?</h3>
+<h4>Using Android’s builtin key storage options</h4>
+<p>The <a href="https://developer.android.com/training/articles/keystore">Android Keystore</a> system allows apps to store encryption keys in a
+container that is protected on a system level. Additionally, it can restrict when and how the keys are used. For example, it allows the app to require
+user authentication (for example using a fingerprint) before the key is made available. This is the recommended way to store cryptographic keys on
+Android.</p>
+<h4>Dynamically retrieving encryption keys remotely</h4>
+<p>As user devices are less trusted than controlled environments such as the application backend, the latter should be preferred for the storage of
+encryption keys. This requires that a user’s device has an internet connection, which may not be suitable for every use case.</p>
+<h3>Going the extra mile</h3>
+<h4>Avoid storing sensitive data on user devices</h4>
+<p>In general, it is always preferable to store as little sensitive data on user devices as possible.</p>
+<p>Of course, some sensitive data always has to be stored on client devices, such as the data required for authentication. In this case, consider
+whether the application logic can also function with a hash (or otherwise non-reversible form) of that data. For example, if an email address is
+required for authentication, it might be possible to use and store a hashed version of this address instead.</p>
+<h2>How to fix it in SQLCipher</h2>
+<h3>Code examples</h3>
+<p>In the example below, a local database is opened using a hardcoded key. To fix this, the key is moved to a secure location instead and retrieved
+using a <code>getKey()</code> method.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="101" data-diff-type="noncompliant">
+String key = "gb09ym9ydoolp3w886d0tciczj6ve9kszqd65u7d126040gwy86xqimjpuuc788g";
+SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("test.db", key, null); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="101" data-diff-type="compliant">
+SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("test.db", getKey(), null);
+</pre>
+<h3>How does this work?</h3>
+<h4>Using Android’s builtin key storage options</h4>
+<p>The <a href="https://developer.android.com/training/articles/keystore">Android Keystore</a> system allows apps to store encryption keys in a
+container that is protected on a system level. Additionally, it can restrict when and how the keys are used. For example, it allows the app to require
+user authentication (for example using a fingerprint) before the key is made available. This is the recommended way to store cryptographic keys on
+Android.</p>
+<h4>Dynamically retrieving encryption keys remotely</h4>
+<p>As user devices are less trusted than controlled environments such as the application backend, the latter should be preferred for the storage of
+encryption keys. This requires that a user’s device has an internet connection, which may not be suitable for every use case.</p>
+<h3>Going the extra mile</h3>
+<h4>Avoid storing sensitive data on user devices</h4>
+<p>In general, it is always preferable to store as little sensitive data on user devices as possible.</p>
+<p>Of course, some sensitive data always has to be stored on client devices, such as the data required for authentication. In this case, consider
+whether the application logic can also function with a hash (or otherwise non-reversible form) of that data. For example, if an email address is
+required for authentication, it might be possible to use and store a hashed version of this address instead.</p>
 <h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Android Documentation - <a href="https://developer.android.com/training/articles/keystore">Android Keystore system</a> </li>
+  <li> Android Documentation - <a href="https://developer.android.com/training/articles/security-tips#UserData">Security tips - User data</a> </li>
+  <li> OWASP Mobile Application Security Testing Guide - <a
+  href="https://mobile-security.gitbook.io/mobile-security-testing-guide/android-testing-guide/0x05d-testing-data-storage">Data Storage on Android</a>
+  </li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">OWASP Top 10 2021 Category A4</a> - Insecure Design </li>

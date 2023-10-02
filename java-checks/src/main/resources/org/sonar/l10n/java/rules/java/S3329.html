@@ -98,8 +98,12 @@ public void encrypt(String key, String plainText) {
 </pre>
 <h3>How does this work?</h3>
 <h4>Use unique IVs</h4>
-<p>To ensure strong security, the initialization vectors for each encryption operation must be unique and random but they do not have to be
-secret.</p>
+<p>To ensure high security, initialization vectors must meet two important criteria:</p>
+<ul>
+  <li> IVs must be unique for each encryption operation. </li>
+  <li> For CBC and CFB modes, a secure FIPS-compliant random number generator should be used to generate unpredictable IVs. </li>
+</ul>
+<p>The IV does not need be secret, so the IV or information sufficient to determine the IV may be transmitted along with the ciphertext.</p>
 <p>In the previous non-compliant example, the problem is not that the IV is hard-coded.<br> It is that the same IV is used for multiple encryption
 attempts.</p>
 <h2>Resources</h2>

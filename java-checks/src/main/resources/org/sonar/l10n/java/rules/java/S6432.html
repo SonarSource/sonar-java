@@ -1,41 +1,128 @@
+<p>When encrypting data using AES-GCM or AES-CCM, it is essential not to reuse the same initialization vector (IV, also called nonce) with a given
+key. To prevent this, it is recommended to either randomize the IV for each encryption or increment the IV after each encryption.</p>
 <h2>Why is this an issue?</h2>
-<p>When encrypting data with Counter (CTR) derived block cipher modes of operation, it is essential not to reuse the same initialization vector (IV)
-with a given key, such IV is called a "nonce" (number used only once). Galois/Counter (GCM) and Counter with Cipher Block Chaining-Message
-Authentication Code (CCM) are both CTR-based modes of operation.</p>
-<p>An attacker, who has knowledge of one plaintext (original content) and ciphertext (encrypted content) pair, is able to retrieve the corresponding
-plaintext of any other ciphertext generated with the same IV and key. It also drastically decreases the key recovery computational complexity by
-downgrading it to a simpler polynomial root-finding problem.</p>
-<p>When using GCM, NIST recommends a 96 bit length nonce using a 'Deterministic' approach or at least 96 bits using a 'Random Bit Generator (RBG)'.
-The 'Deterministic' construction involves a counter, which increments per encryption process. The 'RBG' construction, as the name suggests, generates
-the nonce using a random bit generator. Collision probabilities (nonce-key pair reuse) using the 'RBG-based' approach require a shorter key rotation
-period, 2^32 maximum invocations per key.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>When encrypting data using a counter (CTR) derived block cipher mode of operation, it is essential not to reuse the same initialization vector (IV)
+for a given key. An IV that complies with this requirement is called a "nonce" (<strong>n</strong>umber used <strong>once</strong>). Galois/Counter
+(GCM) and Counter with Cipher Block Chaining-Message Authentication Code (CCM) are both derived from counter mode.</p>
+<p>When using AES-GCM or AES-CCM, a given key and IV pair will create a "keystream" that is used to encrypt a plaintext (original content) into a
+ciphertext (encrypted content.) For any key and IV pair, this keystream is always deterministic. Because of this property, encrypting several
+plaintexts with one key and IV pair can be catastrophic. If an attacker has access to one plaintext and its associated ciphertext, they are able to
+decrypt everything that was created using the same pair.</p>
+<p>Additionally, IV reuse also drastically decreases the key recovery computational complexity by downgrading it to a simpler polynomial root-finding
+problem. This means that even without access to a plaintext/ciphertext pair, an attacker may still be able to decrypt all the sensitive data.</p>
+<h3>What is the potential impact?</h3>
+<p>If the encryption that is being used is flawed, attackers might be able to exploit it in several ways. They might be able to decrypt existing
+sensitive data or bypass key protections.</p>
+<p>Below are some real-world scenarios that illustrate some impacts of an attacker exploiting the vulnerability.</p>
+<h4>Theft of sensitive data</h4>
+<p>The encrypted message might contain data that is considered sensitive and should not be known to third parties.</p>
+<p>By not using the encryption algorithm correctly, the likelihood that an attacker might be able to recover the original sensitive data drastically
+increases.</p>
+<h4>Additional attack surface</h4>
+<p>Encrypted values are often considered trusted, since under normal circumstances it would not be possible for a third party to modify them. If an
+attacker is able to modify the cleartext of the encrypted message, it might be possible to trigger other vulnerabilities in the code.</p>
+<h2>How to fix it in Java Cryptography Extension</h2>
+<h3>Code examples</h3>
+<p>The example uses a hardcoded IV as a nonce, which causes AES-CCM to be insecure. To fix it, a nonce is randomly generated instead.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="101" data-diff-type="noncompliant">
 public void encrypt(byte[] key, byte[] ptxt) {
-    byte[] bytesIV = "7cVgr5cbdCZV".getBytes("UTF-8"); // The initialization vector is a static value
-
-    GCMParameterSpec gcmSpec    = new GCMParameterSpec(128, nonce); // The initialization vector is configured here
-    SecretKeySpec keySpec       = new SecretKeySpec(key, "AES");
+    byte[] nonce = "7cVgr5cbdCZV".getBytes("UTF-8");
 
     Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-    cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);  // Noncompliant
+    SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+    GCMParameterSpec gcmSpec = new GCMParameterSpec(128, nonce);
+
+    cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec); // Noncompliant
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="101" data-diff-type="compliant">
 public void encrypt(byte[] key, byte[] ptxt) {
     SecureRandom random = new SecureRandom();
-    byte[] bytesIV = new byte[12];
-    random.nextBytes(bytesIV); // Random 96 bit IV
-
-    GCMParameterSpec gcmSpec    = new GCMParameterSpec(128, nonce);
-    SecretKeySpec keySpec       = new SecretKeySpec(key, "AES");
+    byte[] nonce = new byte[12];
+    random.nextBytes(nonce);
 
     Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-    cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
+    SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+    GCMParameterSpec gcmSpec = new GCMParameterSpec(128, nonce);
+
+    cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
 }
 </pre>
+<h3>How does this work?</h3>
+<p>For AES-GCM and AES-CCM, NIST recommends generating a nonce using either a deterministic approach or using a 'Random Bit Generator (RBG)'.</p>
+<h4>Generating nonces using random number generation</h4>
+<p>When using a randomized approach, NIST recommends a nonce of at least 96 bits using a cryptographically secure pseudorandom number generator
+(CSPRNG.) Such a generator can create output with a sufficiently low probability of the same number being output twice (also called a
+<em>collision</em>) for a long time. However, after 2<sup>32</sup> generated numbers for the same key, NIST recommends rotating this key for a new
+one. After that amount of generated numbers, the probability of a collision is high enough to be considered insecure.</p>
+<p>The code example above demonstrates how CSPRNGs can be used to generate nonces.</p>
+<p>Be careful to use a random number generator that is sufficiently secure. Default (non-cryptographically secure) RNGs might be more prone to
+collisions in their output, which is catastrophic for counter-based encryption modes.</p>
+<h4>Deterministically generating nonces</h4>
+<p>One method to prevent the same IV from being used multiple times for the same key is to update the IV in a deterministic way after each encryption.
+The most straightforward deterministic method for this is a counter.</p>
+<p>The way this works is simple: for any key, the first IV is the number zero. After this IV is used to encrypt something with a key, it is
+incremented for that key (and is now equal to 1). Although this requires additional bookkeeping, it should guarantee that for each encryption key, an
+IV is never repeated.</p>
+<p>For a secure implementation, NIST suggests generating these nonces in two parts: a fixed field and an invocation field. The fixed field should be
+used to identify the device executing the encryption (for example, it could contain a device ID), such that for one key, no two devices can generate
+the same nonce. The invocation field contains the counter as described above. For a 96-bit nonce, NIST recommends (but does not require) using a
+32-bit fixed field and a 64-bit invocation field. Additional details can be found in the <a
+href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf">NIST Special Publication 800-38D</a>.</p>
+<h2>How to fix it in BouncyCastle</h2>
+<h3>Code examples</h3>
+<p>The example uses a hardcoded IV as a nonce, which causes AES-CCM to be insecure. To fix it, a nonce is randomly generated instead.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="201" data-diff-type="noncompliant">
+public void encrypt(byte[] key, byte[] ptxt) {
+    byte[] nonce = "7cVgr5cbdCZV".getBytes(StandardCharsets.UTF_8);
+
+    BlockCipher engine = new AESEngine();
+    AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce);
+    CCMBlockCipher cipher = new CCMBlockCipher(engine);
+
+    cipher.init(true, params); // Noncompliant
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="201" data-diff-type="compliant">
+public void encrypt(byte[] key, byte[] ptxt) {
+    SecureRandom random = new SecureRandom();
+    byte[] nonce = new byte[12];
+    random.nextBytes(nonce);
+
+    BlockCipher engine = new AESEngine();
+    AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce);
+    CCMBlockCipher cipher = new CCMBlockCipher(engine);
+
+    cipher.init(true, params);
+}
+</pre>
+<h3>How does this work?</h3>
+<p>For AES-GCM and AES-CCM, NIST recommends generating a nonce using either a deterministic approach or using a 'Random Bit Generator (RBG)'.</p>
+<h4>Generating nonces using random number generation</h4>
+<p>When using a randomized approach, NIST recommends a nonce of at least 96 bits using a cryptographically secure pseudorandom number generator
+(CSPRNG.) Such a generator can create output with a sufficiently low probability of the same number being output twice (also called a
+<em>collision</em>) for a long time. However, after 2<sup>32</sup> generated numbers for the same key, NIST recommends rotating this key for a new
+one. After that amount of generated numbers, the probability of a collision is high enough to be considered insecure.</p>
+<p>The code example above demonstrates how CSPRNGs can be used to generate nonces.</p>
+<p>Be careful to use a random number generator that is sufficiently secure. Default (non-cryptographically secure) RNGs might be more prone to
+collisions in their output, which is catastrophic for counter-based encryption modes.</p>
+<h4>Deterministically generating nonces</h4>
+<p>One method to prevent the same IV from being used multiple times for the same key is to update the IV in a deterministic way after each encryption.
+The most straightforward deterministic method for this is a counter.</p>
+<p>The way this works is simple: for any key, the first IV is the number zero. After this IV is used to encrypt something with a key, it is
+incremented for that key (and is now equal to 1). Although this requires additional bookkeeping, it should guarantee that for each encryption key, an
+IV is never repeated.</p>
+<p>For a secure implementation, NIST suggests generating these nonces in two parts: a fixed field and an invocation field. The fixed field should be
+used to identify the device executing the encryption (for example, it could contain a device ID), such that for one key, no two devices can generate
+the same nonce. The invocation field contains the counter as described above. For a 96-bit nonce, NIST recommends (but does not require) using a
+32-bit fixed field and a 64-bit invocation field. Additional details can be found in the <a
+href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf">NIST Special Publication 800-38D</a>.</p>
 <h2>Resources</h2>
+<h3>Standards</h3>
 <ul>
   <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
   <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure

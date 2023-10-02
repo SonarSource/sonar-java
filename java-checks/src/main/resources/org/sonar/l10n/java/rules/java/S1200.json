@@ -1,5 +1,5 @@
 {
-  "title": "Classes should not be coupled to too many other classes (Single Responsibility Principle)",
+  "title": "Classes should not be coupled to too many other classes",
   "type": "CODE_SMELL",
   "code": {
     "impacts": {

@@ -5,7 +5,7 @@
     "impacts": {
       "SECURITY": "MEDIUM"
     },
-    "attribute": "COMPLETE"
+    "attribute": "TRUSTWORTHY"
   },
   "status": "ready",
   "remediation": {

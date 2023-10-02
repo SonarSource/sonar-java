@@ -1,72 +1,91 @@
+<p>XML parsers Denial of Service attacks target XML parsers, which are software components responsible for parsing and interpreting XML documents.</p>
 <h2>Why is this an issue?</h2>
-<p>An XML bomb / <a href="https://en.wikipedia.org/wiki/Billion_laughs_attack">billion laughs</a> attack is a malicious XML document containing the
-same large entity repeated over and over again. If no restrictions is in place, such a limit on the number of entity expansions, the XML processor can
-consume a lot memory and time during the parsing of such documents leading to Denial of Service.</p>
-<h3>Noncompliant code example</h3>
-<p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a> and <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> and <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">Transformer</a> JAPX factories:</p>
-<pre>
+<p>XML files are complex data structures. When a malicious user is able to submit an XML file, it triggers complex processing that may overwhelm the
+parser. Most of the time, those complex processing are enabled by default, and XML parsers do not take preventive measures against Denial of Service
+attacks.</p>
+<h3>What is the potential impact?</h3>
+<p>When an attacker successfully exploits the vulnerability, it can lead to a Denial of Service (DoS) condition.</p>
+<h3>System Unavailability</h3>
+<p>Affected system becomes unresponsive or crashes, rendering it unavailable to legitimate users. This can have severe consequences, especially for
+critical systems that rely on continuous availability, such as web servers, APIs, or network services.</p>
+<h3>Amplification Attacks</h3>
+<p>In some cases, XML parsers Denial of Service attacks can be used as a part of larger-scale amplification attacks. By leveraging the vulnerability,
+attackers can generate a disproportionately large response from the targeted system, amplifying the impact of their attack. This can result in
+overwhelming network bandwidth and causing widespread disruption.</p>
+<h2>How to fix it in Java SE</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import javax.xml.parsers.DocumentBuilderFactory;
+
 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant
-
-SAXParserFactory factory = SAXParserFactory.newInstance();
-factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant
-
-SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant
-
-TransformerFactory factory = javax.xml.transform.TransformerFactory.newInstance();
-factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant
 </pre>
-<p>For <a href="https://dom4j.github.io/">Dom4j</a> library:</p>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import javax.xml.parsers.DocumentBuilderFactory;
+
+DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+</pre>
+<h2>How to fix it in Dom4j</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+import org.dom4j.io.SAXReader;
+
 SAXReader xmlReader = new SAXReader();
 xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant
 </pre>
-<p>For <a href="http://www.jdom.org/">Jdom2</a> library:</p>
-<pre>
-SAXBuilder builder = new SAXBuilder();
-builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);  // Noncompliant
-</pre>
-<h3>Compliant solution</h3>
-<p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a> and <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> and <a
-href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">Transformer</a> JAPX factories:</p>
-<pre>
-DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+import org.dom4j.io.SAXReader;
 
-SAXParserFactory factory = SAXParserFactory.newInstance();
-factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-
-SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-
-TransformerFactory factory = javax.xml.transform.TransformerFactory.newInstance();
-factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-</pre>
-<p>For <a href="https://dom4j.github.io/">Dom4j</a> library:</p>
-<pre>
 SAXReader xmlReader = new SAXReader();
 xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 </pre>
-<p>For <a href="http://www.jdom.org/">Jdom2</a> library:</p>
-<pre>
+<h2>How to fix it in Jdom2</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+import org.jdom2.input.SAXBuilder;
+
+SAXBuilder builder = new SAXBuilder();
+builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);  // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+import org.jdom2.input.SAXBuilder;
+
 SAXBuilder builder = new SAXBuilder();
 builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li> <a
-  href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-8CD65EF5-D113-4D5C-A564-B875C8625FAC">Oracle Java Documentation</a> - XML External Entity Injection Attack </li>
-  <li> <a href="https://owasp.org/www-project-top-ten/2017/A4_2017-XML_External_Entities_(XXE)">OWASP Top 10 2017 Category A4</a> - XML External
-  Entities (XXE) </li>
-  <li> <a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java">OWASP XXE Prevention Cheat
+  <li> Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.xml/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilderFactory Class</a>
+  </li>
+  <li> Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.xml/javax/xml/parsers/SAXParserFactory.html">SAXParserFactory Class</a> </li>
+  <li> Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.xml/javax/xml/validation/SchemaFactory.html">SchemaFactory Class</a> </li>
+  <li> Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.xml/javax/xml/transform/TransformerFactory.html">TransformerFactory Class</a> </li>
+  <li> Java Documentation - <a href="https://docs.oracle.com/en/java/javase/21/security/java-api-xml-processing-jaxp-security-guide.html">Java API for
+  XML Processing (JAXP) Security Guide</a> </li>
+  <li> Dom4j Documentation - <a href="https://dom4j.github.io/javadoc/2.1.4/org/dom4j/io/SAXReader.html">SAXReader Class</a> </li>
+  <li> Jdom2 Documentation - <a href="http://www.jdom.org/docs/apidocs/org/jdom2/input/SAXBuilder.html">SAXBuilder class</a> </li>
+  <li> OWASP - <a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java">XXE Prevention Cheat
   Sheet</a> </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/776">MITRE, CWE-776</a> - Improper Restriction of Recursive Entity References in DTDs ('XML
-  Entity Expansion') </li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li> OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">OWASP Top 10 2021 Category A5 - Security Misconfiguration</a>
+  </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A4_2017-XML_External_Entities_(XXE)">OWASP Top 10 2017 Category A4 - XML External
+  Entities (XXE)</a> </li>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/776">CWE-776 - Improper Restriction of Recursive Entity References in DTDs ('XML Entity
+  Expansion')</a> </li>
 </ul>
 
