@@ -50,8 +50,11 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
   private static final List<String> SPRING_INJECTION_ANNOTATION = Arrays.asList(
     "org.springframework.beans.factory.annotation.Autowired",
     "javax.inject.Inject",
+    "jakarta.inject.Inject",
     "javax.annotation.Resource",
+    "jakarta.annotation.Resource",
     "javax.persistence.PersistenceContext",
+    "jakarta.persistence.PersistenceContext",
     "org.springframework.beans.factory.annotation.Value");
 
   private static final List<String> SPRING_SINGLETON_ANNOTATION = Arrays.asList(

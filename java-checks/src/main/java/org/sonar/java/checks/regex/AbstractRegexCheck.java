@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.IntFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -106,6 +107,15 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
       .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING)
       .build());
 
+  private static final Set<String> ANNOTATIONS_TO_FILTER = Set.of(
+    "javax.validation.constraints.Pattern",
+    "jakarta.validation.constraints.Pattern",
+    "javax.validation.constraints.Email",
+    "jakarta.validation.constraints.Email",
+    "org.hibernate.validator.constraints.URL",
+    "org.hibernate.validator.constraints.Email"
+    );
+
   private RegexScannerContext regexContext;
 
   // We want to report only one issue per element for one rule.
@@ -130,10 +140,7 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
 
   protected boolean filterAnnotation(AnnotationTree annotation) {
     Type type = annotation.symbolType();
-    return type.is("javax.validation.constraints.Pattern") ||
-      type.is("javax.validation.constraints.Email") ||
-      type.is("org.hibernate.validator.constraints.URL") ||
-      type.is("org.hibernate.validator.constraints.Email");
+    return ANNOTATIONS_TO_FILTER.stream().anyMatch(type::is);
   }
 
   @Override
