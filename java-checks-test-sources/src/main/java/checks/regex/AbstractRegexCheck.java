@@ -88,4 +88,25 @@ public abstract class AbstractRegexCheck {
     return s;
   }
 
+  @jakarta.validation.constraints.Pattern( // Noncompliant {{[^@]+const@}}
+    regexp = "[^@]+" + CONST + "@")
+  private String jakartaField1;
+
+  @jakarta.validation.constraints.Pattern(regexp = "a+", flags = jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE) // Noncompliant {{a+,initialFlags=2}}
+  private String jakartaField2;
+
+  @jakarta.validation.constraints.Pattern(regexp = "a+", flags = { jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE, jakarta.validation.constraints.Pattern.Flag.DOTALL }) // Noncompliant {{a+,initialFlags=34}}
+  private String jakartaField3;
+
+  @jakarta.validation.constraints.Email(flags = jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE)
+  private String jakartaField4;
+
+  @jakarta.validation.constraints.Email(regexp = "[^@]+@[^@]+") // Noncompliant {{[^@]+@[^@]+}}
+  private String jakartaField5;
+
+  @jakarta.validation.constraints.Email(regexp = "a+", flags = jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE) // Noncompliant {{a+,initialFlags=2}}
+  private String jakartaField6;
+
+  @jakarta.validation.constraints.Email(regexp = "a+", flags = { jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE, jakarta.validation.constraints.Pattern.Flag.DOTALL }) // Noncompliant {{a+,initialFlags=34}}
+  private String jakartaField7;
 }

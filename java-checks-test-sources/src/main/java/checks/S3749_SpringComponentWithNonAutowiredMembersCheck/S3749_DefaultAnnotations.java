@@ -156,7 +156,6 @@ class ConstructorInjection1 {
 class MyRepo {
   @PersistenceContext
   private EntityManager em; // Compliant
-
   // ...
 }
 
@@ -176,4 +175,16 @@ class TokenCacheManagerConfigProperties {
       throw new IllegalStateException(message);
     }
   }
+}
+
+@Repository
+class JakartaRepo {
+  @jakarta.persistence.PersistenceContext
+  private EntityManager em2; // Compliant
+
+  @jakarta.inject.Inject
+  String email = null; // Compliant
+
+  @jakarta.annotation.Resource
+  String email2 = null; // Compliant
 }
