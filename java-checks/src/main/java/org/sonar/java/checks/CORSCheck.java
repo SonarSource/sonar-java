@@ -45,7 +45,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class CORSCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers SET_ADD_HEADER_MATCHER = MethodMatchers.create()
-    .ofTypes("javax.servlet.http.HttpServletResponse")
+    .ofTypes("javax.servlet.http.HttpServletResponse", "jakarta.servlet.http.HttpServletResponse")
     .names("setHeader", "addHeader")
     .withAnyParameters()
     .build();

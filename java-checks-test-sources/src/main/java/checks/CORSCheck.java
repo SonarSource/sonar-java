@@ -46,6 +46,13 @@ class CORSCheck {
 
     resp.getWriter().write("response");
   }
+
+  protected void doGetJakarta(jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp) throws IOException {
+    resp.setHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
+    resp.setHeader("Access-control-allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
+    resp.addHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
+  }
+
   // === Spring MVC Controller annotation ===
   @CrossOrigin(origins = "*") // Noncompliant [[sc=4;ec=15]] {{Make sure that enabling CORS is safe here.}}
   @RequestMapping("")
@@ -160,19 +167,19 @@ class CORSCheck {
       public CorsFilter corsFilter4() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=164,165]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=+1,+2]]
         config.applyPermitDefaultValues();
         config.applyPermitDefaultValues();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=164,165]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=-2,-1]]
         return new CorsFilter(source);
       }
     }
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     CorsConfiguration config = new CorsConfiguration();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=173,174]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=+1,+2]]
     config.applyPermitDefaultValues();
     config.applyPermitDefaultValues();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=173,174]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=-2,-1]]
     return new CorsFilter(source);
   }
 
