@@ -204,6 +204,13 @@ class JSymbolMetadataTest {
   }
 
   @Test
+  void jakarta_annotation_nullability() throws IOException {
+    assertNullability(
+      NULLABILITY_SOURCE_DIR.resolve(Paths.get("no_default", "JakartaNullabilityAnnotation.java"))
+    );
+  }
+
+  @Test
   void generics_nullability() throws IOException {
     Path sourceFile = NULLABILITY_SOURCE_DIR.resolve(Paths.get("no_default", "NullabilityWithGenerics.java"));
     CompilationUnitTree cut = JParserTestUtils.parse(sourceFile.toRealPath().toFile(), JParserTestUtils.checksTestClassPath());

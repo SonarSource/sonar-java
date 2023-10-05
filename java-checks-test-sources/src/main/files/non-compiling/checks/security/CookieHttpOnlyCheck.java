@@ -83,3 +83,43 @@ class B {
     Unknown.unkown(() -> { Class<String> v = unknown(); });
   }
 }
+
+class JakartaCookieHttpOnlyCheck {
+
+  jakarta.servlet.http.Cookie field4;
+  jakarta.servlet.http.Cookie field6;
+
+  void servletCookie(boolean param, jakarta.servlet.http.Cookie c0) {
+    field6.setHttpOnly(false); // Noncompliant
+
+    jakarta.servlet.http.Cookie c7 = new UnknownCookie("name", "value"); // Noncompliant
+    Object c8 = new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant
+
+    jakarta.servlet.http.Cookie c13;
+    c13 = new UnknownCookie("name", "value"); // Noncompliant
+
+    field4 = new jakarta.servlet.http.Cookie("name, value"); // FN
+  }
+
+  jakarta.servlet.http.Cookie getC0() {
+    return new UnknownCookie("name", "value"); // FN
+  }
+
+  void compliant(jakarta.ws.rs.core.Cookie c) {
+    c.isHttpOnly();
+  }
+}
+
+class JakartaCookieHttpOnlyCheckCookie extends jakarta.servlet.http.Cookie {
+  public jakarta.servlet.http.Cookie c;
+  public void setHttpOnly(boolean isHttpOnly) { }
+  void foo() {
+    setHttpOnly(false); // Noncompliant
+  }
+  void bar(boolean x) {
+    setHttpOnly(x);
+  }
+  void baz() {
+    setHttpOnly(true);
+  }
+}

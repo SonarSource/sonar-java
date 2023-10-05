@@ -537,3 +537,73 @@ record TestSonar(@Nonnull String arg1, String arg2, String arg3, String arg4, lo
     new TestSonar(null, null, null, null, 0L, null); // Noncompliant
   }
 }
+
+// ============ jakarta annotations ============
+class JakartaSpringJavaBean {
+
+  @jakarta.validation.constraints.NotNull // This annotation will be used by Bean Validation
+  private String field;
+
+  private JakartaSpringJavaBean() { // Compliant
+    // Java Bean's fields will be initialized and validated later
+  }
+
+  public String getField() {
+    return field;
+  }
+
+  public void setField(String field) {
+    this.field = field;
+  }
+}
+@jakarta.persistence.Entity
+class JakartaJpaEntityInvalidDefault {
+
+  @jakarta.annotation.Nonnull
+  private String itemName;
+
+  @jakarta.annotation.Nonnull
+  private String primary;
+  private String secondary;
+
+  private String otherField;
+
+  public JakartaJpaEntityInvalidDefault() { // Noncompliant  {{"itemName" is marked "@Nonnull" but is not initialized in this constructor.}}
+    otherField = "test";
+  }
+  public void setColors2(@jakarta.annotation.Nullable String color) {
+    primary = color; // Noncompliant {{"primary" is marked "@Nonnull" but is set to null.}}
+    secondary = color; // Compliant, secondary is not Nonnull
+  }
+}
+
+@jakarta.persistence.Embeddable
+class JakartaJpaEmbeddable {
+
+  @jakarta.annotation.Nonnull
+  private String itemName;
+
+  public JakartaJpaEmbeddable() { // Compliant
+    // Default constructor for JPA
+  }
+
+  public JakartaJpaEmbeddable(String name) {
+    itemName = name;
+  }
+}
+
+@jakarta.persistence.MappedSuperclass
+class JakartaJpaMappedSuperClass {
+
+  @jakarta.annotation.Nonnull
+  private String itemName;
+
+  public JakartaJpaMappedSuperClass() { // Compliant
+    // Default constructor for JPA
+  }
+
+  public JakartaJpaMappedSuperClass(String name) {
+    itemName = name;
+  }
+}
+

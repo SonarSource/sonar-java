@@ -34,6 +34,14 @@ public class NonNullSetToNullCheck {
   public void nullableMethod(@Nullable String s) {
     nullableMethod(null); // Compliant
   }
+
+  public void jakartaNonNullMethod(@jakarta.annotation.Nonnull String s) {
+    nonNullMethod(null); // Noncompliant {{Parameter 1 to this call is marked "@Nonnull" but null could be passed.}}
+  }
+
+  public void jakartaNullableMethod(@jakarta.annotation.Nonnull String s) {
+    nullableMethod(null); // Compliant
+  }
 }
 
 class HandleNonNullByDefaultPrimitives {

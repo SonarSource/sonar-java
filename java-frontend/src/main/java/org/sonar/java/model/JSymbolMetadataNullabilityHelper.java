@@ -67,6 +67,7 @@ public class JSymbolMetadataNullabilityHelper {
    */
   private static final Set<String> STRONG_NULLABLE_ANNOTATIONS = SetUtils.immutableSetOf(
     "javax.annotation.CheckForNull",
+    "jakarta.annotation.CheckForNull",
     "edu.umd.cs.findbugs.annotations.CheckForNull",
     "org.netbeans.api.annotations.common.CheckForNull",
     // Despite the name, some Nullable annotations are meant to be used as CheckForNull
@@ -91,6 +92,7 @@ public class JSymbolMetadataNullabilityHelper {
     "io.reactivex.annotations.Nullable",
     "io.reactivex.rxjava3.annotations.Nullable",
     "javax.annotation.Nullable",
+    "jakarta.annotation.Nullable",
     "org.checkerframework.checker.nullness.compatqual.NullableDecl",
     "org.checkerframework.checker.nullness.compatqual.NullableType",
     "org.checkerframework.checker.nullness.qual.Nullable",
@@ -120,6 +122,7 @@ public class JSymbolMetadataNullabilityHelper {
     "io.reactivex.annotations.NonNull",
     "io.reactivex.rxjava3.annotations.NonNull",
     "javax.validation.constraints.NotNull",
+    "jakarta.validation.constraints.NotNull",
     "lombok.NonNull",
     "org.checkerframework.checker.nullness.compatqual.NonNullDecl",
     "org.checkerframework.checker.nullness.compatqual.NonNullType",
@@ -140,6 +143,8 @@ public class JSymbolMetadataNullabilityHelper {
    */
   private static final String JAVAX_ANNOTATION_NONNULL = "javax.annotation.Nonnull";
 
+  private static final String JAKARTA_ANNOTATION_NONNULL = "jakarta.annotation.Nonnull";
+
   /**
    * Target parameters and return values.
    * Only applicable to package.
@@ -156,11 +161,13 @@ public class JSymbolMetadataNullabilityHelper {
    * Target parameters only.
    */
   private static final String JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT = "javax.annotation.ParametersAreNonnullByDefault";
+  private static final String JAKARTA_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT = "jakarta.annotation.ParametersAreNonnullByDefault";
 
   /**
    * Target parameters only.
    */
   private static final String JAVAX_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT = "javax.annotation.ParametersAreNullableByDefault";
+  private static final String JAKARTA_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT = "jakarta.annotation.ParametersAreNullableByDefault";
 
   /**
    * Target fields only.
@@ -214,6 +221,11 @@ public class JSymbolMetadataNullabilityHelper {
     configureAnnotation(JAVAX_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT, WEAK_NULLABLE,
       Collections.singletonList(PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
 
+    configureAnnotation(JAKARTA_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT, NON_NULL,
+      Collections.singletonList(PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
+    configureAnnotation(JAKARTA_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT, WEAK_NULLABLE,
+      Collections.singletonList(PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
+
     configureAnnotation(ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS, NON_NULL,
       Collections.singletonList(FIELD), Collections.singletonList(PACKAGE));
 
@@ -227,10 +239,13 @@ public class JSymbolMetadataNullabilityHelper {
 
     // Add all annotations to the set of known annotations
     KNOWN_ANNOTATIONS.add(JAVAX_ANNOTATION_NONNULL);
+    KNOWN_ANNOTATIONS.add(JAKARTA_ANNOTATION_NONNULL);
     KNOWN_ANNOTATIONS.add(COM_MONGO_DB_LANG_NON_NULL_API);
     KNOWN_ANNOTATIONS.add(ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API);
     KNOWN_ANNOTATIONS.add(JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT);
+    KNOWN_ANNOTATIONS.add(JAKARTA_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT);
     KNOWN_ANNOTATIONS.add(JAVAX_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT);
+    KNOWN_ANNOTATIONS.add(JAKARTA_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT);
     KNOWN_ANNOTATIONS.add(ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS);
     KNOWN_ANNOTATIONS.add(ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT);
   }
@@ -338,7 +353,8 @@ public class JSymbolMetadataNullabilityHelper {
   }
 
   private static NullabilityType getTypeFromNonNull(AnnotationInstance annotation) {
-    if (JAVAX_ANNOTATION_NONNULL.equals(annotationType(annotation).fullyQualifiedName())) {
+    if (JAVAX_ANNOTATION_NONNULL.equals(annotationType(annotation).fullyQualifiedName())
+    || JAKARTA_ANNOTATION_NONNULL.equals(annotationType(annotation).fullyQualifiedName())) {
       List<AnnotationValue> values = annotation.values();
       if (values.isEmpty() || checkAnnotationParameter(values, "when", "ALWAYS")) {
         return NON_NULL;
