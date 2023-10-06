@@ -123,6 +123,9 @@ class ReturnEmptyArrayNotNullCheckC {
     return null; 
   }
 
+  @jakarta.annotation.Nullable
+  public int[] jakartaArr() { return null; }
+
   int[] qix(){
     takeLambda(a -> {
       return null;

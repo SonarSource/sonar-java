@@ -38,7 +38,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
   private static char[] secretCharArrayField = new char[]{0xC, 0xA, 0xF, 0xE};
   private static CharSequence secretCharSequenceField = "Hello, World!".subSequence(0, 12);
 
-  public static void nonCompliant(byte[] message, boolean condition, Charset encoding, SignatureAlgorithm paremSignatureAlgorithm) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+  public static void nonCompliant(byte[] message, boolean condition, Charset encoding, SignatureAlgorithm paremSignatureAlgorithm) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException, jakarta.servlet.ServletException {
     String effectivelyConstantString = "s3cr37";
     byte[] key = effectivelyConstantString.getBytes();
 
@@ -69,6 +69,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     String concatenatedPassword = "abc" + true + ":" + 12 + ":" + 43L + ":" + 'a' + ":" + 0.2f + ":" + 0.2d;
     request.login("user", concatenatedPassword); // Noncompliant [[sc=27;ec=47;secondary=-1]]
 
+    jakarta.servlet.http.HttpServletRequest requestJakarta = new jakarta.servlet.http.HttpServletRequestWrapper(null);
+    requestJakarta.login("user", "password"); // Noncompliant
     KeyStore store = KeyStore.getInstance(null);
 
     store.getKey("", new char[]{0xC, 0xA, 0xF, 0xE}); // Noncompliant
