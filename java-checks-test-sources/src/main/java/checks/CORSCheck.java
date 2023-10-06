@@ -47,7 +47,7 @@ class CORSCheck {
     resp.getWriter().write("response");
   }
 
-  protected void doGetJakarta(jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp) throws IOException {
+  protected void doGetJakarta(jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp) {
     resp.setHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
     resp.setHeader("Access-control-allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
     resp.addHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
