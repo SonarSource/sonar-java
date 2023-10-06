@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -42,6 +43,14 @@ import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotati
 
 @Rule(key = "S3242")
 public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
+
+  private static final Set<String> SPRING_INJECT_ANNOTATIONS = Set.of(
+    "org.springframework.beans.factory.annotation.Autowired",
+    "javax.inject.Inject",
+    "jakarta.inject.Inject",
+    "javax.annotation.Resource",
+    "jakarta.annotation.Resource"
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -232,9 +241,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isSpringInjectionAnnotated(SymbolMetadata metadata) {
-    return metadata.isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired")
-      || metadata.isAnnotatedWith("javax.inject.Inject")
-      || metadata.isAnnotatedWith("javax.annotation.Resource");
+    return SPRING_INJECT_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
 }

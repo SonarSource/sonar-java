@@ -256,17 +256,175 @@ class CookieHttpOnlyCheckCookieA extends Cookie {
 
 class CookieHttpOnlyCheckCookieB {
   CookieHttpOnlyCheckCookieA a;
-  public void setHttpOnly(boolean isHttpOnly) { }
+
+  public void setHttpOnly(boolean isHttpOnly) {
+  }
+
   void foo() {
     setHttpOnly(false);
   }
-  void bar() { return; }
+
+  void bar() {
+    return;
+  }
+
   CookieHttpOnlyCheckCookieA getA() {
     return new CookieHttpOnlyCheckCookieA(); // Noncompliant
   }
+
   void baw() {
     int i;
     i = 1;
     a.c = new Cookie("1", "2"); // FN
+  }
+}
+
+class JakartaCookieHttpOnlyCheckCookieACookieHttpOnlyCheck {
+
+  private static final boolean FALSE_CONSTANT = false;
+
+  jakarta.servlet.http.Cookie field1 = new jakarta.servlet.http.Cookie("name", "value"); // FN
+  jakarta.ws.rs.core.Cookie field3 = new jakarta.ws.rs.core.Cookie("name", "value"); // FN
+  jakarta.servlet.http.Cookie field6;
+  void servletCookie(boolean param, jakarta.servlet.http.Cookie c0) {
+    c0.setHttpOnly(false); // Noncompliant [[sc=19;ec=26]] {{Make sure creating this cookie without the "HttpOnly" flag is safe.}}
+    field6.setHttpOnly(false); // Noncompliant
+
+    jakarta.servlet.http.Cookie c1 = new jakarta.servlet.http.Cookie("name", "value");
+    if (param) {
+      c1.setHttpOnly(false); // Noncompliant
+    } else {
+      c1.setHttpOnly(true);
+    }
+
+    jakarta.servlet.http.Cookie c2 = new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant [[sc=42;ec=69]]
+
+    c1.setHttpOnly(false); // Noncompliant
+
+    c1.setHttpOnly(FALSE_CONSTANT); // Noncompliant
+
+    boolean b = false;
+    c1.setHttpOnly(b); // Noncompliant
+
+    c1.setHttpOnly(param);
+
+    jakarta.servlet.http.Cookie c3;
+    c3 = new jakarta.servlet.http.Cookie("name", "value");
+    c3.setHttpOnly(false); // Noncompliant
+
+    c3.setHttpOnly(true);
+
+    boolean bValue = true;
+    c3.setHttpOnly(!bValue); // FN
+  }
+
+  jakarta.servlet.http.Cookie getC1() {
+    return new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant [[sc=16;ec=43]]
+  }
+
+  jakarta.servlet.http.Cookie returnHttpCookie(jakarta.servlet.http.HttpServletResponse response) {
+    jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant
+    response.addCookie(new jakarta.servlet.http.Cookie("name", "value")); // Noncompliant
+    return new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant
+  }
+
+  void jakartaRsCookie() {
+    jakarta.ws.rs.core.Cookie c1 = new jakarta.ws.rs.core.Cookie("name", "value"); // Noncompliant
+    jakarta.ws.rs.core.Cookie c2 = new jakarta.ws.rs.core.Cookie("name", "value", "path", "domain"); // Noncompliant
+  }
+
+  void jakartaRsNewCookie(jakarta.ws.rs.core.Cookie cookie) {
+    jakarta.ws.rs.core.NewCookie c1 = new jakarta.ws.rs.core.NewCookie("name", "value", "path", "domain", "comment", 1, true); // Noncompliant
+    jakarta.ws.rs.core.NewCookie c2 = new jakarta.ws.rs.core.NewCookie(cookie, "comment", 2, true); // Noncompliant
+    jakarta.ws.rs.core.NewCookie c3 = new jakarta.ws.rs.core.NewCookie(cookie); // Noncompliant
+    jakarta.ws.rs.core.NewCookie c4 = new jakarta.ws.rs.core.NewCookie(cookie, "c", 1, true); // Noncompliant
+
+    jakarta.ws.rs.core.NewCookie c5 = new jakarta.ws.rs.core.NewCookie(cookie, "c", 1, new Date(), false, true); // last param is HttpOnly
+    jakarta.ws.rs.core.NewCookie c6 = new jakarta.ws.rs.core.NewCookie("1", "2", "3", "4", 5, "6", 7, new Date(), false, true);
+    jakarta.ws.rs.core.NewCookie c7 = new jakarta.ws.rs.core.NewCookie("1", "2", "3", "4", "5", 6, false, true);
+  }
+
+  jakarta.ws.rs.core.NewCookie getC3() {
+    return new jakarta.ws.rs.core.NewCookie("name", "value", "path", "domain", "comment", 1, true); // Noncompliant
+  }
+
+  // SONARJAVA-2772
+  jakarta.servlet.http.Cookie xsfrToken() {
+    String cookieName = "XSRF-TOKEN";
+
+    jakarta.servlet.http.Cookie xsfrToken = new jakarta.servlet.http.Cookie("XSRF-TOKEN", "value"); // OK, used to implement XSRF
+    xsfrToken.setHttpOnly(false);
+
+    jakarta.servlet.http.Cookie xsfrToken2 = new jakarta.servlet.http.Cookie("XSRF-TOKEN", "value");
+    xsfrToken2.setHttpOnly(true);
+
+    jakarta.servlet.http.Cookie xsfrToken3 = new jakarta.servlet.http.Cookie("XSRF-TOKEN", "value");
+
+    jakarta.ws.rs.core.Cookie xsfrToken6 = new jakarta.ws.rs.core.Cookie("XSRF-TOKEN", "value");
+
+    jakarta.ws.rs.core.Cookie xsfrToken7 = new jakarta.ws.rs.core.Cookie("XSRF-TOKEN", "value", "path", "domain");
+
+    play.mvc.Http.CookieBuilder xsfrToken10;
+    xsfrToken10 = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2");
+    xsfrToken10.withHttpOnly(false);
+
+    play.mvc.Http.CookieBuilder xsfrToken11 = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2");
+    xsfrToken11.withHttpOnly(false);
+
+    jakarta.servlet.http.Cookie xsfrToken12 = new jakarta.servlet.http.Cookie("CSRFToken", "value");
+    xsfrToken12.setHttpOnly(false);
+
+    jakarta.servlet.http.Cookie xsfrToken13 = new jakarta.servlet.http.Cookie("Csrf-token", "value");
+    xsfrToken13.setHttpOnly(false);
+
+    return new jakarta.servlet.http.Cookie("XSRF-TOKEN", "value");
+  }
+}
+
+class JakartaCookieHttpOnlyCheckCookieA extends jakarta.servlet.http.Cookie {
+  public jakarta.servlet.http.Cookie c;
+
+  public JakartaCookieHttpOnlyCheckCookieA() {
+    super("name", "value");
+  }
+
+  public void setHttpOnly(boolean isHttpOnly) {
+  }
+
+  void foo() {
+    setHttpOnly(false); // Noncompliant
+  }
+
+  void bar(boolean x) {
+    setHttpOnly(x);
+  }
+
+  void baz() {
+    setHttpOnly(true);
+  }
+}
+
+class JakartaCookieHttpOnlyCheckCookieB {
+  JakartaCookieHttpOnlyCheckCookieA a;
+
+  public void setHttpOnly(boolean isHttpOnly) {
+  }
+
+  void foo() {
+    setHttpOnly(false);
+  }
+
+  void bar() {
+    return;
+  }
+
+  JakartaCookieHttpOnlyCheckCookieA getC() {
+    return new JakartaCookieHttpOnlyCheckCookieA(); // Noncompliant
+  }
+
+  void baw() {
+    int i;
+    i = 1;
+    a.c = new jakarta.servlet.http.Cookie("1", "2"); // FN
   }
 }

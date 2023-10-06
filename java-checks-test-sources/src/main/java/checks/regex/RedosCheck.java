@@ -8,6 +8,9 @@ public class RedosCheck {
   @Email(regexp = "(.*-)*@.*") // Noncompliant [[sc=4;ec=9]] {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
   String email;
 
+  @jakarta.validation.constraints.Email(regexp = "(.*-)*@.*") // Noncompliant [[sc=4;ec=40]] {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
+  String email2;
+
   void realWorldExamples(String str) {
     String cloudflareAttack = "(?:(?:\"|'|\\]|\\}|\\\\|\\d|(?:nan|infinity|true|false|null|undefined|symbol|math)|\\`|\\-|\\+)+[)]*;?((?:\\s|-|~|!|\\{\\}|\\|\\||\\+)*.*(?:.*=.*)))";
     String stackOverflowAttack = "^[\\s\\u200c]+|[\\s\\u200c]+$";

@@ -66,7 +66,10 @@ public class NonNullSetToNullCheck extends SECheck {
   private static final String[] JPA_ANNOTATIONS = {
     "javax.persistence.Entity",
     "javax.persistence.Embeddable",
-    "javax.persistence.MappedSuperclass"
+    "javax.persistence.MappedSuperclass",
+    "jakarta.persistence.Entity",
+    "jakarta.persistence.Embeddable",
+    "jakarta.persistence.MappedSuperclass"
   };
 
   private Deque<MethodTree> methodTrees = new ArrayDeque<>();
@@ -155,7 +158,7 @@ public class NonNullSetToNullCheck extends SECheck {
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {
     Optional<String> nonnullAnnotationAsString = getNonnullAnnotationAsString(symbol);
-    if (nonnullAnnotationAsString.isEmpty() || isJavaxValidationConstraint(symbol) || symbol.isStatic()) {
+    if (nonnullAnnotationAsString.isEmpty() || isJavaxOrJakartaValidationConstraint(symbol) || symbol.isStatic()) {
       return;
     }
     if (isUndefinedOrNull(context, symbol)) {
@@ -164,9 +167,10 @@ public class NonNullSetToNullCheck extends SECheck {
     }
   }
 
-  private static boolean isJavaxValidationConstraint(Symbol symbol) {
+  private static boolean isJavaxOrJakartaValidationConstraint(Symbol symbol) {
     SymbolMetadata.AnnotationInstance annotation = symbol.metadata().nullabilityData().annotation();
-    return annotation != null && annotation.symbol().type().fullyQualifiedName().startsWith("javax.validation.constraints.");
+    return annotation != null
+      && annotation.symbol().type().fullyQualifiedName().matches("^(javax|jakarta)\\.validation\\.constraints\\..*");
   }
 
   private static boolean isUndefinedOrNull(CheckerContext context, Symbol symbol) {

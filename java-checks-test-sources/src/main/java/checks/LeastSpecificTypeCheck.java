@@ -90,6 +90,33 @@ class LeastSpecificTypeCheck {
     list.size();
   }
 
+  @jakarta.annotation.Resource
+  public void jakartaResourceAnnotatedMethod3(List<Object> list) { // Noncompliant {{Use 'java.util.Collection' here; it is a more general type than 'List'.}}
+    for (Object o : list) {
+      o.toString();
+    }
+  }
+
+  @jakarta.inject.Inject
+  public void jakartaInjectAnnotatedMethod1(List<Object> list) { // Noncompliant {{Use 'java.util.Collection' here; it is a more general type than 'List'.}}
+    for (Object o : list) {
+      o.toString();
+    }
+  }
+  @jakarta.annotation.Resource
+  public void jakartaRAnnotatedMethod4(Collection<Object> list) { // Compliant - since Spring annotated methods cannot take 'Iterable' as argument
+    for (Object o : list) {
+      o.toString();
+    }
+  }
+
+  @jakarta.inject.Inject
+  public void jakartaInjectAnnotatedMethod2(Collection<Object> list) { // Compliant - since Spring annotated methods cannot take 'Iterable' as argument
+    for (Object o : list) {
+      o.toString();
+    }
+  }
+
   public static void staticMethod(List<Object> list) { // Noncompliant {{Use 'java.util.Collection' here; it is a more general type than 'List'.}}
     list.size();
   }

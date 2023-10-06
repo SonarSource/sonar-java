@@ -32,7 +32,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -71,20 +70,25 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   private static final class ClassName {
     private static final String SERVLET_COOKIE = "javax.servlet.http.Cookie";
+    private static final String JAKARTA_SERVLET_COOKIE = "jakarta.servlet.http.Cookie";
     private static final String NET_HTTP_COOKIE = "java.net.HttpCookie";
     private static final String JAX_RS_COOKIE = "javax.ws.rs.core.Cookie";
+    private static final String JAKARTA_RS_COOKIE = "jakarta.ws.rs.core.Cookie";
     private static final String JAX_RS_NEW_COOKIE = "javax.ws.rs.core.NewCookie";
+    private static final String JAKARTA_RS_NEW_COOKIE = "jakarta.ws.rs.core.NewCookie";
     private static final String SHIRO_COOKIE = "org.apache.shiro.web.servlet.SimpleCookie";
     private static final String PLAY_COOKIE = "play.mvc.Http$Cookie";
     private static final String PLAY_COOKIE_BUILDER = "play.mvc.Http$CookieBuilder";
   }
 
-  private static final Set<String> SETTER_NAMES = SetUtils.immutableSetOf("setHttpOnly", "withHttpOnly");
+  private static final Set<String> SETTER_NAMES = Set.of("setHttpOnly", "withHttpOnly");
 
-  private static final Set<String> CLASSES = SetUtils.immutableSetOf(
+  private static final Set<String> CLASSES = Set.of(
     ClassName.SERVLET_COOKIE,
+    ClassName.JAKARTA_SERVLET_COOKIE,
     ClassName.NET_HTTP_COOKIE,
     ClassName.JAX_RS_COOKIE,
+    ClassName.JAKARTA_RS_COOKIE,
     ClassName.SHIRO_COOKIE,
     ClassName.PLAY_COOKIE,
     ClassName.PLAY_COOKIE_BUILDER);
@@ -99,17 +103,22 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
       .addParametersMatcher(ClassName.JAX_RS_COOKIE, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN)
       .build(),
     MethodMatchers.create()
-      .ofSubTypes(ClassName.JAX_RS_NEW_COOKIE)
+      .ofSubTypes(ClassName.JAKARTA_RS_NEW_COOKIE)
+      .constructor()
+      .addParametersMatcher(ClassName.JAKARTA_RS_COOKIE, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN)
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes(ClassName.JAX_RS_NEW_COOKIE, ClassName.JAKARTA_RS_NEW_COOKIE)
       .constructor()
       .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN)
       .build(),
     MethodMatchers.create()
-      .ofSubTypes(ClassName.JAX_RS_NEW_COOKIE)
+      .ofSubTypes(ClassName.JAX_RS_NEW_COOKIE, ClassName.JAKARTA_RS_NEW_COOKIE)
       .constructor()
       .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN)
       .build(),
     MethodMatchers.create()
-      .ofSubTypes(ClassName.PLAY_COOKIE)
+      .ofSubTypes(ClassName.PLAY_COOKIE, ClassName.JAKARTA_RS_NEW_COOKIE)
       .constructor()
       .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN)
       .build());
