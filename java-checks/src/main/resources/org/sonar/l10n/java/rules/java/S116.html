@@ -1,17 +1,25 @@
 <h2>Why is this an issue?</h2>
-<p>Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that field
-names match a provided regular expression.</p>
-<h3>Noncompliant code example</h3>
-<p>With the default regular expression <code>^[a-z][a-zA-Z0-9]*$</code>:</p>
-<pre>
+<p>A naming convention in software development is a set of guidelines for naming code elements like variables, functions, and classes.</p>
+<p>The goal of a naming convention is to make the code more readable and understandable, which makes it easier to maintain and debug. It also ensures
+consistency in the code, especially when multiple developers are working on the same project.</p>
+<p>This rule checks that field names match a provided regular expression.</p>
+<p>Using the regular expression <code>^[a-z][a-zA-Z0-9]*$</code>, the noncompliant code below:</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class MyClass {
    private int my_field;
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<p>Should be replaced with:</p>
+<pre data-diff-id="1" data-diff-type="compliant">
 class MyClass {
    private int myField;
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Oracle - <a href="https://www.oracle.com/java/technologies/javase/codeconventions-namingconventions.html">Java SE Naming Conventions</a> </li>
+  <li> Geeksforgeeks - <a href="https://www.geeksforgeeks.org/java-naming-conventions/">Java Naming Conventions</a> </li>
+  <li> Wikipedia - <a href="https://en.wikipedia.org/wiki/Naming_convention_(programming)">Naming Convention (programming)</a> </li>
+</ul>
 

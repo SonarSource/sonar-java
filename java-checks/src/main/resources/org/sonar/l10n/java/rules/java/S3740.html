@@ -1,14 +1,43 @@
+<p>Generic types should not be used raw (without type parameters). To fix this issue, add the type parameters.</p>
 <h2>Why is this an issue?</h2>
-<p>Generic types shouldn’t be used raw (without type parameters) in variable declarations or return values. Doing so bypasses generic type checking,
-and defers the catch of unsafe code to runtime.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-List myList; // Noncompliant
-Set mySet; // Noncompliant
+<p>A generic type is a generic class or interface that is parameterized over types. For example, <code>java.util.List</code> has one type parameter:
+the type of its elements.</p>
+<p>When generic types are used raw (without type parameters), the compiler is not able to do generic type checking. For this reason, it is sometimes
+necessary to cast objects and defer type-checking to runtime.</p>
+<h3>What is the potential impact?</h3>
+<p>When a cast fails, a <code>ClassCastException</code> is thrown and the program most likely crashes. Therefore, this issue might impact the
+availability and reliability of your application.</p>
+<h2>How to fix it</h2>
+<p>You should add type parameters. In the case of collections, the type parameter(s) should correspond to the type of elements that the list is
+intended to store.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+List integers = new ArrayList&lt;&gt;();
+
+// It is possible to add a string to a list that is supposed to be integers only
+integers.add("Hello World!");
+
+Integer a = (Integer) integers.get(0);  // ClassCastException!
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-List&lt;String&gt; myList;
-Set&lt;? extends Number&gt; mySet;
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+List&lt;Integer&gt; integers = new ArrayList&lt;&gt;();
+
+// The program does not compile anymore with this mistake:
+// integers.add("Hello World!");
+integers.add(42);
+
+Integer a = integers.get(0);  // No need to cast anymore.
 </pre>
+<h3>How does this work?</h3>
+<p>In the noncompliant example, <code>List</code> is used as a raw type. Even though the list stores integers, the compiler will type its elements as
+<code>Object</code>, To use an element of the list as an integer, it needs to be cast first. But elements are not garanteed to be integers. In this
+case, a <code>String</code> is erroneously appended to the list, causing the cast to <code>Integer</code> to fail.</p>
+<p>When the type parameter is specified, this bug is detected by the compiler during type-checking. The cast is also unncessary in this case.</p>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/generics/rawTypes.html">Raw types</a> in the Java Tutorial. </li>
+</ul>
 
