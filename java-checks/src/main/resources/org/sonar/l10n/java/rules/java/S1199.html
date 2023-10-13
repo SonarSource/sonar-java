@@ -1,30 +1,67 @@
 <h2>Why is this an issue?</h2>
-<p>Nested code blocks can be used to create a new scope and restrict the visibility of the variables defined inside it. Using this feature in a method
-typically indicates that the method has too many responsibilities, and should be refactored into smaller methods.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public void evaluate(int operator) {
-  // Do some computation...
-  {
-    int a = stack.pop();
-    int b = stack.pop();
-    int result = a + b;
-    stack.push(result);
-  }
-}
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-public void evaluate(int operator) {
-  // Do some computation...
-  evaluateAdd();
-}
+<p>Nested code blocks create new scopes where variables declared within are inaccessible from the outside, and their lifespan ends with the block.</p>
+<p>Although this may appear beneficial, their usage within a function often suggests that the function is overloaded. Thus, it may violate the Single
+Responsibility Principle, and the function needs to be broken down into smaller functions.</p>
+<p>The presence of nested blocks that don’t affect the control flow might suggest possible mistakes in the code.</p>
+<h3>Exceptions</h3>
+<p>The usage of a code block after a <code>case</code> is allowed.</p>
+<h2>How to fix it</h2>
+<p>The nested code blocks should be extracted into separate methods.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class Example {
 
-private void evaluateAdd() {
-  int a = stack.pop();
-  int b = stack.pop();
-  int result = a + b;
-  stack.push(result);
+    private final Deque&lt;Integer&gt; stack = new LinkedList&lt;&gt;();
+
+    public void evaluate(int operator) {
+      switch (operator) {
+        case ADD: {
+          /* ... */
+          { // Noncompliant - Extract this nested code block into a method
+            int a = stack.pop();
+            int b = stack.pop();
+            int result = a + b;
+            stack.push(result);
+          }
+          /* ... */
+          break;
+        }
+        /* ... */
+      }
+    }
 }
 </pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Example {
+
+    private final Deque&lt;Integer&gt; stack = new LinkedList&lt;&gt;();
+
+    public void evaluate(int operator) {
+      switch (operator) {
+        case ADD: {
+          /* ... */
+          evaluateAdd();
+          /* ... */
+          break;
+        }
+        /* ... */
+      }
+    }
+
+    private void evaluateAdd() {
+      int a = stack.pop();
+      int b = stack.pop();
+      int result = a + b;
+      stack.push(result);
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Wikipedia - <a href="https://en.wikipedia.org/wiki/Single-responsibility_principle">Single Responsibility Principle</a> </li>
+  <li> Baeldung - <a href="https://www.baeldung.com/java-single-responsibility-principle">Single Responsibility Principle</a> </li>
+</ul>
 

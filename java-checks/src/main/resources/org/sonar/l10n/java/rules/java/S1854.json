@@ -10,7 +10,7 @@
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "15min"
+    "constantCost": "1min"
   },
   "tags": [
     "cwe",
@@ -30,5 +30,5 @@
       563
     ]
   },
-  "quickfix": "targeted"
+  "quickfix": "unknown"
 }

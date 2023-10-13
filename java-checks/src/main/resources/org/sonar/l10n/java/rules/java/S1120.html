@@ -1,10 +1,19 @@
+<p>Indentation should be consistent to make the code easy to read, review and modify. To fix this issue, change the indentation so that the text
+starts at the expected column.</p>
 <h2>Why is this an issue?</h2>
-<p>Proper indentation is a simple and effective way to improve the code’s readability. Consistent indentation among the developers within a team also
-reduces the differences that are committed to source control systems, making code reviews easier.</p>
-<p>This rule raises an issue when indentation does not match the configured value. Only the first line of a badly indented section is reported.</p>
-<h3>Noncompliant code example</h3>
+<p>Consistent indentation is a simple and effective way to improve the code’s readability. It reduces the differences that are committed to source
+control systems, making code reviews easier.</p>
+<p>This rule raises an issue when the indentation does not match the configured value. Only the first line of a badly indented section is
+reported.</p>
+<h3>What is the potential impact?</h3>
+<p>The readability is decreased. It becomes more tedious to review and modify the code.</p>
+<h2>How to fix it</h2>
+<p>Change the indentation so that the text starts at the expected column. The expected column should be the configured indent size multiplied by the
+level at which the code block is nested.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <p>With an indent size of 2:</p>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class Foo {
   public int a;
    public int b;   // Noncompliant, expected to start at column 4
@@ -18,8 +27,8 @@ class Foo {
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 class Foo {
   public int a;
   public int b;
@@ -28,9 +37,16 @@ class Foo {
 
   public void doSomething() {
     if(something) {
-        doSomethingElse();
+      doSomethingElse();
     }
   }
 }
 </pre>
+<h3>Going the extra mile</h3>
+<p>You can adopt a tool or configure your IDE to take care of code formatting automatically.</p>
+<h2>Resources</h2>
+<h3>External coding guidelines</h3>
+<ul>
+  <li> <a href="https://google.github.io/styleguide/javaguide.html">Google Java Style Guide</a> </li>
+</ul>
 
