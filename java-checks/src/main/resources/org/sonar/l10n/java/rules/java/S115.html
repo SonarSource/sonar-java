@@ -1,24 +1,54 @@
+<p>Constants should be named consistently to communicate intent and improve maintainability. Rename your constants to follow your project’s naming
+convention to address this issue.</p>
 <h2>Why is this an issue?</h2>
-<p>Shared coding conventions allow teams to collaborate efficiently. This rule checks that all constant names match a provided regular expression.</p>
-<h3>Noncompliant code example</h3>
-<p>With the default regular expression <code>^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$</code>:</p>
-<pre>
+<p>Constants are variables whose value does not change during the runtime of a program after initialization. Oftentimes, constants are used in
+multiple locations across different subroutines.</p>
+<p>It is important that the names of constants follow a consistent and easily recognizable pattern. This way, readers immediately understand that the
+referenced value does not change, which simplifies debugging.</p>
+<p>Or, in the case of primitive constants, that accessing the constant is thread-safe.</p>
+<p>This rule checks that all constant names match a given regular expression.</p>
+<h3>What is the potential impact?</h3>
+<p>Ignoring the naming convention for constants makes the code less readable since constants and variables are harder to tell apart. Code that is hard
+to understand is also difficult to maintain between different team members.</p>
+<h2>How to fix it</h2>
+<p>First, familiarize yourself with the particular naming convention of the project in question. Then, update the name of the constant to match the
+convention, as well as all usages of the name. For many IDEs, you can use built-in renaming and refactoring features to update all usages of a
+constant at once.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>The following example assumes that constant names should match the default regular expression <code>^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$</code>:</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class MyClass {
-  public static final int first = 1;
+  public static final float pi = 3.14159f; // Noncompliant: Constant is not capitalized
+
+  void myMethod() {
+    System.out.println(pi);
+  }
 }
 
 public enum MyEnum {
-  first;
+  optionOne, // Noncompliant
+  optionTwo; // Noncompliant
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class MyClass {
-  public static final int FIRST = 1;
+  public static final float PI = 3.14159f;
+
+  void myMethod() {
+    System.out.println(PI);
+  }
 }
 
 public enum MyEnum {
-  FIRST;
+  OPTION_ONE,
+  OPTION_TWO;
 }
 </pre>
+<h2>Resources</h2>
+<h3>External coding guidelines</h3>
+<ul>
+  <li> <a href="https://google.github.io/styleguide/javaguide.html#s5.2.4-constant-names">The Google Java Style Guide on Constant Names</a>. </li>
+</ul>
 

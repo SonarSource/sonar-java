@@ -26,8 +26,9 @@
       476
     ],
     "CERT": [
+      "EXP34-C.",
       "EXP01-J."
     ]
   },
-  "quickfix": "unknown"
+  "quickfix": "infeasible"
 }

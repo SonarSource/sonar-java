@@ -1,25 +1,54 @@
 <h2>Why is this an issue?</h2>
-<p>The imports part of a file should be handled by the Integrated Development Environment (IDE), not manually by the developer.</p>
-<p>Unused and useless imports should not occur if that is the case.</p>
-<p>Leaving them in reduces the code’s readability, since their presence can be confusing.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-package my.company;
-
-import java.lang.String;        // Noncompliant; java.lang classes are always implicitly imported
-import my.company.SomeClass;    // Noncompliant; same-package files are always implicitly imported
-import java.io.File;            // Noncompliant; File is not used
-
-import my.company2.SomeType;
-import my.company2.SomeType;    // Noncompliant; 'SomeType' is already imported
-
-class ExampleClass {
-
-  public String someString;
-  public SomeType something;
-
-}
-</pre>
+<p>Unnecessary imports refer to importing types that are not used or referenced anywhere in the code.</p>
+<p>Although they don’t affect the runtime behavior of the application after compilation, removing them will:</p>
+<ul>
+  <li> Improve the readability and maintainability of the code. </li>
+  <li> Help avoid potential naming conflicts. </li>
+  <li> Improve the build time, as the compiler has fewer lines to read and fewer types to resolve. </li>
+  <li> Reduce the number of items the code editor will show for auto-completion, thereby showing fewer irrelevant suggestions. </li>
+</ul>
 <h3>Exceptions</h3>
 <p>Imports for types mentioned in Javadocs are ignored.</p>
+<h2>How to fix it</h2>
+<p>While it’s not difficult to remove these unneeded lines manually, modern code editors support the removal of every unnecessary import with a single
+click from every file of the project.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+package myapp.helpers;
+
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.*;     // Noncompliant - package is imported twice
+import java.lang.Runnable;  // Noncompliant - java.lang is imported by default
+
+public class FileHelper {
+    public static String readFirstLine(String filePath) throws IOException {
+        return Files.readAllLines(Paths.get(filePath)).get(0);
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+package myapp.helpers;
+
+import java.io.IOException;
+import java.nio.file.*;
+
+public class FileHelper {
+    public static String readFirstLine(String filePath) throws IOException {
+        return Files.readAllLines(Paths.get(filePath)).get(0);
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/package/usepkgs.html">Java packages</a> </li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li> {rule:java:S1144} - Unused "private" methods should be removed </li>
+  <li> {rule:java:S1481} - Unused local variables should be removed </li>
+</ul>
 

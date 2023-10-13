@@ -102,6 +102,12 @@
     "url": "https://find-sec-bugs.github.io/bugs.htm#CUSTOM_MESSAGE_DIGEST"
   },
   {
+    "key": "DANGEROUS_PERMISSION_COMBINATION",
+    "name": "Dangerous combination of permissions granted",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#DANGEROUS_PERMISSION_COMBINATION"
+  },
+  {
     "key": "DEFAULT_HTTP_CLIENT",
     "name": "DefaultHttpClient with default constructor is not compatible with TLS 1.2",
     "type": "VULNERABILITY",
@@ -132,6 +138,18 @@
     "url": "https://find-sec-bugs.github.io/bugs.htm#EL_INJECTION"
   },
   {
+    "key": "ENTITY_LEAK",
+    "name": "Unexpected property leak",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#ENTITY_LEAK"
+  },
+  {
+    "key": "ENTITY_MASS_ASSIGNMENT",
+    "name": "Mass assignment",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#ENTITY_MASS_ASSIGNMENT"
+  },
+  {
     "key": "ESAPI_ENCRYPTOR",
     "name": "Use of ESAPI Encryptor",
     "type": "VULNERABILITY",
@@ -156,14 +174,20 @@
     "url": "https://find-sec-bugs.github.io/bugs.htm#FORMAT_STRING_MANIPULATION"
   },
   {
+    "key": "GROOVY_SHELL",
+    "name": "Potential code injection when using GroovyShell",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#GROOVY_SHELL"
+  },
+  {
     "key": "HARD_CODE_KEY",
-    "name": "Hard Coded Key",
+    "name": "Hard coded key",
     "type": "VULNERABILITY",
     "url": "https://find-sec-bugs.github.io/bugs.htm#HARD_CODE_KEY"
   },
   {
     "key": "HARD_CODE_PASSWORD",
-    "name": "Hard Coded Password",
+    "name": "Hard coded password",
     "type": "VULNERABILITY",
     "url": "https://find-sec-bugs.github.io/bugs.htm#HARD_CODE_PASSWORD"
   },
@@ -190,6 +214,12 @@
     "name": "Potential HTTP Response Splitting",
     "type": "VULNERABILITY",
     "url": "https://find-sec-bugs.github.io/bugs.htm#HTTP_RESPONSE_SPLITTING"
+  },
+  {
+    "key": "IMPROPER_UNICODE",
+    "name": "Improper handling of Unicode transformations",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#IMPROPER_UNICODE"
   },
   {
     "key": "INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE",
@@ -247,7 +277,7 @@
   },
   {
     "key": "JSP_XSLT",
-    "name": "A malicious XSLT could be provided",
+    "name": "A malicious XSLT could be provided to the JSP tag",
     "type": "VULNERABILITY",
     "url": "https://find-sec-bugs.github.io/bugs.htm#JSP_XSLT"
   },
@@ -276,6 +306,18 @@
     "url": "https://find-sec-bugs.github.io/bugs.htm#MALICIOUS_XSLT"
   },
   {
+    "key": "MODIFICATION_AFTER_VALIDATION",
+    "name": "String is modified after validation and not before it",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#MODIFICATION_AFTER_VALIDATION"
+  },
+  {
+    "key": "NORMALIZATION_AFTER_VALIDATION",
+    "name": "String is normalzied after validation and not before it",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#NORMALIZATION_AFTER_VALIDATION"
+  },
+  {
     "key": "NULL_CIPHER",
     "name": "NullCipher is insecure",
     "type": "VULNERABILITY",
@@ -292,6 +334,12 @@
     "name": "Potential code injection when using OGNL expression",
     "type": "VULNERABILITY",
     "url": "https://find-sec-bugs.github.io/bugs.htm#OGNL_INJECTION"
+  },
+  {
+    "key": "OVERLY_PERMISSIVE_FILE_PERMISSION",
+    "name": "Overly permissive file permission",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#OVERLY_PERMISSIVE_FILE_PERMISSION"
   },
   {
     "key": "PADDING_ORACLE",
@@ -348,6 +396,12 @@
     "url": "https://find-sec-bugs.github.io/bugs.htm#REQUESTDISPATCHER_FILE_DISCLOSURE"
   },
   {
+    "key": "RPC_ENABLED_EXTENSIONS",
+    "name": "Enabling extensions in Apache XML RPC server or client.",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#RPC_ENABLED_EXTENSIONS"
+  },
+  {
     "key": "RSA_KEY_SIZE",
     "name": "RSA usage with short key",
     "type": "VULNERABILITY",
@@ -360,6 +414,12 @@
     "url": "https://find-sec-bugs.github.io/bugs.htm#RSA_NO_PADDING"
   },
   {
+    "key": "SAML_IGNORE_COMMENTS",
+    "name": "Ignoring XML comments in SAML may lead to authentication bypass",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SAML_IGNORE_COMMENTS"
+  },
+  {
     "key": "SCALA_COMMAND_INJECTION",
     "name": "Potential Command Injection (Scala)",
     "type": "VULNERABILITY",
@@ -367,7 +427,7 @@
   },
   {
     "key": "SCALA_PATH_TRAVERSAL_IN",
-    "name": "Potential Path Traversal (file read)",
+    "name": "Potential Path Traversal using Scala API (file read)",
     "type": "VULNERABILITY",
     "url": "https://find-sec-bugs.github.io/bugs.htm#SCALA_PATH_TRAVERSAL_IN"
   },
@@ -558,6 +618,12 @@
     "url": "https://find-sec-bugs.github.io/bugs.htm#SQL_INJECTION_TURBINE"
   },
   {
+    "key": "SQL_INJECTION_VERTX",
+    "name": "Potential SQL Injection with Vert.x Sql Client",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SQL_INJECTION_VERTX"
+  },
+  {
     "key": "SSL_CONTEXT",
     "name": "Weak SSLContext",
     "type": "VULNERABILITY",
@@ -610,6 +676,12 @@
     "name": "Potential template injection with Freemarker",
     "type": "VULNERABILITY",
     "url": "https://find-sec-bugs.github.io/bugs.htm#TEMPLATE_INJECTION_FREEMARKER"
+  },
+  {
+    "key": "TEMPLATE_INJECTION_PEBBLE",
+    "name": "Potential template injection with Pebble",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#TEMPLATE_INJECTION_PEBBLE"
   },
   {
     "key": "TEMPLATE_INJECTION_VELOCITY",
@@ -694,6 +766,12 @@
     "name": "Found Wicket WebPage",
     "type": "VULNERABILITY",
     "url": "https://find-sec-bugs.github.io/bugs.htm#WICKET_ENDPOINT"
+  },
+  {
+    "key": "WICKET_XSS1",
+    "name": "Disabling HTML escaping put the application at risk for XSS",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#WICKET_XSS1"
   },
   {
     "key": "XML_DECODER",

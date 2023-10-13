@@ -1,17 +1,8 @@
 <h2>Why is this an issue?</h2>
-<p>Unused parameters are misleading. Whatever the values passed to such parameters, the behavior will be the same.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-void doSomething(int a, int b) {     // "b" is unused
-  compute(a);
-}
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-void doSomething(int a) {
-  compute(a);
-}
-</pre>
+<p>A typical code smell known as unused function parameters refers to parameters declared in a function but not used anywhere within the function’s
+body. While this might seem harmless at first glance, it can lead to confusion and potential errors in your code. Disregarding the values passed to
+such parameters, the function’s behavior will be the same, but the programmer’s intention won’t be clearly expressed anymore. Therefore, removing
+function parameters that are not being utilized is considered best practice.</p>
 <h3>Exceptions</h3>
 <p>The rule will not raise issues for unused parameters:</p>
 <ul>
@@ -24,6 +15,23 @@ void doSomething(int a) {
   <li> in overridable methods (non-final, or not member of a final class, non-static, non-private), if the parameter is documented with a proper
   javadoc. </li>
 </ul>
+<h2>How to fix it</h2>
+<p>Having unused function parameters in your code can lead to confusion and misunderstanding of a developer’s intention. They reduce code readability
+and introduce the potential for errors. To avoid these problems, developers should remove unused parameters from function declarations.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+void doSomething(int a, int b) { // Noncompliant, "b" is unused
+  compute(a);
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+void doSomething(int a) {
+  compute(a);
+}
+</pre>
+<p>Examples of exceptions:</p>
 <pre>
 @Override
 void doSomething(int a, int b) {     // no issue reported on b
@@ -43,7 +51,7 @@ public void qix(String s) {
 }
 
 /**
- * @param s This string may be use for further computation in overriding classes
+ * @param s This string may be used for further computation in overriding classes
  */
 protected void foobar(int a, String s) { // no issue, method is overridable and unused parameter has proper javadoc
   compute(a);
