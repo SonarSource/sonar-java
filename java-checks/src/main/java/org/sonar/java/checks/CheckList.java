@@ -135,6 +135,7 @@ import org.sonar.java.checks.serialization.SerializableComparatorCheck;
 import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassCheck;
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
+import org.sonar.java.checks.spring.AsyncMethodsReturnTypeCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
 import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
@@ -273,6 +274,7 @@ public final class CheckList {
     AssertOnBooleanVariableCheck.class,
     AssertionsInProductionCodeCheck.class,
     AssertsOnParametersOfPublicMethodCheck.class,
+    AsyncMethodsReturnTypeCheck.class,
     AtLeastOneConstructorCheck.class,
     AuthorizationsStrongDecisionsCheck.class,
     AwsConsumerBuilderUsageCheck.class,
