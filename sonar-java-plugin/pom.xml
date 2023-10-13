@@ -12,6 +12,9 @@
   <artifactId>sonar-java-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
+  <properties>
+    <maven.deploy.skip>false</maven.deploy.skip>
+  </properties>
   <name>SonarQube Java :: Plugin</name>
   <description>Code Analyzer for Java</description>
   <url>http://redirect.sonarsource.com/plugins/java.html</url>

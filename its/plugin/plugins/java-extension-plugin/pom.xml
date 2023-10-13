@@ -16,6 +16,7 @@
   <properties>
     <sonar.pluginClass>org.sonar.samples.java.JavaExtensionPlugin</sonar.pluginClass>
     <sonar.skip>true</sonar.skip>
+    <maven.deploy.skip>false</maven.deploy.skip>
   </properties>
 
   <dependencies>
