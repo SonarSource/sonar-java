@@ -1,0 +1,62 @@
+<h2>Why is this an issue?</h2>
+<p>A method annotated with Spring’s <code>@Async</code> or <code>@Transactional</code> annotations will not work as expected if invoked directly from
+within its class.</p>
+<p>This is because Spring generates a proxy class with wrapper code to manage the method’s asynchronicity (<code>@Async</code>) or to handle the
+transaction (<code>@Transactional</code>). However, when called using <code>this</code>, the proxy instance is bypassed, and the method is invoked
+directly without the required wrapper code.</p>
+<h2>How to fix it</h2>
+<p>Replace calls to <code>@Async</code> or <code>@Transactional</code> methods via <code>this</code> with calls on an instance that was injected by
+Spring (<code>@Autowired</code>, <code>@Resource</code> or <code>@Inject</code>). The injected instance is a proxy on which the methods can be invoked
+safely.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Service
+public class AsyncNotificationProcessor implements NotificationProcessor {
+
+  @Override
+  public void process(Notification notification) {
+    processAsync(notification); // Noncompliant, call bypasses proxy
+  }
+
+  @Async
+  public processAsync(Notification notification) {
+    // ...
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Service
+public class AsyncNotificationProcessor implements NotificationProcessor {
+
+  @Resource
+  private AsyncNotificationProcessor
+
+  @Override
+  public void process(Notification notification) {
+    asyncNotificationProcessor.processAsync(notification); // Compliant, call via injected proxy
+  }
+
+  @Async
+  public processAsync(Notification notification) {
+    // ...
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Async.html">Spring
+  Framework API - Annotation Interface Async</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Transactional.html">Spring
+  Framework API - Annotation Interface Transactional</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/spring-async">Baeldung - How To Do @Async in Spring</a> </li>
+  <li> <a href="https://stackoverflow.com/questions/22561775/spring-async-ignored">Stack Overflow - Spring @Async ignored</a> </li>
+  <li> <a href="https://stackoverflow.com/questions/4396284/does-spring-transactional-attribute-work-on-a-private-method">Stack Overflow - Does Spring
+  @Transactional attribute work on a private method?</a> </li>
+</ul>
+
