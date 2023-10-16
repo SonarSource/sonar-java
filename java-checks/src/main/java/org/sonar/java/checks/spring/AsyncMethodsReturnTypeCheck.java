@@ -38,7 +38,9 @@ public class AsyncMethodsReturnTypeCheck extends IssuableSubscriptionVisitor {
     var mt = (MethodTree) tree;
     if (mt.symbol().metadata().isAnnotatedWith("org.springframework.scheduling.annotation.Async")) {
       var returnType = mt.returnType();
-      if (returnType != null && !returnType.symbolType().isVoid() && !returnType.symbolType().isSubtypeOf("java.util.concurrent.Future")) {
+      // returnType can only be null if the method is a constructor. Since the @Async annotation is not allowed on constructors, and since
+      // we hence only visit methods, not constructors, we assume that returnType is not null.
+      if (!returnType.symbolType().isVoid() && !returnType.symbolType().isSubtypeOf("java.util.concurrent.Future")) {
         reportIssue(returnType, "Async methods should return 'void' or a 'Future' type.");
       }
     }
