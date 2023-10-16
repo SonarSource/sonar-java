@@ -1,5 +1,7 @@
 package checks.spring;
 
+import java.util.concurrent.Future;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 
 class TransactionalMethodVisibilityCheck {
@@ -13,7 +15,28 @@ class TransactionalMethodVisibilityCheck {
     @Transactional
     int bar(); // Compliant
   }
-  
+
+  private interface A {
+    @Async
+    int bar(); // Compliant
+  }
+
+  public static abstract class Inner {
+
+    @Async
+    protected abstract Future<String> aMethod(); // Noncompliant
+  }
+
+  @Async
+  public Future<String> asyncMethod(){ // compliant
+    return  null;
+  }
+
+  @Async
+  private  Future<String> asyncMethodPrivate(){ // Noncompliant {{Make this method "public" or remove the "@Async" annotation}}
+    return  null;
+  }
+
   @org.springframework.transaction.annotation.Transactional
   public void publicTransactionalMethod() {} // Compliant
 
