@@ -137,6 +137,7 @@ import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
 import org.sonar.java.checks.spring.AsyncMethodsReturnTypeCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
+import org.sonar.java.checks.spring.FieldDependencyInjectionCheck;
 import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringAntMatcherOrderCheck;
@@ -402,6 +403,7 @@ public final class CheckList {
     ExcessiveContentRequestCheck.class,
     ExpressionComplexityCheck.class,
     ExternalizableClassConstructorCheck.class,
+    FieldDependencyInjectionCheck.class,
     FieldModifierCheck.class,
     FileHeaderCheck.class,
     FilePermissionsCheck.class,

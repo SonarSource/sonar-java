@@ -1,0 +1,40 @@
+<h2>Why is this an issue?</h2>
+<p>Spring supports dependency injection by using annotations such as <code>@Autowired</code>. This annotation can be used to inject beans via
+constructor, setter, and field injection.</p>
+<p>Generally speaking, field injection is discouraged. It allows the creation of objects in an invalid state and makes testing more difficult. The
+dependencies are not explicit when instantiating a class that uses field injection.</p>
+<p>Apart from that, field injection is not compatible with final fields. Keeping dependencies immutable where possible makes the code easier to
+understand, easing development and maintenance.</p>
+<p>This rule raises an issue when the <code>@Autowired</code> or <code>@Inject</code> annotations are used on a field.</p>
+<h2>How to fix it</h2>
+<p>Use constructor injection instead.</p>
+<p>By using constructor injection, the dependencies are explicit and must be passed during an object’s construction. This avoids the possibility of
+instantiating an object in an invalid state and makes types more testable. Fields can be declared final, which makes the code easier to understand, as
+dependencies don’t change after instantiation.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class SomeService {
+    @Autowired
+    private SomeDependency someDependency;
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class SomeService {
+    private final SomeDependency someDependency;
+
+    @Autowired
+    public SomeService(SomeDependency someDependency) {
+        this.someDependency = someDependency;
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> Baeldung - <a href="https://www.baeldung.com/java-spring-field-injection-cons">Why Is Field Injection Not Recommended?</a> </li>
+  <li> Baeldung - <a href="https://www.baeldung.com/constructor-injection-in-spring">Constructor Dependency Injection in Spring</a> </li>
+  <li> Oliver Drotbohm - <a href="https://odrotbohm.de/2013/11/why-field-injection-is-evil/">Why field injection is evil</a> </li>
+</ul>
+
