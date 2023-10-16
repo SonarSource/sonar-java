@@ -139,6 +139,7 @@ import org.sonar.java.checks.spring.AsyncMethodsCalledViaThisCheck;
 import org.sonar.java.checks.spring.AsyncMethodsReturnTypeCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
 import org.sonar.java.checks.spring.FieldDependencyInjectionCheck;
+import org.sonar.java.checks.spring.OptionalRestParametersShouldBeObjectsCheck;
 import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringAntMatcherOrderCheck;
@@ -520,6 +521,7 @@ public final class CheckList {
     OneDeclarationPerLineCheck.class,
     OpenSAML2AuthenticationBypassCheck.class,
     OptionalAsParameterCheck.class,
+    OptionalRestParametersShouldBeObjectsCheck.class,
     OutputStreamOverrideWriteCheck.class,
     OverrideAnnotationCheck.class,
     OverwrittenKeyCheck.class,
