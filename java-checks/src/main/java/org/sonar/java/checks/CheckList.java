@@ -136,6 +136,7 @@ import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassC
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
+import org.sonar.java.checks.spring.ModelAttributeNamingConventionForSpELCheck;
 import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringAntMatcherOrderCheck;
@@ -485,6 +486,7 @@ public final class CheckList {
     MissingCurlyBracesCheck.class,
     MissingDeprecatedCheck.class,
     MissingOverridesInRecordWithArrayComponentCheck.class,
+    ModelAttributeNamingConventionForSpELCheck.class,
     ModifiersOrderCheck.class,
     ModulusEqualityCheck.class,
     MultipleWhitespaceCheck.class,
