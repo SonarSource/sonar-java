@@ -1,10 +1,11 @@
 package checks.spring;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 class ValueAnnotationShouldInjectPropertyOrSpELCheck {
 
-  @Value("catalog.name") // Noncompliant [[sc=3;ec=25]] {{Only a simple value is injected, replace the "@Value" annotation with a standard field initialization.}}
+  @Value("catalog.name") // Noncompliant [[sc=3;ec=25]] {{Either replace the "@Value" annotation with a standard field initialization, use "${propertyname}" to inject a property or use "#{expression}" to evaluate a SpEL expression.}}
   String catalogA;
 
   @Value("${catalog.name}") // Compliant
@@ -24,4 +25,19 @@ class ValueAnnotationShouldInjectPropertyOrSpELCheck {
   @Value("") // Noncompliant
   String empty;
 
+  public void setValue(@Value("xxx") String x){ // compliant
+  }
+
+  @Value("xxx")
+  public void setValueA(String x){ // compliant
+  }
+
+  @Value("${a") // Noncompliant
+  String a;
+
+  @Value("#{a") // Noncompliant
+  String b;
+
+  @Autowired
+  String c;
 }
