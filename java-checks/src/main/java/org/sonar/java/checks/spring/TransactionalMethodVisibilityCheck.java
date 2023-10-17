@@ -33,13 +33,11 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
 
   private static final List<String> proxyAnnotations = List.of(
     "org.springframework.transaction.annotation.Transactional",
-    "org.springframework.scheduling.annotation.Async"
-  );
+    "org.springframework.scheduling.annotation.Async");
 
-  private static final Map<String, String> annShortName = Map.ofEntries(
-    Map.entry("org.springframework.transaction.annotation.Transactional", "@Transactional"),
-    Map.entry("org.springframework.scheduling.annotation.Async", "@Async")
-  );
+  private static final Map<String, String> annShortName = Map.of(
+    "org.springframework.transaction.annotation.Transactional", "@Transactional",
+    "org.springframework.scheduling.annotation.Async", "@Async");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -50,13 +48,11 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
     if (!method.symbol().isPublic()) {
-      for(String annSymbol : proxyAnnotations){
-        if(hasAnnotation(method, annSymbol)){
-          reportIssue(
-            method.simpleName(),
-            "Make this method \"public\" or remove the \""+ annShortName.get(annSymbol)+"\" annotation");
-        }
-      }
+      proxyAnnotations.stream()
+        .filter(annSymbol -> hasAnnotation(method, annSymbol))
+        .forEach(annSymbol -> reportIssue(
+          method.simpleName(),
+          "Make this method \"public\" or remove the \"" + annShortName.get(annSymbol) + "\" annotation."));
     }
   }
 
