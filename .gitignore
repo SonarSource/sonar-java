@@ -37,3 +37,4 @@ Thumbs.db
 Desktop.ini
 
 .java-version
+.mvn/.gradle-enterprise/gradle-enterprise-workspace-id

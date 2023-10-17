@@ -12,6 +12,11 @@ env:
   BURGR_URL: VAULT[development/kv/data/burgr data.url]
   BURGR_USERNAME: VAULT[development/kv/data/burgr data.cirrus_username]
   BURGR_PASSWORD: VAULT[development/kv/data/burgr data.cirrus_password]
+  GRADLE_ENTERPRISE_USERNAME: VAULT[development/team/sonarqube/kv/data/gradle-enterprise data.username]
+  GRADLE_ENTERPRISE_PASSWORD: VAULT[development/team/sonarqube/kv/data/gradle-enterprise data.password]
+  GRADLE_ENTERPRISE_URL: VAULT[development/team/sonarqube/kv/data/gradle-enterprise data.url]
+  GRADLE_ENTERPRISE_KEY: VAULT[development/team/sonarqube/kv/data/gradle-enterprise data.access-key]
+  GRADLE_ENTERPRISE_ACCESS_KEY: ${GRADLE_ENTERPRISE_URL}=${GRADLE_ENTERPRISE_KEY}
   # Use bash (instead of sh on linux or cmd.exe on windows)
   CIRRUS_SHELL: bash
   # Allows to run builds for the 50 last commits in a branch:
