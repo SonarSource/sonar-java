@@ -1,10 +1,11 @@
 <h2>Why is this an issue?</h2>
-<p>There are two ways in Spring how to make a REST parameter optional:</p>
+<p>Spring provides two options to mark a REST parameter as optional:</p>
 <ol>
-  <li> Use <code>required = false</code> in the <code>@PathVariable</code> annotation of the respective method parameter or </li>
+  <li> Use <code>required = false</code> in the <code>@PathVariable</code> or <code>@RequestParam</code> annotation of the respective method parameter
+  or </li>
   <li> Use type <code>java.util.Optional&lt;T&gt;</code> for the method parameter </li>
 </ol>
-<p>When using 1., the absence of the parameter when the REST function is called is encoded by <code>null</code>, which can only be used for object
+<p>When using 1., the absence of the parameter, when the REST function is called, is encoded by <code>null</code>, which can only be used for object
 types. If <code>required = false</code> is used for a parameter with a primitive and the REST function is called without the parameter, a runtime
 exception occurs because the Spring data mapper cannot map the <code>null</code> value to the parameter.</p>
 <h2>How to fix it</h2>
@@ -12,7 +13,7 @@ exception occurs because the Spring data mapper cannot map the <code>null</code>
 <code>Boolean</code>, <code>Character</code>, <code>Integer</code>.</p>
 <p>Alternatively, you might choose to remove <code>required = false</code> from the annotation and use an <code>Optional&lt;T&gt;</code> type for the
 parameter, such as <code>Optional&lt;Boolean&gt;</code> or <code>Optional&lt;String&gt;</code>, which automatically makes the REST parameter optional.
-This is the preferred approach, because it enforces the proper handling of <code>null</code> in the method implementation.</p>
+This is the preferred approach because it enforces the proper handling of <code>null</code> in the method implementation.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
