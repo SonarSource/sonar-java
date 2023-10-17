@@ -32,7 +32,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S6814")
 public class OptionalRestParametersShouldBeObjectsCheck extends IssuableSubscriptionVisitor {
 
-  private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
+  private static final List<String> PARAMETER_ANNOTATIONS = List.of(
+    "org.springframework.web.bind.annotation.PathVariable",
+    "org.springframework.web.bind.annotation.RequestParam"
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -50,13 +53,13 @@ public class OptionalRestParametersShouldBeObjectsCheck extends IssuableSubscrip
   private static boolean isOptionalPrimitive(VariableTree parameter) {
     return parameter.type().symbolType().isPrimitive() &&
       parameter.modifiers().annotations().stream()
-        .anyMatch(OptionalRestParametersShouldBeObjectsCheck::isPathVariableOptional);
+        .anyMatch(OptionalRestParametersShouldBeObjectsCheck::isMarkingAsOptional);
   }
 
-  private static boolean isPathVariableOptional(AnnotationTree annotation) {
-    return annotation.annotationType().symbolType().is(PATH_VARIABLE_ANNOTATION) &&
+  private static boolean isMarkingAsOptional(AnnotationTree annotation) {
+    return PARAMETER_ANNOTATIONS.stream().anyMatch(candidate -> annotation.annotationType().symbolType().is(candidate)) &&
       annotation.arguments().stream().anyMatch(expressionTree -> {
-        // Because all parameters of the PathVariable annotation are assignments, we can cast safely here.
+        // Because all parameters of the supported annotations are assignments, we can cast safely here.
         AssignmentExpressionTree assignment = (AssignmentExpressionTree) expressionTree;
         IdentifierTree variable = (IdentifierTree) assignment.variable();
         Boolean constant = assignment.expression().asConstant(Boolean.class).orElse(Boolean.TRUE);
