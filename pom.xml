@@ -95,9 +95,6 @@
     <!-- Release: enable publication to Bintray -->
     <artifactsToPublish>${project.groupId}:sonar-java-plugin:jar</artifactsToPublish>
 
-    <!-- FIXME: Overrides OSS parent pom for java 16 compatibility -->
-    <version.artifactory.plugin>3.4.0</version.artifactory.plugin>
-
     <!-- FIXME: Overrides OSS parent pom for java 19 compatibility -->
     <version.jacoco.plugin>0.8.10</version.jacoco.plugin>
   </properties>
