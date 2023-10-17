@@ -6,6 +6,7 @@ class ModelAttributeNamingConventionForSpELCheck {
 
   public void foo(org.springframework.ui.Model model) {
     model.addAllAttributes(Map.of("m", 42, "a", 22)); // Compliant
+    model.addAllAttributes(getMap()); // Compliant
 
     model.addAllAttributes(Map.of(" m", 42, " a", 22)); // Noncompliant [[sc=35;ec=39]] {{Attribute names must begin with a letter (a-z, A-Z), underscore (_), or dollar sign ($)
                                                         // and can be followed by letters, digits, underscores, or dollar signs.}}
@@ -20,6 +21,10 @@ class ModelAttributeNamingConventionForSpELCheck {
     model.addAttribute("b", 42); // Compliant
     model.addAttribute("_c", 7); // Compliant
     model.addAttribute("$d", 8); // Compliant
+  }
+
+  private Map getMap() {
+    return Map.of("one", "two");
   }
 
 }
