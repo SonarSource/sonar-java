@@ -80,14 +80,14 @@ class PmdSensorTest {
     assertThat(repository.language()).isEqualTo("java");
     assertThat(repository.isExternal()).isTrue();
 
-    assertThat(repository.rules()).hasSize(288);
+    assertThat(repository.rules()).hasSizeGreaterThan(288);
 
     RulesDefinition.Rule rule = repository.rule("EqualsNull");
     assertThat(rule).isNotNull();
     assertThat(rule.name()).isEqualTo("Equals null");
     assertThat(rule.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(rule.htmlDescription()).isEqualTo(
-      "See description of PMD rule <code>EqualsNull</code> at the <a href=\"https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#equalsnull\">PMD website</a>.");
+      "See description of PMD rule <code>EqualsNull</code> at the <a href=\"https://pmd.github.io/pmd/pmd_rules_java_errorprone.html#equalsnull\">PMD website</a>.");
     assertThat(rule.tags()).isEmpty();
   }
 

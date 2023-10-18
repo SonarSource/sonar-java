@@ -85,7 +85,7 @@ class JavaSonarWayProfileTest {
 
   @Test
   void should_activate_hotspots_when_supported() {
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(null);
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");

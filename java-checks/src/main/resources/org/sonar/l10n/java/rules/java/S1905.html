@@ -1,29 +1,16 @@
 <h2>Why is this an issue?</h2>
-<p>Unnecessary casting expressions make the code harder to read and understand.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public void example() {
-  for (Foo obj : (List&lt;Foo&gt;) getFoos()) {  // Noncompliant; cast unnecessary because List&lt;Foo&gt; is what's returned
-    //...
-  }
-}
-
-public List&lt;Foo&gt; getFoos() {
-  return this.foos;
-}
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-public void example() {
-  for (Foo obj : getFoos()) {
-    //...
-  }
-}
-
-public List&lt;Foo&gt; getFoos() {
-  return this.foos;
-}
-</pre>
+<p>Casting expressions are utilized to convert one data type to another, such as transforming an integer into a string. This is especially crucial in
+strongly typed languages like <code>C</code>, <code>C++</code>, <code>C#</code>, <code>Java</code>, <code>Python</code>, and others.</p>
+<p>However, there are instances where casting expressions are not needed. These include situations like:</p>
+<ul>
+  <li> casting a variable to its own type </li>
+  <li> casting a subclass to a parent class (in the case of polymorphism) </li>
+  <li> the programming language is capable of automatically converting the given type to another </li>
+</ul>
+<p>These scenarios are considered unnecessary casting expressions. They can complicate the code and make it more difficult to understand, without
+offering any advantages.</p>
+<p>As a result, it’s generally advised to avoid unnecessary casting expressions. Instead, rely on the language’s type system to ensure type safety and
+code clarity.</p>
 <h3>Exceptions</h3>
 <p>Casting may be required to distinguish the method to call in the case of overloading:</p>
 <pre>
@@ -36,9 +23,43 @@ class C {
   void foo() {
     B b = new B();
     fun(b);
-    fun((A) b); //call the first method so cast is not redundant.
+    fun((A) b); // Compliant, required to call the first method so cast is not redundant.
   }
-
 }
 </pre>
+<h2>How to fix it</h2>
+<p>To fix your code remove the unnecessary casting expression.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class Example {
+    public void example(List&lt;String&gt; list) {
+        for (String item: (List&lt;String&gt;) list) {  // Noncompliant, Remove this unnecessary cast to "List".
+          //...
+        }
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Example {
+    public void example() {
+        for (String foo : getFoos()) {
+          //...
+        }
+    }
+
+    public List&lt;String&gt; getFoos() {
+        return List.of("foo1", "foo2");
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Geeksforgeeks - <a href="https://www.geeksforgeeks.org/type-conversion-java-examples/">Type conversion in Java with Examples</a> </li>
+  <li> Wikipedia - <a href="https://en.wikipedia.org/wiki/Type_conversion">Type Conversion</a> </li>
+  <li> Wikipedia - <a href="https://en.wikipedia.org/wiki/Strong_and_weak_typing">Strong and Weak Typing</a> </li>
+  <li> Wikipedia - <a href="https://en.wikipedia.org/wiki/Polymorphism_(computer_science)"> Polymorphism (Computer Science)</a> </li>
+</ul>
 

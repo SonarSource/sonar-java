@@ -6,12 +6,15 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>java</artifactId>
-    <version>7.26.0-SNAPSHOT</version>
+    <version>7.27.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>sonar-java-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
+  <properties>
+    <maven.deploy.skip>false</maven.deploy.skip>
+  </properties>
   <name>SonarQube Java :: Plugin</name>
   <description>Code Analyzer for Java</description>
   <url>http://redirect.sonarsource.com/plugins/java.html</url>

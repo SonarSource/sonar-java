@@ -1,40 +1,32 @@
 <h2>Why is this an issue?</h2>
-<p>If a <code>private</code> field is declared but not used in the program, it can be considered dead code and should therefore be removed. This will
-improve maintainability because developers will not wonder what the variable is used for.</p>
+<p>If a <code>private</code> field is declared but not used locally, its limited visibility makes it dead code.</p>
+<p>This is either a sign that some logic is missing or that the code should be cleaned.</p>
+<p>Cleaning out dead code decreases the size of the maintained codebase, making it easier to understand and preventing bugs from being introduced.</p>
+<pre>
+public class MyClass {
+  private int foo = 42; // Noncompliant: foo is unused and should be removed
+
+  public int compute(int a) {
+    return a * 42;
+  }
+
+}
+</pre>
 <p>Note that this rule does not take reflection into account, which means that issues will be raised on <code>private</code> fields that are only
 accessed using the reflection API.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public class MyClass {
-  private int foo = 42;
-
-  public int compute(int a) {
-    return a * 42;
-  }
-
-}
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-public class MyClass {
-  public int compute(int a) {
-    return a * 42;
-  }
-}
-</pre>
 <h3>Exceptions</h3>
 <p>The rule admits 3 exceptions:</p>
 <ul>
-  <li> Serialization id fields </li>
+  <li> Serialization ID fields </li>
 </ul>
-<p>The Java serialization runtime associates with each serializable class a version number, called <code>serialVersionUID</code>, which is used during
-deserialization to verify that the sender and receiver of a serialized object have loaded classes for that object that are compatible with respect to
+<p>The Java serialization runtime associates with each serializable class a version number called <code>serialVersionUID</code>, which is used during
+deserialization to verify that the sender and receiver of a serialized object have loaded classes for that object that are compatible for
 serialization.</p>
 <p>A serializable class can declare its own <code>serialVersionUID</code> explicitly by declaring a field named <code>serialVersionUID</code> that
-must be static, final, and of type long. By definition those <code>serialVersionUID</code> fields should not be reported by this rule:</p>
+must be static, final, and of type long. By definition, those <code>serialVersionUID</code> fields should not be reported by this rule:</p>
 <pre>
 public class MyClass implements java.io.Serializable {
-  private static final long serialVersionUID = 42L;
+  private static final long serialVersionUID = 42L;  // Compliant by exception
 }
 </pre>
 <ul>
@@ -44,7 +36,7 @@ public class MyClass implements java.io.Serializable {
 <pre>
 public class MyClass {
   @SomeAnnotation
-  private int unused;
+  private int unused;  // Compliant by exception
 }
 </pre>
 <ul>
@@ -53,7 +45,7 @@ public class MyClass {
 <p>The unused field in this class will not be reported by the rule as it might be used by native code.</p>
 <pre>
 public class MyClass {
-  private int unused = 42;
+  private int unused = 42;  // Compliant by exception
   private native static void doSomethingNative();
 }
 </pre>

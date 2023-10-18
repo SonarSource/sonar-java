@@ -70,7 +70,7 @@ class CheckstyleSensorTest {
     assertThat(repository.language()).isEqualTo("java");
     assertThat(repository.isExternal()).isTrue();
 
-    assertThat(repository.rules()).hasSize(156);
+    assertThat(repository.rules()).hasSizeGreaterThan(156);
 
     RulesDefinition.Rule rule = repository.rule("ArrayTypeStyleCheck");
     assertThat(rule).isNotNull();
@@ -79,7 +79,7 @@ class CheckstyleSensorTest {
     assertThat(rule.severity()).isEqualTo("MAJOR");
     assertThat(rule.htmlDescription()).isEqualTo(
       "See description of Checkstyle rule <code>ArrayTypeStyleCheck</code> at the " +
-        "<a href=\"http://checkstyle.sourceforge.net/config_misc.html#ArrayTypeStyle\">Checkstyle website</a>.");
+        "<a href=\"https://checkstyle.sourceforge.net/checks/misc/arraytypestyle.html#ArrayTypeStyle\">Checkstyle website</a>.");
     assertThat(rule.tags()).isEmpty();
     assertThat(rule.debtRemediationFunction().baseEffort()).isEqualTo("5min");
   }

@@ -1,40 +1,44 @@
 <h2>Why is this an issue?</h2>
-<p>Once deprecated, classes, and interfaces, and their members should be avoided, rather than used, inherited or extended. Deprecation is a warning
-that the class or interface has been superseded, and will eventually be removed. The deprecation period allows you to make a smooth transition away
-from the aging, soon-to-be-retired technology.</p>
-<h3>Noncompliant code example</h3>
+<p>Code is sometimes annotated as deprecated by developers maintaining libraries or APIs to indicate that the method, class, or other programming
+element is no longer recommended for use. This is typically due to the introduction of a newer or more effective alternative. For example, when a
+better solution has been identified, or when the existing code presents potential errors or security risks.</p>
+<p>Deprecation is a good practice because it helps to phase out obsolete code in a controlled manner, without breaking existing software that may
+still depend on it. It is a way to warn other developers not to use the deprecated element in new code, and to replace it in existing code when
+possible.</p>
+<p>Deprecated classes, interfaces, and their members should not be used, inherited or extended because they will eventually be removed. The
+deprecation period allows you to make a smooth transition away from the aging, soon-to-be-retired technology.</p>
+<p>Check the documentation or the deprecation message to understand why the code was deprecated and what the recommended alternative is.</p>
 <pre>
 /**
- * @deprecated  As of release 1.3, replaced by {@link #Fee}
+ * @deprecated  As of release 1.3, replaced by {@link #Foo}
  */
 @Deprecated
 public class Fum { ... }
 
 public class Foo {
   /**
-   * @deprecated  As of release 1.7, replaced by {@link #doTheThingBetter()}
+   * @deprecated  As of release 1.7, replaced by {@link #newMethod()}
    */
   @Deprecated
-  public void doTheThing() { ... }
+  public void oldMethod() { ... }
 
-  public void doTheThingBetter() { ... }
+  public void newMethod() { ... }
 }
 
 public class Bar extends Foo {
-  public void doTheThing() { ... } // Noncompliant; don't override a deprecated method or explicitly mark it as @Deprecated
+  public void oldMethod() { ... } // Noncompliant; don't override a deprecated method
 }
 
-public class Bar extends Fum {  // Noncompliant; Fum is deprecated
-
+public class Baz extends Fum {  // Noncompliant; Fum is deprecated
   public void myMethod() {
-    Foo foo = new Foo();  // okay; the class isn't deprecated
-    foo.doTheThing();  // Noncompliant; doTheThing method is deprecated
+    Foo foo = new Foo();
+    foo.oldMethod();  // Noncompliant; oldMethod method is deprecated
   }
 }
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/477">MITRE, CWE-477</a> - Use of Obsolete Functions </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/6TdGBQ">CERT, MET02-J.</a> - Do not use deprecated or obsolete classes or methods </li>
 </ul>
 

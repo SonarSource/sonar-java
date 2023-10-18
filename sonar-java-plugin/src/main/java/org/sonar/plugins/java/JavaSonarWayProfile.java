@@ -56,6 +56,13 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
 
   private final ProfileRegistrar[] profileRegistrars;
 
+  /**
+   * Constructor used by Pico container (SC) when no ProfileRegistrar are available
+   */
+  public JavaSonarWayProfile() {
+    this(null);
+  }
+
   public JavaSonarWayProfile(@Nullable ProfileRegistrar[] profileRegistrars) {
     this.profileRegistrars = profileRegistrars;
   }

@@ -1,0 +1,22 @@
+{
+  "title": "Avoid field dependency injection",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6813",
+  "sqKey": "S6813",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM",
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
