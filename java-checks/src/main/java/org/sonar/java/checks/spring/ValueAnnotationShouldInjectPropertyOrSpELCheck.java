@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-@Rule(key = "S604")
+@Rule(key = "S6804")
 public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubscriptionVisitor {
 
   private static final String SPRING_VALUE = "org.springframework.beans.factory.annotation.Value";
