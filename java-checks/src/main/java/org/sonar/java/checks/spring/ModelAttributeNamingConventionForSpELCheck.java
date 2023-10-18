@@ -80,21 +80,19 @@ public class ModelAttributeNamingConventionForSpELCheck extends AbstractMethodDe
   }
 
   private void checkStringLiteralAndReport(ExpressionTree tree, ExpressionTree reportTree) {
-    if (tree.is(Tree.Kind.STRING_LITERAL)) {
-      LiteralTree literalTree = (LiteralTree) tree;
-      String literalValue = LiteralUtils.getAsStringValue(literalTree);
-      Matcher matcher = pattern.matcher(literalValue);
-      if (!matcher.matches()) {
-        reportIssue(reportTree,
-          "Attribute names must begin with a letter (a-z, A-Z), underscore (_), or dollar sign ($) and can be followed by letters, digits, underscores, or dollar signs.");
-      }
+    LiteralTree literalTree = (LiteralTree) tree;
+    String literalValue = LiteralUtils.getAsStringValue(literalTree);
+    Matcher matcher = pattern.matcher(literalValue);
+    if (!matcher.matches()) {
+      reportIssue(reportTree,
+        "Attribute names must begin with a letter (a-z, A-Z), underscore (_), or dollar sign ($) and can be followed by letters, digits, underscores, or dollar signs.");
     }
   }
 
   private void checkIdentifier(IdentifierTree identifierTree) {
     VariableTreeImpl declaration = (VariableTreeImpl) identifierTree.symbol().declaration();
     if (declaration != null) {
-      checkStringLiteralAndReport(declaration.initializer(), identifierTree);
+      checkExpression(declaration.initializer(), identifierTree);
     }
   }
 
