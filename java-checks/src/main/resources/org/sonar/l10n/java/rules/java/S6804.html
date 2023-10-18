@@ -1,0 +1,60 @@
+<p>This rule reports when the Spring <code>@Value</code> annotation is used to inject a simple value that does not contain an expression.</p>
+<h2>Why is this an issue?</h2>
+<p>The purpose of the <code>@Value</code> annotation in <code>org.springframework.beans.factory.annotation</code> is to inject a value into a field or
+method based on the Spring context after it has been established.</p>
+<p>If the annotation does not include an expression (either Spring Expression Language or a property injection), the injected value is a simple
+constant that does not depend on the Spring context, making the annotation replaceable with a standard field initialization statement.</p>
+<p>This not only implies the redundant use of <code>@Value</code>, but could also indicate an error where the expression indicators (<code>#</code>,
+<code>$</code>) were omitted by mistake.</p>
+<h3>Exceptions</h3>
+<p>This rule does not raise an issue if <code>@Value</code> is applied to a method or method argument, because the annotation has the side effect that
+the method is called.</p>
+<h2>How to fix it</h2>
+<ul>
+  <li> If a property is to be injected, use <code>${propertyname}</code> instead of <code>propertyname</code>. </li>
+  <li> If an SpEL expression is to be evaluated, use <code>#{expression}</code> instead of <code>expression</code>. </li>
+  <li> If you intend to initialize a field with a simple value or with an expression that does not depend on the Spring context, use a standard field
+  initialization statement. </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Value("catalog.name") // Noncompliant, this will not inject the property
+String catalog;
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Value("${catalog.name}") // Compliant
+String catalog;
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@Value("book.topics[0]") // Noncompliant, this will not evaluate the expression
+Topic topic;
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@Value("#{book.topics[0]}") // Compliant
+Topic topic;
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+@Value("Hello, world!") // Noncompliant, this use of @Value is redundant
+String greeting;
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+String greeting = "Hello, world!"; // Compliant
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html">Spring
+  Framework API - Annotation Interface Value</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/spring-value-annotation">Baeldung - A Quick Guide to Spring @Value</a> </li>
+  <li> <a href="https://www.digitalocean.com/community/tutorials/spring-value-annotation">DigitalOcean - Spring @Value Annotation</a> </li>
+</ul>
+

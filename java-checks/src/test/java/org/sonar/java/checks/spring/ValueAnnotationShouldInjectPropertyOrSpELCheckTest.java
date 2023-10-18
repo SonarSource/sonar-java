@@ -30,7 +30,7 @@ class ValueAnnotationShouldInjectPropertyOrSpELCheckTest {
   void test() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/spring/ValueAnnotationShouldInjectPropertyOrSpELCheckSample.java"))
-      .withCheck(new ValueAnnotationShouldInjectPropertyOrSpElCheck())
+      .withCheck(new ValueAnnotationShouldInjectPropertyOrSpELCheck())
       .verifyIssues();
   }
 

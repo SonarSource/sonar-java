@@ -157,7 +157,7 @@ import org.sonar.java.checks.spring.SpringScanDefaultPackageCheck;
 import org.sonar.java.checks.spring.SpringSecurityDisableCSRFCheck;
 import org.sonar.java.checks.spring.SpringSessionFixationCheck;
 import org.sonar.java.checks.spring.TransactionalMethodVisibilityCheck;
-import org.sonar.java.checks.spring.ValueAnnotationShouldInjectPropertyOrSpElCheck;
+import org.sonar.java.checks.spring.ValueAnnotationShouldInjectPropertyOrSpELCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
 import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
@@ -721,7 +721,7 @@ public final class CheckList {
     UselessParenthesesCheck.class,
     UserEnumerationCheck.class,
     UtilityClassWithPublicConstructorCheck.class,
-    ValueAnnotationShouldInjectPropertyOrSpElCheck.class,
+    ValueAnnotationShouldInjectPropertyOrSpELCheck.class,
     ValueBasedObjectUsedForLockCheck.class,
     ValueBasedObjectsShouldNotBeSerializedCheck.class,
     VarArgCheck.class,
