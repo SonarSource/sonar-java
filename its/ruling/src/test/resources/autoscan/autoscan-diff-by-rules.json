@@ -1112,7 +1112,7 @@
   {
     "ruleKey": "S2230",
     "hasTruePositives": true,
-    "falseNegatives": 0,
+    "falseNegatives": 15,
     "falsePositives": 0
   },
   {
@@ -2874,6 +2874,12 @@
     "falsePositives": 0
   },
   {
+    "ruleKey": "S6809",
+    "hasTruePositives": false,
+    "falseNegatives": 94,
+    "falsePositives": 0
+  },
+  {
     "ruleKey": "S6806",
     "hasTruePositives": false,
     "falseNegatives": 10,
@@ -2882,13 +2888,13 @@
   {
     "ruleKey": "S6810",
     "hasTruePositives": false,
-    "falseNegatives": 5,
+    "falseNegatives": 6,
     "falsePositives": 0
   },
   {
     "ruleKey": "S6813",
     "hasTruePositives": true,
-    "falseNegatives": 31,
+    "falseNegatives": 32,
     "falsePositives": 0
   }
 ]
