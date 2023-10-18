@@ -52,8 +52,6 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class AutoScanTest {
 
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -182,7 +180,7 @@ public class AutoScanTest {
     softly.assertThat(newTotal).isEqualTo(knownTotal);
     softly.assertThat(rulesCausingFPs).hasSize(6);
     softly.assertThat(rulesNotReporting).hasSize(7);
-    softly.assertThat(rulesSilenced).hasSize(70);
+    softly.assertThat(rulesSilenced).hasSize(71);
 
     /**
      * 4. Check total number of differences (FPs + FNs)
@@ -190,7 +188,7 @@ public class AutoScanTest {
      * No differences would mean that we find the same issues with and without the bytecode and libraries
      */
     String differences = Files.readString(pathFor(TARGET_ACTUAL + PROJECT_KEY + "-no-binaries_differences"));
-    softly.assertThat(differences).isEqualTo("Issues differences: 3430");
+    softly.assertThat(differences).isEqualTo("Issues differences: 3335");
 
     softly.assertAll();
   }
