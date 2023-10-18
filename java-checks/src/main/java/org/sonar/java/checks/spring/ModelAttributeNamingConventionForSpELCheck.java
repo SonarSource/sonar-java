@@ -24,14 +24,19 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6806")
 public class ModelAttributeNamingConventionForSpELCheck extends AbstractMethodDetection {
+
+  private static final Pattern pattern = Pattern.compile("^[a-zA-Z_$][a-zA-Z0-9_$]*$");
 
   private static final MethodMatchers ADD_ATTRIBUTE_MATCHER_WITH_TWO_PARAMS = MethodMatchers.create()
     .ofTypes("org.springframework.ui.Model")
@@ -47,11 +52,9 @@ public class ModelAttributeNamingConventionForSpELCheck extends AbstractMethodDe
 
   private static final MethodMatchers MAP_OF = MethodMatchers.create()
     .ofTypes("java.util.Map")
-    .names("of")
+    .names("of", "ofEntries", "entry")
     .withAnyParameters()
     .build();
-
-  Pattern pattern = Pattern.compile("^[a-zA-Z_$][a-zA-Z0-9_$]*$");
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -61,33 +64,53 @@ public class ModelAttributeNamingConventionForSpELCheck extends AbstractMethodDe
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree argumentTree = mit.arguments().get(0);
-    checkStringLiteralAndReport(argumentTree);
-
-    if (argumentTree.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) argumentTree;
-      if (MAP_OF.matches(methodInvocationTree)) {
-        for (int i = 0; i < methodInvocationTree.arguments().size(); i += 2) {
-          ExpressionTree tree = methodInvocationTree.arguments().get(i);
-          if (checkStringLiteralAndReport(tree)) {
-            break;
-          }
-        }
-      }
+    if (argumentTree.is(Tree.Kind.STRING_LITERAL)) {
+      checkStringLiteralAndReport(argumentTree, argumentTree);
+    } else if (argumentTree.is(Tree.Kind.IDENTIFIER)) {
+      checkIdentifier((IdentifierTree) argumentTree);
+    } else if (argumentTree.is(Tree.Kind.MEMBER_SELECT)) {
+      checkMemberSelect((MemberSelectExpressionTree) argumentTree);
+    } else if (argumentTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      checkMethodInvocation((MethodInvocationTree) argumentTree);
     }
   }
 
-  private boolean checkStringLiteralAndReport(ExpressionTree argumentTree) {
-    if (argumentTree.is(Tree.Kind.STRING_LITERAL)) {
-      LiteralTree literalTree = (LiteralTree) argumentTree;
+  private boolean checkStringLiteralAndReport(ExpressionTree tree, ExpressionTree reportTree) {
+    if (tree.is(Tree.Kind.STRING_LITERAL)) {
+      LiteralTree literalTree = (LiteralTree) tree;
       String literalValue = LiteralUtils.getAsStringValue(literalTree);
       Matcher matcher = pattern.matcher(literalValue);
       if (!matcher.matches()) {
-        reportIssue(argumentTree,
+        reportIssue(reportTree,
           "Attribute names must begin with a letter (a-z, A-Z), underscore (_), or dollar sign ($) and can be followed by letters, digits, underscores, or dollar signs.");
         return true;
       }
     }
     return false;
+  }
+
+  private void checkIdentifier(IdentifierTree identifierTree) {
+    VariableTreeImpl declaration = (VariableTreeImpl) identifierTree.symbol().declaration();
+    if (declaration != null) {
+      checkStringLiteralAndReport(declaration.initializer(), identifierTree);
+    }
+  }
+
+  private void checkMemberSelect(MemberSelectExpressionTree memberSelectExpressionTree) {
+    checkIdentifier(memberSelectExpressionTree.identifier());
+  }
+
+  private void checkMethodInvocation(MethodInvocationTree methodInvocationTree) {
+    if (MAP_OF.matches(methodInvocationTree)) {
+      for (int i = 0; i < methodInvocationTree.arguments().size(); i += 2) {
+        ExpressionTree key = methodInvocationTree.arguments().get(i);
+        if (checkStringLiteralAndReport(key, methodInvocationTree)) {
+          break;
+        } else if (key.is(Tree.Kind.METHOD_INVOCATION)) {
+          checkMethodInvocation((MethodInvocationTree) key);
+        }
+      }
+    }
   }
 
 }

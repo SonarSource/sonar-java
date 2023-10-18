@@ -15,8 +15,7 @@
   "code": {
     "impacts": {
       "MAINTAINABILITY": "MEDIUM",
-      "RELIABILITY": "MEDIUM",
-      "SECURITY": "LOW"
+      "RELIABILITY": "MEDIUM"
     },
     "attribute": "LOGICAL"
   }
