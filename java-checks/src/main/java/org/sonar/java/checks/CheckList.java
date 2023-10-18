@@ -721,7 +721,7 @@ public final class CheckList {
     UselessParenthesesCheck.class,
     UserEnumerationCheck.class,
     UtilityClassWithPublicConstructorCheck.class,
-    ValueAnnotationShouldInjectPropertyOrSpELCheck.java,
+    ValueAnnotationShouldInjectPropertyOrSpElCheck.class,
     ValueBasedObjectUsedForLockCheck.class,
     ValueBasedObjectsShouldNotBeSerializedCheck.class,
     VarArgCheck.class,
