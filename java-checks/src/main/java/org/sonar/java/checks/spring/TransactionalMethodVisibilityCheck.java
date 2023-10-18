@@ -21,6 +21,7 @@ package org.sonar.java.checks.spring;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -30,6 +31,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2230")
 public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisitor {
 
+  private static final List<String> proxyAnnotations = List.of(
+    "org.springframework.transaction.annotation.Transactional",
+    "org.springframework.scheduling.annotation.Async");
+
+  private static final Map<String, String> annShortName = Map.of(
+    "org.springframework.transaction.annotation.Transactional", "@Transactional",
+    "org.springframework.scheduling.annotation.Async", "@Async");
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.METHOD);
@@ -38,14 +47,18 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
-    if (!method.symbol().isPublic() && hasTransactionalAnnotation(method)) {
-      reportIssue(method.simpleName(), "Make this method \"public\" or remove the \"@Transactional\" annotation");
+    if (!method.symbol().isPublic()) {
+      proxyAnnotations.stream()
+        .filter(annSymbol -> hasAnnotation(method, annSymbol))
+        .forEach(annSymbol -> reportIssue(
+          method.simpleName(),
+          "Make this method \"public\" or remove the \"" + annShortName.get(annSymbol) + "\" annotation."));
     }
   }
 
-  private static boolean hasTransactionalAnnotation(MethodTree method) {
+  private static boolean hasAnnotation(MethodTree method, String annotationSymbol) {
     for (AnnotationTree annotation : method.modifiers().annotations()) {
-      if (annotation.symbolType().is("org.springframework.transaction.annotation.Transactional")) {
+      if (annotation.symbolType().is(annotationSymbol)) {
         return true;
       }
     }

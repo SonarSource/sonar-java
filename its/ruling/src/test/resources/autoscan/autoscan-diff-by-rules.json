@@ -1112,7 +1112,7 @@
   {
     "ruleKey": "S2230",
     "hasTruePositives": true,
-    "falseNegatives": 0,
+    "falseNegatives": 15,
     "falsePositives": 0
   },
   {
@@ -2882,7 +2882,7 @@
   {
     "ruleKey": "S6810",
     "hasTruePositives": false,
-    "falseNegatives": 5,
+    "falseNegatives": 6,
     "falsePositives": 0
   },
   {
