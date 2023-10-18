@@ -64,8 +64,12 @@ public class ModelAttributeNamingConventionForSpELCheck extends AbstractMethodDe
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree argumentTree = mit.arguments().get(0);
+    checkExpression(argumentTree, argumentTree);
+  }
+
+  private void checkExpression(ExpressionTree argumentTree, ExpressionTree reportTree) {
     if (argumentTree.is(Tree.Kind.STRING_LITERAL)) {
-      checkStringLiteralAndReport(argumentTree, argumentTree);
+      checkStringLiteralAndReport(argumentTree, reportTree);
     } else if (argumentTree.is(Tree.Kind.IDENTIFIER)) {
       checkIdentifier((IdentifierTree) argumentTree);
     } else if (argumentTree.is(Tree.Kind.MEMBER_SELECT)) {
@@ -75,7 +79,7 @@ public class ModelAttributeNamingConventionForSpELCheck extends AbstractMethodDe
     }
   }
 
-  private boolean checkStringLiteralAndReport(ExpressionTree tree, ExpressionTree reportTree) {
+  private void checkStringLiteralAndReport(ExpressionTree tree, ExpressionTree reportTree) {
     if (tree.is(Tree.Kind.STRING_LITERAL)) {
       LiteralTree literalTree = (LiteralTree) tree;
       String literalValue = LiteralUtils.getAsStringValue(literalTree);
@@ -83,10 +87,8 @@ public class ModelAttributeNamingConventionForSpELCheck extends AbstractMethodDe
       if (!matcher.matches()) {
         reportIssue(reportTree,
           "Attribute names must begin with a letter (a-z, A-Z), underscore (_), or dollar sign ($) and can be followed by letters, digits, underscores, or dollar signs.");
-        return true;
       }
     }
-    return false;
   }
 
   private void checkIdentifier(IdentifierTree identifierTree) {
@@ -104,11 +106,7 @@ public class ModelAttributeNamingConventionForSpELCheck extends AbstractMethodDe
     if (MAP_OF.matches(methodInvocationTree)) {
       for (int i = 0; i < methodInvocationTree.arguments().size(); i += 2) {
         ExpressionTree key = methodInvocationTree.arguments().get(i);
-        if (checkStringLiteralAndReport(key, methodInvocationTree)) {
-          break;
-        } else if (key.is(Tree.Kind.METHOD_INVOCATION)) {
-          checkMethodInvocation((MethodInvocationTree) key);
-        }
+        checkExpression(key, key);
       }
     }
   }

@@ -10,6 +10,11 @@ class ModelAttributeNamingConventionForSpELCheck {
   private static final String MY_ILLEGAL_CONSTANT = "a-b";
 
   public void foo(org.springframework.ui.Model model) {
+    model.addAllAttributes(
+      Map.of(" m", 42, // Noncompliant
+        " a", 22)); // Noncompliant
+
+    model.addAllAttributes(Map.of(MY_ILLEGAL_CONSTANT, 42)); // Noncompliant
 
     model.addAttribute(File.separator, 42); // Compliant - can not resolve
     model.addAttribute(MY_LEGAL_CONSTANT, 0); // Compliant
@@ -18,8 +23,7 @@ class ModelAttributeNamingConventionForSpELCheck {
     model.addAllAttributes(Map.of("m", 42, "a", 22)); // Compliant
     model.addAllAttributes(getMap()); // Compliant
 
-    model.addAllAttributes(Map.of(" m", 42, " a", 22)); // Noncompliant [[sc=28;ec=54]] {{Attribute names must begin with a letter (a-z, A-Z), underscore (_), or dollar sign ($)
-                                                        // and can be followed by letters, digits, underscores, or dollar signs.}}
+    model.addAllAttributes(Map.of("m", 42, " a", 22)); // Noncompliant
 
     model.addAllAttributes(Map.ofEntries(Map.entry("m", 42), Map.entry("a", 22))); // Compliant
     model.addAllAttributes(getMap()); // Compliant
