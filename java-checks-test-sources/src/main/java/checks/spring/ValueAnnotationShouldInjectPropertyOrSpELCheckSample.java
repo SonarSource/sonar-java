@@ -3,7 +3,7 @@ package checks.spring;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-class ValueAnnotationShouldInjectPropertyOrSpELCheck {
+class ValueAnnotationShouldInjectPropertyOrSpELCheckSample {
 
   @Value("catalog.name") // Noncompliant [[sc=3;ec=25]] {{Either replace the "@Value" annotation with a standard field initialization, use "${propertyname}" to inject a property or use "#{expression}" to evaluate a SpEL expression.}}
   String catalogA;
