@@ -45,6 +45,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -176,11 +177,12 @@ public class AutoScanTest {
     List<IssueDiff> knownDiffs = GSON.fromJson(Files.readString(pathFor("src/test/resources/autoscan/" + DIFF_FILE + ".json")), GSON_LIST_ISSUE_DIFF_TYPE);
     IssueDiff knownTotal = IssueDiff.total(knownDiffs);
 
-    assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs);
-    assertThat(newTotal).isEqualTo(knownTotal);
-    assertThat(rulesCausingFPs).hasSize(6);
-    assertThat(rulesNotReporting).hasSize(7);
-    assertThat(rulesSilenced).hasSize(69);
+    SoftAssertions softly = new SoftAssertions();
+    softly.assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs);
+    softly.assertThat(newTotal).isEqualTo(knownTotal);
+    softly.assertThat(rulesCausingFPs).hasSize(6);
+    softly.assertThat(rulesNotReporting).hasSize(7);
+    softly.assertThat(rulesSilenced).hasSize(69);
 
     /**
      * 4. Check total number of differences (FPs + FNs)
@@ -188,7 +190,9 @@ public class AutoScanTest {
      * No differences would mean that we find the same issues with and without the bytecode and libraries
      */
     String differences = Files.readString(pathFor(TARGET_ACTUAL + PROJECT_KEY + "-no-binaries_differences"));
-    assertThat(differences).isEqualTo("Issues differences: 3335");
+    softly.assertThat(differences).isEqualTo("Issues differences: 3335");
+
+    softly.assertAll();
   }
 
   private static Path pathFor(String path) {
