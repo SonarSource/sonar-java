@@ -1,6 +1,6 @@
 <h2>Why is this an issue?</h2>
-<p>Spring supports dependency injection by using annotations such as <code>@Autowired</code>. This annotation can be used to inject beans via
-constructor, setter, and field injection.</p>
+<p>Dependency injection frameworks such as Spring support dependency injection by using annotations such as <code>@Inject</code> and
+<code>@Autowired</code>. These annotation can be used to inject beans via constructor, setter, and field injection.</p>
 <p>Generally speaking, field injection is discouraged. It allows the creation of objects in an invalid state and makes testing more difficult. The
 dependencies are not explicit when instantiating a class that uses field injection.</p>
 <p>Apart from that, field injection is not compatible with final fields. Keeping dependencies immutable where possible makes the code easier to
