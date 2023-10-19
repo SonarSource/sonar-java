@@ -44,15 +44,15 @@ public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubs
   public void visitNode(Tree tree) {
     ClassTree cls = (ClassTree) tree;
 
-    List<AnnotationTree> fieldsAnn = cls.members()
+    List<AnnotationTree> fieldsAnnotations = cls.members()
       .stream()
       .filter(m -> m.is(Tree.Kind.VARIABLE))
       .flatMap(field -> ((VariableTree) field).modifiers().annotations().stream())
       .collect(Collectors.toList());
 
-    List<AnnotationTree> annTypeAnn = cls.is(Tree.Kind.ANNOTATION_TYPE) ? cls.modifiers().annotations() : List.of();
+    List<AnnotationTree> interfaceAnnotations = cls.is(Tree.Kind.ANNOTATION_TYPE) ? cls.modifiers().annotations() : List.of();
 
-    Stream.concat(fieldsAnn.stream(), annTypeAnn.stream())
+    Stream.concat(fieldsAnnotations.stream(), interfaceAnnotations.stream())
       .filter(ValueAnnotationShouldInjectPropertyOrSpELCheck::isSimpleSpringValue)
       .forEach(ann -> reportIssue(
         ann,
