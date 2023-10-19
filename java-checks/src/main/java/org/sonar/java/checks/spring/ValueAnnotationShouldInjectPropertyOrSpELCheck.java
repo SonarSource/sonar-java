@@ -20,13 +20,15 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6804")
 public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubscriptionVisitor {
@@ -35,40 +37,39 @@ public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubs
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.ANNOTATION);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.ANNOTATION_TYPE);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    AnnotationTree ann = (AnnotationTree) tree;
-    List<ExpressionTree> arguments = ann.arguments();
-    if (ann.symbolType().is(SPRING_VALUE)
-      && !inMethodDeclaration(ann)) {
+    ClassTree cls = (ClassTree) tree;
 
-      LiteralTree literal = (LiteralTree) arguments.get(0);
+    List<AnnotationTree> fieldsAnn = cls.members()
+      .stream()
+      .filter(m -> m.is(Tree.Kind.VARIABLE))
+      .flatMap(field -> ((VariableTree)field).modifiers().annotations().stream())
+      .collect(Collectors.toList());
+
+    List<AnnotationTree> annTypeAnn = cls.is(Tree.Kind.ANNOTATION_TYPE) ? cls.modifiers().annotations() : List.of();
+
+    Stream.concat(fieldsAnn.stream(), annTypeAnn.stream())
+      .filter(ValueAnnotationShouldInjectPropertyOrSpELCheck::isSimpleSpringValue)
+      .forEach(ann ->
+          reportIssue(
+            ann,
+            "Either replace the \"@Value\" annotation with a standard field initialization," +
+              " use \"${propertyname}\" to inject a property " +
+              "or use \"#{expression}\" to evaluate a SpEL expression.")
+        );
+  }
+
+  private static boolean isSimpleSpringValue(AnnotationTree ann){
+    if(ann.symbolType().is(SPRING_VALUE)){
+      LiteralTree literal = (LiteralTree) ann.arguments().get(0);
       String value = literal.value();
-
-      if (!isPropertyName(value) && !isSpEL(value)) {
-        reportIssue(
-          ann,
-          "Either replace the \"@Value\" annotation with a standard field initialization," +
-            " use \"${propertyname}\" to inject a property " +
-            "or use \"#{expression}\" to evaluate a SpEL expression.");
-      }
-
+      return !isPropertyName(value) && !isSpEL(value);
     }
-  }
-
-  private static boolean inMethodDeclaration(AnnotationTree ann) {
-    boolean appliedOnMethod = parentHasKind(ann.parent().parent(), Tree.Kind.METHOD);
-    boolean appliedOnParameter = parentHasKind(ann.parent().parent(), Tree.Kind.VARIABLE)
-      && parentHasKind(ann.parent().parent().parent(), Tree.Kind.METHOD);
-
-    return appliedOnMethod || appliedOnParameter;
-  }
-
-  private static boolean parentHasKind(@Nullable Tree parent, Tree.Kind kind) {
-    return parent != null && parent.is(kind);
+    return false;
   }
 
   private static boolean isPropertyName(String value) {
