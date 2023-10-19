@@ -41,3 +41,8 @@ class ValueAnnotationShouldInjectPropertyOrSpELCheckSample {
   @Autowired
   String c;
 }
+
+@Value("${myValue.ok}") // Compliant
+@interface MyValueOk {}
+@Value("myValue.not.ok") // Noncompliant
+@interface MyValueNotOk {}

@@ -1,4 +1,4 @@
-<p>This rule reports when the Spring <code>@Value</code> annotation is used to inject a simple value that does not contain an expression.</p>
+<p>This rule reports when the Spring <code>@Value</code> annotation injects a simple value that does not contain an expression.</p>
 <h2>Why is this an issue?</h2>
 <p>The purpose of the <code>@Value</code> annotation in <code>org.springframework.beans.factory.annotation</code> is to inject a value into a field or
 method based on the Spring context after it has been established.</p>
@@ -11,8 +11,8 @@ constant that does not depend on the Spring context, making the annotation repla
 the method is called.</p>
 <h2>How to fix it</h2>
 <ul>
-  <li> If a property is to be injected, use <code>${propertyname}</code> instead of <code>propertyname</code>. </li>
-  <li> If an SpEL expression is to be evaluated, use <code>#{expression}</code> instead of <code>expression</code>. </li>
+  <li> If a property is to be injected, use <code>${propertyName}</code> instead of <code>propertyName</code>. </li>
+  <li> If a SpEL expression is to be evaluated, use <code>#{expression}</code> instead of <code>expression</code>. </li>
   <li> If you intend to initialize a field with a simple value or with an expression that does not depend on the Spring context, use a standard field
   initialization statement. </li>
 </ul>
