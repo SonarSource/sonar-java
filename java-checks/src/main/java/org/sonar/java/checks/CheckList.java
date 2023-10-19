@@ -138,6 +138,7 @@ import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
 import org.sonar.java.checks.spring.AsyncMethodsCalledViaThisCheck;
 import org.sonar.java.checks.spring.AsyncMethodsReturnTypeCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
+import org.sonar.java.checks.spring.ModelAttributeNamingConventionForSpELCheck;
 import org.sonar.java.checks.spring.FieldDependencyInjectionCheck;
 import org.sonar.java.checks.spring.OptionalRestParametersShouldBeObjectsCheck;
 import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
@@ -492,6 +493,7 @@ public final class CheckList {
     MissingCurlyBracesCheck.class,
     MissingDeprecatedCheck.class,
     MissingOverridesInRecordWithArrayComponentCheck.class,
+    ModelAttributeNamingConventionForSpELCheck.class,
     ModifiersOrderCheck.class,
     ModulusEqualityCheck.class,
     MultipleWhitespaceCheck.class,
