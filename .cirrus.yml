@@ -63,7 +63,6 @@ build_task:
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
-    - export GRADLE_ENTERPRISE_ACCESS_KEY=${GRADLE_ENTERPRISE_URL}=${GRADLE_ENTERPRISE_KEY}
     - source cirrus-env BUILD
     - regular_mvn_build_deploy_analyze -Dsonar.analysisCache.enabled=true
     - ./check-license-compliance.sh
@@ -84,7 +83,6 @@ ws_scan_task:
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   whitesource_script:
-    - export GRADLE_ENTERPRISE_ACCESS_KEY=${GRADLE_ENTERPRISE_URL}=${GRADLE_ENTERPRISE_KEY}
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - mvn clean install -DskipTests -pl '!java-checks-test-sources'
@@ -101,7 +99,6 @@ qa_os_win_task:
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
-    - export GRADLE_ENTERPRISE_ACCESS_KEY=${GRADLE_ENTERPRISE_URL}=${GRADLE_ENTERPRISE_KEY}
     - source cirrus-env CI
     - mvn.cmd clean verify
   cleanup_before_cache_script: cleanup_maven_repository
@@ -125,7 +122,6 @@ plugin_qa_task:
   submodules_script:
     - git submodule update --init --recursive
   qa_script:
-    - export GRADLE_ENTERPRISE_ACCESS_KEY=${GRADLE_ENTERPRISE_URL}=${GRADLE_ENTERPRISE_KEY}
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd docs/java-custom-rules-example
@@ -146,7 +142,6 @@ sanity_task:
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   sanity_script:
-    - export GRADLE_ENTERPRISE_ACCESS_KEY=${GRADLE_ENTERPRISE_URL}=${GRADLE_ENTERPRISE_KEY}
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - mvn clean install -Dmaven.test.skip=true
@@ -167,7 +162,6 @@ ruling_task:
   submodules_script:
     - git submodule update --init --recursive
   ruling_script:
-    - export GRADLE_ENTERPRISE_ACCESS_KEY=${GRADLE_ENTERPRISE_URL}=${GRADLE_ENTERPRISE_KEY}
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
@@ -185,7 +179,6 @@ ruling_win_task:
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   ruling_script:
-    - export GRADLE_ENTERPRISE_ACCESS_KEY=${GRADLE_ENTERPRISE_URL}=${GRADLE_ENTERPRISE_KEY}
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - init_git_submodules its/sources
