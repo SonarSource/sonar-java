@@ -47,24 +47,22 @@ public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubs
     List<AnnotationTree> fieldsAnn = cls.members()
       .stream()
       .filter(m -> m.is(Tree.Kind.VARIABLE))
-      .flatMap(field -> ((VariableTree)field).modifiers().annotations().stream())
+      .flatMap(field -> ((VariableTree) field).modifiers().annotations().stream())
       .collect(Collectors.toList());
 
     List<AnnotationTree> annTypeAnn = cls.is(Tree.Kind.ANNOTATION_TYPE) ? cls.modifiers().annotations() : List.of();
 
     Stream.concat(fieldsAnn.stream(), annTypeAnn.stream())
       .filter(ValueAnnotationShouldInjectPropertyOrSpELCheck::isSimpleSpringValue)
-      .forEach(ann ->
-          reportIssue(
-            ann,
-            "Either replace the \"@Value\" annotation with a standard field initialization," +
-              " use \"${propertyname}\" to inject a property " +
-              "or use \"#{expression}\" to evaluate a SpEL expression.")
-        );
+      .forEach(ann -> reportIssue(
+        ann,
+        "Either replace the \"@Value\" annotation with a standard field initialization," +
+          " use \"${propertyName}\" to inject a property " +
+          "or use \"#{expression}\" to evaluate a SpEL expression."));
   }
 
-  private static boolean isSimpleSpringValue(AnnotationTree ann){
-    if(ann.symbolType().is(SPRING_VALUE)){
+  private static boolean isSimpleSpringValue(AnnotationTree ann) {
+    if (ann.symbolType().is(SPRING_VALUE)) {
       LiteralTree literal = (LiteralTree) ann.arguments().get(0);
       String value = literal.value();
       return !isPropertyName(value) && !isSpEL(value);
