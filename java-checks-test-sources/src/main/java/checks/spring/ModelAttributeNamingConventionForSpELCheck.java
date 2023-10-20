@@ -3,6 +3,7 @@ package checks.spring;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.ui.Model;
 
 class ModelAttributeNamingConventionForSpELCheck {
 
@@ -42,6 +43,13 @@ class ModelAttributeNamingConventionForSpELCheck {
     model.addAttribute("$d", 8); // Compliant
 
     model.addAllAttributes(new HashMap<>()); // Compliant - test coverage
+    model.addAllAttributes(Map.of());
+
+
+  }
+
+  public void modelAttribute(Model model, String name, Object value) { // Compliant
+    model.addAttribute(name, value);
   }
 
   private Map getMap() {
