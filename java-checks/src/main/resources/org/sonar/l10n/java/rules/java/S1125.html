@@ -1,7 +1,14 @@
 <h2>Why is this an issue?</h2>
-<p>Redundant Boolean literals should be removed from expressions to improve readability.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>A boolean literal can be represented in two different ways: <code>true</code> or <code>false</code>. They can be combined with logical operators
+(<code>!, &amp;&amp;, ||, ==, !=</code>) to produce logical expressions that represent truth values. However, comparing a boolean literal to a
+variable or expression that evaluates to a boolean value is unnecessary and can make the code harder to read and understand. The more complex a
+boolean expression is, the harder it will be for developers to understand its meaning and expected behavior, and it will favour the introduction of
+new bugs.</p>
+<h2>How to tix it</h2>
+<p>Remove redundant boolean literals from expressions to improve readability and make the code more maintainable.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 if (booleanMethod() == true) { /* ... */ }
 if (booleanMethod() == false) { /* ... */ }
 if (booleanMethod() || false) { /* ... */ }
@@ -14,8 +21,8 @@ booleanVariable = booleanMethod() ? false : exp;
 booleanVariable = booleanMethod() ? exp : true;
 booleanVariable = booleanMethod() ? exp : false;
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 if (booleanMethod()) { /* ... */ }
 if (!booleanMethod()) { /* ... */ }
 if (booleanMethod()) { /* ... */ }

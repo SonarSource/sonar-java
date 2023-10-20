@@ -1,5 +1,5 @@
 {
-  "title": "Printf-style format strings should be used correctly",
+  "title": "Format strings should be used correctly",
   "type": "CODE_SMELL",
   "code": {
     "impacts": {
@@ -10,7 +10,7 @@
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "10min"
+    "constantCost": "1min"
   },
   "tags": [
     "cert",

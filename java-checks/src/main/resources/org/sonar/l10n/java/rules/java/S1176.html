@@ -1,27 +1,43 @@
+<p>A good API documentation is a key factor in the usability and success of a software API. It ensures that developers can effectively use, maintain,
+and collaborate on the API.</p>
 <h2>Why is this an issue?</h2>
-<p>Try to imagine using the standard Java API (Collections, JDBC, IO, …​) without Javadoc. It would be a nightmare, because Javadoc is the only way to
-understand of the contract of the API. Documenting an API with Javadoc increases the productivity of the developers consuming it.</p>
-<p>On top of a main description for each member of a public API, the following Javadoc elements are required to be described:</p>
+<p>Undocumented APIs pose significant challenges in software development for several reasons:</p>
+<ul>
+  <li> <strong>Lack of Clarity:</strong> developers struggling to understand how to use the API correctly. This can lead to misuse and unexpected
+  results. </li>
+  <li> <strong>Increased Development Time:</strong> developers spending extra time reading and understanding the source code, which slows down the
+  development process. </li>
+  <li> <strong>Error Prone:</strong> developers are more likely to make mistakes that lead to bugs or system crashes when the intent or the error
+  handling of an API is not clear. </li>
+  <li> <strong>Difficult Maintenance and Updates:</strong> developers may not understand the existing functionality well enough to add new features
+  without breaking the existing ones. </li>
+  <li> <strong>Poor Collaboration:</strong> collaboration, when there is lack of documentation, leads to confusion and inconsistencies. </li>
+</ul>
+<p>It is recommended to document the API using <strong>JavaDoc</strong> to clarify what is the contract of the API. This is especially important for
+public APIs, as they are used by other developers.</p>
+<h3>Exceptions</h3>
+<p>The following public methods and constructors are not taken into account by this rule:</p>
+<ul>
+  <li> Getters and setters. </li>
+  <li> Methods overriding another method (usually annotated with <code>@Override</code>). </li>
+  <li> Empty constructors. </li>
+  <li> Static constants. </li>
+</ul>
+<h2>How to fix it</h2>
+<p>On top of a main description for each member of a public API, the following <strong>Javadoc</strong> elements are required to be described:</p>
 <ul>
   <li> Parameters, using <code>@param parameterName</code>. </li>
   <li> Thrown exceptions, using <code>@throws exceptionName</code>. </li>
   <li> Method return values, using <code>@return</code>. </li>
   <li> Generic types, using <code>@param &lt;T&gt;</code>. </li>
 </ul>
-<p>Furthermore the following guidelines should be followed:</p>
+<p>Furthermore, the following guidelines should be followed:</p>
 <ul>
   <li> At least 1 line of description. </li>
   <li> All parameters documented with <code>@param</code>, and names should match. </li>
-  <li> All checked exceptions documented with <code>@throws</code> </li>
-  <li> <code>@return</code> present and documented when not <code>void</code>. </li>
-  <li> Placeholders like <code>"TODO"</code>, <code>"FIXME"</code>, <code>"..."</code> should be avoided. </li>
-</ul>
-<p>The following public methods and constructors are not taken into account by this rule:</p>
-<ul>
-  <li> Getters and setters. </li>
-  <li> Methods overriding another method (usually decorated with <code>@Override</code>). </li>
-  <li> Empty constructors. </li>
-  <li> Static constants. </li>
+  <li> All checked exceptions should be documented with <code>@throws</code> </li>
+  <li> <code>@return</code> present and documented when method return type is not <code>void</code>. </li>
+  <li> Placeholders like <code>"TODO"</code>, <code>"FIXME"</code>, <code>"…​"</code> should be avoided. </li>
 </ul>
 <p>For the parameters of the rule, the following rules are applied:</p>
 <ul>
@@ -35,50 +51,51 @@ understand of the contract of the API. Documenting an API with Javadoc increases
   <li> <code>java.internal.*</code> will match any member of <code>java.internal</code> package. </li>
   <li> <code>java.internal.**</code> same as above, but including sub-packages. </li>
 </ul>
-<h3>Noncompliant code example</h3>
-<pre>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 /**
   * This is a Javadoc comment
   */
-public class MyClass&lt;T&gt; implements Runnable {    // Noncompliant - missing '@param &lt;T&gt;'
+public class MyClass&lt;T&gt; implements Runnable {   // Noncompliant - missing '@param &lt;T&gt;'
 
-  public static final DEFAULT_STATUS = 0;    // Compliant - static constant
+  public static final int DEFAULT_STATUS = 0;   // Compliant - static constant
   private int status;                           // Compliant - not public
 
-  public String message;                  // Noncompliant
+  public String message;                        // Noncompliant
 
-  public MyClass() {                         // Noncompliant - missing documentation
+  public MyClass() {                            // Noncompliant - missing documentation
     this.status = DEFAULT_STATUS;
   }
 
-  public void setStatus(int status) {  // Compliant - setter
+  public void setStatus(int status) {           // Compliant - setter
     this.status = status;
   }
 
   @Override
-  public void run() {                          // Compliant - has @Override annotation
+  public void run() {                           // Compliant - has @Override annotation
   }
 
-  protected void doSomething() {    // Compliant - not public
+  protected void doSomething() {                // Compliant - not public
   }
 
-  public void doSomething2(int value) {  // Noncompliant
+  public void doSomething2(int value) {         // Noncompliant
   }
 
-  public int doSomething3(int value) {  // Noncompliant
+  public int doSomething3(int value) {          // Noncompliant
     return value;
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 /**
   * This is a Javadoc comment
   * @param &lt;T&gt; the parameter of the class
   */
 public class MyClass&lt;T&gt; implements Runnable {
 
-  public static final DEFAULT_STATUS = 0;
+  public static final int DEFAULT_STATUS = 0;
   private int status;
 
   /**
@@ -109,6 +126,7 @@ public class MyClass&lt;T&gt; implements Runnable {
     * @param value the value to be used
     */
   public void doSomething(int value) {
+  }
 
   /**
     *  {@inheritDoc}
@@ -118,4 +136,16 @@ public class MyClass&lt;T&gt; implements Runnable {
   }
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Oracle - <a href="https://docs.oracle.com/javase/8/docs/technotes/tools/windows/javadoc.html">JavaDoc</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> Technical Writer HQ - <a href="https://technicalwriterhq.com/documentation/api-documentation/how-to-write-api-documentation/">How to write API
+  documentation</a> </li>
+  <li> FreeCodeCamp - <a href="https://www.freecodecamp.org/news/how-to-write-api-documentation-like-a-pro/">How to write API documentation like a
+  pro</a> </li>
+</ul>
 

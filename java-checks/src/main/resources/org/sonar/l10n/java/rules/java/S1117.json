@@ -1,5 +1,4 @@
 {
-  "title": "Local variables should not shadow class fields",
   "type": "CODE_SMELL",
   "code": {
     "impacts": {
@@ -22,10 +21,10 @@
   "sqKey": "S1117",
   "scope": "All",
   "quickfix": "unknown",
+  "title": "Local variables should not shadow class fields",
   "securityStandards": {
     "CERT": [
-      "DCL51-J.",
-      "DCL01-C."
+      "DCL51-J."
     ]
   }
 }

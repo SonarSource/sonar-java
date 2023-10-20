@@ -38,7 +38,7 @@ Realm realm = Realm.getInstance(config);
 </pre>
 <h3>How does this work?</h3>
 <h4>Using Android’s builtin key storage options</h4>
-<p>The <a href="https://developer.android.com/training/articles/keystore">Android Keystore</a> system allows apps to store encryption keys in a
+<p>The <a href="https://developer.android.com/privacy-and-security/keystore">Android Keystore</a> system allows apps to store encryption keys in a
 container that is protected on a system level. Additionally, it can restrict when and how the keys are used. For example, it allows the app to require
 user authentication (for example using a fingerprint) before the key is made available. This is the recommended way to store cryptographic keys on
 Android.</p>
@@ -66,7 +66,7 @@ SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("test.db", getKey(), nul
 </pre>
 <h3>How does this work?</h3>
 <h4>Using Android’s builtin key storage options</h4>
-<p>The <a href="https://developer.android.com/training/articles/keystore">Android Keystore</a> system allows apps to store encryption keys in a
+<p>The <a href="https://developer.android.com/privacy-and-security/keystore">Android Keystore</a> system allows apps to store encryption keys in a
 container that is protected on a system level. Additionally, it can restrict when and how the keys are used. For example, it allows the app to require
 user authentication (for example using a fingerprint) before the key is made available. This is the recommended way to store cryptographic keys on
 Android.</p>
@@ -82,8 +82,8 @@ required for authentication, it might be possible to use and store a hashed vers
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> Android Documentation - <a href="https://developer.android.com/training/articles/keystore">Android Keystore system</a> </li>
-  <li> Android Documentation - <a href="https://developer.android.com/training/articles/security-tips#UserData">Security tips - User data</a> </li>
+  <li> Android Documentation - <a href="https://developer.android.com/privacy-and-security/keystore">Android Keystore system</a> </li>
+  <li> Android Documentation - <a href="https://developer.android.com/privacy-and-security/security-tips#UserData">Security tips - User data</a> </li>
   <li> OWASP Mobile Application Security Testing Guide - <a
   href="https://mobile-security.gitbook.io/mobile-security-testing-guide/android-testing-guide/0x05d-testing-data-storage">Data Storage on Android</a>
   </li>

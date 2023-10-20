@@ -1,15 +1,36 @@
 <h2>Why is this an issue?</h2>
-<p>If a local variable is declared but not used, it is dead code and should be removed. Doing so will improve maintainability because developers will
-not wonder what the variable is used for.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>An unused local variable is a variable that has been declared but is not used anywhere in the block of code where it is defined. It is dead code,
+contributing to unnecessary complexity and leading to confusion when reading the code. Therefore, it should be removed from your code to maintain
+clarity and efficiency.</p>
+<h3>What is the potential impact?</h3>
+<p>Having unused local variables in your code can lead to several issues:</p>
+<ul>
+  <li> Decreased Readability: Unused variables can make your code more difficult to read. They add extra lines and complexity, which can distract from
+  the main logic of the code. </li>
+  <li> Misunderstanding: When other developers read your code, they may wonder why a variable is declared but not used. This can lead to confusion and
+  misinterpretation of the code’s intent. </li>
+  <li> Potential for Bugs: If a variable is declared but not used, it might indicate a bug or incomplete code. For example, if you declared a variable
+  intending to use it in a calculation, but then forgot to do so, your program might not work as expected. </li>
+  <li> Maintenance Issues: Unused variables can make code maintenance more difficult. If a programmer sees an unused variable, they might think it is
+  a mistake and try to 'fix' the code, potentially introducing new bugs. </li>
+  <li> Memory Usage: Although modern compilers are smart enough to ignore unused variables, not all compilers do this. In such cases, unused variables
+  take up memory space, leading to inefficient use of resources. </li>
+</ul>
+<p>In summary, unused local variables can make your code less readable, more confusing, and harder to maintain, and they can potentially lead to bugs
+or inefficient memory use. Therefore, it is best to remove them.</p>
+<h2>How to fix it</h2>
+<p>The fix for this issue is straightforward. Once you ensure the unused variable is not part of an incomplete implementation leading to bugs, you
+just need to remove it.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public int numberOfMinutes(int hours) {
-  int seconds = 0;   // seconds is never used
+  int seconds = 0;   // Noncompliant - seconds is unused
   return hours * 60;
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public int numberOfMinutes(int hours) {
   return hours * 60;
 }

@@ -1,33 +1,39 @@
 <h2>Why is this an issue?</h2>
-<p>Marking a non-<code>public</code> method <code>@Transactional</code> is both useless and misleading because Spring does not recognize
-non-<code>public</code> methods, and so makes no provision for their proper invocation. Nor does Spring make provision for the methods invoked by the
-method it called.</p>
-<p>Therefore marking a <code>private</code> method, for instance, <code>@Transactional</code> can only result in a runtime error or exception if the
-method is annotated as <code>@Transactional</code>.</p>
+<p>Marking a non-public method <code>@Async</code> or <code>@Transactional</code> is misleading because Spring does not recognize non-public methods,
+and so makes no provision for their proper invocation. Nor does Spring make provision for the methods invoked by the method it called.</p>
+<p>Therefore marking a private method, for instance, @Transactional can only result in a runtime error or exception if the method is annotated as
+@Transactional.</p>
 <h2>How to fix it</h2>
-<p>Make the method public or remove the <code>@Transactional</code> annotation.</p>
+<p>Declare the method <code>public</code>. Note that this action alone does not resolve the issue of direct instance calls from within the same class
+(see rule {rule:java:S6809}), but it is a required precondition to fix it.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
-@Transactional  // Noncompliant
-void doTheThing(ArgClass arg) {
-  // ...
-}
-
-@Transactional  // Noncompliant
-private void doTheOtherThing(ArgClass arg) {
-  // ...
+@Async
+private Future&lt;String&gt; asyncMethodWithReturnType() { // Noncompliant, no proxy generated and
+    return "Hellow, world!";                         // can only be invoked from same class
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
-@Transactional
-public void doTheThing(ArgClass arg) {
-  // ...
-}
-
-private void doTheOtherThing(ArgClass arg) {
-  // ...
+@Async
+public Future&lt;String&gt; asyncMethodWithReturnType() { // Compliant
+    return "Hellow, world!";
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Async.html">Spring
+  Framework API - Annotation Interface Async</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Transactional.html">Spring
+  Framework API - Annotation Interface Transactional</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/spring-async">Baeldung - How To Do @Async in Spring</a> </li>
+  <li> <a href="https://stackoverflow.com/questions/22561775/spring-async-ignored">Stack Overflow - Spring @Async ignored</a> </li>
+  <li> <a href="https://stackoverflow.com/questions/4396284/does-spring-transactional-attribute-work-on-a-private-method">Stack Overflow - Does Spring
+  @Transactional attribute work on a private method?</a> </li>
+</ul>
 

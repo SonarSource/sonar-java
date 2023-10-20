@@ -1,35 +1,53 @@
 <h2>Why is this an issue?</h2>
-<p>Assignments within sub-expressions are hard to spot and therefore make the code less readable. Ideally, sub-expressions should not have
-side-effects.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-if ((str = cont.substring(pos1, pos2)).isEmpty()) {  // Noncompliant
-  //...
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-str = cont.substring(pos1, pos2);
-if (str.isEmpty()) {
-  //...
-</pre>
+<p>A common code smell that can hinder the clarity of source code is making assignments within sub-expressions. This practice involves assigning a
+value to a variable inside a larger expression, such as within a loop or a conditional statement.</p>
+<p>This practice essentially gives a side-effect to a larger expression, thus making it less readable. This often leads to confusion and potential
+errors.</p>
 <h3>Exceptions</h3>
-<p>Assignments in <code>while</code> statement conditions, and assignments enclosed in relational expressions are ignored.</p>
+<p>This rule ignores assignments in conditions of <code>while</code> statements and assignments enclosed in relational expressions.</p>
 <pre>
-BufferedReader br = new BufferedReader(/* ... */);
-String line;
-while ((line = br.readLine()) != null) {...}
-if ((i = j) &gt;= 1) {...}
+void processInput(BufferedReader br) {
+  String line;
+  while ((line = br.readLine()) != null) {
+    processLine(line);
+  }
+}
+
+Object foo;
+if ((foo = bar()) != null) {
+  // do something with "foo"
+}
 </pre>
-<p>Chained assignments, including compound assignments, are ignored.</p>
+<p>This rule also ignores chained assignments, including compound assignments.</p>
 <pre>
-int i = j = 0;
+int j, i = j = 0;
 int k = (j += 1);
+byte[] result, bresult;
 result = (bresult = new byte[len]);
+</pre>
+<h2>How to fix it</h2>
+<p>Making assignments within sub-expressions can hinder the clarity of source code.</p>
+<p>This practice essentially gives a side-effect to a larger expression, thus making it less readable. This often leads to confusion and potential
+errors.</p>
+<p>Extracting assignments into separate statements is encouraged to keep the code clear and straightforward.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String str;
+if (!(str = cont.substring(pos1, pos2)).isEmpty()) {  // Noncompliant
+  // do something with "str"
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+String str = cont.substring(pos1, pos2);
+if (!str.isEmpty()) {
+  // do something with "str"
+}
 </pre>
 <h2>Resources</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/481">MITRE, CWE-481</a> - Assigning instead of Comparing </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/ZNYxBQ">CERT, EXP45-C.</a> - Do not perform assignments in selection statements </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/ITZGBQ">CERT, EXP51-J.</a> - Do not perform assignments in conditional expressions </li>
 </ul>
 
