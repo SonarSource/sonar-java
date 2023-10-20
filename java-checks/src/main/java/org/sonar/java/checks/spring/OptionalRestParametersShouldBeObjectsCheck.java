@@ -31,10 +31,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6814")
 public class OptionalRestParametersShouldBeObjectsCheck extends IssuableSubscriptionVisitor {
-
+  private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
+  private static final String REQUEST_PARAM_ANNOTATION = "org.springframework.web.bind.annotation.RequestParam";
   private static final List<String> PARAMETER_ANNOTATIONS = List.of(
-    "org.springframework.web.bind.annotation.PathVariable",
-    "org.springframework.web.bind.annotation.RequestParam"
+    PATH_VARIABLE_ANNOTATION,
+    REQUEST_PARAM_ANNOTATION
   );
 
   @Override
@@ -53,7 +54,7 @@ public class OptionalRestParametersShouldBeObjectsCheck extends IssuableSubscrip
   private static boolean isOptionalPrimitive(VariableTree parameter) {
     return parameter.type().symbolType().isPrimitive() &&
       parameter.modifiers().annotations().stream()
-        .anyMatch(OptionalRestParametersShouldBeObjectsCheck::isMarkingAsOptional);
+        .anyMatch(annotation -> isMarkingAsOptional(annotation) && !hasDefaultValue(annotation));
   }
 
   private static boolean isMarkingAsOptional(AnnotationTree annotation) {
@@ -64,6 +65,15 @@ public class OptionalRestParametersShouldBeObjectsCheck extends IssuableSubscrip
         IdentifierTree variable = (IdentifierTree) assignment.variable();
         Boolean constant = assignment.expression().asConstant(Boolean.class).orElse(Boolean.TRUE);
         return "required".equals(variable.name()) && Boolean.FALSE.equals(constant);
+      });
+  }
+
+  private static boolean hasDefaultValue(AnnotationTree annotation) {
+    return annotation.annotationType().symbolType().is(REQUEST_PARAM_ANNOTATION) &&
+      annotation.arguments().stream().anyMatch(expressionTree -> {
+        AssignmentExpressionTree assignment = (AssignmentExpressionTree) expressionTree;
+        IdentifierTree variable = (IdentifierTree) assignment.variable();
+        return "defaultValue".equals(variable.name());
       });
   }
 }

@@ -56,6 +56,11 @@ class OptionalRestParametersShouldBeObjects {
     return new Article(articleId);
   }
 
+  @GetMapping(value = "{/article/id")
+  public Article getArticleRequestParamWithDefaultValue(@RequestParam(required = false, defaultValue = "1") int articleId) { // Compliant
+    return new Article(articleId);
+  }
+
   @GetMapping(value = {"/article/{id}"})
   public Article getArticleButDifferentlyAnnotated(@Nullable int articleId) { // Compliant
     return new Article(articleId);
