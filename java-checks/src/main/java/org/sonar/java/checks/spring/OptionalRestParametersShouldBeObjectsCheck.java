@@ -20,6 +20,7 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -59,9 +60,7 @@ public class OptionalRestParametersShouldBeObjectsCheck extends IssuableSubscrip
 
   private static boolean isMarkingAsOptional(AnnotationTree annotation) {
     return PARAMETER_ANNOTATIONS.stream().anyMatch(candidate -> annotation.annotationType().symbolType().is(candidate)) &&
-      annotation.arguments().stream().anyMatch(expressionTree -> {
-        // Because all parameters of the supported annotations are assignments, we can cast safely here.
-        AssignmentExpressionTree assignment = (AssignmentExpressionTree) expressionTree;
+      streamAllNamedArguments(annotation).anyMatch(assignment -> {
         IdentifierTree variable = (IdentifierTree) assignment.variable();
         Boolean constant = assignment.expression().asConstant(Boolean.class).orElse(Boolean.TRUE);
         return "required".equals(variable.name()) && Boolean.FALSE.equals(constant);
@@ -70,10 +69,15 @@ public class OptionalRestParametersShouldBeObjectsCheck extends IssuableSubscrip
 
   private static boolean hasDefaultValue(AnnotationTree annotation) {
     return annotation.annotationType().symbolType().is(REQUEST_PARAM_ANNOTATION) &&
-      annotation.arguments().stream().anyMatch(expressionTree -> {
-        AssignmentExpressionTree assignment = (AssignmentExpressionTree) expressionTree;
+      streamAllNamedArguments(annotation).anyMatch(assignment -> {
         IdentifierTree variable = (IdentifierTree) assignment.variable();
         return "defaultValue".equals(variable.name());
       });
+  }
+
+  private static Stream<AssignmentExpressionTree> streamAllNamedArguments(AnnotationTree annotation) {
+    return annotation.arguments().stream()
+      .filter(expression -> expression.is(Tree.Kind.ASSIGNMENT))
+      .map(AssignmentExpressionTree.class::cast);
   }
 }

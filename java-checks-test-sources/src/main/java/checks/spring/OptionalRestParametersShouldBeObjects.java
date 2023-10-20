@@ -66,6 +66,16 @@ class OptionalRestParametersShouldBeObjects {
     return new Article(articleId);
   }
 
+  @GetMapping(value = {"/article/{id}"})
+  public Article getArticlePathVariableWithValue(@PathVariable("id") int articleId) { // Compliant
+    return new Article(articleId);
+  }
+
+  @GetMapping(value = {"/article/{id}"})
+  public Article getArticleRequestParamWithValue(@RequestParam("id") int articleId) { // Compliant
+    return new Article(articleId);
+  }
+
   record Article(int id) {
   }
 }
