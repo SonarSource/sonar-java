@@ -91,7 +91,7 @@ public class ModelAttributeNamingConventionForSpELCheck extends AbstractMethodDe
 
   private void checkIdentifier(IdentifierTree identifierTree) {
     VariableTreeImpl declaration = (VariableTreeImpl) identifierTree.symbol().declaration();
-    if (declaration != null) {
+    if (declaration != null && declaration.initializer()!=null) {
       checkExpression(declaration.initializer(), identifierTree);
     }
   }
