@@ -4,4 +4,9 @@
     <allowUntrusted>true</allowUntrusted>
     <accessKey>${env.GRADLE_ENTERPRISE_KEY}</accessKey>
   </server>
+  <buildCache>
+    <remote>
+      <storeEnabled>true</storeEnabled>
+    </remote>
+  </buildCache>
 </gradleEnterprise>
