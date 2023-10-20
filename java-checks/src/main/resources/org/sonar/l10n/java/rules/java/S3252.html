@@ -1,8 +1,10 @@
 <h2>Why is this an issue?</h2>
-<p>In the interest of code clarity, <code>static</code> members of a <code>base</code> class should never be accessed using a derived type’s name.
-Doing so is confusing and could create the illusion that two different static members exist.</p>
+<p>In object-oriented programming, inappropriately accessing static members of a base class via derived types is considered a code smell.</p>
+<p>Static members are associated with the class itself, not with any specific instance of the class or its children classes. Accessing through the
+wrong type suggests a misunderstanding of the ownership and role of this member. This can make the maintenance of the code more complicated.</p>
+<p>Therefore, the access should be done directly through the base class to maintain clarity and avoid potential misunderstandings.</p>
 <h3>Noncompliant code example</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class Parent {
   public static int counter;
 }
@@ -14,7 +16,7 @@ class Child extends Parent {
 }
 </pre>
 <h3>Compliant solution</h3>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 class Parent {
   public static int counter;
 }

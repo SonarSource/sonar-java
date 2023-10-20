@@ -1,35 +1,63 @@
+<p>This rule raises an issue when a generic exception (such as <code>Error</code>, <code>RuntimeException</code>, <code>Throwable</code>, or
+<code>Exception</code>) is thrown.</p>
 <h2>Why is this an issue?</h2>
-<p>Using such generic exceptions as <code>Error</code>, <code>RuntimeException</code>, <code>Throwable</code>, and <code>Exception</code> prevents
-calling methods from handling true, system-generated exceptions differently than application-generated errors.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public void foo(String bar) throws Throwable {  // Noncompliant
-  throw new RuntimeException("My Message");     // Noncompliant
-}
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-public void foo(String bar) {
-  throw new MyOwnRuntimeException("My Message");
-}
-</pre>
+<p>Throwing generic exceptions such as <code>Error</code>, <code>RuntimeException</code>, <code>Throwable</code>, and <code>Exception</code> will have
+a negative impact on any code trying to catch these exceptions.</p>
+<p>From a consumer perspective, it is generally a best practice to only catch exceptions you intend to handle. Other exceptions should ideally be let
+to propagate up the stack trace so that they can be dealt with appropriately. When a generic exception is thrown, it forces consumers to catch
+exceptions they do not intend to handle, which they then have to re-throw.</p>
+<p>Besides, when working with a generic type of exception, the only way to distinguish between multiple exceptions is to check their message, which is
+error-prone and difficult to maintain. Legitimate exceptions may be unintentionally silenced and errors may be hidden.</p>
+<p>For instance, when a <code>Throwable</code> is caught and not re-thrown, it may mask errors such as <code>OutOfMemoryError</code> and prevent the
+program from terminating gracefully.</p>
+<p>When throwing an exception, it is therefore recommended to throw the most specific exception possible so that it can be handled intentionally by
+consumers.</p>
 <h3>Exceptions</h3>
-<p>Generic exceptions in the signatures of overriding methods are ignored, because overriding method has to follow signature of the throw declaration
-in the superclass. The issue will be raised on superclass declaration of the method (or won’t be raised at all if superclass is not part of the
-analysis).</p>
+<p>Generic exceptions in the signatures of overriding methods are ignored, because an overriding method has to follow the signature of the throw
+declaration in the superclass. The issue will be raised on superclass declaration of the method (or won’t be raised at all if superclass is not part
+of the analysis).</p>
 <pre>
 @Override
 public void myMethod() throws Exception {...}
 </pre>
 <p>Generic exceptions are also ignored in the signatures of methods that make calls to methods that throw generic exceptions.</p>
 <pre>
-public void myOtherMethod throws Exception {
+public void myOtherMethod() throws Exception {
   doTheThing();  // this method throws Exception
 }
 </pre>
-<h2>Resources</h2>
+<h2>How to fix it</h2>
+<p>To fix this issue, make sure to throw specific exceptions that are relevant to the context in which they arise. It is recommended to either:</p>
 <ul>
-  <li> <a href="https://cwe.mitre.org/data/definitions/397">MITRE, CWE-397</a> - Declaration of Throws for Generic Exception </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/_DdGBQ">CERT, ERR07-J.</a> - Do not throw RuntimeException, Exception, or Throwable </li>
+  <li> Raise a specific exception from the Java standard library when one matches. For example an <code>IllegalArgumentException</code> should be
+  thrown when a method receives an invalid argument. </li>
+  <li> Create a custom exception class deriving from <code>Exception</code> or one of its subclasses. </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+void checkValue(int value) throws Throwable { // Noncompliant: signature is too broad
+    if (value == 42) {
+        throw new RuntimeException("Value is 42"); // Noncompliant: This will be difficult for consumers to handle
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+void checkValue(int value) {
+    if (value == 42) {
+        throw new IllegalArgumentException("Value is 42"); // Compliant
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Standards</h3>
+<ul>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/397">397 Declaration of Throws for Generic Exception</a> </li>
+  <li> CERT - <a href="https://wiki.sei.cmu.edu/confluence/x/_DdGBQ">ERR07-J. Do not throw RuntimeException, Exception, or Throwable</a> </li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li> {rule:java:S1181} - Generic exceptions should not be caught </li>
 </ul>
 

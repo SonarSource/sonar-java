@@ -1,15 +1,22 @@
 <h2>Why is this an issue?</h2>
-<p>Java 9 introduced a flag for the <code>@Deprecated</code> annotation, which allows to explicitly say if the deprecated code is planned to be
-removed at some point or not. This is done using <code>forRemoval=true</code> as annotation parameter. The javadoc of the annotation explicitly
-mention the following:</p>
+<p>With the introduction of Java 9, the standard annotation class <code>java.lang.Deprecated</code> has been updated with new parameters. Notably, a
+boolean parameter <code>forRemoval</code> has been added to clearly signify whether the deprecated code is intended to be removed in the future. This
+is indicated with <code>forRemoval=true</code>. The javadoc of the annotation explicitly mentions the following:</p>
 <blockquote>
-  <p>If true, it means that this API element is earmarked for removal in a future release.</p>
-  <p>If false, the API element is deprecated, but there is currently no intention to remove it in a future release.</p>
+  <p>This annotation type has a boolean-valued element <code>forRemoval</code>. A value of <code>true</code> indicates intent to remove the annotated
+  program element in a future version. A value of <code>false</code> indicates that use of the annotated program element is discouraged, but at the
+  time the program element was annotated, there was no specific intent to remove it.</p>
 </blockquote>
-<p>While usually deprecated classes, interfaces, and their deprecated members should be avoided rather than used, inherited or extended, those already
-marked for removal are much more sensitive to causing trouble in your code soon. Consequently, any usage of such deprecated code should be avoided or
-removed.</p>
-<h3>Noncompliant code example</h3>
+<p>While it is generally recommended for developers to steer clear of using deprecated classes, interfaces, and their deprecated members, those
+already marked for removal will surely block you from upgrading your dependency. Usage of deprecated code should be avoided or eliminated as soon as
+possible to prevent accumulation and allow a smooth upgrade of dependencies.</p>
+<p>The deprecated code is usually no longer maintained, can contain some bugs or vulnerabilities, and usually indicates that there is a better way to
+do the same thing. Removing it can even lead to significant improvement of your software.</p>
+<h2>How to fix it</h2>
+<p>Usage of deprecated classes, interfaces, and their methods explicitly marked for removal is discouraged. A developer should either migrate to
+alternative methods or refactor the code to avoid the deprecated ones.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre>
 /**
  * @deprecated As of release 1.3, replaced by {@link #Fee}. Will be dropped with release 1.4.

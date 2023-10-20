@@ -1,22 +1,28 @@
 <h2>Why is this an issue?</h2>
 <p>The standard assertions library methods such as <code>org.junit.Assert.assertEquals</code>, and <code>org.junit.Assert.assertSame</code> expect the
-first argument to be the expected value and the second argument to be the actual value. For AssertJ, it’s the other way around, the argument of
-<code>org.assertj.core.api.Assertions.assertThat</code> is the actual value, and the subsequent calls contain the expected values. Swap them, and your
-test will still have the same outcome (succeed/fail when it should) but the error messages will be confusing.</p>
+first argument to be the expected value and the second argument to be the actual value. For AssertJ instead, the argument of
+<code>org.assertj.core.api.Assertions.assertThat</code> is the actual value, and the subsequent calls contain the expected values.</p>
+<h3>What is the potential impact?</h3>
+<p>Having the expected value and the actual value in the wrong order will not alter the outcome of tests, (succeed/fail when it should) but the error
+messages will contain misleading information.</p>
 <p>This rule raises an issue when the actual argument to an assertions library method is a hard-coded value and the expected argument is not.</p>
+<h2>How to fix it</h2>
+<p>You should provide the assertion methods with a hard-coded value as the expected value, while the actual value of the assertion should derive from
+the portion of code that you want to test.</p>
 <p>Supported frameworks:</p>
 <ul>
-  <li> JUnit4 </li>
-  <li> JUnit5 </li>
+  <li> <a href="https://junit.org/junit4/">JUnit4</a> </li>
+  <li> <a href="https://junit.org/junit5/docs/current/user-guide/">JUnit5</a> </li>
   <li> <a href="https://assertj.github.io/doc/">AssertJ</a> </li>
 </ul>
-<h3>Noncompliant code example</h3>
-<pre>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 org.junit.Assert.assertEquals(runner.exitCode(), 0, "Unexpected exit code");  // Noncompliant; Yields error message like: Expected:&lt;-1&gt;. Actual:&lt;0&gt;.
 org.assertj.core.api.Assertions.assertThat(0).isEqualTo(runner.exitCode()); // Noncompliant
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 org.junit.Assert.assertEquals(0, runner.exitCode(), "Unexpected exit code");
 org.assertj.core.api.Assertions.assertThat(runner.exitCode()).isEqualTo(0);
 </pre>

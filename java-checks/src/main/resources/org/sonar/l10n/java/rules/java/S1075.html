@@ -1,12 +1,19 @@
 <h2>Why is this an issue?</h2>
-<p>Hard coding a URI makes it difficult to test a program: path literals are not always portable across operating systems, a given absolute path may
-not exist on a specific test environment, a specified Internet URL may not be available when executing the tests, production environment filesystems
-usually differ from the development environment, …​etc. For all those reasons, a URI should never be hard coded. Instead, it should be replaced by
-customizable parameter.</p>
-<p>Further even if the elements of a URI are obtained dynamically, portability can still be limited if the path-delimiters are hard-coded.</p>
-<p>This rule raises an issue when URI’s or path delimiters are hard coded.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>Hard-coding a URI makes it difficult to test a program for a variety of reasons:</p>
+<ul>
+  <li> path literals are not always portable across operating systems </li>
+  <li> a given absolute path may not exist in a specific test environment </li>
+  <li> a specified Internet URL may not be available when executing the tests </li>
+  <li> production environment filesystems usually differ from the development environment </li>
+</ul>
+<p>In addition, hard-coded URIs can contain sensitive information, like IP addresses, and they should not be stored in the code.</p>
+<p>For all those reasons, a URI should never be hard coded. Instead, it should be replaced by a customizable parameter.</p>
+<p>Further, even if the elements of a URI are obtained dynamically, portability can still be limited if the path delimiters are hard-coded.</p>
+<p>This rule raises an issue when URIs or path delimiters are hard-coded.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Foo {
   public Collection&lt;User&gt; listUsers() {
     File userList = new File("/home/mylogin/Dev/users.txt"); // Noncompliant
@@ -15,8 +22,8 @@ public class Foo {
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class Foo {
   // Configuration is a class that returns customizable properties: it can be mocked to be injected during tests.
   private Configuration config;
@@ -33,8 +40,4 @@ public class Foo {
   }
 }
 </pre>
-<h2>Resources</h2>
-<ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/OjdGBQ">CERT, MSC03-J.</a> - Never hard code sensitive information </li>
-</ul>
 

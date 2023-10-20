@@ -1,9 +1,14 @@
 <h2>Why is this an issue?</h2>
-<p>Utility classes, which are collections of <code>static</code> members, are not meant to be instantiated. Even abstract utility classes, which can
-be extended, should not have public constructors.</p>
-<p>Java adds an implicit public constructor to every class which does not define at least one explicitly. Hence, at least one non-public constructor
-should be defined.</p>
-<h3>Noncompliant code example</h3>
+<p>Whenever there are portions of code that are duplicated and do not depend on the state of their container class, they can be centralized inside a
+"utility class". A utility class is a class that only has static members, hence it should not be instantiated.</p>
+<h3>Exceptions</h3>
+<p>When a class contains <code>public static void main(String[] args)</code> method it is not considered as a utility class and will be ignored by
+this rule.</p>
+<h2>How to fix it</h2>
+<p>To prevent the class from being instantiated, you should define a non-public constructor. This will prevent the compiler from implicitly generating
+a public parameterless constructor.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 class StringUtils { // Noncompliant
 
@@ -13,7 +18,7 @@ class StringUtils { // Noncompliant
 
 }
 </pre>
-<h3>Compliant solution</h3>
+<h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 class StringUtils { // Compliant
 
@@ -27,7 +32,4 @@ class StringUtils { // Compliant
 
 }
 </pre>
-<h3>Exceptions</h3>
-<p>When class contains <code>public static void main(String[] args)</code> method it is not considered as utility class and will be ignored by this
-rule.</p>
 

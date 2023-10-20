@@ -1,17 +1,26 @@
 <h2>Why is this an issue?</h2>
-<p>Using <code>Collection.size()</code> to test for emptiness works, but using <code>Collection.isEmpty()</code> makes the code more readable and can
-be more performant. The time complexity of any <code>isEmpty()</code> method implementation should be <code>O(1)</code> whereas some implementations
-of <code>size()</code> can be <code>O(n)</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-if (myCollection.size() == 0) {  // Noncompliant
-  /* ... */
+<p>When you call <code>isEmpty()</code>, it clearly communicates the code’s intention, which is to check if the collection is empty. Using
+<code>size() == 0</code> for this purpose is less direct and makes the code slightly more complex.</p>
+<p>Moreover, depending on the implementation, the <code>size()</code> method can have a time complexity of <code>O(n)</code> where <code>n</code> is
+the number of elements in the collection. On the other hand, <code>isEmpty()</code> simply checks if there is at least one element in the collection,
+which is a constant time operation, <code>O(1)</code>.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class MyClass {
+  public void doSomething(Collection&lt;String&gt; myCollection) {
+    if (myCollection.size() == 0) { // Noncompliant
+      doSomethingElse();
+    }
+  }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-if (myCollection.isEmpty()) {
-  /* ... */
+<p>Prefer using <code>isEmpty()</code> to test for emptiness over <code>size()</code>.</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class MyClass {
+  public void doSomething(Collection&lt;String&gt; myCollection) {
+    if (myCollection.isEmpty()) {
+      doSomethingElse();
+    }
+  }
 }
 </pre>
 

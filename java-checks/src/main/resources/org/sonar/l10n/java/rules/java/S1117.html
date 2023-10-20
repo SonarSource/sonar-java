@@ -1,22 +1,36 @@
 <h2>Why is this an issue?</h2>
-<p>Overriding or shadowing a variable declared in an outer scope can strongly impact the readability, and therefore the maintainability, of a piece of
-code. Further, it could lead maintainers to introduce bugs because they think they’re using one variable but are really using another.</p>
+<p>Shadowing occurs when a local variable has the same name as a variable or a field in an outer scope.</p>
+<p>This can lead to three main problems:</p>
+<ul>
+  <li> Confusion: The same name can refer to different variables in different parts of the scope, making the code hard to read and understand. </li>
+  <li> Unintended Behavior: You might accidentally use the wrong variable, leading to hard-to-detect bugs. </li>
+  <li> Maintenance Issues: If the inner variable is removed or renamed, the code’s behavior might change unexpectedly because the outer variable is
+  now being used. </li>
+</ul>
+<p>To avoid these problems, rename the shadowing, shadowed, or both identifiers to accurately represent their purpose with unique and meaningful
+names.</p>
+<p>This rule focuses on variables in methods that shadow a field.</p>
+<h3>Noncompliant code example</h3>
 <pre>
 class Foo {
   public int myField;
 
   public void doSomething() {
     int myField = 0; // Noncompliant
-    ...
+    // ...
   }
 }
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/display/c/DCL01-C.+Do+not+reuse+variable+names+in+subscopes">CERT, DCL01-C.</a> - Do not reuse
-  variable names in subscopes </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL51-J.+Do+not+shadow+or+obscure+identifiers+in+subscopes">CERT, DCL51-J.</a> - Do
-  not shadow or obscure identifiers in subscopes </li>
+  <li> CERT - <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL51-J.+Do+not+shadow+or+obscure+identifiers+in+subscopes">DCL51-J. Do not
+  shadow or obscure identifiers in subscopes</a> </li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li> {rule:java:S2176} - Class names should not shadow interfaces or superclasses </li>
+  <li> {rule:java:S2387} - Child class fields should not shadow parent class fields </li>
+  <li> {rule:java:S4977} - Type parameters should not shadow other type parameters </li>
 </ul>
 

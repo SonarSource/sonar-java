@@ -1,20 +1,21 @@
 {
-  "title": "Non-public methods should not be \"@Transactional\"",
+  "title": "Methods with Spring proxying annotations should be public",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "CONVENTIONAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "20min"
+    "constantCost": "5min"
   },
   "tags": [
     "spring"
   ],
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH",
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  },
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2230",
   "sqKey": "S2230",

@@ -1,12 +1,16 @@
 <h2>Why is this an issue?</h2>
-<p>Shared coding conventions allow teams to collaborate efficiently. This rule checks that all package names match a provided regular expression.</p>
-<h3>Noncompliant code example</h3>
+<p>Shared naming conventions improve readability and allow teams to collaborate efficiently. This rule checks that all package names match a provided
+regular expression.</p>
+<h2>How to fix it</h2>
+<p>Rename packages with the expected naming convention</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <p>With the default regular expression <code>^[a-z_]+(\.[a-z_][a-z0-9_]*)*$</code>:</p>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 package org.exAmple; // Noncompliant
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 package org.example;
 </pre>
 

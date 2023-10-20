@@ -1,24 +1,43 @@
 <h2>Why is this an issue?</h2>
-<p>Blindly importing all the classes in a package clutters the class namespace and could lead to conflicts between classes in different packages with
-the same name. On the other hand, specifically listing the necessary classes avoids that problem and makes clear which versions were wanted.</p>
-<h3>Noncompliant code example</h3>
+<p>Using wildcards in imports may look cleaner as it reduces the number of lines in the import section and simplifies the code.<br> On the other hand,
+it makes the code harder to maintain:</p>
+<ul>
+  <li> It reduces code readability as developers will have a hard time knowing where names come from. </li>
+  <li> It could lead to conflicts between names defined locally and the ones imported. </li>
+  <li> It could later raise conflicts on dependency upgrade or Java version migration, as a wildcard import that works today might be broken tomorrow.
+  </li>
+</ul>
+<p>That is why it is better to import only the specific classes or modules you need.</p>
+<h3>Exceptions</h3>
+<p>Static imports are ignored by this rule. For example:</p>
 <pre>
+import static java.lang.Math.*;
+</pre>
+<p>will not raise an issue;</p>
+<h2>How to fix it</h2>
+<p>Depending on your IDE you can solve this issue almost <strong>automatically</strong>:<br> Look for <strong>Organize/Optimize imports</strong>
+actions. These actions can also often be applied automatically on save.<br> <em>Note:</em> To make this work properly, you must adjust IDE settings to
+use a very high <code>allowed class count usage</code> before using wildcards.</p>
+<p>Resolving this issue <strong>manually</strong> will require a step-by-step approach:</p>
+<ol>
+  <li> Remove one wildcard import and note down compilation failures. </li>
+  <li> For each missing class, import it back with the package prefix. </li>
+  <li> When the code compiles again, proceed with the next wildcard import. </li>
+</ol>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 import java.sql.*; // Noncompliant
 import java.util.*; // Noncompliant
 
 private Date date; // Date class exists in java.sql and java.util. Which one is this?
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 import java.sql.Date;
 import java.util.List;
 import java.util.ArrayList;
 
 private Date date;
-</pre>
-<h3>Exceptions</h3>
-<p>Static imports are ignored by this rule. E.G.</p>
-<pre>
-import static java.lang.Math.*;
 </pre>
 
