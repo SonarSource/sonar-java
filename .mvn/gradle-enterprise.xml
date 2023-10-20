@@ -1,0 +1,7 @@
+<gradleEnterprise>
+  <server>
+    <url>https://ae5480415855641419524dee8eb44d76-f3fa1c0f09cfc0bc.elb.eu-west-1.amazonaws.com</url>
+    <allowUntrusted>true</allowUntrusted>
+    <accessKey>${env.GRADLE_ENTERPRISE_KEY}</accessKey>
+  </server>
+</gradleEnterprise>
