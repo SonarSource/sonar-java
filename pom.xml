@@ -99,6 +99,14 @@
     <version.jacoco.plugin>0.8.10</version.jacoco.plugin>
   </properties>
 
+  <distributionManagement>
+    <repository>
+      <id>local-folder</id>
+      <name>Local folder to test deployment configuration</name>
+      <url>file:./local-deployment</url>
+    </repository>
+  </distributionManagement>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
