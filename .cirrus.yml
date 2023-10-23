@@ -64,6 +64,7 @@ build_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
     - source cirrus-env BUILD
+    - cp .mvn/gradle-enterprise-ci.xml .mvn/gradle-enterprise.xml
     - regular_mvn_build_deploy_analyze -Dsonar.analysisCache.enabled=true
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
@@ -85,6 +86,7 @@ ws_scan_task:
   whitesource_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
+    - cp .mvn/gradle-enterprise-ci.xml .mvn/gradle-enterprise.xml
     - mvn clean install -DskipTests -pl '!java-checks-test-sources'
     - source ws_scan.sh
   allow_failures: "true"
@@ -100,6 +102,7 @@ qa_os_win_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
     - source cirrus-env CI
+    - cp .mvn/gradle-enterprise-ci.xml .mvn/gradle-enterprise.xml
     - mvn.cmd clean verify
   cleanup_before_cache_script: cleanup_maven_repository
 
@@ -123,6 +126,7 @@ plugin_qa_task:
     - git submodule update --init --recursive
   qa_script:
     - source cirrus-env QA
+    - cp .mvn/gradle-enterprise-ci.xml .mvn/gradle-enterprise.xml
     - source set_maven_build_version $BUILD_NUMBER
     - cd docs/java-custom-rules-example
     - mvn clean install -B -e -V
@@ -143,6 +147,7 @@ sanity_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   sanity_script:
     - source cirrus-env QA
+    - cp .mvn/gradle-enterprise-ci.xml .mvn/gradle-enterprise.xml
     - source set_maven_build_version $BUILD_NUMBER
     - mvn clean install -Dmaven.test.skip=true
     - mvn verify -f java-checks/pom.xml -Psanity -Dtest=SanityTest
@@ -163,6 +168,7 @@ ruling_task:
     - git submodule update --init --recursive
   ruling_script:
     - source cirrus-env QA
+    - cp .mvn/gradle-enterprise-ci.xml .mvn/gradle-enterprise.xml
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
     - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
@@ -180,6 +186,7 @@ ruling_win_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   ruling_script:
     - source cirrus-env QA
+    - cp .mvn/gradle-enterprise-ci.xml .mvn/gradle-enterprise.xml
     - source set_maven_build_version $BUILD_NUMBER
     - init_git_submodules its/sources
     - git submodule update --init --recursive

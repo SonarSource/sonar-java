@@ -1,0 +1,21 @@
+<gradleEnterprise>
+  <server>
+    <url>${env.GRADLE_ENTERPRISE_URL}</url>
+    <allowUntrusted>true</allowUntrusted>
+    <accessKey>${env.GRADLE_ENTERPRISE_KEY}</accessKey>
+  </server>
+  <buildCache>
+    <local>
+      <enabled>true</enabled>
+    </local>
+    <remote>
+      <server>
+        <url>${env.GRADLE_ENTERPRISE_URL}/cache/</url>
+        <allowUntrusted>true</allowUntrusted>
+        <accessKey>${env.GRADLE_ENTERPRISE_KEY}</accessKey>
+      </server>
+      <enabled>true</enabled>
+      <storeEnabled>true</storeEnabled>
+    </remote>
+  </buildCache>
+</gradleEnterprise>
