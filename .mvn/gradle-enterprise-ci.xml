@@ -6,13 +6,16 @@
   </server>
   <buildCache>
     <local>
-      <enabled>true</enabled>
+      <enabled>false</enabled>
     </local>
     <remote>
       <server>
         <url>${env.GRADLE_ENTERPRISE_URL}/cache/</url>
         <allowUntrusted>true</allowUntrusted>
-        <accessKey>${env.GRADLE_ENTERPRISE_KEY}</accessKey>
+        <credentials>
+          <username>${env.GRADLE_ENTERPRISE_USERNAME}</username>
+          <password>${env.GRADLE_ENTERPRISE_PASSWORD}</password>
+        </credentials>
       </server>
       <enabled>true</enabled>
       <storeEnabled>true</storeEnabled>
