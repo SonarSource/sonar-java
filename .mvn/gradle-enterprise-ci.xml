@@ -11,7 +11,7 @@
     <remote>
       <storeEnabled>true</storeEnabled>
       <server>
-        <url>${env.GRADLE_ENTERPRISE_URL}/cache/</url>
+        <url>${env.GRADLE_ENTERPRISE_URL}cache/</url>
         <allowUntrusted>true</allowUntrusted>
         <credentials>
           <username>${env.GRADLE_ENTERPRISE_USERNAME}</username>
