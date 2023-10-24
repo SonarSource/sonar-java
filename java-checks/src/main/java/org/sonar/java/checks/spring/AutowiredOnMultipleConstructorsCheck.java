@@ -65,8 +65,8 @@ public class AutowiredOnMultipleConstructorsCheck extends IssuableSubscriptionVi
   }
 
   private static boolean isAutowired(Symbol s) {
-    List<SymbolMetadata.AnnotationValue> annotationValues = s.metadata().valuesForAnnotation(AUTOWIRED_ANNOTATION);
-    if (s.metadata().isAnnotatedWith(AUTOWIRED_ANNOTATION) && annotationValues != null) {
+    if (s.metadata().isAnnotatedWith(AUTOWIRED_ANNOTATION)) {
+      List<SymbolMetadata.AnnotationValue> annotationValues = s.metadata().valuesForAnnotation(AUTOWIRED_ANNOTATION);
       return annotationValues.isEmpty() || annotationValues.stream().anyMatch(a -> "required".equals(a.name()) && a.value().equals(true));
     }
     return false;
