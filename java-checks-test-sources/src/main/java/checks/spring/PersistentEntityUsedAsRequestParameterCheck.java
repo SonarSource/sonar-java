@@ -5,6 +5,7 @@ import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,6 +50,16 @@ class PersistentEntityUsedAsRequestParameterCheck {
 
   @Controller
   class FooController {
+
+    @Entity
+    abstract class User implements UserDetails {
+      String username;
+      // ...
+    }
+    @GetMapping("/greet")
+    public void greet(@org.springframework.security.core.annotation.AuthenticationPrincipal User user) {
+      // do something with User
+    }
 
     @RequestMapping(path = "/foo", method = RequestMethod.POST)
     public void foo1(Foo foo) { // Noncompliant [[sc=26;ec=29]] {{Replace this persistent entity with a simple POJO or DTO object.}}
