@@ -18,6 +18,7 @@
     <sonar.skip>true</sonar.skip>
     <forbiddenapis.skip>true</forbiddenapis.skip>
     <skipTests>true</skipTests>
+    <maven.deploy.skip>true</maven.deploy.skip>
   </properties>
 
   <!--
@@ -951,12 +952,6 @@
           <argLine>--enable-preview</argLine>
         </configuration>
       </plugin>
-      <!--
-      We don't want to publish any artifacts from this module in artifactory or maven central.
-      Unfortunately, "org.jfrog.buildinfo : artifactory-maven-plugin" only supports maven.deploy.skip=true at the project level
-      and not in a submodule. If the bellow plugins are disabled (<phase>none</phase>), it's a workaround to
-      not generate ".jar" "-sources.jar" and "-javadoc.jar".
-      -->
       <plugin>
         <groupId>org.simplify4u.plugins</groupId>
         <artifactId>sign-maven-plugin</artifactId>
