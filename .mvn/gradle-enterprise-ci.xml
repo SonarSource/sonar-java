@@ -4,6 +4,11 @@
     <allowUntrusted>true</allowUntrusted>
     <accessKey>${env.GRADLE_ENTERPRISE_KEY}</accessKey>
   </server>
+  <buildScan>
+    <capture>
+      <goalInputFiles>true</goalInputFiles>
+    </capture>
+  </buildScan>
   <buildCache>
     <local>
       <enabled>false</enabled>
