@@ -3,10 +3,10 @@
 required dependencies (such as other beans or components) to a class’s fields, methods, or constructors, allowing for easier and more flexible
 management of dependencies in a Spring application. In other words, it’s a way to wire up and inject dependencies into Spring components
 automatically, reducing the need for manual configuration and enhancing modularity and maintainability.</p>
-<p>When using the Spring framework for dependency injection, it’s essential to use the <code>@Autowired</code> annotation judiciously. Specifically,
-avoid using the <code>@Autowired</code> annotation on multiple constructors within a Spring component (e.g., a class annotated with
-<code>@Component</code>). The <code>@Autowired</code> annotation indicates which constructor Spring should use for dependency injection. When multiple
-constructors have this annotation, Spring may not be able to determine which one to use, leading to ambiguity in the bean creation process.</p>
+<p>In any bean class, only one constructor is permitted to declare <code>@Autowired</code> with the <code>required</code> attribute set to true. This
+signifies the constructor to be automatically wired when used as a Spring bean. Consequently, when the required attribute remains at its default value
+(true), only a singular constructor can bear the <code>@Autowired</code> annotation. In cases where multiple constructors have this annotation, they
+must all specify <code>required=false</code> to be eligible as candidates for auto-wiring.</p>
 <h2>How to fix it</h2>
 <p>To maintain code clarity and ensure that the Spring context can create beans correctly, have only one constructor annotated with
 <code>@Autowired</code> within a Spring component.</p>
@@ -15,33 +15,49 @@ constructors have this annotation, Spring may not be able to determine which one
 <pre data-diff-id="1" data-diff-type="noncompliant">
 @Component
 public class MyComponent {
-    private final MyService myService;
+  private final MyService myService;
 
-    @Autowired
-    public MyComponent(MyService myService) {
-        this.myService = myService;
-    }
+  @Autowired
+  public MyComponent(MyService myService) {
+    this.myService = myService;
+    // ...
+  }
 
-     @Autowired                                           // Noncompliant
-    public MyComponent(AnotherService anotherService) {
-        // ...
-    }
+  @Autowired  // Noncompliant
+  public MyComponent(MyService myService, Integer i) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired  // Noncompliant
+  public MyComponent(MyService myService, Integer i, String s) {
+    this.myService = myService;
+    // ...
+  }
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 @Component
 public class MyComponent {
-    private final MyService myService;
+  private final MyService myService;
 
-    @Autowired
-    public MyComponent(MyService myService) {
-        this.myService = myService;
-    }
+  @Autowired
+  public MyComponent(MyService myService) {
+    this.myService = myService;
+    // ...
+  }
 
-    public MyComponent(AnotherService anotherService) {
-        // ...
-    }
+  public MyComponent(MyService myService, Integer i) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired(required=false)
+  public MyComponent(MyService myService, Integer i, String s) {
+    this.myService = myService;
+    // ...
+  }
 }
 </pre>
 <h2>Resources</h2>
