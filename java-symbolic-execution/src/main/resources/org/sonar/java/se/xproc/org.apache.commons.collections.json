@@ -1,32 +1,5 @@
 [
   {
-    "signature": "org.apache.commons.collections.MapUtils#size(Ljava/util/Map;)I",
-    "varArgs": false,
-    "declaredExceptions": [],
-    "yields": [
-      {
-        "parametersConstraints": [
-          [
-            "NULL"
-          ]
-        ],
-        "resultIndex": -1,
-        "resultConstraint": [
-          "ZERO"
-        ]
-      },
-      {
-        "parametersConstraints": [
-          [
-            "NOT_NULL"
-          ]
-        ],
-        "resultIndex": -1,
-        "resultConstraint": null
-      }
-    ]
-  },
-  {
     "signature": "org.apache.commons.collections4.MapUtils#size(Ljava/util/Map;)I",
     "varArgs": false,
     "declaredExceptions": [],
