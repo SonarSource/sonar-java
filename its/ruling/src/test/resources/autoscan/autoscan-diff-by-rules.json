@@ -2911,8 +2911,8 @@
   },
   {
     "ruleKey": "S6818",
-    "hasTruePositives": true,
-    "falseNegatives": 0,
+    "hasTruePositives": false,
+    "falseNegatives": 4,
     "falsePositives": 0
   }
 ]
