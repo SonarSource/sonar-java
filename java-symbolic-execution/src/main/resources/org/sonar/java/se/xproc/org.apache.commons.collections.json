@@ -54,6 +54,33 @@
     ]
   },
   {
+    "signature": "org.apache.commons.collections.CollectionUtils#size(Ljava/lang/Object;)I",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "ZERO"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      }
+    ]
+  },
+  {
     "signature": "org.apache.commons.collections4.CollectionUtils#size(Ljava/lang/Object;)I",
     "varArgs": false,
     "declaredExceptions": [],
@@ -135,6 +162,35 @@
     ]
   },
   {
+    "signature": "org.apache.commons.collections.CollectionUtils#isNotEmpty(Ljava/util/Collection;)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "TRUE",
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "FALSE",
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
     "signature": "org.apache.commons.collections4.CollectionUtils#isNotEmpty(Ljava/util/Collection;)Z",
     "varArgs": false,
     "declaredExceptions": [],
@@ -189,6 +245,35 @@
     ]
   },
   {
+    "signature": "org.apache.commons.collections.MapUtils#isEmpty(Ljava/util/Map;)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "TRUE",
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "FALSE",
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
     "signature": "org.apache.commons.collections4.MapUtils#isEmpty(Ljava/util/Map;)Z",
     "varArgs": false,
     "declaredExceptions": [],
@@ -206,6 +291,35 @@
       {
         "parametersConstraints": [
           ["NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "FALSE",
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.collections.MapUtils#isNotEmpty(Ljava/util/Map;)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "TRUE",
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          []
         ],
         "resultIndex": -1,
         "resultConstraint": [

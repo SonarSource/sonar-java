@@ -5,13 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 
 class CollectionUtilsIsEmpty {
   void fun() {
     List<Object> objects = null;
-    if (CollectionUtils.isEmpty(objects)) { // returns true if objects is null
+    if (org.apache.commons.collections.CollectionUtils.isEmpty(objects)) { // returns true if objects is null
       doSomething();
     } else if (objects.size() == 1) {
       doSomethingElse();
@@ -35,7 +33,7 @@ class CollectionUtilsIsEmpty {
   }
   void fun4() {
     List<Object> objects = null;
-    if (CollectionUtils.isNotEmpty(objects)) { // returns false if objects is null
+    if (org.apache.commons.collections.CollectionUtils.isNotEmpty(objects)) { // returns false if objects is null
       objects.size();
     } else {
       doSomethingElse();
@@ -47,6 +45,15 @@ class CollectionUtilsIsEmpty {
       map.clear();
     }
     if (org.apache.commons.collections4.MapUtils.isNotEmpty(map)) { // returns false if objects is null
+      map.clear();
+    }
+  }
+
+  void test_map_commons3(@Nullable Map<String, String> map) {
+    if (!org.apache.commons.collections.MapUtils.isEmpty(map)) { // returns true if objects is null
+      map.clear();
+    }
+    if (org.apache.commons.collections.MapUtils.isNotEmpty(map)) { // returns false if objects is null
       map.clear();
     }
   }
@@ -64,16 +71,16 @@ class CollectionUtilsIsEmpty {
   }
 
   void test_list(@Nullable List<String> list, List<String> defaultValue) {
-    List<String> listA = ListUtils.defaultIfNull(new ArrayList<>(), null);
+    List<String> listA = org.apache.commons.collections4.ListUtils.defaultIfNull(new ArrayList<>(), null);
     listA.clear();
 
-    List<String> listB = ListUtils.defaultIfNull(null, new ArrayList<>());
+    List<String> listB = org.apache.commons.collections4.ListUtils.defaultIfNull(null, new ArrayList<>());
     listB.clear();
 
-    List<String> listC = ListUtils.defaultIfNull(null, null);
+    List<String> listC = org.apache.commons.collections4.ListUtils.defaultIfNull(null, null);
     // listC is null and usage would raise S2259
 
-    List<String> listD = ListUtils.defaultIfNull(list, defaultValue);
+    List<String> listD = org.apache.commons.collections4.ListUtils.defaultIfNull(list, defaultValue);
     listD.clear();
   }
 
