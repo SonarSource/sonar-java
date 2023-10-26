@@ -36,6 +36,11 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
     return Collections.singletonList(Tree.Kind.METHOD);
   }
 
+  private static final List<String> PARAMETER_ANNOTATION_EXCEPTIONS = List.of(
+    "org.springframework.web.bind.annotation.PathVariable",
+    "org.springframework.security.core.annotation.AuthenticationPrincipal"
+  );
+
   private static final List<String> REQUEST_ANNOTATIONS = List.of(
     "org.springframework.web.bind.annotation.RequestMapping",
     "org.springframework.web.bind.annotation.GetMapping",
@@ -51,8 +56,6 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
     "org.springframework.data.elasticsearch.annotations.Document"
   );
 
-  private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
-
   private static final String JSON_CREATOR_ANNOTATION = "com.fasterxml.jackson.annotation.JsonCreator";
 
   @Override
@@ -62,7 +65,7 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
 
     if (isRequestMappingAnnotated(methodSymbol)) {
       methodTree.parameters().stream()
-        .filter(PersistentEntityUsedAsRequestParameterCheck::hasNoPathVariableAnnotation)
+        .filter(PersistentEntityUsedAsRequestParameterCheck::hasNoAllowedAnnotations)
         .filter(PersistentEntityUsedAsRequestParameterCheck::isPersistentEntity)
         .filter(PersistentEntityUsedAsRequestParameterCheck::hasNoCustomSerialization)
         .forEach(p -> reportIssue(p.simpleName(), "Replace this persistent entity with a simple POJO or DTO object."));
@@ -77,8 +80,8 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
     return ENTITY_ANNOTATIONS.stream().anyMatch(variableTree.type().symbolType().symbol().metadata()::isAnnotatedWith);
   }
 
-  private static boolean hasNoPathVariableAnnotation(VariableTree variableTree) {
-    return !variableTree.symbol().metadata().isAnnotatedWith(PATH_VARIABLE_ANNOTATION);
+  private static boolean hasNoAllowedAnnotations(VariableTree variableTree) {
+    return PARAMETER_ANNOTATION_EXCEPTIONS.stream().noneMatch(variableTree.symbol().metadata()::isAnnotatedWith);
   }
 
   private static boolean hasNoCustomSerialization(VariableTree variableTree) {
