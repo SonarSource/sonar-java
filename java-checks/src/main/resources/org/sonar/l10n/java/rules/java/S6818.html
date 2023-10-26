@@ -53,7 +53,56 @@ public class MyComponent {
     // ...
   }
 
-  @Autowired(required=false)
+  public MyComponent(MyService myService, Integer i, String s) {
+    this.myService = myService;
+    // ...
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@Component
+public class MyComponent {
+  private final MyService myService;
+
+  @Autowired
+  public MyComponent(MyService myService) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired  // Noncompliant
+  public MyComponent(MyService myService, Integer i) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired  // Noncompliant
+  public MyComponent(MyService myService, Integer i, String s) {
+    this.myService = myService;
+    // ...
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@Component
+public class MyComponent {
+  private final MyService myService;
+
+  @Autowired
+  public MyComponent(MyService myService) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired(required=false)  // Compliant
+  public MyComponent(MyService myService, Integer i) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired(required=false)  // Compliant
   public MyComponent(MyService myService, Integer i, String s) {
     this.myService = myService;
     // ...

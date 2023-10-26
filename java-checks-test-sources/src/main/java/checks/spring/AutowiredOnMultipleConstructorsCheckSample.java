@@ -1,6 +1,7 @@
 package checks.spring;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class AutowiredOnMultipleConstructorsCheckSample {
@@ -40,6 +41,7 @@ class Test {
 
   private final Object myService;
 
+  @Nullable
   @Autowired // Compliant
   public Test(Object myService) {
     this.myService = myService;
@@ -68,6 +70,7 @@ class MyComponent {
     // ...
   }
 
+  @Nullable // Compliant
   public MyComponent(Object myService, int i) {
     this.myService = myService;
     // ...
