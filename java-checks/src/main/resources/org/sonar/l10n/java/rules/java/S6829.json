@@ -1,0 +1,24 @@
+{
+  "title": "@Autowired should be used when multiple constructors are provided",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-6829",
+  "sqKey": "S6829",
+  "scope": "All",
+  "quickfix": "infeasible",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM",
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
+}
