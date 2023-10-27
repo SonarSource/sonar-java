@@ -200,7 +200,7 @@ autoscan_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
     - git submodule update --init --recursive
-  ruling_script:
+  autoscan_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - mvn clean compile --projects java-checks-test-sources
