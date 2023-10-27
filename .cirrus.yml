@@ -211,23 +211,6 @@ autoscan_task:
     actual_artifacts:
       path: "${CIRRUS_WORKING_DIR}/its/autoscan/target/actual/**/*"
 
-autoscan_win_task:
-  depends_on:
-    - build
-  <<: *ONLY_SONARSOURCE_QA
-  <<: *WINDOWS_VM_DEFINITION
-  maven_cache:
-    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  ruling_script:
-    - source cirrus-env QA
-    - source set_maven_build_version $BUILD_NUMBER
-    - init_git_submodules its/sources
-    - git submodule update --init --recursive
-    - mvn clean compile --projects java-checks-test-sources
-    - cd its/autoscan
-    - mvn package -Pit-autoscan -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
-  cleanup_before_cache_script: cleanup_maven_repository
-
 promote_task:
   depends_on:
     - qa_os_win
