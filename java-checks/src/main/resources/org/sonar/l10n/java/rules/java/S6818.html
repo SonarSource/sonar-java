@@ -1,0 +1,122 @@
+<h2>Why is this an issue?</h2>
+<p><code>@Autowired</code> is an annotation in the Spring Framework for automatic dependency injection. It tells Spring to automatically provide the
+required dependencies (such as other beans or components) to a class’s fields, methods, or constructors, allowing for easier and more flexible
+management of dependencies in a Spring application. In other words, it’s a way to wire up and inject dependencies into Spring components
+automatically, reducing the need for manual configuration and enhancing modularity and maintainability.</p>
+<p>In any bean class, only one constructor is permitted to declare <code>@Autowired</code> with the <code>required</code> attribute set to true. This
+signifies the constructor to be automatically wired when used as a Spring bean. Consequently, when the required attribute remains at its default value
+(true), only a singular constructor can bear the <code>@Autowired</code> annotation. In cases where multiple constructors have this annotation, they
+must all specify <code>required=false</code> to be eligible as candidates for auto-wiring.</p>
+<h2>How to fix it</h2>
+<p>To maintain code clarity and ensure that the Spring context can create beans correctly, have only one constructor annotated with
+<code>@Autowired</code> within a Spring component or set <code>required = false</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Component
+public class MyComponent {
+  private final MyService myService;
+
+  @Autowired
+  public MyComponent(MyService myService) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired  // Noncompliant
+  public MyComponent(MyService myService, Integer i) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired  // Noncompliant
+  public MyComponent(MyService myService, Integer i, String s) {
+    this.myService = myService;
+    // ...
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Component
+public class MyComponent {
+  private final MyService myService;
+
+  @Autowired
+  public MyComponent(MyService myService) {
+    this.myService = myService;
+    // ...
+  }
+
+  public MyComponent(MyService myService, Integer i) {
+    this.myService = myService;
+    // ...
+  }
+
+  public MyComponent(MyService myService, Integer i, String s) {
+    this.myService = myService;
+    // ...
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@Component
+public class MyComponent {
+  private final MyService myService;
+
+  @Autowired
+  public MyComponent(MyService myService) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired  // Noncompliant
+  public MyComponent(MyService myService, Integer i) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired  // Noncompliant
+  public MyComponent(MyService myService, Integer i, String s) {
+    this.myService = myService;
+    // ...
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@Component
+public class MyComponent {
+  private final MyService myService;
+
+  @Autowired
+  public MyComponent(MyService myService) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired(required=false)  // Compliant
+  public MyComponent(MyService myService, Integer i) {
+    this.myService = myService;
+    // ...
+  }
+
+  @Autowired(required=false)  // Compliant
+  public MyComponent(MyService myService, Integer i, String s) {
+    this.myService = myService;
+    // ...
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired.html">Spring Framework - Using @Autowired</a>
+  </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/spring-autowire">Baeldung - Guide to Spring @Autowired</a> </li>
+</ul>
+

@@ -1,0 +1,24 @@
+{
+  "title": "Avoid Using \"@Autowired\" on Multiple Constructors in a Spring Component",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6818",
+  "sqKey": "S6818",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM",
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  }
+}
