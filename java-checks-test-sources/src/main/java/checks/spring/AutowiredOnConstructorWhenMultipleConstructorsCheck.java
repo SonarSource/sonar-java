@@ -7,87 +7,87 @@ import org.springframework.stereotype.Component;
 public class AutowiredOnConstructorWhenMultipleConstructorsCheck { // Compliant
 
   public AutowiredOnConstructorWhenMultipleConstructorsCheck() {
-  };
+  }
 
   public AutowiredOnConstructorWhenMultipleConstructorsCheck(int i) {
-  };
+  }
 
   public AutowiredOnConstructorWhenMultipleConstructorsCheck(String s) {
-  };
-}
+  }
 
-@Component
-class SpringComponent { // Noncompliant [[sc=7;ec=22]] {{Add @Autowired to one of the constructors.}}
+  @Component
+  class SpringComponent { // Noncompliant [[sc=9;ec=24]] {{Add @Autowired to one of the constructors.}}
 
-  public SpringComponent() {
-  };
+    public SpringComponent() {
+    }
 
-  public SpringComponent(int i) {
-  };
+    public SpringComponent(int i) {
+    }
 
-  public SpringComponent(String s) {
-  };
-}
+    public SpringComponent(String s) {
+    }
+  }
 
-@Component
-class CompliantSpringComponent { // Compliant
+  @Component
+  class CompliantSpringComponent { // Compliant
 
-  @Autowired
-  public CompliantSpringComponent() {
-  };
+    @Autowired
+    public CompliantSpringComponent() {
+    }
 
-  public CompliantSpringComponent(int i) {
-  };
+    public CompliantSpringComponent(int i) {
+    }
 
-  public CompliantSpringComponent(String s) {
-  };
-}
+    public CompliantSpringComponent(String s) {
+    }
+  }
 
-@Component
-class ComponentWithOtherAnnotations { // Noncompliant
+  @Component
+  class ComponentWithOtherAnnotations { // Noncompliant
 
-  public ComponentWithOtherAnnotations() {
-  };
+    public ComponentWithOtherAnnotations() {
+    }
 
-  public ComponentWithOtherAnnotations(int i) {
-  };
+    public ComponentWithOtherAnnotations(int i) {
+    }
 
-  @Deprecated
-  public ComponentWithOtherAnnotations(String s) {
-  };
+    @Deprecated
+    public ComponentWithOtherAnnotations(String s) {
+    }
+  }
 
-}
+  @Component
+  class ComponentWithOneConstructorWithAutowired { // Compliant
 
-@Component
-class ComponentWithOneConstructorWithAutowired { // Compliant
+    public ComponentWithOneConstructorWithAutowired() {
+    }
+  }
 
-  public ComponentWithOneConstructorWithAutowired() {
-  };
-}
+  @Nullable
+  class ClassWithSomeOtherAnnotation { // Compliant
 
-@Nullable
-class ClassWithSomeOtherAnnotation { // Compliant
+    public ClassWithSomeOtherAnnotation() {
+    }
 
-  public ClassWithSomeOtherAnnotation() {
-  };
+    public ClassWithSomeOtherAnnotation(int i) {
+    }
 
-  public ClassWithSomeOtherAnnotation(int i) {
-  };
+    public ClassWithSomeOtherAnnotation(String s) {
+    }
+  }
 
-  public ClassWithSomeOtherAnnotation(String s) {
-  };
-}
+  @Nullable
+  @Component
+  class ClassWithTwoAnnotations { // Noncompliant
 
-@Nullable
-@Component
-class ClassWithTwoAnnotations { // Noncompliant
+    public ClassWithTwoAnnotations() {
+    }
 
-  public ClassWithTwoAnnotations() {
-  };
+    public ClassWithTwoAnnotations(int i) {
+    }
 
-  public ClassWithTwoAnnotations(int i) {
-  };
+    public ClassWithTwoAnnotations(String s) {
+    }
+  }
 
-  public ClassWithTwoAnnotations(String s) {
-  };
 }

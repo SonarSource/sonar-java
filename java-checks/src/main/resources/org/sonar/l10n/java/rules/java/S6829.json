@@ -1,5 +1,5 @@
 {
-  "title": "@Autowired should be used when multiple constructors are provided",
+  "title": "\"@Autowired\" should be used when multiple constructors are provided",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
