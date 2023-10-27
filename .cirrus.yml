@@ -198,8 +198,6 @@ autoscan_task:
     memory: 6G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  submodules_script:
-    - git submodule update --init --recursive
   autoscan_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
