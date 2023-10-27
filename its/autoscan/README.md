@@ -19,7 +19,8 @@ mvn clean compile --projects java-checks-test-sources
 
 To run the tests from this folder, run:
 ```shell
-mvn clean package --activate-profiles it-autoscan --batch-mode --errors --show-version \
+mvn clean package --batch-mode --errors --show-version \
+   --activate-profiles it-autoscan \
   -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] \
   -Dmaven.test.redirectTestOutputToFile=false \
   -Dparallel=methods -DuseUnlimitedThreads=true
