@@ -219,6 +219,7 @@ promote_task:
     - ruling_win
     - plugin_qa
     - ws_scan
+    - autoscan
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
