@@ -9,7 +9,7 @@ signifies the constructor to be automatically wired when used as a Spring bean. 
 must all specify <code>required=false</code> to be eligible as candidates for auto-wiring.</p>
 <h2>How to fix it</h2>
 <p>To maintain code clarity and ensure that the Spring context can create beans correctly, have only one constructor annotated with
-<code>@Autowired</code> within a Spring component.</p>
+<code>@Autowired</code> within a Spring component or set <code>required = false</code>.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
