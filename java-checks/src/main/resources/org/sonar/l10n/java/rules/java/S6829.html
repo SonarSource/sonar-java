@@ -1,0 +1,68 @@
+<p>The <code>@Autowired</code> annotation in Spring is used for automatic dependency injection. It allows Spring to resolve and inject the required
+beans into your bean. For example to inject a <code>@Repository</code> object into a <code>@Service</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>The Spring dependency injection mechanism cannot identify which constructor to use for auto-wiring when multiple constructors are present in a
+class. This ambiguity can cause the application to crash at runtime, and it makes the code less clear to understand and more complex to extend and
+maintain.</p>
+<h3>What is the potential impact?</h3>
+<ul>
+  <li> <strong>Incorrect Instantiation</strong>: the wrong constructor is selected for instantiation, leading to a bean not being correctly
+  initialized. </li>
+  <li> <strong>Unsatisfied Dependency Exception</strong>: the constructor selected by Spring requires beans that are not available in the Spring
+  context. </li>
+  <li> <strong>Non-Deterministic Behavior</strong>: the constructor selected by Spring can vary, based on the number of dependencies that can be
+  satisfied at runtime, leading to unpredictable application behavior. </li>
+  <li> <strong>Maintainability Issues</strong>: adding more constructors in the future could lead to further confusion and potential bugs. </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Use the <code>@Autowired</code> annotation to specify which constructor to use for auto-wiring.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Component
+public class ExampleClass { // Noncompliant, multiple constructors present and no @Autowired annotation to specify which one to use
+
+    private final DependencyClass1 dependency1;
+
+    public ExampleClass() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public ExampleClass(DependencyClass1 dependency1) {
+        this.dependency1 = dependency1;
+    }
+
+    // ...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Component
+public class ExampleClass {
+
+    private final DependencyClass1 dependency1;
+
+    public ExampleClass() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Autowired
+    public ExampleClass(DependencyClass1 dependency1) {
+        this.dependency1 = dependency1;
+    }
+
+    // ...
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Spring - <a href="https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired.html">Annotation Config:
+  Autowired</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> Java Guides - <a href="https://www.javaguides.net/2023/08/unsatisfieddependencyexception-in.html">UnsatisfiedDependencyException in Spring
+  Boot</a> </li>
+</ul>
+
