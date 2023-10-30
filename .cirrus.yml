@@ -64,7 +64,6 @@ build_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
     - source cirrus-env BUILD
-    - mvn clean -Pcoverage,deploy-sonarsource,release,sign
     - regular_mvn_build_deploy_analyze -Dsonar.analysisCache.enabled=true
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
