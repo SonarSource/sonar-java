@@ -188,7 +188,7 @@ public class AutoScanTest {
      * No differences would mean that we find the same issues with and without the bytecode and libraries
      */
     String differences = Files.readString(pathFor(TARGET_ACTUAL + PROJECT_KEY + "-no-binaries_differences"));
-    softly.assertThat(differences).isEqualTo("Issues differences: 3487");
+    softly.assertThat(differences).isEqualTo("Issues differences: 3491");
 
     softly.assertAll();
   }
