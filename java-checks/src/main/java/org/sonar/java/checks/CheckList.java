@@ -158,6 +158,7 @@ import org.sonar.java.checks.spring.SpringRequestMappingMethodCheck;
 import org.sonar.java.checks.spring.SpringScanDefaultPackageCheck;
 import org.sonar.java.checks.spring.SpringSecurityDisableCSRFCheck;
 import org.sonar.java.checks.spring.SpringSessionFixationCheck;
+import org.sonar.java.checks.spring.SuperfluousResponseBodyAnnotationCheck;
 import org.sonar.java.checks.spring.TransactionalMethodVisibilityCheck;
 import org.sonar.java.checks.spring.ValueAnnotationShouldInjectPropertyOrSpELCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
@@ -644,6 +645,7 @@ public final class CheckList {
     StrongCipherAlgorithmCheck.class,
     SubClassStaticReferenceCheck.class,
     SuperfluousCurlyBraceCheck.class,
+    SuperfluousResponseBodyAnnotationCheck.class,
     SuppressWarningsCheck.class,
     SuspiciousListRemoveCheck.class,
     SwitchCaseTooBigCheck.class,
