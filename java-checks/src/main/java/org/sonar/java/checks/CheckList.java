@@ -146,6 +146,7 @@ import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
 import org.sonar.java.checks.spring.FieldDependencyInjectionCheck;
 import org.sonar.java.checks.spring.ModelAttributeNamingConventionForSpELCheck;
 import org.sonar.java.checks.spring.NonSingletonAutowiredInSingletonCheck;
+import org.sonar.java.checks.spring.NullableInjectedFieldsHaveDefaultValueCheck;
 import org.sonar.java.checks.spring.OptionalRestParametersShouldBeObjectsCheck;
 import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
@@ -524,6 +525,7 @@ public final class CheckList {
     NonShortCircuitLogicCheck.class,
     NonStaticClassInitializerCheck.class,
     NotifyCheck.class,
+    NullableInjectedFieldsHaveDefaultValueCheck.class,
     NullCheckWithInstanceofCheck.class,
     NullReturnedOnComputeIfPresentOrAbsentCheck.class,
     OSCommandsPathCheck.class,

@@ -1,0 +1,23 @@
+{
+  "title": "Nullable injected fields and parameters should provide a default value",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6816",
+  "sqKey": "S6816",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  }
+}

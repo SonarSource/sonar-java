@@ -1,0 +1,29 @@
+<p>SpEL, the Spring Expression Languages allows developers fine-grained control over the values injected into fields and parameters. Using the
+<code>@Value</code> annotation, it is possible to inject values from sources such as system properties.</p>
+<h2>Why is this an issue?</h2>
+<p>The <code>@Value</code> annotation does not guarantee that the property is defined. Particularly if a field or parameter is annotated as nullable,
+it indicates that the developer assumes that the property may be undefined.</p>
+<p>An undefined property may lead to a runtime exceptions when the Spring framework tries to inject the autowired dependency during bean creation.</p>
+<p>This rule raises an issue when a nullable field or parameter is annotated with <code>@Value</code> and no default value is provided.</p>
+<h2>How to fix it</h2>
+<p>Add a default value to the <code>@Value</code> annotation. A default value can be supplied by using the colon (<code>:</code>) operator. As the
+field is nullable, the default value should most likely be <code>#{null}</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Nullable
+@Value("${my.property}") // Noncompliant, no default value is provided, even though the field is nullable
+private String myProperty;
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Nullable
+@Value("${my.property:#{null}}") // Compliant, a default value is provided
+private String myProperty;
+</pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> Baeldung - <a href="https://www.baeldung.com/spring-value-defaults">Using Spring @Value With Defaults</a> </li>
+</ul>
+
