@@ -22,11 +22,14 @@ package org.sonar.java.checks.spring;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -61,21 +64,29 @@ public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubs
           "or use \"#{expression}\" to evaluate a SpEL expression."));
   }
 
-  private static boolean isSimpleSpringValue(AnnotationTree ann) {
-    if (ann.symbolType().is(SPRING_VALUE)) {
-      LiteralTree literal = (LiteralTree) ann.arguments().get(0);
-      String value = literal.value();
-      return !isPropertyName(value) && !isSpEL(value);
+  private static boolean isSimpleSpringValue(AnnotationTree annotation) {
+    if (annotation.symbolType().is(SPRING_VALUE)) {
+      String value = extractArgumentValue(annotation.arguments().get(0));
+      return value != null && !(isPropertyName(value) || isSpEL(value));
     }
     return false;
   }
 
+  @CheckForNull
+  private static String extractArgumentValue(ExpressionTree annotationArgument) {
+    if (annotationArgument.is(Tree.Kind.ASSIGNMENT)) {
+      ExpressionTree expression = ((AssignmentExpressionTree) annotationArgument).expression();
+      return ExpressionsHelper.getConstantValueAsString(expression).value();
+    }
+    return ExpressionsHelper.getConstantValueAsString(annotationArgument).value();
+  }
+
   private static boolean isPropertyName(String value) {
-    return value.startsWith("\"${") && value.endsWith("}\"");
+    return value.startsWith("${") && value.endsWith("}");
   }
 
   private static boolean isSpEL(String value) {
-    return value.startsWith("\"#{") && value.endsWith("}\"");
+    return value.startsWith("#{") && value.endsWith("}");
   }
 
 }
