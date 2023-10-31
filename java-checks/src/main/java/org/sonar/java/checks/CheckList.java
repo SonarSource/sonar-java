@@ -137,11 +137,12 @@ import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
 import org.sonar.java.checks.spring.AsyncMethodsCalledViaThisCheck;
 import org.sonar.java.checks.spring.AsyncMethodsReturnTypeCheck;
-import org.sonar.java.checks.spring.AutowiredOnMultipleConstructorsCheck;
 import org.sonar.java.checks.spring.AutowiredOnConstructorWhenMultipleConstructorsCheck;
+import org.sonar.java.checks.spring.AutowiredOnMultipleConstructorsCheck;
+import org.sonar.java.checks.spring.AvoidQualifierOnBeanMethodsCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
-import org.sonar.java.checks.spring.ModelAttributeNamingConventionForSpELCheck;
 import org.sonar.java.checks.spring.FieldDependencyInjectionCheck;
+import org.sonar.java.checks.spring.ModelAttributeNamingConventionForSpELCheck;
 import org.sonar.java.checks.spring.OptionalRestParametersShouldBeObjectsCheck;
 import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
@@ -287,6 +288,7 @@ public final class CheckList {
     AuthorizationsStrongDecisionsCheck.class,
     AutowiredOnConstructorWhenMultipleConstructorsCheck.class,
     AutowiredOnMultipleConstructorsCheck.class,
+    AvoidQualifierOnBeanMethodsCheck.class,
     AwsConsumerBuilderUsageCheck.class,
     AwsCredentialsShouldBeSetExplicitlyCheck.class,
     AwsLambdaSyncCallCheck.class,
