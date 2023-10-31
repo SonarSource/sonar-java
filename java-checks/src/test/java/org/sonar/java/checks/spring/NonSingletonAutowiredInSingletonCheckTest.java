@@ -24,6 +24,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class NonSingletonAutowiredInSingletonCheckTest {
 
@@ -33,5 +34,14 @@ class NonSingletonAutowiredInSingletonCheckTest {
       .onFile(TestUtils.mainCodeSourcesPath("checks/spring/NonSingletonAutowiredInSingletonCheck.java"))
       .withCheck(new NonSingletonAutowiredInSingletonCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_semantics() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/NonSingletonAutowiredInSingletonCheck.java"))
+      .withCheck(new NonSingletonAutowiredInSingletonCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }
