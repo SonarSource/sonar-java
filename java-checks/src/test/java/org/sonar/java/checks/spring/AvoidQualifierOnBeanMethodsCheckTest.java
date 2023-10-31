@@ -21,6 +21,7 @@ package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -28,9 +29,10 @@ class AvoidQualifierOnBeanMethodsCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    ((InternalCheckVerifier) CheckVerifier.newVerifier())
       .onFile(mainCodeSourcesPath("checks/spring/AvoidQualifierOnBeanMethodsCheck.java"))
       .withCheck(new AvoidQualifierOnBeanMethodsCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 

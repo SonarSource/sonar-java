@@ -21,50 +21,51 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6831")
 public class AvoidQualifierOnBeanMethodsCheck extends IssuableSubscriptionVisitor {
-  private static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
   private static final String BEAN_ANNOTATION = "org.springframework.context.annotation.Bean";
   private static final String QUALIFIER_ANNOTATION = "org.springframework.beans.factory.annotation.Qualifier";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS);
+    return List.of(Tree.Kind.METHOD);
   }
 
+  /**
+   * This rule reports an issue when @Bean methods are annotated with @Qualifier.
+   */
   @Override
   public void visitNode(Tree tree) {
-    var classTree = (ClassTree) tree;
+    var methodTree = (MethodTree) tree;
 
-    if(hasAnnotation(classTree.modifiers(), CONFIGURATION_ANNOTATION)) {
-      classTree.members()
-        .stream()
-        .filter(member -> member.is(Tree.Kind.METHOD))
-        .map(MethodTree.class::cast)
-        .filter(methodTree -> hasAnnotation(methodTree.modifiers(), BEAN_ANNOTATION))
-        .filter(methodTree -> hasAnnotation(methodTree.modifiers(), QUALIFIER_ANNOTATION))
-        .forEach(methodTree -> reportIssue(getQualifierAnnotation(methodTree), "Remove this redundant \"@Qualifier\" annotation"));
+    var beanAnnotation = getAnnotation(methodTree, BEAN_ANNOTATION);
+    var qualifierAnnotation = getAnnotation(methodTree, QUALIFIER_ANNOTATION);
+
+    if(beanAnnotation != null && qualifierAnnotation != null) {
+      QuickFixHelper.newIssue(context)
+       .forRule(this)
+        .onTree(qualifierAnnotation)
+        .withMessage("Remove this redundant \"@Qualifier\" annotation")
+        .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove \"@Qualifier\"")
+          .addTextEdit(JavaTextEdit.removeTree(qualifierAnnotation))
+          .build())
+       .report();
     }
   }
 
-  private static boolean hasAnnotation(ModifiersTree modifiersTree, String annotation) {
-    return modifiersTree.annotations()
-      .stream()
-      .anyMatch(annotationTree -> annotationTree.symbolType().is(annotation));
-  }
-
-  private static AnnotationTree getQualifierAnnotation(MethodTree methodTree) {
+  private static AnnotationTree getAnnotation(MethodTree methodTree, String annotation) {
     return methodTree.modifiers()
       .annotations()
       .stream()
-      .filter(annotationTree -> annotationTree.symbolType().is(QUALIFIER_ANNOTATION))
+      .filter(annotationTree -> annotationTree.symbolType().is(annotation))
       .findFirst()
       .orElse(null);
   }
