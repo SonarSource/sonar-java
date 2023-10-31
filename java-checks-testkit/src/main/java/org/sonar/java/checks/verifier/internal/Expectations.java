@@ -645,7 +645,15 @@ class Expectations {
     }
 
     private static String parseMessage(String cleanedComment, int horizon) {
-      return StringUtils.substringBetween(cleanedComment.substring(0, horizon), "{{", "}}");
+      String delimitedComment = cleanedComment.substring(0, horizon);
+      int firstIndex =  delimitedComment.indexOf("{{");
+      if (firstIndex != -1) {
+        int lastIndex = delimitedComment.lastIndexOf("}}");
+        if (lastIndex != -1) {
+          return delimitedComment.substring(firstIndex + 2, lastIndex);
+        }
+      }
+      return null;
     }
 
     static class ParsedComment {

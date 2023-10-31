@@ -375,6 +375,15 @@ class ExpectationsTest {
     }
 
     @Test
+    void quick_fix_edit_fails_without_end_delimiter() {
+      parser.parseIssue("// Noncompliant@ [[sc=3;ec=10;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{It goes like this:}}", TEST_LINE + 1);
+      parser.parseQuickFix("// edit@qf1 [[sc=5;ec=10]] {{boom}", TEST_LINE + 2);
+      assertThatThrownBy(() -> parser.consolidateQuickFixes())
+        .isInstanceOf(AssertionError.class);
+    }
+
+    @Test
     void quick_fix_without_message() {
       parser.parseIssue("// Noncompliant@+1 [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
       assertThatThrownBy(() -> parser.consolidateQuickFixes()).isInstanceOf(AssertionError.class)
