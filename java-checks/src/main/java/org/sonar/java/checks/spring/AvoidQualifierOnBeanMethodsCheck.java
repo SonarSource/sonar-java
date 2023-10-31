@@ -19,9 +19,12 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.util.LinkedList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
+import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -53,10 +56,8 @@ public class AvoidQualifierOnBeanMethodsCheck extends IssuableSubscriptionVisito
       QuickFixHelper.newIssue(context)
        .forRule(this)
         .onTree(qualifierAnnotation)
-        .withMessage("Remove this redundant \"@Qualifier\" annotation")
-        .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove \"@Qualifier\"")
-          .addTextEdit(JavaTextEdit.removeTree(qualifierAnnotation))
-          .build())
+        .withMessage("Remove this redundant \"@Qualifier\" annotation.")
+        .withQuickFixes(() -> getQuickFix(methodTree, qualifierAnnotation))
        .report();
     }
   }
@@ -69,4 +70,44 @@ public class AvoidQualifierOnBeanMethodsCheck extends IssuableSubscriptionVisito
       .findFirst()
       .orElse(null);
   }
+
+  private static List<JavaQuickFix> getQuickFix(MethodTree methodTree, AnnotationTree qualifierAnnotation) {
+    List<JavaQuickFix> quickFixes = new LinkedList<>();
+
+    if(isFixable(methodTree, qualifierAnnotation)) {
+      var quickFix = JavaQuickFix.newQuickFix("Remove \"@Qualifier\"")
+        .addTextEdit(JavaTextEdit.removeTree(qualifierAnnotation))
+        .build();
+      quickFixes.add(quickFix);
+    }
+
+    return quickFixes;
+  }
+
+  private static boolean isFixable(MethodTree methodTree, AnnotationTree qualifierAnnotation) {
+    // @Qualifier annotation without argument can be always removed
+    if(qualifierAnnotation.arguments().isEmpty()) {
+      return true;
+    }
+
+    // @Qualifier that matches the method name is redundant and can be removed
+    var methodName = methodTree.simpleName().name();
+    var qualifierAnnotationValue = getQualifierAnnotationValue(qualifierAnnotation);
+    return methodName.equals(qualifierAnnotationValue);
+  }
+
+  private static String getQualifierAnnotationValue(AnnotationTree qualifierAnnotation) {
+    var argument = qualifierAnnotation.arguments().get(0);
+
+    switch (argument.kind()) {
+      case ASSIGNMENT:
+        return ((LiteralTreeImpl) ((AssignmentExpressionTreeImpl) argument).expression()).value().replace("\"", "");
+      case STRING_LITERAL:
+        return ((LiteralTreeImpl) argument).token().text().replace("\"", "");
+      default:
+        return "";
+    }
+  }
+
 }
+
