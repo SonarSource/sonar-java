@@ -21,6 +21,9 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -38,17 +41,23 @@ public class AsyncMethodsOnConfigurationClassCheck extends IssuableSubscriptionV
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     boolean isConfiguration = classTree.modifiers().annotations().stream()
-      .map(annotation -> annotation.annotationType().symbolType().fullyQualifiedName())
-      .anyMatch("org.springframework.context.annotation.Configuration"::equals);
+      .anyMatch(annotation -> annotation.annotationType().symbolType().is("org.springframework.context.annotation.Configuration"));
 
     if (isConfiguration) {
       classTree.members().stream()
         .filter(member -> member.is(Tree.Kind.METHOD))
         .map(MethodTree.class::cast)
         .forEach(member -> member.modifiers().annotations().stream()
-          .filter(annotation -> "org.springframework.scheduling.annotation.Async".equals(annotation.annotationType().symbolType().fullyQualifiedName()))
+          .filter(annotation -> annotation.annotationType().symbolType().is("org.springframework.scheduling.annotation.Async"))
           .findFirst()
-          .ifPresent(annotation -> reportIssue(annotation, "Remove this \"@Async\" annotation from this method.")));
+          .ifPresent(annotation -> QuickFixHelper.newIssue(context)
+            .forRule(this)
+            .onTree(annotation)
+            .withMessage("Remove this \"@Async\" annotation from this method.")
+            .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove \"@Async\"")
+              .addTextEdit(JavaTextEdit.removeTree(annotation))
+              .build())
+            .report()));
     }
   }
 
