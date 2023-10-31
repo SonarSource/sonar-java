@@ -39,14 +39,14 @@ public class AsyncMethodsOnConfigurationClassCheck extends IssuableSubscriptionV
     ClassTree classTree = (ClassTree) tree;
     boolean isConfiguration = classTree.modifiers().annotations().stream()
       .map(annotation -> annotation.annotationType().symbolType().fullyQualifiedName())
-      .anyMatch(annotation -> annotation.equals("org.springframework.context.annotation.Configuration"));
+      .anyMatch("org.springframework.context.annotation.Configuration"::equals);
 
     if (isConfiguration) {
       classTree.members().stream()
         .filter(member -> member.is(Tree.Kind.METHOD))
         .map(MethodTree.class::cast)
         .forEach(member -> member.modifiers().annotations().stream()
-          .filter(annotation -> annotation.annotationType().symbolType().fullyQualifiedName().equals("org.springframework.scheduling.annotation.Async"))
+          .filter(annotation -> "org.springframework.scheduling.annotation.Async".equals(annotation.annotationType().symbolType().fullyQualifiedName()))
           .findFirst()
           .ifPresent(annotation -> reportIssue(annotation, "Remove this \"@Async\" annotation from this method.")));
     }
