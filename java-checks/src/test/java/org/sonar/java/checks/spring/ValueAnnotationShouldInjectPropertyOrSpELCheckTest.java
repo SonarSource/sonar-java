@@ -33,5 +33,4 @@ class ValueAnnotationShouldInjectPropertyOrSpELCheckTest {
       .withCheck(new ValueAnnotationShouldInjectPropertyOrSpELCheck())
       .verifyIssues();
   }
-
 }
