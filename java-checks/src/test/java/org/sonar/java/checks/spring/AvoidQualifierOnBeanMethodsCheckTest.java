@@ -30,7 +30,7 @@ class AvoidQualifierOnBeanMethodsCheckTest {
   @Test
   void test() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(mainCodeSourcesPath("checks/spring/AvoidQualifierOnBeanMethodsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/AvoidQualifierOnBeanMethodsCheckSample.java"))
       .withCheck(new AvoidQualifierOnBeanMethodsCheck())
       .withQuickFixes()
       .verifyIssues();
@@ -39,7 +39,7 @@ class AvoidQualifierOnBeanMethodsCheckTest {
   @Test
   void test_no_semantics() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/AvoidQualifierOnBeanMethodsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/AvoidQualifierOnBeanMethodsCheckSample.java"))
       .withCheck(new AvoidQualifierOnBeanMethodsCheck())
       .withoutSemantic()
       .verifyNoIssues();

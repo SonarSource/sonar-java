@@ -5,12 +5,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-public class AvoidQualifierOnBeanMethodsCheck {
+public class AvoidQualifierOnBeanMethodsCheckSample {
 
   @Configuration
   class Configuration1 {
     @Bean
-    @Qualifier("foo") // Noncompliant, [[sc=5;ec=22;quickfixes=qf1]] {{Remove this redundant "@Qualifier" annotation.}}
+    @Qualifier("foo") // Noncompliant, [[sc=5;ec=22;quickfixes=qf1]] {{Remove this redundant "@Qualifier" annotation and rely on the @Bean method.}}
     // fix@qf1 {{Remove "@Qualifier"}}
     // edit@qf1 [[sc=5;ec=22]] {{}}
     public String foo() {
@@ -18,7 +18,7 @@ public class AvoidQualifierOnBeanMethodsCheck {
     }
 
     @Bean
-    @Qualifier(value = "bar") // Noncompliant, [[sc=5;ec=30;quickfixes=qf2]] {{Remove this redundant "@Qualifier" annotation.}}
+    @Qualifier(value = "bar") // Noncompliant, [[sc=5;ec=30;quickfixes=qf2]] {{Remove this redundant "@Qualifier" annotation and rely on the @Bean method.}}
     // fix@qf2 {{Remove "@Qualifier"}}
     // edit@qf2 [[sc=5;ec=30]] {{}}
     public String bar() {
@@ -34,13 +34,13 @@ public class AvoidQualifierOnBeanMethodsCheck {
   @Component
   class Component1 {
     @Bean("foo")
-    @Qualifier("Foo") // Noncompliant, [[sc=5;ec=22]] {{Remove this redundant "@Qualifier" annotation.}}
+    @Qualifier("Foo") // Noncompliant
     public String foo() {
       return "foo";
     }
 
     @Bean(name = "bar")
-    @Qualifier(value = "Bar") // Noncompliant, [[sc=5;ec=30]] {{Remove this redundant "@Qualifier" annotation.}}
+    @Qualifier(value = "Bar") // Noncompliant
     public String bar() {
       return "bar";
     }
@@ -53,13 +53,15 @@ public class AvoidQualifierOnBeanMethodsCheck {
 
   class Class1 {
     @Bean("foo")
-    @Qualifier("Foo") // Noncompliant, [[sc=5;ec=22]] {{Remove this redundant "@Qualifier" annotation.}}
+    @Qualifier("Foo") // Noncompliant
     public String foo() {
       return "foo";
     }
 
     @Bean(name = "bar")
-    @Qualifier // Noncompliant, [[sc=5;ec=15]] {{Remove this redundant "@Qualifier" annotation.}}
+    @Qualifier // Noncompliant, [[sc=5;ec=15;quickfixes=qf3]] {{Remove this redundant "@Qualifier" annotation and rely on the @Bean method.}}
+    // fix@qf3 {{Remove "@Qualifier"}}
+    // edit@qf3 [[sc=5;ec=15]] {{}}
     public String bar() {
       return "bar";
     }
@@ -69,4 +71,5 @@ public class AvoidQualifierOnBeanMethodsCheck {
       return "foobar";
     }
   }
+
 }
