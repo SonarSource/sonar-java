@@ -1,0 +1,51 @@
+<h2>Why is this an issue?</h2>
+<p><code>@Configuration</code> is a class-level annotation indicating that an object is a source of bean definitions. <code>@Configuration</code>
+classes declare beans through <code>@Bean</code>-annotated methods. Calls to <code>@Bean</code> methods on <code>@Configuration</code> classes can
+also be used to define inter-bean dependencies. The <code>@Bean</code> annotation indicates that a method instantiates, configures, and initializes a
+new object to be managed by the Spring IoC container.</p>
+<p>Annotating a method of a bean with <code>@Async</code> will make it execute in a separate thread. In other words, the caller will not wait for the
+completion of the called method.</p>
+<p>The <code>@Async</code> annotation is not supported on methods declared within a <code>@Configuration</code> class. This is because
+<code>@Async</code> methods are typically used for asynchronous processing, and they require certain infrastructure to be set up, which may not be
+available or appropriate in a <code>@Configuration</code> class.</p>
+<h2>How to fix it</h2>
+<p>Don’t use <code>@Async</code> annotations on methods of <code>@Configuration</code> classes.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@EnableAsync
+@Configuration
+public class MyConfiguration {
+
+  @Async // Noncompliant - This is not allowed
+  public void asyncMethod() {
+    // ...
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@EnableAsync
+@Configuration
+public class MyConfiguration {
+
+  public void method() {
+    // ...
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Async.html">Spring
+  Framework - @Async</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/reference/core/beans/java/configuration-annotation.html">Spring Framework - Using the
+  @Configuration annotation</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/reference/core/beans/java/basic-concepts.html">Spring Framework - Basic Concepts: @Bean and
+  @Configuration</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/spring-async">Baeldung - How To Do @Async in Spring</a> </li>
+</ul>
+
