@@ -2930,7 +2930,7 @@
   {
     "ruleKey": "S6830",
     "hasTruePositives": false,
-    "falseNegatives": 16,
+    "falseNegatives": 17,
     "falsePositives": 0
   },
   {
