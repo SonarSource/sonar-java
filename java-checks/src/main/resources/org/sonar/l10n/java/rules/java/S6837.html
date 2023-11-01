@@ -1,0 +1,58 @@
+<h2>Why is this an issue?</h2>
+<p>The Spring framework’s <code>@RestController</code> annotation is equivalent to using the <code>@Controller</code> and <code>@ResponseBody</code>
+annotations together. As such, it is redundant to add a <code>@ResponseBody</code> annotation when the class is already annotated with
+<code>@RestController</code>.</p>
+<h2>How to fix it</h2>
+<p>Remove the <code>@ResponseBody</code> annotation from the class or method.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@RestController
+public class MyController {
+  @ResponseBody // Noncompliant, the @RestController annotation already implies @ResponseBody
+  @RequestMapping("/hello")
+  public String hello() {
+    return "Hello World!";
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@RestController
+public class MyController {
+  @RequestMapping("/hello")
+  public String hello() {
+    return "Hello World!";
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@RestController
+@ResponseBody // Noncompliant, the @RestController annotation already implies @ResponseBody
+public class MyController {
+  @RequestMapping("/hello")
+  public String hello() {
+    return "Hello World!";
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@RestController
+public class MyController {
+  @RequestMapping("/hello")
+  public String hello() {
+    return "Hello World!";
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> Spring Guides - <a href="https://spring.io/guides/gs/rest-service/">Building a RESTful Web Service</a> </li>
+  <li> Baeldung - <a href="https://www.baeldung.com/spring-controller-vs-restcontroller">The Spring @Controller and @RestController Annotations</a>
+  </li>
+  <li> Baeldung - <a href="https://www.baeldung.com/spring-request-response-body">Spring’s RequestBody and ResponseBody Annotations</a> </li>
+</ul>
+
