@@ -46,6 +46,12 @@ public class SpringBeanNamingConventionCheckSample {
     return null;
   }
 
+  public final static String MY_BEAN = "my_bean";
+  @Bean(MY_BEAN) // Noncompliant
+  SomeTestClass myBean10() {
+    return null;
+  }
+
   @Bean(initMethod = "NO_camel_case") // Compliant, we are only interested in the bean name
   SomeTestClass myBean4() {
     return null;
@@ -63,6 +69,12 @@ public class SpringBeanNamingConventionCheckSample {
 
   @Bean // Compliant, no name provided
   SomeTestClass myBean9() {
+    return null;
+  }
+
+  public final static String MY_BEAN2 = "myBean";
+  @Bean(MY_BEAN2) // Compliant, name is camel-cased
+  SomeTestClass myBean11() {
     return null;
   }
 }

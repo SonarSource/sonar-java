@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -35,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S6830")
 public class SpringBeanNamingConventionCheck extends IssuableSubscriptionVisitor {
 
-  private final List<String> annotationsToCheck = List.of(
+  private static final List<String> ANNOTATIONS_TO_CHECK = List.of(
     "org.springframework.beans.factory.annotation.Qualifier",
     "org.springframework.context.annotation.Bean",
     "org.springframework.context.annotation.Configuration",
@@ -43,10 +44,9 @@ public class SpringBeanNamingConventionCheck extends IssuableSubscriptionVisitor
     "org.springframework.stereotype.Component",
     "org.springframework.stereotype.Repository",
     "org.springframework.stereotype.Service",
-    "org.springframework.web.bind.annotation.RestController"
-  );
+    "org.springframework.web.bind.annotation.RestController");
 
-  Pattern namingConvention = Pattern.compile("^[a-z][a-zA-Z0-9]*$");
+  private static final Pattern NAMING_CONVENTION = Pattern.compile("^[a-z][a-zA-Z0-9]*$");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -56,35 +56,43 @@ public class SpringBeanNamingConventionCheck extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     var annotation = (AnnotationTree) tree;
-    annotationsToCheck.stream().filter(a -> annotation.symbolType().is(a)).findFirst()
+    ANNOTATIONS_TO_CHECK.stream().filter(a -> annotation.symbolType().is(a)).findFirst()
       .map(a -> getNoncompliantNameArgument(annotation))
-      .ifPresent(n -> reportIssue(n, "Rename this bean to match the regular expression '" + namingConvention.pattern() + "'."));
+      .ifPresent(n -> reportIssue(n, "Rename this bean to match the regular expression '" + NAMING_CONVENTION.pattern() + "'."));
   }
 
   @CheckForNull
-  private ExpressionTree getNoncompliantNameArgument(AnnotationTree annotation) {
+  private static ExpressionTree getNoncompliantNameArgument(AnnotationTree annotation) {
     return annotation.arguments().stream()
       .map(arg -> {
-        ExpressionTree nameValue = null;
-        if (arg.is(Tree.Kind.STRING_LITERAL)) {
-          nameValue = arg;
-        } else {
-          var assignment = (AssignmentExpressionTree) arg;
-          var argName = ((IdentifierTree) assignment.variable()).name();
-          var argValue = assignment.expression();
-          if (argName.equals("name") || argName.equals("value")) {
-            nameValue = argValue;
-          }
+        if (breaksNamingConvention(getArgValue(arg))) {
+          return arg;
+        } else  {
+          return null;
         }
-
-        if (nameValue != null) {
-          var resolvedNameValue = ExpressionsHelper.getConstantValueAsString(nameValue).value();
-          if (resolvedNameValue != null && !namingConvention.matcher(resolvedNameValue).matches()) {
-            return arg;
-          }
-        }
-        return null;
-
       }).filter(Objects::nonNull).findFirst().orElse(null);
+  }
+
+  private static ExpressionTree getArgValue(ExpressionTree argument) {
+    if (argument.is(Tree.Kind.ASSIGNMENT)) {
+      var assignment = (AssignmentExpressionTree) argument;
+      var argName = ((IdentifierTree) assignment.variable()).name();
+      var argValue = assignment.expression();
+      if (argName.equals("name") || argName.equals("value")) {
+        return argValue;
+      }
+    } else {
+      return argument;
+    }
+    return null;
+  }
+
+  private static boolean breaksNamingConvention(@Nullable ExpressionTree nameTree) {
+    if (nameTree == null) {
+      return false;
+    } else {
+      var name = ExpressionsHelper.getConstantValueAsString(nameTree).value();
+      return name != null && !NAMING_CONVENTION.matcher(name).matches();
+    }
   }
 }
