@@ -136,9 +136,10 @@ import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassC
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
 import org.sonar.java.checks.spring.AsyncMethodsCalledViaThisCheck;
+import org.sonar.java.checks.spring.AsyncMethodsOnConfigurationClassCheck;
 import org.sonar.java.checks.spring.AsyncMethodsReturnTypeCheck;
-import org.sonar.java.checks.spring.AutowiredOnMultipleConstructorsCheck;
 import org.sonar.java.checks.spring.AutowiredOnConstructorWhenMultipleConstructorsCheck;
+import org.sonar.java.checks.spring.AutowiredOnMultipleConstructorsCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
 import org.sonar.java.checks.spring.FieldDependencyInjectionCheck;
 import org.sonar.java.checks.spring.ModelAttributeNamingConventionForSpELCheck;
@@ -284,6 +285,7 @@ public final class CheckList {
     AssertionsInProductionCodeCheck.class,
     AssertsOnParametersOfPublicMethodCheck.class,
     AsyncMethodsCalledViaThisCheck.class,
+    AsyncMethodsOnConfigurationClassCheck.class,
     AsyncMethodsReturnTypeCheck.class,
     AtLeastOneConstructorCheck.class,
     AuthorizationsStrongDecisionsCheck.class,
@@ -947,8 +949,7 @@ public final class CheckList {
     UnusedPrivateFieldCheck.class,
     VerifiedServerHostnamesCheck.class,
     VolatileNonPrimitiveFieldCheck.class,
-    WeakSSLContextCheck.class
-  );
+    WeakSSLContextCheck.class);
 
   private CheckList() {
   }
