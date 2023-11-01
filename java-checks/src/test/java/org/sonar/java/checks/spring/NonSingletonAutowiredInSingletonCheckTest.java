@@ -31,7 +31,7 @@ class NonSingletonAutowiredInSingletonCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/NonSingletonAutowiredInSingletonCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/NonSingletonAutowiredInSingletonCheckSample.java"))
       .withCheck(new NonSingletonAutowiredInSingletonCheck())
       .verifyIssues();
   }
@@ -39,7 +39,7 @@ class NonSingletonAutowiredInSingletonCheckTest {
   @Test
   void test_non_semantics() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/NonSingletonAutowiredInSingletonCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/NonSingletonAutowiredInSingletonCheckSample.java"))
       .withCheck(new NonSingletonAutowiredInSingletonCheck())
       .withoutSemantic()
       .verifyNoIssues();

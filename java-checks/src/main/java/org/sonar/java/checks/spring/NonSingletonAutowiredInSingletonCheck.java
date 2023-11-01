@@ -21,7 +21,6 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -39,11 +38,14 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionVisitor {
   private static final String SCOPED_ANNOTATION = "org.springframework.context.annotation.Scope";
   private static final String AUTOWIRED_ANNOTATION = "org.springframework.beans.factory.annotation.Autowired";
+  private static final String JAVAX_INJECT_ANNOTATION = "javax.inject.Inject";
+  private static final String JAKARTA_INJECT_ANNOTATION = "jakarta.inject.Inject";
+  private static final Set<String> AUTO_WIRING_ANNOTATIONS = Set.of(AUTOWIRED_ANNOTATION, JAVAX_INJECT_ANNOTATION, JAKARTA_INJECT_ANNOTATION);
   private static final Set<String> SINGLETON_LITERALS = Set.of("singleton", "\"singleton\"");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS);
+    return List.of(Tree.Kind.ANNOTATION, Tree.Kind.CONSTRUCTOR);
   }
 
   /**
@@ -51,21 +53,50 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
    */
   @Override
   public void visitNode(Tree tree) {
-    ClassTree classTree = (ClassTree) tree;
+    if(tree.is(Tree.Kind.ANNOTATION)) {
+      var annotationTree = (AnnotationTree) tree;
 
-    if(isSingletonBean(classTree)) {
-      var autowiredBeansStream = Stream.of(
-          autowiredClassFields(classTree),
-          parametersFromAutowiredMethods(classTree),
-          parametersFromAutowiredConstructors(classTree),
-          autowiredParametersFromMethodsAndConstructors(classTree)
-        )
-        .flatMap(stream -> stream)
-        // Remove duplicates in case of both method/constructor and parameters are annotated with @Autowired
-        .distinct();
+      if(isAutoWiringAnnotation(annotationTree) && isAnnotationOnKind(annotationTree, Tree.Kind.VARIABLE)) {
+        var variableTree = (VariableTree) annotationTree.parent().parent();
+        var enclosingClassTree = variableTree.symbol().enclosingClass().declaration();
+        reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired field/parameter");
 
-      analyzeInjectedBeans(autowiredBeansStream);
+      } else if(isAutoWiringAnnotation(annotationTree)
+        && (isAnnotationOnKind(annotationTree, Tree.Kind.METHOD) || isAnnotationOnKind(annotationTree, Tree.Kind.CONSTRUCTOR))) {
+        var methodTree = (MethodTree) annotationTree.parent().parent();
+        var enclosingClassTree = methodTree.symbol().enclosingClass().declaration();
+        methodTree.parameters()
+          .forEach(variableTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired method/constructor"));
+      }
     }
+
+    if(tree.is(Tree.Kind.CONSTRUCTOR)) {
+      var constructorTree = (MethodTree) tree;
+      var enclosingClassTree = constructorTree.symbol().enclosingClass().declaration();
+
+      if(constructorTree.parameters().size() == 1) {
+        reportIfNonSingletonInSingleton(enclosingClassTree, constructorTree.parameters().get(0), "single argument constructor");
+      }
+    }
+  }
+
+  private void reportIfNonSingletonInSingleton(ClassTree enclosingClassTree, VariableTree variableTree, String injectionType) {
+    if(isSingletonBean(enclosingClassTree) && hasTypeNotSingletonBean(variableTree)) {
+      reportIssue(variableTree.type(), "Don't auto-wire this non-Singleton bean into a Singleton bean (" + injectionType + ").");
+    }
+  }
+
+  private static boolean isAnnotationOnKind(AnnotationTree annotationTree, Tree.Kind kind) {
+    return annotationTree.parent().parent().is(kind);
+  }
+
+  private static boolean hasTypeNotSingletonBean(VariableTree variableTree) {
+    var typeSymbolDeclaration = variableTree.type().symbolType().symbol().declaration();
+    return typeSymbolDeclaration != null && hasNotSingletonScopeAnnotation(typeSymbolDeclaration.modifiers().annotations());
+  }
+
+  private static boolean isAutoWiringAnnotation(AnnotationTree annotationTree) {
+    return AUTO_WIRING_ANNOTATIONS.contains(annotationTree.symbolType().fullyQualifiedName());
   }
 
   private static boolean isSingletonBean(ClassTree classTree) {
@@ -111,61 +142,5 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
 
   private static boolean isNotSingletonLiteral(String value) {
     return SINGLETON_LITERALS.stream().noneMatch(singletonLiteral -> singletonLiteral.equalsIgnoreCase(value));
-  }
-
-  private  void analyzeInjectedBeans(Stream<VariableTree> injectedBeans) {
-    injectedBeans
-      .filter(NonSingletonAutowiredInSingletonCheck::hasNotSingletonBeanType)
-      .forEach(variable -> reportIssue(variable.type(), "Singleton beans should not auto-wire non-Singleton beans."));
-  }
-
-  private static boolean hasNotSingletonBeanType(VariableTree classField) {
-    var typeSymbolDeclaration = classField.type().symbolType().symbol().declaration();
-    return typeSymbolDeclaration != null && hasNotSingletonScopeAnnotation(typeSymbolDeclaration.modifiers().annotations());
-  }
-
-  private static Stream<VariableTree> autowiredClassFields(ClassTree classTree) {
-    return classTree.members()
-      .stream()
-      .filter(member -> member.is(Tree.Kind.VARIABLE))
-      .map(VariableTree.class::cast)
-      .filter(classField -> hasAutowiredAnnotation(classField.modifiers().annotations()));
-  }
-
-  private static Stream<VariableTree> parametersFromAutowiredMethods(ClassTree classTree) {
-    return classTree.members()
-      .stream()
-      .filter(member -> member.is(Tree.Kind.METHOD))
-      .map(MethodTree.class::cast)
-      .filter(method -> hasAutowiredAnnotation(method.modifiers().annotations()))
-      .flatMap(methodTree -> methodTree.parameters().stream());
-  }
-
-  private static Stream<VariableTree> parametersFromAutowiredConstructors(ClassTree classTree) {
-    return classTree.members()
-      .stream()
-      .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
-      .map(MethodTree.class::cast)
-      .filter(NonSingletonAutowiredInSingletonCheck::isAutowiredConstructor)
-      .flatMap(methodTree -> methodTree.parameters().stream());
-  }
-
-  private static Stream<VariableTree> autowiredParametersFromMethodsAndConstructors(ClassTree classTree) {
-    return classTree.members()
-      .stream()
-      .filter(member -> member.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD))
-      .map(MethodTree.class::cast)
-      .flatMap(methodTree -> methodTree.parameters().stream())
-      .filter(parameter -> hasAutowiredAnnotation(parameter.modifiers().annotations()));
-  }
-
-  private static boolean isAutowiredConstructor(MethodTree constructor) {
-    return constructor.parameters().size() == 1 || hasAutowiredAnnotation(constructor.modifiers().annotations());
-  }
-
-  private static boolean hasAutowiredAnnotation(List<AnnotationTree> annotations) {
-    return annotations
-      .stream()
-      .anyMatch(annotation -> annotation.symbolType().is(AUTOWIRED_ANNOTATION));
   }
 }
