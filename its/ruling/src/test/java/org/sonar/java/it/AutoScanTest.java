@@ -57,6 +57,7 @@ public class AutoScanTest {
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
   private static final Type GSON_MAP_TYPE = new TypeToken<Map<String, List<Integer>>>() {}.getType();
   private static final Type GSON_LIST_ISSUE_DIFF_TYPE = new TypeToken<List<IssueDiff>>() {}.getType();
+  private static final Type GSON_ISSUE_DIFF_TYPE = new TypeToken<IssueDiff>() {}.getType();
 
   private static final Logger LOG = LoggerFactory.getLogger(AutoScanTest.class);
 
@@ -167,12 +168,24 @@ public class AutoScanTest {
     List<IssueDiff> rulesSilenced = newDiffs.stream().filter(IssueDiff::onlyFNs).collect(Collectors.toList());
     LOG.info("{} rules silenced without binaries (only FNs):\n{}", rulesSilenced.size(), IssueDiff.prettyPrint(rulesSilenced));
 
-    // store in a JSON file - serializable
-    Files.writeString(pathFor(TARGET_ACTUAL + DIFF_FILE + ".json"), GSON.toJson(newDiffs));
+    // store new diffs in JSON files - serializable
+    for (var newDiff : newDiffs) {
+      Files.writeString(pathFor(TARGET_ACTUAL + "diff_" + newDiff.ruleKey + ".json"), GSON.toJson(newDiffs));
+    }
     // store in a CSV file - can be easily imported in google sheets
     Files.writeString(pathFor(TARGET_ACTUAL + DIFF_FILE + ".csv"), IssueDiff.prettyPrint(newDiffs, newTotal));
 
-    List<IssueDiff> knownDiffs = GSON.fromJson(Files.readString(pathFor("src/test/resources/autoscan/" + DIFF_FILE + ".json")), GSON_LIST_ISSUE_DIFF_TYPE);
+    //List<IssueDiff> knownDiffs = GSON.fromJson(Files.readString(pathFor("src/test/resources/autoscan/" + DIFF_FILE + ".json")), GSON_LIST_ISSUE_DIFF_TYPE);
+    var knownDiffFiles = new ArrayList<Path>();
+    try (var dirStream = Files.newDirectoryStream(pathFor("src/test/resources/autoscan/"),
+      path -> path.getFileName().toString().startsWith("diff_") && path.toString().endsWith(".json"))) {
+      dirStream.forEach(knownDiffFiles::add);
+    }
+    var knownDiffs = new ArrayList<IssueDiff>();
+    for (var diffFile : knownDiffFiles) {
+      knownDiffs.addAll(GSON.fromJson(Files.readString(diffFile), GSON_LIST_ISSUE_DIFF_TYPE));
+    }
+
     IssueDiff knownTotal = IssueDiff.total(knownDiffs);
 
     SoftAssertions softly = new SoftAssertions();
