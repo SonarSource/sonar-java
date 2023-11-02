@@ -2928,6 +2928,12 @@
     "falsePositives": 0
   },
   {
+    "ruleKey": "S6831",
+    "hasTruePositives": false,
+    "falseNegatives": 6,
+    "falsePositives": 0
+  },
+  {
     "ruleKey": "S6832",
     "hasTruePositives": false,
     "falseNegatives": 27,
