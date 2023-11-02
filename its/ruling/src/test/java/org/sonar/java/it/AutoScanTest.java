@@ -169,6 +169,7 @@ public class AutoScanTest {
     LOG.info("{} rules silenced without binaries (only FNs):\n{}", rulesSilenced.size(), IssueDiff.prettyPrint(rulesSilenced));
 
     // store new diffs in JSON files - serializable
+    Files.createDirectory(pathFor(TARGET_ACTUAL + "autoscan-diffs/"));
     for (var newDiff : newDiffs) {
       Files.writeString(pathFor(TARGET_ACTUAL + "diff_" + newDiff.ruleKey + ".json"), GSON.toJson(newDiffs));
     }
@@ -177,13 +178,13 @@ public class AutoScanTest {
 
     //List<IssueDiff> knownDiffs = GSON.fromJson(Files.readString(pathFor("src/test/resources/autoscan/" + DIFF_FILE + ".json")), GSON_LIST_ISSUE_DIFF_TYPE);
     var knownDiffFiles = new ArrayList<Path>();
-    try (var dirStream = Files.newDirectoryStream(pathFor("src/test/resources/autoscan/"),
+    try (var dirStream = Files.newDirectoryStream(pathFor("src/test/resources/autoscan/diffs/"),
       path -> path.getFileName().toString().startsWith("diff_") && path.toString().endsWith(".json"))) {
       dirStream.forEach(knownDiffFiles::add);
     }
     var knownDiffs = new ArrayList<IssueDiff>();
     for (var diffFile : knownDiffFiles) {
-      knownDiffs.addAll(GSON.fromJson(Files.readString(diffFile), GSON_LIST_ISSUE_DIFF_TYPE));
+      knownDiffs.add(GSON.fromJson(Files.readString(diffFile), GSON_ISSUE_DIFF_TYPE));
     }
 
     IssueDiff knownTotal = IssueDiff.total(knownDiffs);
@@ -200,8 +201,14 @@ public class AutoScanTest {
      *
      * No differences would mean that we find the same issues with and without the bytecode and libraries
      */
+
+    // The expected number of differences is the sum of FPs and FNs from the known differences.
+    // We calculate this value based on the known diffs to avoid a single value in the tests that is affected by all rules (which would
+    // inevitably lead to merge conflicts when people are working on rules in parallel).
+    var expectedDiffs = knownDiffs.stream().map(diff -> diff.falseNegatives + diff.falsePositives).reduce(Integer::sum).orElse(0);
+
     String differences = Files.readString(pathFor(TARGET_ACTUAL + PROJECT_KEY + "-no-binaries_differences"));
-    softly.assertThat(differences).isEqualTo("Issues differences: 3594");
+    softly.assertThat(differences).isEqualTo("Issues differences: " + expectedDiffs);
 
     softly.assertAll();
   }
