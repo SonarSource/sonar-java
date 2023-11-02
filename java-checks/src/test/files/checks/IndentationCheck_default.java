@@ -8,8 +8,8 @@ class TestSwitch {
     }
   }
 
-  public record QonId(String value) {
-    public QonId { // compliant
+  public record QonId_(String value) {
+    public QonId_ { // compliant
       Objects.requireNonNull(value, "QonId value cannot be null");
     }
   }
