@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 
 public class AvoidQualifierOnBeanMethodsCheckSample {
 
+  private static final String FOO = "foo";
+  private static final String CAPITALIZED_FOO = "Foo";
+
   @Configuration
   class Configuration1 {
     @Bean
@@ -18,9 +21,7 @@ public class AvoidQualifierOnBeanMethodsCheckSample {
     }
 
     @Bean
-    @Qualifier(value = "bar") // Noncompliant, [[sc=5;ec=30;quickfixes=qf2]] {{Remove this redundant "@Qualifier" annotation and rely on the @Bean method.}}
-    // fix@qf2 {{Remove "@Qualifier"}}
-    // edit@qf2 [[sc=5;ec=30]] {{}}
+    @Qualifier(value = "bar") // Noncompliant
     public String bar() {
       return "bar";
     }
@@ -34,7 +35,7 @@ public class AvoidQualifierOnBeanMethodsCheckSample {
   @Component
   class Component1 {
     @Bean("foo")
-    @Qualifier("Foo") // Noncompliant
+    @Qualifier(CAPITALIZED_FOO) // Noncompliant
     public String foo() {
       return "foo";
     }
@@ -53,7 +54,9 @@ public class AvoidQualifierOnBeanMethodsCheckSample {
 
   class Class1 {
     @Bean("foo")
-    @Qualifier("Foo") // Noncompliant
+    @Qualifier(FOO) // Noncompliant, [[sc=5;ec=20;quickfixes=qf2]] {{Remove this redundant "@Qualifier" annotation and rely on the @Bean method.}}
+    // fix@qf2 {{Remove "@Qualifier"}}
+    // edit@qf2 [[sc=5;ec=20]] {{}}
     public String foo() {
       return "foo";
     }

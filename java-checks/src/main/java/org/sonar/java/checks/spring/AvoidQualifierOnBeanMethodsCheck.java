@@ -53,13 +53,13 @@ public class AvoidQualifierOnBeanMethodsCheck extends IssuableSubscriptionVisito
     var beanAnnotation = getAnnotation(methodTree, BEAN_ANNOTATION);
     var qualifierAnnotation = getAnnotation(methodTree, QUALIFIER_ANNOTATION);
 
-    if(beanAnnotation != null && qualifierAnnotation != null) {
+    if (beanAnnotation != null && qualifierAnnotation != null) {
       QuickFixHelper.newIssue(context)
-       .forRule(this)
+        .forRule(this)
         .onTree(qualifierAnnotation)
         .withMessage("Remove this redundant \"@Qualifier\" annotation and rely on the @Bean method.")
         .withQuickFixes(() -> getQuickFix(methodTree, qualifierAnnotation))
-       .report();
+        .report();
     }
   }
 
@@ -76,7 +76,7 @@ public class AvoidQualifierOnBeanMethodsCheck extends IssuableSubscriptionVisito
     List<JavaQuickFix> quickFixes = new LinkedList<>();
 
     // quick fix only for @Qualifier annotations without arguments or with argument that matches the method name
-    if(isFixable(methodTree, qualifierAnnotation)) {
+    if (isFixable(methodTree, qualifierAnnotation)) {
       var quickFix = JavaQuickFix.newQuickFix("Remove \"@Qualifier\"")
         .addTextEdit(JavaTextEdit.removeTree(qualifierAnnotation))
         .build();
@@ -90,7 +90,7 @@ public class AvoidQualifierOnBeanMethodsCheck extends IssuableSubscriptionVisito
     var arguments = qualifierAnnotation.arguments();
 
     // @Qualifier annotation without argument can be always removed
-    if(arguments.isEmpty()) {
+    if (arguments.isEmpty()) {
       return true;
     }
 
@@ -101,17 +101,21 @@ public class AvoidQualifierOnBeanMethodsCheck extends IssuableSubscriptionVisito
 
   private static String getQualifierAnnotationValue(Arguments arguments) {
     var argument = arguments.get(0);
-    var qualifierAnnotationValue = "";
+    String qualifierAnnotationValue;
 
-    if(argument.is(Tree.Kind.ASSIGNMENT)) {
-      qualifierAnnotationValue = ((LiteralTreeImpl) ((AssignmentExpressionTreeImpl) argument).expression()).value().replace("\"", "");
-    }
-    else if(argument.is(Tree.Kind.STRING_LITERAL)) {
-      qualifierAnnotationValue = ((LiteralTreeImpl) argument).token().text().replace("\"", "");
+    if (argument.is(Tree.Kind.ASSIGNMENT)) {
+      qualifierAnnotationValue = ((LiteralTreeImpl) ((AssignmentExpressionTreeImpl) argument).expression()).value();
+    } else if (argument.is(Tree.Kind.STRING_LITERAL)) {
+      qualifierAnnotationValue = ((LiteralTreeImpl) argument).token().text();
+    } else {
+      // case when argument is an identifier: don't suggest a quick fix
+      qualifierAnnotationValue = "";
     }
 
-    return qualifierAnnotationValue;
+    return removeQuotes(qualifierAnnotationValue);
   }
 
+  private static String removeQuotes(String value) {
+    return value.replace("\"", "");
+  }
 }
-
