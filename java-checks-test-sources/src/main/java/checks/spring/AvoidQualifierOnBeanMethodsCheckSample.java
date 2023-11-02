@@ -54,9 +54,7 @@ public class AvoidQualifierOnBeanMethodsCheckSample {
 
   class Class1 {
     @Bean("foo")
-    @Qualifier(FOO) // Noncompliant, [[sc=5;ec=20;quickfixes=qf2]] {{Remove this redundant "@Qualifier" annotation and rely on the @Bean method.}}
-    // fix@qf2 {{Remove "@Qualifier"}}
-    // edit@qf2 [[sc=5;ec=20]] {{}}
+    @Qualifier(FOO) // Noncompliant
     public String foo() {
       return "foo";
     }
