@@ -1,0 +1,82 @@
+<h2>Why is this an issue?</h2>
+<p>In Spring Framework, the <code>@Qualifier</code> annotation is typically used to disambiguate between multiple beans of the same type when
+auto-wiring dependencies. It is not necessary to use <code>@Qualifier</code> when defining a bean using the <code>@Bean</code> annotation because the
+bean’s name can be explicitly specified using the <code>name</code> attribute or derived from the method name. Using <code>@Qualifier</code> on
+<code>@Bean</code> methods can lead to confusion and redundancy. Beans should be named appropriately using either the <code>name</code> attribute of
+the <code>@Bean</code> annotation or the method name itself.</p>
+<h3>Noncompliant code example</h3>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Configuration
+public class MyConfiguration {
+  @Bean
+  @Qualifier("myService")
+  public MyService myService() {
+    // ...
+    return new MyService();
+  }
+
+  @Bean
+  @Qualifier("betterService")
+  public MyService aBetterService() {
+    // ...
+    return new MyService();
+  }
+
+  @Bean
+  @Qualifier("evenBetterService")
+  public MyService anEvenBetterService() {
+    // ...
+    return new MyService();
+  }
+
+  @Bean
+  @Qualifier("differentService")
+  public MyBean aDifferentService() {
+    // ...
+    return new MyBean();
+  }
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Configuration
+public class MyConfiguration {
+  @Bean
+  public MyService myService() {
+    // ...
+    return new MyService();
+  }
+
+  @Bean(name="betterService")
+  public MyService aBetterService() {
+    // ...
+    return new MyService();
+  }
+
+  @Bean(name="evenBetterService")
+  public MyService anEvenBetterService() {
+    // ...
+    return new MyService();
+  }
+
+  @Bean(name="differentService")
+  public MyBean aDifferentService() {
+    // ...
+    return new MyBean();
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.spring.io/spring-framework/reference/core/beans/java/bean-annotation.html">Spring Framework - Using the @Bean
+  Annotation</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired-qualifiers.html">Spring Framework - Using
+  @Qualifier</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/spring-qualifier-annotation">Baeldung - Spring @Qualifier Annotation</a> </li>
+  <li> <a href="https://www.baeldung.com/spring-bean-annotations">Baeldung - Spring Bean Annotations</a> </li>
+</ul>
+

@@ -140,6 +140,7 @@ import org.sonar.java.checks.spring.AsyncMethodsOnConfigurationClassCheck;
 import org.sonar.java.checks.spring.AsyncMethodsReturnTypeCheck;
 import org.sonar.java.checks.spring.AutowiredOnConstructorWhenMultipleConstructorsCheck;
 import org.sonar.java.checks.spring.AutowiredOnMultipleConstructorsCheck;
+import org.sonar.java.checks.spring.AvoidQualifierOnBeanMethodsCheck;
 import org.sonar.java.checks.spring.ControllerWithRestControllerReplacementCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
 import org.sonar.java.checks.spring.FieldDependencyInjectionCheck;
@@ -291,6 +292,7 @@ public final class CheckList {
     AuthorizationsStrongDecisionsCheck.class,
     AutowiredOnConstructorWhenMultipleConstructorsCheck.class,
     AutowiredOnMultipleConstructorsCheck.class,
+    AvoidQualifierOnBeanMethodsCheck.class,
     AwsConsumerBuilderUsageCheck.class,
     AwsCredentialsShouldBeSetExplicitlyCheck.class,
     AwsLambdaSyncCallCheck.class,
