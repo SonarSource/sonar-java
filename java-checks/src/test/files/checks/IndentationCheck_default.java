@@ -1,6 +1,18 @@
 import java.util.stream.IntStream;
 
 class TestSwitch {
+
+  public record QonId(String value) {
+      public QonId { // Noncompliant
+      Objects.requireNonNull(value, "QonId value cannot be null");
+    }
+  }
+
+  public record QonId(String value) {
+    public QonId { // compliant
+      Objects.requireNonNull(value, "QonId value cannot be null");
+    }
+  }
   enum Color {
     RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, BLACK, WHITE,
     ORANGE, BROWN, LIME, PURPLE, GREY, CRIMSON, NAVY, OLIVE,
