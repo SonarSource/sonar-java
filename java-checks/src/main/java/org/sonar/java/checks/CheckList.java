@@ -150,6 +150,7 @@ import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringAntMatcherOrderCheck;
 import org.sonar.java.checks.spring.SpringAutoConfigurationCheck;
+import org.sonar.java.checks.spring.SpringBeanNamingConventionCheck;
 import org.sonar.java.checks.spring.SpringBeansShouldBeAccessibleCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.spring.SpringComponentWithWrongScopeCheck;
@@ -618,6 +619,7 @@ public final class CheckList {
     SpecializedFunctionalInterfacesCheck.class,
     SpringAntMatcherOrderCheck.class,
     SpringAutoConfigurationCheck.class,
+    SpringBeanNamingConventionCheck.class,
     SpringBeansShouldBeAccessibleCheck.class,
     SpringComponentWithNonAutowiredMembersCheck.class,
     SpringComponentWithWrongScopeCheck.class,

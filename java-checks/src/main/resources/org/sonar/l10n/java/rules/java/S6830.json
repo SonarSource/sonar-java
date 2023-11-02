@@ -1,0 +1,23 @@
+{
+  "title": "Bean names should adhere to the naming conventions",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-6830",
+  "sqKey": "S6830",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "IDENTIFIABLE"
+  }
+}

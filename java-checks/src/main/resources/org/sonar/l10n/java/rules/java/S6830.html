@@ -1,0 +1,58 @@
+<h2>Why is this an issue?</h2>
+<p>Consistent naming of beans is important for the readability and maintainability of the code. More precisely, according to the Spring
+documentation:</p>
+<pre>
+Naming beans consistently makes your configuration easier to read and understand, and if you are using Spring AOP it helps a lot when applying advice to a set of beans related by name.
+</pre>
+<p>Not following accepted conventions can introduce inconsistent naming, especially when multiple developers work on the same project, leading to
+technical debt.</p>
+<p>The spring documentation establishes a naming convention that consists of camel-cased names with a leading lowercase letter.</p>
+<p>This rule raises an issue when a bean name defined in one of the following annotations does not adhere to the naming convention:</p>
+<ul>
+  <li> <code>@Bean</code> </li>
+  <li> <code>@Configuration</code> </li>
+  <li> <code>@Controller</code> </li>
+  <li> <code>@Component</code> </li>
+  <li> <code>@Qualifier</code> </li>
+  <li> <code>@Repository</code> </li>
+  <li> <code>@Service</code> </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Change the bean’s name to adhere to the naming conventions. Names should be camel-cased and start with a lowercase letter, for example,
+<code>myBean</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Bean(name = "MyBean") // Noncompliant, the first letter of the name should be lowercase
+public MyBean myBean() {
+    ...
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Bean(name = "myBean") // Compliant
+public MyBean myBean() {
+    ...
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@Service("my_service") // Noncompliant, the name should be camel-cased
+public class MyService {
+    ...
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@Service("myService") // Compliant
+public class MyService {
+    ...
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Spring Framework Documentation - <a href="https://docs.spring.io/spring-framework/docs/3.0.0.M4/reference/html/ch03s03.html">3.3 Bean
+  overview</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> Java Guides - <a href="https://www.javaguides.net/2019/03/spring-boot-best-practices.html">Spring Boot Best Practices</a> </li>
+</ul>
+
