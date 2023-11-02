@@ -20,9 +20,12 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -57,27 +60,34 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
       var annotationTree = (AnnotationTree) tree;
 
       if (isAutoWiringAnnotation(annotationTree) && isAnnotationOnKind(annotationTree, Tree.Kind.VARIABLE)) {
-        var variableTree = (VariableTree) annotationTree.parent().parent();
-        var enclosingClassTree = variableTree.symbol().enclosingClass().declaration();
-        reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired field/parameter");
+        getAnnotationSymbol(annotationTree, VariableTree.class)
+          .ifPresent(variableTree -> getEnclosingClass(variableTree.symbol().enclosingClass())
+            .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired field/parameter")));
 
-      } else if (isAutoWiringAnnotation(annotationTree)
-        && (isAnnotationOnKind(annotationTree, Tree.Kind.METHOD) || isAnnotationOnKind(annotationTree, Tree.Kind.CONSTRUCTOR))) {
-        var methodTree = (MethodTree) annotationTree.parent().parent();
-        var enclosingClassTree = methodTree.symbol().enclosingClass().declaration();
-        methodTree.parameters()
-          .forEach(variableTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired method/constructor"));
+      } else if (isAutoWiringAnnotation(annotationTree) && (isAnnotationOnKind(annotationTree, Tree.Kind.METHOD) || isAnnotationOnKind(annotationTree, Tree.Kind.CONSTRUCTOR))) {
+        getAnnotationSymbol(annotationTree, MethodTree.class)
+          .ifPresent(methodTree -> getEnclosingClass(methodTree.symbol().enclosingClass())
+            .ifPresent(enclosingClassTree -> methodTree.parameters()
+              .forEach(variableTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired method/constructor"))));
       }
     }
 
     if (tree.is(Tree.Kind.CONSTRUCTOR)) {
       var constructorTree = (MethodTree) tree;
-      var enclosingClassTree = constructorTree.symbol().enclosingClass().declaration();
 
       if (constructorTree.parameters().size() == 1) {
-        reportIfNonSingletonInSingleton(enclosingClassTree, constructorTree.parameters().get(0), "single argument constructor");
+        getEnclosingClass(constructorTree.symbol().enclosingClass())
+          .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, constructorTree.parameters().get(0), "single argument constructor"));
       }
     }
+  }
+
+  private static <T> Optional<T> getAnnotationSymbol(AnnotationTree annotationTree, Class<T> symbolClass) {
+    return Optional.ofNullable(annotationTree.parent()).map(Tree::parent).map(symbolClass::cast);
+  }
+
+  private static Optional<ClassTree> getEnclosingClass(@Nullable Symbol.TypeSymbol enclosingClassSymbol) {
+    return Optional.ofNullable(enclosingClassSymbol).map(Symbol::declaration).map(ClassTree.class::cast);
   }
 
   private void reportIfNonSingletonInSingleton(ClassTree enclosingClassTree, VariableTree variableTree, String injectionType) {
