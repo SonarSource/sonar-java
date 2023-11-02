@@ -583,6 +583,7 @@ public final class CheckList {
     RequestMappingMethodPublicCheck.class,
     RestrictedIdentifiersUsageCheck.class,
     ResultSetIsLastCheck.class,
+    ResultSetTypeForwardUnsafeMethodsCheck.class,
     ReturnEmptyArrayNotNullCheck.class,
     ReturnOfBooleanExpressionsCheck.class,
     ReuseRandomCheck.class,

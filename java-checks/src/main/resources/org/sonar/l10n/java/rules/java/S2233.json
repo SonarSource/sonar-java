@@ -1,0 +1,19 @@
+{
+  "title": "Optional methods should not be invoked on \"TYPE_FORWARD_ONLY\" result sets",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "lock-in",
+    "pitfall",
+    "sql"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-2233",
+  "sqKey": "S2233",
+  "scope": "Main",
+  "quickfix": "unknown"
+}

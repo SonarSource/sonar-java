@@ -1,0 +1,26 @@
+<h2>Why is this an issue?</h2>
+<p>The implementation of certain <code>ResultSet</code> methods is optional for result sets of type <code>TYPE_FORWARD_ONLY</code>. Even if your
+current JDBC driver does implement those methods, there’s no guarantee you won’t change drivers in the future.</p>
+<p>This rule looks for invocations of the following methods on <code>TYPE_FORWARD_ONLY</code> <code>ResultSet</code>s:</p>
+<ul>
+  <li> <code>isBeforeFirst</code> </li>
+  <li> <code>isAfterLast</code> </li>
+  <li> <code>isFirst</code> </li>
+  <li> <code>getRow</code> </li>
+</ul>
+<h3>Noncompliant code example</h3>
+<pre>
+Statement stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY);
+stmt.executeQuery("SELECT name, address FROM PERSON");
+ResultSet rs = stmt.getResultSet();
+
+if (rs.isBeforeFirst()) { // Noncompliant
+
+}
+</pre>
+<h2>Resources</h2>
+<h3>Related rules</h3>
+<ul>
+  <li> {rule:java:S2232} - "ResultSet.isLast()" should not be used </li>
+</ul>
+
