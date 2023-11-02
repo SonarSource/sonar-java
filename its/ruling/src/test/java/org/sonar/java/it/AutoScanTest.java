@@ -56,7 +56,6 @@ public class AutoScanTest {
 
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
   private static final Type GSON_MAP_TYPE = new TypeToken<Map<String, List<Integer>>>() {}.getType();
-  private static final Type GSON_LIST_ISSUE_DIFF_TYPE = new TypeToken<List<IssueDiff>>() {}.getType();
   private static final Type GSON_ISSUE_DIFF_TYPE = new TypeToken<IssueDiff>() {}.getType();
 
   private static final Logger LOG = LoggerFactory.getLogger(AutoScanTest.class);
@@ -171,7 +170,7 @@ public class AutoScanTest {
     // store new diffs in JSON files - serializable
     Files.createDirectory(pathFor(TARGET_ACTUAL + "autoscan-diffs/"));
     for (var newDiff : newDiffs) {
-      Files.writeString(pathFor(TARGET_ACTUAL + "diff_" + newDiff.ruleKey + ".json"), GSON.toJson(newDiffs));
+      Files.writeString(pathFor(TARGET_ACTUAL + "autoscan-diffs/diff_" + newDiff.ruleKey + ".json"), GSON.toJson(newDiff));
     }
     // store in a CSV file - can be easily imported in google sheets
     Files.writeString(pathFor(TARGET_ACTUAL + DIFF_FILE + ".csv"), IssueDiff.prettyPrint(newDiffs, newTotal));
