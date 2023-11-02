@@ -53,15 +53,15 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
    */
   @Override
   public void visitNode(Tree tree) {
-    if(tree.is(Tree.Kind.ANNOTATION)) {
+    if (tree.is(Tree.Kind.ANNOTATION)) {
       var annotationTree = (AnnotationTree) tree;
 
-      if(isAutoWiringAnnotation(annotationTree) && isAnnotationOnKind(annotationTree, Tree.Kind.VARIABLE)) {
+      if (isAutoWiringAnnotation(annotationTree) && isAnnotationOnKind(annotationTree, Tree.Kind.VARIABLE)) {
         var variableTree = (VariableTree) annotationTree.parent().parent();
         var enclosingClassTree = variableTree.symbol().enclosingClass().declaration();
         reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired field/parameter");
 
-      } else if(isAutoWiringAnnotation(annotationTree)
+      } else if (isAutoWiringAnnotation(annotationTree)
         && (isAnnotationOnKind(annotationTree, Tree.Kind.METHOD) || isAnnotationOnKind(annotationTree, Tree.Kind.CONSTRUCTOR))) {
         var methodTree = (MethodTree) annotationTree.parent().parent();
         var enclosingClassTree = methodTree.symbol().enclosingClass().declaration();
@@ -70,18 +70,18 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
       }
     }
 
-    if(tree.is(Tree.Kind.CONSTRUCTOR)) {
+    if (tree.is(Tree.Kind.CONSTRUCTOR)) {
       var constructorTree = (MethodTree) tree;
       var enclosingClassTree = constructorTree.symbol().enclosingClass().declaration();
 
-      if(constructorTree.parameters().size() == 1) {
+      if (constructorTree.parameters().size() == 1) {
         reportIfNonSingletonInSingleton(enclosingClassTree, constructorTree.parameters().get(0), "single argument constructor");
       }
     }
   }
 
   private void reportIfNonSingletonInSingleton(ClassTree enclosingClassTree, VariableTree variableTree, String injectionType) {
-    if(isSingletonBean(enclosingClassTree) && hasTypeNotSingletonBean(variableTree)) {
+    if (isSingletonBean(enclosingClassTree) && hasTypeNotSingletonBean(variableTree)) {
       reportIssue(variableTree.type(), "Don't auto-wire this non-Singleton bean into a Singleton bean (" + injectionType + ").");
     }
   }
@@ -113,7 +113,7 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
       && (isNotSingletonLiteralValue(annotationTree.arguments()) || isNotSingletonAssignmentValue(annotationTree.arguments()));
   }
 
-  private static boolean isNotSingletonLiteralValue(Arguments arguments){
+  private static boolean isNotSingletonLiteralValue(Arguments arguments) {
     return arguments.size() == 1
       && arguments.get(0).is(Tree.Kind.STRING_LITERAL)
       && isNotSingletonLiteral(((LiteralTree) arguments.get(0)).value());
@@ -143,4 +143,5 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
   private static boolean isNotSingletonLiteral(String value) {
     return SINGLETON_LITERALS.stream().noneMatch(singletonLiteral -> singletonLiteral.equalsIgnoreCase(value));
   }
+
 }
