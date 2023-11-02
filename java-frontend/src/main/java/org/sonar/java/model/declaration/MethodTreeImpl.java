@@ -238,7 +238,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     if(token != null){
       return token.getLine();
     }else{
-      //type cast may fail, it is fine. We will just add a new test case if it happens.
+      //type cast may fail, it is fine. We will just add a new case if it happens.
       //could first try with type cast and fallback parameters
       //but cannot reach full coverage
       InternalSyntaxToken name = (InternalSyntaxToken)simpleName().identifierToken();
