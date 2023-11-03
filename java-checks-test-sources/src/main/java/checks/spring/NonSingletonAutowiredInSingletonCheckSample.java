@@ -17,145 +17,134 @@ public class NonSingletonAutowiredInSingletonCheckSample {
 
   @Component
   @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = TARGET_CLASS)
-  public class RequestBean1 {
-    //...
-  }
+  public class RequestBean1 { }
+
+  @Scope("prototype")
+  public class PrototypeBean1 { }
+
+  @Scope(value = "prototype")
+  public class PrototypeBean2 { }
+
+
+  @Scope(value = PROTOTYPE_SCOPE, scopeName = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
+  public class PrototypeBean3 { }
+
 
   public class SingletonBean {
     @Autowired
-    private final RequestBean1 requestBean1; // Noncompliant, [[sc=19;ec=31]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired field/parameter).}}
-
-    public SingletonBean() {
-      requestBean1 = null;
-    }
-  }
-
-  @Scope("prototype")
-  public class PrototypeBean1 {
-  }
-
-  public class SingletonBean1 {
+    private RequestBean1 requestBean1; // Noncompliant, [[sc=13;ec=25]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired field).}}
     @Autowired
-    private final PrototypeBean1 prototypeBean1; // Noncompliant
-    public SingletonBean1() {
-      prototypeBean1 = null;
-    }
-  }
+    private PrototypeBean1 prototypeBean1; // Noncompliant
+    @Autowired
+    private PrototypeBean2 prototypeBean2; // Noncompliant
+    @Autowired
+    private PrototypeBean3 prototypeBean3; // Noncompliant
 
-  @Scope(value = "prototype")
-  public class PrototypeBean2 {
+    @Autowired // Noncompliant@+1
+    public SingletonBean(RequestBean1 requestBean1) { // Noncompliant, [[sc=26;ec=38]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired constructor).}}
+    }
+
+    @Autowired // Noncompliant@+1
+    public SingletonBean(PrototypeBean2 prototypeBean2) { // Noncompliant
+    }
+
+    @Autowired
+    public SingletonBean(RequestBean1 requestBean1, // Noncompliant
+      PrototypeBean1 prototypeBean1, // Noncompliant
+      PrototypeBean2 prototypeBean2, // Noncompliant
+      PrototypeBean3 prototypeBean3) { // Noncompliant
+
+    }
+
+    @Autowired
+    public void setRequestBean1(RequestBean1 requestBean1) { // Noncompliant, [[sc=33;ec=45]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired setter method).}}
+      this.requestBean1 = requestBean1;
+    }
+
+    public void setPrototypeBean1(@Autowired PrototypeBean1 prototypeBean1) {  // Noncompliant, [[sc=46;ec=60]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired parameter).}}
+      this.prototypeBean1 = prototypeBean1;
+    }
+
+    @Autowired
+    private void setPrototypeBean2(@Autowired PrototypeBean2 prototypeBean2) { // Compliant
+      this.prototypeBean2 = prototypeBean2;
+    }
+
+    public void method(@Autowired RequestBean1 requestBean1) { // Compliant, not a setter or constructor
+      // ...
+    }
   }
 
   @Scope(value = "singleton")
   public class SingletonBean2 {
-    private final PrototypeBean2 prototypeBean2;
+    @Autowired
+    private SingletonBean singletonBean; // Compliant, since scope is non-Singleton
+    @Autowired
+    private RequestBean1 requestBean1; // Noncompliant
+    @Autowired
+    private PrototypeBean1 prototypeBean1; // Noncompliant
 
-    @Autowired // Noncompliant@+1
-    public SingletonBean2(PrototypeBean2 prototypeBean2) { // Noncompliant, [[sc=27;ec=41]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired method/constructor).}}
-      this.prototypeBean2 = prototypeBean2;
+    @Autowired
+    private SingletonBean2(@Autowired SingletonBean singletonBean) {// Compliant, since scope is non-Singleton
+      this.singletonBean = singletonBean;
     }
-  }
 
-  @Scope(value = PROTOTYPE_SCOPE, scopeName = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
-  public class PrototypeBean3 {
+    @Autowired  // Noncompliant@+1
+    public SingletonBean2(RequestBean1 requestBean1) { // Noncompliant
+      this.requestBean1 = requestBean1;
+    }
   }
 
   @Scope(scopeName = "singleton")
   public class SingletonBean3 {
-    private final PrototypeBean3 prototypeBean3;
-    public SingletonBean3(PrototypeBean3 prototypeBean3) { // Noncompliant, [[sc=27;ec=41]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (single argument constructor).}}
-      this.prototypeBean3 = prototypeBean3;
+    @Autowired
+    private SingletonBean singletonBean; // Compliant, since scope is non-Singleton
+    @Autowired
+    private RequestBean1 requestBean1; // Noncompliant
+    @Autowired
+    private PrototypeBean1 prototypeBean1; // Noncompliant
+
+    // Noncompliant@+2 Autowired constructor
+    @Autowired  // Noncompliant@+1 Autowired constructor parameter
+    public SingletonBean3(@Autowired RequestBean1 requestBean1) { // Noncompliant, single parameter constructor
     }
   }
 
   @Scope(proxyMode = TARGET_CLASS)
   public class SingletonBean4 {
-    private final SingletonBean1 singletonBean1;
-    private final RequestBean1 requestBean1;
-
     @Autowired
-    public SingletonBean4 (SingletonBean1 singletonBean1, RequestBean1 requestBean1) { // Noncompliant
-      this.singletonBean1 = singletonBean1;
-      this.requestBean1 = requestBean1;
-    }
+    private SingletonBean singletonBean; // Compliant, since scope is non-Singleton
+    @Autowired
+    private RequestBean1 requestBean1; // Noncompliant
+    @Autowired
+    private PrototypeBean1 prototypeBean1; // Noncompliant
   }
 
   @Scope(value = SINGLETON_SCOPE, scopeName = "singleton")
   public class SingletonBean5 {
-    private final SingletonBean1 singletonBean1;
-    private final RequestBean1 requestBean1;
-    private final PrototypeBean1 prototypeBean1;
-
     @Autowired
-    public SingletonBean5 (
-      SingletonBean1 singletonBean1,
-      RequestBean1 requestBean1, // Noncompliant
-      PrototypeBean1 prototypeBean1) { // Noncompliant
-      this.singletonBean1 = singletonBean1;
-      this.requestBean1 = requestBean1;
-      this.prototypeBean1 = prototypeBean1;
-    }
-
-    public void method(PrototypeBean2 prototypeBean2) { // Compliant, method is not annotated with @Autowired
-      // ...
-    }
-  }
-
-  public class SingletonBean6 {
-    private final SingletonBean1 singletonBean1;
-    private final RequestBean1 requestBean1;
-    private final PrototypeBean1 prototypeBean1;
-
-    public SingletonBean6 (
-      SingletonBean1 singletonBean1,
-      @Autowired RequestBean1 requestBean1, // Noncompliant
-      @Autowired PrototypeBean1 prototypeBean1) { // Noncompliant
-      this.singletonBean1 = singletonBean1;
-      this.requestBean1 = requestBean1;
-      this.prototypeBean1 = prototypeBean1;
-    }
+    private SingletonBean singletonBean; // Compliant, since scope is non-Singleton
+    @Autowired
+    private RequestBean1 requestBean1; // Noncompliant
+    @Autowired
+    private PrototypeBean1 prototypeBean1; // Noncompliant
   }
 
   @Scope("singleton")
-  public class SingletonBean7 {
-    private SingletonBean1 singletonBean2;
-    private RequestBean1 requestBean1;
-    private PrototypeBean1 prototypeBean1;
-
-    public SingletonBean7 (
-      SingletonBean1 singletonBean2, RequestBean1 requestBean1, PrototypeBean1 prototypeBean1) { // Compliant, constructor is not annotated with @Autowired
-      this.singletonBean2 = singletonBean2;
-      this.requestBean1 = requestBean1;
-      this.prototypeBean1 = prototypeBean1;
-    }
-    @Autowired
-    public void setSingletonBean1(SingletonBean1 singletonBean1) { // Compliant
-      this.singletonBean2 = singletonBean2;
-    }
-
-    @Autowired
-    public void setRequestBean1(RequestBean1 requestBean1) { // Noncompliant, [[sc=33;ec=45]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired method/constructor).}}
-      this.requestBean1 = requestBean1;
-    }
-
-    @Autowired // Noncompliant@+1
-    public void setPrototypeBean1(@Autowired PrototypeBean1 prototypeBean1){ // Noncompliant,
-      this.prototypeBean1 = prototypeBean1;
-    }
-  }
-
-  public class SingletonBean9 {
+  public class SingletonBean6 {
+    @Inject
+    private SingletonBean5 singletonBean5; // Compliant, since scope is non-Singleton
     @Inject
     private RequestBean1 requestBean1; // Noncompliant
     private PrototypeBean1 prototypeBean1;
     private PrototypeBean2 prototypeBean2;
 
-    public SingletonBean9(PrototypeBean1 prototypeBean1) { // Noncompliant
+    public SingletonBean6(PrototypeBean1 prototypeBean1) { // Noncompliant
       this.prototypeBean1 = prototypeBean1;
     }
 
     @Inject
-    public SingletonBean9(PrototypeBean1 prototypeBean1, // Noncompliant
+    public SingletonBean6(PrototypeBean1 prototypeBean1, // Noncompliant
       PrototypeBean2 prototypeBean2) { // Noncompliant
       this.prototypeBean1 = prototypeBean1;
       this.prototypeBean2 = prototypeBean2;
@@ -167,18 +156,20 @@ public class NonSingletonAutowiredInSingletonCheckSample {
     }
   }
 
-  public class SingletonBean10 {
+  public class SingletonBean7 {
+    @jakarta.inject.Inject
+    private SingletonBean5 singletonBean5; // Compliant, since scope is non-Singleton
     @jakarta.inject.Inject
     private RequestBean1 requestBean1; // Noncompliant
     private PrototypeBean1 prototypeBean1;
     private PrototypeBean2 prototypeBean2;
 
-    public SingletonBean10(PrototypeBean1 prototypeBean1) { // Noncompliant
+    public SingletonBean7(PrototypeBean1 prototypeBean1) { // Noncompliant
       this.prototypeBean1 = prototypeBean1;
     }
 
     @jakarta.inject.Inject
-    public SingletonBean10(PrototypeBean1 prototypeBean1, // Noncompliant
+    public SingletonBean7(PrototypeBean1 prototypeBean1, // Noncompliant
       PrototypeBean2 prototypeBean2) { // Noncompliant
       this.prototypeBean1 = prototypeBean1;
       this.prototypeBean2 = prototypeBean2;
@@ -193,7 +184,7 @@ public class NonSingletonAutowiredInSingletonCheckSample {
   @Scope(value = CUSTOM_SCOPE, scopeName = "custom", proxyMode = TARGET_CLASS)
   public class CustomBean {
     @Autowired
-    private SingletonBean1 singletonBean1; // Compliant, since scope is non-Singleton
+    private SingletonBean singletonBean; // Compliant, since scope is non-Singleton
     @Autowired
     private SingletonBean5 singletonBean5; // Compliant, since scope is non-Singleton
     @Autowired
@@ -206,12 +197,21 @@ public class NonSingletonAutowiredInSingletonCheckSample {
 
     @Autowired // Noncompliant@+1
     public SingletonBean11(CustomBean customBean) { // Noncompliant
-     this.customBean = customBean;
+      this.customBean = customBean;
     }
 
     @Autowired
     public void setCustomBean(CustomBean customBean) { // Noncompliant
       this.customBean = customBean;
+    }
+
+    @Autowired
+    public void method(CustomBean customBean) { // Compliant, not a setter or constructor
+      // ...
+    }
+
+    public void method2(@Autowired CustomBean customBean) { // Compliant, not a setter or constructor
+      // ...
     }
   }
 

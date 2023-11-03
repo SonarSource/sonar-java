@@ -24,6 +24,8 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.checks.helpers.VariableTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -36,6 +38,9 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.java.checks.helpers.VariableTreeUtils.isConstructorParameter;
+import static org.sonar.java.checks.helpers.VariableTreeUtils.isSetterParameter;
 
 @Rule(key = "S6832")
 public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionVisitor {
@@ -59,16 +64,33 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
     if (tree.is(Tree.Kind.ANNOTATION)) {
       var annotationTree = (AnnotationTree) tree;
 
-      if (isAutoWiringAnnotation(annotationTree) && isAnnotationOnKind(annotationTree, Tree.Kind.VARIABLE)) {
-        getAnnotationSymbol(annotationTree, VariableTree.class)
-          .ifPresent(variableTree -> getEnclosingClass(variableTree.symbol().enclosingClass())
-            .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired field/parameter")));
+      if (!isAutoWiringAnnotation(annotationTree)) {
+        return;
+      }
 
-      } else if (isAutoWiringAnnotation(annotationTree) && (isAnnotationOnKind(annotationTree, Tree.Kind.METHOD) || isAnnotationOnKind(annotationTree, Tree.Kind.CONSTRUCTOR))) {
+      if (isAnnotationOnKind(annotationTree, Tree.Kind.VARIABLE)) {
+        getAnnotationSymbol(annotationTree, VariableTree.class)
+          .filter(VariableTreeUtils::isClassField)
+          .ifPresent(variableTree -> getEnclosingClass(variableTree.symbol().enclosingClass())
+            .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired field")));
+
+        getAnnotationSymbol(annotationTree, VariableTree.class)
+          .filter(variableTree -> isSetterParameter(variableTree) || isConstructorParameter(variableTree))
+          .ifPresent(variableTree -> getEnclosingClass(variableTree.symbol().enclosingClass())
+            .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired parameter")));
+
+      } else if (isAnnotationOnKind(annotationTree, Tree.Kind.METHOD)) {
+        getAnnotationSymbol(annotationTree, MethodTree.class)
+          .filter(MethodTreeUtils::isSetterMethod)
+          .ifPresent(methodTree -> getEnclosingClass(methodTree.symbol().enclosingClass())
+            .ifPresent(enclosingClassTree -> methodTree.parameters()
+              .forEach(variableTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired setter method"))));
+
+      } else if (isAnnotationOnKind(annotationTree, Tree.Kind.CONSTRUCTOR)) {
         getAnnotationSymbol(annotationTree, MethodTree.class)
           .ifPresent(methodTree -> getEnclosingClass(methodTree.symbol().enclosingClass())
             .ifPresent(enclosingClassTree -> methodTree.parameters()
-              .forEach(variableTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired method/constructor"))));
+              .forEach(variableTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired constructor"))));
       }
     }
 
@@ -97,7 +119,10 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
   }
 
   private static boolean isAnnotationOnKind(AnnotationTree annotationTree, Tree.Kind kind) {
-    return annotationTree.parent().parent().is(kind);
+    return Optional.ofNullable(annotationTree.parent())
+      .map(Tree::parent)
+      .filter(parent -> parent.is(kind))
+      .isPresent();
   }
 
   private static boolean hasTypeNotSingletonBean(VariableTree variableTree) {

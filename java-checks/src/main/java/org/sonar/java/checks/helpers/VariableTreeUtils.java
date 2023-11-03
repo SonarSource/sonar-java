@@ -20,17 +20,32 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.Optional;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-public class AnnotationsHelper {
+public class VariableTreeUtils {
 
-  private AnnotationsHelper() {
-    // Helper class, should not be implemented.
+  private VariableTreeUtils() {
   }
 
-  public static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
-    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
+  public static boolean isClassField(VariableTree variableTree) {
+    return Optional.ofNullable(variableTree.parent())
+      .filter(parent -> parent.is(Tree.Kind.CLASS))
+      .isPresent();
+  }
+
+  public static boolean isSetterParameter(VariableTree variableTree) {
+    return Optional.ofNullable(variableTree.parent())
+      .filter(parent -> parent.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .filter(MethodTreeUtils::isSetterMethod)
+      .isPresent();
+  }
+
+  public static boolean isConstructorParameter(VariableTree variableTree) {
+    return Optional.ofNullable(variableTree.parent())
+      .filter(parent -> parent.is(Tree.Kind.CONSTRUCTOR))
+      .isPresent();
   }
 }
