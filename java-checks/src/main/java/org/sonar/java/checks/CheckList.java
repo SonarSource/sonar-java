@@ -141,6 +141,7 @@ import org.sonar.java.checks.spring.AsyncMethodsReturnTypeCheck;
 import org.sonar.java.checks.spring.AutowiredOnConstructorWhenMultipleConstructorsCheck;
 import org.sonar.java.checks.spring.AutowiredOnMultipleConstructorsCheck;
 import org.sonar.java.checks.spring.AvoidQualifierOnBeanMethodsCheck;
+import org.sonar.java.checks.spring.ControllerWithRestControllerReplacementCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
 import org.sonar.java.checks.spring.FieldDependencyInjectionCheck;
 import org.sonar.java.checks.spring.ModelAttributeNamingConventionForSpELCheck;
@@ -364,6 +365,7 @@ public final class CheckList {
     ConstructorCallingOverridableCheck.class,
     ConstructorInjectionCheck.class,
     ControlCharacterInLiteralCheck.class,
+    ControllerWithRestControllerReplacementCheck.class,
     ControllerWithSessionAttributesCheck.class,
     CookieHttpOnlyCheck.class,
     HardCodedCredentialsShouldNotBeUsedCheck.class,
