@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -167,28 +168,32 @@ public class AutoScanTest {
     List<IssueDiff> rulesSilenced = newDiffs.stream().filter(IssueDiff::onlyFNs).collect(Collectors.toList());
     LOG.info("{} rules silenced without binaries (only FNs):\n{}", rulesSilenced.size(), IssueDiff.prettyPrint(rulesSilenced));
 
-    // store new diffs in JSON files - serializable
-    Files.createDirectory(pathFor(TARGET_ACTUAL + "autoscan-diffs/"));
-    for (var newDiff : newDiffs) {
-      Files.writeString(pathFor(TARGET_ACTUAL + "autoscan-diffs/diff_" + newDiff.ruleKey + ".json"), GSON.toJson(newDiff));
-    }
-    // store in a CSV file - can be easily imported in google sheets
-    Files.writeString(pathFor(TARGET_ACTUAL + DIFF_FILE + ".csv"), IssueDiff.prettyPrint(newDiffs, newTotal));
-
+    // Load known diffs
     var knownDiffFiles = new ArrayList<Path>();
     try (var dirStream = Files.newDirectoryStream(pathFor("src/test/resources/autoscan/diffs/"),
       path -> path.getFileName().toString().startsWith("diff_") && path.toString().endsWith(".json"))) {
       dirStream.forEach(knownDiffFiles::add);
     }
-    var knownDiffs = new ArrayList<IssueDiff>();
+    var knownDiffs = new HashMap<String, IssueDiff>();
     for (var diffFile : knownDiffFiles) {
-      knownDiffs.add(GSON.fromJson(Files.readString(diffFile), GSON_ISSUE_DIFF_TYPE));
+      IssueDiff diff = GSON.fromJson(Files.readString(diffFile), GSON_ISSUE_DIFF_TYPE);
+      knownDiffs.put(diff.ruleKey, diff);
     }
 
-    IssueDiff knownTotal = IssueDiff.total(knownDiffs);
+    // store new unexpected diffs in JSON files - serializable
+    Files.createDirectory(pathFor(TARGET_ACTUAL + "autoscan-diffs/"));
+    for (var newDiff : newDiffs) {
+      if (!newDiff.equals(knownDiffs.get(newDiff.ruleKey))) {
+        Files.writeString(pathFor(TARGET_ACTUAL + "autoscan-diffs/diff_" + newDiff.ruleKey + ".json"), GSON.toJson(newDiff));
+      }
+    }
+    // store all new diffs in a CSV file - as an easy import into a spreadsheet application
+    Files.writeString(pathFor(TARGET_ACTUAL + DIFF_FILE + ".csv"), IssueDiff.prettyPrint(newDiffs, newTotal));
+
+    IssueDiff knownTotal = IssueDiff.total(knownDiffs.values());
 
     SoftAssertions softly = new SoftAssertions();
-    softly.assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs);
+    softly.assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs.values());
     softly.assertThat(newTotal).isEqualTo(knownTotal);
     softly.assertThat(rulesCausingFPs).hasSize(6);
     softly.assertThat(rulesNotReporting).hasSize(7);
@@ -202,7 +207,7 @@ public class AutoScanTest {
     // The expected number of differences is the sum of FPs and FNs from the known differences.
     // We calculate this value based on the known diffs to avoid a single value in the tests that is affected by all rules (which would
     // inevitably lead to merge conflicts when people are working on rules in parallel).
-    var expectedDiffs = knownDiffs.stream().map(diff -> diff.falseNegatives + diff.falsePositives).reduce(Integer::sum).orElse(0);
+    var expectedDiffs = knownDiffs.values().stream().map(diff -> diff.falseNegatives + diff.falsePositives).reduce(Integer::sum).orElse(0);
 
     String differences = Files.readString(pathFor(TARGET_ACTUAL + PROJECT_KEY + "-no-binaries_differences"));
     softly.assertThat(differences).isEqualTo("Issues differences: " + expectedDiffs);
