@@ -180,7 +180,7 @@ public class AutoScanTest {
     softly.assertThat(newTotal).isEqualTo(knownTotal);
     softly.assertThat(rulesCausingFPs).hasSize(6);
     softly.assertThat(rulesNotReporting).hasSize(7);
-    softly.assertThat(rulesSilenced).hasSize(80);
+    softly.assertThat(rulesSilenced).hasSize(81);
 
     /**
      * 4. Check total number of differences (FPs + FNs)
