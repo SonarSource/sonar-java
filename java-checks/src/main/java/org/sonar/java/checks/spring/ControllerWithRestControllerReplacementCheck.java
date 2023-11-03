@@ -69,15 +69,19 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
       .filter(a -> "org.springframework.web.bind.annotation.ResponseBody".equals(a.annotationType().symbolType().fullyQualifiedName()))
       .forEach(annotationTree -> secondaryLocations.add(new JavaFileScannerContext.Location("Remove this \"@ResponseBody\" annotation.", annotationTree)));
 
-    if (!secondaryLocations.isEmpty()) {
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
-        .onTree(annotation.get())
-        .withMessage("Replace the \"@Controller\" annotation by \"@RestController\" and remove all \"@ResponseBody\" annotations.")
-        .withSecondaries(secondaryLocations)
-        .withQuickFixes(() -> List.of(JavaQuickFix.newQuickFix("Remove \"@ResponseBody\" annotations.").addTextEdits(edits).build()))
-        .report();
+    if (secondaryLocations.isEmpty()) {
+      return;
     }
+
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(annotation.get())
+      .withMessage("Replace the \"@Controller\" annotation by \"@RestController\" and remove all \"@ResponseBody\" annotations.")
+      .withSecondaries(secondaryLocations)
+      .withQuickFixes(() -> List.of(JavaQuickFix.newQuickFix("Remove \"@ResponseBody\" annotations.").addTextEdits(edits).build(),
+        JavaQuickFix.newQuickFix("Replace \"@Controller\" by \"@RestController\".").addTextEdit(JavaTextEdit.replaceTree(annotation.get(), "@RestController")).build()))
+      .report();
+
   }
 
 }
