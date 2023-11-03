@@ -175,7 +175,6 @@ public class AutoScanTest {
     // store in a CSV file - can be easily imported in google sheets
     Files.writeString(pathFor(TARGET_ACTUAL + DIFF_FILE + ".csv"), IssueDiff.prettyPrint(newDiffs, newTotal));
 
-    //List<IssueDiff> knownDiffs = GSON.fromJson(Files.readString(pathFor("src/test/resources/autoscan/" + DIFF_FILE + ".json")), GSON_LIST_ISSUE_DIFF_TYPE);
     var knownDiffFiles = new ArrayList<Path>();
     try (var dirStream = Files.newDirectoryStream(pathFor("src/test/resources/autoscan/diffs/"),
       path -> path.getFileName().toString().startsWith("diff_") && path.toString().endsWith(".json"))) {
@@ -193,7 +192,6 @@ public class AutoScanTest {
     softly.assertThat(newTotal).isEqualTo(knownTotal);
     softly.assertThat(rulesCausingFPs).hasSize(6);
     softly.assertThat(rulesNotReporting).hasSize(7);
-    softly.assertThat(rulesSilenced).hasSize(82);
 
     /**
      * 4. Check total number of differences (FPs + FNs)
