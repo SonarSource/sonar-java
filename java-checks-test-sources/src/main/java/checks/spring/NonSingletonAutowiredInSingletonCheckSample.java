@@ -53,7 +53,6 @@ public class NonSingletonAutowiredInSingletonCheckSample {
       PrototypeBean1 prototypeBean1, // Noncompliant
       PrototypeBean2 prototypeBean2, // Noncompliant
       PrototypeBean3 prototypeBean3) { // Noncompliant
-
     }
 
     @Autowired
