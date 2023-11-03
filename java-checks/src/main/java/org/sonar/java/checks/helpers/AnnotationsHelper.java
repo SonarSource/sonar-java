@@ -19,10 +19,7 @@
  */
 package org.sonar.java.checks.helpers;
 
-import java.util.Optional;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 public class AnnotationsHelper {
 
