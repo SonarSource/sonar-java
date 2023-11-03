@@ -33,4 +33,5 @@ public class AnnotationsHelper {
   public static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
     return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
+  
 }
