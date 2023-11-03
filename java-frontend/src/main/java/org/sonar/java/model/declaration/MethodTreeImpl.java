@@ -235,13 +235,13 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Override
   public int getLine() {
     InternalSyntaxToken token = parameters.openParenToken();
-    if(token != null){
+    if (token != null) {
       return token.getLine();
-    }else{
-      //type cast may fail, it is fine. We will just add a new case if it happens.
-      //could first try with type cast and fallback parameters
-      //but cannot reach full coverage
-      InternalSyntaxToken name = (InternalSyntaxToken)simpleName().identifierToken();
+    } else {
+      // type cast may fail, it is fine. We will just add a new case if it happens.
+      // could first try with type cast and fallback parameters
+      // but cannot reach full coverage
+      InternalSyntaxToken name = (InternalSyntaxToken) simpleName().identifierToken();
       return name.getLine();
     }
   }

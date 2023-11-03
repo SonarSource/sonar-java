@@ -109,8 +109,5 @@ class ClassTreeImplTest {
       "VARIABLE",
       "CLASS",
       "VARIABLE");
-
-    MethodTreeImpl constructor = (MethodTreeImpl) classTree.members().get(0);
-    assertThat(constructor.getLine()).isEqualTo(2);
   }
 }

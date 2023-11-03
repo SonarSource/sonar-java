@@ -23,13 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class IndentationCheckTest {
 
   @Test
   void detected_default_indentation_level() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/IndentationCheck_default.java")
+      .onFile(nonCompilingTestSourcesPath("checks/IndentationCheck_default.java"))
       .withCheck(new IndentationCheck())
       .verifyIssues();
   }

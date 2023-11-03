@@ -219,6 +219,21 @@ class MethodTreeImplTest {
     assertThat(method.closeParenToken()).isNotNull();
     assertThat(method.semicolonToken()).isNotNull();
     assertThat(method.throwsToken()).isNull();
+
+    method = getUniqueMethod("record Output(String title) { public Output {} }");
+    assertThat(method.openParenToken()).isNull();
+    assertThat(method.closeParenToken()).isNull();
+    assertThat(method.semicolonToken()).isNull();
+    assertThat(method.throwsToken()).isNull();
+  }
+
+  @Test
+  void getLine_return_line_of_method_declaration() {
+    MethodTreeImpl method = getUniqueMethod("class A { public void foo(int arg) throws Exception {} }");
+    assertThat(method.getLine()).isEqualTo(1);
+
+    method = getUniqueMethod("record Output(String title) { public Output {} }");
+    assertThat(method.getLine()).isEqualTo(1);
   }
 
   @Test
