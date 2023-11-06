@@ -199,7 +199,7 @@ class BehaviorCacheTest {
 
     assertThat(behaviorCache.behaviors).isEmpty();
     assertThat(behaviorCache.hardcodedBehaviors()).hasSize(233);
-    assertThat(logTester.logs(Level.DEBUG)).containsOnly("[SE] Loaded 233 hardcoded method behaviors.");
+    assertThat(logTester.logs(Level.DEBUG)).containsOnly("[SE] Loaded 233 hardcoded method behaviors.", "Incomplete Semantic, method invocation 'requireNonNull' line 6 col 47");
   }
 
   @Test
