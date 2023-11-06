@@ -87,6 +87,7 @@ class ClassTreeImplTest {
   void records_members_order() {
     ClassTree classTree = (ClassTree) JParserTestUtils.parse(
       "record Output(String title, String summary, String text) {\n"
+        + "  public Output {}"
         + "  public static final String CONST_1 = \"abc\";\n"
         + "  boolean isTooLong() { return true; }\n"
         + "  public static final int CONST_2 = 42;\n"
@@ -100,6 +101,7 @@ class ClassTreeImplTest {
     assertThat(classTree).is(Tree.Kind.RECORD);
     List<String> membersKinds = classTree.members().stream().map(Tree::kind).map(Tree.Kind::name).collect(Collectors.toList());
     assertThat(membersKinds).containsExactly(
+      "CONSTRUCTOR",
       "VARIABLE",
       "METHOD",
       "VARIABLE",

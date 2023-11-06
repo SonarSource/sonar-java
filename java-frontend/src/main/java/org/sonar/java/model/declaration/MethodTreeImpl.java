@@ -30,6 +30,7 @@ import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
@@ -233,7 +234,16 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public int getLine() {
-    return parameters.openParenToken().getLine();
+    InternalSyntaxToken token = parameters.openParenToken();
+    if (token != null) {
+      return token.getLine();
+    } else {
+      // type cast may fail, it is fine. We will just add a new case if it happens.
+      // could first try with type cast and fallback parameters
+      // but cannot reach full coverage
+      InternalSyntaxToken name = (InternalSyntaxToken) simpleName().identifierToken();
+      return name.getLine();
+    }
   }
 
   @Nullable
