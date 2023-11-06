@@ -40,7 +40,7 @@ class IndentationCheckTest {
     IndentationCheck check = new IndentationCheck();
     check.indentationLevel = 4;
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/IndentationCheck_custom.java")
+      .onFile(mainCodeSourcesPath("checks/IndentationCheck_custom.java"))
       .withCheck(check)
       .verifyIssues();
   }

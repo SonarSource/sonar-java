@@ -1,6 +1,10 @@
+package checks;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
-class Foo {
+class FooIdentation {
   int a;                          // Noncompliant {{Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)}}
    int b;                         // Compliant - already reported
  int c;                           // Compliant - already reported
@@ -39,7 +43,7 @@ if (true) {                       // Compliant
   }
 }
 
-enum Bar {
+enum BarIdentation {
   A,
  B,
    C;
@@ -51,7 +55,7 @@ enum Bar {
  }
 }
 
-interface Qix {
+interface QixIdentation {
 
  void foo1();                     // Noncompliant
 
@@ -59,26 +63,26 @@ interface Qix {
 
 }
 
-class Baz {
+class BazIdentation {
 
   void foo() {                    // Noncompliant {{Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)}}
-    new MyInterface() {           // Noncompliant {{Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)}}
-        public void foo() {       // Compliant
+    new QixIdentation() {           // Noncompliant {{Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)}}
+        public void foo1() {       // Compliant
         }
-          public void bar() {     // Noncompliant
+          public void foo2() {     // Noncompliant
           }
     };
   }
 
-  int[] foo = new int[] {
+  Object[] foo = new Object[] {
     0,
-    new Foo()
+    new FooIdentation()
   };
 
 }
 
- class Qiz {                             // Noncompliant
-  public void foo() {                    // Noncompliant
+ class QizIndentation {                             // Noncompliant
+  public void foo(int foo) {                    // Noncompliant
     switch (0) {                         // Noncompliant
       case 0:
         System.out.println(); System.out.println(); // Noncompliant
@@ -105,13 +109,12 @@ class Baz {
         : case 3: break; // Compliant
     }
   };
+  static List<Integer> list = List.of(1,2,3);
   static {
     try{ // Noncompliant {{Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)}}
-       while (keys.hasMoreElements()) { // Noncompliant {{Make this line start after 12 spaces instead of 7 in order to indent the code consistently. (Indentation level is at 4.)}}
-        s = keys.nextElement();         // Noncompliant {{Make this line start after 16 spaces instead of 8 in order to indent the code consistently. (Indentation level is at 4.)}}
-        rId = (String) s;
-        cName = (String) exceptionClassNames.get(rId);
-        exceptionRepositoryIds.put (cName, rId);
+       while (list.isEmpty()) { // Noncompliant {{Make this line start after 12 spaces instead of 7 in order to indent the code consistently. (Indentation level is at 4.)}}
+        int s = list.get(0);         // Noncompliant {{Make this line start after 16 spaces instead of 8 in order to indent the code consistently. (Indentation level is at 4.)}}
+        String k = "hello";
       }
     } catch (NoSuchElementException e) { }
   }
@@ -122,7 +125,7 @@ class Baz {
   }
 }
 
-class Lambda {
+class LambdaIndentation {
     void foo() {
         IntStream
             .range(1, 5)
