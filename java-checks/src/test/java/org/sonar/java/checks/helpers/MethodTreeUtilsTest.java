@@ -73,6 +73,17 @@ class MethodTreeUtilsTest {
   }
 
   @Test
+  void is_setter_method() {
+    assertTrue(MethodTreeUtils.isSetterMethod(parseMethod("class A { public void setFoo(String foo){} }")));
+    assertFalse(MethodTreeUtils.isSetterMethod(parseMethod("class A { public static void setFoo(String foo){} }")));
+    assertFalse(MethodTreeUtils.isSetterMethod(parseMethod("class A { public int setFoo(String foo){} }")));
+    assertFalse(MethodTreeUtils.isSetterMethod(parseMethod("class A { public void setFoo(String foo, int a){} }")));
+    assertFalse(MethodTreeUtils.isSetterMethod(parseMethod("class A { public void setFoo(){} }")));
+    assertFalse(MethodTreeUtils.isSetterMethod(parseMethod("class A { public void foo(){} }")));
+    assertFalse(MethodTreeUtils.isSetterMethod(parseMethod("class A { public void foo(String foo){} }")));
+  }
+
+  @Test
   void consecutive_and_subsequent_method_invocation() {
     List<MethodInvocationTree> methodInvocationList = new ArrayList<>();
     parseMethod("class A { void m(){ this.a1.a2.toString().toUpperCase().length(); int x = (getClass()).getMethods().length; } A a1; A a2; }")

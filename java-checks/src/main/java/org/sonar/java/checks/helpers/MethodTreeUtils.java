@@ -80,8 +80,17 @@ public final class MethodTreeUtils {
     return isPublic(m) && !isStatic(m) && hasHashCodeSignature;
   }
 
+  public static boolean isSetterMethod(MethodTree m) {
+    boolean publicNonStaticVoid = isPublic(m) && !isStatic(m) && returnsPrimitive(m, "void");
+    return publicNonStaticVoid && isNamePrefix(m, "set") && m.parameters().size() == 1;
+  }
+
   private static boolean isNamed(MethodTree m, String name) {
     return name.equals(m.simpleName().name());
+  }
+
+  private static boolean isNamePrefix(MethodTree m, String prefix) {
+    return m.simpleName().name().startsWith(prefix);
   }
 
   private static boolean isStatic(MethodTree m) {
@@ -135,7 +144,7 @@ public final class MethodTreeUtils {
 
   @VisibleForTesting
   static boolean hasKind(@Nullable Tree tree, Tree.Kind kind) {
-    return tree != null &&  tree.kind() == kind;
+    return tree != null && tree.kind() == kind;
   }
 
   public static class MethodInvocationCollector extends BaseTreeVisitor {
