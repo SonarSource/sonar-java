@@ -137,7 +137,9 @@ public final class MethodTreeUtils {
 
   public static Optional<MethodInvocationTree> subsequentMethodInvocation(Tree tree, MethodMatchers methodMatchers) {
     return consecutiveMethodInvocation(tree)
-      .map(consecutiveMethod -> methodMatchers.matches(consecutiveMethod) ? consecutiveMethod : subsequentMethodInvocation(consecutiveMethod, methodMatchers).orElse(null));
+      .map(consecutiveMethod ->
+        methodMatchers.matches(consecutiveMethod) ?
+          consecutiveMethod : subsequentMethodInvocation(consecutiveMethod, methodMatchers).orElse(null));
   }
 
   @VisibleForTesting

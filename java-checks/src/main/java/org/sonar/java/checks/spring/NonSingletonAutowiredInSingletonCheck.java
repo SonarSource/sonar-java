@@ -88,14 +88,19 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
   }
 
   private void analyzeAnnotatedFieldOrParameter(VariableTree annotatedVar) {
+    String injectionType;
+
     if (isClassField(annotatedVar)) {
-      getEnclosingClass(annotatedVar.symbol().enclosingClass())
-        .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, annotatedVar, "autowired field"));
+      injectionType = "autowired field";
+    } else if (isSetterParameter(annotatedVar) || isConstructorParameter(annotatedVar)) {
+      injectionType = "autowired parameter";
+    } else {
+      injectionType = null;
     }
 
-    if (isSetterParameter(annotatedVar) || isConstructorParameter(annotatedVar)) {
+    if (injectionType != null) {
       getEnclosingClass(annotatedVar.symbol().enclosingClass())
-        .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, annotatedVar, "autowired parameter"));
+        .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, annotatedVar, injectionType));
     }
   }
 
