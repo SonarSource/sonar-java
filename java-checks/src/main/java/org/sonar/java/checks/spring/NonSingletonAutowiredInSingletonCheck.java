@@ -58,53 +58,66 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.ANNOTATION)) {
-      var annotationTree = (AnnotationTree) tree;
-      if (!isAutoWiringAnnotation(annotationTree)) {
-        return;
-      }
-
-      var annotatedSymbol = Optional.ofNullable(annotationTree.parent()).map(Tree::parent);
-      if (annotatedSymbol.isEmpty()) {
-        return;
-      }
-
-      if (annotatedSymbol.get().is(Tree.Kind.VARIABLE)) {
-        var annotatedVar = annotatedSymbol.map(VariableTree.class::cast);
-
-        annotatedVar
-          .filter(NonSingletonAutowiredInSingletonCheck::isClassField)
-          .ifPresent(variableTree -> getEnclosingClass(variableTree.symbol().enclosingClass())
-            .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired field")));
-
-        annotatedVar
-          .filter(variableTree -> isSetterParameter(variableTree) || isConstructorParameter(variableTree))
-          .ifPresent(variableTree -> getEnclosingClass(variableTree.symbol().enclosingClass())
-            .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired parameter")));
-
-      } else if (annotatedSymbol.get().is(Tree.Kind.METHOD)) {
-        annotatedSymbol
-          .map(MethodTree.class::cast)
-          .filter(MethodTreeUtils::isSetterMethod)
-          .ifPresent(methodTree -> getEnclosingClass(methodTree.symbol().enclosingClass())
-            .ifPresent(enclosingClassTree -> methodTree.parameters()
-              .forEach(variableTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired setter method"))));
-
-      } else if (annotatedSymbol.get().is(Tree.Kind.CONSTRUCTOR)) {
-        annotatedSymbol
-          .map(MethodTree.class::cast)
-          .ifPresent(methodTree -> getEnclosingClass(methodTree.symbol().enclosingClass())
-            .ifPresent(enclosingClassTree -> methodTree.parameters()
-              .forEach(variableTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired constructor"))));
-      }
+      analyzeAnnotation((AnnotationTree) tree);
     }
 
     if (tree.is(Tree.Kind.CONSTRUCTOR)) {
-      var constructorTree = (MethodTree) tree;
+      analyzeSingleArgumentConstructor((MethodTree) tree);
+    }
+  }
 
-      if (constructorTree.parameters().size() == 1) {
-        getEnclosingClass(constructorTree.symbol().enclosingClass())
-          .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, constructorTree.parameters().get(0), "single argument constructor"));
-      }
+  private void analyzeAnnotation(AnnotationTree annotationTree) {
+    if (!isAutoWiringAnnotation(annotationTree)) {
+      return;
+    }
+
+    var annotatedSymbol = Optional.ofNullable(annotationTree.parent()).map(Tree::parent).orElse(null);
+    if (annotatedSymbol == null) {
+      return;
+    }
+
+    if (annotatedSymbol.is(Tree.Kind.VARIABLE)) {
+      analyzeAnnotatedFieldOrParameter((VariableTree) annotatedSymbol);
+
+    } else if (annotatedSymbol.is(Tree.Kind.METHOD)) {
+      analyzeAnnotatedSetter((MethodTree) annotatedSymbol);
+
+    } else if (annotatedSymbol.is(Tree.Kind.CONSTRUCTOR)) {
+      analyzeAnnotatedConstructor((MethodTree) annotatedSymbol);
+    }
+  }
+
+  private void analyzeAnnotatedFieldOrParameter(VariableTree annotatedVar) {
+    if (isClassField(annotatedVar)) {
+      getEnclosingClass(annotatedVar.symbol().enclosingClass())
+        .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, annotatedVar, "autowired field"));
+    }
+
+    if (isSetterParameter(annotatedVar) || isConstructorParameter(annotatedVar)) {
+      getEnclosingClass(annotatedVar.symbol().enclosingClass())
+        .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, annotatedVar, "autowired parameter"));
+    }
+  }
+
+  private void analyzeAnnotatedSetter(MethodTree annotatedMethod) {
+    if (MethodTreeUtils.isSetterMethod(annotatedMethod)) {
+      getEnclosingClass(annotatedMethod.symbol().enclosingClass())
+        .ifPresent(enclosingClassTree -> annotatedMethod.parameters()
+          .forEach(variableTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired setter method")));
+    }
+  }
+
+  private void analyzeAnnotatedConstructor(MethodTree annotatedConstructor) {
+    getEnclosingClass(annotatedConstructor.symbol().enclosingClass())
+      .ifPresent(enclosingClassTree -> annotatedConstructor.parameters()
+        .forEach(variableTree -> reportIfNonSingletonInSingleton(enclosingClassTree, variableTree, "autowired constructor")));
+  }
+
+  private void analyzeSingleArgumentConstructor(MethodTree constructorTree) {
+    if (constructorTree.parameters().size() == 1) {
+      var constructorParameter = constructorTree.parameters().get(0);
+      getEnclosingClass(constructorTree.symbol().enclosingClass())
+        .ifPresent(enclosingClassTree -> reportIfNonSingletonInSingleton(enclosingClassTree, constructorParameter, "single argument constructor"));
     }
   }
 
