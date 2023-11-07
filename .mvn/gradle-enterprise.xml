@@ -6,7 +6,7 @@
   </server>
   <buildCache>
     <remote>
-      <storeEnabled>true</storeEnabled>
+      <enabled>false</enabled>
     </remote>
     <requireClean>false</requireClean>
   </buildCache>
