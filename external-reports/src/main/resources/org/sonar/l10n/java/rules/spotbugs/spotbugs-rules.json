@@ -2276,7 +2276,8 @@
   },
   {
     "key": "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES",
-    "name": "Do not reuse public identifiers from JSL as inner name",
+    "name": "Bad practice - Do not reuse public identifiers from JSL as inner name",
+    "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#pi-do-not-reuse-public-identifiers-inner-class-names"
   },
