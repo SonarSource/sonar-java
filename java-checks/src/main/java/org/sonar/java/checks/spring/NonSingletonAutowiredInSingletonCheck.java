@@ -27,13 +27,9 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -45,7 +41,6 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
   private static final String JAVAX_INJECT_ANNOTATION = "javax.inject.Inject";
   private static final String JAKARTA_INJECT_ANNOTATION = "jakarta.inject.Inject";
   private static final Set<String> AUTO_WIRING_ANNOTATIONS = Set.of(AUTOWIRED_ANNOTATION, JAVAX_INJECT_ANNOTATION, JAKARTA_INJECT_ANNOTATION);
-  private static final Set<String> SINGLETON_LITERALS = Set.of("singleton", "\"singleton\"");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -157,8 +152,7 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
   }
 
   private static boolean hasTypeNotSingletonBean(VariableTree variableTree) {
-    var typeSymbolDeclaration = variableTree.type().symbolType().symbol().declaration();
-    return typeSymbolDeclaration != null && hasNotSingletonScopeAnnotation(typeSymbolDeclaration.modifiers().annotations());
+    return hasNotSingletonScopeAnnotation(variableTree.symbol().type().symbol().metadata().annotations());
   }
 
   private static boolean isAutoWiringAnnotation(AnnotationTree annotationTree) {
@@ -166,48 +160,24 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
   }
 
   private static boolean isSingletonBean(ClassTree classTree) {
-    return !hasNotSingletonScopeAnnotation(classTree.modifiers().annotations());
+    return !hasNotSingletonScopeAnnotation(classTree.symbol().metadata().annotations());
   }
 
-  private static boolean hasNotSingletonScopeAnnotation(List<AnnotationTree> annotations) {
+  private static boolean hasNotSingletonScopeAnnotation(List<SymbolMetadata.AnnotationInstance> annotations) {
     // Only classes annotated with @Scope, having a value different from "singleton", are considered as non-Singleton
     return annotations.stream().anyMatch(NonSingletonAutowiredInSingletonCheck::isNotSingletonScopeAnnotation);
   }
 
-  private static boolean isNotSingletonScopeAnnotation(AnnotationTree annotationTree) {
-    return annotationTree.symbolType().is(SCOPED_ANNOTATION)
-      && (isNotSingletonLiteralValue(annotationTree.arguments()) || isNotSingletonAssignmentValue(annotationTree.arguments()));
+  private static boolean isNotSingletonScopeAnnotation(SymbolMetadata.AnnotationInstance annotationInstance) {
+    return annotationInstance.symbol().type().is(SCOPED_ANNOTATION)
+      && annotationInstance.values()
+        .stream()
+        .anyMatch(NonSingletonAutowiredInSingletonCheck::isNotSingletonAnnotationValue);
   }
 
-  private static boolean isNotSingletonLiteralValue(Arguments arguments) {
-    return arguments.size() == 1
-      && arguments.get(0).is(Tree.Kind.STRING_LITERAL)
-      && isNotSingletonLiteral(((LiteralTree) arguments.get(0)).value());
+  private static boolean isNotSingletonAnnotationValue(SymbolMetadata.AnnotationValue annotationValue) {
+    return ("value".equals(annotationValue.name()) || "scopeName".equals(annotationValue.name()))
+      // both "value" and "scopeName" in @Scope annotation have String type
+      && !"singleton".equalsIgnoreCase((String) annotationValue.value());
   }
-
-  private static boolean isNotSingletonAssignmentValue(Arguments arguments) {
-    return arguments
-      .stream()
-      .filter(argument -> argument.is(Tree.Kind.ASSIGNMENT))
-      .map(AssignmentExpressionTree.class::cast)
-      .anyMatch(NonSingletonAutowiredInSingletonCheck::isNotAssignmentToSingletonValue);
-  }
-
-  private static boolean isNotAssignmentToSingletonValue(AssignmentExpressionTree assignmentExpressionTree) {
-    var expression = assignmentExpressionTree.expression();
-
-    if (expression.is(Tree.Kind.STRING_LITERAL)) {
-      return isNotSingletonLiteral(((LiteralTree) expression).value());
-    }
-
-    var variable = (IdentifierTree) assignmentExpressionTree.variable();
-
-    return ("value".equals(variable.name()) || "scopeName".equals(variable.name()))
-      && (expression.is(Tree.Kind.MEMBER_SELECT) && isNotSingletonLiteral(((MemberSelectExpressionTree) expression).identifier().name()));
-  }
-
-  private static boolean isNotSingletonLiteral(String value) {
-    return SINGLETON_LITERALS.stream().noneMatch(singletonLiteral -> singletonLiteral.equalsIgnoreCase(value));
-  }
-
 }

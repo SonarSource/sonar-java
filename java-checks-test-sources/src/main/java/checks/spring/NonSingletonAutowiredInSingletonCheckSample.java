@@ -1,34 +1,18 @@
 package checks.spring;
 
+import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinition.PrototypeBean1;
+import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinition.PrototypeBean2;
+import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinition.PrototypeBean3;
+import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinition.RequestBean1;
 import javax.inject.Inject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.context.annotation.ScopedProxyMode.TARGET_CLASS;
 
 public class NonSingletonAutowiredInSingletonCheckSample {
 
   private static final String SINGLETON_SCOPE = "singleton";
-  private static final String PROTOTYPE_SCOPE = "prototype";
-  private static final String CUSTOM_SCOPE = "custom";
-
-  @Component
-  @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = TARGET_CLASS)
-  public class RequestBean1 { }
-
-  @Scope("prototype")
-  public class PrototypeBean1 { }
-
-  @Scope(value = "prototype")
-  public class PrototypeBean2 { }
-
-
-  @Scope(value = PROTOTYPE_SCOPE, scopeName = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
-  public class PrototypeBean3 { }
-
 
   public class SingletonBean {
     @Autowired
@@ -180,7 +164,7 @@ public class NonSingletonAutowiredInSingletonCheckSample {
     }
   }
 
-  @Scope(value = CUSTOM_SCOPE, scopeName = "custom", proxyMode = TARGET_CLASS)
+  @Scope(value = "custom", scopeName = "custom", proxyMode = TARGET_CLASS)
   public class CustomBean {
     @Autowired
     private SingletonBean singletonBean; // Compliant, since scope is non-Singleton
