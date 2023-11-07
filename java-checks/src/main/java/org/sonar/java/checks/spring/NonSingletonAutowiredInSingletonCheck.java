@@ -177,6 +177,7 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
 
   private static boolean isNotSingletonAnnotationValue(SymbolMetadata.AnnotationValue annotationValue) {
     return ("value".equals(annotationValue.name()) || "scopeName".equals(annotationValue.name()))
-      && annotationValue.value() instanceof String && !"singleton".equalsIgnoreCase((String) annotationValue.value());
+      // both "value" and "scopeName" in @Scope annotation have String type
+      && !"singleton".equalsIgnoreCase((String) annotationValue.value());
   }
 }
