@@ -2,53 +2,143 @@
 <p>A reference to <code>null</code> should never be dereferenced/accessed. Doing so will cause a <code>NullPointerException</code> to be thrown. At
 best, such an exception will cause abrupt program termination. At worst, it could expose debugging information that would be useful to an attacker, or
 it could allow an attacker to bypass security measures.</p>
-<p>Note that when they are present, this rule takes advantage of <code>@CheckForNull</code> and <code>@Nonnull</code> annotations defined in <a
-href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values are and are not nullable except when <code>@Nonnull</code> is used
-on the parameter to <code>equals</code>, which by contract should always work with null.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-@CheckForNull
-String getName(){...}
-
-public boolean isNameEmpty() {
-  return getName().length() == 0; // Noncompliant; the result of getName() could be null, but isn't null-checked
+<p>Note that when they are present, this rule takes advantage of nullability annotations, like <code>@CheckForNull</code> or <code>@Nonnull</code>,
+defined in <a href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values can be null or not. <code>@Nonnull</code> will be
+ignored if used on the parameter of the <code>equals</code> method, which by contract should always work with null.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>The variable <code>myObject</code> is equal to <code>null</code>, meaning it has no value:</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public void method() {
+  Object myObject = null;
+  System.out.println(myObject.toString()); // Noncompliant: myObject is null
 }
 </pre>
-<pre>
+<p>The parameter <code>input</code> might be <code>null</code> as suggested by the <code>if</code> condition:</p>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+public void method(Object input)
+{
+  if (input == null)
+  {
+    // ...
+  }
+  System.out.println(input.toString()); // Noncompliant
+}
+</pre>
+<p>The unboxing triggered in the return statement will throw a <code>NullPointerException</code>:</p>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+public boolean method() {
+  Boolean boxed = null;
+  return boxed; // Noncompliant
+}
+</pre>
+<p>Both <code>conn</code> and <code>stmt</code> might be <code>null</code> in case an exception was thrown in the try{} block:</p>
+<pre data-diff-id="4" data-diff-type="noncompliant">
 Connection conn = null;
 Statement stmt = null;
-try{
+try {
   conn = DriverManager.getConnection(DB_URL,USER,PASS);
   stmt = conn.createStatement();
   // ...
-
-}catch(Exception e){
+} catch(Exception e) {
   e.printStackTrace();
-}finally{
-  stmt.close();   // Noncompliant; stmt could be null if an exception was thrown in the try{} block
-  conn.close();  // Noncompliant; conn could be null if an exception was thrown
+} finally {
+  stmt.close();  // Noncompliant
+  conn.close();  // Noncompliant
 }
 </pre>
-<pre>
-private void merge(@Nonnull Color firstColor, @Nonnull Color secondColor){...}
+<p>As <code>getName()</code> is annotated with <code>@CheckForNull</code>, there is a risk of <code>NullPointerException</code> here:</p>
+<pre data-diff-id="5" data-diff-type="noncompliant">
+@CheckForNull
+String getName() {...}
 
-public  void append(@CheckForNull Color color) {
-    merge(currentColor, color);  // Noncompliant; color should be null-checked because merge(...) doesn't accept nullable parameters
+public boolean isNameEmpty() {
+  return getName().length() == 0; // Noncompliant
 }
 </pre>
-<pre>
-void paint(Color color) {
-  if(color == null) {
-    System.out.println("Unable to apply color " + color.toString());  // Noncompliant; NullPointerException will be thrown
+<p>As <code>merge(…​)</code> parameter is annotated with <code>@Nonnull</code>, passing an identified potential null value (thanks to @CheckForNull)
+is not safe:</p>
+<pre data-diff-id="6" data-diff-type="noncompliant">
+private void merge(@Nonnull Color firstColor, @Nonnull Color secondColor) {...}
+
+public void append(@CheckForNull Color color) {
+  merge(currentColor, color);  // Noncompliant: color should be null-checked because merge(...) doesn't accept nullable parameters
+}
+</pre>
+<h4>Compliant solution</h4>
+<p>Ensuring the variable <code>myObject</code> has a value resolves the issue:</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+public void method() {
+  Object myObject = new Object();
+  System.out.println(myObject.toString()); // Compliant: myObject is not null
+}
+</pre>
+<p>Preventing the non-compliant code to be executed by returning early:</p>
+<pre data-diff-id="2" data-diff-type="compliant">
+public void method(Object input)
+{
+  if (input == null)
+  {
     return;
   }
-  ...
+  System.out.println(input.toString()); // Compliant: if 'input' is null, this is unreachable
+}
+</pre>
+<p>Ensuring that no unboxing of <code>null</code> value can happen resolves the issue</p>
+<pre data-diff-id="3" data-diff-type="compliant">
+public boolean method() {
+  Boolean boxed = true;
+  return boxed; // Compliant
+}
+</pre>
+<p>Ensuring that both <code>conn</code> and <code>stmt</code> are not <code>null</code> resolves the issue:</p>
+<pre data-diff-id="4" data-diff-type="compliant">
+Connection conn = null;
+Statement stmt = null;
+try {
+  conn = DriverManager.getConnection(DB_URL,USER,PASS);
+  stmt = conn.createStatement();
+  // ...
+} catch(Exception e) {
+  e.printStackTrace();
+} finally {
+  if (stmt != null) {
+    stmt.close();  // Compliant
+  }
+  if (conn != null) {
+    conn.close();  // Compliant
+  }
+}
+</pre>
+<p>Checking the returned value of <code>getName()</code> resolves the issue:</p>
+<pre data-diff-id="5" data-diff-type="compliant">
+@CheckForNull
+String getName() {...}
+
+public boolean isNameEmpty() {
+  String name = getName();
+  if (name != null) {
+    return name.length() == 0; // Compliant
+  } else {
+    // ...
+  }
+}
+</pre>
+<p>Ensuring that the provided <code>color</code> is not <code>null</code> resolves the issue:</p>
+<pre data-diff-id="6" data-diff-type="compliant">
+private void merge(@Nonnull Color firstColor, @Nonnull Color secondColor) {...}
+
+public void append(@CheckForNull Color color) {
+  if (color != null) {
+    merge(currentColor, color);  // Compliant
+  }
 }
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://cwe.mitre.org/data/definitions/476">MITRE, CWE-476</a> - NULL Pointer Dereference </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/QdcxBQ">CERT, EXP34-C.</a> - Do not dereference null pointers </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/aDdGBQ">CERT, EXP01-J.</a> - Do not use a null in a case where an object is required </li>
+  <li> MITRE, CWE-476 - <a href="https://cwe.mitre.org/data/definitions/476">NULL Pointer Dereference</a> </li>
+  <li> CERT, EXP34-C. - <a href="https://wiki.sei.cmu.edu/confluence/x/QdcxBQ">Do not dereference null pointers</a> </li>
+  <li> CERT, EXP01-J. - <a href="https://wiki.sei.cmu.edu/confluence/x/aDdGBQ">Do not use a null in a case where an object is required</a> </li>
 </ul>
 

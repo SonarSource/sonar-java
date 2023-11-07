@@ -1,5 +1,5 @@
 {
-  "title": "Avoid field dependency injection",
+  "title": "Field dependency injection should be avoided",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

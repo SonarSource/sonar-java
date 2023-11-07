@@ -1,10 +1,12 @@
 <h2>Why is this an issue?</h2>
 <p>Dependency injection frameworks such as Spring support dependency injection by using annotations such as <code>@Inject</code> and
-<code>@Autowired</code>. These annotation can be used to inject beans via constructor, setter, and field injection.</p>
+<code>@Autowired</code>. These annotations can be used to inject beans via constructor, setter, and field injection.</p>
 <p>Generally speaking, field injection is discouraged. It allows the creation of objects in an invalid state and makes testing more difficult. The
 dependencies are not explicit when instantiating a class that uses field injection.</p>
-<p>Apart from that, field injection is not compatible with final fields. Keeping dependencies immutable where possible makes the code easier to
+<p>In addition, field injection is not compatible with final fields. Keeping dependencies immutable where possible makes the code easier to
 understand, easing development and maintenance.</p>
+<p>Finally, because values are injected into fields after the object has been constructed, they cannot be used to initialize other non-injected fields
+inline.</p>
 <p>This rule raises an issue when the <code>@Autowired</code> or <code>@Inject</code> annotations are used on a field.</p>
 <h2>How to fix it</h2>
 <p>Use constructor injection instead.</p>
@@ -16,17 +18,21 @@ dependencies don’t change after instantiation.</p>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public class SomeService {
     @Autowired
-    private SomeDependency someDependency;
+    private SomeDependency someDependency; // Noncompliant
+
+    private String name = someDependency.getName(); // Will throw a NullPointerException
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 public class SomeService {
     private final SomeDependency someDependency;
+    private final String name;
 
     @Autowired
     public SomeService(SomeDependency someDependency) {
         this.someDependency = someDependency;
+        name = someDependency.getName();
     }
 }
 </pre>
