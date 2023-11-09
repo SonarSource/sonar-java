@@ -71,7 +71,7 @@ For instance, SonarQube `8.9` (previous LTS) is shipped with version `6.15.1.260
 
 ```xml
 <properties>
-  <sonarqube.version>9.9.0.229</sonarqube.version>
+  <sonar.plugin.api.version>9.14.0.375</sonar.plugin.api.version>
   <sonarjava.version>7.16.0.30901</sonarjava.version>
   <!-- [...] -->
 </properties>
@@ -102,7 +102,7 @@ The property `<sonarQubeMinVersion>` also guarantees compatibility with the Sona
     <pluginName>Java Custom Rules</pluginName>
     <pluginClass>org.sonar.samples.java.MyJavaRulesPlugin</pluginClass>
     <sonarLintSupported>true</sonarLintSupported>
-    <sonarQubeMinVersion>${sonarqube.version}</sonarQubeMinVersion>
+    <sonarQubeMinVersion>8.9</sonarQubeMinVersion>
     <requirePlugins>java:${sonarjava.version}</requirePlugins>
   </configuration>
 </plugin>
