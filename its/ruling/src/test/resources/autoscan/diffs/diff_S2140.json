@@ -1,0 +1,6 @@
+{
+  "ruleKey": "S2140",
+  "hasTruePositives": true,
+  "falseNegatives": 9,
+  "falsePositives": 0
+}
