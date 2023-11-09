@@ -19,7 +19,7 @@
   <description>Java Custom Rules Example for SonarQube</description>
 
   <properties>
-    <sonarqube.version>9.9.0.229</sonarqube.version>
+    <sonar.plugin.api.version>9.14.0.375</sonar.plugin.api.version>
     <sonarjava.version>7.16.0.30901</sonarjava.version>
     <!-- Don't forget to update this version of JaCoCo -->
     <jacoco.version>0.8.10</jacoco.version>
@@ -34,7 +34,7 @@
     <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>
       <artifactId>sonar-plugin-api</artifactId>
-      <version>${sonarqube.version}</version>
+      <version>${sonar.plugin.api.version}</version>
       <scope>provided</scope>
     </dependency>
 
