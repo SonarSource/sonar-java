@@ -1,6 +1,19 @@
 import java.util.function.Supplier;
 
 class A {
+
+  public String foo(int dt) {
+    return switch (dt) {
+      case 1 -> {
+        try {
+          yield "";
+        } catch (Exception e) {
+          yield "Exc";
+        }
+      }
+      default -> null;
+    };
+  }
   public void f() {
   }
   abstract void method();
