@@ -20,7 +20,6 @@ jobs:
     name: Update dogfood branch
     permissions:
       id-token: write # required for SonarSource/vault-action-wrapper
-      contents: write # required to grant GITHUB_TOKEN writing permission
     steps:
     - name: get secrets
       id: secrets
@@ -28,9 +27,10 @@ jobs:
       with:
         secrets: |
           development/kv/data/slack webhook | SLACK_WEBHOOK;
+          development/github/token/{REPO_OWNER_NAME_DASH}-dogfood-merge token | dogfood_token;
     - name: git octopus step
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).dogfood_token }}
       id: dogfood
       uses: SonarSource/gh-action_dogfood_merge@v1
       with:
