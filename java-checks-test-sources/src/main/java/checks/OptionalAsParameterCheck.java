@@ -4,9 +4,21 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import javax.annotation.Nullable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 class OptionalAsParameterCheck {
-  void foo(OptionalAsParameterCheck a) {} // Compliant
+
+  @GetMapping("/{id}")
+  ResponseEntity<Foo> getFoo(@PathVariable Long id, @RequestParam(value = "name") Optional<String> name, @RequestParam(value = "bar") Optional<Integer> bar) { // Compliant
+    return new ResponseEntity<>(new Foo(), HttpStatus.OK);
+  }
+
+  void foo(@Nullable OptionalAsParameterCheck a) {} // Compliant
 
   void foo(Optional<OptionalAsParameterCheck> a) {} // Noncompliant [[sc=12;ec=46]] {{Specify a "OptionalAsParameterCheck" parameter instead.}}
   void bar(Optional o) {} // Noncompliant [[sc=12;ec=20]] {{Specify a type instead.}}
