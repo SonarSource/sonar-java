@@ -24,13 +24,13 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class SillyBitOperationCheckTest {
+class UnnecessaryBitOperationCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SillyBitOperationCheck.java"))
-      .withCheck(new SillyBitOperationCheck())
+      .onFile(mainCodeSourcesPath("checks/UnnecessaryBitOperationCheck.java"))
+      .withCheck(new UnnecessaryBitOperationCheck())
       .verifyIssues();
   }
 }
