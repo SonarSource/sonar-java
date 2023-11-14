@@ -126,6 +126,11 @@
           <sonarLintSupported>true</sonarLintSupported>
           <sonarQubeMinVersion>9.9</sonarQubeMinVersion>
           <jreMinVersion>11</jreMinVersion>
+          <archive>
+            <manifestEntries>
+              <Implementation-Version>${project.version}</Implementation-Version>
+            </manifestEntries>
+          </archive>
         </configuration>
       </plugin>
       <plugin>
