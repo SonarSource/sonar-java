@@ -85,7 +85,7 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor {
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       if (isConstantWithLiteral(mit) || isTruncation(mit) || isConstantWithZero(mit) || isConstantWithZeroOrOne(mit)) {
-        reportIssue(mit.methodSelect(), String.format("Remove this silly call to \"Math.%s\"", mit.methodSymbol().name()));
+        reportIssue(mit.methodSelect(), String.format("Remove this unnecessary call to \"Math.%s\"", mit.methodSymbol().name()));
       }
     }
   }
