@@ -20,6 +20,7 @@ env:
   CIRRUS_SHELL: bash
   # Allows to run builds for the 50 last commits in a branch:
   CIRRUS_CLONE_DEPTH: 50
+  CI: true
 
 container_definition: &CONTAINER_DEFINITION
   image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j11-latest
@@ -145,7 +146,7 @@ sanity_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - mvn clean install -Dmaven.test.skip=true
-    - mvn verify -f java-checks/pom.xml -Psanity -Dtest=SanityTest
+    - mvn verify -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_task:

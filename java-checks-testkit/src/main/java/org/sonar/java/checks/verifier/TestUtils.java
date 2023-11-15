@@ -25,38 +25,61 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.checks.verifier.internal.InternalInputFile;
 
 public class TestUtils {
+
+  public static final String DEFAULT_MODULE = "default";
+
+  private static final String PROJECT_LOCATION = "../java-checks-test-sources/";
+
   private TestUtils() {
     // utility class, forbidden constructor
   }
-
-  private static final String PROJECT_LOCATION = "../java-checks-test-sources/";
-  private static final String MAIN_CODE_SOURCES_DIR = PROJECT_LOCATION + "src/main/java/";
-  private static final String TEST_CODE_SOURCES_DIR = PROJECT_LOCATION + "src/test/java/";
-  private static final String NON_COMPILING_TEST_SOURCES_DIR = PROJECT_LOCATION + "src/main/files/non-compiling/";
 
   /**
    * To be used when testing rules targeting MAIN code.
    */
   public static String mainCodeSourcesPath(String path) {
-    return getFileFrom(path, MAIN_CODE_SOURCES_DIR);
+    return mainCodeSourcesPathInModule(DEFAULT_MODULE, path);
+  }
+
+  /**
+   * To be used when testing rules targeting MAIN code from a non-default module.
+   */
+  public static String mainCodeSourcesPathInModule(String module, String path) {
+    return getFileFrom(path, PROJECT_LOCATION + module + "/src/main/java/");
   }
 
   /**
    * To be used when testing rules targeting TEST code.
    */
   public static String testCodeSourcesPath(String path) {
-    return getFileFrom(path, TEST_CODE_SOURCES_DIR);
+    return testCodeSourcesPathInModule(DEFAULT_MODULE, path);
+  }
+
+  /**
+   * To be used when testing rules targeting TEST code from a non-default module.
+   */
+  public static String testCodeSourcesPathInModule(String module, String path) {
+    return getFileFrom(path, PROJECT_LOCATION + module + "/src/test/java/");
   }
 
   /**
    * To be used when testing rules behavior when bytecode is missing, partial, or code does not compile.
    */
   public static String nonCompilingTestSourcesPath(String path) {
-    return getFileFrom(path, NON_COMPILING_TEST_SOURCES_DIR);
+    return nonCompilingTestSourcesPathInModule(DEFAULT_MODULE, path);
+  }
+
+  /**
+   * To be used when testing rules behavior when bytecode is missing, partial, or code does not compile.
+   * And the file is in a non-default module.
+   *
+   */
+  public static String nonCompilingTestSourcesPathInModule(String module, String path) {
+    return getFileFrom(path, PROJECT_LOCATION + module + "/src/main/files/non-compiling/");
   }
 
   private static String getFileFrom(String path, String relocated) {
-    File file = new File((relocated + path).replace('/', File.separatorChar));
+    var file = new File((relocated + path).replace('/', File.separatorChar));
     if (!file.exists()) {
       throw new IllegalStateException("Path '" + path + "' should exist.");
     }

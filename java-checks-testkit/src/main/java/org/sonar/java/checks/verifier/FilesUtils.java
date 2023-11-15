@@ -39,11 +39,14 @@ public final class FilesUtils {
   private FilesUtils() {
   }
 
+  public static final String TEST_SOURCES_ROOT = "../java-checks-test-sources/";
+  public static final String TARGET_TEST_JARS = "/target/test-jars";
+  public static final String TARGET_CLASSES = "/target/classes";
   /**
    * Default location of the jars/zips to be taken into account when performing the analysis.
    */
-  public static final String DEFAULT_TEST_JARS_DIRECTORY = "../java-checks-test-sources/target/test-jars";
-  public static final String DEFAULT_TEST_CLASSES_DIRECTORY = "../java-checks-test-sources/target/classes";
+  public static final String DEFAULT_TEST_JARS_DIRECTORY = TEST_SOURCES_ROOT + "default" + TARGET_TEST_JARS;
+  public static final String DEFAULT_TEST_CLASSES_DIRECTORY = TEST_SOURCES_ROOT + "default" + TARGET_CLASSES;
 
   public static List<File> getClassPath(String jarsDirectory) {
     List<File> classpath = new LinkedList<>();

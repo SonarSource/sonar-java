@@ -40,6 +40,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>java-checks-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>java-symbolic-execution</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -119,22 +124,6 @@
       <properties>
         <argLine>-Xmx512m --add-modules jdk.incubator.httpclient</argLine>
       </properties>
-    </profile>
-    <profile>
-      <id>sanity</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <systemProperties>
-                <force.sanity.test>true</force.sanity.test>
-              </systemProperties>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
   </profiles>
 </project>
