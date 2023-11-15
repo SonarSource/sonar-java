@@ -35,5 +35,46 @@ class ConcatenationWithStringValueOfCheck {
     o = 42 - 2;
   }
 
+  private void quickfixes() {
+    var num = 99;
+    var a = "" + String.valueOf(num) + " balloons"; // Noncompliant [[sc=18;ec=37;quickfixes=qf1]] {{Directly append the argument of String.valueOf().}}
+    // fix@qf1 {{Replace String.valueOf() with its argument}}
+    // edit@qf1 [[sc=18;ec=37]] {{num}}
+
+    a = "" + String.valueOf(num + num); // Noncompliant [[sc=14;ec=39;quickfixes=qf2]]
+    // fix@qf2 {{Replace String.valueOf() with its argument}}
+    // edit@qf2 [[sc=14;ec=39]] {{(num + num)}}
+
+    a = "" + String.valueOf(num - num); // Noncompliant [[sc=14;ec=39;quickfixes=qf3]]
+    // fix@qf3 {{Replace String.valueOf() with its argument}}
+    // edit@qf3 [[sc=14;ec=39]] {{(num - num)}}
+
+    a = "" + String.valueOf(-num); // Noncompliant [[sc=14;ec=34;quickfixes=qf4]]
+    // fix@qf4 {{Replace String.valueOf() with its argument}}
+    // edit@qf4 [[sc=14;ec=34]] {{-num}}
+
+    // Noncompliant@+1 [[sc=14;sl=+1;ec=6;el=+4;quickfixes=qfml]]
+    a = "" + String.valueOf(2 +
+      3 * 4 -
+      5 / 6
+    ) + 7;
+
+    // fix@qfml {{Replace String.valueOf() with its argument}}
+    // edit@qfml [[sc=14;ec=6;el=+3]] {{(2 +\n      3 * 4 -\n      5 / 6)}}
+
+    var world = "world";
+    var b = "Hello, " + String.valueOf(world + world); // Noncompliant [[sc=25;ec=54;quickfixes=qf5]]
+    // fix@qf5 {{Replace String.valueOf() with its argument}}
+    // edit@qf5 [[sc=25;ec=54]] {{world + world}}
+
+    b = "Hello, " + String.valueOf(world.charAt(2)) + "!"; // Noncompliant [[sc=21;ec=52;quickfixes=qf6]]
+    // fix@qf6 {{Replace String.valueOf() with its argument}}
+    // edit@qf6 [[sc=21;ec=52]] {{world.charAt(2)}}
+
+    b = "Hello, " + String.valueOf((world.charAt(2))) + "!"; // Noncompliant [[sc=21;ec=54;quickfixes=qf7]]
+    // fix@qf7 {{Replace String.valueOf() with its argument}}
+    // edit@qf7 [[sc=21;ec=54]] {{(world.charAt(2))}}
+  }
+
   int bar(int i) { return 0; }
 }

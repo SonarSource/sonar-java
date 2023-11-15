@@ -19,7 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -30,9 +35,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Rule(key = "S1153")
 public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -52,14 +54,14 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
       return;
     }
 
-    Set<ExpressionTree> valueOfTrees = new HashSet<>();
+    Set<MethodInvocationTree> valueOfTrees = new HashSet<>();
     boolean flagIssue = false;
     ExpressionTree current = tree;
     while (current.is(Kind.PLUS)) {
       BinaryExpressionTree binOp = (BinaryExpressionTree) current;
       scan(binOp.rightOperand());
       if (isStringValueOf(binOp.rightOperand())) {
-        valueOfTrees.add(binOp.rightOperand());
+        valueOfTrees.add((MethodInvocationTree) binOp.rightOperand());
       }
       flagIssue |= binOp.leftOperand().is(Kind.STRING_LITERAL);
       if (!valueOfTrees.isEmpty()) {
@@ -69,11 +71,29 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
     }
 
     if (flagIssue) {
-      for (ExpressionTree valueOfTree : valueOfTrees) {
-        context.reportIssue(this, valueOfTree, "Directly append the argument of String.valueOf().");
+      for (MethodInvocationTree valueOfTree : valueOfTrees) {
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(valueOfTree)
+          .withMessage("Directly append the argument of String.valueOf().")
+          .withQuickFix(() -> createQuickFix(valueOfTree))
+          .report();
       }
     }
     scan(current);
+  }
+
+  private JavaQuickFix createQuickFix(MethodInvocationTree invocationTree) {
+    ExpressionTree argumentTree = invocationTree.arguments().get(0);
+    String replacement = QuickFixHelper.contentForTree(argumentTree, context);
+
+    if (argumentTree instanceof BinaryExpressionTree && !argumentTree.symbolType().is("java.lang.String")) {
+      replacement = "(" + replacement + ")";
+    }
+
+    return JavaQuickFix.newQuickFix("Replace String.valueOf() with its argument")
+      .addTextEdit(JavaTextEdit.replaceTree(invocationTree, replacement))
+      .build();
   }
 
   private static boolean isStringValueOf(ExpressionTree tree) {
