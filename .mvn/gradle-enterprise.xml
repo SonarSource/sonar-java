@@ -11,4 +11,10 @@
     </remote>
     <requireClean>false</requireClean>
   </buildCache>
+  <buildScan>
+    <backgroundBuildScanUpload>#{env['CI'] == null}</backgroundBuildScanUpload>
+    <capture>
+      <goalInputFiles>true</goalInputFiles>
+    </capture>
+  </buildScan>
 </gradleEnterprise>
