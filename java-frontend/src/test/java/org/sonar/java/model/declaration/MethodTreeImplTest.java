@@ -204,6 +204,11 @@ class MethodTreeImplTest {
     cfg = method.cfg();
     assertThat(cfg).isNotNull();
     assertThat(method.cfg()).isSameAs(cfg);
+
+    MethodTree methodWithSwitchAndYield = getUniqueMethod("class A { String foo(int arg) {return switch (arg) {case 1: yield \"Got a 1\"; case 2: yield \"Got a 2\"; default: yield \"More than 2\";};}}");
+    cfg = methodWithSwitchAndYield.cfg();
+    assertThat(cfg).isNotNull();
+    assertThat(methodWithSwitchAndYield.cfg()).isSameAs(cfg);
   }
 
   @Test

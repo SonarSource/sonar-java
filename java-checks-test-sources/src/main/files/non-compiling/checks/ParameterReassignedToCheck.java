@@ -2,11 +2,22 @@ import java.util.function.Supplier;
 
 class A {
 
-  public String foo(int dt) {
-    return switch (dt) {
+  public String foo(int dt, String myString) {
+    dt = 1; // Noncompliant
+    myString = switch (dt) { // Noncompliant
+      case 1 -> {
+        yield myString + "";
+      }
+      default -> null;
+    };
+    return myString;
+  }
+
+  public String foo2(int dt, String myString2) {
+    String str = switch (dt) { // Compliant
       case 1 -> {
         try {
-          yield "";
+          yield myString2 + "";
         } catch (Exception e) {
           yield "Exc";
         }
