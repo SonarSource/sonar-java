@@ -612,7 +612,7 @@ public final class CheckList {
     ServletInstanceFieldCheck.class,
     ServletMethodsExceptionsThrownCheck.class,
     ShiftOnIntOrLongCheck.class,
-    SillyBitOperationCheck.class,
+    UnnecessaryBitOperationCheck.class,
     SillyEqualsCheck.class,
     SillyStringOperationsCheck.class,
     SimpleClassNameCheck.class,

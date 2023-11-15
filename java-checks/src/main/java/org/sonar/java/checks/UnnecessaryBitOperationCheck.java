@@ -33,7 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2437")
-public class SillyBitOperationCheck extends IssuableSubscriptionVisitor {
+public class UnnecessaryBitOperationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -61,7 +61,7 @@ public class SillyBitOperationCheck extends IssuableSubscriptionVisitor {
     }
     Long evaluatedExpression = LiteralUtils.longLiteralValue(expression);
     if (evaluatedExpression != null && getBitwiseOperationIdentityElement(tree).equals(evaluatedExpression)) {
-      reportIssue(operatorToken, "Remove this silly bit operation.");
+      reportIssue(operatorToken, "Remove this unnecessary bit operation.");
     }
   }
 
