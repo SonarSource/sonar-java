@@ -117,8 +117,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
       reference = ((IdentifierTree) argument).symbol();
     }
     if (reference != null &&
-      reference.owner().type().is(JAVA_UTIL_CALENDAR) &&
-      Threshold.getThreshold(reference.name()) != null) {
+      reference.owner().type().is(JAVA_UTIL_CALENDAR) && DateField.containsField(reference.name())) {
       return reference.name();
     }
     return null;
@@ -180,7 +179,8 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     }
     if (literal != null) {
       int argValue = Integer.parseInt(literal.value()) * sign;
-      if (argValue > Threshold.getThreshold(name) || argValue < 0) {
+      Range range = DateField.getFieldRange(name);
+      if (argValue > range.maxValue || argValue < range.minValue) {
         reportIssue(arg, MessageFormat.format(message, argValue, name));
       }
     }
@@ -190,41 +190,54 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     return ExpressionUtils.methodName(mit).name();
   }
 
-  private enum Threshold {
-    MONTH(11, "setMonth", "getMonth", "MONTH", "month"),
-    DATE(31, "setDate", "getDate", "DAY_OF_MONTH", "dayOfMonth"),
-    HOURS(23, "setHours", "getHours", "HOUR_OF_DAY", "hourOfDay"),
-    MINUTE(60, "setMinutes", "getMinutes", "MINUTE", "minute"),
-    SECOND(61, "setSeconds", "getSeconds", "SECOND", "second");
+  private enum DateField {
+    MONTH(new Range(0, 11), "setMonth", "getMonth", "MONTH", "month"),
+    DATE(new Range(1, 31), "setDate", "getDate", "DAY_OF_MONTH", "dayOfMonth"),
+    HOURS(new Range(0, 23), "setHours", "getHours", "HOUR_OF_DAY", "hourOfDay"),
+    MINUTE(new Range(0, 60), "setMinutes", "getMinutes", "MINUTE", "minute"),
+    SECOND(new Range(0, 61), "setSeconds", "getSeconds", "SECOND", "second");
 
-    private static Map<String, Integer> thresholdByName = new HashMap<>();
+    private static final Map<String, Range> rangeByName = new HashMap<>();
 
     static {
-      for (Threshold value : Threshold.values()) {
-        thresholdByName.put(value.javaDateSetter, value.edgeValue);
-        thresholdByName.put(value.javaDateGetter, value.edgeValue);
-        thresholdByName.put(value.calendarConstant, value.edgeValue);
-        thresholdByName.put(value.gregorianParam, value.edgeValue);
+      for (DateField field : DateField.values()) {
+        rangeByName.put(field.javaDateSetter, field.range);
+        rangeByName.put(field.javaDateGetter, field.range);
+        rangeByName.put(field.calendarConstant, field.range);
+        rangeByName.put(field.gregorianParam, field.range);
       }
     }
 
-    private final int edgeValue;
+    private final Range range;
     private final String javaDateSetter;
     private final String javaDateGetter;
     private final String calendarConstant;
     private final String gregorianParam;
 
-    Threshold(int edgeValue, String javaDateSetter, String javaDateGetter, String calendarConstant, String gregorianParam) {
-      this.edgeValue = edgeValue;
+    DateField(Range range, String javaDateSetter, String javaDateGetter, String calendarConstant, String gregorianParam) {
+      this.range = range;
       this.javaDateSetter = javaDateSetter;
       this.javaDateGetter = javaDateGetter;
       this.calendarConstant = calendarConstant;
       this.gregorianParam = gregorianParam;
     }
 
-    public static Integer getThreshold(String name) {
-      return thresholdByName.get(name);
+    public static Range getFieldRange(String name) {
+      return rangeByName.get(name);
+    }
+
+    public static boolean containsField(String name) {
+      return rangeByName.containsKey(name);
     }
   }
 
+  private static class Range {
+    public final int minValue;
+    public final int maxValue;
+
+    private Range(int minValue, int maxValue) {
+      this.minValue = minValue;
+      this.maxValue = maxValue;
+    }
+  }
 }
