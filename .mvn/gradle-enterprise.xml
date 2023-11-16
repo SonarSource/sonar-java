@@ -12,7 +12,7 @@
     <requireClean>false</requireClean>
   </buildCache>
   <buildScan>
-    <backgroundBuildScanUpload>#{env['CI'] == null}</backgroundBuildScanUpload>
+    <backgroundBuildScanUpload>#{env['CIRRUS_CI'] == null}</backgroundBuildScanUpload>
     <capture>
       <goalInputFiles>true</goalInputFiles>
     </capture>
