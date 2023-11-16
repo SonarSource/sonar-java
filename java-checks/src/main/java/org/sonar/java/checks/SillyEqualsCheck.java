@@ -53,7 +53,7 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
     ExpressionTree firstArgument = ListUtils.getOnlyElement(tree.arguments());
     Type argumentType = firstArgument.symbolType().erasure();
     if (argumentType.isPrimitive()) {
-      argumentType = JUtils.primitiveWrapperType(argumentType);
+      argumentType = argumentType.primitiveWrapperType();
     }
     Type ownerType = getMethodOwnerType(tree).erasure();
 

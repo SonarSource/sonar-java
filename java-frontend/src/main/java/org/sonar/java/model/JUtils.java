@@ -43,7 +43,7 @@ public final class JUtils {
   private JUtils() {
   }
 
-  private static final Map<String, String> WRAPPER_TO_PRIMITIVE = MapBuilder.<String, String>newMap()
+  protected static final Map<String, String> WRAPPER_TO_PRIMITIVE = MapBuilder.<String, String>newMap()
     .put("java.lang.Byte", "byte")
     .put("java.lang.Character", "char")
     .put("java.lang.Short", "short")
@@ -54,7 +54,7 @@ public final class JUtils {
     .put("java.lang.Boolean", "boolean")
     .build();
 
-  private static final Map<String, String> PRIMITIVE_TO_WRAPPER = MapBuilder.<String, String>newMap()
+  protected static final Map<String, String> PRIMITIVE_TO_WRAPPER = MapBuilder.<String, String>newMap()
     .put("byte", "java.lang.Byte")
     .put("char", "java.lang.Character")
     .put("short", "java.lang.Short")
@@ -65,45 +65,9 @@ public final class JUtils {
     .put("boolean", "java.lang.Boolean")
     .build();
 
-  public static boolean isPrimitiveWrapper(Type type) {
-    return type.isClass() && WRAPPER_TO_PRIMITIVE.containsKey(type.fullyQualifiedName());
-  }
-
   public static Type wrapTypeIfPrimitive(Type type) {
-    Type wrapped = primitiveWrapperType(type);
+    Type wrapped = type.primitiveWrapperType();
     return Objects.requireNonNullElse(wrapped, type);
-  }
-
-  @Nullable
-  public static Type primitiveWrapperType(Type type) {
-    String name = PRIMITIVE_TO_WRAPPER.get(type.fullyQualifiedName());
-    if (name == null) {
-      return null;
-    }
-    JSema sema = ((JType) type).sema;
-    return sema.type(sema.resolveType(name));
-  }
-
-  @Nullable
-  public static Type primitiveType(Type type) {
-    String name = WRAPPER_TO_PRIMITIVE.get(type.fullyQualifiedName());
-    if (name == null) {
-      return null;
-    }
-    JSema sema = ((JType) type).sema;
-    return sema.type(sema.resolveType(name));
-  }
-
-  public static boolean isNullType(Type type) {
-    return !type.isUnknown() && ((JType) type).typeBinding.isNullType();
-  }
-
-  public static boolean isIntersectionType(Type type) {
-    return !type.isUnknown() && ((JType) type).typeBinding.isIntersectionType();
-  }
-
-  public static boolean isTypeVar(Type type) {
-    return !type.isUnknown() && ((JType) type).typeBinding.isTypeVariable();
   }
 
   public static boolean isAnnotation(Symbol.TypeSymbol typeSymbol) {
@@ -216,22 +180,6 @@ public final class JUtils {
       || ((JMethodSymbol) method).methodBinding().isGenericMethod();
   }
 
-  public static boolean isRawType(Type type) {
-    if (type.isUnknown()) {
-      return false;
-    }
-    JType t = (JType) type;
-    return t.typeBinding.isRawType();
-  }
-
-  public static Type declaringType(Type type) {
-    if (type.isUnknown()) {
-      return type;
-    }
-    JType t = (JType) type;
-    return t.sema.type(t.typeBinding.getTypeDeclaration());
-  }
-
   public static Set<Type> directSuperTypes(Type type) {
     if (type.isUnknown()) {
       return Collections.emptySet();
@@ -259,15 +207,6 @@ public final class JUtils {
       }
       t = t.parent();
     } while (true);
-  }
-
-  @Nullable
-  public static Symbol importTreeSymbol(ImportTree tree) {
-    return ((JavaTree.ImportTreeImpl) tree).symbol();
-  }
-
-  public static Symbol typeParameterTreeSymbol(TypeParameterTree tree) {
-    return ((TypeParameterTreeImpl) tree).symbol();
   }
 
   public static SymbolMetadata parameterAnnotations(Symbol.MethodSymbol method, int param) {

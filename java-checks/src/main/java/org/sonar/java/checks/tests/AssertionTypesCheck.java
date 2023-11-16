@@ -369,7 +369,7 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
 
   static Type wrapperType(Type type) {
     if (type.isPrimitive()) {
-      Type wrapperType = JUtils.primitiveWrapperType(type);
+      Type wrapperType = type.primitiveWrapperType();
       return wrapperType != null ? wrapperType : type;
     }
     return type;

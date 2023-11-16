@@ -200,7 +200,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
 
     ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(parametrizedType, 0);
     ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(parametrizedType, 1);
-    if (secondArgument.paramTypeName != null && !JUtils.isPrimitiveWrapper(firstArgument.paramType)) {
+    if (secondArgument.paramTypeName != null && !firstArgument.paramType.isPrimitiveWrapper()) {
       return Optional.of(String.format("Obj%sConsumer<%s>", secondArgument.paramTypeName, firstArgument.paramType));
     }
     return Optional.empty();

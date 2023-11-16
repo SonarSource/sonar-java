@@ -61,7 +61,7 @@ public class ToArrayCheck extends AbstractMethodDetection {
       Type elementType = ((Type.ArrayType) type).elementType();
       ExpressionTree methodSelect = mit.methodSelect();
       // Do not report an issue for type variables and call to toArray from the Collection itself
-      if (!JUtils.isTypeVar(elementType) && methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      if (!elementType.isTypeVar() && methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         String typeName = String.format("new %s[0]", elementType.name());
         QuickFixHelper.newIssue(context)
           .forRule(this)
@@ -76,7 +76,7 @@ public class ToArrayCheck extends AbstractMethodDetection {
   private static JavaQuickFix getQuickFix(TypeCastTree castTree, MethodInvocationTree mit, MemberSelectExpressionTree methodSelect, String typeName) {
     List<JavaTextEdit> textEdits = new ArrayList<>();
     textEdits.add(JavaTextEdit.insertAfterTree(mit.arguments().firstToken(), typeName));
-    if (!JUtils.isRawType(methodSelect.expression().symbolType())) {
+    if (!methodSelect.expression().symbolType().isRawType()) {
       textEdits.add(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(castTree, true, mit, false)));
     }
     return JavaQuickFix.newQuickFix("Pass \"%s\" as argument", typeName)

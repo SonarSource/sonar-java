@@ -64,7 +64,7 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
 
   private void checkImports(List<ImportTree> imports) {
     imports.stream()
-      .map(JUtils::importTreeSymbol)
+      .map(ImportTree::symbol)
       .filter(Objects::nonNull)
       .forEach(this::checkSymbol);
   }

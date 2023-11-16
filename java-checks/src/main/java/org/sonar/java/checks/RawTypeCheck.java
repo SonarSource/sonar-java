@@ -97,7 +97,7 @@ public class RawTypeCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private void checkIdentifier(IdentifierTree identifier) {
     Type type = identifier.symbolType();
-    if (JUtils.isRawType(type) && !type.equals(JUtils.declaringType(type))) {
+    if (type.isRawType() && !type.equals(type.declaringType())) {
       context.reportIssue(this, identifier, "Provide the parametrized type for this generic.");
     }
   }

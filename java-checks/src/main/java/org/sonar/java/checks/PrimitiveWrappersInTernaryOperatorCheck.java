@@ -49,7 +49,7 @@ public class PrimitiveWrappersInTernaryOperatorCheck extends IssuableSubscriptio
   }
 
   private static boolean dissimilarPrimitiveTypeWrappers(Type trueExprType, Type falseExprType) {
-    return JUtils.isPrimitiveWrapper(trueExprType) && JUtils.isPrimitiveWrapper(falseExprType) && !trueExprType.equals(falseExprType);
+    return trueExprType.isPrimitiveWrapper() && falseExprType.isPrimitiveWrapper() && !trueExprType.equals(falseExprType);
   }
 
 }

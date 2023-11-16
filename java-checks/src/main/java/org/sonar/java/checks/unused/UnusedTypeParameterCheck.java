@@ -46,7 +46,7 @@ public class UnusedTypeParameterCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     TypeParameters typeParameters = tree.is(Tree.Kind.METHOD) ? ((MethodTree) tree).typeParameters() : ((ClassTree) tree).typeParameters();
     for (TypeParameterTree typeParameter : typeParameters) {
-      Symbol symbol = JUtils.typeParameterTreeSymbol(typeParameter);
+      Symbol symbol = typeParameter.symbol();
       if (!symbol.isUnknown() && symbol.usages().isEmpty()) {
         String message = String.format(ISSUE_MESSAGE, symbol.name(), tree.kind().name().toLowerCase(Locale.ROOT));
         reportIssue(typeParameter.identifier(), message);

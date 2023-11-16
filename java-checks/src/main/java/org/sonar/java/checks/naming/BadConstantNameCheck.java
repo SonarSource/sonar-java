@@ -80,7 +80,7 @@ public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isConstantType(Type symbolType) {
-    return symbolType.isPrimitive() || symbolType.is("java.lang.String") || JUtils.isPrimitiveWrapper(symbolType);
+    return symbolType.isPrimitive() || symbolType.is("java.lang.String") || symbolType.isPrimitiveWrapper();
   }
 
   private void checkName(VariableTree variableTree) {

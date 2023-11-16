@@ -65,7 +65,7 @@ public abstract class CompareWithEqualsVisitor extends BaseTreeVisitor implement
   }
 
   protected static boolean isNullComparison(Type leftOpType, Type rightOpType) {
-    return JUtils.isNullType(leftOpType) || JUtils.isNullType(rightOpType);
+    return leftOpType.isNullType() || rightOpType.isNullType();
   }
 
   protected static boolean isStringType(Type leftOpType, Type rightOpType) {
@@ -73,7 +73,7 @@ public abstract class CompareWithEqualsVisitor extends BaseTreeVisitor implement
   }
 
   protected static boolean isBoxedType(Type leftOpType, Type rightOpType) {
-    return JUtils.isPrimitiveWrapper(leftOpType) && JUtils.isPrimitiveWrapper(rightOpType);
+    return leftOpType.isPrimitiveWrapper() && rightOpType.isPrimitiveWrapper();
   }
 
   protected void reportIssue(SyntaxToken opToken) {

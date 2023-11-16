@@ -118,7 +118,7 @@ public class ConfusingVarargCheck extends IssuableSubscriptionVisitor {
       message = "Remove this argument or pass an empty '%s' array to the vararg method.";
     } else if (isPrimitiveArray(varargArgument)) {
       Type argumentType = ((Type.ArrayType) varargArgument).elementType();
-      return String.format("Use an array of '%s' instead of an array of '%s'.", JUtils.primitiveWrapperType(argumentType).name(), argumentType.name());
+      return String.format("Use an array of '%s' instead of an array of '%s'.", argumentType.primitiveWrapperType().name(), argumentType.name());
     }
     return String.format(message, parameterType.name());
   }

@@ -24,7 +24,6 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -92,7 +91,7 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isIntOrLong(ExpressionTree expression) {
     Type type = expression.symbolType();
-    return isIntegral(type) || (JUtils.isPrimitiveWrapper(type) && isIntegral(JUtils.primitiveType(type)));
+    return isIntegral(type) || (type.isPrimitiveWrapper() && isIntegral(type.primitiveType()));
   }
 
   private static boolean isTruncation(MethodInvocationTree methodTree) {

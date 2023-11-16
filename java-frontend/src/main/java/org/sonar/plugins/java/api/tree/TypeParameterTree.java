@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.tree;
 import org.sonar.java.annotations.Beta;
 
 import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 /**
  * Type parameter.
@@ -44,5 +45,7 @@ public interface TypeParameterTree extends Tree {
   SyntaxToken extendToken();
 
   ListTree<TypeTree> bounds();
+
+  Symbol symbol();
 
 }

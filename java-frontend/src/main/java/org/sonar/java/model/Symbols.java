@@ -338,6 +338,48 @@ public class Symbols {
     }
 
     @Override
+    public boolean isPrimitiveWrapper() {
+      return false;
+    }
+
+    @Nullable
+    @Override
+    public Type primitiveWrapperType() {
+      return null;
+    }
+
+    @Nullable
+    @Override
+    public Type primitiveType() {
+      return null;
+    }
+
+    @Override
+    public boolean isNullType() {
+      return false;
+    }
+
+    @Override
+    public boolean isIntersectionType() {
+      return false;
+    }
+
+    @Override
+    public boolean isTypeVar() {
+      return false;
+    }
+
+    @Override
+    public boolean isRawType() {
+      return false;
+    }
+
+    @Override
+    public Type declaringType() {
+      return this;
+    }
+
+    @Override
     public boolean isUnknown() {
       return true;
     }

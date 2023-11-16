@@ -51,7 +51,7 @@ class JUtilsTest {
     @Test
     void java_lang_Byte() {
       Type wrapperType = SEMA.type(SEMA.resolveType("java.lang.Byte"));
-      Type primitiveType = JUtils.primitiveType(wrapperType);
+      Type primitiveType = wrapperType.primitiveType();
 
       assertThat(primitiveType).isNotNull();
       assertThat(primitiveType.fullyQualifiedName()).isEqualTo("byte");
@@ -59,7 +59,7 @@ class JUtilsTest {
 
     @Test
     void object_is_not_a_primitive_type() {
-      assertThat(JUtils.primitiveType(OBJECT_TYPE)).isNull();
+      assertThat(OBJECT_TYPE.primitiveType()).isNull();
     }
   }
 
@@ -68,7 +68,7 @@ class JUtilsTest {
     @Test
     void java_lang_Byte() {
       Type primitiveType = SEMA.type(SEMA.resolveType("byte"));
-      Type wrapperType = JUtils.primitiveWrapperType(primitiveType);
+      Type wrapperType = primitiveType.primitiveWrapperType();
 
       assertThat(wrapperType).isNotNull();
       assertThat(wrapperType.fullyQualifiedName()).isEqualTo("java.lang.Byte");
@@ -76,7 +76,7 @@ class JUtilsTest {
 
     @Test
     void object_is_not_a_primitive_wrapper_type() {
-      assertThat(JUtils.primitiveWrapperType(OBJECT_TYPE)).isNull();
+      assertThat(OBJECT_TYPE.primitiveWrapperType()).isNull();
     }
   }
 
@@ -86,21 +86,21 @@ class JUtilsTest {
 
     @Test
     void wrapper() {
-      Type wrapperType = JUtils.primitiveWrapperType(primitiveType);
+      Type wrapperType = primitiveType.primitiveWrapperType();
       assertThat(wrapperType).isNotNull();
-      assertThat(JUtils.isPrimitiveWrapper(wrapperType)).isTrue();
+      assertThat(wrapperType.isPrimitiveWrapper()).isTrue();
       assertThat(wrapperType.fullyQualifiedName()).isEqualTo("java.lang.Byte");
     }
 
     @Test
     void not_a_wrapper() {
-      assertThat(JUtils.isPrimitiveWrapper(OBJECT_TYPE)).isFalse();
+      assertThat(OBJECT_TYPE.isPrimitiveWrapper()).isFalse();
     }
 
     @Test
     void not_a_class() {
       Type ObjectArrayType = SEMA.type(SEMA.resolveType("java.lang.Object[]"));
-      assertThat(JUtils.isPrimitiveWrapper(ObjectArrayType)).isFalse();
+      assertThat(ObjectArrayType.isPrimitiveWrapper()).isFalse();
     }
   }
 
@@ -143,23 +143,23 @@ class JUtilsTest {
     void nullType() {
       ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) m1.block().body().get(0);
       AbstractTypedTree e = (AbstractTypedTree) s.expression();
-      assertThat(JUtils.isNullType(cu.sema.type(e.typeBinding)))
-        .isEqualTo(JUtils.isNullType(e.symbolType()))
+      assertThat(cu.sema.type(e.typeBinding).isNullType())
+        .isEqualTo(e.symbolType().isNullType())
         .isTrue();
     }
 
     @Test
     void a_non_null_type_is_not_null_type() {
-      assertThat(JUtils.isNullType(cu.sema.type(m1.methodBinding.getReturnType())))
-        .isEqualTo(JUtils.isNullType(m1.returnType().symbolType()))
+      assertThat(cu.sema.type(m1.methodBinding.getReturnType()).isNullType())
+        .isEqualTo(m1.returnType().symbolType().isNullType())
         .isFalse();
     }
 
     @Test
     void unresolved_type_is_not_null_type() {
       MethodTreeImpl m2 = nthMethod(c, 1);
-      assertThat(JUtils.isNullType(cu.sema.type(m2.methodBinding.getReturnType())))
-        .isEqualTo(JUtils.isNullType(m2.returnType().symbolType()))
+      assertThat(cu.sema.type(m2.methodBinding.getReturnType()).isNullType())
+        .isEqualTo(m2.returnType().symbolType().isNullType())
         .isFalse();
     }
   }
@@ -180,23 +180,23 @@ class JUtilsTest {
     @Test
     void intersection_type() {
       TypeCastExpressionTreeImpl e = (TypeCastExpressionTreeImpl) f.initializer();
-      assertThat(JUtils.isIntersectionType(cu.sema.type(e.typeBinding)))
-        .isEqualTo(JUtils.isIntersectionType(e.symbolType()))
+      assertThat(cu.sema.type(e.typeBinding).isIntersectionType())
+        .isEqualTo(e.symbolType().isIntersectionType())
         .isTrue();
     }
 
     @Test
     void non_intersection_type() {
-      assertThat(JUtils.isIntersectionType(cu.sema.type(f.variableBinding.getType())))
-        .isEqualTo(JUtils.isIntersectionType(f.symbol().type()))
+      assertThat(cu.sema.type(f.variableBinding.getType()).isIntersectionType())
+        .isEqualTo(f.symbol().type().isIntersectionType())
         .isFalse();
     }
 
     @Test
     void unresolved_type_is_not_an_intersection_type() {
       VariableTreeImpl u = nthField(c, 1);
-      assertThat(JUtils.isIntersectionType(cu.sema.type(u.variableBinding.getType())))
-        .isEqualTo(JUtils.isIntersectionType(u.symbol().type()))
+      assertThat(cu.sema.type(u.variableBinding.getType()).isIntersectionType())
+        .isEqualTo(u.symbol().type().isIntersectionType())
         .isFalse();
     }
   }
@@ -209,21 +209,21 @@ class JUtilsTest {
     @Test
     void type_var() {
       VariableTreeImpl t = firstField(c);
-      assertThat(JUtils.isTypeVar(cu.sema.type(t.variableBinding.getType())))
-        .isEqualTo(JUtils.isTypeVar(t.symbol().type()))
+      assertThat(cu.sema.type(t.variableBinding.getType()).isTypeVar())
+        .isEqualTo(t.symbol().type().isTypeVar())
         .isTrue();
     }
 
     @Test
     void simple_type_is_not_a_type_var() {
-      assertThat(JUtils.isTypeVar(OBJECT_TYPE)).isFalse();
+      assertThat(OBJECT_TYPE.isTypeVar()).isFalse();
     }
 
     @Test
     void unresolved_type_is_not_a_type_var() {
       VariableTreeImpl u = nthField(c, 1);
-      assertThat(JUtils.isTypeVar(cu.sema.type(u.variableBinding.getType())))
-        .isEqualTo(JUtils.isTypeVar(u.symbol().type()))
+      assertThat(cu.sema.type(u.variableBinding.getType()).isTypeVar())
+        .isEqualTo(u.symbol().type().isTypeVar())
         .isFalse();
     }
   }
@@ -763,14 +763,12 @@ class JUtilsTest {
     VariableTreeImpl dRaw = (VariableTreeImpl) m.parameters().get(0);
     VariableTreeImpl unknown = (VariableTreeImpl) m.parameters().get(1);
 
-    assertThat(JUtils.isRawType(c.symbol().type()))
-      .isSameAs(JUtils.isRawType(dGeneric.symbol().type()))
-      .isSameAs(JUtils.isRawType(unknown.symbol().type()))
+    assertThat(c.symbol().type().isRawType())
+      .isSameAs(dGeneric.symbol().type().isRawType())
+      .isSameAs(unknown.symbol().type().isRawType())
       .isFalse();
 
-    assertThat(JUtils.isRawType(dRaw.type()
-      .symbolType()))
-      .isTrue();
+    assertThat(dRaw.type().symbolType().isRawType()).isTrue();
   }
 
   @Test
@@ -782,11 +780,11 @@ class JUtilsTest {
     VariableTreeImpl cRaw = (VariableTreeImpl) m.parameters().get(0);
     VariableTreeImpl unknown = (VariableTreeImpl) m.parameters().get(1);
 
-    assertThat(JUtils.declaringType(unknown.symbol().type()))
+    assertThat(unknown.symbol().type().declaringType())
       .isSameAs(unknown.symbol().type());
 
-    assertThat(JUtils.declaringType(cRaw.type().symbolType()))
-      .isSameAs(JUtils.declaringType(c.symbol().type()))
+    assertThat(cRaw.type().symbolType().declaringType())
+      .isSameAs(c.symbol().type().declaringType())
       .isSameAs(c.symbol().type());
   }
 
@@ -877,7 +875,7 @@ class JUtilsTest {
     @Test
     void resolved_imports_have_type_symbols() {
       ImportTree listImport = (ImportTree) cu.imports().get(0);
-      Symbol listImportSymbol = JUtils.importTreeSymbol(listImport);
+      Symbol listImportSymbol = listImport.symbol();
 
       assertThat(listImportSymbol).isNotNull();
       assertThat(listImportSymbol.isTypeSymbol()).isTrue();
@@ -887,7 +885,7 @@ class JUtilsTest {
     @Test
     void unresolved_imports_have_unknown_symbols() {
       ImportTree unknownImport = (ImportTree) cu.imports().get(1);
-      Symbol unknownImportSymbol = JUtils.importTreeSymbol(unknownImport);
+      Symbol unknownImportSymbol = unknownImport.symbol();
 
       assertThat(unknownImportSymbol).isNotNull();
       assertThat(unknownImportSymbol.isUnknown()).isTrue();
@@ -900,9 +898,9 @@ class JUtilsTest {
     ClassTreeImpl a = firstClass(cu);
     TypeParameterTree t = a.typeParameters().get(0);
 
-    Symbol symbol = JUtils.typeParameterTreeSymbol(t);
+    Symbol symbol = t.symbol();
     assertThat(symbol).isNotNull();
-    assertThat(JUtils.isTypeVar(symbol.type())).isTrue();
+    assertThat(symbol.type().isTypeVar()).isTrue();
   }
 
   @Test

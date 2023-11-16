@@ -56,7 +56,7 @@ public class MapKeyNotComparableCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isGenericOrWildCard(TypeTree tree) {
-    return JUtils.isTypeVar(tree.symbolType()) || tree instanceof WildcardTree;
+    return tree.symbolType().isTypeVar() || tree instanceof WildcardTree;
   }
 
   private static Optional<TypeTree> getMapKeyTree(ParameterizedTypeTree typeTree) {

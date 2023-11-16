@@ -67,7 +67,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
       createSymbol(simpleName, tree.symbol().usages());
     }
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-      createSymbol(typeParameterTree.identifier(), JUtils.typeParameterTreeSymbol(typeParameterTree).usages());
+      createSymbol(typeParameterTree.identifier(), typeParameterTree.symbol().usages());
     }
     super.visitClass(tree);
   }
@@ -89,7 +89,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
     List<IdentifierTree> usages = tree.symbol().usages();
     createSymbol(tree.simpleName(), usages);
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-      createSymbol(typeParameterTree.identifier(), JUtils.typeParameterTreeSymbol(typeParameterTree).usages());
+      createSymbol(typeParameterTree.identifier(), typeParameterTree.symbol().usages());
     }
     super.visitMethod(tree);
   }
@@ -110,7 +110,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
     }
     // Exclude on demands imports
     if (!"*".equals(identifierTree.name())) {
-      Symbol symbol = JUtils.importTreeSymbol(tree);
+      Symbol symbol = tree.symbol();
       if (symbol != null) {
         createSymbol(identifierTree, symbol.usages());
       }
