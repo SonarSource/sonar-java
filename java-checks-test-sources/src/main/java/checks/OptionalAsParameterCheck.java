@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 class OptionalAsParameterCheck {
 
   @GetMapping("/{id}")
-  ResponseEntity<Foo> getFoo(@PathVariable Long id, @RequestParam(value = "name") Optional<String> name, @RequestParam(value = "bar") Optional<Integer> bar) { // Compliant
+  ResponseEntity<Foo> getFoo(@PathVariable Optional<Long> id, @RequestParam(value = "name") Optional<String> name, @RequestParam(value = "bar") Optional<Integer> bar) { // Compliant
     return new ResponseEntity<>(new Foo(), HttpStatus.OK);
   }
 
