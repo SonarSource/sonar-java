@@ -91,7 +91,7 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
       replacement = "(" + replacement + ")";
     }
 
-    return JavaQuickFix.newQuickFix("Replace String.valueOf() with its argument")
+    return JavaQuickFix.newQuickFix("Remove redundant String.valueOf() wrapping")
       .addTextEdit(JavaTextEdit.replaceTree(invocationTree, replacement))
       .build();
   }
