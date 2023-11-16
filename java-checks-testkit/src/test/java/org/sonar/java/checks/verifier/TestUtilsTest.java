@@ -43,19 +43,19 @@ class TestUtilsTest {
   @Test
   void checkMainCodeSourcesPath() {
     assertThat(TestUtils.mainCodeSourcesPath("Dummy.java"))
-      .matches("(.+)java-checks-test-sources.src.main.java.Dummy\\.java");
+      .matches("(.+)java-checks-test-sources.default.src.main.java.Dummy\\.java");
   }
 
   @Test
   void checkTestCodeSourcesPath() {
     assertThat(TestUtils.testCodeSourcesPath("DummyTest.java"))
-      .matches("(.+)java-checks-test-sources.src.test.java.DummyTest\\.java");
+      .matches("(.+)java-checks-test-sources.default.src.test.java.DummyTest\\.java");
   }
 
   @Test
   void checkNonCompilingTestResourcesPath() {
     assertThat(TestUtils.nonCompilingTestSourcesPath("Dummy.java"))
-      .matches("(.+)java-checks-test-sources.src.main.files.non-compiling.Dummy\\.java");
+      .matches("(.+)java-checks-test-sources.default.src.main.files.non-compiling.Dummy\\.java");
   }
 
   @Test

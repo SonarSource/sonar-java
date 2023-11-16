@@ -31,7 +31,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.SuppressWarningsCheck;
 import org.sonar.java.model.LineUtils;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
@@ -46,7 +45,6 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
@@ -82,7 +80,58 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   private static final String SUPPRESS_WARNING_RULE_KEY = getSuppressWarningRuleKey();
 
-  private static final Map<String, RuleKey> DEPRRECATED_RULE_KEYS = getDeprecatedRuleKeys();
+  public static final String SQUID = "squid";
+  private static final Map<String, RuleKey> DEPRECATED_RULE_KEYS = MapBuilder.<String, RuleKey>newMap()
+    .put("S139", RuleKey.of(SQUID, "TrailingCommentCheck"))
+    .put("S1128", RuleKey.of(SQUID, "UselessImportCheck"))
+    .put("S100", RuleKey.of(SQUID, "S00100"))
+    .put("S1120", RuleKey.of(SQUID, "IndentationCheck"))
+    .put("S101", RuleKey.of(SQUID, "S00101"))
+    .put("S1121", RuleKey.of(SQUID, "AssignmentInSubExpressionCheck"))
+    .put("S1123", RuleKey.of(SQUID, "MissingDeprecatedCheck"))
+    .put("S1124", RuleKey.of(SQUID, "ModifiersOrderCheck"))
+    .put("S127", RuleKey.of(SQUID, "ForLoopCounterChangedCheck"))
+    .put("S125", RuleKey.of(SQUID, "CommentedOutCodeLine"))
+    .put("S1116", RuleKey.of(SQUID, "EmptyStatementUsageCheck"))
+    .put("S1117", RuleKey.of(SQUID, "HiddenFieldCheck"))
+    .put("S1119", RuleKey.of(SQUID, "LabelsShouldNotBeUsedCheck"))
+    .put("S131", RuleKey.of(SQUID, "SwitchLastCaseIsDefaultCheck"))
+    .put("S1110", RuleKey.of(SQUID, "UselessParenthesesCheck"))
+    .put("S1111", RuleKey.of(SQUID, "ObjectFinalizeCheck"))
+    .put("S1113", RuleKey.of(SQUID, "ObjectFinalizeOverridenCheck"))
+    .put("S1114", RuleKey.of(SQUID, "ObjectFinalizeOverridenCallsSuperFinalizeCheck"))
+    .put("S1874", RuleKey.of(SQUID, "CallToDeprecatedMethod"))
+    .put("S119", RuleKey.of(SQUID, "S00119"))
+    .put("S117", RuleKey.of(SQUID, "S00117"))
+    .put("S118", RuleKey.of(SQUID, "S00118"))
+    .put("S115", RuleKey.of(SQUID, "S00115"))
+    .put("S116", RuleKey.of(SQUID, "S00116"))
+    .put("S113", RuleKey.of(SQUID, "S00113"))
+    .put("S114", RuleKey.of(SQUID, "S00114"))
+    .put("S1105", RuleKey.of(SQUID, "LeftCurlyBraceEndLineCheck"))
+    .put("S1106", RuleKey.of(SQUID, "LeftCurlyBraceStartLineCheck"))
+    .put("S1107", RuleKey.of(SQUID, "RightCurlyBraceSameLineAsNextBlockCheck"))
+    .put("S1108", RuleKey.of(SQUID, "RightCurlyBraceDifferentLineAsNextBlockCheck"))
+    .put("S1109", RuleKey.of(SQUID, "RightCurlyBraceStartLineCheck"))
+    .put("S122", RuleKey.of(SQUID, "S00122"))
+    .put("S120", RuleKey.of(SQUID, "S00120"))
+    .put("S121", RuleKey.of(SQUID, "S00121"))
+    .put("S1144", RuleKey.of(SQUID, "UnusedPrivateMethod"))
+    .put("S1541", RuleKey.of(SQUID, "MethodCyclomaticComplexity"))
+    .put("S1104", RuleKey.of(SQUID, "ClassVariableVisibilityCheck"))
+    .put("S108", RuleKey.of(SQUID, "S00108"))
+    .put("S107", RuleKey.of(SQUID, "S00107"))
+    .put("S104", RuleKey.of(SQUID, "S00104"))
+    .put("S2260", RuleKey.of(SQUID, "ParsingError"))
+    .put("S105", RuleKey.of(SQUID, "S00105"))
+    .put("S103", RuleKey.of(SQUID, "S00103"))
+    .put("S2309", RuleKey.of(SQUID, "EmptyFile"))
+    .put("S2308", RuleKey.of(SQUID, "CallToFileDeleteOnExitMethod"))
+    .put("S1130", RuleKey.of(SQUID, "RedundantThrowsDeclarationCheck"))
+    .put("S112", RuleKey.of(SQUID, "S00112"))
+    .put("S1176", RuleKey.of(SQUID, "UndocumentedApi"))
+    .put("S110", RuleKey.of(SQUID, "MaximumInheritanceDepth"))
+    .build();
 
   private static String getSuppressWarningRuleKey() {
     return AnnotationUtils.getAnnotation(SuppressWarningsCheck.class, Rule.class).key();
@@ -97,18 +146,6 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
   public void scanFile(JavaFileScannerContext context) {
     super.scanFile(context);
     excludedLinesByComponent.put(getComponentKey(), new HashMap<>(excludedLinesByRule()));
-  }
-
-  private static Map<String, RuleKey> getDeprecatedRuleKeys() {
-    Map<String, RuleKey> deprecatedRuleKeys = new HashMap<>();
-    CheckList.getChecks().forEach(c -> {
-      String key = AnnotationUtils.getAnnotation(c, Rule.class).key();
-      DeprecatedRuleKey deprecatedRuleKeyAnnotation = AnnotationUtils.getAnnotation(c, DeprecatedRuleKey.class);
-      if (deprecatedRuleKeyAnnotation != null) {
-        deprecatedRuleKeys.put(key, RuleKey.of(deprecatedRuleKeyAnnotation.repositoryKey(), deprecatedRuleKeyAnnotation.ruleKey()));
-      }
-    });
-    return deprecatedRuleKeys;
   }
 
   @Override
@@ -130,8 +167,8 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
     try {
       // format of the rules requires a repository: "repo:key"
       RuleKey parsed = RuleKey.parse(rule);
-      RuleKey deprecatedRuleKey = DEPRRECATED_RULE_KEYS.get(ruleKey.rule());
-      RuleKey squidRuleKey = RuleKey.of("squid", ruleKey.rule());
+      RuleKey deprecatedRuleKey = DEPRECATED_RULE_KEYS.get(ruleKey.rule());
+      RuleKey squidRuleKey = RuleKey.of(SQUID, ruleKey.rule());
       return ruleKey.equals(parsed) || squidRuleKey.equals(parsed) || parsed.equals(deprecatedRuleKey);
     } catch (IllegalArgumentException e) {
       return false;

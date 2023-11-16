@@ -45,7 +45,6 @@ import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.checks.CheckList;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;

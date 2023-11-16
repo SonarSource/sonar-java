@@ -51,12 +51,14 @@
     <module>java-symbolic-execution</module>
     <module>java-checks-testkit</module>
     <module>java-checks</module>
+    <module>java-checks-aws</module>
     <module>external-reports</module>
     <module>sonar-java-plugin</module>
     <module>java-surefire</module>
     <module>java-jsp</module>
     <module>its</module>
     <module>docs</module>
+    <module>java-checks-common</module>
   </modules>
 
   <scm>

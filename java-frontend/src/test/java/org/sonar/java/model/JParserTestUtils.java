@@ -43,7 +43,7 @@ public class JParserTestUtils {
 
   public static final List<File> DEFAULT_CLASSPATH = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
 
-  public static final Path CHECKS_TEST_DIR = Paths.get("..", "java-checks-test-sources");
+  public static final Path CHECKS_TEST_DIR = Paths.get("..", "java-checks-test-sources", "default");
 
   public static CompilationUnitTree parse(File file) {
     return parse(file, DEFAULT_CLASSPATH);

@@ -1,0 +1,4 @@
+[
+  {"cls":"com.alibaba.druid.spring.boot.autoconfigure.properties.DruidStatProperties$StatViewServlet","name":"setLoginPassword","args":["java.lang.String"],"indices":[0]},
+  {"cls":"software.amazon.awssdk.auth.signer.internal.chunkedencoding.AwsS3V4ChunkSigner","name":"AwsS3V4ChunkSigner","args":["byte[]","java.lang.String","java.lang.String"],"indices":[0]}
+]

@@ -1,5 +1,5 @@
 {
-  "rules-metadata-path": "./java-checks/src/main/resources/org/sonar/l10n/java/rules/java",
+  "rules-metadata-path": "./sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java",
   "languages": [
     "JAVA"
   ],
