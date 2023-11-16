@@ -70,8 +70,8 @@
     <url>https://jira.sonarsource.com/browse/SONARJAVA</url>
   </issueManagement>
   <ciManagement>
-    <system>Travis</system>
-    <url>https://travis-ci.org/SonarSource/sonar-java</url>
+    <system>Cirrus CI</system>
+    <url>https://cirrus-ci.com/github/SonarSource/sonar-java</url>
   </ciManagement>
 
   <properties>
