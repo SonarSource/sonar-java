@@ -20,7 +20,6 @@ jobs:
     name: Update dogfood branch
     permissions:
       id-token: write # required for SonarSource/vault-action-wrapper
-      contents: write # required to grant GITHUB_TOKEN writing permission
     steps:
     - name: get secrets
       id: secrets
