@@ -31,7 +31,7 @@ container_definition: &CONTAINER_DEFINITION
         - key: node.kubernetes.io/instance-type
           operator: In
           values:
-            - m4.4xlarge
+            - m4.4xlarge # 2.4 GHz Intel Xeon E5-2676 v3** Processor, 16 vCPU, 64 GiB Memory
 
 win_vm_definition: &WINDOWS_VM_DEFINITION
   ec2_instance:
@@ -39,8 +39,7 @@ win_vm_definition: &WINDOWS_VM_DEFINITION
     image: base-windows-jdk17-v*
     platform: windows
     region: eu-central-1
-    disk: 128
-    type: c5.4xlarge
+    type: c5.4xlarge # 3.6 GHz (3.9GHz single core) Intel Xeon Scalable Processor, 16 vCPU, 32 GiB Memory
     subnet_id: ${CIRRUS_AWS_SUBNET}
 
 only_sonarsource_qa: &ONLY_SONARSOURCE_QA
@@ -161,11 +160,16 @@ ruling_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
     - git submodule update --init --recursive
+  env:
+    MAVEN_OPTS: "-Xmx3g"
+    matrix:
+      - PROFILE: without-sonarqube-project
+      - PROFILE: only-sonarqube-project
   ruling_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
-    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
   on_failure:
     actual_artifacts:
@@ -178,13 +182,18 @@ ruling_win_task:
   <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  env:
+    MAVEN_OPTS: "-Xmx3g"
+    matrix:
+      - PROFILE: without-sonarqube-project
+      - PROFILE: only-sonarqube-project
   ruling_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - init_git_submodules its/sources
     - git submodule update --init --recursive
     - cd its/ruling
-    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 autoscan_task:
