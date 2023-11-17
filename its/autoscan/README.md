@@ -12,7 +12,7 @@ Make sure that the `java-checks-tests-sources` module has been compiled (ie: the
 In doubt, go to the top-level of the project and run:
 ```shell
 # cd ../../ or back to the top level of sonar-java
-mvn clean compile --projects java-checks-test-sources
+mvn clean compile --projects java-checks-test-sources --also-make-dependents
 ```
 
 ## Running the tests
@@ -21,9 +21,7 @@ To run the tests from this folder, run:
 ```shell
 mvn clean package --batch-mode --errors --show-version \
    --activate-profiles it-autoscan \
-  -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] \
-  -Dmaven.test.redirectTestOutputToFile=false \
-  -Dparallel=methods -DuseUnlimitedThreads=true
+  -Dsonar.runtimeVersion=LATEST_RELEASE[9.9]
 ```
 
 
