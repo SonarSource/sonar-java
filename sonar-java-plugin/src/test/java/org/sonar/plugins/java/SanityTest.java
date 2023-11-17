@@ -43,12 +43,12 @@ import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.testfixtures.log.LogAndArguments;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
+import org.sonar.java.AnalysisProgress;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
@@ -60,7 +60,11 @@ import org.sonar.plugins.java.api.JavaVersion;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.sonar.java.checks.verifier.TestUtils.*;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModule;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPathInModule;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class SanityTest {
 
@@ -255,16 +259,20 @@ class SanityTest {
 
   private static List<SanityCheckException> scanFiles(File moduleBaseDir, List<InputFile> inputFiles, List<JavaCheck> checks, List<File> classpath) {
     SonarComponents sonarComponents = sonarComponents(moduleBaseDir, inputFiles);
+    JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
     JavaVersion javaVersion = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(checks, classpath, sonarComponents, javaVersion);
+    scanner.setVisitorBridge(new VisitorsBridgeForTests(checks, classpath, sonarComponents, javaVersion));
     List<SanityCheckException> exceptions = new ArrayList<>();
-    for (InputFile inputFile : inputFiles) {
-      try {
-        JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge, null);
-      } catch (Throwable e) {
-        exceptions.add(new SanityCheckException(inputFile, e));
-      }
-    }
+    AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
+    JParserConfig.Mode.BATCH
+      .create(javaVersion, classpath)
+      .parse(inputFiles, () -> false, analysisProgress, (input, result) -> {
+        try {
+          scanner.simpleScan(input, result, ast -> {});
+        } catch (Throwable e) {
+          exceptions.add(new SanityCheckException(input, e));
+        }
+      });
     return exceptions;
   }
 
@@ -303,9 +311,6 @@ class SanityTest {
 
   private static SonarComponents sonarComponents(File moduleBaseDir, List<InputFile> inputFiles) {
     SensorContextTester context = SensorContextTester.create(moduleBaseDir).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    context.setSettings(new MapSettings()
-      .setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true)
-      .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true));
     DefaultFileSystem fileSystem = context.fileSystem();
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null) {
       @Override
