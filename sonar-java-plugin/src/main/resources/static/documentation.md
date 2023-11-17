@@ -142,6 +142,22 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.29**
+
+All the API changes are related to ECJ utility methods that were commonly used in the analyzer and could benefit the implementation of 
+custom rules.
+
+* New method: `Type#isPrimitiveWrapper()`. Check if this type is a primitive wrapper.
+* New method: `Type#primitiveWrapperType()`. Returns the type of the primitive wrapper.
+* New method: `Type#primitiveType()`. Returns the type of the primitive.
+* New method: `Type#isNullType()`. Returns whether this type is the null type.
+* New method: `Type#isIntersectionType()`. Check if this type is an intersection type.
+* New method: `Type#isTypeVar()`. Returns whether this type represents a type variable.
+* New method: `Type#isRawType()`. Check if this type is a raw type.
+* New method: `Type#declaringType()`. Returns the declaring type of this type.
+* New method: `ImportTree#symbol()`. Returns the symbol of this `ImportTree`.
+* New method: `TypeParameterTree#symbol()`. Returns the symbol of this `TypeParameterTree`.
+
 #### **7.25**
 
 Update custom rules registration API `CheckRegistrar.RegistrarContext` to allow:
