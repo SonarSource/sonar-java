@@ -65,12 +65,10 @@ import static org.sonar.java.checks.verifier.TestUtils.*;
 class SanityTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(SanityTest.class);
+  public static final String DEFAULT_MODULE = "default";
 
   @RegisterExtension
   public final LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
-
-  private static final String TARGET_CLASSES = "../java-checks/target/test-classes";
-  private static final String TEST_FILES_EXTRA_CLASSES = "../java-checks/src/test/resources/";
 
   private static final String AWS_MODULE = "aws";
 
@@ -117,7 +115,7 @@ class SanityTest {
     List<InputFile> inputFiles = getJavaInputFiles(moduleBaseDir);
     assertThat(inputFiles).hasSizeGreaterThanOrEqualTo(checks.size());
 
-    List<File> classpath = getClassPath();
+    List<File> classpath = getClassPathFromModule(DEFAULT_MODULE);
     classpath.addAll(getClassPathFromModule(AWS_MODULE));
     assertThat(classpath).isNotEmpty();
 
@@ -246,14 +244,6 @@ class SanityTest {
 
   private static boolean isNotParsingErrorFile(String filename) {
     return !(filename.contains("ParsingError") || filename.contains("ParseError"));
-  }
-
-  private static List<File> getClassPath() {
-    List<File> classpath = new ArrayList<>();
-    classpath.addAll(FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY));
-    classpath.add(new File(TARGET_CLASSES).getAbsoluteFile());
-    classpath.add(new File(TEST_FILES_EXTRA_CLASSES).getAbsoluteFile());
-    return classpath;
   }
 
   private static List<File> getClassPathFromModule(String module) {
