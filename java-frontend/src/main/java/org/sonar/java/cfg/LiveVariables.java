@@ -19,17 +19,8 @@
  */
 package org.sonar.java.cfg;
 
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -41,8 +32,17 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import static org.sonar.java.model.JUtils.isLocalVariable;
 
@@ -154,23 +154,10 @@ public class LiveVariables {
         case NEW_CLASS:
           blockGen.addAll(getUsedVariables(((NewClassTree) element).classBody(), cfg.methodSymbol()));
           break;
-        case CASE_GROUP:
-          Optional<Tree> tree = block.elements().stream()
-            .filter(e -> e.is(Kind.IDENTIFIER))
-            .findFirst();
-          tree.ifPresent(value -> processSwitchCase(value, blockKill, blockGen));
-          break;
         default:
           // Ignore other kind of elements, no change of gen/kill
       }
     }
-  }
-
-  private static void processSwitchCase(Tree identifier, Set<Symbol> blockKill, Set<Symbol> blockGen) {
-    IdentifierTree identifierTree = (IdentifierTree) identifier;
-    Symbol symbol = identifierTree.symbol();
-    blockGen.remove(symbol);
-    blockKill.add(symbol);
   }
 
   private void processIdentifier(IdentifierTree element, Set<Symbol> blockGen, Set<Tree> assignmentLHS) {

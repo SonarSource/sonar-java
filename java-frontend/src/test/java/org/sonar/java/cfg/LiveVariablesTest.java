@@ -136,21 +136,6 @@ class LiveVariablesTest {
     assertFieldsByMethodEntry("void foo(int a) { B that = new B(); foo(that.field1); }");
   }
 
-  @Test
-  void test_switch() {
-    CFG cfg = buildCFG("String foo(int arg, String s) { String result=null; switch (arg) {case 1: result = \"Got a 1\"; case 2: result = \"Got a 2\"; default: result s;} return result;}");
-    LiveVariables liveVariables = LiveVariables.analyze(cfg);
-    assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).hasSize(1);
-    assertThat(liveVariables.getIn(cfg.reversedBlocks().get(2)).iterator().next().name()).isEqualTo("arg");
-  }
-
-  @Test
-  void test_switch_yield() {
-    CFG cfg = buildCFG("String foo(int arg, String s) {return switch (arg) {case 1: yield s + \"Got a 1\"; case 2: yield s + \"Got a 2\"; default: yield s;};}");
-    LiveVariables liveVariables = LiveVariables.analyze(cfg);
-    assertThat(liveVariables.getIn(cfg.reversedBlocks().get(2)).stream().anyMatch(b -> b.name().equals("arg"))).isTrue();
-  }
-  
   private void assertFieldsByMethodEntry(String methodCode, String ...inEntryNames) {
     CFG cfg = buildCFG(methodCode);
     LiveVariables liveVariables = LiveVariables.analyzeWithFields(cfg);

@@ -4,9 +4,20 @@ class A {
 
   public String foo(int dt, String myString) {
     dt = 1; // Noncompliant
-    myString = switch (dt) { // Noncompliant
+    myString = switch (dt) { // Compliant - FN
       case 1 -> {
         yield myString + "";
+      }
+      default -> null;
+    };
+    return myString;
+  }
+
+  public String foo3(int dt, String myString) {
+    dt = 1; // Noncompliant
+    myString = switch (dt) { // Noncompliant
+      case 1 -> {
+        yield "";
       }
       default -> null;
     };
