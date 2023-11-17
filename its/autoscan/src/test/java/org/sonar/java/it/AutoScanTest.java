@@ -97,7 +97,7 @@ public class AutoScanTest {
 
     MavenBuild mavenBuild = MavenBuild.create()
       .setPom(FileLocation.of(PROJECT_LOCATION + "pom.xml").getFile().getCanonicalFile())
-      .setCleanPackageSonarGoals()
+      .addSonarGoal()
       .addArgument("-DskipTests")
       .addArgument("-Panalyze-tests")
       .setProperty("sonar.projectKey", PROJECT_KEY)
