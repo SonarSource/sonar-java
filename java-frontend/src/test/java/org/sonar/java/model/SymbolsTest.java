@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import java.io.File;
+import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -56,6 +57,13 @@ class SymbolsTest {
     assertThat(unknownType.isVoid()).isFalse();
     assertThat(unknownType.isPrimitive()).isFalse();
     assertThat(unknownType.isPrimitive(Primitives.BOOLEAN)).isFalse();
+    assertThat(unknownType.isPrimitiveWrapper()).isFalse();
+    assertThat(unknownType.primitiveType()).isNull();
+    assertThat(unknownType.isNullType()).isFalse();
+    assertThat(unknownType.isIntersectionType()).isFalse();
+    assertThat(unknownType.isTypeVar()).isFalse();
+    assertThat(unknownType.isRawType()).isFalse();
+    assertThat(unknownType.declaringType()).isEqualTo(unknownType);
     assertThat(unknownType.isNumerical()).isFalse();
 
     assertThat(unknownType.fullyQualifiedName()).isEqualTo("!Unknown!");
