@@ -43,7 +43,7 @@ public final class JUtils {
   private JUtils() {
   }
 
-  protected static final Map<String, String> WRAPPER_TO_PRIMITIVE = MapBuilder.<String, String>newMap()
+  static final Map<String, String> WRAPPER_TO_PRIMITIVE = MapBuilder.<String, String>newMap()
     .put("java.lang.Byte", "byte")
     .put("java.lang.Character", "char")
     .put("java.lang.Short", "short")
@@ -54,7 +54,7 @@ public final class JUtils {
     .put("java.lang.Boolean", "boolean")
     .build();
 
-  protected static final Map<String, String> PRIMITIVE_TO_WRAPPER = MapBuilder.<String, String>newMap()
+  static final Map<String, String> PRIMITIVE_TO_WRAPPER = MapBuilder.<String, String>newMap()
     .put("byte", "java.lang.Byte")
     .put("char", "java.lang.Character")
     .put("short", "java.lang.Short")
