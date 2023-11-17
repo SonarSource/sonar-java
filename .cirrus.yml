@@ -143,7 +143,7 @@ sanity_task:
   sanity_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
-    - mvn clean install -DskipTests=true
+    - mvn clean compile --projects java-checks-test-sources --also-make-dependents
     - mvn verify -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
   cleanup_before_cache_script: cleanup_maven_repository
 
