@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.checks.CheckList;
 import org.sonar.plugins.java.api.ProfileRegistrar;
 import org.sonarsource.analyzer.commons.BuiltInQualityProfileJsonLoader;
 import org.sonarsource.api.sonarlint.SonarLintSide;

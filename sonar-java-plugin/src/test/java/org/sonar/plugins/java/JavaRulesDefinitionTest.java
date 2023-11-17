@@ -32,7 +32,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.Version;
-import org.sonar.java.checks.CheckList;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKeys;
 

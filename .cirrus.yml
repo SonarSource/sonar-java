@@ -85,7 +85,7 @@ ws_scan_task:
   whitesource_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
-    - mvn clean install -DskipTests -pl '!java-checks-test-sources'
+    - mvn clean install -DskipTests -pl '!java-checks-test-sources,!java-checks-test-sources/default,!java-checks-test-sources/aws'
     - source ws_scan.sh
   allow_failures: "true"
   always:
@@ -144,8 +144,8 @@ sanity_task:
   sanity_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
-    - mvn clean install -Dmaven.test.skip=true
-    - mvn verify -f java-checks/pom.xml -Psanity -Dtest=SanityTest
+    - mvn clean install -DskipTests=true
+    - mvn verify -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_task:

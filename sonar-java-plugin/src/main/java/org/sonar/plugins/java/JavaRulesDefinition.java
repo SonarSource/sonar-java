@@ -26,7 +26,6 @@ import org.sonar.api.SonarRuntime;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.checks.CheckList;
 import org.sonarsource.analyzer.commons.RuleMetadataLoader;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKeys;

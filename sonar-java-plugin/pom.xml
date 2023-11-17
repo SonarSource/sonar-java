@@ -48,6 +48,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>java-checks-aws</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>external-reports</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -66,8 +71,8 @@
       <artifactId>sonar-xml-parsing</artifactId>
     </dependency>
     <dependency>
-     <groupId>org.sonarsource.analyzer-commons</groupId>
-     <artifactId>sonar-performance-measure</artifactId>
+      <groupId>org.sonarsource.analyzer-commons</groupId>
+      <artifactId>sonar-performance-measure</artifactId>
     </dependency>
 
     <dependency>
@@ -110,6 +115,17 @@
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>java-checks-testkit</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -246,4 +262,22 @@
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>sanity</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemProperties>
+                <force.sanity.test>true</force.sanity.test>
+              </systemProperties>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

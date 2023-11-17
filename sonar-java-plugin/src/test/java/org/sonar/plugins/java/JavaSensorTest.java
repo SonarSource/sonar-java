@@ -59,7 +59,6 @@ import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -133,7 +132,7 @@ class JavaSensorTest {
 
     jss.execute(context);
     // argument 119 refers to the comment on line #119 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(120));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(119));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
