@@ -63,7 +63,7 @@ build_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
     - source cirrus-env BUILD
-    - regular_mvn_build_deploy_analyze -Dsonar.analysisCache.enabled=true
+    - regular_mvn_build_deploy_analyze -Dsonar.analysisCache.enabled=true -Dscan.tag.Build
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
 
@@ -126,7 +126,7 @@ plugin_qa_task:
     - cd docs/java-custom-rules-example
     - mvn clean install -B -e -V
     - cd ../../its/plugin
-    - mvn package -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
+    - mvn package -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true -Dscan.tag.${SQ_VERSION}
   cleanup_before_cache_script: cleanup_maven_repository
 
 sanity_task:
@@ -144,7 +144,7 @@ sanity_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - mvn clean compile --projects java-checks-test-sources --also-make-dependents
-    - mvn verify -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
+    - mvn verify -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest -Dscan.tag.Sanity
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_task:
@@ -169,7 +169,7 @@ ruling_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
-    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true -Dscan.tag.Ruling
   cleanup_before_cache_script: cleanup_maven_repository
   on_failure:
     actual_artifacts:
@@ -193,7 +193,7 @@ ruling_win_task:
     - init_git_submodules its/sources
     - git submodule update --init --recursive
     - cd its/ruling
-    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true -Dscan.tag.Ruling
   cleanup_before_cache_script: cleanup_maven_repository
 
 autoscan_task:
