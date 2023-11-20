@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -67,7 +66,7 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
       for (int index = 0; index < arguments.size(); index++) {
         ExpressionTree argument = arguments.get(index);
         Type providedType = argument.symbolType();
-        if (!argument.is(Tree.Kind.NULL_LITERAL) && isThreadAsRunnable(providedType, parametersTypes, index, JUtils.isVarArgsMethod(methodSymbol))) {
+        if (!argument.is(Tree.Kind.NULL_LITERAL) && isThreadAsRunnable(providedType, parametersTypes, index, methodSymbol.isVarArgsMethod())) {
           reportIssue(argument, getMessage(argument, providedType, index));
         }
       }

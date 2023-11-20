@@ -77,7 +77,7 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
       }
       if (isInvocationOnSelf) {
         Symbol symbol = methodIdentifier.symbol();
-        if (symbol.isMethodSymbol() && JUtils.isOverridable((Symbol.MethodSymbol) symbol) && isMethodDefinedOnConstructedType(symbol)) {
+        if (symbol.isMethodSymbol() && ((Symbol.MethodSymbol) symbol).isOverridable() && isMethodDefinedOnConstructedType(symbol)) {
           reportIssue(methodIdentifier, "Remove this call from a constructor to the overridable \"" + methodIdentifier.name() + "\" method.");
         }
       }

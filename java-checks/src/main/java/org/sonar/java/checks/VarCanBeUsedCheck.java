@@ -103,7 +103,7 @@ public class VarCanBeUsedCheck extends IssuableSubscriptionVisitor implements Ja
   private static boolean isExcludedInitializer(ExpressionTree initializer) {
     if (initializer.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol.MethodSymbol symbol = ((MethodInvocationTree) initializer).methodSymbol();
-      return !symbol.isUnknown() && JUtils.isParametrizedMethod(symbol);
+      return !symbol.isUnknown() && symbol.isParametrizedMethod();
     }
     return initializer.is(Tree.Kind.CONDITIONAL_EXPRESSION, Tree.Kind.METHOD_REFERENCE, Tree.Kind.LAMBDA_EXPRESSION);
   }

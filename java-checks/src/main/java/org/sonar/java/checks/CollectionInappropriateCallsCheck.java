@@ -129,7 +129,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
   private static boolean isCallToParametrizedOrUnknownMethod(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol.MethodSymbol symbol = ((MethodInvocationTree) expressionTree).methodSymbol();
-      return symbol.isUnknown() || JUtils.isParametrizedMethod(symbol);
+      return symbol.isUnknown() || symbol.isParametrizedMethod();
     }
     return false;
   }

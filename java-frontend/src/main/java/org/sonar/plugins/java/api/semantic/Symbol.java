@@ -215,6 +215,31 @@ public interface Symbol {
      * @return the signature of the method, as String
      */
     String signature();
+
+    /**
+     * @return true if the method symbol is overridable.
+     */
+    boolean isOverridable();
+
+    /**
+     * @return true if the method has type parameters.
+     */
+    boolean isParametrizedMethod();
+
+    /**
+     * @return true if the method has a default implementation.
+     */
+    boolean isDefaultMethod();
+
+    /**
+     * @return true if the method is synchronized
+     */
+    boolean isSynchronizedMethod();
+
+    /**
+     * @return true if the method takes a vararg argument (e.g. `String... args`)
+     */
+    boolean isVarArgsMethod();
   }
 
   /**

@@ -30,7 +30,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -226,7 +225,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     }
     Stream<Symbol> defaultMethodsFromInterfaces = symbol.interfaces().stream()
       .flatMap(i -> getAllMembers(i.symbol(), false, visitedSymbols))
-      .filter(m -> m.isMethodSymbol() && JUtils.isDefaultMethod((Symbol.MethodSymbol) m));
+      .filter(m -> m.isMethodSymbol() && ((Symbol.MethodSymbol) m).isDefaultMethod());
     members = Stream.concat(members, defaultMethodsFromInterfaces);
     for (Symbol s : symbol.memberSymbols()) {
       if (isNested(s) || isPublicStaticConcrete(s)) {

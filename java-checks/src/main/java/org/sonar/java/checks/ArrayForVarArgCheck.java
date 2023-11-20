@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -98,7 +97,7 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
   private static boolean isLastArgumentVarargs(Symbol.MethodSymbol methodSymbol, Arguments args) {
     // If we have less arguments than parameter types, it means that no arguments was pass to the varargs.
     // If we have more, the last argument can not be an array.
-    return !args.isEmpty() && JUtils.isVarArgsMethod(methodSymbol) && args.size() == methodSymbol.parameterTypes().size();
+    return !args.isEmpty() && methodSymbol.isVarArgsMethod() && args.size() == methodSymbol.parameterTypes().size();
   }
 
   private static Type getLastParameterType(List<? extends Type> list) {

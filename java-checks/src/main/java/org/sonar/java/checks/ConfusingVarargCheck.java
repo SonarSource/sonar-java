@@ -84,7 +84,7 @@ public class ConfusingVarargCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkConfusingVararg(Symbol.MethodSymbol method, Arguments arguments) {
-    if (!JUtils.isVarArgsMethod(method)) {
+    if (!method.isVarArgsMethod()) {
       return;
     }
     List<Type> parameterTypes = method.parameterTypes();

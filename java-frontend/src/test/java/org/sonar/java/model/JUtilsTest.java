@@ -543,18 +543,18 @@ class JUtilsTest {
     @Test
     void isVarArgsMethod() {
       MethodTreeImpl varArgsMethod = firstMethod(a);
-      assertThat(JUtils.isVarArgsMethod(varArgsMethod.symbol())).isTrue();
+      assertThat(varArgsMethod.symbol().isVarArgsMethod()).isTrue();
     }
 
     @Test
     void non_vararg_method_is_not_varargs() {
       MethodTreeImpl nonVarArgsMethod = nthMethod(a, 1);
-      assertThat(JUtils.isVarArgsMethod(nonVarArgsMethod.symbol())).isFalse();
+      assertThat(nonVarArgsMethod.symbol().isVarArgsMethod()).isFalse();
     }
 
     @Test
     void unknown_method_is_not_varargs() {
-      assertThat(JUtils.isVarArgsMethod(Symbols.unknownMethodSymbol)).isFalse();
+      assertThat(Symbols.unknownMethodSymbol.isVarArgsMethod()).isFalse();
     }
   }
 
@@ -569,18 +569,18 @@ class JUtilsTest {
     @Test
     void isSynchronizedMethod() {
       MethodTreeImpl synchronizedMethod = firstMethod(a);
-      assertThat(JUtils.isSynchronizedMethod(synchronizedMethod.symbol())).isTrue();
+      assertThat(synchronizedMethod.symbol().isSynchronizedMethod()).isTrue();
     }
 
     @Test
     void not_synchronized() {
       MethodTreeImpl nonSynchronizedMethod = nthMethod(a, 1);
-      assertThat(JUtils.isSynchronizedMethod(nonSynchronizedMethod.symbol())).isFalse();
+      assertThat(nonSynchronizedMethod.symbol().isSynchronizedMethod()).isFalse();
     }
 
     @Test
     void unknown_method_is_not_synchronized() {
-      assertThat(JUtils.isSynchronizedMethod(Symbols.unknownMethodSymbol)).isFalse();
+      assertThat(Symbols.unknownMethodSymbol.isSynchronizedMethod()).isFalse();
     }
   }
 
@@ -621,18 +621,18 @@ class JUtilsTest {
     @Test
     void isDefaultMethod() {
       MethodTreeImpl defaultMethod = firstMethod(a);
-      assertThat(JUtils.isDefaultMethod(defaultMethod.symbol())).isTrue();
+      assertThat(defaultMethod.symbol().isDefaultMethod()).isTrue();
     }
 
     @Test
     void not_default() {
       MethodTreeImpl nonDefaultMethod = nthMethod(a, 1);
-      assertThat(JUtils.isDefaultMethod(nonDefaultMethod.symbol())).isFalse();
+      assertThat(nonDefaultMethod.symbol().isDefaultMethod()).isFalse();
     }
 
     @Test
     void unknown_method_is_not_default() {
-      assertThat(JUtils.isDefaultMethod(Symbols.unknownMethodSymbol)).isFalse();
+      assertThat(Symbols.unknownMethodSymbol.isDefaultMethod()).isFalse();
     }
   }
 
@@ -678,28 +678,28 @@ class JUtilsTest {
     @Test
     void isOverridable() {
       MethodTreeImpl foo = firstMethod(a);
-      assertThat(JUtils.isOverridable(foo.symbol())).isTrue();
+      assertThat(foo.symbol().isOverridable()).isTrue();
     }
 
     @Test
     void private_method_is_not_overridable() {
       Symbol.MethodSymbol symbol = nthMethod(a, 1).symbol();
       assertThat(symbol.isPrivate()).isTrue();
-      assertThat(JUtils.isOverridable(symbol)).isFalse();
+      assertThat(symbol.isOverridable()).isFalse();
     }
 
     @Test
     void static_method_is_not_overridable() {
       Symbol.MethodSymbol symbol = nthMethod(a, 2).symbol();
       assertThat(symbol.isStatic()).isTrue();
-      assertThat(JUtils.isOverridable(symbol)).isFalse();
+      assertThat(symbol.isOverridable()).isFalse();
     }
 
     @Test
     void final_method_is_not_overridable() {
       Symbol.MethodSymbol symbol = nthMethod(a, 3).symbol();
       assertThat(symbol.isFinal()).isTrue();
-      assertThat(JUtils.isOverridable(symbol)).isFalse();
+      assertThat(symbol.isOverridable()).isFalse();
     }
 
     // final owner
@@ -708,12 +708,12 @@ class JUtilsTest {
       ClassTreeImpl b = nthClass(cu, 1);
       Symbol.MethodSymbol symbol = (firstMethod(b)).symbol();
       assertThat(symbol.isFinal()).isFalse();
-      assertThat(JUtils.isOverridable(symbol)).isFalse();
+      assertThat(symbol.isOverridable()).isFalse();
     }
 
     @Test
     void unknown_method_is_not_overridable() {
-      assertThat(JUtils.isOverridable(Symbols.unknownMethodSymbol)).isFalse();
+      assertThat(Symbols.unknownMethodSymbol.isOverridable()).isFalse();
     }
   }
 
@@ -731,12 +731,12 @@ class JUtilsTest {
       ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) m.block().body().get(0);
       MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) s.expression();
 
-      assertThat(JUtils.isParametrizedMethod(cu.sema.methodSymbol(m.methodBinding)))
-        .isEqualTo(JUtils.isParametrizedMethod(m.symbol()))
+      assertThat(cu.sema.methodSymbol(m.methodBinding).isParametrizedMethod())
+        .isEqualTo(m.symbol().isParametrizedMethod())
         .isEqualTo(m.methodBinding.isGenericMethod())
         .isTrue();
-      assertThat(JUtils.isParametrizedMethod(cu.sema.methodSymbol(methodInvocation.methodBinding)))
-        .isEqualTo(JUtils.isParametrizedMethod(methodInvocation.methodSymbol()))
+      assertThat(cu.sema.methodSymbol(methodInvocation.methodBinding).isParametrizedMethod())
+        .isEqualTo(methodInvocation.methodSymbol().isParametrizedMethod())
         .isEqualTo(methodInvocation.methodBinding.isParameterizedMethod())
         .isTrue();
     }
@@ -744,12 +744,12 @@ class JUtilsTest {
     @Test
     void non_parametrized_method_is_not_parametrized() {
       MethodTreeImpl n = nthMethod(c, 1);
-      assertThat(JUtils.isParametrizedMethod(n.symbol())).isFalse();
+      assertThat(n.symbol().isParametrizedMethod()).isFalse();
     }
 
     @Test
     void unknown_method_is_not_parametrized() {
-      assertThat(JUtils.isParametrizedMethod(Symbols.unknownMethodSymbol)).isFalse();
+      assertThat(Symbols.unknownMethodSymbol.isParametrizedMethod()).isFalse();
     }
   }
 

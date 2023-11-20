@@ -38,7 +38,6 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -72,7 +71,7 @@ public class BehaviorCache {
 
   public MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
     String signature = symbol.signature();
-    boolean varArgs = JUtils.isVarArgsMethod(symbol);
+    boolean varArgs = symbol.isVarArgsMethod();
     return behaviors.computeIfAbsent(signature, k -> new MethodBehavior(signature, varArgs));
   }
 

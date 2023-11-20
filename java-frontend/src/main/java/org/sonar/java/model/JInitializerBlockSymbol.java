@@ -185,4 +185,29 @@ final class JInitializerBlockSymbol implements Symbol.MethodSymbol {
   public String signature() {
     return owner.name() + "." + name();
   }
+
+  @Override
+  public boolean isOverridable() {
+    return false;
+  }
+
+  @Override
+  public boolean isParametrizedMethod() {
+    return false;
+  }
+
+  @Override
+  public boolean isDefaultMethod() {
+    return false;
+  }
+
+  @Override
+  public boolean isSynchronizedMethod() {
+    return false;
+  }
+
+  @Override
+  public boolean isVarArgsMethod() {
+    return false;
+  }
 }
