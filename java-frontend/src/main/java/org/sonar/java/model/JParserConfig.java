@@ -113,6 +113,7 @@ public abstract class JParserConfig {
     options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion.effectiveJavaVersionAsString());
     options.put(JavaCore.COMPILER_SOURCE, javaVersion.effectiveJavaVersionAsString());
     options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
+    options.put(JavaCore.COMPILER_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE, "enabled");
     if (shouldEnablePreviewFlag(javaVersion)) {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     }
