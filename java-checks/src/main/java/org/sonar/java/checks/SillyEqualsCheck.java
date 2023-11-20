@@ -23,7 +23,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -53,7 +52,7 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
     ExpressionTree firstArgument = ListUtils.getOnlyElement(tree.arguments());
     Type argumentType = firstArgument.symbolType().erasure();
     if (argumentType.isPrimitive()) {
-      argumentType = JUtils.primitiveWrapperType(argumentType);
+      argumentType = argumentType.primitiveWrapperType();
     }
     Type ownerType = getMethodOwnerType(tree).erasure();
 

@@ -142,6 +142,20 @@ class JTypeTest {
   }
 
   @Test
+  void primitiveType(){
+    Type byteType = type("java.lang.Byte");
+    assertThat(byteType.primitiveType()).isEqualTo(type("byte"));
+    assertThat(byteType.primitiveType()).isNotEqualTo(type("boolean"));
+  }
+
+  @Test
+  void declaringType(){
+    Type byteType = type("java.lang.Byte");
+    assertThat(byteType.declaringType()).isEqualTo(byteType);
+    assertThat(byteType.declaringType()).isNotEqualTo(type("java.lang.Boolean"));
+  }
+
+  @Test
   void isNumerical() {
     assertAll(
       () -> assertThat(type("byte").isNumerical()).isTrue(),

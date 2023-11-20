@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.tree;
 import org.sonar.java.annotations.Beta;
 
 import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 /**
  * Import declaration.
@@ -51,4 +52,8 @@ public interface ImportTree extends ImportClauseTree {
   Tree qualifiedIdentifier();
 
   SyntaxToken semicolonToken();
+
+  @Nullable
+  Symbol symbol();
+
 }

@@ -199,7 +199,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isGeneric(IdentifierTree identifierTree) {
-    return JUtils.isTypeVar(identifierTree.symbolType());
+    return identifierTree.symbolType().isTypeVar();
   }
 
   private static boolean isSingleParamExpression(ExpressionTree expression, Symbol symbol) {

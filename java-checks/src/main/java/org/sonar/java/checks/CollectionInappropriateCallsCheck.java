@@ -174,7 +174,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
 
   private static boolean autoboxing(Type argumentType, Type collectionParameterType) {
     return argumentType.isPrimitive()
-      && isSubtypeOf(JUtils.primitiveWrapperType(argumentType), collectionParameterType);
+      && isSubtypeOf(argumentType.primitiveWrapperType(), collectionParameterType);
   }
 
   private static class TypeChecker {

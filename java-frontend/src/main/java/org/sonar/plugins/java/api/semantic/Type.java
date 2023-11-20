@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.semantic;
 
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Interface to access resolved type of an expression or a Type.
@@ -123,6 +124,92 @@ public interface Type {
    * @return true if this is the primitive type
    */
   boolean isPrimitive(Primitives primitive);
+
+  /**
+   * Check if this type is a primitive wrapper.
+   *
+   * <code><pre>
+   *   Type type;
+   *   type.isPrimitiveWrapper();
+   *</pre></code>
+   *
+   * @return true if this is a primitive wrapper
+   */
+  boolean isPrimitiveWrapper();
+
+  /**
+   * Returns the type of the primitive wrapper
+   *
+   * <code><pre>
+   *   Type type;
+   *   Type primitiveWrapperType = type.primitiveWrapperType();
+   *</pre></code>
+   *
+   * @return the type of the primitive wrapper, as Type
+   */
+  @Nullable
+  Type primitiveWrapperType();
+
+  /**
+   * Returns the type of the primitive
+   *
+   * <code><pre>
+   *   Type type;
+   *   Type primitiveType = type.primitiveType();
+   *</pre></code>
+   *
+   * @return the type of the primitive, as Type
+   */
+  @Nullable
+  Type primitiveType();
+
+  /**
+   * Returns whether this type is the null type
+   *
+   * <code><pre>
+   *   Type type;
+   *   type.isNullType();
+   *</pre></code>
+   *
+   * @return true if it is a null type
+   */
+  boolean isNullType();
+
+  /**
+   * Returns whether this type represents a type variable
+   *
+   * <code><pre>
+   *   Type type;
+   *   type.isTypeVar();
+   *</pre></code>
+   *
+   * @return true if this is a type variable
+   */
+  boolean isTypeVar();
+
+  /**
+   * Check if this type is a raw type
+   *
+   * <code><pre>
+   *   Type type;
+   *   type.isRawType();
+   *</pre></code>
+   *
+   * @return true if it is a raw type
+   */
+  boolean isRawType();
+
+  /**
+   * Returns the declaring type of this type
+   *
+   * <code><pre>
+   *   Type type;
+   *   Type declaringType = type.declaringType();
+   *</pre></code>
+   *
+   * @return the declaring type of this, as Type
+   */
+  Type declaringType();
 
   /**
    * Check if this type has been resolved.

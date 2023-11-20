@@ -398,7 +398,7 @@ public class DivisionByZeroCheck extends SECheck {
         return;
       }
       Type type = identifier.symbolType();
-      if (type.isPrimitive() || JUtils.isPrimitiveWrapper(type)) {
+      if (type.isPrimitive() || type.isPrimitiveWrapper()) {
         JUtils.constantValue((Symbol.VariableSymbol) symbol)
           .filter(Number.class::isInstance)
           .map(Number.class::cast)

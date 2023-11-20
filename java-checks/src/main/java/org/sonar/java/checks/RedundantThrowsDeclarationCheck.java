@@ -151,7 +151,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       || !exceptionType.isSubtypeOf("java.lang.Exception")
       || exceptionType.isSubtypeOf("java.lang.RuntimeException")
       || thrownExceptions == null
-      || thrownExceptions.stream().anyMatch(JUtils::isTypeVar)) {
+      || thrownExceptions.stream().anyMatch(Type::isTypeVar)) {
       return false;
     }
 

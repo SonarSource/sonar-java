@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -64,7 +63,7 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
 
   private void checkImports(List<ImportTree> imports) {
     imports.stream()
-      .map(JUtils::importTreeSymbol)
+      .map(ImportTree::symbol)
       .filter(Objects::nonNull)
       .forEach(this::checkSymbol);
   }

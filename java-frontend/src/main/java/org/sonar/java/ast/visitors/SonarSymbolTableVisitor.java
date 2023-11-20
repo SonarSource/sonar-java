@@ -22,7 +22,6 @@ package org.sonar.java.ast.visitors;
 import java.util.List;
 import org.sonar.api.batch.sensor.symbol.NewSymbol;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -67,7 +66,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
       createSymbol(simpleName, tree.symbol().usages());
     }
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-      createSymbol(typeParameterTree.identifier(), JUtils.typeParameterTreeSymbol(typeParameterTree).usages());
+      createSymbol(typeParameterTree.identifier(), typeParameterTree.symbol().usages());
     }
     super.visitClass(tree);
   }
@@ -89,7 +88,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
     List<IdentifierTree> usages = tree.symbol().usages();
     createSymbol(tree.simpleName(), usages);
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-      createSymbol(typeParameterTree.identifier(), JUtils.typeParameterTreeSymbol(typeParameterTree).usages());
+      createSymbol(typeParameterTree.identifier(), typeParameterTree.symbol().usages());
     }
     super.visitMethod(tree);
   }
@@ -110,7 +109,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
     }
     // Exclude on demands imports
     if (!"*".equals(identifierTree.name())) {
-      Symbol symbol = JUtils.importTreeSymbol(tree);
+      Symbol symbol = tree.symbol();
       if (symbol != null) {
         createSymbol(identifierTree, symbol.usages());
       }

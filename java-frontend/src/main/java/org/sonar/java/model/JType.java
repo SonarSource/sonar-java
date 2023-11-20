@@ -40,6 +40,21 @@ final class JType implements Type, Type.ArrayType {
   private final String fullyQualifiedName;
 
   /**
+   * Cache for {@link #primitiveWrapperType()}.
+   */
+  private Type primitiveWrapperType;
+
+  /**
+   * Cache for {@link #primitiveType()}.
+   */
+  private Type primitiveType;
+
+  /**
+   * Cache for {@link #declaringType()}.
+   */
+  private Type declaringType;
+
+  /**
    * Cache for {@link #typeArguments()}.
    */
   private List<Type> typeArguments;
@@ -109,6 +124,66 @@ final class JType implements Type, Type.ArrayType {
   public boolean isPrimitive(Primitives primitive) {
     // TODO suboptimal
     return primitive.name().toLowerCase(Locale.ROOT).equals(fullyQualifiedName());
+  }
+
+  @Override
+  public boolean isPrimitiveWrapper() {
+    return isClass() && JUtils.WRAPPER_TO_PRIMITIVE.containsKey(fullyQualifiedName());
+  }
+
+  @Nullable
+  @Override
+  public Type primitiveWrapperType() {
+    if (primitiveWrapperType == null) {
+      String name = JUtils.PRIMITIVE_TO_WRAPPER.get(fullyQualifiedName());
+      if (name == null) {
+        return null;
+      }
+      primitiveWrapperType = sema.type(sema.resolveType(name));
+    }
+    return primitiveWrapperType;
+  }
+
+  @Nullable
+  @Override
+  public Type primitiveType() {
+    if (primitiveType == null) {
+      String name = JUtils.WRAPPER_TO_PRIMITIVE.get(fullyQualifiedName());
+      if (name == null) {
+        return null;
+      }
+      primitiveType = sema.type(sema.resolveType(name));
+    }
+    return primitiveType;
+  }
+
+  @Override
+  public boolean isNullType() {
+    return !isUnknown() && typeBinding.isNullType();
+  }
+
+  @Override
+  public boolean isTypeVar() {
+    return !isUnknown() && typeBinding.isTypeVariable();
+  }
+
+  @Override
+  public boolean isRawType() {
+    if (isUnknown()) {
+      return false;
+    }
+    return typeBinding.isRawType();
+  }
+
+  @Override
+  public Type declaringType() {
+    if (declaringType == null) {
+      if (isUnknown()) {
+        return this;
+      }
+      declaringType = sema.type(typeBinding.getTypeDeclaration());
+    }
+    return declaringType;
   }
 
   @Override
