@@ -70,6 +70,10 @@ public final class JUtils {
     return Objects.requireNonNullElse(wrapped, type);
   }
 
+  public static boolean isIntersectionType(Type type) {
+    return !type.isUnknown() && ((JType) type).typeBinding.isIntersectionType();
+  }
+
   public static boolean isAnnotation(Symbol.TypeSymbol typeSymbol) {
     return !typeSymbol.isUnknown() && ((JTypeSymbol) typeSymbol).typeBinding().isAnnotation();
   }

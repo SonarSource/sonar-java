@@ -180,23 +180,23 @@ class JUtilsTest {
     @Test
     void intersection_type() {
       TypeCastExpressionTreeImpl e = (TypeCastExpressionTreeImpl) f.initializer();
-      assertThat(cu.sema.type(e.typeBinding).isIntersectionType())
-        .isEqualTo(e.symbolType().isIntersectionType())
+      assertThat(JUtils.isIntersectionType(cu.sema.type(e.typeBinding)))
+        .isEqualTo(JUtils.isIntersectionType(e.symbolType()))
         .isTrue();
     }
 
     @Test
     void non_intersection_type() {
-      assertThat(cu.sema.type(f.variableBinding.getType()).isIntersectionType())
-        .isEqualTo(f.symbol().type().isIntersectionType())
+      assertThat(JUtils.isIntersectionType(cu.sema.type(f.variableBinding.getType())))
+        .isEqualTo(JUtils.isIntersectionType(f.symbol().type()))
         .isFalse();
     }
 
     @Test
     void unresolved_type_is_not_an_intersection_type() {
       VariableTreeImpl u = nthField(c, 1);
-      assertThat(cu.sema.type(u.variableBinding.getType()).isIntersectionType())
-        .isEqualTo(u.symbol().type().isIntersectionType())
+      assertThat(JUtils.isIntersectionType(cu.sema.type(u.variableBinding.getType())))
+        .isEqualTo(JUtils.isIntersectionType(u.symbol().type()))
         .isFalse();
     }
   }

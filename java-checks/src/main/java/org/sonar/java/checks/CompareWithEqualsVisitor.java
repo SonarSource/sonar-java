@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.java.checks.helpers.MethodTreeUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;

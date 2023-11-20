@@ -151,7 +151,6 @@ custom rules.
 * New method: `Type#primitiveWrapperType()`. Returns the type of the primitive wrapper.
 * New method: `Type#primitiveType()`. Returns the type of the primitive.
 * New method: `Type#isNullType()`. Returns whether this type is the null type.
-* New method: `Type#isIntersectionType()`. Check if this type is an intersection type.
 * New method: `Type#isTypeVar()`. Returns whether this type represents a type variable.
 * New method: `Type#isRawType()`. Check if this type is a raw type.
 * New method: `Type#declaringType()`. Returns the declaring type of this type.

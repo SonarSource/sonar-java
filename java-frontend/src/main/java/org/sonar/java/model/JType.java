@@ -163,11 +163,6 @@ final class JType implements Type, Type.ArrayType {
   }
 
   @Override
-  public boolean isIntersectionType() {
-    return !isUnknown() && typeBinding.isIntersectionType();
-  }
-
-  @Override
   public boolean isTypeVar() {
     return !isUnknown() && typeBinding.isTypeVariable();
   }

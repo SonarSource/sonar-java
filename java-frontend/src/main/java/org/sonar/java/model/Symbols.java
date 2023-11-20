@@ -360,11 +360,6 @@ public class Symbols {
     }
 
     @Override
-    public boolean isIntersectionType() {
-      return false;
-    }
-
-    @Override
     public boolean isTypeVar() {
       return false;
     }

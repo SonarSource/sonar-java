@@ -57,10 +57,10 @@ class SymbolsTest {
     assertThat(unknownType.isVoid()).isFalse();
     assertThat(unknownType.isPrimitive()).isFalse();
     assertThat(unknownType.isPrimitive(Primitives.BOOLEAN)).isFalse();
+    assertThat(unknownType.primitiveWrapperType()).isNull();
     assertThat(unknownType.isPrimitiveWrapper()).isFalse();
     assertThat(unknownType.primitiveType()).isNull();
     assertThat(unknownType.isNullType()).isFalse();
-    assertThat(unknownType.isIntersectionType()).isFalse();
     assertThat(unknownType.isTypeVar()).isFalse();
     assertThat(unknownType.isRawType()).isFalse();
     assertThat(unknownType.declaringType()).isEqualTo(unknownType);

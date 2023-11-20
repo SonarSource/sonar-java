@@ -176,18 +176,6 @@ public interface Type {
   boolean isNullType();
 
   /**
-   * Check if this type is an intersection type
-   *
-   * <code><pre>
-   *   Type type;
-   *   type.isIntersectionType();
-   *</pre></code>
-   *
-   * @return true if it is an intersection type
-   */
-  boolean isIntersectionType();
-
-  /**
    * Returns whether this type represents a type variable
    *
    * <code><pre>
