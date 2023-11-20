@@ -22,10 +22,14 @@ package org.sonar.java.classpath;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JavaSdkUtilTest {
 
@@ -83,4 +87,53 @@ class JavaSdkUtilTest {
     File expected = path.resolve(Paths.get("bin","default","jclSC180","vm.jar")).toAbsolutePath().toFile();
     assertThat(jdkClassRoots).contains(expected);
   }
+
+  @Test
+  void collect_jars_from_classpath_file() {
+    List<File> actual = JavaSdkUtil.collectJarsFromClasspathFile("src/test/resources/classpath-example.txt");
+    assertThat(actual).hasSize(1);
+    File file = actual.get(0);
+    assertThat(file.toString().replace(File.separatorChar, '/'))
+      .endsWith("/org/openjdk/jol/jol-core/0.16/jol-core-0.16.jar");
+  }
+
+  @Test
+  void collect_jars_from_missing_classpath_file() {
+    assertThatThrownBy(() -> JavaSdkUtil.collectJarsFromClasspathFile("src/test/resources/missing-file.txt"))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessageContaining("missing-file.txt");
+  }
+
+  @Test
+  void collect_jars_from_classpath_file_with_invalid_entries() {
+    assertThatThrownBy(() -> JavaSdkUtil.collectJarsFromClasspathFile("src/test/resources/invalid-classpath-example.txt"))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessageContaining("missing-artifact-666.jar");
+  }
+
+  @Test
+  void maven_local_repository_without_M2_REPO() {
+    UnaryOperator<String> systemPropertyProvider = Map.of("user.home", File.separatorChar + "Users" + File.separatorChar + "me")::get;
+    UnaryOperator<String> systemEnvProvider = Collections.<String, String>emptyMap()::get;
+    assertThat(JavaSdkUtil.getMavenLocalRepository(systemEnvProvider, systemPropertyProvider))
+      .isEqualTo("/Users/me/.m2/repository".replace('/', File.separatorChar));
+  }
+
+  @Test
+  void maven_local_repository_with_blank_M2_REPO() {
+    UnaryOperator<String> systemPropertyProvider = Map.of("user.home", File.separatorChar + "Users" + File.separatorChar + "me")::get;
+    UnaryOperator<String> systemEnvProvider = Map.of("M2_REPO", "")::get;
+    assertThat(JavaSdkUtil.getMavenLocalRepository(systemEnvProvider, systemPropertyProvider))
+      .isEqualTo("/Users/me/.m2/repository".replace('/', File.separatorChar));
+  }
+
+  @Test
+  void maven_local_repository_with_valid_M2_REPO() {
+    UnaryOperator<String> systemPropertyProvider = Map.of("user.home", File.separatorChar + "Users" + File.separatorChar + "me")::get;
+    String fooRepo = "/home/foo/.m2/repository".replace('/', File.separatorChar);
+    UnaryOperator<String> systemEnvProvider = Map.of("M2_REPO", fooRepo)::get;
+    assertThat(JavaSdkUtil.getMavenLocalRepository(systemEnvProvider, systemPropertyProvider))
+      .isEqualTo(fooRepo);
+  }
+
 }

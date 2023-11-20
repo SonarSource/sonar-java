@@ -21,6 +21,9 @@ package org.sonar.java.checks.verifier.internal;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,6 +60,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.classpath.JavaSdkUtil;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
@@ -82,9 +86,12 @@ public class InternalCheckVerifier implements CheckVerifier {
   private static final String FILE_OR_FILES = "file(s)";
 
   private static final JavaVersion DEFAULT_JAVA_VERSION = new JavaVersionImpl();
-  private static final List<File> DEFAULT_CLASSPATH = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
+  private static final List<File> DEFAULT_CLASSPATH;
 
   static {
+    Path path = Paths.get(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE.replace('/', File.separatorChar));
+    // Because of 'java-custom-rules-example' module, we silently use an empty classpath if the file does not exist
+    DEFAULT_CLASSPATH = Files.exists(path) ? JavaSdkUtil.collectJarsFromClasspathFile(path.toString()) : new ArrayList<>();
     Optional.of(new File(FilesUtils.DEFAULT_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(DEFAULT_CLASSPATH::add);
   }
 

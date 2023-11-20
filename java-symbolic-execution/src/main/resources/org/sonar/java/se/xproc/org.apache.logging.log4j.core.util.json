@@ -22,5 +22,51 @@
         "exception": "java.lang.NullPointerException"
       }
     ]
+  },
+  {
+    "signature": "org.apache.logging.log4j.core.util.Assert#requireNonEmpty(Ljava/lang/Object;)Ljava/lang/Object;",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"]
+        ],
+        "resultIndex": 0,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          ["NULL"]
+        ],
+        "exception": "java.lang.NullPointerException"
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.logging.log4j.core.util.Assert#requireNonEmpty(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["NOT_NULL"],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          ["NULL"],
+          []
+        ],
+        "exception": "java.lang.NullPointerException"
+      }
+    ]
   }
 ]

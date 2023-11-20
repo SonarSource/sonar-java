@@ -25,16 +25,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.SystemUtils;
 import org.sonar.java.annotations.VisibleForTesting;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Adapted from https://github.com/JetBrains/intellij-community/blob/203.5981/jps/model-impl/src/org/jetbrains/jps/model/java/impl/JavaSdkUtil.java
@@ -85,6 +89,38 @@ public class JavaSdkUtil {
     }
 
     return rootFiles;
+  }
+
+  public static List<File> collectJarsFromClasspathFile(String classpathTextFilePath) {
+    List<File> classpath = new ArrayList<>();
+    String mavenRepository = getMavenLocalRepository(System::getenv, System::getProperty);
+    try {
+      String content = Files.readString(Paths.get(classpathTextFilePath.replace('/', File.separatorChar)), UTF_8);
+      Arrays.stream(content.split(":"))
+        .map(String::trim)
+        .filter(line -> !line.isBlank())
+        .map(line -> line.replace('/', File.separatorChar))
+        .map(line -> line.replace("${M2_REPO}", mavenRepository))
+        .map(Paths::get)
+        .forEach(dependencyPath ->{
+          if (!Files.exists(dependencyPath)) {
+            throw new IllegalArgumentException("Missing dependency: " + dependencyPath);
+          }
+          classpath.add(dependencyPath.toFile());
+        });
+    } catch (IOException e) {
+      throw new IllegalArgumentException("Exception while loading '" + classpathTextFilePath + "': " + e.getMessage(), e);
+    }
+    return classpath;
+  }
+
+  @VisibleForTesting
+  static String getMavenLocalRepository(UnaryOperator<String> systemEnvProvider, UnaryOperator<String> systemPropertyProvider) {
+    String repository = systemEnvProvider.apply("M2_REPO");
+    if (repository == null || repository.isEmpty()) {
+      repository = Path.of(systemPropertyProvider.apply("user.home")).resolve(".m2").resolve("repository").toString();
+    }
+    return repository;
   }
 
   private static boolean isJarFile(Path path) {

@@ -25,11 +25,9 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.java.annotations.VisibleForTesting;
@@ -40,24 +38,13 @@ public final class FilesUtils {
   }
 
   public static final String TEST_SOURCES_ROOT = "../java-checks-test-sources/";
-  public static final String TARGET_TEST_JARS = "/target/test-jars";
+  public static final String TARGET_TEST_CLASSPATH_FILE = "/target/test-classpath.txt";
   public static final String TARGET_CLASSES = "/target/classes";
   /**
    * Default location of the jars/zips to be taken into account when performing the analysis.
    */
-  public static final String DEFAULT_TEST_JARS_DIRECTORY = TEST_SOURCES_ROOT + "default" + TARGET_TEST_JARS;
+  public static final String DEFAULT_TEST_CLASSPATH_FILE = TEST_SOURCES_ROOT + "default" + TARGET_TEST_CLASSPATH_FILE;
   public static final String DEFAULT_TEST_CLASSES_DIRECTORY = TEST_SOURCES_ROOT + "default" + TARGET_CLASSES;
-
-  public static List<File> getClassPath(String jarsDirectory) {
-    List<File> classpath = new LinkedList<>();
-    Path testJars = Paths.get(jarsDirectory);
-    if (testJars.toFile().exists()) {
-      classpath = getFilesRecursively(testJars, "jar", "zip");
-    } else if (!DEFAULT_TEST_JARS_DIRECTORY.equals(jarsDirectory)) {
-      throw new AssertionError("The directory to be used to extend class path does not exists (" + testJars.toAbsolutePath() + ").");
-    }
-    return classpath;
-  }
 
   @VisibleForTesting
   public static List<File> getFilesRecursively(Path root, String... extensions) {

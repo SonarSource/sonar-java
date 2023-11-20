@@ -20,4 +20,31 @@
     <module>default</module>
   </modules>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>build-classpath</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>build-classpath</goal>
+            </goals>
+            <configuration>
+              <fileSeparator>/</fileSeparator>
+              <pathSeparator>:${line.separator}</pathSeparator>
+              <includeScope>test</includeScope>
+              <!-- $$ to not evaluate M2_REPO now, this will become ${M2_REPO} in the output file -->
+              <localRepoProperty>$${M2_REPO}</localRepoProperty>
+              <outputEncoding>UTF-8</outputEncoding>
+              <outputFile>${project.build.directory}/test-classpath.txt</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

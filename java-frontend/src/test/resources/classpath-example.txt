@@ -1,0 +1,2 @@
+${M2_REPO}/org/openjdk/jol/jol-core/0.16/jol-core-0.16.jar:
+

@@ -19,21 +19,19 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.checks.verifier.FilesUtils;
-
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import org.sonar.java.classpath.JavaSdkUtil;
 
 public class CommonConstants {
 
   public static final String AWS_MODULE = "aws";
 
-  public static final String AWS_TEST_JARS_DIRECTORY = "../java-checks-test-sources/aws/target/test-jars";
+  public static final String AWS_TEST_CLASSPATH_FILE = "../java-checks-test-sources/aws/target/test-classpath.txt";
   public static final String AWS_TEST_CLASSES_DIRECTORY = "../java-checks-test-sources/aws/target/classes";
 
-
-  public static final List<File> AWS_CLASSPATH = FilesUtils.getClassPath(AWS_TEST_JARS_DIRECTORY);
+  public static final List<File> AWS_CLASSPATH = JavaSdkUtil.collectJarsFromClasspathFile(AWS_TEST_CLASSPATH_FILE);
 
   static {
     Optional.of(new File(AWS_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(AWS_CLASSPATH::add);

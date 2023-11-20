@@ -22,7 +22,6 @@ package org.sonar.java.se.utils;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,7 @@ import java.util.Optional;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.java.checks.verifier.FilesUtils;
+import org.sonar.java.classpath.JavaSdkUtil;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 public class SETestUtils {
 
-  public static final List<File> CLASS_PATH = new ArrayList<>(FilesUtils.getClassPath("target/test-jars"));
+  public static final List<File> CLASS_PATH = JavaSdkUtil.collectJarsFromClasspathFile(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE);
   static {
     CLASS_PATH.add(new File("target/test-classes"));
   }
