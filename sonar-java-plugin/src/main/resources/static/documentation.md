@@ -147,6 +147,11 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 All the API changes are related to ECJ utility methods that were commonly used in the analyzer and could benefit the implementation of 
 custom rules.
 
+* New Method `Symbol.MethodSymbol.isOverridable()`. Returns whether this method is overridable.
+* New Method `Symbol.MethodSymbol.isVarArgsMethod()`. Returns whether this method has a vararg parameter.
+* New Method `Symbol.MethodSymbol.isDefaultMethod()`. Returns whether this method has a default implementation.
+* New Method `Symbol.MethodSymbol.isParametrizedMethod()`. Returns whether this method has type parameters.
+* New Method `Symbol.MethodSymbol.isSynchronizedMethod()`. Returns whether this method is synchronized.
 * New method: `Type#isPrimitiveWrapper()`. Check if this type is a primitive wrapper.
 * New method: `Type#primitiveWrapperType()`. Returns the type of the primitive wrapper.
 * New method: `Type#primitiveType()`. Returns the type of the primitive.
