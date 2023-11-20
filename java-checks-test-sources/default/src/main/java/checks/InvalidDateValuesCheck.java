@@ -12,6 +12,8 @@ class InvalidDateValuesCheck {
     Date d = new Date();
     d.setDate(25);
     d.setDate(32);// Noncompliant [[sc=15;ec=17]] {{"32" is not a valid value for "setDate" method.}}
+    d.setDate(0);// Noncompliant [[sc=15;ec=16]] {{"0" is not a valid value for "setDate" method.}}
+    d.setDate(-1);// Noncompliant [[sc=15;ec=17]] {{"-1" is not a valid value for "setDate" method.}}
     d.setYear(2014);
     d.setMonth(11);
     d.setMonth(12); // Noncompliant {{"12" is not a valid value for "setMonth" method.}}
@@ -70,6 +72,8 @@ class InvalidDateValuesCheck {
     b = 31 == d.getDate();
     b = foo() == d.getDate();
     b = 32 == d.getDate(); // Noncompliant {{"32" is not a valid value for "getDate".}}
+    b = -1 == d.getDate(); // Noncompliant {{"-1" is not a valid value for "getDate".}}
+    b = 0 == d.getDate(); // Noncompliant {{"0" is not a valid value for "getDate".}}
     b = d1.getSeconds() == -1;// Noncompliant {{"-1" is not a valid value for "getSeconds".}}
     b = cal.get(Calendar.DST_OFFSET) == 0;
     return 0;
@@ -90,5 +94,3 @@ class InvalidDateValuesCheck {
     }
   }
 }
-
-
