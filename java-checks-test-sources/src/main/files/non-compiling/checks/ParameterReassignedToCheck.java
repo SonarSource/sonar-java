@@ -1,6 +1,41 @@
 import java.util.function.Supplier;
 
 class A {
+
+  public String foo(int dt, String myString) {
+    dt = 1; // Noncompliant
+    myString = switch (dt) { // Compliant - FN
+      case 1 -> {
+        yield myString + "";
+      }
+      default -> null;
+    };
+    return myString;
+  }
+
+  public String foo3(int dt, String myString) {
+    dt = 1; // Noncompliant
+    myString = switch (dt) { // Noncompliant
+      case 1 -> {
+        yield "";
+      }
+      default -> null;
+    };
+    return myString;
+  }
+
+  public String foo2(int dt, String myString2) {
+    String str = switch (dt) { // Compliant
+      case 1 -> {
+        try {
+          yield myString2 + "";
+        } catch (Exception e) {
+          yield "Exc";
+        }
+      }
+      default -> null;
+    };
+  }
   public void f() {
   }
   abstract void method();

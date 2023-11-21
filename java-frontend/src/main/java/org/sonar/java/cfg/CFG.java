@@ -923,7 +923,7 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildYieldStatement(YieldStatementTree tree) {
-    currentBlock = createUnconditionalJump(tree, breakTargets.getLast(), currentBlock);
+    currentBlock = createUnconditionalJump(tree, breakTargets.isEmpty() ? null : breakTargets.getLast(), currentBlock);
     build(tree.expression());
     currentBlock.exitBlock = null;
   }
