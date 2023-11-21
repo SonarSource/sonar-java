@@ -37,7 +37,7 @@ class TestClasspathUtilsTest {
     assertThat(actual).hasSize(1);
     File file = actual.get(0);
     assertThat(file.toString().replace(File.separatorChar, '/'))
-      .endsWith("/org/openjdk/jol/jol-core/0.16/jol-core-0.16.jar");
+      .endsWith("/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar");
   }
 
   @Test

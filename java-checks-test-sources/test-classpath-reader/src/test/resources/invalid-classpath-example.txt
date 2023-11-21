@@ -1,2 +1,2 @@
-${M2_REPO}/org/openjdk/jol/jol-core/0.16/jol-core-0.16.jar::
+${M2_REPO}/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:
 ${M2_REPO}/org/bad/luck/missing-artifact/666/missing-artifact-666.jar:
