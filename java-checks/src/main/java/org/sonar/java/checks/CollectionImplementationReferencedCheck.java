@@ -45,6 +45,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S1319")
 public class CollectionImplementationReferencedCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -117,7 +118,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   );
 
   @SuppressWarnings("squid:S1192")
-  private static final Set<String> LIST_METHODS = union(COLLECTION_METHODS, Set.of(
+  private static final Set<String> LIST_METHODS = SetUtils.concat(COLLECTION_METHODS, Set.of(
     "copyOf",
     "get",
     "indexOf",
@@ -129,14 +130,14 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     "subList"
   ));
 
-  private static final Set<String> QUEUE_METHODS = union(COLLECTION_METHODS, Set.of(
+  private static final Set<String> QUEUE_METHODS = SetUtils.concat(COLLECTION_METHODS, Set.of(
     "element",
     "offer",
     "peek",
     "poll"
   ));
 
-  private static final Set<String> DEQUE_METHODS = union(QUEUE_METHODS, Set.of(
+  private static final Set<String> DEQUE_METHODS = SetUtils.concat(QUEUE_METHODS, Set.of(
     "addFirst",
     "addLast",
     "descendingIterator",
@@ -156,11 +157,11 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     "removeLastOccurrence"
   ));
 
-  private static final Set<String> SET_METHODS = union(COLLECTION_METHODS, Set.of(
+  private static final Set<String> SET_METHODS = SetUtils.concat(COLLECTION_METHODS, Set.of(
     "copyOf"
   ));
 
-  private static final Set<String> SORTED_SET_METHODS = union(SET_METHODS, Set.of(
+  private static final Set<String> SORTED_SET_METHODS = SetUtils.concat(SET_METHODS, Set.of(
     "comparator",
     "first",
     "headSet",
@@ -198,11 +199,11 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     "values"
   );
 
-  private static final Set<String> CONCURRENT_MAP_METHODS = union(MAP_METHODS, Set.of(
+  private static final Set<String> CONCURRENT_MAP_METHODS = SetUtils.concat(MAP_METHODS, Set.of(
     "merge"
   ));
 
-  private static final Set<String> SORTED_MAP_METHODS = union(MAP_METHODS, Set.of(
+  private static final Set<String> SORTED_MAP_METHODS = SetUtils.concat(MAP_METHODS, Set.of(
     "comparator",
     "firstKey",
     "headMap",
@@ -211,16 +212,16 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     "tailMap"
   ));
 
-  private static final Map<String, Set<String>> METHODS_BY_INTERFACE = MapBuilder.<String, Set<String>>newMap()
-    .put(LIST, LIST_METHODS)
-    .put(QUEUE, QUEUE_METHODS)
-    .put(DEQUE, DEQUE_METHODS)
-    .put(SET, SET_METHODS)
-    .put(SORTED_SET, SORTED_SET_METHODS)
-    .put(MAP, MAP_METHODS)
-    .put(CONCURRENT_MAP, CONCURRENT_MAP_METHODS)
-    .put(SORTED_MAP, SORTED_MAP_METHODS)
-    .build();
+  private static final Map<String, Set<String>> METHODS_BY_INTERFACE = Map.of(
+    LIST, LIST_METHODS,
+    QUEUE, QUEUE_METHODS,
+    DEQUE, DEQUE_METHODS,
+    SET, SET_METHODS,
+    SORTED_SET, SORTED_SET_METHODS,
+    MAP, MAP_METHODS,
+    CONCURRENT_MAP, CONCURRENT_MAP_METHODS,
+    SORTED_MAP, SORTED_MAP_METHODS
+  );
 
   private JavaFileScannerContext context;
   private QuickFixHelper.ImportSupplier importSupplier;
@@ -243,12 +244,14 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    if (!isPublic(tree.modifiers()) || !Boolean.FALSE.equals(tree.isOverriding())) {
+    boolean isNotPublic = !isPublic(tree.modifiers());
+    boolean isOverridingMethod = !Boolean.FALSE.equals(tree.isOverriding());
+    if (isNotPublic || isOverridingMethod) {
       return;
     }
 
     checkIfAllowed(tree.returnType(), "The return type of this method");
-    var candidateParameters = tree.parameters().stream()
+    List<VariableTree> candidateParameters = tree.parameters().stream()
       .filter(it -> getSuggestedInterface(it.type()) != null)
       .collect(Collectors.toList());
     if (candidateParameters.isEmpty()) {
@@ -260,7 +263,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     if (block != null) {
       var visitor = new MethodBodyVisitor(candidateParameters);
       block.accept(visitor);
-      reportParameters = reportParameters.filter(it -> !visitor.excludeParameters.contains(it));
+      reportParameters = reportParameters.filter(it -> !visitor.excludedParameters.contains(it));
     }
     reportParameters.forEach(it -> report(it.type(), String.format("The type of \"%s\"", it.simpleName())));
   }
@@ -331,18 +334,11 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
   }
 
-  private static <T> Set<T> union(Set<T> a, Set<T> b) {
-    var set = new HashSet<T>();
-    set.addAll(a);
-    set.addAll(b);
-    return set;
-  }
-
   private static class MethodBodyVisitor extends BaseTreeVisitor {
 
     private final Map<String, VariableTree> candidateParametersByName = new HashMap<>();
 
-    public final Set<VariableTree> excludeParameters = new HashSet<>();
+    public final Set<VariableTree> excludedParameters = new HashSet<>();
 
     public MethodBodyVisitor(List<VariableTree> candidateParameters) {
       for (var variableTree : candidateParameters) {
@@ -366,7 +362,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
       var memberName = tree.identifier().name();
       var interfaceName = getSuggestedInterface(variableTree.type());
       if (!METHODS_BY_INTERFACE.get(interfaceName).contains(memberName)) {
-        excludeParameters.add(variableTree);
+        excludedParameters.add(variableTree);
       }
     }
   }
