@@ -155,7 +155,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     if (type.is(genericTypeName)) {
       return type;
     }
-    return JUtils.superTypes(type.symbol())
+    return type.symbol().superTypes()
       .stream()
       .filter(superType -> superType.is(genericTypeName))
       .findFirst()

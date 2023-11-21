@@ -300,7 +300,7 @@ public final class ExpressionUtils {
         return Boolean.FALSE;
       }
     }
-    return JUtils.constantValue((Symbol.VariableSymbol) symbol).orElse(null);
+    return ((Symbol.VariableSymbol) symbol).constantValue().orElse(null);
   }
 
   @CheckForNull

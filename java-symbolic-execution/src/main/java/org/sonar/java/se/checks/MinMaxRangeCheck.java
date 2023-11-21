@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
@@ -175,7 +174,7 @@ public class MinMaxRangeCheck extends SECheck {
     }
     NumericalConstraint numericalConstraint = programState.getConstraint(constant, NumericalConstraint.class);
     if (numericalConstraint == null) {
-      return JUtils.constantValue(((Symbol.VariableSymbol) identifier))
+      return ((Symbol.VariableSymbol) identifier).constantValue()
         .filter(Number.class::isInstance)
         .map(Number.class::cast)
         .map(value -> programState.addConstraint(constant, new NumericalConstraint(value)))

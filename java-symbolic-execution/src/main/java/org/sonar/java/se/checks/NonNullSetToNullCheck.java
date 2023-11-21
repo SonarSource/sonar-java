@@ -55,7 +55,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 
-import static org.sonar.java.model.JUtils.isLocalVariable;
 import static org.sonar.java.se.NullabilityDataUtils.nullabilityAsString;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.VARIABLE;
@@ -298,7 +297,7 @@ public class NonNullSetToNullCheck extends SECheck {
         return false;
       }
       if (expression.is(Tree.Kind.IDENTIFIER)) {
-        return isLocalVariable(((IdentifierTree) expression).symbol());
+        return JUtils.isLocalVariable(((IdentifierTree) expression).symbol());
       }
       return true;
     }

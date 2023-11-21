@@ -89,7 +89,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
       // should be anonymous class of interface and not abstract class
       return symbol.interfaces().size() == 1
         && symbol.superClass().is(JAVA_LANG_OBJECT)
-        && hasSingleAbstractMethodInHierarchy(JUtils.superTypes(symbol));
+        && hasSingleAbstractMethodInHierarchy(symbol.superTypes());
     }
     return false;
   }

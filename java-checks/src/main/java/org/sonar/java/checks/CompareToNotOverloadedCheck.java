@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -41,7 +40,7 @@ public class CompareToNotOverloadedCheck extends IssuableSubscriptionVisitor {
     MethodTree methodTree = (MethodTree) tree;
     if (isCompareToMethod(methodTree) && Boolean.FALSE.equals(methodTree.isOverriding())) {
       Symbol.TypeSymbol ownerType = (Symbol.TypeSymbol) methodTree.symbol().owner();
-      JUtils.superTypes(ownerType).stream().filter(supertype -> supertype.is("java.lang.Comparable")).findFirst().ifPresent(
+      ownerType.superTypes().stream().filter(supertype -> supertype.is("java.lang.Comparable")).findFirst().ifPresent(
         comparableType -> {
           String name = "Object";
           if (comparableType.isParameterized()) {

@@ -163,7 +163,7 @@ public class HardcodedStringExpressionChecker {
     }
     VariableTree variable = (VariableTree) symbol.declaration();
     if (variable == null) {
-      return JUtils.constantValue((Symbol.VariableSymbol) symbol).isPresent();
+      return ((Symbol.VariableSymbol) symbol).constantValue().isPresent();
     }
 
     List<ExpressionTree> assignments = getIdentifierAssignments(identifier);

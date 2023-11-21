@@ -146,6 +146,9 @@ class SymbolsTest {
     assertThat(unknownTypeSymbol.interfaces()).isEmpty();
     assertThat(unknownTypeSymbol.memberSymbols()).isEmpty();
     assertThat(unknownTypeSymbol.lookupSymbols("whatever")).isEmpty();
+    assertThat(unknownTypeSymbol.isAnnotation()).isFalse();
+    assertThat(unknownTypeSymbol.outermostClass()).isEqualTo(Symbols.unknownTypeSymbol);
+    assertThat(unknownTypeSymbol.superTypes()).isEmpty();
   }
 
   @Test

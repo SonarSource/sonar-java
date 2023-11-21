@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -97,13 +96,13 @@ public class SerialVersionUidCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isGuiClass(Symbol.TypeSymbol symbol) {
-    for (Type superType : JUtils.superTypes(symbol)) {
+    for (Type superType : symbol.superTypes()) {
       Symbol.TypeSymbol superTypeSymbol = superType.symbol();
       if (hasGuiPackage(superTypeSymbol)) {
         return true;
       }
     }
-    return hasGuiPackage(symbol) || (!symbol.equals(JUtils.outermostClass(symbol)) && isGuiClass(JUtils.outermostClass(symbol)));
+    return hasGuiPackage(symbol) || (!symbol.equals(symbol.outermostClass()) && isGuiClass(symbol.outermostClass()));
   }
 
   private static boolean hasGuiPackage(Symbol.TypeSymbol superTypeSymbol) {

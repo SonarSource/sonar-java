@@ -22,15 +22,14 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;

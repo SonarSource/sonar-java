@@ -443,7 +443,6 @@ class JMethodSymbolTest {
     assertThat(symbol.declarationParameters()).hasSize(6);
   }
 
-
   private static JMethodSymbol getJMethodSymbolFromClassText(String classText){
     return getJMethodSymbolFromClassText(classText, false);
   }

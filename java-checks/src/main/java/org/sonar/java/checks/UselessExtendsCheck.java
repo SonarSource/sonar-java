@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
@@ -59,7 +58,7 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
     }
 
     List<Type> superInterfacesTypes = getTypes(superInterfaces);
-    List<Type> superTypes = new ArrayList<>(JUtils.superTypes(classTree.symbol()));
+    List<Type> superTypes = new ArrayList<>(classTree.symbol().superTypes());
     superTypes.sort(new SuperTypeComparator(superInterfacesTypes));
 
     Set<String> reportedNames = new HashSet<>();

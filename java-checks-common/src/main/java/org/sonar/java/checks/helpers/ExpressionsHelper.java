@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -255,7 +254,7 @@ public class ExpressionsHelper {
   }
 
   public static boolean isNotReassigned(Symbol symbol) {
-    return symbol.isFinal() || (symbol.isVariableSymbol() && JUtils.isEffectivelyFinal(((Symbol.VariableSymbol) symbol)));
+    return symbol.isFinal() || (symbol.isVariableSymbol() && ((Symbol.VariableSymbol) symbol).isEffectivelyFinal());
   }
 
   public static List<ExpressionTree> getIdentifierAssignments(IdentifierTree identifier) {
