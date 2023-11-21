@@ -7,7 +7,7 @@
   </server>
   <buildCache>
     <remote>
-      <enabled>true</enabled>
+      <enabled>#{env['CIRRUS_CRON'] != "nightly"}</enabled>
       <storeEnabled>true</storeEnabled>
     </remote>
     <requireClean>false</requireClean>
