@@ -19,15 +19,16 @@
  */
 package org.sonar.java.checks.serialization;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S2060")
 public class ExternalizableClassConstructorCheck extends IssuableSubscriptionVisitor {
@@ -42,15 +43,16 @@ public class ExternalizableClassConstructorCheck extends IssuableSubscriptionVis
     ClassTree classTree = (ClassTree) tree;
     if (!isAnonymous(classTree) && implementsExternalizable(classTree)) {
       Collection<Symbol> constructors = classTree.symbol().lookupSymbols("<init>");
-      boolean hasNoArgConstructor = constructors.isEmpty();
-      for (Symbol constructor : constructors) {
-        if (isNoArgConstructor(constructor)) {
-          hasNoArgConstructor = true;
-          break;
+      var noArgConstructor = constructors.stream().filter(ExternalizableClassConstructorCheck::isNoArgConstructor).findFirst();
+
+      if (noArgConstructor.isEmpty()) {
+        reportIssue(Objects.requireNonNull(classTree.simpleName()), "Add a no-arg constructor to this class.");
+      } else if (!noArgConstructor.get().isPublic()) {
+        // Implicit no-arg constructors have no declaration and same visibility as class. Can be below "public". Ignore them.
+        var declaration = noArgConstructor.get().declaration();
+        if (declaration != null) {
+          reportIssue(((MethodTree) declaration).simpleName(), "Declare this no-arg constructor public.");
         }
-      }
-      if (!hasNoArgConstructor) {
-        reportIssue(classTree.simpleName(), "Add a no-arg constructor to this class.");
       }
     }
   }
