@@ -113,7 +113,9 @@ public abstract class JParserConfig {
     options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion.effectiveJavaVersionAsString());
     options.put(JavaCore.COMPILER_SOURCE, javaVersion.effectiveJavaVersionAsString());
     options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
-    options.put(JavaCore.COMPILER_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE, "enabled");
+    if (shouldIgnoreUnnamedModuleForSplitPackage()) {
+      options.put(JavaCore.COMPILER_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE, "enabled");
+    }
     if (shouldEnablePreviewFlag(javaVersion)) {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     }
@@ -134,6 +136,11 @@ public abstract class JParserConfig {
     astParser.setBindingsRecovery(true);
 
     return astParser;
+  }
+
+  private boolean shouldIgnoreUnnamedModuleForSplitPackage() {
+    // Read the value from the analysis parameters/sonarcomponents
+    return true;
   }
 
   @VisibleForTesting
