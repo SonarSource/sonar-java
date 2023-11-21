@@ -17,23 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+@ParametersAreNonnullByDefault
+package org.sonar.java.test.classpath;
 
-import java.io.File;
-import java.util.List;
-import java.util.Optional;
-import org.sonar.java.test.classpath.TestClasspathUtils;
-
-public class CommonConstants {
-
-  public static final String AWS_MODULE = "aws";
-
-  public static final String AWS_TEST_CLASSPATH_FILE = "../java-checks-test-sources/aws/target/test-classpath.txt";
-  public static final String AWS_TEST_CLASSES_DIRECTORY = "../java-checks-test-sources/aws/target/classes";
-
-  public static final List<File> AWS_CLASSPATH = TestClasspathUtils.loadFromFile(AWS_TEST_CLASSPATH_FILE);
-
-  static {
-    Optional.of(new File(AWS_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(AWS_CLASSPATH::add);
-  }
-}
+import javax.annotation.ParametersAreNonnullByDefault;

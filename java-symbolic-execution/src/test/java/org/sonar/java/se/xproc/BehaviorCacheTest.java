@@ -198,8 +198,8 @@ class BehaviorCacheTest {
     }
 
     assertThat(behaviorCache.behaviors).isEmpty();
-    assertThat(behaviorCache.hardcodedBehaviors()).hasSize(233);
-    assertThat(logTester.logs(Level.DEBUG)).containsOnly("[SE] Loaded 233 hardcoded method behaviors.");
+    assertThat(behaviorCache.hardcodedBehaviors()).hasSize(235);
+    assertThat(logTester.logs(Level.DEBUG)).containsOnly("[SE] Loaded 235 hardcoded method behaviors.");
   }
 
   @Test

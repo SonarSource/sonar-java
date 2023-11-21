@@ -14,6 +14,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.sonarsource.java</groupId>
+      <artifactId>test-classpath-reader</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>java-frontend</artifactId>
       <version>${project.version}</version>

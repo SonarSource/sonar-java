@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Fail;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -44,13 +43,14 @@ import org.sonar.check.Rule;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
-import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -72,7 +72,7 @@ public class FilterVerifier {
 
     visitors.addAll(Arrays.asList(extraJavaChecks));
 
-    Collection<File> classpath = FileUtils.listFiles(new File(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY), new String[] {"jar", "zip"}, true);
+    Collection<File> classpath = TestClasspathUtils.loadFromFile(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE);
     List<File> projectClasspath = new ArrayList<>(classpath);
     projectClasspath.add(new File("target/test-classes"));
 

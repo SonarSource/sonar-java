@@ -22,7 +22,6 @@ package org.sonar.java.se.utils;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +37,7 @@ import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.MethodBehavior;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.VariableSymbol;
 
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 public class SETestUtils {
 
-  public static final List<File> CLASS_PATH = new ArrayList<>(FilesUtils.getClassPath("target/test-jars"));
+  public static final List<File> CLASS_PATH = TestClasspathUtils.loadFromFile(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE);
   static {
     CLASS_PATH.add(new File("target/test-classes"));
   }
