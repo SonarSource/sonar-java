@@ -29,7 +29,6 @@ import java.util.Optional;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.classpath.JavaSdkUtil;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
@@ -38,6 +37,7 @@ import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.MethodBehavior;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.VariableSymbol;
 
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 public class SETestUtils {
 
-  public static final List<File> CLASS_PATH = JavaSdkUtil.collectJarsFromClasspathFile(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE);
+  public static final List<File> CLASS_PATH = TestClasspathUtils.loadFromFile(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE);
   static {
     CLASS_PATH.add(new File("target/test-classes"));
   }

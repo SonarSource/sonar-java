@@ -52,8 +52,8 @@ import org.sonar.java.AnalysisProgress;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.classpath.JavaSdkUtil;
 import org.sonar.java.model.JParserConfig;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -253,7 +253,7 @@ class SanityTest {
 
   private static List<File> getClassPathFromModule(String module) {
     List<File> classpath = new ArrayList<>();
-    classpath.addAll(JavaSdkUtil.collectJarsFromClasspathFile(FilesUtils.TEST_SOURCES_ROOT + module + FilesUtils.TARGET_TEST_CLASSPATH_FILE));
+    classpath.addAll(TestClasspathUtils.loadFromFile(FilesUtils.TEST_SOURCES_ROOT + module + FilesUtils.TARGET_TEST_CLASSPATH_FILE));
     classpath.add(new File(FilesUtils.TEST_SOURCES_ROOT + module + FilesUtils.TARGET_CLASSES).getAbsoluteFile());
     return classpath;
   }

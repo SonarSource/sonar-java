@@ -18,6 +18,7 @@
   <modules>
     <module>aws</module>
     <module>default</module>
+    <module>test-classpath-reader</module>
   </modules>
 
   <build>

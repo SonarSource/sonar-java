@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.sonar.java.classpath.JavaSdkUtil;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
@@ -85,7 +85,7 @@ public class JParserTestUtils {
     String classpathTextFilePath = testProjectDir.resolve(Paths.get("target", "test-classpath.txt")).toString();
     List<File> classPath = new ArrayList<>();
     classPath.add(testProjectDir.resolve(Paths.get("target", "classes")).toFile());
-    classPath.addAll(JavaSdkUtil.collectJarsFromClasspathFile(classpathTextFilePath));
+    classPath.addAll(TestClasspathUtils.loadFromFile(classpathTextFilePath));
     assertThat(classPath).hasSizeGreaterThan(300);
     return classPath;
   }

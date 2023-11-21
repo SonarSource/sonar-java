@@ -44,6 +44,12 @@
       <artifactId>sonar-performance-measure</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.sonarsource.java</groupId>
+      <artifactId>test-classpath-reader</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>java-checks-testkit</artifactId>
       <version>${project.version}</version>

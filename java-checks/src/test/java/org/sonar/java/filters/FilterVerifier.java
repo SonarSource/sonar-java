@@ -45,10 +45,10 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.classpath.JavaSdkUtil;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -72,7 +72,7 @@ public class FilterVerifier {
 
     visitors.addAll(Arrays.asList(extraJavaChecks));
 
-    Collection<File> classpath = JavaSdkUtil.collectJarsFromClasspathFile(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE);
+    Collection<File> classpath = TestClasspathUtils.loadFromFile(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE);
     List<File> projectClasspath = new ArrayList<>(classpath);
     projectClasspath.add(new File("target/test-classes"));
 
