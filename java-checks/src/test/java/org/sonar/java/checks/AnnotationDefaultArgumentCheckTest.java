@@ -22,8 +22,9 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AnnotationDefaultArgumentCheckTest {
 
@@ -41,5 +42,18 @@ class AnnotationDefaultArgumentCheckTest {
       .onFile(nonCompilingTestSourcesPath("checks/AnnotationDefaultArgumentCheck.java"))
       .withCheck(new AnnotationDefaultArgumentCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_breaking() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/NoTestInTestClassCheck.java"))
+      .withCheck(new AnnotationDefaultArgumentCheck())
+      .verifyNoIssues();
+
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/NoTestsInTestClassCheckPactTest.java"))
+      .withCheck(new AnnotationDefaultArgumentCheck())
+      .verifyNoIssues();
   }
 }

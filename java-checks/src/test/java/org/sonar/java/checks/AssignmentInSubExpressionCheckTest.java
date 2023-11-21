@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -32,6 +33,15 @@ class AssignmentInSubExpressionCheckTest {
       .onFile(mainCodeSourcesPath("checks/AssignmentInSubExpressionCheck.java"))
       .withCheck(new AssignmentInSubExpressionCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_breaking() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
+      .withJavaVersion(11)
+      .withCheck(new AssignmentInSubExpressionCheck())
+      .verifyNoIssues();
   }
 
 }
