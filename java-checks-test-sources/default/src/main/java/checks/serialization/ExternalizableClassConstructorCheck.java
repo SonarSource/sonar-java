@@ -46,3 +46,40 @@ class S2060_E implements S2060_I { // Noncompliant [[sc=7;ec=14]] {{Add a no-arg
 class S2060_F  {  // Compliant
   public S2060_F(String color, int weight) {}
 }
+
+class CtorVisibility_A implements Externalizable {
+  public CtorVisibility_A() {} // Compliant
+  @Override public void writeExternal(ObjectOutput out) throws IOException { }
+  @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
+}
+
+class CtorVisibility_B implements Externalizable { // Compliant
+  protected CtorVisibility_B() {} // Noncompliant [[sc=13;ec=29]] {{Declare this no-arg constructor public.}}
+  @Override public void writeExternal(ObjectOutput out) throws IOException { }
+  @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
+}
+
+class CtorVisibility_C implements Externalizable { // Compliant
+  CtorVisibility_C() {} // Noncompliant [[sc=3;ec=19]]
+  @Override public void writeExternal(ObjectOutput out) throws IOException { }
+  @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
+}
+
+class CtorVisibility_D implements Externalizable { // Compliant
+  private CtorVisibility_D() {} // Noncompliant [[sc=11;ec=27]]
+  @Override public void writeExternal(ObjectOutput out) throws IOException { }
+  @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
+}
+
+class OuterClass {
+
+  private static class CtorVisibility_E implements Externalizable { // Compliant, no-arg constructor is private, but implicit
+    @Override public void writeExternal(ObjectOutput out) throws IOException { }
+    @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
+  }
+
+  public static class CtorVisibilita_F implements Externalizable { // Compliant, implicit no-arg constructor is public
+    @Override public void writeExternal(ObjectOutput out) throws IOException { }
+    @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
+  }
+}
