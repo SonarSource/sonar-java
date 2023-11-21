@@ -357,6 +357,8 @@ class JMethodSymbolTest {
   void isOverridableTest(){
     JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
     assertThat(jms.isOverridable()).isTrue();
+    jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }", true);
+    assertThat(jms.isOverridable()).isFalse();
     jms = getJMethodSymbolFromClassText("class C { private C m() { return null; } }");
     assertThat(jms.isOverridable()).isFalse();
     jms = getJMethodSymbolFromClassText("class C { static C m() { return null; } }");
@@ -372,6 +374,8 @@ class JMethodSymbolTest {
     JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
     assertThat(jms.isParametrizedMethod()).isFalse();
     jms = getJMethodSymbolFromClassText("class C { <T> C m() { return null; } }");
+    assertThat(jms.isParametrizedMethod()).isTrue();
+    jms = getJMethodSymbolFromClassText("class C { <T> Collection<T> m(T t) { return null; } }");
     assertThat(jms.isParametrizedMethod()).isTrue();
     jms = getJMethodSymbolFromClassText("class C { <T> C m() { return null; } }", true);
     assertThat(jms.isParametrizedMethod()).isFalse();
