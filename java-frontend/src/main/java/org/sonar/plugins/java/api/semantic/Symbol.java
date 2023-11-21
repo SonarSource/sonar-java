@@ -232,12 +232,12 @@ public interface Symbol {
     boolean isDefaultMethod();
 
     /**
-     * @return true if the method is synchronized
+     * @return true if the method is synchronized.
      */
     boolean isSynchronizedMethod();
 
     /**
-     * @return true if the method takes a vararg argument (e.g. `String... args`)
+     * @return true if the method takes a vararg argument (e.g. `String... args`).
      */
     boolean isVarArgsMethod();
   }
