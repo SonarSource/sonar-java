@@ -20,6 +20,7 @@ env:
   CIRRUS_SHELL: bash
   # Allows to run builds for the 50 last commits in a branch:
   CIRRUS_CLONE_DEPTH: 50
+  CIRRUS_CRON: nightly
 
 container_definition: &CONTAINER_DEFINITION
   image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j11-latest
