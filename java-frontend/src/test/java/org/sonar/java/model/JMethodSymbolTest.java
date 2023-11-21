@@ -354,6 +354,60 @@ class JMethodSymbolTest {
   }
 
   @Test
+  void isOverridableTest(){
+    JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
+    assertThat(jms.isOverridable()).isTrue();
+    jms = getJMethodSymbolFromClassText("class C { private C m() { return null; } }");
+    assertThat(jms.isOverridable()).isFalse();
+    jms = getJMethodSymbolFromClassText("class C { static C m() { return null; } }");
+    assertThat(jms.isOverridable()).isFalse();
+    jms = getJMethodSymbolFromClassText("class C { final C m() { return null; } }");
+    assertThat(jms.isOverridable()).isFalse();
+    jms = getJMethodSymbolFromClassText("final class C { C m() { return null; } }");
+    assertThat(jms.isOverridable()).isFalse();
+  }
+
+  @Test
+  void isParametrizedMethodTest(){
+    JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
+    assertThat(jms.isParametrizedMethod()).isFalse();
+    jms = getJMethodSymbolFromClassText("class C { <T> C m() { return null; } }");
+    assertThat(jms.isParametrizedMethod()).isTrue();
+    jms = getJMethodSymbolFromClassText("class C { <T> C m() { return null; } }", true);
+    assertThat(jms.isParametrizedMethod()).isFalse();
+  }
+
+  @Test
+  void isDefaultMethodTest(){
+    JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
+    assertThat(jms.isDefaultMethod()).isFalse();
+    jms = getJMethodSymbolFromClassText("interface I { default C m() { return null; } }");
+    assertThat(jms.isDefaultMethod()).isTrue();
+    jms = getJMethodSymbolFromClassText("interface I { default C m() { return null; } }", true);
+    assertThat(jms.isDefaultMethod()).isFalse();
+  }
+
+  @Test
+  void isSynchronizedMethodTest(){
+    JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
+    assertThat(jms.isSynchronizedMethod()).isFalse();
+    jms = getJMethodSymbolFromClassText("class C { synchronized C m() { return null; } }");
+    assertThat(jms.isSynchronizedMethod()).isTrue();
+    jms = getJMethodSymbolFromClassText("class C { synchronized C m() { return null; } }", true);
+    assertThat(jms.isSynchronizedMethod()).isFalse();
+  }
+
+  @Test
+  void isVarArgsTest(){
+    JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
+    assertThat(jms.isVarArgsMethod()).isFalse();
+    jms = getJMethodSymbolFromClassText("class C { C m(String... s) { return null; } }");
+    assertThat(jms.isVarArgsMethod()).isTrue();
+    jms = getJMethodSymbolFromClassText("class C { C m(String... s) { return null; } }", true);
+    assertThat(jms.isVarArgsMethod()).isFalse();
+  }
+
+  @Test
   void support_unexpected_IMethodBinding_null_return_type() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { C m() { return null; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
@@ -383,6 +437,23 @@ class JMethodSymbolTest {
     JMethodSymbol symbol = ((JMethodSymbol) newClassExpression.methodSymbol());
 
     assertThat(symbol.declarationParameters()).hasSize(6);
+  }
+
+
+  private static JMethodSymbol getJMethodSymbolFromClassText(String classText){
+    return getJMethodSymbolFromClassText(classText, false);
+  }
+  private static JMethodSymbol getJMethodSymbolFromClassText(String classText, boolean brokenSemantic){
+    JavaTree.CompilationUnitTreeImpl cu = test(classText);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    if(brokenSemantic){
+      IMethodBinding brokenMethodBinding = spy(m.methodBinding);
+      when(brokenMethodBinding.getReturnType()).thenReturn(null);
+      when(brokenMethodBinding.isRecovered()).thenReturn(true);
+      return new JMethodSymbol(cu.sema, brokenMethodBinding);
+    }
+    return new JMethodSymbol(cu.sema, m.methodBinding);
   }
 
   private static CompilationUnitTreeImpl test(String source) {

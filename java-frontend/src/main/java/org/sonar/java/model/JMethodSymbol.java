@@ -184,10 +184,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
   @Override
   public boolean isParametrizedMethod() {
-    if (isUnknown()) {
-      return false;
-    }
-    return methodBinding().isParameterizedMethod() || methodBinding().isGenericMethod();
+    return !isUnknown() && (methodBinding().isParameterizedMethod() || methodBinding().isGenericMethod());
   }
 
   @Override
