@@ -779,7 +779,7 @@ class ExplodedGraphWalkerTest {
   }
 
   private static MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
-    boolean varArgs = JUtils.isVarArgsMethod(symbol);
+    boolean varArgs = symbol.isVarArgsMethod();
     return new MethodBehavior(symbol.signature(), varArgs);
   }
 }

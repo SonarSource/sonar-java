@@ -68,7 +68,7 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean removingParametrizedAspect(Symbol.MethodSymbol method, Symbol.MethodSymbol overridee) {
-    return !JUtils.isParametrizedMethod(method) && JUtils.isParametrizedMethod(overridee);
+    return !method.isParametrizedMethod() && overridee.isParametrizedMethod();
   }
 
   private static boolean differentThrows(Symbol.MethodSymbol method, Symbol.MethodSymbol overridee) {

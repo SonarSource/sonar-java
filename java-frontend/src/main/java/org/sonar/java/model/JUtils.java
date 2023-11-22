@@ -146,20 +146,8 @@ public final class JUtils {
     return symbol;
   }
 
-  public static boolean isVarArgsMethod(Symbol.MethodSymbol method) {
-    return !method.isUnknown() && ((JMethodSymbol) method).methodBinding().isVarargs();
-  }
-
-  public static boolean isSynchronizedMethod(Symbol.MethodSymbol method) {
-    return !method.isUnknown() && Modifier.isSynchronized(((JMethodSymbol) method).binding.getModifiers());
-  }
-
   public static boolean isNativeMethod(Symbol.MethodSymbol method) {
     return !method.isUnknown() && Modifier.isNative(((JMethodSymbol) method).binding.getModifiers());
-  }
-
-  public static boolean isDefaultMethod(Symbol.MethodSymbol method) {
-    return !method.isUnknown() && Modifier.isDefault(((JMethodSymbol) method).binding.getModifiers());
   }
 
   @Nullable
@@ -168,18 +156,6 @@ public final class JUtils {
       return null;
     }
     return ((JMethodSymbol) method).methodBinding().getDefaultValue();
-  }
-
-  public static boolean isOverridable(Symbol.MethodSymbol method) {
-    return !method.isUnknown() && !(method.isPrivate() || method.isStatic() || method.isFinal() || method.owner().isFinal());
-  }
-
-  public static boolean isParametrizedMethod(Symbol.MethodSymbol method) {
-    if (method.isUnknown()) {
-      return false;
-    }
-    return ((JMethodSymbol) method).methodBinding().isParameterizedMethod()
-      || ((JMethodSymbol) method).methodBinding().isGenericMethod();
   }
 
   public static Set<Type> directSuperTypes(Type type) {

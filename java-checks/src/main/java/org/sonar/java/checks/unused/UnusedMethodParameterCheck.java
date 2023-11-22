@@ -30,7 +30,6 @@ import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -89,7 +88,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       return;
     }
     Set<String> undocumentedParameters = new HashSet<>(new Javadoc(methodTree).undocumentedParameters());
-    boolean overridableMethod = JUtils.isOverridable(methodTree.symbol());
+    boolean overridableMethod = methodTree.symbol().isOverridable();
     List<IdentifierTree> unused = new ArrayList<>();
     for (VariableTree parameter : methodTree.parameters()) {
       Symbol symbol = parameter.symbol();

@@ -294,6 +294,31 @@ public class Symbols {
     public String signature() {
       return "!unknownMethod!";
     }
+
+    @Override
+    public boolean isOverridable() {
+      return false;
+    }
+
+    @Override
+    public boolean isParametrizedMethod() {
+      return false;
+    }
+
+    @Override
+    public boolean isDefaultMethod() {
+      return false;
+    }
+
+    @Override
+    public boolean isSynchronizedMethod() {
+      return false;
+    }
+
+    @Override
+    public boolean isVarArgsMethod() {
+      return false;
+    }
   }
 
   private static final class UnknownType implements Type {

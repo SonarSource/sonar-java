@@ -31,6 +31,7 @@ import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ASTUtils;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -174,6 +175,31 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   @Override
   public String signature() {
     return signature;
+  }
+
+  @Override
+  public boolean isOverridable() {
+    return !isUnknown() && !(isPrivate() || isStatic() || isFinal() || owner().isFinal());
+  }
+
+  @Override
+  public boolean isParametrizedMethod() {
+    return !isUnknown() && (methodBinding().isParameterizedMethod() || methodBinding().isGenericMethod());
+  }
+
+  @Override
+  public boolean isDefaultMethod() {
+    return !isUnknown() && Modifier.isDefault(binding.getModifiers());
+  }
+
+  @Override
+  public boolean isSynchronizedMethod() {
+    return !isUnknown() && Modifier.isSynchronized(binding.getModifiers());
+  }
+
+  @Override
+  public boolean isVarArgsMethod() {
+    return !isUnknown() && methodBinding().isVarargs();
   }
 
   @Nullable

@@ -28,7 +28,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -96,7 +95,7 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
         String name = ExpressionUtils.methodName(tree).name();
         unknownInvocations.computeIfAbsent(name, k -> new HashSet<>()).add(tree);
       } else if (isPrivateMethodOfOuterClass(symbol) && isInvocationOnCurrentInstance(tree)) {
-        if (JUtils.isParametrizedMethod(symbol) && symbol.declaration() != null) {
+        if (symbol.isParametrizedMethod() && symbol.declaration() != null) {
           // generic methods requires to use their declaration symbol rather than the parameterized one
           symbol = symbol.declaration().symbol();
         }
@@ -139,7 +138,7 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
       int formalArity = methodUsed.parameterTypes().size();
       int invokedArity = mit.arguments().size();
       return formalArity == invokedArity ||
-        (JUtils.isVarArgsMethod(methodUsed) && invokedArity >= formalArity - 1);
+        (methodUsed.isVarArgsMethod() && invokedArity >= formalArity - 1);
     }
 
     private void reportIssueOnMethod(@Nullable MethodTree declaration, Symbol.TypeSymbol classSymbol) {

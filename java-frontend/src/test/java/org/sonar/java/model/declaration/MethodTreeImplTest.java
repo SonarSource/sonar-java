@@ -22,7 +22,6 @@ package org.sonar.java.model.declaration;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -244,9 +243,9 @@ class MethodTreeImplTest {
   @Test
   void varargs_flag() {
     Symbol.MethodSymbol methodSymbol = getUniqueMethod("class A { public static void main(String[] args){} }").symbol();
-    assertThat(JUtils.isVarArgsMethod(methodSymbol)).isFalse();
+    assertThat(methodSymbol.isVarArgsMethod()).isFalse();
     methodSymbol = getUniqueMethod("class A { public static void main(String... args){} }").symbol();
-    assertThat(JUtils.isVarArgsMethod(methodSymbol)).isTrue();
+    assertThat(methodSymbol.isVarArgsMethod()).isTrue();
   }
 
   private static MethodTreeImpl getUniqueMethod(String code) {

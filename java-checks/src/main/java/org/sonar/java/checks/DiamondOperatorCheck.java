@@ -28,7 +28,6 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -132,7 +131,7 @@ public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVer
       return false;
     }
 
-    if (JUtils.isParametrizedMethod(methodSymbol)) {
+    if (methodSymbol.isParametrizedMethod()) {
       // killing the noise - might be required for inference on nested method calls
       return false;
     }

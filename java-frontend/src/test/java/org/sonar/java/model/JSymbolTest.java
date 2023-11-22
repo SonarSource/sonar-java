@@ -285,6 +285,11 @@ class JSymbolTest {
     assertThat(initializerBlock.parameterTypes()).isEmpty();
     assertThat(initializerBlock.declarationParameters()).isEmpty();
     assertThat(initializerBlock.thrownTypes()).isEmpty();
+    assertThat(initializerBlock.isOverridable()).isFalse();
+    assertThat(initializerBlock.isParametrizedMethod()).isFalse();
+    assertThat(initializerBlock.isDefaultMethod()).isFalse();
+    assertThat(initializerBlock.isSynchronizedMethod()).isFalse();
+    assertThat(initializerBlock.isVarArgsMethod()).isFalse();
   }
 
   @Test

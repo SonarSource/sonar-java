@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import org.sonar.java.Preconditions;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
@@ -813,7 +812,7 @@ public class FlowComputation {
 
     for (Integer argumentIndex : argumentIndices) {
       // do not consider varargs part
-      if (JUtils.isVarArgsMethod(methodSymbol) && argumentIndex >= methodParameters.size() - 1) {
+      if (methodSymbol.isVarArgsMethod() && argumentIndex >= methodParameters.size() - 1) {
         break;
       }
       IdentifierTree argumentName = getArgumentIdentifier(mit, argumentIndex);
