@@ -138,25 +138,40 @@ class SanityTest {
       .filter(SanityTest::isTypeResolutionError)
       .collect(Collectors.toList());
 
-    assertThat(errorLogs).hasSize(19);
+    assertThat(errorLogs).hasSize(30);
 
     List<LogAndArguments> remainingErrors = new ArrayList<>(errorLogs);
     remainingErrors.removeAll(parsingErrors);
     remainingErrors.removeAll(typeResolutionErrors);
-    assertThat(remainingErrors).hasSize(7);
+    assertThat(remainingErrors).isEmpty();
 
     assertThat(typeResolutionErrors)
-      .hasSize(2)
+      .hasSize(18)
       .map(LogAndArguments::getFormattedMsg)
       .map(log -> log.substring("ECJ Unable to resolve type ".length()))
       // FIXME investigate root cause (seems to be a conflict of version, with classes from JDK not resolved correctly
       .containsOnly(
-        "org.assertj.core.api.AbstractTemporalAssert",
-        "org.assertj.core.api.Java6Assertions"
-      );
+        "javax.servlet.http.Cookie",
+        "javax.validation.ConstraintValidator",
+        "javax.ws.rs.core.Cookie",
+        "jakarta.ws.rs.core.Cookie",
+        "jakarta.servlet.http.Cookie",
+        "javax.ws.rs.core.NewCookie",
+        "junit.framework.TestCase",
+        "org.apache.commons.lang.math.RandomUtils",
+        "org.apache.commons.lang.RandomStringUtils",
+        "org.apache.commons.lang3.RandomStringUtils",
+        "org.apache.commons.lang3.RandomUtils",
+        "org.apache.shiro.web.servlet.SimpleCookie",
+        "org.apache.struts.action.Action",
+        "org.assertj.core.api.AbstractAssert",
+        "org.fest.assertions.GenericAssert",
+        "org.springframework.security.web.savedrequest.SavedCookie",
+        "play.mvc.Http$Cookie",
+        "play.mvc.Http$CookieBuilder");
 
     assertThat(parsingErrors)
-      .hasSize(10)
+      .hasSize(12)
       .map(LogAndArguments::getFormattedMsg)
       .allMatch(log ->
       // ECJ error message
