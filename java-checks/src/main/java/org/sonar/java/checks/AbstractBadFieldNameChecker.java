@@ -34,9 +34,9 @@ public abstract class AbstractBadFieldNameChecker extends IssuableSubscriptionVi
 
   protected static final String DEFAULT_FORMAT_KEY = "format";
 
-  protected static final String DEFAULT_FORMAT_DESCRIPTION = "Regular expression used to check the field names against.";
 
   protected static final String DEFAULT_FORMAT_VALUE = "^[a-z][a-zA-Z0-9]*$";
+  protected static final String DEFAULT_FORMAT_DESCRIPTION = "Regular expression used to check the field names against.";
 
   private Pattern pattern = null;
 
