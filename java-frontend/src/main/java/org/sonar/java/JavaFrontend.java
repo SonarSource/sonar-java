@@ -232,8 +232,9 @@ public class JavaFrontend {
   private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> batchFiles, AnalysisProgress analysisProgress) {
     analysisProgress.startBatch(batchFiles.size());
     Set<Runnable> environmentsCleaners = new HashSet<>();
+    boolean shouldIgnoreUnnamedSplitModules = sonarComponents!= null && sonarComponents.shouldIgnoreUnnamedSplitModules();
     JParserConfig.Mode.BATCH
-      .create(javaVersion, context.getClasspath())
+      .create(javaVersion, context.getClasspath(), shouldIgnoreUnnamedSplitModules)
       .parse(batchFiles, this::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));
     // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually, at the end of each batches. See SONARJAVA-3609.
     environmentsCleaners.forEach(Runnable::run);
@@ -401,10 +402,6 @@ public class JavaFrontend {
     } catch (ApiMismatchException e) {
       return false;
     }
-  }
-
-  private boolean shouldIgnoreUnnamedSplitModules() {
-    return sonarComponents!= null && sonarComponents.shouldIgnoreUnnamedSplitModules();
   }
 
   private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {
