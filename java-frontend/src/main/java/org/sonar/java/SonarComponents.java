@@ -96,6 +96,12 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
    */
   public static final String SONAR_CAN_SKIP_UNCHANGED_FILES_KEY = "sonar.java.skipUnchanged";
 
+  /**
+   * Describes whether input files should be parsed while ignoring unnamed split modules.
+   * In practice, enabling this parameter should help developers in the Android ecosystem and those
+   * relying on (transitive) dependencies that do not respect modularization as defined by the JLS.
+   */
+  public static final String SONAR_IGNORE_UNNAMED_SPLIT_MODULES = "sonar.ignoreUnnamedSplitModules";
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
   @VisibleForTesting
@@ -412,6 +418,10 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
       return -1L;
     }
     return config.getLong(SONAR_BATCH_SIZE_KEY).orElse(computeIdealBatchSize());
+  }
+
+  public boolean shouldIgnoreUnnamedSplitModules() {
+    return context.config().getBoolean(SONAR_IGNORE_UNNAMED_SPLIT_MODULES).orElse(false);
   }
 
   private static long computeIdealBatchSize() {

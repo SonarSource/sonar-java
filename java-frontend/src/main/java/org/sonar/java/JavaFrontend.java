@@ -403,6 +403,10 @@ public class JavaFrontend {
     }
   }
 
+  private boolean shouldIgnoreUnnamedSplitModules() {
+    return sonarComponents!= null && sonarComponents.shouldIgnoreUnnamedSplitModules();
+  }
+
   private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {
     if (CollectionUtils.size(files) > 0) {
       Duration mainDuration = PerformanceMeasure.start(descriptor);

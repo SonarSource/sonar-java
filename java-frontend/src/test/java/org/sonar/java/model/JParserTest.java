@@ -405,7 +405,7 @@ class JParserTest {
     Deque<RuntimeException> exceptions = new LinkedList<>();
 
     public BatchWithException() {
-      super(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH);
+      super(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, false);
     }
 
     @Override
