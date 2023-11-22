@@ -23,10 +23,13 @@ import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ExpressionsHelperTest extends JParserTestUtils {
 
@@ -125,6 +128,23 @@ class ExpressionsHelperTest extends JParserTestUtils {
       "b = c;",
       "return a;}");
     assertValueResolution(code, null);
+  }
+
+  @Test
+  void isNotReassignedTest(){
+    Symbol.VariableSymbol symbol = mock(Symbol.VariableSymbol.class);
+
+    when(symbol.isFinal()).thenReturn(true);
+    assertThat(ExpressionsHelper.isNotReassigned(symbol)).isTrue();
+
+    when(symbol.isFinal()).thenReturn(false);
+    assertThat(ExpressionsHelper.isNotReassigned(symbol)).isFalse();
+
+    when(symbol.isVariableSymbol()).thenReturn(true);
+    assertThat(ExpressionsHelper.isNotReassigned(symbol)).isFalse();
+
+    when(symbol.isEffectivelyFinal()).thenReturn(true);
+    assertThat(ExpressionsHelper.isNotReassigned(symbol)).isTrue();
   }
 
   private <T> void assertValueResolution(String code, @Nullable T target) {

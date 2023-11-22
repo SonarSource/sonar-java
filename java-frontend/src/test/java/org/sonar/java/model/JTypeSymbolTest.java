@@ -88,6 +88,17 @@ class JTypeSymbolTest {
       );
   }
 
+  @Test
+  void outermostClassTest() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { class N {} }");
+    ClassTreeImpl outerClass = (ClassTreeImpl) cu.types().get(0);
+    ClassTreeImpl innerClass = (ClassTreeImpl) outerClass.members().get(0);
+    JTypeSymbol innerClassSymbol = cu.sema.typeSymbol(innerClass.typeBinding);
+    JTypeSymbol outerClassSymbol = cu.sema.typeSymbol(outerClass.typeBinding);
+    assertThat(innerClassSymbol.outermostClass()).isSameAs(outerClassSymbol);
+    assertThat(innerClassSymbol.outermostClass()).isSameAs(outerClassSymbol);
+  }
+
   private static JavaTree.CompilationUnitTreeImpl test(String source) {
     return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }

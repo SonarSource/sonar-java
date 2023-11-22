@@ -57,6 +57,11 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
    */
   private Collection<Symbol> memberSymbols;
 
+  /**
+   * Cache for {@link #superTypes()}.
+   */
+  private Set<Type> superTypes;
+
   final SpecialField superSymbol = new SpecialField() {
     @Override
     public String name() {
@@ -161,12 +166,15 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
   @Override
   public Set<Type> superTypes() {
-    if (isUnknown()) {
-      return Collections.emptySet();
+    if (superTypes == null) {
+      if (isUnknown()) {
+        superTypes = Collections.emptySet();
+      } else {
+        superTypes = new HashSet<>();
+        JUtils.collectSuperTypes(superTypes, sema, typeBinding());
+      }
     }
-    Set<Type> result = new HashSet<>();
-    JUtils.collectSuperTypes(result, sema, typeBinding());
-    return result;
+    return superTypes;
   }
 
   @Override
