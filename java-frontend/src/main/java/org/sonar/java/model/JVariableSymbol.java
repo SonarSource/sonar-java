@@ -77,12 +77,12 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
   @Override
   public boolean isLocalVariable() {
     Symbol owner = owner();
-    return isVariableSymbol() && owner != null && owner.isMethodSymbol();
+    return owner != null && owner.isMethodSymbol();
   }
 
   @Override
   public boolean isParameter() {
-    return isVariableSymbol() && ((IVariableBinding) binding).isParameter();
+    return ((IVariableBinding) binding).isParameter();
   }
 
 

@@ -191,7 +191,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
   @Override
   public boolean isAnnotation() {
-    return false;
+    return !isUnknown() && typeBinding().isAnnotation();
   }
 
   abstract class SpecialField extends Symbols.DefaultSymbol implements Symbol.VariableSymbol {

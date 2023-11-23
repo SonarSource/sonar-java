@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import java.io.File;
-import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
