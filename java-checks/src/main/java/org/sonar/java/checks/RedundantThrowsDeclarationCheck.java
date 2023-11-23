@@ -33,7 +33,6 @@ import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
