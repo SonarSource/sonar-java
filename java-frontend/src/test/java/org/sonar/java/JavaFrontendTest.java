@@ -785,6 +785,25 @@ class JavaFrontendTest {
     assertThat(generator.next()).isEmpty();
   }
 
+  @Test
+  void sonar_ignoreUnnamedSplitModules_is_logged_at_debug_level_when_enabled() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.ignoreUnnamedSplitModules", "false");
+    scan(settings, SONARQUBE_RUNTIME, "package com.acme; class Anvil {}");
+    List<String> formattedLogs = logTester.getLogs().stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .collect(Collectors.toList());
+    assertThat(formattedLogs).doesNotContain("The parser will ignore unnamed split packages.");
+
+    settings.setProperty("sonar.ignoreUnnamedSplitModules", "true");
+    scan(settings, SONARQUBE_RUNTIME, "package com.acme; class Dynamite {}");
+
+    formattedLogs = logTester.getLogs().stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .collect(Collectors.toList());
+    assertThat(formattedLogs).contains("The parser will ignore unnamed split packages.");
+  }
+
   private List<InputFile> scan(SonarRuntime sonarRuntime, String... codeList) throws IOException {
     return scan(new MapSettings(), sonarRuntime, codeList);
   }

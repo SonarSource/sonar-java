@@ -62,10 +62,6 @@ public abstract class JParserConfig {
   final List<File> classpath;
   final boolean shouldIgnoreUnnamedModuleForSplitPackage;
 
-  private JParserConfig(JavaVersion javaVersion, List<File> classpath) {
-    this(javaVersion, classpath, false);
-  }
-
   private JParserConfig(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
     this.javaVersion = javaVersion;
     this.classpath = classpath;
@@ -90,6 +86,9 @@ public abstract class JParserConfig {
     }
 
     public JParserConfig create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedSplitModules) {
+      if (shouldIgnoreUnnamedSplitModules) {
+        LOG.debug("The parser will ignore unnamed split packages.");
+      }
       return supplier.apply(javaVersion, classpath, shouldIgnoreUnnamedSplitModules);
     }
   }
