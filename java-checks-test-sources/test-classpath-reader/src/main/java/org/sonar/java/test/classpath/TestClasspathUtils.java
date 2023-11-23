@@ -28,6 +28,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -37,18 +46,66 @@ public final class TestClasspathUtils {
     // utility class
   }
 
+  public static Path findModuleJarPath(String modulePath) {
+    Path moduleAbsolutePath;
+    try {
+      moduleAbsolutePath = toPath(modulePath).toRealPath();
+    } catch (IOException e) {
+      throw new IllegalArgumentException("Module path exception '" + modulePath + "': " + e.getMessage(), e);
+    }
+    Document pom = loadXml(moduleAbsolutePath.resolve("pom.xml"));
+    String groupId = xmlNodeValue(pom, "project/groupId/text()|project/parent/groupId/text()");
+    String artifactId = xmlNodeValue(pom, "project/artifactId/text()");
+    String version = xmlNodeValue(pom, "project/version/text()|project/parent/version/text()");
+    Path moduleJarPath = moduleAbsolutePath.resolve("target").resolve(artifactId + "-" + version + ".jar");
+    if (Files.exists(moduleJarPath)) {
+      return moduleJarPath;
+    }
+    String mavenRepository = findMavenLocalRepository(System::getenv, System::getProperty);
+    Path localRepositoryJarPath = toPath(mavenRepository, groupId.replace('.', '/'), artifactId, version, artifactId + "-" + version + ".jar");
+    if (!Files.exists(localRepositoryJarPath)) {
+      throw new IllegalArgumentException("Missing jar for module '" + modulePath + "', not found in '" + moduleJarPath + "' nor in '" + localRepositoryJarPath + "'");
+    }
+    return localRepositoryJarPath;
+  }
+
+  // VisibleForTesting
+  static Document loadXml(Path xmlPath) {
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+      return factory.newDocumentBuilder().parse(xmlPath.toFile());
+    } catch (IOException | ParserConfigurationException | SAXException e) {
+      throw new IllegalArgumentException("Exception reading '" + xmlPath + "': " + e.getMessage(), e);
+    }
+  }
+
+  // VisibleForTesting
+  static String xmlNodeValue(Document document, String xpath) {
+    try {
+      XPathExpression expression = XPathFactory.newInstance().newXPath().compile(xpath);
+      Node node = (Node) expression.evaluate(document, XPathConstants.NODE);
+      if (node == null) {
+        throw new IllegalArgumentException("Missing node for xpath '" + xpath + "'");
+      }
+      return node.getNodeValue();
+    } catch (XPathExpressionException e) {
+      throw new IllegalArgumentException("Exception evaluating '" + xpath + "': " + e.getMessage(), e);
+    }
+  }
+
   public static List<File> loadFromFile(String classpathTextFilePath) {
     List<File> classpath = new ArrayList<>();
     String mavenRepository = findMavenLocalRepository(System::getenv, System::getProperty);
     try {
-      String content = Files.readString(Paths.get(classpathTextFilePath.replace('/', File.separatorChar)), UTF_8);
+      String content = Files.readString(toPath(classpathTextFilePath), UTF_8);
       Arrays.stream(content.split(":"))
         .map(String::trim)
         .filter(line -> !line.isBlank())
-        .map(line -> line.replace('/', File.separatorChar))
+        .map(TestClasspathUtils::fixSeparator)
         .map(line -> line.replace("${M2_REPO}", mavenRepository))
         .map(Paths::get)
-        .forEach(dependencyPath ->{
+        .forEach(dependencyPath -> {
           if (!Files.exists(dependencyPath)) {
             throw new IllegalArgumentException("Missing dependency: " + dependencyPath);
           }
@@ -66,9 +123,22 @@ public final class TestClasspathUtils {
     if (repository == null || repository.isEmpty()) {
       // In the root pom.xml file, the surefire plugin's configuration always set the M2_REPO env variable to the right directory.
       // Here we default to ~/.m2/repository only for IDE execution that doesn't use the maven surefire plugin configuration.
-      repository = Path.of(systemPropertyProvider.apply("user.home")).resolve(".m2").resolve("repository").toString();
+      repository = toPath(systemPropertyProvider.apply("user.home"), ".m2", "repository").toString();
     }
     return repository;
+  }
+
+  // VisibleForTesting
+  static String fixSeparator(String path) {
+    return path.replace(File.separatorChar == '/' ? '\\' : '/', File.separatorChar == '/' ? '/' : '\\');
+  }
+
+  // VisibleForTesting
+  static Path toPath(String first, String... more) {
+    for (int i = 0; i < more.length; i++) {
+      more[i] = fixSeparator(more[i]);
+    }
+    return Paths.get(fixSeparator(first), more);
   }
 
 }

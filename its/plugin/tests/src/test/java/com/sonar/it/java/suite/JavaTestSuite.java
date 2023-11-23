@@ -23,7 +23,6 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -32,6 +31,7 @@ import javax.annotation.CheckForNull;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonarqube.ws.Components.Component;
 import org.sonarqube.ws.Measures;
 import org.sonarqube.ws.Measures.Measure;
@@ -58,8 +58,8 @@ import static java.util.Collections.singletonList;
 })
 public class JavaTestSuite {
 
-  public static final FileLocation JAVA_PLUGIN_LOCATION = FileLocation.byWildcardMavenFilename(new File("../../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar");
-  public static final FileLocation TUTORIAL_EXAMPLE_PLUGIN_LOCATION = FileLocation.byWildcardMavenFilename(new File("../../../docs/java-custom-rules-example/target"), "java-custom-rules-example-*.jar");
+  public static final FileLocation JAVA_PLUGIN_LOCATION = FileLocation.of(TestClasspathUtils.findModuleJarPath("../../../sonar-java-plugin").toFile());
+  public static final FileLocation TUTORIAL_EXAMPLE_PLUGIN_LOCATION = FileLocation.of(TestClasspathUtils.findModuleJarPath("../../../docs/java-custom-rules-example").toFile());
 
   @ClassRule
   public static final Orchestrator ORCHESTRATOR;
