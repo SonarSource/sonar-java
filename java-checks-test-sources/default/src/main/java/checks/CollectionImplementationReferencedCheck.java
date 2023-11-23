@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -41,7 +43,7 @@ class EmployeesTopLevel {
   public ConcurrentHashMap<?,?> concurrentHashMap() { return null; } // Noncompliant [[sc=10;ec=27;quickfixes=ConcurrentHashMap]] {{The return type of this method should be an interface such as "ConcurrentMap" rather than the implementation "ConcurrentHashMap".}}
                                                                      // fix@ConcurrentHashMap {{Replace "ConcurrentHashMap" by "ConcurrentMap"}}
                                                                      // edit@ConcurrentHashMap [[sc=10;ec=27]] {{ConcurrentMap}}
-                                                                     // edit@ConcurrentHashMap [[sl=9;sc=47;el=9;ec=47]] {{\nimport java.util.concurrent.ConcurrentMap;}}
+                                                                     // edit@ConcurrentHashMap [[sl=11;sc=47;el=11;ec=47]] {{\nimport java.util.concurrent.ConcurrentMap;}}
 
   public ConcurrentSkipListMap concurrentSkipListMap() { return null; } // Noncompliant {{The return type of this method should be an interface such as "ConcurrentMap" rather than the implementation "ConcurrentSkipListMap".}}
 
@@ -59,6 +61,12 @@ class EmployeesTopLevel {
     @Override
     public void foo(HashMap<String, String> map) { } // Compliant method is inherited
   }
+
+  public void function(TreeSet<Object> treeSet, // Noncompliant
+    TreeMap<Object, Object> treeMap) { // Noncompliant
+
+  }
+
 }
 
 class Employee {

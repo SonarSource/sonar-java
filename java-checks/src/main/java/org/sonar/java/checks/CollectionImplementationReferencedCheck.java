@@ -49,8 +49,8 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   private static final String CONCURRENT_MAP = "java.util.concurrent.ConcurrentMap";
   private static final String QUEUE = "java.util.Queue";
   private static final String SET = "java.util.Set";
-  private static final String SORTED_MAP = "java.util.SortedMap";
-  private static final String SORTED_SET = "java.util.SortedSet";
+  private static final String NAVIGABLE_MAP = "java.util.NavigableMap";
+  private static final String NAVIGABLE_SET = "java.util.NavigableSet";
 
   private static final Map<String, String> MAPPING = MapBuilder.<String, String> newMap()
     .put("java.util.ArrayDeque", DEQUE)
@@ -83,9 +83,9 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     .put("java.util.HashSet", SET)
     .put("java.util.LinkedHashSet", SET)
 
-    .put("java.util.TreeMap", SORTED_MAP)
+    .put("java.util.TreeMap", NAVIGABLE_MAP)
 
-    .put("java.util.TreeSet", SORTED_SET)
+    .put("java.util.TreeSet", NAVIGABLE_SET)
     .build();
 
   private JavaFileScannerContext context;
