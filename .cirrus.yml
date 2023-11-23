@@ -63,8 +63,10 @@ build_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
     - source cirrus-env BUILD
-    - regular_mvn_build_deploy_analyze -Dsonar.analysisCache.enabled=true
-    - ./check-license-compliance.sh
+    - which set_maven_build_version
+    - false
+    #- regular_mvn_build_deploy_analyze -Dsonar.analysisCache.enabled=true
+    #- ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
 
 ws_scan_task:
