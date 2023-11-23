@@ -28,7 +28,6 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
-import java.io.File;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,6 +51,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 
 public class AutoScanTest {
 
@@ -68,7 +68,7 @@ public class AutoScanTest {
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
     .useDefaultAdminCredentialsForBuilds(true)
     .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[9.9]"))
-    .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
+    .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../sonar-java-plugin").toFile()))
     .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.11.0.2659"))
     .build();
 
