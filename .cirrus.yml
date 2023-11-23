@@ -123,9 +123,7 @@ plugin_qa_task:
   qa_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
-    - cd docs/java-custom-rules-example
-    - mvn clean install -B -e -V
-    - cd ../../its/plugin
+    - cd its/plugin
     - mvn package -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
