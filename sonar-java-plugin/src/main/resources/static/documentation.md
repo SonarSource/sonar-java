@@ -147,6 +147,13 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 All the API changes are related to ECJ utility methods that were commonly used in the analyzer and could benefit the implementation of 
 custom rules.
 
+* New method `Symbol.TypeSymbol#superTypes()`. Returns the list of super types of this type.
+* New method `Symbol.TypeSymbol#outermostClass()`. Returns the outermost class of this type.
+* New method `Symbol.TypeSymbol#isAnnotation()`. Returns whether this type is an annotation.
+* New method `Symbol.VariableSymbol#isEffectivelyFinal()`. Returns whether this variable is effectively final.
+* New method `Symbol.VariableSymbol#isLocalVariable()`. Returns whether this variable is a local variable.
+* New method `Symbol.VariableSymbol#isParameter()`. Returns whether this variable is a parameter.
+* New method `Symbol.VariableSymbol#constantValue()`. Returns the constant value of this variable.
 * New Method `Symbol.MethodSymbol.isOverridable()`. Returns whether this method is overridable.
 * New Method `Symbol.MethodSymbol.isVarArgsMethod()`. Returns whether this method has a vararg parameter.
 * New Method `Symbol.MethodSymbol.isDefaultMethod()`. Returns whether this method has a default implementation.
