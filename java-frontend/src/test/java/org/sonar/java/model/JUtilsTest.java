@@ -235,18 +235,18 @@ class JUtilsTest {
 
     @Test
     void annotation() {
-      assertThat(JUtils.isAnnotation(anno.symbol())).isTrue();
+      assertThat(anno.symbol().isAnnotation()).isTrue();
     }
 
     @Test
     void simple_type_is_not_an_annotation() {
-      assertThat(JUtils.isAnnotation(OBJECT_TYPE.symbol())).isFalse();
+      assertThat(OBJECT_TYPE.symbol().isAnnotation()).isFalse();
     }
 
     @Test
     void unresolved_type_is_not_an_annotation() {
       VariableTreeImpl u = firstField(anno);
-      assertThat(JUtils.isAnnotation(u.type().symbolType().symbol())).isFalse();
+      assertThat(u.type().symbolType().symbol().isAnnotation()).isFalse();
     }
   }
 
