@@ -32,7 +32,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;

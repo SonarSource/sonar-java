@@ -136,6 +136,12 @@ class JTypeSymbolTest {
     assertThat(classSymbol.isAnnotation()).isFalse();
   }
 
+  @Test
+  void isEffectivelyFinalTest(){
+    JTypeSymbol classSymbol = getJTypeSymbolFromClassText("class C { }", false);
+    assertThat(classSymbol.superSymbol.isEffectivelyFinal()).isFalse();
+  }
+
   private static JTypeSymbol getJTypeSymbolFromClassText(String classText, boolean isUnknown){
     JavaTree.CompilationUnitTreeImpl cu = test(classText);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
