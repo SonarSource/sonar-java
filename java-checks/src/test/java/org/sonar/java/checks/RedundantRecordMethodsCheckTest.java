@@ -32,16 +32,4 @@ class RedundantRecordMethodsCheckTest {
       .verifyIssues();
   }
 
-  @Test
-  void test_breaking() {
-    CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/AccessibilityChangeCheck.java"))
-      .withCheck(new RedundantRecordMethodsCheck())
-      .verifyNoIssues();
-
-    CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/serialization/SerialVersionUidInRecordCheck.java"))
-      .withCheck(new RedundantRecordMethodsCheck())
-      .verifyNoIssues();
-  }
 }

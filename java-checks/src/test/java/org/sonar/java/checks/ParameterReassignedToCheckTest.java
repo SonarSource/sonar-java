@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.TestUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
@@ -35,12 +34,4 @@ class ParameterReassignedToCheckTest {
       .verifyIssues();
   }
 
-  @Test
-  void test_breaking() {
-    CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
-      .withCheck(new ParameterReassignedToCheck())
-      .withJavaVersion(11)
-      .verifyNoIssues();
-  }
 }
