@@ -147,27 +147,27 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 All the API changes are related to ECJ utility methods that were commonly used in the analyzer and could benefit the implementation of 
 custom rules.
 
-* New method: `Symbol.TypeSymbol#superTypes()`. Returns the list of super types of this type.
-* New method: `Symbol.TypeSymbol#outermostClass()`. Returns the outermost class of this type.
-* New method: `Symbol.TypeSymbol#isAnnotation()`. Returns whether this type is an annotation.
-* New method: `Symbol.VariableSymbol#isEffectivelyFinal()`. Returns whether this variable is effectively final.
-* New method: `Symbol.VariableSymbol#constantValue()`. Returns the constant value of this variable.
+* New method: `Symbol.TypeSymbol.superTypes()`. Returns the list of super types of this type.
+* New method: `Symbol.TypeSymbol.outermostClass()`. Returns the outermost class of this type.
+* New method: `Symbol.TypeSymbol.isAnnotation()`. Returns whether this type is an annotation.
+* New method: `Symbol.VariableSymbol.isEffectivelyFinal()`. Returns whether this variable is effectively final.
+* New method: `Symbol.VariableSymbol.constantValue()`. Returns the constant value of this variable.
 * New Method: `Symbol.MethodSymbol.isOverridable()`. Returns whether this method is overridable.
 * New Method: `Symbol.MethodSymbol.isVarArgsMethod()`. Returns whether this method has a vararg parameter.
 * New Method: `Symbol.MethodSymbol.isDefaultMethod()`. Returns whether this method has a default implementation.
 * New Method: `Symbol.MethodSymbol.isParametrizedMethod()`. Returns whether this method has type parameters.
 * New Method: `Symbol.MethodSymbol.isSynchronizedMethod()`. Returns whether this method is synchronized.
-* New method: `Symbol#isLocalVariable()`. Returns whether this variable is a local variable.
-* New method: `Symbol#isParameter()`. Returns whether this variable is a parameter.
-* New method: `Type#isPrimitiveWrapper()`. Check if this type is a primitive wrapper.
-* New method: `Type#primitiveWrapperType()`. Returns the type of the primitive wrapper.
-* New method: `Type#primitiveType()`. Returns the type of the primitive.
-* New method: `Type#isNullType()`. Returns whether this type is the null type.
-* New method: `Type#isTypeVar()`. Returns whether this type represents a type variable.
-* New method: `Type#isRawType()`. Check if this type is a raw type.
-* New method: `Type#declaringType()`. Returns the declaring type of this type.
-* New method: `ImportTree#symbol()`. Returns the symbol of this `ImportTree`.
-* New method: `TypeParameterTree#symbol()`. Returns the symbol of this `TypeParameterTree`.
+* New method: `Symbol.isLocalVariable()`. Returns whether this variable is a local variable.
+* New method: `Symbol.isParameter()`. Returns whether this variable is a parameter.
+* New method: `Type.isPrimitiveWrapper()`. Check if this type is a primitive wrapper.
+* New method: `Type.primitiveWrapperType()`. Returns the type of the primitive wrapper.
+* New method: `Type.primitiveType()`. Returns the type of the primitive.
+* New method: `Type.isNullType()`. Returns whether this type is the null type.
+* New method: `Type.isTypeVar()`. Returns whether this type represents a type variable.
+* New method: `Type.isRawType()`. Check if this type is a raw type.
+* New method: `Type.declaringType()`. Returns the declaring type of this type.
+* New method: `ImportTree.symbol()`. Returns the symbol of this `ImportTree`.
+* New method: `TypeParameterTree.symbol()`. Returns the symbol of this `TypeParameterTree`.
 
 #### **7.25**
 

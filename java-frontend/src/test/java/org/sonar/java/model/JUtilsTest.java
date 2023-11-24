@@ -228,28 +228,6 @@ class JUtilsTest {
     }
   }
 
-  @Nested
-  class IsAnnotation {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("@interface Anno { Unknown u; }");
-    private final ClassTreeImpl anno = firstClass(cu);
-
-    @Test
-    void annotation() {
-      assertThat(anno.symbol().isAnnotation()).isTrue();
-    }
-
-    @Test
-    void simple_type_is_not_an_annotation() {
-      assertThat(OBJECT_TYPE.symbol().isAnnotation()).isFalse();
-    }
-
-    @Test
-    void unresolved_type_is_not_an_annotation() {
-      VariableTreeImpl u = firstField(anno);
-      assertThat(u.type().symbolType().symbol().isAnnotation()).isFalse();
-    }
-  }
-
   @Test
   void effectivelyFinal() {
     JavaTree.CompilationUnitTreeImpl cu = test("class A { void foo(Object o) { int i = 42; int j = 43; j++; foo(i); } }");
