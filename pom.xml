@@ -312,6 +312,26 @@
             </archive>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>com.gradle</groupId>
+          <artifactId>gradle-enterprise-maven-extension</artifactId>
+          <configuration>
+            <gradleEnterprise>
+              <normalization>
+                <runtimeClassPath>
+                  <metaInf>
+                    <ignoredAttributes>
+                      <ignore>Implementation-Version</ignore>
+                      <ignore>Version</ignore>
+                      <ignore>Implementation-Build</ignore>
+                      <ignore>Build-Time</ignore>
+                    </ignoredAttributes>
+                  </metaInf>
+                </runtimeClassPath>
+              </normalization>
+            </gradleEnterprise>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
 
