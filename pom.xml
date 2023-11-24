@@ -325,6 +325,9 @@
                       <ignore>Version</ignore>
                       <ignore>Implementation-Build</ignore>
                       <ignore>Build-Time</ignore>
+                      <ignore>Plugin-BuildDate</ignore>
+                      <ignore>Plugin-Display-Version</ignore>
+                      <ignore>Plugin-Version</ignore>
                     </ignoredAttributes>
                   </metaInf>
                 </runtimeClassPath>
