@@ -45,7 +45,7 @@ win_vm_definition: &WINDOWS_VM_DEFINITION
 only_sonarsource_qa: &ONLY_SONARSOURCE_QA
   only_if: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_TAG == "" && ($CIRRUS_PR != "" || $CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*" || $CIRRUS_BRANCH =~ "dogfood-on-.*")
 
-build_task:
+common_build_definition: &COMMON_BUILD_DEFINITION
   eks_container:
     <<: *CONTAINER_DEFINITION
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j19-latest
@@ -61,15 +61,23 @@ build_task:
     DEPLOY_PULL_REQUEST: true
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+
+build_compile_task:
+  <<: *COMMON_BUILD_DEFINITION
   build_script:
     - source cirrus-env BUILD
-    - regular_mvn_build_deploy_analyze -Dsonar.analysisCache.enabled=true
+    - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true
+  cleanup_before_cache_script: cleanup_maven_repository
+
+build_test_analyze_task:
+  <<: *COMMON_BUILD_DEFINITION
+  build_script:
+    - source cirrus-env BUILD
+    - PULL_REQUEST_SHA=$GIT_SHA1 regular_mvn_build_deploy_analyze -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
 
 ws_scan_task:
-  depends_on:
-    - build
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
@@ -84,7 +92,7 @@ ws_scan_task:
   whitesource_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
-    - mvn clean install -DskipTests -pl '!java-checks-test-sources,!java-checks-test-sources/default,!java-checks-test-sources/aws'
+    - mvn clean install -Dmaven.test.skip=true -pl '!java-checks-test-sources,!java-checks-test-sources/default,!java-checks-test-sources/aws'
     - source ws_scan.sh
   allow_failures: "true"
   always:
@@ -92,8 +100,6 @@ ws_scan_task:
       path: "whitesource/**/*"
 
 qa_os_win_task:
-  depends_on:
-    - build
   <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
@@ -104,7 +110,7 @@ qa_os_win_task:
 
 plugin_qa_task:
   depends_on:
-    - build
+    - build_compile
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
@@ -129,7 +135,7 @@ plugin_qa_task:
 
 sanity_task:
   depends_on:
-    - build
+    - build_compile
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
@@ -147,7 +153,7 @@ sanity_task:
 
 ruling_task:
   depends_on:
-    - build
+    - build_compile
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
@@ -175,7 +181,7 @@ ruling_task:
 
 ruling_win_task:
   depends_on:
-    - build
+    - build_compile
   <<: *ONLY_SONARSOURCE_QA
   <<: *WINDOWS_VM_DEFINITION
   maven_cache:
@@ -196,7 +202,7 @@ ruling_win_task:
 
 autoscan_task:
   depends_on:
-    - build
+    - build_compile
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
@@ -218,6 +224,8 @@ autoscan_task:
 
 promote_task:
   depends_on:
+    - build_compile
+    - build_test_analyze
     - qa_os_win
     - sanity
     - ruling
