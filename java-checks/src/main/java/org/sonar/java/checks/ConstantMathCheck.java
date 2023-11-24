@@ -38,8 +38,8 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 @Rule(key = "S2185")
 public class ConstantMathCheck extends IssuableSubscriptionVisitor {
 
-  private static final String ABS = "abs";
   private static final String CEIL = "ceil";
+  private static final String ABS = "abs";
   private static final String DOUBLE = "double";
   private static final String FLOAT = "float";
   private static final String FLOOR = "floor";
