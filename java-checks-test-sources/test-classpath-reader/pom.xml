@@ -10,6 +10,7 @@
   </parent>
 
   <artifactId>test-classpath-reader</artifactId>
+  <name>SonarQube Java :: Checks Test Sources :: Test Classpath Reader</name>
 
   <dependencies>
     <dependency>

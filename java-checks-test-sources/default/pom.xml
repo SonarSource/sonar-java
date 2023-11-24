@@ -12,7 +12,7 @@
 
   <artifactId>default</artifactId>
 
-  <name>SonarQube Java :: Default Checks Test Sources</name>
+  <name>SonarQube Java :: Checks Test Sources :: Default</name>
 
   <properties>
     <sonar.skip>true</sonar.skip>

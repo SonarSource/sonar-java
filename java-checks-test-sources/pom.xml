@@ -13,7 +13,7 @@
   <artifactId>java-checks-test-sources</artifactId>
   <packaging>pom</packaging>
 
-  <name>SonarQube Java :: Test Sources</name>
+  <name>SonarQube Java :: Checks Test Sources :: Parent Pom</name>
 
   <modules>
     <module>aws</module>

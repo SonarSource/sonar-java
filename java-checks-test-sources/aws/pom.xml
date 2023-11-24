@@ -12,7 +12,7 @@
 
   <artifactId>aws</artifactId>
 
-  <name>SonarQube Java :: AWS Checks Test Sources</name>
+  <name>SonarQube Java :: Checks Test Sources :: AWS</name>
 
   <properties>
     <sonar.skip>true</sonar.skip>
