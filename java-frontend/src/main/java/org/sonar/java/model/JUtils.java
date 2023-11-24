@@ -72,13 +72,6 @@ public final class JUtils {
     return !type.isUnknown() && ((JType) type).typeBinding.isIntersectionType();
   }
 
-  public static boolean isParameter(Symbol symbol) {
-    if (symbol instanceof Symbol.VariableSymbol) {
-      return ((Symbol.VariableSymbol) symbol).isParameter();
-    }
-    return false;
-  }
-
   public static void collectSuperTypes(Set<Type> result, JSema sema, ITypeBinding typeBinding) {
     ITypeBinding s = typeBinding.getSuperclass();
     if (s != null) {

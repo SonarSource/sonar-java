@@ -330,24 +330,24 @@ class JUtilsTest {
     @Test
     void field_is_not_parameter() {
       VariableTreeImpl field = firstField(c);
-      assertThat(JUtils.isParameter(field.symbol())).isFalse();
+      assertThat(field.symbol().isParameter()).isFalse();
     }
 
     @Test
     void local_variable_is_not_parameter() {
       VariableTreeImpl localVariable = (VariableTreeImpl) m.block().body().get(0);
-      assertThat(JUtils.isParameter(localVariable.symbol())).isFalse();
+      assertThat(localVariable.symbol().isParameter()).isFalse();
     }
 
     @Test
     void parameter() {
       VariableTreeImpl p = (VariableTreeImpl) m.parameters().get(0);
-      assertThat(JUtils.isParameter(p.symbol())).isTrue();
+      assertThat(p.symbol().isParameter()).isTrue();
     }
 
     @Test
     void not_a_variable_is_not_a_parameter() {
-      assertThat(JUtils.isParameter(OBJECT_TYPE.symbol())).isFalse();
+      assertThat(OBJECT_TYPE.symbol().isParameter()).isFalse();
     }
 
     @Test
@@ -355,7 +355,7 @@ class JUtilsTest {
       ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(1);
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
       IdentifierTreeImpl arg0 = (IdentifierTreeImpl) mit.arguments().get(0);
-      assertThat(JUtils.isParameter(arg0.symbol())).isFalse();
+      assertThat(arg0.symbol().isParameter()).isFalse();
     }
 
     @Test
@@ -363,7 +363,7 @@ class JUtilsTest {
       ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(2);
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
       Symbol.MethodSymbol symbol = mit.methodSymbol();
-      assertThat(JUtils.isParameter(symbol.declarationParameters().get(0))).isTrue();
+      assertThat(symbol.declarationParameters().get(0).isParameter()).isTrue();
     }
   }
 

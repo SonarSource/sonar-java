@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -158,7 +157,7 @@ public class HardcodedStringExpressionChecker {
     Set<Symbol> visited) {
     Symbol symbol = identifier.symbol();
     boolean firstVisit = visited.add(symbol);
-    if (!firstVisit || !symbol.isVariableSymbol() || JUtils.isParameter(symbol) || isNonFinalField(symbol)) {
+    if (!firstVisit || !symbol.isVariableSymbol() || symbol.isParameter() || isNonFinalField(symbol)) {
       return false;
     }
     VariableTree variable = (VariableTree) symbol.declaration();

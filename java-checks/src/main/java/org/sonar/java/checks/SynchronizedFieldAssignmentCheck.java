@@ -24,7 +24,6 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -65,7 +64,7 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
   private static Symbol getParam(ExpressionTree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol reference = ((IdentifierTree) tree).symbol();
-      if (JUtils.isParameter(reference)) {
+      if (reference.isParameter()) {
         return reference;
       }
     }

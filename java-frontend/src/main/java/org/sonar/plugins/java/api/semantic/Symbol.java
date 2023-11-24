@@ -117,9 +117,16 @@ public interface Symbol {
   Tree declaration();
 
   /**
-   * @return true if this variable is a local variable of a method.
+   * @return true if this symbol represents a variable which is a local variable of a method.
    */
   default boolean isLocalVariable() {
+    return false;
+  }
+
+  /**
+   * @return true if this symbol represents a variable which is a parameter of a method.
+   */
+  default boolean isParameter() {
     return false;
   }
 
@@ -195,11 +202,6 @@ public interface Symbol {
      * @return the constant value of this variable if it has one.
      */
     Optional<Object> constantValue();
-
-    /**
-     * @return true if this variable is a parameter of a method.
-     */
-    boolean isParameter();
 
   }
 

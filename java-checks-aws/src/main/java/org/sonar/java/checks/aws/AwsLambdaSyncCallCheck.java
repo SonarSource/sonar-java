@@ -38,8 +38,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.model.JUtils.isParameter;
-
 @Rule(key = "S6246")
 public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
 
@@ -90,7 +88,7 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
           .filter(u -> u.symbol().isLocalVariable() && !u.equals(invokeRequest))
           .collect(Collectors.toList());
 
-        if (isParameter(invokeRequest.symbol())
+        if (invokeRequest.symbol().isParameter()
           || localUsages.stream().anyMatch(lu -> isArgumentToACall(lu) || statementSetsAsyncCall(lu))
           || declarationSetsAsyncCall(invokeRequest)) {
           return Optional.empty();
