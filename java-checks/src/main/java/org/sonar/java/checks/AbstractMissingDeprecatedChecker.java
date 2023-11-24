@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.deprecatedAnnotation;
 import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.hasJavadocDeprecatedTag;
-import static org.sonar.java.model.JUtils.isLocalVariable;
 
 public abstract class AbstractMissingDeprecatedChecker extends IssuableSubscriptionVisitor {
 
@@ -48,7 +47,7 @@ public abstract class AbstractMissingDeprecatedChecker extends IssuableSubscript
 
   @Override
   public void visitNode(Tree tree) {
-    boolean isLocalVar = tree.is(Tree.Kind.VARIABLE) && isLocalVariable(((VariableTree) tree).symbol());
+    boolean isLocalVar = tree.is(Tree.Kind.VARIABLE) && ((VariableTree) tree).symbol().isLocalVariable();
     AnnotationTree deprecatedAnnotation = deprecatedAnnotation(tree);
     boolean hasDeprecatedAnnotation = deprecatedAnnotation != null;
     boolean hasJavadocDeprecatedTag = hasJavadocDeprecatedTag(tree);

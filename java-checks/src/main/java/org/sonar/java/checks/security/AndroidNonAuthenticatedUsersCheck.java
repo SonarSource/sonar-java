@@ -36,7 +36,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.checks.helpers.MethodTreeUtils.subsequentMethodInvocation;
-import static org.sonar.java.model.JUtils.isLocalVariable;
 
 @Rule(key = "S6288")
 public class AndroidNonAuthenticatedUsersCheck extends AbstractMethodDetection {
@@ -105,7 +104,7 @@ public class AndroidNonAuthenticatedUsersCheck extends AbstractMethodDetection {
   }
 
   private static Optional<NewClassTree> getNotAuthenticatedConstructorInDeclaration(Symbol symbol) {
-    if (isLocalVariable(symbol)) {
+    if (symbol.isLocalVariable()) {
       Tree declaration = symbol.declaration();
       if (declaration instanceof VariableTree) {
         ExpressionTree initializer = ((VariableTree) declaration).initializer();

@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -39,7 +38,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.model.JUtils.isLocalVariable;
 import static org.sonar.java.model.JUtils.isParameter;
 
 @Rule(key = "S6246")
@@ -89,7 +87,7 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
 
         // We know there is at least one usage, i.e. the one we just got above.
         List<IdentifierTree> localUsages = invokeRequest.symbol().usages().stream()
-          .filter(u -> isLocalVariable(u.symbol()) && !u.equals(invokeRequest))
+          .filter(u -> u.symbol().isLocalVariable() && !u.equals(invokeRequest))
           .collect(Collectors.toList());
 
         if (isParameter(invokeRequest.symbol())
@@ -113,7 +111,7 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
 
     private static boolean hasLocalVarDeclaration(IdentifierTree invokeRequest) {
       Tree declaration = invokeRequest.symbol().declaration();
-      return (declaration != null && declaration.is(Tree.Kind.VARIABLE) && isLocalVariable(((VariableTree) declaration).symbol()));
+      return (declaration != null && declaration.is(Tree.Kind.VARIABLE) && ((VariableTree) declaration).symbol().isLocalVariable());
     }
 
     /**

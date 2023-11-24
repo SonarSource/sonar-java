@@ -34,8 +34,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.model.JUtils.isLocalVariable;
-
 @Rule(key = "S5659")
 public class JWTWithStrongCipherCheck extends IssuableSubscriptionVisitor {
 
@@ -150,7 +148,7 @@ public class JWTWithStrongCipherCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean declarationIsSigned(Symbol symbol) {
-    if (isLocalVariable(symbol)) {
+    if (symbol.isLocalVariable()) {
       Tree declaration = symbol.declaration();
       if (declaration instanceof VariableTree) {
         ExpressionTree initializer = ((VariableTree) declaration).initializer();

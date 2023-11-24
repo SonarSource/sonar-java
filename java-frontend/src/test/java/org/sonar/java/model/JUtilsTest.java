@@ -292,25 +292,25 @@ class JUtilsTest {
     void local_variable() {
       MethodTreeImpl m = nthMethod(c, 2);
       VariableTreeImpl localVariable = (VariableTreeImpl) m.block().body().get(0);
-      assertThat(JUtils.isLocalVariable(localVariable.symbol())).isTrue();
+      assertThat(localVariable.symbol().isLocalVariable()).isTrue();
     }
 
     @Test
     void variable_from_initializer_is_local_variable() {
       BlockTree staticInitializer = (BlockTree) c.members().get(0);
       VariableTreeImpl v = (VariableTreeImpl) staticInitializer.body().get(0);
-      assertThat(JUtils.isLocalVariable(v.symbol())).isTrue();
+      assertThat(v.symbol().isLocalVariable()).isTrue();
     }
 
     @Test
     void field_is_not_a_local_variable() {
       VariableTreeImpl field = nthField(c, 1);
-      assertThat(JUtils.isLocalVariable(field.symbol())).isFalse();
+      assertThat(field.symbol().isLocalVariable()).isFalse();
     }
 
     @Test
     void type_symbol_is_not_a_local_variable() {
-      assertThat(JUtils.isLocalVariable(c.symbol())).isFalse();
+      assertThat(c.symbol().isLocalVariable()).isFalse();
     }
   }
 

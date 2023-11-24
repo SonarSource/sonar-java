@@ -117,6 +117,13 @@ public interface Symbol {
   Tree declaration();
 
   /**
+   * @return true if this variable is a local variable of a method.
+   */
+  default boolean isLocalVariable() {
+    return false;
+  }
+
+  /**
    * Symbol for a type : class, enum, interface or annotation.
    */
   interface TypeSymbol extends Symbol {
@@ -188,11 +195,6 @@ public interface Symbol {
      * @return the constant value of this variable if it has one.
      */
     Optional<Object> constantValue();
-
-    /**
-     * @return true if this variable is a local variable of a method.
-     */
-    boolean isLocalVariable();
 
     /**
      * @return true if this variable is a parameter of a method.

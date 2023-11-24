@@ -26,7 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -118,7 +117,7 @@ public class AwsConsumerBuilderUsageCheck extends AbstractMethodDetection {
       return false;
     }
     Symbol variable = ((IdentifierTree) expression).symbol();
-    return JUtils.isLocalVariable(variable) &&
+    return variable.isLocalVariable() &&
       ExpressionsHelper.initializedAndAssignedExpressionStream(variable)
         .anyMatch(AwsConsumerBuilderUsageCheck::isBuilder);
   }

@@ -38,7 +38,6 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.model.JUtils.isLocalVariable;
 import static org.sonar.java.model.JUtils.isParameter;
 
 @Rule(key = "S1481")
@@ -112,7 +111,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isProperLocalVariable(VariableTree variable) {
     Symbol symbol = variable.symbol();
-    return isLocalVariable(symbol)
+    return symbol.isLocalVariable()
       && !isParameter(symbol)
       && !isDefinedInCatchClause(variable)
       && !isTryResource(variable);

@@ -72,13 +72,6 @@ public final class JUtils {
     return !type.isUnknown() && ((JType) type).typeBinding.isIntersectionType();
   }
 
-  public static boolean isLocalVariable(Symbol symbol) {
-    if (symbol instanceof Symbol.VariableSymbol) {
-      return ((Symbol.VariableSymbol) symbol).isLocalVariable();
-    }
-    return false;
-  }
-
   public static boolean isParameter(Symbol symbol) {
     if (symbol instanceof Symbol.VariableSymbol) {
       return ((Symbol.VariableSymbol) symbol).isParameter();

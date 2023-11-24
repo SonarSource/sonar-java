@@ -412,7 +412,7 @@ public class ProgramState {
 
       @Override
       public void accept(Symbol symbol, SymbolicValue symbolicValue) {
-        if (JUtils.isLocalVariable(symbol) && !liveVariables.contains(symbol) && !protectedSymbolicValues.contains(symbolicValue)) {
+        if (symbol.isLocalVariable() && !liveVariables.contains(symbol) && !protectedSymbolicValues.contains(symbolicValue)) {
           newProgramState = true;
           newValues = newValues.remove(symbol);
           newReferences = decreaseReference(newReferences, symbolicValue);

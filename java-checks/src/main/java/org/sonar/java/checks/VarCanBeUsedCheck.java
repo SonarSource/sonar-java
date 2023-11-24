@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -79,7 +78,7 @@ public class VarCanBeUsedCheck extends IssuableSubscriptionVisitor implements Ja
       type.is(Tree.Kind.VAR_TYPE) ||
       isArrayInitializerWithoutType(initializer) ||
       symbolType.isUnknown() ||
-      !JUtils.isLocalVariable(variableTree.symbol()) ||
+      !variableTree.symbol().isLocalVariable() ||
       symbolType.isParameterized()) {
       return;
     }

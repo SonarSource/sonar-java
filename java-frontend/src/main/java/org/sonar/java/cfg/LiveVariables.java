@@ -43,8 +43,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
-import static org.sonar.java.model.JUtils.isLocalVariable;
-
 public class LiveVariables {
 
   private final CFG cfg;
@@ -194,7 +192,7 @@ public class LiveVariables {
   }
 
   private boolean includeSymbol(Symbol symbol) {
-    return isLocalVariable(symbol) || (includeFields && isField(symbol));
+    return symbol.isLocalVariable() || (includeFields && isField(symbol));
   }
 
   private static boolean isField(Symbol symbol) {

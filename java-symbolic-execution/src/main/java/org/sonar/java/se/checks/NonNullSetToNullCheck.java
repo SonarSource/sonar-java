@@ -297,7 +297,7 @@ public class NonNullSetToNullCheck extends SECheck {
         return false;
       }
       if (expression.is(Tree.Kind.IDENTIFIER)) {
-        return JUtils.isLocalVariable(((IdentifierTree) expression).symbol());
+        return ((IdentifierTree) expression).symbol().isLocalVariable();
       }
       return true;
     }
