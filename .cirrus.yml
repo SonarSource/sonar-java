@@ -49,8 +49,8 @@ common_build_definition: &COMMON_BUILD_DEFINITION
   eks_container:
     <<: *CONTAINER_DEFINITION
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base-pr-397:j19-latest
-    cpu: 4
-    memory: 4G
+    cpu: 8
+    memory: 16G
   env:
     SIGN_KEY: VAULT[development/kv/data/sign data.key]
     PGP_PASSPHRASE: VAULT[development/kv/data/sign data.passphrase]
@@ -66,14 +66,14 @@ build_compile_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
     - source cirrus-env BUILD
-    - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws'
+    - MAVEN_OPTS="-Xmx8g" regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws'
   cleanup_before_cache_script: cleanup_maven_repository
 
 build_test_analyze_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
     - source cirrus-env BUILD
-    - PULL_REQUEST_SHA=$GIT_SHA1 regular_mvn_build_deploy_analyze -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true
+    - MAVEN_OPTS="-Xmx8g" PULL_REQUEST_SHA=$GIT_SHA1 regular_mvn_build_deploy_analyze -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
 
