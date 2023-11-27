@@ -111,6 +111,13 @@
 
   <dependencyManagement>
     <dependencies>
+
+      <dependency>
+        <groupId>org.sonar.ml</groupId>
+        <artifactId>ml-lib</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+
       <dependency>
         <groupId>org.sonarsource.api.plugin</groupId>
         <artifactId>sonar-plugin-api</artifactId>
