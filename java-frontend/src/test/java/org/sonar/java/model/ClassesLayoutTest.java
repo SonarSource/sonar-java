@@ -100,7 +100,7 @@ class ClassesLayoutTest {
   @Test
   void symbol_type() {
     assertAll(
-      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(96),
+      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(104),
       () -> assertThat(instanceSize(JTypeSymbol.class, X86_64_COOPS)).isEqualTo(56)
     );
   }
@@ -116,8 +116,8 @@ class ClassesLayoutTest {
   @Test
   void symbol_variable() {
     assertAll(
-      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(56),
-      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64_COOPS)).isEqualTo(32)
+      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(72),
+      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64_COOPS)).isEqualTo(40)
     );
   }
 

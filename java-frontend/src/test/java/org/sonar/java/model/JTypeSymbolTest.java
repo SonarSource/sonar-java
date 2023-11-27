@@ -19,16 +19,17 @@
  */
 package org.sonar.java.model;
 
+import java.util.Objects;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
-import java.util.Objects;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 class JTypeSymbolTest {
 
@@ -86,6 +87,70 @@ class JTypeSymbolTest {
         cu.sema.methodSymbol(m.methodBinding),
         cu.sema.typeSymbol(n.typeBinding)
       );
+  }
+
+  @Test
+  void superTypesTest(){
+    JavaTree.CompilationUnitTreeImpl cu = test("interface I { } class C implements I { } class C2 extends C { }");
+    ITypeBinding javaLangObject = Objects.requireNonNull(cu.sema.resolveType("java.lang.Object"));
+    assertThat(cu.sema.typeSymbol(javaLangObject).superTypes()).isEmpty();
+
+    ClassTreeImpl interfaceI = (ClassTreeImpl) cu.types().get(0);
+    JTypeSymbol interfaceITypeSymbol = cu.sema.typeSymbol(interfaceI.typeBinding);
+    assertThat(interfaceITypeSymbol.superTypes()).isEmpty();
+    assertThat(interfaceITypeSymbol.superTypes()).isEmpty(); // repeat call to cover cache
+
+    ClassTreeImpl classC = (ClassTreeImpl) cu.types().get(1);
+    JTypeSymbol classCTypeSymbol = cu.sema.typeSymbol(classC.typeBinding);
+    assertThat(classCTypeSymbol.superTypes()).containsExactly(interfaceITypeSymbol.type(), cu.sema.type(javaLangObject));
+
+
+    ClassTreeImpl classC2 = (ClassTreeImpl) cu.types().get(2);
+    JTypeSymbol classC2TypeSymbol = cu.sema.typeSymbol(classC2.typeBinding);
+    assertThat(classC2TypeSymbol.superTypes()).containsExactly(classCTypeSymbol.type() ,interfaceITypeSymbol.type(), cu.sema.type(javaLangObject));
+
+    ITypeBinding brokenTypeBinding = spy(classC2.typeBinding);
+    when(brokenTypeBinding.isRecovered()).thenReturn(true);
+    JTypeSymbol brokenTypeSymbol = new JTypeSymbol(cu.sema, brokenTypeBinding);
+    assertThat(brokenTypeSymbol.superTypes()).isEmpty();
+  }
+
+  @Test
+  void outermostClassTest() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { class N {} }");
+    ClassTreeImpl outerClass = (ClassTreeImpl) cu.types().get(0);
+    ClassTreeImpl innerClass = (ClassTreeImpl) outerClass.members().get(0);
+    JTypeSymbol innerClassSymbol = cu.sema.typeSymbol(innerClass.typeBinding);
+    JTypeSymbol outerClassSymbol = cu.sema.typeSymbol(outerClass.typeBinding);
+    assertThat(innerClassSymbol.outermostClass()).isSameAs(outerClassSymbol);
+    assertThat(innerClassSymbol.outermostClass()).isSameAs(outerClassSymbol);
+  }
+
+  @Test
+  void isAnnotationTest(){
+    JTypeSymbol annotationSymbol = getJTypeSymbolFromClassText("@interface A { }", true);
+    assertThat(annotationSymbol.isAnnotation()).isFalse();
+    annotationSymbol = getJTypeSymbolFromClassText("@interface A { }", false);
+    assertThat(annotationSymbol.isAnnotation()).isTrue();
+    JTypeSymbol classSymbol = getJTypeSymbolFromClassText("class C { }", false);
+    assertThat(classSymbol.isAnnotation()).isFalse();
+  }
+
+  @Test
+  void isEffectivelyFinalTest(){
+    JTypeSymbol classSymbol = getJTypeSymbolFromClassText("class C { }", false);
+    assertThat(classSymbol.superSymbol.isEffectivelyFinal()).isFalse();
+  }
+
+  private static JTypeSymbol getJTypeSymbolFromClassText(String classText, boolean isUnknown){
+    JavaTree.CompilationUnitTreeImpl cu = test(classText);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    if(isUnknown){
+      ITypeBinding brokenTypeBinding = spy(c.typeBinding);
+      when(brokenTypeBinding.isRecovered()).thenReturn(true);
+      return new JTypeSymbol(cu.sema, brokenTypeBinding);
+    }
+    return new JTypeSymbol(cu.sema, c.typeBinding);
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {

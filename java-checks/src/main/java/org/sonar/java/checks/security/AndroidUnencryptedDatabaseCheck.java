@@ -35,8 +35,6 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.model.JUtils.isLocalVariable;
-
 @Rule(key = "S6291")
 public class AndroidUnencryptedDatabaseCheck extends IssuableSubscriptionVisitor {
 
@@ -133,7 +131,7 @@ public class AndroidUnencryptedDatabaseCheck extends IssuableSubscriptionVisitor
   }
 
   private static boolean declarationIsEncrypted(Symbol symbol) {
-    if (isLocalVariable(symbol)) {
+    if (symbol.isLocalVariable()) {
       Tree declaration = symbol.declaration();
       if (declaration instanceof VariableTree) {
         ExpressionTree initializer = ((VariableTree) declaration).initializer();

@@ -24,7 +24,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -83,7 +82,7 @@ public class ReuseRandomCheck extends AbstractMethodDetection {
 
   private static boolean isLocalVariable(ExpressionTree expression) {
     if (expression.is(Kind.IDENTIFIER)) {
-      return JUtils.isLocalVariable(((IdentifierTree) expression).symbol());
+      return ((IdentifierTree) expression).symbol().isLocalVariable();
     }
     return false;
   }

@@ -31,7 +31,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.se.checks.AllowXMLInclusionCheck;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;

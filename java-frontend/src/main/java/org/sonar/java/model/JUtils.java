@@ -72,52 +72,7 @@ public final class JUtils {
     return !type.isUnknown() && ((JType) type).typeBinding.isIntersectionType();
   }
 
-  public static boolean isAnnotation(Symbol.TypeSymbol typeSymbol) {
-    return !typeSymbol.isUnknown() && ((JTypeSymbol) typeSymbol).typeBinding().isAnnotation();
-  }
-
-  public static boolean isEffectivelyFinal(Symbol.VariableSymbol variableSymbol) {
-    return (variableSymbol instanceof JVariableSymbol) && ((IVariableBinding) ((JVariableSymbol) variableSymbol).binding).isEffectivelyFinal();
-  }
-
-  public static boolean isLocalVariable(Symbol symbol) {
-    return symbol.isVariableSymbol() && symbol.owner().isMethodSymbol();
-  }
-
-  public static boolean isParameter(Symbol symbol) {
-    if (symbol instanceof JTypeSymbol.SpecialField) {
-      return false;
-    }
-    return symbol.isVariableSymbol() && 
-      ((symbol instanceof JVariableSymbol.ParameterPlaceholderSymbol)
-        || ((IVariableBinding) ((JVariableSymbol) symbol).binding).isParameter());
-  }
-
-  public static Optional<Object> constantValue(Symbol.VariableSymbol symbol) {
-    if (!symbol.isFinal() || !symbol.isStatic() || !(symbol instanceof JVariableSymbol)) {
-      return Optional.empty();
-    }
-    Object c = ((IVariableBinding) ((JVariableSymbol) symbol).binding).getConstantValue();
-    if (c instanceof Short) {
-      c = Integer.valueOf((Short) c);
-    } else if (c instanceof Byte) {
-      c = Integer.valueOf((Byte) c);
-    } else if (c instanceof Character) {
-      c = Integer.valueOf((Character) c);
-    }
-    return Optional.ofNullable(c);
-  }
-
-  public static Set<Type> superTypes(Symbol.TypeSymbol typeSymbol) {
-    if (typeSymbol.isUnknown()) {
-      return Collections.emptySet();
-    }
-    Set<Type> result = new HashSet<>();
-    collectSuperTypes(result, ((JTypeSymbol) typeSymbol).sema, ((JTypeSymbol) typeSymbol).typeBinding());
-    return result;
-  }
-
-  private static void collectSuperTypes(Set<Type> result, JSema sema, ITypeBinding typeBinding) {
+  public static void collectSuperTypes(Set<Type> result, JSema sema, ITypeBinding typeBinding) {
     ITypeBinding s = typeBinding.getSuperclass();
     if (s != null) {
       result.add(sema.type(s));
@@ -127,16 +82,6 @@ public final class JUtils {
       result.add(sema.type(i));
       collectSuperTypes(result, sema, i);
     }
-  }
-
-  public static Symbol.TypeSymbol outermostClass(Symbol.TypeSymbol typeSymbol) {
-    Symbol symbol = typeSymbol;
-    Symbol result = null;
-    while (!symbol.isPackageSymbol()) {
-      result = symbol;
-      symbol = symbol.owner();
-    }
-    return (Symbol.TypeSymbol) result;
   }
 
   public static Symbol getPackage(Symbol symbol) {

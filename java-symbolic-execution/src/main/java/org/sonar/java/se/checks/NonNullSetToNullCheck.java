@@ -29,7 +29,6 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -55,7 +54,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 
-import static org.sonar.java.model.JUtils.isLocalVariable;
 import static org.sonar.java.se.NullabilityDataUtils.nullabilityAsString;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.VARIABLE;
@@ -204,7 +202,7 @@ public class NonNullSetToNullCheck extends SECheck {
       if (ExpressionUtils.isSimpleAssignment(tree)) {
         IdentifierTree variable = ExpressionUtils.extractIdentifier(tree);
         Symbol symbol = variable.symbol();
-        if (JUtils.isParameter(symbol)) {
+        if (symbol.isParameter()) {
           // It is fine to assign a parameter to null in the body of the method.
           return;
         }
@@ -298,7 +296,7 @@ public class NonNullSetToNullCheck extends SECheck {
         return false;
       }
       if (expression.is(Tree.Kind.IDENTIFIER)) {
-        return isLocalVariable(((IdentifierTree) expression).symbol());
+        return ((IdentifierTree) expression).symbol().isLocalVariable();
       }
       return true;
     }

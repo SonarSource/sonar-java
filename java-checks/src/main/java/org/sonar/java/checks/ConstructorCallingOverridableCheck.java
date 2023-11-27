@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -112,7 +111,7 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
 
     private boolean isMethodDefinedOnConstructedType(Symbol symbol) {
       Type typeDefiningMethod = symbol.enclosingClass().type().erasure();
-      for (Type superType : JUtils.superTypes(constructorType)) {
+      for (Type superType : constructorType.superTypes()) {
         if (superType.erasure().equals(typeDefiningMethod)) {
           return true;
         }

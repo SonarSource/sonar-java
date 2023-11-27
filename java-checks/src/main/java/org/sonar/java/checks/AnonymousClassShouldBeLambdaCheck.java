@@ -24,11 +24,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -89,7 +88,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
       // should be anonymous class of interface and not abstract class
       return symbol.interfaces().size() == 1
         && symbol.superClass().is(JAVA_LANG_OBJECT)
-        && hasSingleAbstractMethodInHierarchy(JUtils.superTypes(symbol));
+        && hasSingleAbstractMethodInHierarchy(symbol.superTypes());
     }
     return false;
   }

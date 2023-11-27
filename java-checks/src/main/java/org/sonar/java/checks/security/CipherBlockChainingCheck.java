@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -74,7 +73,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   private static boolean isDynamicallyGenerated(ExpressionTree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) tree).symbol();
-      if (JUtils.isParameter(symbol)) {
+      if (symbol.isParameter()) {
         return true;
       }
       VariableTree declaration = symbol.isVariableSymbol() ? ((Symbol.VariableSymbol) symbol).declaration() : null;

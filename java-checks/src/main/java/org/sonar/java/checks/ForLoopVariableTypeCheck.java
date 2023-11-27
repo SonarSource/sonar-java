@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -81,7 +80,7 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
       return ((Type.ArrayType) expressionType).elementType();
     }
     if(expressionType.isClass()) {
-      return JUtils.superTypes(expressionType.symbol()).stream()
+      return expressionType.symbol().superTypes().stream()
         .filter(t -> t.is("java.lang.Iterable") && t.isParameterized())
         .findFirst()
         .map(iter -> iter.typeArguments().get(0))

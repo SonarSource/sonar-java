@@ -19,6 +19,9 @@
  */
 package org.sonar.java.model;
 
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
@@ -53,6 +56,11 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
    * Cache for {@link #memberSymbols()}.
    */
   private Collection<Symbol> memberSymbols;
+
+  /**
+   * Cache for {@link #superTypes()}.
+   */
+  private Set<Type> superTypes;
 
   final SpecialField superSymbol = new SpecialField() {
     @Override
@@ -156,6 +164,36 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     return (ClassTree) super.declaration();
   }
 
+  @Override
+  public Set<Type> superTypes() {
+    if (superTypes == null) {
+      if (isUnknown()) {
+        superTypes = Collections.emptySet();
+      } else {
+        superTypes = new HashSet<>();
+        JUtils.collectSuperTypes(superTypes, sema, typeBinding());
+      }
+    }
+    return superTypes;
+  }
+
+  @Override
+  @Nullable
+  public TypeSymbol outermostClass() {
+    Symbol symbol = this;
+    Symbol result = null;
+    while (symbol != null && !symbol.isPackageSymbol()) {
+      result = symbol;
+      symbol = symbol.owner();
+    }
+    return (Symbol.TypeSymbol) result;
+  }
+
+  @Override
+  public boolean isAnnotation() {
+    return !isUnknown() && typeBinding().isAnnotation();
+  }
+
   abstract class SpecialField extends Symbols.DefaultSymbol implements Symbol.VariableSymbol {
     @Override
     public final Symbol owner() {
@@ -191,6 +229,25 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     @Override
     public final VariableTree declaration() {
       return null;
+    }
+
+    @Override
+    public final boolean isEffectivelyFinal(){
+      return false;
+    }
+    @Override
+    public final Optional<Object> constantValue() {
+      return Optional.empty();
+    }
+
+    @Override
+    public final boolean isLocalVariable() {
+      return false;
+    }
+
+    @Override
+    public final boolean isParameter() {
+      return false;
     }
   }
 

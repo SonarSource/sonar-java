@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -182,7 +181,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
 
     private static boolean definesOrInheritsSymbol(Symbol symbol, Symbol.TypeSymbol typeSymbol) {
       return definesSymbol(symbol, typeSymbol)
-        || JUtils.superTypes(typeSymbol).stream().anyMatch(superType -> definesSymbol(symbol, superType.symbol()));
+        || typeSymbol.superTypes().stream().anyMatch(superType -> definesSymbol(symbol, superType.symbol()));
     }
 
     private static boolean definesSymbol(Symbol m, Symbol.TypeSymbol typeSymbol) {

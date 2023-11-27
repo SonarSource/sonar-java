@@ -22,7 +22,6 @@ package org.sonar.java.checks.aws;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -67,7 +66,7 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
     // If the call to build is made on a builder variable, we look into initialization and usages for a call to the method
     getIdentifier(invocation).ifPresentOrElse(identifier -> {
       Symbol symbol = identifier.symbol();
-      if (!JUtils.isLocalVariable(symbol) || JUtils.isParameter(symbol)) {
+      if (!symbol.isLocalVariable() || symbol.isParameter()) {
         return;
       }
       VariableTree declaration = (VariableTree) symbol.declaration();

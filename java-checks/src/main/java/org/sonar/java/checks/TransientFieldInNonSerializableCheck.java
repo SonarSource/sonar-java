@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -56,7 +55,7 @@ public class TransientFieldInNonSerializableCheck extends IssuableSubscriptionVi
   }
 
   private static boolean isNotSerializable(Symbol.TypeSymbol symbol) {
-    for (Type superType : JUtils.superTypes(symbol)) {
+    for (Type superType : symbol.superTypes()) {
       if (superType.isUnknown()) {
         return false;
       }

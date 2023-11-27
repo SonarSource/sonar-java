@@ -228,28 +228,6 @@ class JUtilsTest {
     }
   }
 
-  @Nested
-  class IsAnnotation {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("@interface Anno { Unknown u; }");
-    private final ClassTreeImpl anno = firstClass(cu);
-
-    @Test
-    void annotation() {
-      assertThat(JUtils.isAnnotation(anno.symbol())).isTrue();
-    }
-
-    @Test
-    void simple_type_is_not_an_annotation() {
-      assertThat(JUtils.isAnnotation(OBJECT_TYPE.symbol())).isFalse();
-    }
-
-    @Test
-    void unresolved_type_is_not_an_annotation() {
-      VariableTreeImpl u = firstField(anno);
-      assertThat(JUtils.isAnnotation(u.type().symbolType().symbol())).isFalse();
-    }
-  }
-
   @Test
   void effectivelyFinal() {
     JavaTree.CompilationUnitTreeImpl cu = test("class A { void foo(Object o) { int i = 42; int j = 43; j++; foo(i); } }");
@@ -260,10 +238,10 @@ class JUtilsTest {
     VariableTreeImpl j = (VariableTreeImpl) body.get(1);
 
     assertThat(i.symbol().isVariableSymbol()).isTrue();
-    assertThat(JUtils.isEffectivelyFinal((Symbol.VariableSymbol) i.symbol())).isTrue();
+    assertThat(((Symbol.VariableSymbol) i.symbol()).isEffectivelyFinal()).isTrue();
 
     assertThat(j.symbol().isVariableSymbol()).isTrue();
-    assertThat(JUtils.isEffectivelyFinal((Symbol.VariableSymbol) j.symbol())).isFalse();
+    assertThat(((Symbol.VariableSymbol) j.symbol()).isEffectivelyFinal()).isFalse();
   }
 
   @Test
@@ -276,7 +254,7 @@ class JUtilsTest {
     Symbol.MethodSymbol methodSymbol = mit.methodSymbol();
     Symbol symbol = methodSymbol.declarationParameters().get(0);
     assertThat(symbol.isVariableSymbol()).isTrue();
-    assertThat(JUtils.isEffectivelyFinal((Symbol.VariableSymbol) symbol)).isFalse();
+    assertThat(((Symbol.VariableSymbol) symbol).isEffectivelyFinal()).isFalse();
   }
 
   @Nested
@@ -292,25 +270,25 @@ class JUtilsTest {
     void local_variable() {
       MethodTreeImpl m = nthMethod(c, 2);
       VariableTreeImpl localVariable = (VariableTreeImpl) m.block().body().get(0);
-      assertThat(JUtils.isLocalVariable(localVariable.symbol())).isTrue();
+      assertThat(localVariable.symbol().isLocalVariable()).isTrue();
     }
 
     @Test
     void variable_from_initializer_is_local_variable() {
       BlockTree staticInitializer = (BlockTree) c.members().get(0);
       VariableTreeImpl v = (VariableTreeImpl) staticInitializer.body().get(0);
-      assertThat(JUtils.isLocalVariable(v.symbol())).isTrue();
+      assertThat(v.symbol().isLocalVariable()).isTrue();
     }
 
     @Test
     void field_is_not_a_local_variable() {
       VariableTreeImpl field = nthField(c, 1);
-      assertThat(JUtils.isLocalVariable(field.symbol())).isFalse();
+      assertThat(field.symbol().isLocalVariable()).isFalse();
     }
 
     @Test
     void type_symbol_is_not_a_local_variable() {
-      assertThat(JUtils.isLocalVariable(c.symbol())).isFalse();
+      assertThat(c.symbol().isLocalVariable()).isFalse();
     }
   }
 
@@ -330,24 +308,24 @@ class JUtilsTest {
     @Test
     void field_is_not_parameter() {
       VariableTreeImpl field = firstField(c);
-      assertThat(JUtils.isParameter(field.symbol())).isFalse();
+      assertThat(field.symbol().isParameter()).isFalse();
     }
 
     @Test
     void local_variable_is_not_parameter() {
       VariableTreeImpl localVariable = (VariableTreeImpl) m.block().body().get(0);
-      assertThat(JUtils.isParameter(localVariable.symbol())).isFalse();
+      assertThat(localVariable.symbol().isParameter()).isFalse();
     }
 
     @Test
     void parameter() {
       VariableTreeImpl p = (VariableTreeImpl) m.parameters().get(0);
-      assertThat(JUtils.isParameter(p.symbol())).isTrue();
+      assertThat(p.symbol().isParameter()).isTrue();
     }
 
     @Test
     void not_a_variable_is_not_a_parameter() {
-      assertThat(JUtils.isParameter(OBJECT_TYPE.symbol())).isFalse();
+      assertThat(OBJECT_TYPE.symbol().isParameter()).isFalse();
     }
 
     @Test
@@ -355,7 +333,7 @@ class JUtilsTest {
       ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(1);
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
       IdentifierTreeImpl arg0 = (IdentifierTreeImpl) mit.arguments().get(0);
-      assertThat(JUtils.isParameter(arg0.symbol())).isFalse();
+      assertThat(arg0.symbol().isParameter()).isFalse();
     }
 
     @Test
@@ -363,7 +341,7 @@ class JUtilsTest {
       ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(2);
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
       Symbol.MethodSymbol symbol = mit.methodSymbol();
-      assertThat(JUtils.isParameter(symbol.declarationParameters().get(0))).isTrue();
+      assertThat(symbol.declarationParameters().get(0).isParameter()).isTrue();
     }
   }
 
@@ -379,14 +357,14 @@ class JUtilsTest {
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
       IdentifierTreeImpl thisArg = (IdentifierTreeImpl) mit.arguments().get(0);
       assertThat(thisArg.symbol().isVariableSymbol()).isTrue();
-      assertThat(JUtils.constantValue((Symbol.VariableSymbol) thisArg.symbol())).isEmpty();
+      assertThat(((Symbol.VariableSymbol) thisArg.symbol()).constantValue()).isEmpty();
     }
 
     @Test
     void static_non_final_field_can_not_be_evaluated() {
       VariableTreeImpl field = firstField(c);
       assertThat(field.symbol().isVariableSymbol()).isTrue();
-      assertThat(JUtils.constantValue((Symbol.VariableSymbol) field.symbol())).isEmpty();
+      assertThat(((Symbol.VariableSymbol) field.symbol()).constantValue()).isEmpty();
     }
 
     @Test
@@ -396,7 +374,7 @@ class JUtilsTest {
       Symbol.MethodSymbol methodSymbol = mit.methodSymbol();
       Symbol symbol = methodSymbol.declarationParameters().get(0);
       assertThat(symbol.isVariableSymbol()).isTrue();
-      assertThat(JUtils.constantValue((Symbol.VariableSymbol) symbol)).isEmpty();
+      assertThat(((Symbol.VariableSymbol) symbol).constantValue()).isEmpty();
     }
 
     @Test
@@ -405,22 +383,22 @@ class JUtilsTest {
       ClassTreeImpl c = firstClass(cu);
 
       Symbol.VariableSymbol shortConstant = cu.sema.variableSymbol(firstField(c).variableBinding);
-      assertThat(JUtils.constantValue(shortConstant).orElseThrow(AssertionError::new))
+      assertThat(shortConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
       Symbol.VariableSymbol charConstant = cu.sema.variableSymbol(nthField(c, 1).variableBinding);
-      assertThat(JUtils.constantValue(charConstant).orElseThrow(AssertionError::new))
+      assertThat(charConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
       Symbol.VariableSymbol byteConstant = cu.sema.variableSymbol(nthField(c, 2).variableBinding);
-      assertThat(JUtils.constantValue(byteConstant).orElseThrow(AssertionError::new))
+      assertThat(byteConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
       Symbol.VariableSymbol booleanConstant = cu.sema.variableSymbol(nthField(c, 3).variableBinding);
-      assertThat(JUtils.constantValue(booleanConstant).orElseThrow(AssertionError::new))
+      assertThat(booleanConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Boolean.class)
         .isEqualTo(Boolean.FALSE);
     }
@@ -435,18 +413,18 @@ class JUtilsTest {
 
     @Test
     void Objects_has_no_supertypes() {
-      assertThat(JUtils.superTypes(OBJECT_TYPE.symbol())).isEmpty();
+      assertThat(OBJECT_TYPE.symbol().superTypes()).isEmpty();
     }
 
     @Test
     void unresolved_type_has_no_supertypes() {
       VariableTreeImpl u = firstField(c);
-      assertThat(JUtils.superTypes(u.type().symbolType().symbol())).isEmpty();
+      assertThat(u.type().symbolType().symbol().superTypes()).isEmpty();
     }
 
     @Test
     void unresolved_types_are_also_part_of_supertypes() {
-      Set<Type> superTypes = JUtils.superTypes(c.symbol());
+      Set<Type> superTypes = c.symbol().superTypes();
       assertThat(superTypes).hasSize(3);
       assertThat(superTypes.stream().map(Type::name)).containsOnly("Object", "Serializable", "Unknown");
     }
@@ -454,7 +432,7 @@ class JUtilsTest {
     @Test
     void supertypes_are_called_in_all_hierarchy() {
       ClassTreeImpl b = nthClass(cu, 1);
-      Set<Type> superTypes = JUtils.superTypes(b.symbol());
+      Set<Type> superTypes = b.symbol().superTypes();
       assertThat(superTypes).hasSize(7);
       assertThat(superTypes.stream().map(Type::name)).containsOnly("C", "Object", "Serializable", "Unknown", "List", "Collection", "Iterable");
     }
@@ -468,9 +446,9 @@ class JUtilsTest {
     ClassTreeImpl b = firstClass(a);
     ClassTreeImpl c = firstClass(b);
 
-    assertThat(JUtils.outermostClass(aTypeSymbol)).isSameAs(aTypeSymbol);
-    assertThat(JUtils.outermostClass(b.symbol())).isSameAs(aTypeSymbol);
-    assertThat(JUtils.outermostClass(c.symbol())).isSameAs(aTypeSymbol);
+    assertThat(aTypeSymbol.outermostClass()).isSameAs(aTypeSymbol);
+    assertThat(b.symbol().outermostClass()).isSameAs(aTypeSymbol);
+    assertThat(c.symbol().outermostClass()).isSameAs(aTypeSymbol);
   }
 
   @Nested
@@ -808,7 +786,7 @@ class JUtilsTest {
     void direct_supertypes_might_be_equal_to_all_supertypes() {
       ClassTreeImpl c = firstClass(cu);
       Set<Type> directSuperTypes = JUtils.directSuperTypes(c.symbol().type());
-      Set<Type> allSuperTypes = JUtils.superTypes(c.symbol());
+      Set<Type> allSuperTypes = c.symbol().superTypes();
       assertThat(directSuperTypes)
         .hasSize(3)
         .isEqualTo(allSuperTypes);
@@ -819,7 +797,7 @@ class JUtilsTest {
     void direct_supertypes_is_generaly_a_subset_of_all_supertypes() {
       ClassTreeImpl b = nthClass(cu, 1);
       Set<Type> directSuperTypes = JUtils.directSuperTypes(b.symbol().type());
-      Set<Type> allSuperTypes = JUtils.superTypes(b.symbol());
+      Set<Type> allSuperTypes = b.symbol().superTypes();
       assertThat(directSuperTypes).hasSize(2);
       assertThat(directSuperTypes.stream().map(Type::name)).containsOnly("C", "List");
       assertThat(allSuperTypes)

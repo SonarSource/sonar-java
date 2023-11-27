@@ -51,8 +51,6 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.model.JUtils.isLocalVariable;
-
 @Rule(key = "S1854")
 public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
@@ -156,7 +154,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     ExpressionTree lhs = ExpressionUtils.skipParentheses(element.variable());
     if (lhs.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) lhs).symbol();
-      if (isLocalVariable(symbol)
+      if (symbol.isLocalVariable()
         && !out.contains(symbol)
         && (element.is(Tree.Kind.ASSIGNMENT) || isParentExpressionStatement(element))
         && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(symbol.name())) {
@@ -177,7 +175,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
   private static void handleIdentifier(Set<Symbol> out, Set<Tree> assignmentLHS, IdentifierTree element) {
     Symbol symbol = element.symbol();
-    if (!assignmentLHS.contains(element) && isLocalVariable(symbol)) {
+    if (!assignmentLHS.contains(element) && symbol.isLocalVariable()) {
       out.add(symbol);
     }
   }
@@ -234,7 +232,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     ExpressionTree expression = element.expression();
     if (isParentExpressionStatement(element) && expression.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) expression).symbol();
-      if (isLocalVariable(symbol) && !out.contains(symbol)) {
+      if (symbol.isLocalVariable() && !out.contains(symbol)) {
         createIssue(element, symbol);
       }
     }
@@ -244,7 +242,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     ExpressionTree expression = ExpressionUtils.skipParentheses(element.expression());
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) expression).symbol();
-      if (isLocalVariable(symbol) && !out.contains(symbol)) {
+      if (symbol.isLocalVariable() && !out.contains(symbol)) {
         createIssue(element, symbol);
       }
     }
@@ -306,7 +304,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
       ExpressionTree lhs = ExpressionUtils.skipParentheses(tree.variable());
       if (lhs.is(Tree.Kind.IDENTIFIER)) {
         Symbol symbol = ((IdentifierTree) lhs).symbol();
-        if (isLocalVariable(symbol)) {
+        if (symbol.isLocalVariable()) {
           assignedLocalVars.add(symbol);
         }
         super.visitAssignmentExpression(tree);

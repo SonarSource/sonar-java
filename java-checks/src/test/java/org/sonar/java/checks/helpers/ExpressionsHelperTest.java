@@ -19,10 +19,9 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.lang.reflect.Constructor;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Constructor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 

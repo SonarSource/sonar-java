@@ -139,6 +139,7 @@ class JMethodSymbolTest {
     assertThat(parameterSymbol1.declaration()).isNull();
     assertThat(parameterSymbol1.metadata()).isSameAs(parameterSymbol2.metadata());
     assertThat(parameterSymbol1.isVariableSymbol()).isTrue();
+    assertThat(parameterSymbol1.isLocalVariable()).isFalse();
     assertThat(parameterSymbol1.isFinal()).isFalse();
   }
 
@@ -442,7 +443,6 @@ class JMethodSymbolTest {
 
     assertThat(symbol.declarationParameters()).hasSize(6);
   }
-
 
   private static JMethodSymbol getJMethodSymbolFromClassText(String classText){
     return getJMethodSymbolFromClassText(classText, false);

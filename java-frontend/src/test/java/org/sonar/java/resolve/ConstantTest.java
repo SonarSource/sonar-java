@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -56,7 +55,7 @@ class ConstantTest {
           Object value = null;
           Symbol symbol = variableTree.symbol();
           if (symbol.isVariableSymbol()) {
-            value = JUtils.constantValue((Symbol.VariableSymbol) symbol).orElse(null);
+            value = ((Symbol.VariableSymbol) symbol).constantValue().orElse(null);
           }
           valuesByFieldName.put(variableTree.simpleName().name(), value);
         }

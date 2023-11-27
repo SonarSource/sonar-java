@@ -19,12 +19,10 @@
  */
 package org.sonar.java.se;
 
-import java.util.HashSet;
-import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.Preconditions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -32,10 +30,8 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonarsource.analyzer.commons.collections.PCollections;
-import org.sonarsource.analyzer.commons.collections.PMap;
-import org.sonarsource.analyzer.commons.collections.PStack;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
+import org.sonar.java.Preconditions;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;
@@ -50,8 +46,10 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-
-import static org.sonar.java.model.JUtils.isLocalVariable;
+import org.sonarsource.analyzer.commons.collections.PCollections;
+import org.sonarsource.analyzer.commons.collections.PMap;
+import org.sonarsource.analyzer.commons.collections.PStack;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 public class ProgramState {
 
@@ -413,7 +411,7 @@ public class ProgramState {
 
       @Override
       public void accept(Symbol symbol, SymbolicValue symbolicValue) {
-        if (isLocalVariable(symbol) && !liveVariables.contains(symbol) && !protectedSymbolicValues.contains(symbolicValue)) {
+        if (symbol.isLocalVariable() && !liveVariables.contains(symbol) && !protectedSymbolicValues.contains(symbolicValue)) {
           newProgramState = true;
           newValues = newValues.remove(symbol);
           newReferences = decreaseReference(newReferences, symbolicValue);

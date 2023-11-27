@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -33,6 +34,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
+  // cache for this.constantValue()
+  private boolean constantValueComputed = false;
+  private Optional<Object> constantValue;
+
   JVariableSymbol(JSema sema, IVariableBinding variableBinding) {
     super(sema, variableBinding);
   }
@@ -41,6 +46,43 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
   @Override
   public VariableTree declaration() {
     return (VariableTree) super.declaration();
+  }
+
+  @Override
+  public boolean isEffectivelyFinal() {
+    return ((IVariableBinding)binding).isEffectivelyFinal();
+  }
+
+  @Override
+  public Optional<Object> constantValue() {
+    if (!constantValueComputed) {
+      constantValueComputed = true;
+      if (!isFinal() || !isStatic()) {
+        constantValue = Optional.empty();
+      } else {
+        Object c = ((IVariableBinding) binding).getConstantValue();
+        if (c instanceof Short) {
+          c = Integer.valueOf((Short) c);
+        } else if (c instanceof Byte) {
+          c = Integer.valueOf((Byte) c);
+        } else if (c instanceof Character) {
+          c = Integer.valueOf((Character) c);
+        }
+        constantValue = Optional.ofNullable(c);
+      }
+    }
+    return constantValue;
+  }
+
+  @Override
+  public boolean isLocalVariable() {
+    Symbol owner = owner();
+    return owner != null && owner.isMethodSymbol();
+  }
+
+  @Override
+  public boolean isParameter() {
+    return ((IVariableBinding) binding).isParameter();
   }
 
 
@@ -97,6 +139,26 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
     @Override
     public VariableTree declaration() {
       return null;
+    }
+
+    @Override
+    public boolean isEffectivelyFinal() {
+      return false;
+    }
+
+    @Override
+    public Optional<Object> constantValue() {
+      return Optional.empty();
+    }
+
+    @Override
+    public boolean isLocalVariable() {
+      return false;
+    }
+
+    @Override
+    public boolean isParameter() {
+      return true;
     }
 
     @Override

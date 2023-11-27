@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.CheckForNull;
 
 import javax.annotation.Nullable;
@@ -209,6 +210,21 @@ public class Symbols {
     @Override
     public ClassTree declaration() {
       return null;
+    }
+
+    @Override
+    public Set<Type> superTypes() {
+      return Collections.emptySet();
+    }
+
+    @Override
+    public TypeSymbol outermostClass() {
+      return Symbols.unknownTypeSymbol;
+    }
+
+    @Override
+    public boolean isAnnotation() {
+      return false;
     }
 
     @Override

@@ -20,7 +20,6 @@
 package org.sonar.plugins.java.api;
 
 import org.sonar.java.annotations.Beta;
-import org.sonar.plugins.java.api.JavaVersion;
 
 /**
  * Implementing this interface allows a check to be executed - or not - during analysis, depending

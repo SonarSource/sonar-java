@@ -19,8 +19,16 @@
  */
 package org.sonar.java.cfg;
 
-import org.sonarsource.analyzer.commons.collections.ListUtils;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -32,19 +40,8 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import static org.sonar.java.model.JUtils.isLocalVariable;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 public class LiveVariables {
 
@@ -195,7 +192,7 @@ public class LiveVariables {
   }
 
   private boolean includeSymbol(Symbol symbol) {
-    return isLocalVariable(symbol) || (includeFields && isField(symbol));
+    return symbol.isLocalVariable() || (includeFields && isField(symbol));
   }
 
   private static boolean isField(Symbol symbol) {

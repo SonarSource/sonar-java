@@ -20,9 +20,10 @@
 package org.sonar.java.model;
 
 import java.io.File;
-import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
@@ -146,6 +147,9 @@ class SymbolsTest {
     assertThat(unknownTypeSymbol.interfaces()).isEmpty();
     assertThat(unknownTypeSymbol.memberSymbols()).isEmpty();
     assertThat(unknownTypeSymbol.lookupSymbols("whatever")).isEmpty();
+    assertThat(unknownTypeSymbol.isAnnotation()).isFalse();
+    assertThat(unknownTypeSymbol.outermostClass()).isEqualTo(Symbols.unknownTypeSymbol);
+    assertThat(unknownTypeSymbol.superTypes()).isEmpty();
   }
 
   @Test
@@ -193,4 +197,20 @@ class SymbolsTest {
     assertThat(unknownSymbol.type()).isEqualTo(Symbols.unknownType);
     assertThat(unknownSymbol.enclosingClass()).isEqualTo(Symbols.unknownTypeSymbol);
   }
+
+  @Test
+  void testIsAnnotation() {
+    JSema sema = ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")).sema;
+    Type objectType = sema.type(sema.resolveType("java.lang.Object"));
+    JavaTree.CompilationUnitTreeImpl cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("@interface Anno { Unknown u; }");
+    ClassTreeImpl anno = (ClassTreeImpl) cu.types().get(0);
+
+    assertThat(anno.symbol().isAnnotation()).isTrue();
+
+    assertThat(objectType.symbol().isAnnotation()).isFalse();
+
+    VariableTreeImpl u = (VariableTreeImpl) anno.members().get(0);
+    assertThat(u.type().symbolType().symbol().isAnnotation()).isFalse();
+  }
+
 }

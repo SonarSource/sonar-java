@@ -33,7 +33,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -273,7 +272,7 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
     }
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) symbol;
-    if (!(variableSymbol.isFinal() || JUtils.isEffectivelyFinal(variableSymbol))) {
+    if (!(variableSymbol.isFinal() || variableSymbol.isEffectivelyFinal())) {
       return Optional.empty();
     }
     VariableTree declaration = variableSymbol.declaration();

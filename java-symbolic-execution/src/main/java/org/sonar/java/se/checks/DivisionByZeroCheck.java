@@ -29,7 +29,6 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
@@ -399,7 +398,7 @@ public class DivisionByZeroCheck extends SECheck {
       }
       Type type = identifier.symbolType();
       if (type.isPrimitive() || type.isPrimitiveWrapper()) {
-        JUtils.constantValue((Symbol.VariableSymbol) symbol)
+        ((Symbol.VariableSymbol) symbol).constantValue()
           .filter(Number.class::isInstance)
           .map(Number.class::cast)
           .ifPresent(num -> {

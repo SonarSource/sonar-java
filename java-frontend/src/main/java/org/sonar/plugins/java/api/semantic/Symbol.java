@@ -21,6 +21,8 @@ package org.sonar.plugins.java.api.semantic;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -115,6 +117,20 @@ public interface Symbol {
   Tree declaration();
 
   /**
+   * @return true if this symbol represents a variable which is a local variable of a method.
+   */
+  default boolean isLocalVariable() {
+    return false;
+  }
+
+  /**
+   * @return true if this symbol represents a variable which is a parameter of a method.
+   */
+  default boolean isParameter() {
+    return false;
+  }
+
+  /**
    * Symbol for a type : class, enum, interface or annotation.
    */
   interface TypeSymbol extends Symbol {
@@ -150,6 +166,21 @@ public interface Symbol {
     @Override
     ClassTree declaration();
 
+    /**
+     * @return the set of types that are super types of this type (extended classes and implemented interfaces).
+     */
+    Set<Type> superTypes();
+
+    /**
+     * @return the most outer class containing this symbol.
+     */
+    Symbol.TypeSymbol outermostClass();
+
+    /**
+     * @return true if this type is an annotation.
+     */
+    boolean isAnnotation();
+
   }
 
   /**
@@ -160,6 +191,17 @@ public interface Symbol {
     @Nullable
     @Override
     VariableTree declaration();
+
+    /**
+     * @return true if this variable is effectively final.
+     * A variable is effectively final if it is not explicitly declared final but never reassigned after initialization.
+     */
+    boolean isEffectivelyFinal();
+
+    /**
+     * @return the constant value of this variable if it has one.
+     */
+    Optional<Object> constantValue();
 
   }
 

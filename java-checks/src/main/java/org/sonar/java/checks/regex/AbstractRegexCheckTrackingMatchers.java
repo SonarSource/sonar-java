@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -247,7 +246,7 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
   private static boolean isPrivateEffectivelyFinalVariable(Symbol symbol) {
     return (symbol.isPrivate() || symbol.owner().isMethodSymbol())
       && symbol.isVariableSymbol()
-      && (symbol.isFinal() || JUtils.isEffectivelyFinal((Symbol.VariableSymbol) symbol));
+      && (symbol.isFinal() || ((Symbol.VariableSymbol) symbol).isEffectivelyFinal());
   }
 
   private static Optional<Symbol> getAssignedPrivateEffectivelyFinalVariable(MethodInvocationTree mit) {

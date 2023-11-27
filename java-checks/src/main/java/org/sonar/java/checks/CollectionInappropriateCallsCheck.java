@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -155,7 +154,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     if (type.is(genericTypeName)) {
       return type;
     }
-    return JUtils.superTypes(type.symbol())
+    return type.symbol().superTypes()
       .stream()
       .filter(superType -> superType.is(genericTypeName))
       .findFirst()

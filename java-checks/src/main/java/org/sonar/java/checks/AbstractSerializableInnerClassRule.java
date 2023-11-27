@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -62,7 +61,7 @@ public abstract class AbstractSerializableInnerClassRule extends IssuableSubscri
   }
 
   private static boolean isInnerClass(Symbol.TypeSymbol typeSymbol) {
-    return !typeSymbol.equals(JUtils.outermostClass(typeSymbol));
+    return !typeSymbol.equals(typeSymbol.outermostClass());
   }
 
   protected boolean isSerializable(Type type) {
