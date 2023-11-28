@@ -36,22 +36,31 @@ public class JavaWriteCacheImpl implements JavaWriteCache {
   @Override
   public void write(String key, InputStream data) {
     PerformanceMeasure.Duration duration = PerformanceMeasure.start("JavaWriteCache.write");
-    this.writeCache.write(key, data);
-    duration.stop();
+    try {
+      this.writeCache.write(key, data);
+    } finally {
+      duration.stop();
+    }
   }
 
   @Override
   public void write(String key, byte[] data) {
     PerformanceMeasure.Duration duration = PerformanceMeasure.start("JavaWriteCache.write");
-    this.writeCache.write(key, data);
-    duration.stop();
+    try {
+      this.writeCache.write(key, data);
+    } finally {
+      duration.stop();
+    }
   }
 
   @Override
   public void copyFromPrevious(String key) {
     PerformanceMeasure.Duration duration = PerformanceMeasure.start("JavaWriteCache.copyFromPrevious");
-    this.writeCache.copyFromPrevious(key);
-    duration.stop();
+    try {
+      this.writeCache.copyFromPrevious(key);
+    } finally {
+      duration.stop();
+    }
   }
 
   @Override

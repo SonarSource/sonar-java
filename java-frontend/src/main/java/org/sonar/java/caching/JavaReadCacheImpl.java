@@ -32,7 +32,7 @@ import org.sonarsource.performance.measure.PerformanceMeasure;
 public class JavaReadCacheImpl implements JavaReadCache {
   private static final Logger LOG = LoggerFactory.getLogger(JavaReadCacheImpl.class);
 
-  private ReadCache readCache;
+  private final ReadCache readCache;
 
   public JavaReadCacheImpl(ReadCache readCache) {
     this.readCache = readCache;
@@ -41,8 +41,12 @@ public class JavaReadCacheImpl implements JavaReadCache {
   @Override
   public InputStream read(String key) {
     PerformanceMeasure.Duration duration = PerformanceMeasure.start("JavaReadCache.read");
-    InputStream read = readCache.read(key);
-    duration.stop();
+    InputStream read;
+    try {
+      read = readCache.read(key);
+    } finally {
+      duration.stop();
+    }
     return read;
   }
 
@@ -50,18 +54,19 @@ public class JavaReadCacheImpl implements JavaReadCache {
   @Override
   public byte[] readBytes(String key) {
     PerformanceMeasure.Duration duration = PerformanceMeasure.start("JavaReadCache.readBytes");
-    if (readCache.contains(key)) {
-      try (var in = read(key)) {
-        return in.readAllBytes();
-      } catch (IOException e) {
-        throw new CacheReadException(String.format("Unable to read data for key '%s'", key), e);
-      } finally {
-        duration.stop();
+    try {
+      if (readCache.contains(key)) {
+        try (var in = read(key)) {
+          return in.readAllBytes();
+        } catch (IOException e) {
+          throw new CacheReadException(String.format("Unable to read data for key '%s'", key), e);
+        }
+      } else {
+        LOG.trace("Cache miss for key '{}'", key);
+        return null;
       }
-    } else {
-      LOG.trace("Cache miss for key '{}'", key);
+    } finally {
       duration.stop();
-      return null;
     }
   }
 
