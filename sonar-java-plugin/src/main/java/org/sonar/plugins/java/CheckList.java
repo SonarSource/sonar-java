@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.sonar.java.checks.AbsOnNegativeCheck;
 import org.sonar.java.checks.AbstractClassNoFieldShouldBeInterfaceCheck;
 import org.sonar.java.checks.AbstractClassWithoutAbstractMethodCheck;
@@ -455,6 +454,7 @@ import org.sonar.java.checks.design.BrainMethodCheck;
 import org.sonar.java.checks.design.ClassCouplingCheck;
 import org.sonar.java.checks.design.ClassImportCouplingCheck;
 import org.sonar.java.checks.design.SingletonUsageCheck;
+import org.sonar.java.checks.ml.CommentedOutCodeLineMLCheck;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -775,6 +775,7 @@ public final class CheckList {
     CombineCatchCheck.class,
     CommentRegularExpressionCheck.class,
     CommentedOutCodeLineCheck.class,
+    CommentedOutCodeLineMLCheck.class,
     CompareToNotOverloadedCheck.class,
     CompareToResultTestCheck.class,
     CompareToReturnValueCheck.class,
