@@ -62,14 +62,15 @@ common_build_definition: &COMMON_BUILD_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
 
-build_compile_task:
+# Only compile without "test and sonar:sonar". Note: Do not rename "build", it is used by "Check Releasability"
+build_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
     - source cirrus-env BUILD
     - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws'
   cleanup_before_cache_script: cleanup_maven_repository
 
-build_test_analyze_task:
+test_analyze_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
     - source cirrus-env BUILD
@@ -110,7 +111,7 @@ qa_os_win_task:
 
 plugin_qa_task:
   depends_on:
-    - build_compile
+    - build
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
@@ -135,7 +136,7 @@ plugin_qa_task:
 
 sanity_task:
   depends_on:
-    - build_compile
+    - build
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
@@ -153,7 +154,7 @@ sanity_task:
 
 ruling_task:
   depends_on:
-    - build_compile
+    - build
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
@@ -181,7 +182,7 @@ ruling_task:
 
 ruling_win_task:
   depends_on:
-    - build_compile
+    - build
   <<: *ONLY_SONARSOURCE_QA
   <<: *WINDOWS_VM_DEFINITION
   maven_cache:
@@ -202,7 +203,7 @@ ruling_win_task:
 
 autoscan_task:
   depends_on:
-    - build_compile
+    - build
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
@@ -224,8 +225,8 @@ autoscan_task:
 
 promote_task:
   depends_on:
-    - build_compile
-    - build_test_analyze
+    - build
+    - test_analyze
     - qa_os_win
     - sanity
     - ruling
