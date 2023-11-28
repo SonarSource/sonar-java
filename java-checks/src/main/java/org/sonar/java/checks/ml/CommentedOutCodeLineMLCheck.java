@@ -20,10 +20,14 @@
 package org.sonar.java.checks.ml;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.sonar.check.Rule;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.ml.feature_engineering.CommentPreparation;
 import org.sonar.ml.feature_engineering.VocabularyAndSemicolonFeatures;
@@ -32,6 +36,7 @@ import org.sonar.ml.model.LogisticRegressionModel;
 import org.sonar.ml.tokenization.RoBERTaBPEEncoder;
 import org.sonar.ml.tokenization.RoBERTaTokenizer;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -40,12 +45,12 @@ import static org.sonar.ml.feature_engineering.CommentPreparation.CommentType.JA
 import static org.sonar.ml.feature_engineering.VocabularyAndSemicolonFeatures.loadVocabulary;
 import static org.sonar.ml.model.LinearRegressionModel.loadParams;
 
-@Rule(key = "S125")
+@Rule(key = "S125-ML")
 public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MODEL_LR_100_FILENAME = "/Users/angelo.buono/IdeaProjects/sonar-java/java-checks/src/main/resources/ml/S125/model-lr-100.json";
-  private static final String MERGES_TXT = "/Users/angelo.buono/IdeaProjects/sonar-java/java-checks/src/main/resources/ml/S125/merges.txt";
-  private static final String VOCAB_100_FILENAME = "/Users/angelo.buono/IdeaProjects/sonar-java/java-checks/src/main/resources/ml/S125/vocab-100.json";
+  private static final String MODEL_LR_100_FILENAME = "ml/S125/model-lr-100.json";
+  private static final String MERGES_TXT = "ml/S125/merges.txt";
+  private static final String VOCAB_100_FILENAME = "ml/S125/vocab-100.json";
   private static final double DECISION_THRESHOLD = 0.83d;
   public static final int MAX_TOKENS_PER_STRING = 500;
 
@@ -58,14 +63,20 @@ public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
     commentPreparation = CommentPreparation.newInstance();
 
     try {
-      tokenizer = new RoBERTaTokenizer(RoBERTaBPEEncoder.from(new FileInputStream(MERGES_TXT)));
-      VocabularyAndSemicolonFeatures.Vocabulary vocabulary = loadVocabulary(new FileInputStream(VOCAB_100_FILENAME));
+      tokenizer = new RoBERTaTokenizer(RoBERTaBPEEncoder.from(loadResource(MERGES_TXT)));
+      VocabularyAndSemicolonFeatures.Vocabulary vocabulary = loadVocabulary(loadResource(VOCAB_100_FILENAME));
       featureExtractor = new VocabularyAndSemicolonFeatures(vocabulary, MAX_TOKENS_PER_STRING);
-      LinearRegressionModel.ModelParams linearRegressionParams = loadParams(new FileInputStream(MODEL_LR_100_FILENAME));
+      LinearRegressionModel.ModelParams linearRegressionParams = loadParams(loadResource(MODEL_LR_100_FILENAME));
       model = new LogisticRegressionModel(new LinearRegressionModel(linearRegressionParams), DECISION_THRESHOLD);
+
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new IllegalArgumentException("Could setup ML Model.", e);
     }
+  }
+
+  private static FileInputStream loadResource(String resourceName) throws FileNotFoundException {
+    var resourcePath = CommentedOutCodeLineMLCheck.class.getClassLoader().getResource(resourceName);
+    return new FileInputStream(Objects.requireNonNull(resourcePath).getFile());
   }
 
   @Override
@@ -98,20 +109,19 @@ public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
   }
 
   private void reportCommentedOutCode(SyntaxTrivia syntaxTrivia, String[] lines) {
-    for (int lineOffset = 0; lineOffset < lines.length; lineOffset++) {
+    // todo figure out the logic to identify where the commented out code starts! O.O -> Binary Search?
+    //  for now just reporting at the beginning of the comment
+    int lineOffset = 0;
+    String line = lines[lineOffset];
 
-      // todo figure out the logic to identify where the commented out code starts! O.O -> Binary Search?
+    int startLine = LineUtils.startLine(syntaxTrivia) + lineOffset;
+    int startColumnOffset = (lineOffset == 0 ? Position.startOf(syntaxTrivia).columnOffset() : 0);
 
-//      String line = lines[lineOffset];
-//
-//      int startLine = LineUtils.startLine(syntaxTrivia) + lineOffset;
-//      int startColumnOffset = (lineOffset == 0 ? Position.startOf(syntaxTrivia).columnOffset() : 0);
-//
-//      ((DefaultJavaFileScannerContext) this.context)
-//        .reportIssue(createAnalyzerMessage(startLine, startColumnOffset, line, "Code"));
-    }
+    ((DefaultJavaFileScannerContext) this.context)
+      .reportIssue(createAnalyzerMessage(startLine, startColumnOffset, line, "Code"));
   }
 
+  // todo: methods below are a copy of the methods in CommentedOutCodeLineCheck, should be refactored to a common place!
   private AnalyzerMessage createAnalyzerMessage(int startLine, int startColumn, String line, String message) {
     String lineWithoutCommentPrefix = line.replaceFirst("^(//|/\\*\\*?|[ \t]*\\*)?[ \t]*+", "");
     int prefixSize = line.length() - lineWithoutCommentPrefix.length();
