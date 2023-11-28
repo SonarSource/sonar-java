@@ -112,6 +112,7 @@
   <dependencyManagement>
     <dependencies>
 
+      <!-- todo: internal ML Java Library to make public! -->
       <dependency>
         <groupId>org.sonar.ml</groupId>
         <artifactId>ml-lib</artifactId>
