@@ -157,10 +157,9 @@ public abstract class JParserConfig {
         encodings.add(inputFile.charset().name());
       }
 
-      PerformanceMeasure.Duration batchPerformance = PerformanceMeasure.start("ParseAsBatch");
       ExecutionTimeReport executionTimeReport = new ExecutionTimeReport();
       ProgressMonitor monitor = new ProgressMonitor(isCanceled, analysisProgress);
-
+      PerformanceMeasure.Duration batchPerformance = PerformanceMeasure.start("ParseAsBatch");
       try {
         astParser().createASTs(sourceFilePaths.toArray(new String[0]), encodings.toArray(new String[0]), new String[0], new FileASTRequestor() {
           @Override
@@ -202,9 +201,9 @@ public abstract class JParserConfig {
           LOG.warn("Unexpected {}: {}", e.getClass().getName(), e.getMessage());
         }
       } finally {
+        batchPerformance.stop();
         // ExecutionTimeReport will not include the parsing time by file when using batch mode.
         executionTimeReport.reportAsBatch();
-        batchPerformance.stop();
         monitor.done();
       }
     }

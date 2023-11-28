@@ -46,6 +46,7 @@ public class PerformanceStatistics {
     Path performanceJsonFile = performanceDirectory.resolve("sonar.java.performance.measure.json");
     DurationMeasure measure = DurationMeasureFiles.fromJsonWithoutObservationCost(performanceJsonFile);
     measure.recursiveMergeOnUpperLevel("RegexParser");
+    measure.recursiveMergeOnUpperLevel("JavaWriteCache.write");
     Path performanceStatFile = performanceDirectory.resolve("sonar.java.performance.statistics.txt");
     DurationMeasureFiles.writeStatistics(performanceStatFile, measure, categoryNames, groupedMeasurePredicate);
   }
