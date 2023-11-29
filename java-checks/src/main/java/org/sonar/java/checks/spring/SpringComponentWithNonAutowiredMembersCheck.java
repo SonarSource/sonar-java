@@ -59,6 +59,7 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
 
   private static final List<String> SPRING_SINGLETON_ANNOTATION = Arrays.asList(
     "org.springframework.stereotype.Controller",
+    "org.springframework.web.bind.annotation.RestController",
     "org.springframework.stereotype.Service",
     "org.springframework.stereotype.Component",
     "org.springframework.stereotype.Repository");
