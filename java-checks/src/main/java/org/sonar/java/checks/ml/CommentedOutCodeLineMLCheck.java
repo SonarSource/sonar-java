@@ -19,13 +19,11 @@
  */
 package org.sonar.java.checks.ml;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
@@ -50,9 +48,9 @@ import static org.sonar.ml.model.LinearRegressionModel.loadParams;
 @Rule(key = "S125-ML")
 public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MODEL_LR_100_FILENAME = "ml/S125/model-lr-100.json";
-  private static final String MERGES_TXT = "ml/S125/merges.txt";
-  private static final String VOCAB_100_FILENAME = "ml/S125/vocab-100.json";
+  private static final String MODEL_LR_100_FILENAME = "/ml/S125/model-lr-100.json";
+  private static final String MERGES_TXT = "/ml/S125/merges.txt";
+  private static final String VOCAB_100_FILENAME = "/ml/S125/vocab-100.json";
   private static final double DECISION_THRESHOLD = 0.83d;
   public static final int MAX_TOKENS_PER_STRING = 500;
   private static final String MESSAGE = "This block of commented-out lines of code should be removed.";
@@ -77,9 +75,8 @@ public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static FileInputStream loadResource(String resourceName) throws FileNotFoundException {
-    var resourcePath = CommentedOutCodeLineMLCheck.class.getClassLoader().getResource(resourceName);
-    return new FileInputStream(Objects.requireNonNull(resourcePath).getFile());
+  private InputStream loadResource(String resourceName) {
+    return getClass().getResourceAsStream(resourceName);
   }
 
   @Override
