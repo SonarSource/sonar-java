@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.ml;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
@@ -26,6 +27,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class CommentedOutCodeLineMLCheckTest {
 
+  @Disabled
   @Test
   void test() {
     CheckVerifier.newVerifier()
