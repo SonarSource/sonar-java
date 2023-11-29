@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 public class S3749_DefaultAnnotations {
@@ -48,6 +49,11 @@ class ServiceHelloWorld {
 @Repository
 class RepositoryHelloWorld {
   protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+}
+
+@RestController
+class S3749_RestController{
+  protected String name = null; // Noncompliant
 }
 
 @Repository
