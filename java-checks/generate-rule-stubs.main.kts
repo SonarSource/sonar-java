@@ -44,7 +44,7 @@ val testPath = (listOf("src", "test", "java", "org", "sonar", "java", "checks") 
     acc.resolve(part)
   }
 
-val samplePath = (listOf("..", "java-checks-test-sources", "src", "main", "java", "checks") + checkQualifier + "${checkName}Sample.java")
+val samplePath = (listOf("..", "java-checks-test-sources", "default", "src", "main", "java", "checks") + checkQualifier + "${checkName}Sample.java")
   .fold(javaChecksModulePath) { acc, part ->
     acc.resolve(part)
   }
@@ -128,7 +128,7 @@ samplePath.writeText(
 )
 
 // Add check to check list
-val checkListPath = listOf("src", "main", "java", "org", "sonar", "java", "checks", "CheckList.java")
+val checkListPath = listOf("..", "sonar-java-plugin", "src", "main", "java", "org", "sonar", "plugins", "java", "CheckList.java")
   .fold(javaChecksModulePath) { acc, part ->
     acc.resolve(part)
   }
