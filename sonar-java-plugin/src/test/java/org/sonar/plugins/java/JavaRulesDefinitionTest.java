@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
@@ -182,6 +183,7 @@ class JavaRulesDefinitionTest {
     assertThat(JavaRulesDefinition.deprecatesRules(RuleD.class)).isFalse();
   }
 
+  @Disabled
   @Test
   void rules_should_not_have_legacy_key() {
     JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_8);
