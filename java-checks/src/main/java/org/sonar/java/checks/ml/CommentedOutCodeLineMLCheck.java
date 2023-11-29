@@ -22,14 +22,13 @@ package org.sonar.java.checks.ml;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
-import org.sonar.java.model.InternalSyntaxTrivia;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.ml.feature_engineering.CommentPreparation;
@@ -56,6 +55,7 @@ public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
   private static final String VOCAB_100_FILENAME = "ml/S125/vocab-100.json";
   private static final double DECISION_THRESHOLD = 0.83d;
   public static final int MAX_TOKENS_PER_STRING = 500;
+  private static final String MESSAGE = "This block of commented-out lines of code should be removed.";
 
   private final CommentPreparation commentPreparation;
   private final RoBERTaTokenizer tokenizer;
@@ -89,52 +89,51 @@ public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
-    for (SyntaxTrivia syntaxTrivia : mergeAdjacentSingleLineComments(syntaxToken.trivias())) {
 
+    List<AnalyzerMessage> issues = new ArrayList<>();
+    AnalyzerMessage previousRelatedIssue = null;
+    int previousCommentLine = -1;
+
+    for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
+      int currentCommentLine = LineUtils.startLine(syntaxTrivia);
+
+      if (currentCommentLine != previousCommentLine + 1 &&
+        currentCommentLine != previousCommentLine) {
+        previousRelatedIssue = null;
+      }
       String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
 
       if (containsCode(lines)) {
-        reportCommentedOutCode(syntaxTrivia, lines);
-      }
-    }
-  }
-
-  private static List<SyntaxTrivia> mergeAdjacentSingleLineComments(List<SyntaxTrivia> syntaxTrivias) {
-    var mergedTrivias = new LinkedList<SyntaxTrivia>();
-    var triviaToMerge = new LinkedList<SyntaxTrivia>();
-
-    for (SyntaxTrivia syntaxTrivia : syntaxTrivias) {
-      if (triviaToMerge.isEmpty()
-        || (sameCommentType(triviaToMerge.getLast(), syntaxTrivia) && contiguousComments(triviaToMerge.getLast(), syntaxTrivia))) {
-        triviaToMerge.add(syntaxTrivia);
-      } else {
-        mergedTrivias.add(mergeSyntaxTrivias(triviaToMerge));
-        triviaToMerge.clear();
-        triviaToMerge.add(syntaxTrivia);
+        previousRelatedIssue = collectIssues(issues, syntaxTrivia, previousRelatedIssue);
+        previousCommentLine = currentCommentLine;
       }
     }
 
-    if(!triviaToMerge.isEmpty()) {
-      mergedTrivias.add(mergeSyntaxTrivias(triviaToMerge));
+    DefaultJavaFileScannerContext scannerContext = (DefaultJavaFileScannerContext) this.context;
+    issues.forEach(scannerContext::reportIssue);
+  }
+
+  public AnalyzerMessage collectIssues(List<AnalyzerMessage> issues, SyntaxTrivia syntaxTrivia, @Nullable AnalyzerMessage previousRelatedIssue) {
+    String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
+    AnalyzerMessage issue = previousRelatedIssue;
+
+    for (int lineOffset = 0; lineOffset < lines.length; lineOffset++) {
+      String line = lines[lineOffset];
+
+      if (containsCode(List.of(line).toArray(String[]::new))) {
+        int startLine = LineUtils.startLine(syntaxTrivia) + lineOffset;
+        int startColumnOffset = (lineOffset == 0 ? Position.startOf(syntaxTrivia).columnOffset() : 0);
+
+        if (issue != null) {
+          issue.flows.add(Collections.singletonList(createAnalyzerMessage(startLine, startColumnOffset, line, "Code")));
+        } else {
+          issue = createAnalyzerMessage(startLine, startColumnOffset, line, MESSAGE);
+          issues.add(issue);
+        }
+      }
     }
 
-    return mergedTrivias;
-  }
-
-  private static boolean sameCommentType(SyntaxTrivia syntaxTrivia1, SyntaxTrivia syntaxTrivia2) {
-    return syntaxTrivia1.comment().startsWith("//") && syntaxTrivia2.comment().startsWith("//")
-      || (syntaxTrivia1.comment().startsWith("/*") && syntaxTrivia1.comment().endsWith("*/")
-        && syntaxTrivia2.comment().startsWith("/*") && syntaxTrivia2.comment().endsWith("*/"));
-  }
-
-  private static boolean contiguousComments(SyntaxTrivia syntaxTrivia1, SyntaxTrivia syntaxTrivia2) {
-    return syntaxTrivia1.range().end().line() + 1 == syntaxTrivia2.range().start().line();
-  }
-
-  private static SyntaxTrivia mergeSyntaxTrivias(List<SyntaxTrivia> syntaxTrivias) {
-    var mergedComments = syntaxTrivias.stream().map(SyntaxTrivia::comment).collect(Collectors.joining("\n"));
-    var firstCommentRange = syntaxTrivias.get(0).range();
-    return new InternalSyntaxTrivia(mergedComments, firstCommentRange.start().line(), firstCommentRange.start().columnOffset());
+    return issue;
   }
 
   private boolean containsCode(String[] lines) {
@@ -147,19 +146,6 @@ public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
         return prediction.getDecision();
       })
       .orElse(false);
-  }
-
-  private void reportCommentedOutCode(SyntaxTrivia syntaxTrivia, String[] lines) {
-    // todo figure out the logic to identify where the commented out code starts! O.O -> Binary Search?
-    // for now just reporting at the beginning of the comment
-    int lineOffset = 0;
-    String line = lines[lineOffset];
-
-    int startLine = LineUtils.startLine(syntaxTrivia) + lineOffset;
-    int startColumnOffset = (lineOffset == 0 ? Position.startOf(syntaxTrivia).columnOffset() : 0);
-
-    ((DefaultJavaFileScannerContext) this.context)
-      .reportIssue(createAnalyzerMessage(startLine, startColumnOffset, line, "This block of commented-out lines of code should be removed."));
   }
 
   // todo: methods below are a copy of the methods in CommentedOutCodeLineCheck, should be refactored to a common place!
