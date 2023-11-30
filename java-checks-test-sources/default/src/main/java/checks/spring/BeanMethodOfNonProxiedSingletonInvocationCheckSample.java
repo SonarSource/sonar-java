@@ -38,4 +38,17 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheckSample {
       return new PrototypeBean(singletonBean);
     }
   }
+
+  @Configuration(proxyBeanMethods = true)
+  static class ProxyBeanMethodsEnabled {
+    @Bean
+    public SingletonBean singletonBean() {
+      return new SingletonBean();
+    }
+
+    @Bean
+    public PrototypeBean nonCompliantBean() {
+      return new PrototypeBean(singletonBean()); // Compliant, call will be proxied and the singleon instance will be returned
+    }
+  }
 }

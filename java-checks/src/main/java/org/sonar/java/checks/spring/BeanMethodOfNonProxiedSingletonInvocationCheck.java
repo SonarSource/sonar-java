@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -73,7 +74,12 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
     return annotation.arguments().stream()
       .filter(argument -> argument.is(Tree.Kind.ASSIGNMENT))
       .map(AssignmentExpressionTree.class::cast)
-      .anyMatch(assignment -> assignment.variable().is(Tree.Kind.IDENTIFIER) && "proxyBeanMethods".equals(((IdentifierTree) assignment.variable()).name()));
+      .anyMatch(BeanMethodOfNonProxiedSingletonInvocationCheck::setsProxyBeanMethodsToFalse);
+  }
+
+  private static boolean setsProxyBeanMethodsToFalse(AssignmentExpressionTree assignment) {
+    return "proxyBeanMethods".equals(((IdentifierTree) assignment.variable()).name()) &&
+      Boolean.FALSE.equals(ExpressionsHelper.getConstantValueAsBoolean(assignment.expression()).value());
   }
 
   static class NonProxiedMethodInvocationVisitor extends BaseTreeVisitor {
