@@ -1,0 +1,23 @@
+{
+  "title": "\"@Bean\" methods for Singleton should not be invoked in \"@Configuration\" when proxyBeanMethods is false",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6838",
+  "sqKey": "S6838",
+  "scope": "All",
+  "quickfix": "infeasible",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  }
+}

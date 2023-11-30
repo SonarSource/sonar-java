@@ -1,0 +1,104 @@
+<p>Spring proxies are based on the <strong>Proxy design pattern</strong> and serve as intermediaries to other resources, offering extra features at a
+slight performance penalty. For example, they facilitate lazy resource initialization and data caching.</p>
+<p>The <code>@Configuration</code> annotation enables this mechanism by default through the <code>proxyBeanMethods</code> attribute set to
+<code>true</code>. This ensures that the <code>@Bean</code> methods are proxied in order to enforce bean lifecycle behavior, e.g. to return shared
+singleton bean instances even in case of direct <code>@Bean</code> method calls in user code. This functionality is achieved via method interception,
+implemented through a runtime-generated <strong><a href="https://github.com/cglib/cglib/wiki">CGLIB</a></strong> subclass.</p>
+<h2>Why is this an issue?</h2>
+<p>When setting the <code>proxyBeanMethods</code> attribute to <code>false</code> the <code>@Bean</code> methods are not proxied and this is similar
+to removing the <code>@Configuration</code> stereotype. In this scenario, <code>@Bean</code> methods within the <code>@Configuration</code> annotated
+class operate in <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html"><em>lite
+mode</em></a>, resulting in a new bean creation each time the method is invoked.</p>
+<p>For <code>Singleton</code> beans, this could cause unexpected outcomes as the bean is created multiple times instead of being created once and
+cached.</p>
+<p>The rule raises an issue when the <code>proxyBeanMethods</code> attribute is set to <code>false</code> and the <code>@Bean</code> method of a
+<code>Singleton</code> bean is directly invoked in the <code>@Configuration</code> annotated class code.</p>
+<h2>How to fix it</h2>
+<p>The issue can be fixed in the following ways:</p>
+<ul>
+  <li> Not invoking the <code>@Bean</code> method directly, but rather injecting the bean in the context and using it, by means of <code>@Bean</code>
+  <a href="https://docs.spring.io/spring-framework/reference/core/beans/java/bean-annotation.html#beans-java-dependencies">method parameters</a>.
+  </li>
+  <li> If the performance penalty is negligible, consider not disabling the <code>proxyBeanMethods</code> attribute, so that the <code>@Bean</code>
+  methods are proxied and the bean lifecycle is enforced. </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>In the example below, every instance of <code>PrototypeBean</code> will have a different instance of <code>SingletonBean</code>, as
+<code>singletonBean()</code> is called directly from <code>prototypeBean()</code>.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Configuration(proxyBeanMethods = false)
+class ConfigurationExample {
+  @Bean
+  public SingletonBean singletonBean() {
+    return new SingletonBean();
+  }
+
+  @Bean
+  @Scope("prototype")
+  public PrototypeBean prototypeBean() {
+    return new PrototypeBean(singletonBean()); // Noncompliant, the singletonBean is created every time a prototypeBean is created
+  }
+
+  class SingletonBean {
+    // ...
+  }
+
+  class PrototypeBean {
+    // ...
+
+    public PrototypeBean(SingletonBean singletonBean) {
+      // ...
+    }
+
+    // ...
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<p>The compliant solution relies on the <code>@Bean</code> method parameter to automatically inject the <code>SingletonBean</code> from the
+<code>ApplicationContext</code>. This way every instance of <code>PrototypeBean</code> will have the same instance of <code>SingletonBean</code>.</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Configuration(proxyBeanMethods = false)
+class ConfigurationExample {
+  @Bean
+  public SingletonBean singletonBean() {
+    return new SingletonBean();
+  }
+
+  @Bean
+  @Scope("prototype")
+  public PrototypeBean prototypeBean(SingletonBean singletonBean) { // Compliant, the singletonBean is injected in the context and used by every prototypeBean
+    return new PrototypeBean(singletonBean);
+  }
+
+  class SingletonBean {
+    // ...
+  }
+
+  class PrototypeBean {
+    // ...
+
+    public PrototypeBean(SingletonBean singletonBean) {
+      // ...
+    }
+
+    // ...
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Spring - <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Configuration.html#proxyBeanMethods()">Configuration - proxyBeanMethods</a> </li>
+  <li> Spring - <a href="https://docs.spring.io/spring-framework/reference/core/aop/proxying.html">Proxying Mechanisms</a> </li>
+  <li> Spring - <a href="https://docs.spring.io/spring-framework/reference/core/beans/java/bean-annotation.html#beans-java-dependencies">Bean
+  Annotation - Dependencies</a> </li>
+  <li> GitHub - <a href="https://github.com/cglib/cglib/wiki">CGLIB</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> Medium - <a href="https://blog.devgenius.io/demystifying-proxy-in-spring-3ab536046b11">Demystifying Proxy in Spring</a> </li>
+</ul>
+
