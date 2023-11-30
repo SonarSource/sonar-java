@@ -55,9 +55,7 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
     }
     var visitor = new NonProxiedMethodInvocationVisitor((ClassTree) tree);
     tree.accept(visitor);
-    visitor.locations
-      .stream()
-      .forEach(invocation -> reportIssue(invocation, ""));
+    visitor.locations.forEach(invocation -> reportIssue(invocation, ""));
   }
 
   private static Optional<AnnotationTree> getConfigurationAnnotation(ClassTree tree) {
