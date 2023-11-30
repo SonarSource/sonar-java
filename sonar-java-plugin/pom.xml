@@ -74,10 +74,10 @@
       <groupId>org.sonarsource.analyzer-commons</groupId>
       <artifactId>sonar-performance-measure</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.sonar.ml</groupId>
       <artifactId>ml-lib</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -173,8 +173,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>20000000</maxsize>
-                  <minsize>18500000</minsize>
+                  <maxsize>26500000</maxsize>
+                  <minsize>1800000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
