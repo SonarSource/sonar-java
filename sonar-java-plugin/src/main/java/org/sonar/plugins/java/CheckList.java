@@ -965,6 +965,7 @@ public final class CheckList {
     OverrideAnnotationCheck.class,
     OverwrittenKeyCheck.class,
     PasswordEncoderCheck.class,
+    PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck.class,
     PersistentEntityUsedAsRequestParameterCheck.class,
     PopulateBeansCheck.class,
     PossessiveQuantifierContinuationCheck.class,
