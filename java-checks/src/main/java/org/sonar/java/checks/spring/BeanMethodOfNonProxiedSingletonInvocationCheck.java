@@ -19,24 +19,83 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 
 @Rule(key = "S6838")
 public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubscriptionVisitor {
+  private static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    // TODO: Specify the kind of nodes you want to be called to visit here.
-    return List.of();
+    return List.of(Tree.Kind.CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    boolean isTargetClass = getConfigurationAnnotation((ClassTree) tree)
+      .map(BeanMethodOfNonProxiedSingletonInvocationCheck::hasProxyBeanMethodsDisabled)
+      .orElse(Boolean.FALSE);
+    if (!isTargetClass) {
+      return;
+    }
+    var visitor = new NonProxiedMethodInvocationVisitor((ClassTree) tree);
+    tree.accept(visitor);
+    visitor.locations
+      .stream()
+      .forEach(invocation -> reportIssue(invocation, ""));
   }
-  
+
+  private static Optional<AnnotationTree> getConfigurationAnnotation(ClassTree tree) {
+    SymbolMetadata metadata = tree.symbol().metadata();
+    for (SymbolMetadata.AnnotationInstance instance : metadata.annotations()) {
+      if (instance.symbol().type().is(CONFIGURATION_ANNOTATION)) {
+        return Optional.ofNullable(metadata.findAnnotationTree(instance));
+      }
+    }
+    return Optional.empty();
+  }
+
+  private static boolean hasProxyBeanMethodsDisabled(AnnotationTree annotation) {
+    return annotation.arguments().stream()
+      .filter(argument -> argument.is(Tree.Kind.ASSIGNMENT))
+      .map(AssignmentExpressionTree.class::cast)
+      .anyMatch(assignment -> assignment.variable().is(Tree.Kind.IDENTIFIER) && "proxyBeanMethods".equals(((IdentifierTree) assignment.variable()).name()));
+  }
+
+  static class NonProxiedMethodInvocationVisitor extends BaseTreeVisitor {
+    private final ClassTree parentClass;
+    private final List<MethodInvocationTree> locations = new ArrayList<>();
+
+    NonProxiedMethodInvocationVisitor(ClassTree parentClass) {
+      this.parentClass = parentClass;
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      super.visitMethodInvocation(tree);
+      MethodTree declaration = tree.methodSymbol().declaration();
+      if (declaration == null) {
+        return;
+      }
+      Tree parent = declaration.parent();
+      if (parent == parentClass) {
+        locations.add(tree);
+      }
+    }
+  }
+
 }
