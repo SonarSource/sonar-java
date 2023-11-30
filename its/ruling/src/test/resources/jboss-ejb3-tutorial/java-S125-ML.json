@@ -1,0 +1,11 @@
+{
+"jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/Flight.java": [
+78
+],
+"jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/client/Client.java": [
+29
+],
+"jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/Flight.java": [
+84
+]
+}
