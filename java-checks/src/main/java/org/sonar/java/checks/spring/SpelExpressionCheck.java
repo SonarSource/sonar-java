@@ -90,11 +90,13 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void parseStringArgument(String value) {
+  private static void parseStringArgument(String value) {
     value = value.substring(1, value.length() - 1);
     var i = 0;
     while (i < value.length()) {
-      switch (value.charAt(i++)) {
+      var c = value.charAt(i);
+      i++;
+      switch (c) {
         case '$':
           i = parsePropertyPlaceholder(value, i);
           break;

@@ -9,19 +9,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 public class SpelExpressionCheckSample {
 
-  @Value("#{systemProperties['user.region'}") // Noncompliant
+  @Value("#{systemProperties['user.region'}") // Noncompliant {{Correct this malformed SpEL expression.}}
   private String regionNc;
 
   @Value("#{systemProperties['user.region']}") // Compliant
   private String regionC;
 
-  @Value("#{'${listOfValues}' split(',')}") // Noncompliant, missing operator
+  @Value("#{'${listOfValues}' split(',')}") // Noncompliant {{Correct this malformed SpEL expression.}}
   private List<String> valuesListNc;
 
   @Value("#{'${listOfValues}'.split(',')}") // Compliant
   private List<String> valuesListC;
 
-  @Value("#{T(java.lang.Math).random() * 64h}") // Noncompliant, invalid number
+  @Value("#{T(java.lang.Math).random() * 64h}") // Noncompliant {{Correct this malformed SpEL expression.}}
   private Double randPercentNc;
 
   @Value("#{T(java.lang.Math).random() * 100.0}") // Compliant
@@ -44,7 +44,7 @@ public class SpelExpressionCheckSample {
     @Query("select u from User u where u.age = ?#{[0}") // Noncompliant
     List<User> findUsersByAge2(int age);
 
-    @Query("select u from User u where u.age = ?#{[0]") // Noncompliant
+    @Query("select u from User u where u.age = ?#{[0]") // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
     List<User> findUsersByAge3(int age);
 
     @Query("select u from User u where u.age = ?#{[0*]}") // Noncompliant
@@ -59,11 +59,14 @@ public class SpelExpressionCheckSample {
     @Query("select u from User u where u.name = :#{#customer.name} and u.firstname = :#{#customer.firstname}")  // Compliant
     List<User> findUsersByCustomersFullName1(@Param("customer") Customer customer);
 
-    @Query("select u from User u where u.name = :#{#customer.name} and u.firstname = :#{#customer.firstname")  // Noncompliant
+    @Query("select u from User u where u.name = :#{#customer.name} and u.firstname = :#{#customer.firstname")  // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
     List<User> findUsersByCustomersFullName2(@Param("customer") Customer customer);
 
-    @Query("select u from User u where u.name = :#{#customer.name} and u.firstname = :#{#*customer.firstname}")  // Noncompliant
+    @Query("select u from User u where u.name = :#{#customer.name and u.firstname = :#{#customer.firstname}")  // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
     List<User> findUsersByCustomersFullName3(@Param("customer") Customer customer);
+
+    @Query("select u from User u where u.name = :#{#customer.name and u.firstname} = :#{#*customer.firstname}")  // Noncompliant {{Correct this malformed SpEL expression.}}
+    List<User> findUsersByCustomersFullName4(@Param("customer") Customer customer);
 
     @Query("select u from User u where u.firstname = :#{#customer.firstname} and u.role=${admin}")  // Compliant
     List<User> findAdminUsersByFirstname1(@Param("customer") Customer customer);
@@ -161,7 +164,7 @@ public class SpelExpressionCheckSample {
   @Value("{ }") // Compliant
   String delimiters20;
 
-  @Value("${ }") // Noncompliant
+  @Value("${ }") // Noncompliant {{Correct this malformed property placeholder.}}
   String delimiters21;
 
   @Value("#{ }") // Noncompliant
@@ -203,10 +206,10 @@ public class SpelExpressionCheckSample {
   @Value("${foo,bar}") // Noncompliant
   String ncPlaceholder3;
 
-  @Value("${foo..bar}") // Noncompliant
+  @Value("${foo..bar}") // Noncompliant {{Correct this malformed property placeholder.}}
   String ncPlaceholder4;
 
-  @Value("${foo.}") // Noncompliant
+  @Value("${foo.}") // Noncompliant {{Correct this malformed property placeholder.}}
   String ncPlaceholder5;
 
   @Value("${.bar}") // Noncompliant
