@@ -19,6 +19,12 @@
  */
 package org.sonar.java.checks.ml;
 
+import com.sonar.ml.feature_engineering.CommentPreparation;
+import com.sonar.ml.feature_engineering.VocabularyAndSemicolonFeatures;
+import com.sonar.ml.model.LinearRegressionModel;
+import com.sonar.ml.model.LogisticRegressionModel;
+import com.sonar.ml.tokenization.RoBERTaBPEEncoder;
+import com.sonar.ml.tokenization.RoBERTaTokenizer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,21 +35,15 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.ml.feature_engineering.CommentPreparation;
-import org.sonar.ml.feature_engineering.VocabularyAndSemicolonFeatures;
-import org.sonar.ml.model.LinearRegressionModel;
-import org.sonar.ml.model.LogisticRegressionModel;
-import org.sonar.ml.tokenization.RoBERTaBPEEncoder;
-import org.sonar.ml.tokenization.RoBERTaTokenizer;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.ml.feature_engineering.CommentPreparation.CommentType.JAVADOC;
-import static org.sonar.ml.feature_engineering.VocabularyAndSemicolonFeatures.loadVocabulary;
-import static org.sonar.ml.model.LinearRegressionModel.loadParams;
+import static com.sonar.ml.feature_engineering.CommentPreparation.CommentType.JAVADOC;
+import static com.sonar.ml.feature_engineering.VocabularyAndSemicolonFeatures.loadVocabulary;
+import static com.sonar.ml.model.LinearRegressionModel.loadParams;
 
 @Rule(key = "S125-ML")
 public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
