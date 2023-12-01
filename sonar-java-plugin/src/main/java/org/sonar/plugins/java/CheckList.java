@@ -97,6 +97,7 @@ import org.sonar.java.checks.CompareToResultTestCheck;
 import org.sonar.java.checks.CompareToReturnValueCheck;
 import org.sonar.java.checks.ConcatenationWithStringValueOfCheck;
 import org.sonar.java.checks.ConditionalOnNewLineCheck;
+import org.sonar.java.checks.ConfigurationBeanNamesCheck;
 import org.sonar.java.checks.ConfusingOverloadCheck;
 import org.sonar.java.checks.ConfusingVarargCheck;
 import org.sonar.java.checks.ConstantMathCheck;
@@ -738,6 +739,7 @@ public final class CheckList {
     BooleanMethodNameCheck.class,
     BooleanMethodReturnCheck.class,
     BrainMethodCheck.class,
+    ConfigurationBeanNamesCheck.class,
     CORSCheck.class,
     CallOuterPrivateMethodCheck.class,
     CallSuperMethodFromInnerClassCheck.class,
