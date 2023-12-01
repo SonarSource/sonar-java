@@ -106,11 +106,7 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck exte
   }
 
   private static String cropFirstAndLast(String str) {
-    if (str.length() >= 2) {
       return str.substring(1, str.length() - 1);
-    } else {
-      return str;
-    }
   }
 
   private static Optional<String> pathVariableName(VariableTree parameter) {

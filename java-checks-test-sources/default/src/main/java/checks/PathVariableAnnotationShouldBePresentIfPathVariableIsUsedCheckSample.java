@@ -141,6 +141,16 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSampl
     return "Hello World";
   }
 
+  @GetMapping("/{id/name}")
+  public String stangePath(@PathVariable String id) { // compliant
+    return "Hello World";
+  }
+
+  @GetMapping("/{id}/{name}") // Noncompliant
+  public String mapStringToInt(@PathVariable Map<String,Integer> map) {
+    return "Hello World";
+  }
+
 
   @GetMapping(
     path={"/{id}", "/{name}"},
