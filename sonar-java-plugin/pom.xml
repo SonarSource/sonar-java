@@ -76,7 +76,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.sonar.ml</groupId>
+      <groupId>com.sonar.ml</groupId>
       <artifactId>ml-lib</artifactId>
     </dependency>
 
