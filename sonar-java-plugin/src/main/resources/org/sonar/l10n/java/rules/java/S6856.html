@@ -1,0 +1,43 @@
+<h2>Why is this an issue?</h2>
+<p>The <code>@PathVariable</code> annotation in Spring extracts values from the URI path and binds them to method parameters in a Spring MVC
+controller. It is commonly used with <code>@GetMapping</code>, <code>@PostMapping</code>, <code>@PutMapping</code>, and <code>@DeleteMapping</code> to
+capture path variables from the URI. These annotations map HTTP requests to specific handler methods in a controller. They are part of the Spring Web
+module and are commonly used to define the routes for different HTTP operations in a RESTful API.</p>
+<p>If a method has a path template containing a placeholder, like "/api/resource/{id}", and there’s no <code>@PathVariable</code> annotation on a
+method parameter to capture the id path variable, Spring will disregard the id variable.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@GetMapping("/api/resource/{id}")
+public ResponseEntity&lt;String&gt; getResourceById(Long id) { // Noncompliant - The 'id' parameter will not be automatically populated with the path variable value
+  return ResponseEntity.ok("Fetching resource with ID: " + id);
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@GetMapping("/api/resource/{id}")
+public ResponseEntity&lt;String&gt; getResourceById(@PathVariable Long id) { // Compliant
+  return ResponseEntity.ok("Fetching resource with ID: " + id);
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://spring.io/guides/tutorials/rest/">Spring IO - Building REST services with Spring</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html">Spring
+  Framework API - PathVariable</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html">Spring
+  Framework API - GetMapping</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PostMapping.html">Spring
+  Framework API - PostMapping</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html">Spring
+  Framework API - PutMapping</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/DeleteMapping.html">Spring
+  Framework API - DeleteMapping</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/spring-pathvariable">Baeldung - Spring @PathVariable</a> </li>
+</ul>
+
