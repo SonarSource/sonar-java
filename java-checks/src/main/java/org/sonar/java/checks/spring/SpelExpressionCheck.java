@@ -26,7 +26,10 @@ import java.util.function.ObjIntConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -41,8 +44,9 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
 
   private static final String SPRING_PREFIX = "org.springframework";
 
-  private static final Pattern PROPERTY_PLACEHOLDER_PATTERN = Pattern.compile("[a-zA-Z_]\\w*+(\\[\\d++])*+(\\.[a-zA-Z_]\\w*+(\\[\\d++])" +
-    "*+)*+");
+  private static final Pattern PROPERTY_PLACEHOLDER_PATTERN = Pattern.compile(
+    "[a-zA-Z_]\\w*+(\\[\\d++])*+(\\.[a-zA-Z_]\\w*+(\\[\\d++])*+)*+"
+  );
 
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
@@ -86,8 +90,21 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     try {
       parseStringArgument(argument.value());
     } catch (SyntaxError e) {
-      reportIssue(argument, e.getMessage());
+      reportIssue(argument, e);
     }
+  }
+
+  private void reportIssue(LiteralTree stringToken, SyntaxError error) {
+    var tokenStart = Position.startOf(stringToken);
+    var textSpan = new AnalyzerMessage.TextSpan(
+      tokenStart.line(),
+      tokenStart.columnOffset() + error.startIndex + 1,
+      tokenStart.line(),
+      tokenStart.columnOffset() + error.endIndex + 1
+    );
+
+    var analyzerMessage = new AnalyzerMessage(this, context.getInputFile(), textSpan, error.getMessage(), 0);
+    ((DefaultJavaFileScannerContext) context).reportIssue(analyzerMessage);
   }
 
   private static void parseStringArgument(String value) {
@@ -112,7 +129,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
   private static int parsePropertyPlaceholder(String value, int startIndex) {
     return parseDelimitersAndContents(value, startIndex, (contents, endIndex) -> {
       if (!isValidPropertyPlaceholder(contents)) {
-        throw new SyntaxError("Correct this malformed property placeholder.", startIndex + 1, endIndex - 1);
+        throw new SyntaxError("Correct this malformed property placeholder.", startIndex - 1, endIndex);
       }
     });
   }
@@ -120,7 +137,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
   private static int parseSpelExpression(String value, int startIndex) {
     return parseDelimitersAndContents(value, startIndex, (contents, endIndex) -> {
       if (!isValidSpelExpression(contents)) {
-        throw new SyntaxError("Correct this malformed SpEL expression.", startIndex + 1, endIndex - 1);
+        throw new SyntaxError("Correct this malformed SpEL expression.", startIndex - 1, endIndex);
       }
     });
   }
@@ -146,7 +163,9 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     var openCount = 1;
 
     while (i < value.length()) {
-      switch (value.charAt(i++)) {
+      var c = value.charAt(i);
+      i++;
+      switch (c) {
         case '{':
           openCount++;
           break;
@@ -160,7 +179,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
           break;
       }
     }
-    throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", startIndex, i);
+    throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", startIndex - 1, i);
   }
 
   private static boolean isValidPropertyPlaceholder(String placeholder) {

@@ -9,19 +9,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 public class SpelExpressionCheckSample {
 
-  @Value("#{systemProperties['user.region'}") // Noncompliant {{Correct this malformed SpEL expression.}}
+  @Value("#{systemProperties['user.region'}") // Noncompliant [[sc=11;ec=44]] {{Correct this malformed SpEL expression.}}
   private String regionNc;
 
   @Value("#{systemProperties['user.region']}") // Compliant
   private String regionC;
 
-  @Value("#{'${listOfValues}' split(',')}") // Noncompliant {{Correct this malformed SpEL expression.}}
+  @Value("#{'${listOfValues}' split(',')}") // Noncompliant [[sc=11;ec=42]] {{Correct this malformed SpEL expression.}}
   private List<String> valuesListNc;
 
   @Value("#{'${listOfValues}'.split(',')}") // Compliant
   private List<String> valuesListC;
 
-  @Value("#{T(java.lang.Math).random() * 64h}") // Noncompliant {{Correct this malformed SpEL expression.}}
+  @Value("#{T(java.lang.Math).random() * 64h}") // Noncompliant [[sc=11;ec=46]] {{Correct this malformed SpEL expression.}}
   private Double randPercentNc;
 
   @Value("#{T(java.lang.Math).random() * 100.0}") // Compliant
@@ -41,10 +41,10 @@ public class SpelExpressionCheckSample {
     @Query("select u from User u where u.age = ?#{[0]}") // Compliant
     List<User> findUsersByAge1(int age);
 
-    @Query("select u from User u where u.age = ?#{[0}") // Noncompliant
+    @Query("select u from User u where u.age = ?#{[0}") // Noncompliant [[sc=49;ec=54]]
     List<User> findUsersByAge2(int age);
 
-    @Query("select u from User u where u.age = ?#{[0]") // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
+    @Query("select u from User u where u.age = ?#{[0]") // Noncompliant [[sc=49;ec=54]] {{Add missing '}' for this property placeholder or SpEL expression.}}
     List<User> findUsersByAge3(int age);
 
     @Query("select u from User u where u.age = ?#{[0*]}") // Noncompliant
@@ -80,7 +80,7 @@ public class SpelExpressionCheckSample {
   public static class RequestController1 { }
 
   @Controller
-  @RequestMapping("#{1+2+}") // Noncompliant
+  @RequestMapping("#{1+2+}") // Noncompliant [[sc=20;ec=27]]
   public static class RequestController2 { }
 
   @Value("foo") // Compliant
@@ -128,7 +128,7 @@ public class SpelExpressionCheckSample {
   @Value("$foo") // Compliant
   String delimiters8;
 
-  @Value("${}") // Noncompliant
+  @Value("${}") // Noncompliant [[sc=11;ec=14]]
   String delimiters9;
 
   @Value("${123") // Noncompliant
@@ -170,14 +170,17 @@ public class SpelExpressionCheckSample {
   @Value("#{ }") // Noncompliant
   String delimiters22;
 
-  @Value("${") // Noncompliant
+  @Value("${") // Noncompliant [[sc=11;ec=13]]
   String delimiters23;
 
-  @Value("${ ") // Noncompliant
+  @Value("${ ") // Noncompliant [[sc=11;ec=14]]
   String delimiters24;
 
-  @Value("#{ ") // Noncompliant
+  @Value("#{ ") // Noncompliant [[sc=11;ec=14]]
   String delimiters25;
+
+  @Value("#{ " + "") // Compliant
+  String delimiters25_2;
 
   @Value("$ {") // Compliant
   String delimiters26;
