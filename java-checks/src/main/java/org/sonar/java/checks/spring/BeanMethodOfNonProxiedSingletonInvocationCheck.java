@@ -97,7 +97,6 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
       if (declaration == null) {
         return;
       }
-      // TODO check if the return type of the method returns a type with a prototype scope
       if (returnsAPrototypeBean(declaration)) {
         return;
       }
