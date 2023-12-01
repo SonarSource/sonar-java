@@ -1,5 +1,5 @@
 {
-  "title": "Sections of code should not be commented out",
+  "title": "Sections of code should not be commented out (ML)",
   "type": "CODE_SMELL",
   "code": {
     "impacts": {
