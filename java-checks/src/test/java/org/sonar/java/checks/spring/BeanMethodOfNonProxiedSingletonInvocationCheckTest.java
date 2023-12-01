@@ -32,5 +32,4 @@ class BeanMethodOfNonProxiedSingletonInvocationCheckTest {
       .withCheck(new BeanMethodOfNonProxiedSingletonInvocationCheck())
       .verifyIssues();
   }
-  
 }

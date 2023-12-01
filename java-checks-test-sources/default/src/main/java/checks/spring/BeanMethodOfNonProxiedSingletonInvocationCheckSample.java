@@ -8,41 +8,41 @@ import org.springframework.context.annotation.Scope;
 import static java.lang.System.lineSeparator;
 
 public class BeanMethodOfNonProxiedSingletonInvocationCheckSample {
-  static class SimpleBean {
-    // ...
-  }
-
-  @Scope("Prototype")
-  static class PrototypeBean {
-    public PrototypeBean(SimpleBean simpleBean) {
-      // ...
-    }
-  }
-
-  static class NamedBean {
-    private String name;
-
-    public NamedBean(String name) {
-      this.name = name;
-    }
-  }
-
-  private static String getAString() {
-    return (new Random(42)).nextBoolean() ? "Nothing" : "Something";
-  }
-
   @Configuration(proxyBeanMethods = false)
   static class NonCompliantConfiguration {
     @Bean
-    public SimpleBean singletonBean() {
+    public SimpleBean simpleBean() {
       return new SimpleBean();
     }
 
     @Bean
-    public PrototypeBean prototypeBean() {
-      return new PrototypeBean(singletonBean()); // Noncompliant, the singletonBean is created every time a prototypeBean is created
+    public CompositeBean compositeBean() {
+      return new CompositeBean(simpleBean()); // Noncompliant [[sc=32;ec=44]] {{Replace this bean method invocation with a dependency injection.}}
+    }
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class CompliantConfiguration {
+    @Bean
+    public SimpleBean simpleBean() {
+      return new SimpleBean();
     }
 
+    @Bean
+    @Scope("Prototype")
+    public PrototypeBean prototypeBean() {
+      return new PrototypeBean();
+    }
+
+    @Bean
+    public CompositeBean compositeBean(SimpleBean simpleBean) { // Compliant, the simpleBean is injected in the context and used by every compositeBean
+      return new CompositeBean(simpleBean);
+    }
+
+    @Bean
+    public CompositeBean compositeBeanWithPrototypeDependency() {
+      return new CompositeBean(prototypeBean()); // Compliant, beans with a prototype scope are not singletons (ie a new instance is created on each call)
+    }
     @Bean
     public NamedBean namedBean() {
       return new NamedBean(lineSeparator());
@@ -53,57 +53,56 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheckSample {
     }
   }
 
-  @Configuration(proxyBeanMethods = false)
-  static class CompliantConfiguration {
-    @Bean
-    public SimpleBean singletonBean() {
-      return new SimpleBean();
-    }
-
-    @Bean
-    public PrototypeBean prototypeBean(SimpleBean simpleBean) { // Compliant, the singletonBean is injected in the context and used by every prototypeBean
-      return new PrototypeBean(simpleBean);
-    }
-
-    @Bean
-    public NamedBean namedBean() {
-      return new NamedBean(lineSeparator());
-    }
-  }
-
   @Configuration(proxyBeanMethods = true)
   static class ProxyBeanMethodsEnabledExplicitly {
     @Bean
-    public SimpleBean singletonBean() {
+    public SimpleBean simpleBean() {
       return new SimpleBean();
     }
 
     @Bean
-    public PrototypeBean prototypeBean() {
-      return new PrototypeBean(singletonBean()); // Compliant, call will be proxied and the singleton instance will be returned
-    }
-
-    @Bean
-    public NamedBean namedBean() {
-      return new NamedBean(lineSeparator());
+    public CompositeBean compositeBean() {
+      return new CompositeBean(simpleBean()); // Compliant, call will be proxied and the singleton instance will be returned
     }
   }
 
   @Configuration(value = "nothingToSeeHere")
   static class ProxyBeanMethodsEnabledImplicitly {
     @Bean
-    public SimpleBean singletonBean() {
+    public SimpleBean simpleBean() {
       return new SimpleBean();
     }
 
     @Bean
-    public PrototypeBean prototypeBean() {
-      return new PrototypeBean(singletonBean()); // Compliant, call will be proxied and the singleton instance will be returned
+    public CompositeBean compositeBean() {
+      return new CompositeBean(simpleBean()); // Compliant, call will be proxied and the singleton instance will be returned
     }
+  }
 
-    @Bean
-    public NamedBean namedBean() {
-      return new NamedBean(lineSeparator());
+
+  static class SimpleBean {
+    // ...
+  }
+
+  static class CompositeBean {
+    public CompositeBean(SimpleBean simpleBean) {
+      // ...
     }
+  }
+  static class PrototypeBean extends SimpleBean {
+    // ...
+  }
+
+  static class NamedBean {
+    private String name;
+
+    public NamedBean(String name) {
+      this.name = name;
+    }
+  }
+
+
+  private static String getAString() {
+    return (new Random(42)).nextBoolean() ? "Nothing" : "Something";
   }
 }

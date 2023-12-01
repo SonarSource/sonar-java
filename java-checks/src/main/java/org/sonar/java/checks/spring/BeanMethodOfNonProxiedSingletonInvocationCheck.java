@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S6838")
 public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubscriptionVisitor {
   private static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
+  private static final String SCOPE_ANNOTATION = "org.springframework.context.annotation.Scope";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -55,7 +56,7 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
     }
     var visitor = new NonProxiedMethodInvocationVisitor((ClassTree) tree);
     tree.accept(visitor);
-    visitor.locations.forEach(invocation -> reportIssue(invocation, ""));
+    visitor.locations.forEach(invocation -> reportIssue(invocation, "Replace this bean method invocation " + "with a dependency injection."));
   }
 
   private static Optional<AnnotationTree> getConfigurationAnnotation(ClassTree tree) {
@@ -67,6 +68,7 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
     }
     return Optional.empty();
   }
+
 
   private static boolean hasProxyBeanMethodsDisabled(AnnotationTree annotation) {
     return annotation.arguments().stream()
@@ -95,10 +97,25 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
       if (declaration == null) {
         return;
       }
+      // TODO check if the return type of the method returns a type with a prototype scope
+      if (returnsAPrototypeBean(declaration)) {
+        return;
+      }
       Tree parent = declaration.parent();
       if (parent == parentClass) {
         locations.add(tree);
       }
+    }
+
+    private static boolean returnsAPrototypeBean(MethodTree method) {
+      List<SymbolMetadata.AnnotationValue> annotationValues = method.symbol().metadata().valuesForAnnotation(SCOPE_ANNOTATION);
+      if (annotationValues == null || annotationValues.isEmpty()) {
+        return false;
+      }
+      return annotationValues.stream()
+        .filter(argument -> List.of("value", "scopeName").contains(argument.name()))
+        .map(SymbolMetadata.AnnotationValue::value)
+        .anyMatch("Prototype"::equals);
     }
   }
 
