@@ -66,14 +66,14 @@ common_build_definition: &COMMON_BUILD_DEFINITION
 build_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
-    - source cirrus-env BUILD
+    - source cirrus-env BUILD-PRIVATE
     - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws'
   cleanup_before_cache_script: cleanup_maven_repository
 
 test_analyze_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
-    - source cirrus-env BUILD
+    - source cirrus-env BUILD-PRIVATE
     - PULL_REQUEST_SHA=$GIT_SHA1 regular_mvn_build_deploy_analyze -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
