@@ -75,9 +75,8 @@
       <artifactId>sonar-performance-measure</artifactId>
     </dependency>
 
-    <!-- todo: internal ML Java Library to make public! -->
     <dependency>
-      <groupId>com.sonar.ml</groupId>
+      <groupId>com.sonarsource.ml</groupId>
       <artifactId>ml-lib</artifactId>
     </dependency>
 
