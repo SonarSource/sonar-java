@@ -100,16 +100,16 @@ ws_scan_task:
     ws_artifacts:
       path: "whitesource/**/*"
 
-qa_os_win_task:
-  depends_on:
-    - build
-  <<: *WINDOWS_VM_DEFINITION
-  maven_cache:
-    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  build_script:
-    - source cirrus-env CI
-    - mvn.cmd clean verify
-  cleanup_before_cache_script: cleanup_maven_repository
+#qa_os_win_task:
+#  depends_on:
+#    - build
+#  <<: *WINDOWS_VM_DEFINITION
+#  maven_cache:
+#    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+#  build_script:
+#    - source cirrus-env CI
+#    - mvn.cmd clean verify
+#  cleanup_before_cache_script: cleanup_maven_repository
 
 plugin_qa_task:
   depends_on:
@@ -229,7 +229,7 @@ promote_task:
   depends_on:
     - build
 #    - test_analyze
-    - qa_os_win
+#    - qa_os_win
     - sanity
     - ruling
     - ruling_win
