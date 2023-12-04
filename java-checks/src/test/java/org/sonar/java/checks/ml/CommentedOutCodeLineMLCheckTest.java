@@ -27,7 +27,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class CommentedOutCodeLineMLCheckTest {
 
-  @Disabled
+  @Disabled("disable to allow dogfooding")
   @Test
   void test() {
     CheckVerifier.newVerifier()

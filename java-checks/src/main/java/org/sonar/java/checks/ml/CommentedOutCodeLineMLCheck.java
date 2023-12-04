@@ -47,12 +47,6 @@ import static com.sonar.ml.model.LinearRegressionModel.loadParams;
 
 @Rule(key = "S125-ML")
 public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
-
-  private static final String MODEL_LR_100_FILENAME = "/ml/S125/model-lr-100.json";
-  private static final String MERGES_TXT = "/ml/S125/merges.txt";
-  private static final String VOCAB_100_FILENAME = "/ml/S125/vocab-100.json";
-  private static final double DECISION_THRESHOLD = 0.83d;
-  public static final int MAX_TOKENS_PER_STRING = 500;
   private static final String MESSAGE = "This block of commented-out lines of code should be removed.";
 
   private final CommentPreparation commentPreparation;
@@ -64,11 +58,9 @@ public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
     commentPreparation = CommentPreparation.newInstance();
 
     try {
-      tokenizer = new RoBERTaTokenizer(RoBERTaBPEEncoder.from(loadResource(MERGES_TXT)));
-      VocabularyAndSemicolonFeatures.Vocabulary vocabulary = loadVocabulary(loadResource(VOCAB_100_FILENAME));
-      featureExtractor = new VocabularyAndSemicolonFeatures(vocabulary, MAX_TOKENS_PER_STRING);
-      LinearRegressionModel.ModelParams linearRegressionParams = loadParams(loadResource(MODEL_LR_100_FILENAME));
-      model = new LogisticRegressionModel(new LinearRegressionModel(linearRegressionParams), DECISION_THRESHOLD);
+      tokenizer = new RoBERTaTokenizer(RoBERTaBPEEncoder.from(loadResource("/ml/S125/merges.txt")));
+      featureExtractor = new VocabularyAndSemicolonFeatures(loadVocabulary(loadResource("/ml/S125/vocab-100.json")), 500);
+      model = new LogisticRegressionModel(new LinearRegressionModel(loadParams(loadResource("/ml/S125/model-lr-100.json"))), 0.83d);
 
     } catch (IOException e) {
       throw new IllegalArgumentException("Could setup ML Model.", e);
@@ -145,7 +137,7 @@ public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
       .orElse(false);
   }
 
-  // todo: methods below are a copy of the methods in CommentedOutCodeLineCheck, should be refactored to a common place!
+  // methods below are a copy of the methods in CommentedOutCodeLineCheck, should be refactored to a common place!
   private AnalyzerMessage createAnalyzerMessage(int startLine, int startColumn, String line, String message) {
     String lineWithoutCommentPrefix = line.replaceFirst("^(//|/\\*\\*?|[ \t]*\\*)?[ \t]*+", "");
     int prefixSize = line.length() - lineWithoutCommentPrefix.length();
