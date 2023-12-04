@@ -112,11 +112,10 @@
   <dependencyManagement>
     <dependencies>
 
-      <!-- todo: internal ML Java Library to make public! -->
-      <dependency>
-        <groupId>com.sonar.ml</groupId>
+    <dependency>
+        <groupId>com.sonarsource.ml</groupId>
         <artifactId>ml-lib</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
         <exclusions>
             <exclusion>
                 <groupId>commons-logging</groupId>

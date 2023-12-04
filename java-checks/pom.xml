@@ -15,10 +15,9 @@
 
   <dependencies>
 
-    <!-- todo: internal ML Java Library to make public! -->
     <dependency>
-      <groupId>com.sonar.ml</groupId>
-      <artifactId>ml-lib</artifactId>
+        <groupId>com.sonarsource.ml</groupId>
+        <artifactId>ml-lib</artifactId>
     </dependency>
 
     <dependency>
