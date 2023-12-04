@@ -1,6 +1,6 @@
 {
   "ruleKey": "S3516",
   "hasTruePositives": true,
-  "falseNegatives": 11,
+  "falseNegatives": 6,
   "falsePositives": 0
 }
