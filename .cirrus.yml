@@ -101,6 +101,8 @@ ws_scan_task:
       path: "whitesource/**/*"
 
 qa_os_win_task:
+  depends_on:
+    - build
   <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
