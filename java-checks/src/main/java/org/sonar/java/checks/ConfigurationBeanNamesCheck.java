@@ -44,16 +44,10 @@ public class ConfigurationBeanNamesCheck extends IssuableSubscriptionVisitor {
     }
 
     var beanMethods = getBeanMethods(classTree);
-    var reportedElements = new HashSet<>();
-
-    for (int i = 0; i < beanMethods.size(); i++) {
-      String name = beanMethods.get(i).simpleName().name();
-      for (int j = i + 1; j < beanMethods.size(); j++) {
-        var otherBeanMethod = beanMethods.get(j);
-        if (name.equals(otherBeanMethod.simpleName().name()) && !reportedElements.contains(otherBeanMethod)) {
-          reportedElements.add(otherBeanMethod);
-          reportIssue(otherBeanMethod.simpleName(), "Rename this bean method to prevent any conflict with other beans.");
-        }
+    var foundNames = new HashSet<String>();
+    for (MethodTree beanMethod : beanMethods) {
+      if (!foundNames.add(beanMethod.simpleName().name())) {
+        reportIssue(beanMethod.simpleName(), "Rename this bean method to prevent any conflict with other beans.");
       }
     }
   }
