@@ -10,10 +10,67 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class SpelExpressionCheckSample {
 
   @Value("#{systemProperties['user.region'}") // Noncompliant [[sc=11;ec=44]] {{Correct this malformed SpEL expression.}}
-  private String regionNc;
+  private String region1;
 
   @Value("#{systemProperties['user.region']}") // Compliant
-  private String regionC;
+  private String region2;
+
+  @Value("${user.region}") // Compliant
+  private String region3;
+
+  @Value("${user.2region}") // Noncompliant
+  private String region4;
+
+  @Value("${user.region:defaultRegion}") // Compliant
+  private String multi1;
+
+  @Value("${user.region::defaultRegion}") // Noncompliant {{Correct this malformed property placeholder.}}
+  private String multi2;
+
+  @Value("${:user.region:defaultRegion}") // Noncompliant {{Correct this malformed property placeholder.}}
+  private String multi3;
+
+  @Value("${user.region:defaultRegion:}") // Noncompliant {{Correct this malformed property placeholder.}}
+  private String multi4;
+
+  @Value("${  user.region  : defaultRegion  }") // Compliant
+  private String multi5;
+
+  @Value("${user.region:#{null}}") // Compliant
+  private String multi6;
+
+  @Value("${user.region:#{  null  }}") // Compliant
+  private String multi7;
+
+  @Value("${user.region:#{  null + 3 }}") // Compliant
+  private String multi8;
+
+  @Value("${user.region:#{  null + * 3 }}") // Noncompliant [[sc=25;ec=41]] {{Correct this malformed SpEL expression.}}
+  private String multi9;
+
+  @Value("${user.region:#{'D'+'E'}}") // Compliant
+  private String multi10;
+
+  @Value("${user.region:#{null}:#{null}:foo.bar}") // Compliant
+  private String multi11;
+
+  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // Noncompliant [[sc=33;ec=40]] {{Correct this malformed SpEL expression.}}
+  private String multi12;
+
+  @Value("${user.region:#{null}:#{4*4}:foo.bar}") // Compliant
+  private String multi13;
+
+  @Value("${user.region:#{null}:#{4*4}:foo..bar}") // Noncompliant
+  private String multi14;
+
+  @Value("${user.region:#{4**4}:#{4**4}:foo.bar}") // Noncompliant
+  private String multi15;
+
+  @Value("${:defaultRegion}") // Noncompliant
+  private String multi16;
+
+  @Value("${user.2region:default-region}") // Noncompliant
+  private String multi17;
 
   @Value("#{'${listOfValues}' split(',')}") // Noncompliant [[sc=11;ec=42]] {{Correct this malformed SpEL expression.}}
   private List<String> valuesListNc;

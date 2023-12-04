@@ -88,7 +88,9 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
 
   private void checkSpringAnnotationStringArgument(LiteralTree argument) {
     try {
-      parseStringArgument(argument.value());
+      var argValue = argument.value();
+      var argContents = argValue.substring(1, argValue.length() - 1);
+      parseStringContents(argContents);
     } catch (SyntaxError e) {
       reportIssue(argument, e);
     }
@@ -98,64 +100,51 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     var tokenStart = Position.startOf(stringToken);
     var textSpan = new AnalyzerMessage.TextSpan(
       tokenStart.line(),
-      tokenStart.columnOffset() + error.startIndex + 1,
+      tokenStart.columnOffset() + error.rangeStart,
       tokenStart.line(),
-      tokenStart.columnOffset() + error.endIndex + 1
+      tokenStart.columnOffset() + error.rangeEnd
     );
 
     var analyzerMessage = new AnalyzerMessage(this, context.getInputFile(), textSpan, error.getMessage(), 0);
     ((DefaultJavaFileScannerContext) context).reportIssue(analyzerMessage);
   }
 
-  private static void parseStringArgument(String value) {
-    value = value.substring(1, value.length() - 1);
+  private static void parseStringContents(String content) {
     var i = 0;
-    while (i < value.length()) {
-      var c = value.charAt(i);
-      i++;
+    while (i < content.length()) {
+      var c = content.charAt(i);
       switch (c) {
         case '$':
-          i = parsePropertyPlaceholder(value, i);
+          i = parseDelimitersAndContents(content, i + 1, i + 1, SpelExpressionCheck::checkValidPropertyPlaceholder);
           break;
         case '#':
-          i = parseSpelExpression(value, i);
+          i = parseDelimitersAndContents(content, i + 1, i + 1, SpelExpressionCheck::checkValidSpelExpression);
           break;
         default:
+          i++;
           break;
       }
     }
   }
 
-  private static int parsePropertyPlaceholder(String value, int startIndex) {
-    return parseDelimitersAndContents(value, startIndex, (contents, endIndex) -> {
-      if (!isValidPropertyPlaceholder(contents)) {
-        throw new SyntaxError("Correct this malformed property placeholder.", startIndex - 1, endIndex);
-      }
-    });
-  }
-
-  private static int parseSpelExpression(String value, int startIndex) {
-    return parseDelimitersAndContents(value, startIndex, (contents, endIndex) -> {
-      if (!isValidSpelExpression(contents)) {
-        throw new SyntaxError("Correct this malformed SpEL expression.", startIndex - 1, endIndex);
-      }
-    });
-  }
-
-  private static int parseDelimitersAndContents(String value, int startIndex, ObjIntConsumer<String> parseContents) {
+  private static int parseDelimitersAndContents(
+    String value,
+    int startIndex,
+    int rangeStart,
+    ObjIntConsumer<String> parseContents) {
     if (startIndex == value.length()) {
       return startIndex;
     }
-    var endIndex = parseDelimiterBraces(value, startIndex);
+    var endIndex = parseDelimiterBraces(value, startIndex, rangeStart);
     if (endIndex == startIndex) {
       return endIndex;
     }
-    var contents = value.substring(startIndex + 1, endIndex - 1).strip();
-    parseContents.accept(contents, endIndex);
+    var contents = value.substring(startIndex + 1, endIndex - 1);
+    parseContents.accept(contents, rangeStart);
     return endIndex;
   }
 
-  private static int parseDelimiterBraces(String value, int startIndex) throws SyntaxError {
+  private static int parseDelimiterBraces(String value, int startIndex, int rangeStart) throws SyntaxError {
     if (value.charAt(startIndex) != '{') {
       return startIndex;
     }
@@ -179,14 +168,56 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
           break;
       }
     }
-    throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", startIndex - 1, i);
+
+    var rangeEnd = rangeStart + i - startIndex + 1; // +3 because of prefix `$` or `#`
+    throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", rangeStart, rangeEnd);
   }
 
-  private static boolean isValidPropertyPlaceholder(String placeholder) {
-    return PROPERTY_PLACEHOLDER_PATTERN.matcher(placeholder).matches();
+  private static void checkValidPropertyPlaceholder(String placeholder, int rangeStart) {
+    if (!isValidPropertyPlaceholder(placeholder, rangeStart)) {
+      var rangeEnd = rangeStart + placeholder.length() + 3; // +3 because of delimiter `#{` and `}`
+      throw new SyntaxError("Correct this malformed property placeholder.", rangeStart, rangeEnd);
+    }
+  }
+
+  private static boolean isValidPropertyPlaceholder(String placeholder, int rangeStart) {
+    var startIndex = 0;
+    var endIndex = placeholder.indexOf(':');
+
+    while (endIndex != -1) {
+      var segment = placeholder.substring(startIndex, endIndex);
+      if (!isValidPropertyPlaceholderSegment(segment, rangeStart + startIndex)) {
+        return false;
+      }
+      startIndex = endIndex + 1;
+      endIndex = placeholder.indexOf(':', startIndex);
+    }
+    var segment = placeholder.substring(startIndex);
+    return isValidPropertyPlaceholderSegment(segment, rangeStart + startIndex);
+  }
+
+  private static boolean isValidPropertyPlaceholderSegment(String segment, int rangeStart) {
+    var stripped = segment.stripLeading();
+    rangeStart += segment.length() - stripped.length();
+    stripped = stripped.stripTrailing();
+
+    if (stripped.startsWith("#{")) {
+      parseDelimitersAndContents(stripped, 1, rangeStart + 2, SpelExpressionCheck::checkValidSpelExpression);
+      return true;
+    } else {
+      return PROPERTY_PLACEHOLDER_PATTERN.matcher(stripped).matches();
+    }
+  }
+
+  private static void checkValidSpelExpression(String expressionString, int rangeStart) {
+    if (!isValidSpelExpression(expressionString)) {
+      var rangeEnd = rangeStart + expressionString.length() + 3; // +3 because of delimiter `${` and `}`
+      throw new SyntaxError("Correct this malformed SpEL expression.", rangeStart, rangeEnd);
+    }
   }
 
   private static boolean isValidSpelExpression(String expressionString) {
+    expressionString = expressionString.strip();
     if (expressionString.isEmpty()) {
       return false;
     }
@@ -200,14 +231,13 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
 
   private static class SyntaxError extends RuntimeException {
 
-    SyntaxError(String message, int startIndex, int endIndex) {
+    SyntaxError(String message, int rangeStart, int rangeEnd) {
       super(message);
-      this.startIndex = startIndex;
-      this.endIndex = endIndex;
+      this.rangeStart = rangeStart;
+      this.rangeEnd = rangeEnd;
     }
 
-    public final int startIndex;
-
-    public final int endIndex;
+    public final int rangeStart;
+    public final int rangeEnd;
   }
 }

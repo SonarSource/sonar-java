@@ -2940,6 +2940,12 @@
     "falsePositives": 0
   },
   {
+    "ruleKey": "S6857",
+    "hasTruePositives": false,
+    "falseNegatives": 57,
+    "falsePositives": 0
+  },
+  {
     "ruleKey": "S6862",
     "hasTruePositives": false,
     "falseNegatives": 5,
