@@ -169,13 +169,15 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
       }
     }
 
-    var rangeEnd = rangeStart + i - startIndex + 1; // +3 because of prefix `$` or `#`
+    // +1 because of prefix `$` or `#`
+    var rangeEnd = rangeStart + i - startIndex + 1;
     throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", rangeStart, rangeEnd);
   }
 
   private static void checkValidPropertyPlaceholder(String placeholder, int rangeStart) {
     if (!isValidPropertyPlaceholder(placeholder, rangeStart)) {
-      var rangeEnd = rangeStart + placeholder.length() + 3; // +3 because of delimiter `#{` and `}`
+      // +3 because of delimiter `#{` and `}`
+      var rangeEnd = rangeStart + placeholder.length() + 3;
       throw new SyntaxError("Correct this malformed property placeholder.", rangeStart, rangeEnd);
     }
   }
@@ -211,7 +213,8 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
 
   private static void checkValidSpelExpression(String expressionString, int rangeStart) {
     if (!isValidSpelExpression(expressionString)) {
-      var rangeEnd = rangeStart + expressionString.length() + 3; // +3 because of delimiter `${` and `}`
+      // +3 because of delimiter `${` and `}`
+      var rangeEnd = rangeStart + expressionString.length() + 3;
       throw new SyntaxError("Correct this malformed SpEL expression.", rangeStart, rangeEnd);
     }
   }
