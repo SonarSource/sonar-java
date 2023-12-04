@@ -20,31 +20,26 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-
 @Rule(key = "S6856")
 public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck extends IssuableSubscriptionVisitor {
-  private static final List<String> MAPPING_ANNOTATION_PATH_ARGUMENTS = List.of("path", "value");
   private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
+  private static final Pattern EXTRACT_PATH_VARIABLE = Pattern.compile("([^:}/]*)(:.*)?\\}.*");
   private static final List<String> MAPPING_ANNOTATIONS = List.of(
     "org.springframework.web.bind.annotation.GetMapping",
     "org.springframework.web.bind.annotation.PostMapping",
@@ -60,17 +55,16 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck exte
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
 
-    method.modifiers()
-      .annotations()
-      .stream()
-      .filter(annotation -> MAPPING_ANNOTATIONS.stream().anyMatch(name -> annotation.symbolType().is(name)))
-      .forEach(annotation -> reportIssueOnParameters(annotation, method));
+    MAPPING_ANNOTATIONS
+      .forEach(annotation -> reportIssueOnParameters(method, annotation));
   }
 
-  private void reportIssueOnParameters(AnnotationTree annotation, MethodTree method) {
+  private void reportIssueOnParameters(MethodTree method, String annotation) {
     boolean containsMap = method.parameters().stream()
+      .filter(parameter -> parameter.symbol().metadata().isAnnotatedWith(PATH_VARIABLE_ANNOTATION))
       .anyMatch(parameter -> {
         Type type = parameter.type().symbolType();
+        // if is not Map<String,String> then it will throw a could not cast exception at runtime
         boolean stringToString = type.typeArguments().stream().allMatch(typeArgument -> typeArgument.is("java.lang.String"));
         return type.isSubtypeOf("java.util.Map") && stringToString;
       });
@@ -84,7 +78,7 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck exte
       .flatMap(Optional::stream)
       .collect(Collectors.toSet());
 
-    extractPathArgumentFromMappingAnnotations(annotation)
+    extractPathArgumentFromMappingAnnotations(method, annotation)
       .map(path -> extractPathVariables(path))
       .map(pathVariables -> {
         pathVariables.removeAll(pathVariablesNames);
@@ -92,77 +86,60 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck exte
       })
       .filter(pathVariables -> !pathVariables.isEmpty())
       .forEach(pathVariables -> reportIssue(
-        annotation.arguments(),
+        annotation(method, annotation),
         "Bind path variable \"" + String.join("\", \"", pathVariables) + "\" to a method parameter."));
   }
 
+  private static ExpressionTree annotation(MethodTree method, String name) {
+    return method.modifiers().annotations().stream()
+      .filter(annotation -> annotation.symbolType().is(name))
+      .findFirst()
+      // it will never be null because we are filtering on the annotation before.
+      .orElse(null);
+  }
+
   private static Set<String> extractPathVariables(String path) {
-    return List.of(path.split("/"))
-      .stream()
-      .filter(part -> part.startsWith("{") && part.endsWith("}"))
-      .map(part -> cropFirstAndLast(part))
-      .map(part -> part.split(":")[0])
+
+    return Stream.of(path.split("\\{"))
+      .map(EXTRACT_PATH_VARIABLE::matcher)
+      .filter(Matcher::matches)
+      .map(matcher -> matcher.group(1))
       .collect(Collectors.toSet());
   }
 
-  private static String cropFirstAndLast(String str) {
-    return str.substring(1, str.length() - 1);
-  }
-
   private static Optional<String> pathVariableName(VariableTree parameter) {
-    return getAnnotation(parameter.modifiers(), PATH_VARIABLE_ANNOTATION)
-      .flatMap(annotation -> getArgumentNamed(annotation, "name", expression -> extractLiteral(expression))
-        .or(() -> getArgumentNamed(annotation, "value", expression -> extractLiteral(expression)))
-        .or(() -> getDefaultArgument(annotation, expression -> extractLiteral(expression)))
-        .or(() -> Optional.of(parameter.simpleName().name())));
+    SymbolMetadata metadata = parameter.symbol().metadata();
+
+    return Optional.ofNullable(metadata.valuesForAnnotation(PATH_VARIABLE_ANNOTATION)).flatMap(arguments -> {
+      Map<String, Object> nameToValue = arguments.stream().collect(
+        Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
+
+      return Optional.ofNullable((String) nameToValue.get("value"))
+        .or(() -> Optional.ofNullable((String) nameToValue.get("name")))
+        .or(() -> Optional.of(parameter.simpleName().name()));
+    });
+
   }
 
-  private static Optional<AnnotationTree> getAnnotation(ModifiersTree modifiers, String annotationName) {
-    return modifiers.annotations()
-      .stream()
-      .filter(annotation -> annotation.symbolType().is(annotationName))
-      .findAny();
+  private static Stream<String> extractPathArgumentFromMappingAnnotations(MethodTree method, String annotation) {
+    SymbolMetadata metadata = method.symbol().metadata();
+    return Optional.ofNullable(metadata.valuesForAnnotation(annotation)).flatMap(arguments -> {
+      Map<String, Object> nameToValue = arguments.stream().collect(
+        Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
+
+      return arrayOrString(nameToValue.get("path"))
+        .or(() -> arrayOrString(nameToValue.get("value")));
+    }).orElseGet(Stream::empty);
   }
 
-  private static Stream<String> extractPathArgumentFromMappingAnnotations(AnnotationTree annotation){
-    Optional<Stream<String>> defaultPath = getDefaultArgument(annotation, expression -> extractLiteralOrArray(expression));
-
-    Stream<String> assignedPaths = MAPPING_ANNOTATION_PATH_ARGUMENTS.stream()
-      .map(name -> getArgumentNamed(annotation, name, expression -> extractLiteralOrArray(expression)))
-      .flatMap(Optional::stream)
-      .flatMap(Function.identity());
-
-    return Stream.concat(defaultPath.orElse(Stream.of()), assignedPaths);
-  }
-
-  private static <A> Optional<A> getDefaultArgument(AnnotationTree annotation, Function<ExpressionTree, A> readValue) {
-    return annotation.arguments().stream()
-      .filter(argument -> argument.is(Tree.Kind.STRING_LITERAL) || argument.is(Tree.Kind.ARRAY_TYPE))
-      .findFirst()
-      .map(readValue);
-  }
-
-  private static <A> Optional<A> getArgumentNamed(AnnotationTree annotation, String name, Function<ExpressionTree, A> readValue) {
-    return annotation.arguments().stream()
-      .filter(argument -> argument.is(Tree.Kind.ASSIGNMENT))
-      .map(AssignmentExpressionTree.class::cast)
-      .filter(assignment -> ((IdentifierTree) assignment.variable()).name().equals(name))
-      .findFirst()
-      .map(assignment -> readValue.apply(assignment.expression()));
-  }
-
-  private static String extractLiteral(ExpressionTree expression) {
-    LiteralTree literal = (LiteralTree) expression;
-    return LiteralUtils.trimQuotes((literal).value());
-  }
-
-  private static Stream<String> extractLiteralOrArray(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.STRING_LITERAL)) {
-      return Stream.of(extractLiteral(expression));
+  private static Optional<Stream<String>> arrayOrString(Object value) {
+    if (value == null) {
+      return Optional.empty();
     }
 
-    NewArrayTree array = (NewArrayTree) expression;
-    return array.initializers().stream().map(lit -> extractLiteral(lit));
+    Object[] array = (Object[]) value;
+    return Optional.of(Stream.of(array)
+      .map(x -> (String) x));
   }
 
 }

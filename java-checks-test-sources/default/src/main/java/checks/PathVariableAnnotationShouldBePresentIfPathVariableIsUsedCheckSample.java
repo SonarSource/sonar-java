@@ -153,14 +153,36 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSampl
 
 
   @GetMapping(
-    path={"/{id}", "/{name}"},
     produces={"application/json", "application/xml"},
     consumes={"application/json", "application/xml"},
     headers={"aHeader=aValue", "anotherHeader=anotherValue"},
     params={"aPara", "anotherParam=anotherValue"},
-    name="aName"
+    name="aName",
+    path={"/{id}", "/{name}"}
   )
   public String getFullExample(@PathVariable Map<String,String> x) { // compliant
+    return "Hello World";
+  }
+
+  @GetMapping( // Noncompliant
+    produces={"application/json", "application/xml"},
+    consumes={"application/json", "application/xml"},
+    headers={"aHeader=aValue", "anotherHeader=anotherValue"},
+    params={"aPara", "anotherParam=anotherValue"},
+    name="aName",
+    path={"/{id}", "/name"}
+  )
+  public String getFullExampleNonCompliant(Map<String,String> x) {
+    return "Hello World";
+  }
+
+  @GetMapping("/id-{id:.+}")
+  public String getCrazyPath(@PathVariable String id) { // compliant
+    return "Hello World";
+  }
+
+  @GetMapping("/id-{id:.+}") // Noncompliant
+  public String getCrazyPathNonCompliant(String id) {
     return "Hello World";
   }
 
