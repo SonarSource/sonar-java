@@ -1,0 +1,47 @@
+<h2>Why is this an issue?</h2>
+<p>Naming conventions play a crucial role in maintaining code clarity and readability. The uniqueness of bean names in Spring configurations is vital
+to the clarity and readability of the code. When two beans share the same name within a configuration, it is not obvious to the reader which bean is
+being referred to. This leads to potential misunderstandings and errors.</p>
+<h2>How to fix it</h2>
+<p>To address this issue, ensure each bean within a configuration has a distinct and meaningful name. Choose names that accurately represent the
+purpose or functionality of the bean.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Configuration
+class Config {
+  @Bean
+  public User user() {
+    return currentUser();
+  }
+  @Bean
+  public User user(AuthService auth) { // Noncompliant
+    return auth.user();
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Configuration
+class Config {
+  @Bean
+  public User user() {
+    return currentUser();
+  }
+  @Bean
+  public User userFromAuth(AuthService auth) {
+    return auth.user();
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.spring.io/spring-framework/reference/core/beans/java/basic-concepts.html">Spring IO - Basic concepts: @Bean and
+  @Configuration</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/reference/core/beans/java/configuration-annotation.html">Spring IO - Using the @Configuration
+  annotation</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/reference/core/beans/java/bean-annotation.html">Spring IO - Using the @Bean annotation</a>
+  </li>
+</ul>
+
