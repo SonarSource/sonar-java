@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class ValueAnnotationShouldInjectPropertyOrSpELCheckTest {
 
@@ -32,5 +33,13 @@ class ValueAnnotationShouldInjectPropertyOrSpELCheckTest {
       .onFile(mainCodeSourcesPath("checks/spring/ValueAnnotationShouldInjectPropertyOrSpELCheckSample.java"))
       .withCheck(new ValueAnnotationShouldInjectPropertyOrSpELCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/spring/ValueAnnotationShouldInjectPropertyOrSpELCheckSampleNonCompiling.java"))
+      .withCheck(new ValueAnnotationShouldInjectPropertyOrSpELCheck())
+      .verifyNoIssues();
   }
 }
