@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.sonar.java.checks.AbsOnNegativeCheck;
 import org.sonar.java.checks.AbstractClassNoFieldShouldBeInterfaceCheck;
 import org.sonar.java.checks.AbstractClassWithoutAbstractMethodCheck;
@@ -280,6 +279,7 @@ import org.sonar.java.checks.OverrideAnnotationCheck;
 import org.sonar.java.checks.OverwrittenKeyCheck;
 import org.sonar.java.checks.ParameterReassignedToCheck;
 import org.sonar.java.checks.ParsingErrorCheck;
+import org.sonar.java.checks.PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck;
 import org.sonar.java.checks.PopulateBeansCheck;
 import org.sonar.java.checks.PredictableSeedCheck;
 import org.sonar.java.checks.PreferStreamAnyMatchCheck;
@@ -967,6 +967,7 @@ public final class CheckList {
     OverrideAnnotationCheck.class,
     OverwrittenKeyCheck.class,
     PasswordEncoderCheck.class,
+    PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck.class,
     PersistentEntityUsedAsRequestParameterCheck.class,
     PopulateBeansCheck.class,
     PossessiveQuantifierContinuationCheck.class,
