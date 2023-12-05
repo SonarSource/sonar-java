@@ -108,7 +108,7 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
 
     private static boolean returnsAPrototypeBean(MethodTree method) {
       List<SymbolMetadata.AnnotationValue> annotationValues = method.symbol().metadata().valuesForAnnotation(SCOPE_ANNOTATION);
-      if (annotationValues == null || annotationValues.isEmpty()) {
+      if (annotationValues == null) {
         return false;
       }
       return annotationValues.stream()
