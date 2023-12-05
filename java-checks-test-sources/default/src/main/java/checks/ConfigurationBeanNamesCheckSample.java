@@ -3,20 +3,22 @@ package checks;
 import javax.annotation.Nullable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.User;
 
 public class ConfigurationBeanNamesCheckSample {
+
+  class User {
+  }
 
   @Configuration
   class Config1 {
     @Bean
     public User user() {
-      return new User("user", "password", true, true, true, true, null);
+      return new User();
     }
 
     @Bean
     public User user(String name) { // Noncompliant [[sc=17;ec=21]] {{Rename this bean method to prevent any conflict with other beans.}}
-      return new User(name, "password", true, true, true, true, null);
+      return new User();
     }
   }
 
@@ -24,12 +26,12 @@ public class ConfigurationBeanNamesCheckSample {
   class Config2 {
     @Bean
     public User user() {
-      return new User("user", "password", true, true, true, true, null);
+      return new User();
     }
 
     @Bean
     public User userWithName(String name) { // Compliant
-      return new User(name, "password", true, true, true, true, null);
+      return new User();
     }
   }
 
@@ -37,7 +39,7 @@ public class ConfigurationBeanNamesCheckSample {
   class Config3 {
     @Bean
     public User user() { // Compliant
-      return new User("user", "password", true, true, true, true, null);
+      return new User();
     }
   }
 
@@ -45,12 +47,12 @@ public class ConfigurationBeanNamesCheckSample {
   class Config4 {
     @Bean
     public User user() { // Compliant
-      return new User("user", "password", true, true, true, true, null);
+      return new User();
     }
 
     @Nullable
     public User user(String name) {
-      return new User(name, "password", true, true, true, true, null);
+      return new User();
     }
   }
 
@@ -58,23 +60,51 @@ public class ConfigurationBeanNamesCheckSample {
   class Config5 {
     @Bean
     public User user() {
-      return new User("user", "password", true, true, true, true, null);
+      return new User();
     }
 
     @Bean
     public User userWithName(String name) { // Compliant
-      return new User(name, "password", true, true, true, true, null);
+      return new User();
     }
 
     @Bean
     public User user(String name, String password) { // Noncompliant
-      return new User(name, password, true, true, true, true, null);
+      return new User();
     }
 
     @Bean
     public User user(String name, String password, boolean enabled) { // Noncompliant
-      return new User(name, password, enabled, true, true, true, null);
+      return new User();
     }
+  }
+
+  @Configuration
+  class Config6 {
+  }
+
+  @Configuration
+  class Config7 {
+    @Bean
+    public User user1() {
+      return new User();
+    }
+
+    @Bean
+    public User user1(String name) { // Noncompliant
+      return new User();
+    }
+
+    @Bean
+    public User user2() {
+      return new User();
+    }
+
+    @Bean
+    public User user2(String name) { // Noncompliant
+      return new User();
+    }
+
   }
 
 }
