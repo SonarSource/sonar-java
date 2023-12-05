@@ -56,6 +56,18 @@ class ValueAnnotationShouldInjectPropertyOrSpELCheckSample {
 
   @Autowired
   String c;
+
+  @Value("classpath:some.xml") // compliant
+  String classpath;
+
+  @Value("file:aPath") // compliant
+  String file;
+
+  @Value("url:anUrl") // compliant
+  String url;
+
+  @Value("invlalidPrefix:xxxx") // Noncompliant
+  String notAResource;
 }
 
 @Value("${myValue.ok}") // Compliant

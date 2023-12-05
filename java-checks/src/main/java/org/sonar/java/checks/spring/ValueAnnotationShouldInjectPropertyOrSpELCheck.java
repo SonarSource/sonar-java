@@ -67,7 +67,7 @@ public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubs
   private static boolean isSimpleSpringValue(AnnotationTree annotation) {
     if (annotation.symbolType().is(SPRING_VALUE)) {
       String value = extractArgumentValue(annotation.arguments().get(0));
-      return value != null && !(isPropertyName(value) || isSpEL(value));
+      return value != null && !(isPropertyName(value) || isSpEL(value) || referenceResource(value));
     }
     return false;
   }
@@ -87,6 +87,10 @@ public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubs
 
   private static boolean isSpEL(String value) {
     return value.startsWith("#{") && value.endsWith("}");
+  }
+
+  private static boolean referenceResource(String value) {
+    return value.startsWith("classpath:") || value.startsWith("file:") || value.startsWith("url:");
   }
 
 }
