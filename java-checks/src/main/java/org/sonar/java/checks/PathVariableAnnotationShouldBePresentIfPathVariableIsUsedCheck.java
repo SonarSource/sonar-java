@@ -19,10 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -40,6 +42,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck extends IssuableSubscriptionVisitor {
   private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
   private static final Pattern EXTRACT_PATH_VARIABLE = Pattern.compile("([^:}/]*)(:.*)?\\}.*");
+  private static final Predicate<String> CONTAINS_PLACEHOLDER = Pattern.compile("\\$\\{.*\\}").asPredicate();
   private static final List<String> MAPPING_ANNOTATIONS = List.of(
     "org.springframework.web.bind.annotation.GetMapping",
     "org.springframework.web.bind.annotation.PostMapping",
@@ -64,12 +67,16 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck exte
       .filter(parameter -> parameter.symbol().metadata().isAnnotatedWith(PATH_VARIABLE_ANNOTATION))
       .anyMatch(parameter -> {
         Type type = parameter.type().symbolType();
-        // if is not Map<String,String> then it will throw a could not cast exception at runtime
+        // if the type is not Map<String,String>, Spring will throw a ClassCastException exception at runtime
         boolean stringToString = type.typeArguments().stream().allMatch(typeArgument -> typeArgument.is("java.lang.String"));
         return type.isSubtypeOf("java.util.Map") && stringToString;
       });
 
     if (containsMap) {
+      /*
+       * If any of the method parameters is a map, we assume all path variables are captured
+       * and there is no mismatch with path variables in the request mapping.
+       */
       return;
     }
 
@@ -99,6 +106,9 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck exte
   }
 
   private static Set<String> extractPathVariables(String path) {
+    if (CONTAINS_PLACEHOLDER.test(path)) {
+      return new HashSet<>();
+    }
 
     return Stream.of(path.split("\\{"))
       .map(EXTRACT_PATH_VARIABLE::matcher)

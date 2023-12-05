@@ -141,10 +141,6 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSampl
     return "Hello World";
   }
 
-  @GetMapping("/{id/name}")
-  public String stangePath(@PathVariable String id) { // compliant
-    return "Hello World";
-  }
 
   @GetMapping("/{id}/{name}") // Noncompliant
   public String mapStringToInt(@PathVariable Map<String,Integer> map) {
@@ -179,10 +175,15 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSampl
   @GetMapping("/id-{id:.+}")
   public String getCrazyPath(@PathVariable String id) { // compliant
     return "Hello World";
-  }
+  } // compliant
 
   @GetMapping("/id-{id:.+}") // Noncompliant
   public String getCrazyPathNonCompliant(String id) {
+    return "Hello World";
+  }
+
+  @GetMapping("/{id}/{xxx${placeHolder}xxxx}/{${{placeHolder}}}")
+  public String getPlaceHolder(String id) { // compliant, we don't consider this case
     return "Hello World";
   }
 
