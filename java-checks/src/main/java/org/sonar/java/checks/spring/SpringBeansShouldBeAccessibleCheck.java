@@ -163,7 +163,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     }
   }
 
-  private static Optional<List<String>>   readFromCache(InputFileScannerContext context) {
+  private static Optional<List<String>> readFromCache(InputFileScannerContext context) {
     var cacheKey = cacheKey(context.getInputFile());
     var bytes = context.getCacheContext().getReadCache().readBytes(cacheKey);
     if (bytes != null) {
