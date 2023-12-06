@@ -146,6 +146,45 @@ For example using the command:
 
     cp its/ruling/target/actual/* its/ruling/src/test/resources/
 
+#### Autoscan Test
+
+The tests in the [autoscan module](its/autoscan) are designed to detect differences between the issues the Java analyzer can find with and without bytecode.
+The goal here is to spot and fix the potential FPs, and verify the expected FNs between that would show up in [SonarCloud's automatic analysis](https://docs.sonarcloud.io/advanced-setup/automatic-analysis/).
+
+Running this test can be broken down in 2 steps:
+
+1. Compiling the test sources
+2. Executing the autoscan test
+
+##### Compiling the test sources
+
+Make sure that the `java-checks-tests-sources` module has been compiled (ie: the .class files in `java-checks-tests-sources/target/` are up to date).
+
+In doubt, go the top-level of the project and run:
+```shell
+mvn clean compile --projects java-checks-test-sources --also-make-dependents
+```
+
+##### Executing the autoscan test
+
+To run the tests, move to the [`its/autoscan`](its/autoscan) folder and run:
+```shell
+# cd its/autoscan
+mvn clean package --batch-mode --errors --show-version \
+   --activate-profiles it-autoscan \
+  -Dsonar.runtimeVersion=LATEST_RELEASE[9.9]
+```
+
+The artifacts produced during the test execution will be found in [`its/autoscan/target/actual`](its/autoscan/target/actual).
+You will want to compare the results produced in the autoscan-diff-by-rules
+
+For more detailed information, you can compare the differences between the results found with bytecode and without bytecode by comparing two respective folders:
+* [java-checks-test-sources-mvn](its/autoscan/target/actual/java-checks-test-sources-mvn)
+* [java-checks-test-sources-no-binaries](its/autoscan/target/actual/java-checks-test-sources-no-binaries)
+
+Depending on the results found, you might need to update the ground truth.
+The expected results are listed in [src/test/resources](its/autoscan/src/test/resources/autoscan/).
+
 #### Debugging Integration Tests
 You can debug ITs by adding `-Dmaven.binary=mvnDebug` as an option when running the tests. This will cause the analyzer JVM to wait for a debugger to be attached before continuing.
 
