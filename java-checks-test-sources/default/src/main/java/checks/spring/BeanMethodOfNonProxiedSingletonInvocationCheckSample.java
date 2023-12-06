@@ -4,6 +4,7 @@ import java.util.Random;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import static java.lang.System.lineSeparator;
 
@@ -98,6 +99,19 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheckSample {
 
     public NamedBean(String name) {
       this.name = name;
+    }
+  }
+
+  @Component
+  abstract class AnnotatedClassWithoutAConfigurationAnnotation {
+    @Bean
+    public SimpleBean simpleBean() {
+      return new SimpleBean();
+    }
+
+    @Bean
+    public CompositeBean compositeBean() {
+      return new CompositeBean(simpleBean()); // Compliant because this is not annotated with Configuration
     }
   }
 

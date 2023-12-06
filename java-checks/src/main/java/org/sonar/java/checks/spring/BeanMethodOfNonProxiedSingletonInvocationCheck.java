@@ -48,25 +48,21 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
 
   @Override
   public void visitNode(Tree tree) {
-    boolean isTargetClass = getConfigurationAnnotation((ClassTree) tree)
-      .map(BeanMethodOfNonProxiedSingletonInvocationCheck::hasProxyBeanMethodsDisabled)
-      .orElse(Boolean.FALSE);
-    if (!isTargetClass) {
+    Optional<AnnotationTree> configurationAnnotation = getConfigurationAnnotation((ClassTree) tree);
+    if (configurationAnnotation.isEmpty() || !hasProxyBeanMethodsDisabled(configurationAnnotation.get())) {
       return;
     }
     var visitor = new NonProxiedMethodInvocationVisitor((ClassTree) tree);
     tree.accept(visitor);
-    visitor.locations.forEach(invocation -> reportIssue(invocation, "Replace this bean method invocation " + "with a dependency injection."));
+    visitor.locations.forEach(invocation -> reportIssue(invocation, "Replace this bean method invocation with a dependency injection."));
   }
 
   private static Optional<AnnotationTree> getConfigurationAnnotation(ClassTree tree) {
     SymbolMetadata metadata = tree.symbol().metadata();
-    for (SymbolMetadata.AnnotationInstance instance : metadata.annotations()) {
-      if (instance.symbol().type().is(CONFIGURATION_ANNOTATION)) {
-        return Optional.ofNullable(metadata.findAnnotationTree(instance));
-      }
-    }
-    return Optional.empty();
+    return metadata.annotations().stream()
+      .filter(annotationInstance -> annotationInstance.symbol().type().is(CONFIGURATION_ANNOTATION))
+      .findFirst()
+      .map(metadata::findAnnotationTree);
   }
 
 
@@ -82,11 +78,11 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
       Boolean.FALSE.equals(ExpressionsHelper.getConstantValueAsBoolean(assignment.expression()).value());
   }
 
-  static class NonProxiedMethodInvocationVisitor extends BaseTreeVisitor {
+  private static class NonProxiedMethodInvocationVisitor extends BaseTreeVisitor {
     private final ClassTree parentClass;
     private final List<MethodInvocationTree> locations = new ArrayList<>();
 
-    NonProxiedMethodInvocationVisitor(ClassTree parentClass) {
+    public NonProxiedMethodInvocationVisitor(ClassTree parentClass) {
       this.parentClass = parentClass;
     }
 
@@ -94,10 +90,7 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
     public void visitMethodInvocation(MethodInvocationTree tree) {
       super.visitMethodInvocation(tree);
       MethodTree declaration = tree.methodSymbol().declaration();
-      if (declaration == null) {
-        return;
-      }
-      if (returnsAPrototypeBean(declaration)) {
+      if (declaration == null || returnsAPrototypeBean(declaration)) {
         return;
       }
       Tree parent = declaration.parent();
@@ -108,10 +101,7 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
 
     private static boolean returnsAPrototypeBean(MethodTree method) {
       List<SymbolMetadata.AnnotationValue> annotationValues = method.symbol().metadata().valuesForAnnotation(SCOPE_ANNOTATION);
-      if (annotationValues == null) {
-        return false;
-      }
-      return annotationValues.stream()
+      return annotationValues != null && annotationValues.stream()
         .filter(argument -> List.of("value", "scopeName").contains(argument.name()))
         .map(SymbolMetadata.AnnotationValue::value)
         .anyMatch("Prototype"::equals);
