@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -185,6 +186,55 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSampl
   @GetMapping("/{id}/{xxx${placeHolder}xxxx}/{${{placeHolder}}}")
   public String getPlaceHolder(String id) { // compliant, we don't consider this case
     return "Hello World";
+  }
+
+  static class ModelA {
+    @ModelAttribute("user")
+    public String getUser(@PathVariable String id, @PathVariable String name) {
+      return "user";
+    }
+
+    @GetMapping("/{id}/{name}")
+    public String get() { // compliant
+      return "Hello World";
+    }
+
+    @GetMapping("/{id}/{name}/{age}")
+    public String get2(@PathVariable String age) { // compliant
+      return "Hello World";
+    }
+
+    @GetMapping("/{id}/{name}/{age}") // Noncompliant
+    public String get3() {
+      return "Hello World";
+    }
+  }
+
+  static class ModelB {
+    @ModelAttribute("user")
+    public String getUser(@PathVariable String id) {
+      return "user";
+    }
+
+    @ModelAttribute("id")
+    public String getId(@PathVariable String id) {
+      return "id";
+    }
+
+    @GetMapping("/{id}/{name}")
+    public String get() { // compliant
+      return "Hello World";
+    }
+
+    @GetMapping("/{id}/{name}/{age}")
+    public String get2(@PathVariable String age) { // compliant
+      return "Hello World";
+    }
+
+    @GetMapping("/{id}/{name}/{age}") // Noncompliant
+    public String get3() {
+      return "Hello World";
+    }
   }
 
 }
