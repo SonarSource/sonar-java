@@ -1,10 +1,10 @@
 {
-  'com.google.guava:guava:src/com/google/common/base/Preconditions.java':[
-    146,
-    199,
-    413,
-  ],
-  'com.google.guava:guava:src/com/google/common/reflect/TypeToken.java':[
-    1047,
-  ],
+'com.google.guava:guava:src/com/google/common/base/Preconditions.java':[
+146,
+199,
+413,
+],
+'com.google.guava:guava:src/com/google/common/reflect/TypeToken.java':[
+1047,
+],
 }
