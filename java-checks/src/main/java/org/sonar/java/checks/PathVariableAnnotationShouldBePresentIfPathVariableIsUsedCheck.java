@@ -33,6 +33,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -41,6 +42,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S6856")
 public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck extends IssuableSubscriptionVisitor {
   private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
+  private static final String MODEL_ATTRIBUTE_ANNOTATION = "org.springframework.web.bind.annotation.ModelAttribute";
   private static final Pattern EXTRACT_PATH_VARIABLE = Pattern.compile("([^:}/]*)(:.*)?\\}.*");
   private static final Predicate<String> CONTAINS_PLACEHOLDER = Pattern.compile("\\$\\{.*\\}").asPredicate();
   private static final List<String> MAPPING_ANNOTATIONS = List.of(
@@ -51,18 +53,30 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck exte
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.METHOD);
+    return List.of(Tree.Kind.CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    MethodTree method = (MethodTree) tree;
+    ClassTree clazzTree = (ClassTree) tree;
 
-    MAPPING_ANNOTATIONS
-      .forEach(annotation -> reportIssueOnParameters(method, annotation));
+    List<MethodTree> methods = clazzTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .collect(Collectors.toList());
+
+    Set<String> modelAttributePathVariable = methods.stream()
+      .filter(method -> method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION))
+      .flatMap(method -> method.parameters().stream())
+      .map(variable -> pathVariableName(variable))
+      .flatMap(Optional::stream)
+      .collect(Collectors.toSet());
+
+    methods.forEach(method -> MAPPING_ANNOTATIONS
+      .forEach(annotation -> reportIssueOnParameters(method, annotation, modelAttributePathVariable)));
   }
 
-  private void reportIssueOnParameters(MethodTree method, String annotation) {
+  private void reportIssueOnParameters(MethodTree method, String annotation, Set<String> modelAttributePathVariable) {
     boolean containsMap = method.parameters().stream()
       .filter(parameter -> parameter.symbol().metadata().isAnnotatedWith(PATH_VARIABLE_ANNOTATION))
       .anyMatch(parameter -> {
@@ -89,6 +103,7 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck exte
       .map(path -> extractPathVariables(path))
       .map(pathVariables -> {
         pathVariables.removeAll(pathVariablesNames);
+        pathVariables.removeAll(modelAttributePathVariable);
         return pathVariables;
       })
       .filter(pathVariables -> !pathVariables.isEmpty())

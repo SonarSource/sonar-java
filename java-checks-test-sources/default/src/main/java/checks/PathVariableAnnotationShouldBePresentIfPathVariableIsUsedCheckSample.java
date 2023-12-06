@@ -217,7 +217,7 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSampl
     }
 
     @ModelAttribute("id")
-    public String getId(@PathVariable String id) {
+    public String getId(@PathVariable String name) {
       return "id";
     }
 
