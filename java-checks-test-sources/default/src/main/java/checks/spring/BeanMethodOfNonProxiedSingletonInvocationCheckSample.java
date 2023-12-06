@@ -1,6 +1,7 @@
 package checks.spring;
 
 import java.util.Random;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -20,6 +21,28 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheckSample {
     public CompositeBean compositeBean() {
       return new CompositeBean(simpleBean()); // Noncompliant [[sc=32;ec=44]] {{Replace this bean method invocation with a dependency injection.}}
     }
+
+    @Bean
+    @Scope("Singleton")
+    public SimpleBean anotherSimpleBean() {
+      return new SimpleBean();
+    }
+
+    @Bean
+    public CompositeBean anotherCompositeBean() {
+      return new CompositeBean(anotherSimpleBean()); // Noncompliant [[sc=32;ec=51]] {{Replace this bean method invocation with a dependency injection.}}
+    }
+
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public SimpleBean yetAnotherSimpleBean() {
+      return new SimpleBean();
+    }
+
+    @Bean
+    public CompositeBean yetAnotherCompositeBean() {
+      return new CompositeBean(yetAnotherSimpleBean()); // Noncompliant [[sc=32;ec=54]] {{Replace this bean method invocation with a dependency injection.}}
+    }
   }
 
   @Configuration(proxyBeanMethods = false)
@@ -30,7 +53,7 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheckSample {
     }
 
     @Bean
-    @Scope("Prototype")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public PrototypeBean prototypeBean() {
       return new PrototypeBean();
     }

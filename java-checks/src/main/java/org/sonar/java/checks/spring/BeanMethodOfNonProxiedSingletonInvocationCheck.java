@@ -90,7 +90,7 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
     public void visitMethodInvocation(MethodInvocationTree tree) {
       super.visitMethodInvocation(tree);
       MethodTree declaration = tree.methodSymbol().declaration();
-      if (declaration == null || returnsAPrototypeBean(declaration)) {
+      if (declaration == null || hasPrototypeScope(declaration)) {
         return;
       }
       Tree parent = declaration.parent();
@@ -99,12 +99,16 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
       }
     }
 
-    private static boolean returnsAPrototypeBean(MethodTree method) {
+    /*
+     * A method with the prototype scope is meant to return a new instance on every call.
+     */
+    private static boolean hasPrototypeScope(MethodTree method) {
       List<SymbolMetadata.AnnotationValue> annotationValues = method.symbol().metadata().valuesForAnnotation(SCOPE_ANNOTATION);
       return annotationValues != null && annotationValues.stream()
         .filter(argument -> List.of("value", "scopeName").contains(argument.name()))
         .map(SymbolMetadata.AnnotationValue::value)
-        .anyMatch("Prototype"::equals);
+        .map(String.class::cast)
+        .anyMatch("prototype"::equalsIgnoreCase);
     }
   }
 
