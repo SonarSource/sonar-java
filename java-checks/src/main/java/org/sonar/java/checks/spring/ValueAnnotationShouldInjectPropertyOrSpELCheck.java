@@ -22,7 +22,6 @@ package org.sonar.java.checks.spring;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -67,12 +66,11 @@ public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubs
   private static boolean isSimpleSpringValue(AnnotationTree annotation) {
     if (annotation.symbolType().is(SPRING_VALUE)) {
       String value = extractArgumentValue(annotation.arguments().get(0));
-      return value != null && !(isPropertyName(value) || isSpEL(value));
+      return value != null && !isPropertyName(value) && !isSpEL(value) && !referenceResource(value);
     }
     return false;
   }
 
-  @CheckForNull
   private static String extractArgumentValue(ExpressionTree annotationArgument) {
     if (annotationArgument.is(Tree.Kind.ASSIGNMENT)) {
       ExpressionTree expression = ((AssignmentExpressionTree) annotationArgument).expression();
@@ -87,6 +85,10 @@ public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubs
 
   private static boolean isSpEL(String value) {
     return value.startsWith("#{") && value.endsWith("}");
+  }
+
+  private static boolean referenceResource(String value) {
+    return value.startsWith("classpath:") || value.startsWith("file:") || value.startsWith("url:");
   }
 
 }

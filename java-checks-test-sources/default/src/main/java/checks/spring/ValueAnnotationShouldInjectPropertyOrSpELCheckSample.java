@@ -41,11 +41,11 @@ class ValueAnnotationShouldInjectPropertyOrSpELCheckSample {
   @Value("") // Noncompliant
   String empty;
 
-  public void setValue(@Value("xxx") String x){ // compliant
+  public void setValue(@Value("xxx") String x){ // Compliant
   }
 
   @Value("xxx")
-  public void setValueA(String x){ // compliant
+  public void setValueA(String x){ // Compliant
   }
 
   @Value("${a") // Noncompliant
@@ -56,6 +56,18 @@ class ValueAnnotationShouldInjectPropertyOrSpELCheckSample {
 
   @Autowired
   String c;
+
+  @Value("classpath:some.xml") // Compliant
+  String classpath;
+
+  @Value("file:aPath") // Compliant
+  String file;
+
+  @Value("url:anUrl") // Compliant
+  String url;
+
+  @Value("invlalidPrefix:xxxx") // Noncompliant
+  String notAResource;
 }
 
 @Value("${myValue.ok}") // Compliant
