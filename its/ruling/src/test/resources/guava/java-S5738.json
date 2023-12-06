@@ -1,22 +1,14 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Throwables.java':[
-337,
-367,
-370,
-],
-'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
-321,
-],
-'com.google.guava:guava:src/com/google/common/io/FileBackedOutputStream.java':[
-103,
-],
-'com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java':[
-364,
-],
-'com.google.guava:guava:src/com/google/common/reflect/Types.java':[
-362,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
-871,
-],
+  'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
+    321,
+  ],
+  'com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java':[
+    364,
+  ],
+  'com.google.guava:guava:src/com/google/common/reflect/Types.java':[
+    362,
+  ],
+  'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
+    871,
+  ],
 }
