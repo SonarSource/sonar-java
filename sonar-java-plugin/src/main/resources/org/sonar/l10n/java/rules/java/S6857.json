@@ -1,5 +1,5 @@
 {
-  "title": "SpEL expression should have valid syntax",
+  "title": "SpEL expression should have a valid syntax",
   "type": "BUG",
   "status": "ready",
   "remediation": {
