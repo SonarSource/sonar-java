@@ -39,7 +39,7 @@ import static java.util.Arrays.asList;
 public final class UnitTestUtils {
 
   private static final String ORG_JUNIT_TEST = "org.junit.Test";
-  public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile("(assert|verify|fail|should|check|expect|validate).*");
+  public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile("(assert|verify|fail|should|check|expect|validate|andExpect).*");
   public static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
 
   public static final MethodMatchers ASSERTION_INVOCATION_MATCHERS = MethodMatchers.or(
