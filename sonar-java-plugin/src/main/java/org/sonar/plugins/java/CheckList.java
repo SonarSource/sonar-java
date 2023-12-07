@@ -564,6 +564,7 @@ import org.sonar.java.checks.spring.AutowiredOnMultipleConstructorsCheck;
 import org.sonar.java.checks.spring.AvoidQualifierOnBeanMethodsCheck;
 import org.sonar.java.checks.spring.ControllerWithRestControllerReplacementCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
+import org.sonar.java.checks.spring.DirectBeanMethodInvocationWithoutProxyCheck;
 import org.sonar.java.checks.spring.FieldDependencyInjectionCheck;
 import org.sonar.java.checks.spring.ModelAttributeNamingConventionForSpELCheck;
 import org.sonar.java.checks.spring.NonSingletonAutowiredInSingletonCheck;
@@ -809,6 +810,7 @@ public final class CheckList {
     DefaultInitializedFieldCheck.class,
     DeprecatedTagPresenceCheck.class,
     DiamondOperatorCheck.class,
+    DirectBeanMethodInvocationWithoutProxyCheck.class,
     DisableAutoEscapingCheck.class,
     DisallowedConstructorCheck.class,
     DisallowedMethodCheck.class,
