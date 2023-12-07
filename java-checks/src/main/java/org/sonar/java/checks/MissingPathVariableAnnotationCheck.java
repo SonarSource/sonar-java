@@ -40,11 +40,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6856")
-public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck extends IssuableSubscriptionVisitor {
+public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisitor {
   private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
   private static final String MODEL_ATTRIBUTE_ANNOTATION = "org.springframework.web.bind.annotation.ModelAttribute";
-  private static final Pattern EXTRACT_PATH_VARIABLE = Pattern.compile("([^:}/]*)(:.*)?\\}.*");
-  private static final Predicate<String> CONTAINS_PLACEHOLDER = Pattern.compile("\\$\\{.*\\}").asPredicate();
+  private static final Pattern EXTRACT_PATH_VARIABLE = Pattern.compile("([^:}/]*)(:.*)?}.*");
+  private static final Predicate<String> CONTAINS_PLACEHOLDER = Pattern.compile("\\$\\{.*}").asPredicate();
   private static final List<String> MAPPING_ANNOTATIONS = List.of(
     "org.springframework.web.bind.annotation.GetMapping",
     "org.springframework.web.bind.annotation.PostMapping",
@@ -68,25 +68,16 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck exte
     Set<String> modelAttributePathVariable = methods.stream()
       .filter(method -> method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION))
       .flatMap(method -> method.parameters().stream())
-      .map(variable -> pathVariableName(variable))
+      .map(MissingPathVariableAnnotationCheck::pathVariableName)
       .flatMap(Optional::stream)
       .collect(Collectors.toSet());
 
     methods.forEach(method -> MAPPING_ANNOTATIONS
-      .forEach(annotation -> reportIssueOnParameters(method, annotation, modelAttributePathVariable)));
+      .forEach(annotation -> checkParameters(method, annotation, modelAttributePathVariable)));
   }
 
-  private void reportIssueOnParameters(MethodTree method, String annotation, Set<String> modelAttributePathVariable) {
-    boolean containsMap = method.parameters().stream()
-      .filter(parameter -> parameter.symbol().metadata().isAnnotatedWith(PATH_VARIABLE_ANNOTATION))
-      .anyMatch(parameter -> {
-        Type type = parameter.type().symbolType();
-        // if the type is not Map<String,String>, Spring will throw a ClassCastException exception at runtime
-        boolean stringToString = type.typeArguments().stream().allMatch(typeArgument -> typeArgument.is("java.lang.String"));
-        return type.isSubtypeOf("java.util.Map") && stringToString;
-      });
-
-    if (containsMap) {
+  private void checkParameters(MethodTree method, String annotation, Set<String> modelAttributePathVariable) {
+    if (containsMap(method)) {
       /*
        * If any of the method parameters is a map, we assume all path variables are captured
        * and there is no mismatch with path variables in the request mapping.
@@ -94,30 +85,45 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck exte
       return;
     }
 
-    Set<String> pathVariablesNames = method.parameters().stream()
-      .map(variable -> pathVariableName(variable))
+    Set<String> unusedPathVariables= findUnusedPathVariables(method, annotation, modelAttributePathVariable);
+    if(!unusedPathVariables.isEmpty()) {
+      reportIssue(
+        annotation(method, annotation),
+        "Bind path variable \"" + String.join("\", \"", unusedPathVariables) + "\" to a method parameter.");
+    }
+  }
+
+  private static Set<String> findUnusedPathVariables(MethodTree method, String annotation, Set<String> modelAttributePathVariable) {
+    Set<String> pathVariablesUsedInArguments = method.parameters().stream()
+      .map(MissingPathVariableAnnotationCheck::pathVariableName)
       .flatMap(Optional::stream)
       .collect(Collectors.toSet());
 
-    extractPathArgumentFromMappingAnnotations(method, annotation)
-      .map(path -> extractPathVariables(path))
-      .map(pathVariables -> {
-        pathVariables.removeAll(pathVariablesNames);
+    return extractPathArgumentFromMappingAnnotations(method, annotation)
+      .map(MissingPathVariableAnnotationCheck::extractPathVariables)
+      .flatMap(pathVariables -> {
+        pathVariables.removeAll(pathVariablesUsedInArguments);
         pathVariables.removeAll(modelAttributePathVariable);
-        return pathVariables;
+        return pathVariables.stream();
       })
-      .filter(pathVariables -> !pathVariables.isEmpty())
-      .forEach(pathVariables -> reportIssue(
-        annotation(method, annotation),
-        "Bind path variable \"" + String.join("\", \"", pathVariables) + "\" to a method parameter."));
+      .collect(Collectors.toSet());
+  }
+
+  private static boolean containsMap(MethodTree method) {
+    return method.parameters().stream()
+      .filter(parameter -> parameter.symbol().metadata().isAnnotatedWith(PATH_VARIABLE_ANNOTATION))
+      .anyMatch(parameter -> {
+        Type type = parameter.type().symbolType();
+        return type.isSubtypeOf("java.util.Map");
+      });
   }
 
   private static ExpressionTree annotation(MethodTree method, String name) {
     return method.modifiers().annotations().stream()
       .filter(annotation -> annotation.symbolType().is(name))
-      .findFirst()
-      // it will never be null because we are filtering on the annotation before.
-      .orElse(null);
+      .collect(Collectors.toList())
+      // it will never be empty because we are filtering on the annotation before.
+      .get(0);
   }
 
   private static Set<String> extractPathVariables(String path) {

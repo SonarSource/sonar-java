@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
-public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSample {
-  @GetMapping("/{id}") // Noncompliant {{Bind path variable "id" to a method parameter.}}
+public class MissingPathVariableAnnotationCheckSample {
+  @GetMapping("/{id}") // Noncompliant [[sc=3;ec=23]] {{Bind path variable "id" to a method parameter.}}
   public String get(String id) {
     return "Hello World";
   }
@@ -142,13 +142,6 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSampl
     return "Hello World";
   }
 
-
-  @GetMapping("/{id}/{name}") // Noncompliant
-  public String mapStringToInt(@PathVariable Map<String,Integer> map) {
-    return "Hello World";
-  }
-
-
   @GetMapping(
     produces={"application/json", "application/xml"},
     consumes={"application/json", "application/xml"},
@@ -195,7 +188,8 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSampl
     }
 
     @GetMapping("/{id}/{name}")
-    public String get() { // compliant
+    public String get() { // compliant, @ModelAttribute is always called before @GetMapping to generate the model. In our case model attribute
+      // consume the id and name path variables
       return "Hello World";
     }
 
@@ -204,7 +198,7 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSampl
       return "Hello World";
     }
 
-    @GetMapping("/{id}/{name}/{age}") // Noncompliant
+    @GetMapping("/{id}/{name}/{age}") // Noncompliant  {{Bind path variable "age" to a method parameter.}}
     public String get3() {
       return "Hello World";
     }

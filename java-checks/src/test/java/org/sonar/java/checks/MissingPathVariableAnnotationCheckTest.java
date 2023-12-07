@@ -23,13 +23,13 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
-class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckTest {
+class MissingPathVariableAnnotationCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSample.java"))
-      .withCheck(new PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck())
+      .onFile(TestUtils.mainCodeSourcesPath("checks/MissingPathVariableAnnotationCheckSample.java"))
+      .withCheck(new MissingPathVariableAnnotationCheck())
       .verifyIssues();
   }
   
