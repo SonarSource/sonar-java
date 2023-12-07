@@ -4,9 +4,9 @@ import org.junit.Test;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.ws.test.client.MockWebServiceClient;
+import org.springframework.ws.test.server.MockWebServiceClient;
 
-class SpringTest {
+abstract class SpringTest {
 
   @Test
   public void testWithNoAssertion1() { // Noncompliant
@@ -38,11 +38,12 @@ class SpringTest {
   }
 
   @Test
-  public void mockWebServiceClient(){
+  public void mockWebServiceClient(){ // Compliant
     MockWebServiceClient server = null;
-    // server.expect(payload(requestXml)).andRespond(withPayload(responseXml));
-    // server.verify();
-  }
+    server.sendRequest(null)
+      .andExpect(null)
+      .andExpect(null);
+ }
   
   private ResultActions getResultActions() {
     return null;
