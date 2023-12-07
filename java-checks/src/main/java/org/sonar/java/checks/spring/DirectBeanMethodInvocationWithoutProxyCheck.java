@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 
 @Rule(key = "S6838")
-public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubscriptionVisitor {
+public class DirectBeanMethodInvocationWithoutProxyCheck extends IssuableSubscriptionVisitor {
   private static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
   private static final String SCOPE_ANNOTATION = "org.springframework.context.annotation.Scope";
 
@@ -70,7 +70,7 @@ public class BeanMethodOfNonProxiedSingletonInvocationCheck extends IssuableSubs
     return annotation.arguments().stream()
       .filter(argument -> argument.is(Tree.Kind.ASSIGNMENT))
       .map(AssignmentExpressionTree.class::cast)
-      .anyMatch(BeanMethodOfNonProxiedSingletonInvocationCheck::setsProxyBeanMethodsToFalse);
+      .anyMatch(DirectBeanMethodInvocationWithoutProxyCheck::setsProxyBeanMethodsToFalse);
   }
 
   private static boolean setsProxyBeanMethodsToFalse(AssignmentExpressionTree assignment) {

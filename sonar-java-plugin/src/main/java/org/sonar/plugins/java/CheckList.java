@@ -562,9 +562,9 @@ import org.sonar.java.checks.spring.AsyncMethodsReturnTypeCheck;
 import org.sonar.java.checks.spring.AutowiredOnConstructorWhenMultipleConstructorsCheck;
 import org.sonar.java.checks.spring.AutowiredOnMultipleConstructorsCheck;
 import org.sonar.java.checks.spring.AvoidQualifierOnBeanMethodsCheck;
-import org.sonar.java.checks.spring.BeanMethodOfNonProxiedSingletonInvocationCheck;
 import org.sonar.java.checks.spring.ControllerWithRestControllerReplacementCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
+import org.sonar.java.checks.spring.DirectBeanMethodInvocationWithoutProxyCheck;
 import org.sonar.java.checks.spring.FieldDependencyInjectionCheck;
 import org.sonar.java.checks.spring.ModelAttributeNamingConventionForSpELCheck;
 import org.sonar.java.checks.spring.NonSingletonAutowiredInSingletonCheck;
@@ -732,7 +732,6 @@ public final class CheckList {
     BadMethodNameCheck.class,
     BadTypeParameterNameCheck.class,
     BasicAuthCheck.class,
-    BeanMethodOfNonProxiedSingletonInvocationCheck.class,
     BigDecimalDoubleConstructorCheck.class,
     AndroidBiometricAuthWithoutCryptoCheck.class,
     BlindSerialVersionUidCheck.class,
@@ -811,6 +810,7 @@ public final class CheckList {
     DefaultInitializedFieldCheck.class,
     DeprecatedTagPresenceCheck.class,
     DiamondOperatorCheck.class,
+    DirectBeanMethodInvocationWithoutProxyCheck.class,
     DisableAutoEscapingCheck.class,
     DisallowedConstructorCheck.class,
     DisallowedMethodCheck.class,

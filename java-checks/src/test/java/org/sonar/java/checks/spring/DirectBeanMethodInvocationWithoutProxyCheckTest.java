@@ -23,13 +23,13 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
-class BeanMethodOfNonProxiedSingletonInvocationCheckTest {
+class DirectBeanMethodInvocationWithoutProxyCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/BeanMethodOfNonProxiedSingletonInvocationCheckSample.java"))
-      .withCheck(new BeanMethodOfNonProxiedSingletonInvocationCheck())
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/DirectBeanMethodInvocationWithoutProxyCheckSample.java"))
+      .withCheck(new DirectBeanMethodInvocationWithoutProxyCheck())
       .verifyIssues();
   }
 }

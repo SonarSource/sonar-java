@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import static java.lang.System.lineSeparator;
 
-public class BeanMethodOfNonProxiedSingletonInvocationCheckSample {
+public class DirectBeanMethodInvocationWithoutProxyCheckSample {
   @Configuration(proxyBeanMethods = false)
   static class NonCompliantConfiguration {
     @Bean
