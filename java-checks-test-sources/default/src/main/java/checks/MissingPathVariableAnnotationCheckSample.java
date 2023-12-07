@@ -193,7 +193,7 @@ public class MissingPathVariableAnnotationCheckSample {
       return "Hello World";
     }
 
-    @GetMapping("/{id}/{name}/{age}")
+    @GetMapping("/{id}/{name}/{age}") // Compliant
     public String get2(@PathVariable String age) { // compliant
       return "Hello World";
     }

@@ -85,8 +85,8 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       return;
     }
 
-    Set<String> unusedPathVariables= findUnusedPathVariables(method, annotation, modelAttributePathVariable);
-    if(!unusedPathVariables.isEmpty()) {
+    Set<String> unusedPathVariables = findUnusedPathVariables(method, annotation, modelAttributePathVariable);
+    if (!unusedPathVariables.isEmpty()) {
       reportIssue(
         annotation(method, annotation),
         "Bind path variable \"" + String.join("\", \"", unusedPathVariables) + "\" to a method parameter.");
@@ -121,9 +121,9 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   private static ExpressionTree annotation(MethodTree method, String name) {
     return method.modifiers().annotations().stream()
       .filter(annotation -> annotation.symbolType().is(name))
-      .collect(Collectors.toList())
+      .findFirst()
       // it will never be empty because we are filtering on the annotation before.
-      .get(0);
+      .orElseThrow();
   }
 
   private static Set<String> extractPathVariables(String path) {
