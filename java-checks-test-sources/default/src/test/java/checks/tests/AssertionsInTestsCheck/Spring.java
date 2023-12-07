@@ -6,7 +6,7 @@ import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.ws.test.server.MockWebServiceClient;
 
-abstract class SpringTest {
+class SpringTest {
 
   @Test
   public void testWithNoAssertion1() { // Noncompliant
