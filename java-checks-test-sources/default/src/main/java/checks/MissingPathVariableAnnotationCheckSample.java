@@ -4,12 +4,13 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
-public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSample {
-  @GetMapping("/{id}") // Noncompliant {{Bind path variable "id" to a method parameter.}}
+public class MissingPathVariableAnnotationCheckSample {
+  @GetMapping("/{id}") // Noncompliant [[sc=3;ec=23]] {{Bind path variable "id" to a method parameter.}}
   public String get(String id) {
     return "Hello World";
   }
@@ -141,13 +142,6 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSampl
     return "Hello World";
   }
 
-
-  @GetMapping("/{id}/{name}") // Noncompliant
-  public String mapStringToInt(@PathVariable Map<String,Integer> map) {
-    return "Hello World";
-  }
-
-
   @GetMapping(
     produces={"application/json", "application/xml"},
     consumes={"application/json", "application/xml"},
@@ -185,6 +179,56 @@ public class PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheckSampl
   @GetMapping("/{id}/{xxx${placeHolder}xxxx}/{${{placeHolder}}}")
   public String getPlaceHolder(String id) { // compliant, we don't consider this case
     return "Hello World";
+  }
+
+  static class ModelA {
+    @ModelAttribute("user")
+    public String getUser(@PathVariable String id, @PathVariable String name) {
+      return "user";
+    }
+
+    @GetMapping("/{id}/{name}")
+    public String get() { // compliant, @ModelAttribute is always called before @GetMapping to generate the model. In our case model attribute
+      // consume the id and name path variables
+      return "Hello World";
+    }
+
+    @GetMapping("/{id}/{name}/{age}") // Compliant
+    public String get2(@PathVariable String age) { // compliant
+      return "Hello World";
+    }
+
+    @GetMapping("/{id}/{name}/{age}") // Noncompliant  {{Bind path variable "age" to a method parameter.}}
+    public String get3() {
+      return "Hello World";
+    }
+  }
+
+  static class ModelB {
+    @ModelAttribute("user")
+    public String getUser(@PathVariable String id) {
+      return "user";
+    }
+
+    @ModelAttribute("id")
+    public String getId(@PathVariable String name) {
+      return "id";
+    }
+
+    @GetMapping("/{id}/{name}")
+    public String get() { // compliant
+      return "Hello World";
+    }
+
+    @GetMapping("/{id}/{name}/{age}")
+    public String get2(@PathVariable String age) { // compliant
+      return "Hello World";
+    }
+
+    @GetMapping("/{id}/{name}/{age}") // Noncompliant
+    public String get3() {
+      return "Hello World";
+    }
   }
 
 }

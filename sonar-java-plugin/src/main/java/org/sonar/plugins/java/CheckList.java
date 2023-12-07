@@ -279,7 +279,7 @@ import org.sonar.java.checks.OverrideAnnotationCheck;
 import org.sonar.java.checks.OverwrittenKeyCheck;
 import org.sonar.java.checks.ParameterReassignedToCheck;
 import org.sonar.java.checks.ParsingErrorCheck;
-import org.sonar.java.checks.PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck;
+import org.sonar.java.checks.MissingPathVariableAnnotationCheck;
 import org.sonar.java.checks.PopulateBeansCheck;
 import org.sonar.java.checks.PredictableSeedCheck;
 import org.sonar.java.checks.PreferStreamAnyMatchCheck;
@@ -969,7 +969,7 @@ public final class CheckList {
     OverrideAnnotationCheck.class,
     OverwrittenKeyCheck.class,
     PasswordEncoderCheck.class,
-    PathVariableAnnotationShouldBePresentIfPathVariableIsUsedCheck.class,
+    MissingPathVariableAnnotationCheck.class,
     PersistentEntityUsedAsRequestParameterCheck.class,
     PopulateBeansCheck.class,
     PossessiveQuantifierContinuationCheck.class,
