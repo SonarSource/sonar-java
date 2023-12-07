@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.ws.test.client.MockWebServiceClient;
 
 class SpringTest {
 
@@ -34,6 +35,13 @@ class SpringTest {
   @Test
   public void andExpectAllTest() throws Exception { // Compliant
     getResultActions().andDo(getResultHandler()).andExpectAll(getResultMatcher(), getResultMatcher()).andReturn();
+  }
+
+  @Test
+  public void mockWebServiceClient(){
+    MockWebServiceClient server = null;
+    // server.expect(payload(requestXml)).andRespond(withPayload(responseXml));
+    // server.verify();
   }
   
   private ResultActions getResultActions() {
