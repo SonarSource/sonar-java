@@ -9,6 +9,44 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 public class SpelExpressionCheckSample {
 
+  private static final String UNCLOSED = "${1 + 2 + 3";
+  private static final String INVALID_SPEL = "#{1 * * 2}";
+  private static final String INVALID_PROPERTY_PLACEHOLDER = "${foo.bar[}";
+  private static final String VALID_PROPERTY_PLACEHOLDER = "${foo.bar}";
+
+  @Value(UNCLOSED) // Noncompliant [[sc=10;ec=18]] {{Add missing '}' for this property placeholder or SpEL expression.}}
+  private String complexArgument1;
+
+  @Value(INVALID_SPEL) // Noncompliant [[sc=10;ec=22]] {{Correct this malformed SpEL expression.}}
+  private String complexArgument2;
+
+  @Value(INVALID_PROPERTY_PLACEHOLDER) // Noncompliant [[sc=10;ec=38]] {{Correct this malformed property placeholder.}}
+  private String complexArgument3;
+
+  @Value(value = UNCLOSED) // Noncompliant [[sc=18;ec=26]] {{Add missing '}' for this property placeholder or SpEL expression.}}
+  private String complexArgument4;
+
+  @Value(value = INVALID_SPEL) // Noncompliant [[sc=18;ec=30]] {{Correct this malformed SpEL expression.}}
+  private String complexArgument5;
+
+  @Value(value = INVALID_PROPERTY_PLACEHOLDER) // Noncompliant [[sc=18;ec=46]] {{Correct this malformed property placeholder.}}
+  private String complexArgument6;
+
+  @Value(value = "${1 + 2 + 3") // Noncompliant [[sc=19;ec=30]] {{Add missing '}' for this property placeholder or SpEL expression.}}
+  private String complexArgument7;
+
+  @Value(value = "#{1 * * 2}") // Noncompliant [[sc=19;ec=29]] {{Correct this malformed SpEL expression.}}
+  private String complexArgument8;
+
+  @Value(value = "${foo.bar[}") // Noncompliant [[sc=19;ec=30]] {{Correct this malformed property placeholder.}}
+  private String complexArgument9;
+
+  @Value(value = "#{1 + 2 + 3}") // Compliant
+  private String complexArgument10;
+
+  @Value(value = VALID_PROPERTY_PLACEHOLDER) // Compliant
+  private String complexArgument11;
+
   @Value("#{systemProperties['user.region'}") // Noncompliant [[sc=11;ec=44]] {{Correct this malformed SpEL expression.}}
   private String region1;
 
@@ -236,7 +274,7 @@ public class SpelExpressionCheckSample {
   @Value("#{ ") // Noncompliant [[sc=11;ec=14]]
   String delimiters25;
 
-  @Value("#{ " + "") // Compliant
+  @Value("#{ " + "") // Noncompliant
   String delimiters25_2;
 
   @Value("$ {") // Compliant
