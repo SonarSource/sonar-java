@@ -53,20 +53,20 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
    * Regular expression for a property placeholder segment that is not a SpEL expression.
    * It implements the following grammar with possessive quantifiers:
    * <p>
-   * ```
-   * PropertyPlaceholder ::= Identifier IndexedAccess* ("." Identifier IndexedAccess*)*
+   * <pre>
+   * PropertyPlaceholder ::= Identifier IndexExpression* ("." Identifier IndexExpression*)*
    * Identifier          ::= [a-zA-Z_][a-zA-Z0-9_]*
    * IndexExpression     ::= "[" [0-9]+ "]"
-   * ```
+   * </pre>
    * <p>
    * Some examples for accepted inputs:
    * <p>
-   * ```
+   * <pre>
    * foo
    * foo.bar
    * foo[42].bar23
    * bar[23][42]
-   * ```
+   * </pre>
    */
   private static final Pattern PROPERTY_PLACEHOLDER_PATTERN = Pattern.compile(
     "[a-zA-Z_]\\w*+(\\[\\d++])*+(\\.[a-zA-Z_]\\w*+(\\[\\d++])*+)*+"
@@ -183,8 +183,8 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
    * Where correct bracing is checked and then <code>contents</code> is parsed using the given <code>parseContents</code> function.
    *
    * @param value         string containing the character sequence to parse
-   * @param startIndex    start index of the character sequence in <code>value</code>
-   * @param startColumn   column offset between the original string literal and <code>value</code> (needed for reporting)
+   * @param startIndex    index of the opening delimiter we start from in <code>value</code>
+   * @param startColumn   offset with the position of <code>value</code> within a potentially longer original string (used for reporting)
    * @param parseContents function to parse <code>contents</code>
    * @throws SyntaxError when the input does not comply with the expected grammatical expression
    */
