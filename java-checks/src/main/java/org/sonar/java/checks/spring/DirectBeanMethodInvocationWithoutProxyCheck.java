@@ -60,7 +60,7 @@ public class DirectBeanMethodInvocationWithoutProxyCheck extends IssuableSubscri
 
   private static Optional<AnnotationTree> getConfigurationAnnotation(ClassTree tree) {
     return tree.modifiers().annotations().stream()
-      .filter(annotationInstance -> annotationInstance.symbolType().is(CONFIGURATION_ANNOTATION))
+      .filter(annotation -> annotation.symbolType().is(CONFIGURATION_ANNOTATION))
       .findFirst();
   }
 
