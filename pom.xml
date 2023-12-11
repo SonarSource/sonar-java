@@ -91,7 +91,6 @@
     <sslr.version>1.24.0.633</sslr.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
-
     <!-- Use more recent version than the one in parent-oss to support jreMinVersion -->
     <version.sonar-packaging.plugin>1.20.0.405</version.sonar-packaging.plugin>
 
