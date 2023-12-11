@@ -13,6 +13,7 @@ public class StatusCodesOnResponseCheckSample {
   @Controller
   class UserController {
     public ResponseEntity<User> getUserNoncompliant() {
+
       try {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new User()); // Noncompliant [[sc=16;ec=71]] {{Use the "ResponseEntity.ok()" method or set the status to
                                                                                          // "HttpStatus.OK".}}
@@ -42,6 +43,14 @@ public class StatusCodesOnResponseCheckSample {
       } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Compliant
       }
+    }
+
+    public ResponseEntity<User> getUser() {
+      return ResponseEntity.status(HttpStatus.OK).build(); // Compliant
+    }
+
+    public ResponseEntity<User> getUser2() {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Compliant
     }
 
     public ResponseEntity<User> getUserCompliant() {
