@@ -587,6 +587,7 @@ import org.sonar.java.checks.spring.SpringRequestMappingMethodCheck;
 import org.sonar.java.checks.spring.SpringScanDefaultPackageCheck;
 import org.sonar.java.checks.spring.SpringSecurityDisableCSRFCheck;
 import org.sonar.java.checks.spring.SpringSessionFixationCheck;
+import org.sonar.java.checks.spring.StatusCodesOnResponseCheck;
 import org.sonar.java.checks.spring.SuperfluousResponseBodyAnnotationCheck;
 import org.sonar.java.checks.spring.TransactionalMethodVisibilityCheck;
 import org.sonar.java.checks.spring.ValueAnnotationShouldInjectPropertyOrSpELCheck;
@@ -1039,6 +1040,7 @@ public final class CheckList {
     ServletInstanceFieldCheck.class,
     ServletMethodsExceptionsThrownCheck.class,
     ShiftOnIntOrLongCheck.class,
+    StatusCodesOnResponseCheck.class,
     UnnecessaryBitOperationCheck.class,
     SillyEqualsCheck.class,
     SillyStringOperationsCheck.class,
