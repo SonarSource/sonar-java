@@ -572,6 +572,7 @@ import org.sonar.java.checks.spring.NullableInjectedFieldsHaveDefaultValueCheck;
 import org.sonar.java.checks.spring.OptionalRestParametersShouldBeObjectsCheck;
 import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
+import org.sonar.java.checks.spring.SpelExpressionCheck;
 import org.sonar.java.checks.spring.SpringAntMatcherOrderCheck;
 import org.sonar.java.checks.spring.SpringAutoConfigurationCheck;
 import org.sonar.java.checks.spring.SpringBeanNamingConventionCheck;
@@ -675,6 +676,7 @@ public final class CheckList {
   public static final String REPOSITORY_KEY = "java";
 
   private static final List<Class<? extends JavaCheck>> JAVA_MAIN_CHECKS = Arrays.asList(
+
     // fast JavaFileScanner (not IssuableSubscriptionVisitor) ordered from the fastest to the slowest
     LeftCurlyBraceEndLineCheck.class,
     IndentationCheck.class,
@@ -1046,6 +1048,7 @@ public final class CheckList {
     SingleCharCharacterClassCheck.class,
     SingletonUsageCheck.class,
     SpecializedFunctionalInterfacesCheck.class,
+    SpelExpressionCheck.class,
     SpringAntMatcherOrderCheck.class,
     SpringAutoConfigurationCheck.class,
     SpringBeanNamingConventionCheck.class,
