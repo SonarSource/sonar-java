@@ -103,6 +103,18 @@ public class DirectBeanMethodInvocationWithoutProxyCheckSample {
     }
   }
 
+  @Configuration(proxyBeanMethods = false)
+  static class InvokeNonBeanMethod {
+    public SimpleBean simpleBean() {
+      return new SimpleBean();
+    }
+
+    @Bean
+    public CompositeBean compositeBean() {
+      return new CompositeBean(simpleBean()); // Compliant, call to a method that is not a bean
+    }
+  }
+
 
   static class SimpleBean {
     // ...

@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6838")
 public class DirectBeanMethodInvocationWithoutProxyCheck extends IssuableSubscriptionVisitor {
+  private static final String BEAN_ANNOTATION = "org.springframework.context.annotation.Bean";
   private static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
   private static final String SCOPE_ANNOTATION = "org.springframework.context.annotation.Scope";
 
@@ -59,7 +60,7 @@ public class DirectBeanMethodInvocationWithoutProxyCheck extends IssuableSubscri
 
   private static Optional<AnnotationTree> getConfigurationAnnotation(ClassTree tree) {
     return tree.modifiers().annotations().stream()
-      .filter(annotationInstance -> annotationInstance.symbolType().is(CONFIGURATION_ANNOTATION))
+      .filter(annotation -> annotation.symbolType().is(CONFIGURATION_ANNOTATION))
       .findFirst();
   }
 
@@ -88,13 +89,18 @@ public class DirectBeanMethodInvocationWithoutProxyCheck extends IssuableSubscri
     public void visitMethodInvocation(MethodInvocationTree tree) {
       super.visitMethodInvocation(tree);
       MethodTree declaration = tree.methodSymbol().declaration();
-      if (declaration == null || hasPrototypeScope(declaration)) {
+      if (declaration == null || !isBeanMethod(declaration) || hasPrototypeScope(declaration)) {
         return;
       }
       Tree parent = declaration.parent();
       if (parent == parentClass) {
         locations.add(tree);
       }
+    }
+
+    private static boolean isBeanMethod(MethodTree tree) {
+      return tree.modifiers().annotations().stream()
+        .anyMatch(annotation -> annotation.symbolType().is(BEAN_ANNOTATION));
     }
 
     /*
