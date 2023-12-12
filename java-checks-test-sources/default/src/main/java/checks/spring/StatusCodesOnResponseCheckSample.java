@@ -12,6 +12,15 @@ public class StatusCodesOnResponseCheckSample {
 
   @Controller
   class UserController {
+
+    public ResponseEntity<User> getOkUser() {
+      return ResponseEntity.ok(new User()); // Compliant
+    }
+
+    public ResponseEntity<User> getBadReqUser() {
+      return ResponseEntity.badRequest().build(); // Compliant
+    }
+
     public ResponseEntity<User> getUserNoncompliant() {
 
       try {
@@ -41,7 +50,7 @@ public class StatusCodesOnResponseCheckSample {
       } catch (NotFoundException e) {
         return ResponseEntity.ok().build(); // Noncompliant
       } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Compliant
+        return ResponseEntity.notFound().build(); // Compliant
       }
     }
 
@@ -60,6 +69,14 @@ public class StatusCodesOnResponseCheckSample {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Compliant
       } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Compliant
+      }
+    }
+
+    public ResponseEntity<User> getUserCompliant2() {
+      try {
+        return ResponseEntity.status(HttpStatus.OK).build(); // Compliant
+      } catch (NotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Compliant
       }
     }
   }

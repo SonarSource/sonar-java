@@ -50,10 +50,10 @@ public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
 
     MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor();
     classTree.accept(methodInvocationVisitor);
-
   }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
+
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocationTree) {
 
@@ -64,41 +64,41 @@ public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
         .build();
 
       if (statusMethodMatchers.matches(methodInvocationTree)) {
-        checkTryCatchWithStatus(methodInvocationTree);
+        checkTryCatchForStatus(methodInvocationTree);
       }
 
-      MethodMatchers okMethodMatchers = MethodMatchers.create()
+      MethodMatchers okMethodMatchersWithParam = MethodMatchers.create()
         .ofTypes(RESPONSE_ENTITY)
         .names("ok")
-        .addWithoutParametersMatcher()
+        .withAnyParameters()
         .build();
 
-      if (okMethodMatchers.matches(methodInvocationTree)) {
-        checkTryCatchWithStatus(methodInvocationTree);
+      if (okMethodMatchersWithParam.matches(methodInvocationTree)) {
+        Tree catchParent = checkCatchWithErrorStatus(methodInvocationTree, false);
+
+        if (catchParent == null) {
+          checkTryWithOkStatus(methodInvocationTree, true);
+        }
       }
 
-      MethodMatchers errorMethodMatchers = MethodMatchers.create()
+      MethodMatchers errorMethodMatchersWithParam = MethodMatchers.create()
         .ofTypes(RESPONSE_ENTITY)
         .names("badRequest", "notFound")
         .addWithoutParametersMatcher()
         .build();
 
-      if (errorMethodMatchers.matches(methodInvocationTree)) {
-        checkTryCatchWithStatus(methodInvocationTree);
+      if (errorMethodMatchersWithParam.matches(methodInvocationTree)) {
+        Tree catchParent = checkCatchWithErrorStatus(methodInvocationTree, true);
+
+        if (catchParent == null) {
+          checkTryWithOkStatus(methodInvocationTree, false);
+        }
       }
 
       super.visitMethodInvocation(methodInvocationTree);
     }
 
-    private void checkTryCatchWithStatus(MethodInvocationTree methodInvocationTree) {
-      Tree catchParent = checkCatchWithErrorStatus(methodInvocationTree);
-
-      if (catchParent == null) {
-        checkTryWithOkStatus(methodInvocationTree);
-      }
-    }
-
-    private Tree checkCatchWithErrorStatus(MethodInvocationTree methodInvocationTree) {
+    private void checkTryCatchForStatus(MethodInvocationTree methodInvocationTree) {
       Tree catchParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.CATCH);
       boolean isError = methodInvocationTree.arguments().stream()
         .map(MemberSelectExpressionTree.class::cast)
@@ -109,20 +109,37 @@ public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
           "Use the \"ResponseEntity.badRequest()\" or \"ResponseEntity.notFound()\" method" +
             "or set the status to \"HttpStatus.INTERNAL_SERVER_ERROR\" or \"HttpStatus.NOT_FOUND\".");
       }
+
+      if (catchParent == null) {
+        Tree tryParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.TRY_STATEMENT);
+        boolean isOk = methodInvocationTree.arguments().stream()
+          .map(MemberSelectExpressionTree.class::cast)
+          .anyMatch(arg -> "OK".equals(arg.identifier().name()));
+
+        if (tryParent != null && !isOk) {
+          reportIssue(methodInvocationTree, "Use the \"ResponseEntity.ok()\" method or set the status to \"HttpStatus.OK\".");
+        }
+      }
+    }
+
+    private Tree checkCatchWithErrorStatus(MethodInvocationTree methodInvocationTree, boolean isError) {
+      Tree catchParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.CATCH);
+
+      if (catchParent != null && !isError) {
+        reportIssue(methodInvocationTree,
+          "Use the \"ResponseEntity.badRequest()\" or \"ResponseEntity.notFound()\" method" +
+            "or set the status to \"HttpStatus.INTERNAL_SERVER_ERROR\" or \"HttpStatus.NOT_FOUND\".");
+      }
       return catchParent;
     }
 
-    private void checkTryWithOkStatus(MethodInvocationTree methodInvocationTree) {
+    private void checkTryWithOkStatus(MethodInvocationTree methodInvocationTree, boolean isOk) {
       Tree tryParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.TRY_STATEMENT);
-      boolean isOk = methodInvocationTree.arguments().stream()
-        .map(MemberSelectExpressionTree.class::cast)
-        .anyMatch(arg -> "OK".equals(arg.identifier().name()));
 
       if (tryParent != null && !isOk) {
         reportIssue(methodInvocationTree, "Use the \"ResponseEntity.ok()\" method or set the status to \"HttpStatus.OK\".");
       }
     }
-
   }
 
   private static boolean isClassController(ClassTree classTree) {
