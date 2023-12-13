@@ -56,7 +56,7 @@ public class SpelExpressionCheckSample {
   @Value("${user.region}") // Compliant
   private String region3;
 
-  @Value("${user.2region}") // Noncompliant
+  @Value("${user.2region}") // Compliant
   private String region4;
 
   @Value("${user.region:defaultRegion}") // Compliant
@@ -107,7 +107,7 @@ public class SpelExpressionCheckSample {
   @Value("${:defaultRegion}") // Noncompliant
   private String multi16;
 
-  @Value("${user.2region:default-region}") // Noncompliant
+  @Value("${user.2region:default-region}") // Compliant
   private String multi17;
 
   @Value("#{'${listOfValues}' split(',')}") // Noncompliant [[sc=11;ec=42]] {{Correct this malformed SpEL expression.}}
@@ -292,7 +292,7 @@ public class SpelExpressionCheckSample {
   @Value("# }") // Compliant
   String delimiters30;
 
-  @Value("${3foo}") // Noncompliant
+  @Value("${3foo}") // Compliant
   String ncPlaceholder0;
 
   @Value("${foo bar}") // Noncompliant
@@ -357,6 +357,12 @@ public class SpelExpressionCheckSample {
 
   @Value("${foo.bar[10][20].baz}") // Compliant
   String cPlaceholder5;
+
+  @Value("${foo-bar}") // Compliant
+  String cPlaceholder6;
+
+  @Value("${foo[10].bar.bar-baz}") // Compliant
+  String cPlaceholder7;
 
   @Value("#{foo bar}") // Noncompliant
   String spel0;
