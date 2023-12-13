@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -97,7 +98,7 @@ public class SuspiciousListRemoveCheck extends IssuableSubscriptionVisitor {
   private static class LoopBodyVisitor extends BaseTreeVisitor {
     private final Symbol counter;
     private MethodInvocationTree listRemove;
-    private boolean hasBreakOrContinue;
+    private boolean hasBreakOrContinueOrReturn;
     private boolean isCounterAssigned;
 
     public LoopBodyVisitor(Symbol counter) {
@@ -114,14 +115,20 @@ public class SuspiciousListRemoveCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitBreakStatement(BreakStatementTree tree) {
-      hasBreakOrContinue = true;
+      hasBreakOrContinueOrReturn = true;
       super.visitBreakStatement(tree);
     }
 
     @Override
     public void visitContinueStatement(ContinueStatementTree tree) {
-      hasBreakOrContinue = true;
+      hasBreakOrContinueOrReturn = true;
       super.visitContinueStatement(tree);
+    }
+
+    @Override
+    public void visitReturnStatement(ReturnStatementTree tree) {
+      hasBreakOrContinueOrReturn = true;
+      super.visitReturnStatement(tree);
     }
 
     @Override
@@ -141,7 +148,7 @@ public class SuspiciousListRemoveCheck extends IssuableSubscriptionVisitor {
     }
 
     boolean hasIssue() {
-      return listRemove != null && !hasBreakOrContinue && !isCounterAssigned;
+      return listRemove != null && !hasBreakOrContinueOrReturn && !isCounterAssigned;
     }
   }
 
