@@ -37,71 +37,97 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
 
   public static final String RESPONSE_ENTITY = "org.springframework.http.ResponseEntity";
-  public static final String OK_ISSUE_MESSAGE = "Use the \"ResponseEntity.ok()\" method or set the status to \"HttpStatus.OK\".";
-  public static final String ERROR_ISSUE_MESSAGE = "Use the \"ResponseEntity.badRequest()\" or \"ResponseEntity.notFound()\" method" +
-    "or set the status to \"HttpStatus.INTERNAL_SERVER_ERROR\" or \"HttpStatus.NOT_FOUND\".";
+  public static final String ISSUE_MESSAGE = "Set a HttpStatus code reflective of the operation.";
 
-  private final List<String> okCodes = List.of("CONTINUE",
-    "SWITCHING_PROTOCOLS",
-    "PROCESSING",
-    "CHECKPOINT",
-    "OK",
-    "CREATED",
-    "ACCEPTED",
-    "NON_AUTHORITATIVE_INFORMATION",
-    "NO_CONTENT",
-    "RESET_CONTENT",
-    "PARTIAL_CONTENT",
-    "MULTI_STATUS",
+  /*
+   * Values for the okCodes list are extracted from:
+   * https://docs.spring.io/spring-framework/docs/5.0.6.RELEASE/javadoc-api/index.html?org/springframework/http/HttpStatus.html
+   * by taking all that return 1xx, 2xx, 3xx code.
+   */
+  private static final List<String> OK_CODES = List.of("ACCEPTED",
     "ALREADY_REPORTED",
-    "IM_USED",
-    "MULTIPLE_CHOICES",
-    "MOVED_PERMANENTLY",
+    "CHECKPOINT",
+    "CONTINUE",
+    "CREATED",
     "FOUND",
-    "SEE_OTHER",
+    "IM_USED",
+    "MOVED_PERMANENTLY",
+    "MULTIPLE_CHOICES",
+    "MULTI_STATUS",
+    "NON_AUTHORITATIVE_INFORMATION",
     "NOT_MODIFIED",
-    "TEMPORARY_REDIRECT",
-    "PERMANENT_REDIRECT");
+    "NO_CONTENT",
+    "OK",
+    "PARTIAL_CONTENT",
+    "PERMANENT_REDIRECT",
+    "PROCESSING",
+    "RESET_CONTENT",
+    "SEE_OTHER",
+    "SWITCHING_PROTOCOLS",
+    "TEMPORARY_REDIRECT");
 
-  private final List<String> errorCodes = List.of("BAD_REQUEST",
-    "UNAUTHORIZED",
-    "PAYMENT_REQUIRED",
-    "FORBIDDEN",
-    "NOT_FOUND",
-    "METHOD_NOT_ALLOWED",
-    "NOT_ACCEPTABLE",
-    "PROXY_AUTHENTICATION_REQUIRED",
-    "REQUEST_TIMEOUT",
-    "CONFLICT",
-    "GONE",
-    "LENGTH_REQUIRED",
-    "PRECONDITION_FAILED",
-    "PAYLOAD_TOO_LARGE",
-    "URI_TOO_LONG",
-    "UNSUPPORTED_MEDIA_TYPE",
-    "REQUESTED_RANGE_NOT_SATISFIABLE",
-    "EXPECTATION_FAILED",
-    "I_AM_A_TEAPOT",
-    "UNPROCESSABLE_ENTITY",
-    "LOCKED",
-    "FAILED_DEPENDENCY",
-    "UPGRADE_REQUIRED",
-    "PRECONDITION_REQUIRED",
-    "TOO_MANY_REQUESTS",
-    "REQUEST_HEADER_FIELDS_TOO_LARGE",
-    "UNAVAILABLE_FOR_LEGAL_REASONS",
-    "INTERNAL_SERVER_ERROR",
-    "NOT_IMPLEMENTED",
-    "BAD_GATEWAY",
-    "SERVICE_UNAVAILABLE",
-    "GATEWAY_TIMEOUT",
-    "HTTP_VERSION_NOT_SUPPORTED",
-    "VARIANT_ALSO_NEGOTIATES",
-    "INSUFFICIENT_STORAGE",
-    "LOOP_DETECTED",
+  /*
+   * Values for the errorCodes list are extracted from:
+   * https://docs.spring.io/spring-framework/docs/5.0.6.RELEASE/javadoc-api/index.html?org/springframework/http/HttpStatus.html
+   * by taking all that return 4xx, 5xx code.
+   */
+  private static final List<String> ERROR_CODES = List.of("BAD_GATEWAY",
+    "BAD_REQUEST",
     "BANDWIDTH_LIMIT_EXCEEDED",
+    "CONFLICT",
+    "EXPECTATION_FAILED",
+    "FAILED_DEPENDENCY",
+    "FORBIDDEN",
+    "GATEWAY_TIMEOUT",
+    "GONE",
+    "HTTP_VERSION_NOT_SUPPORTED",
+    "INSUFFICIENT_STORAGE",
+    "INTERNAL_SERVER_ERROR",
+    "I_AM_A_TEAPOT",
+    "LENGTH_REQUIRED",
+    "LOCKED",
+    "LOOP_DETECTED",
+    "METHOD_NOT_ALLOWED",
+    "NETWORK_AUTHENTICATION_REQUIRED",
+    "NOT_ACCEPTABLE",
     "NOT_EXTENDED",
-    "NETWORK_AUTHENTICATION_REQUIRED");
+    "NOT_FOUND",
+    "NOT_IMPLEMENTED",
+    "PAYLOAD_TOO_LARGE",
+    "PAYMENT_REQUIRED",
+    "PRECONDITION_FAILED",
+    "PRECONDITION_REQUIRED",
+    "PROXY_AUTHENTICATION_REQUIRED",
+    "REQUESTED_RANGE_NOT_SATISFIABLE",
+    "REQUEST_HEADER_FIELDS_TOO_LARGE",
+    "REQUEST_TIMEOUT",
+    "SERVICE_UNAVAILABLE",
+    "TOO_MANY_REQUESTS",
+    "UNAUTHORIZED",
+    "UNAVAILABLE_FOR_LEGAL_REASONS",
+    "UNPROCESSABLE_ENTITY",
+    "UNSUPPORTED_MEDIA_TYPE",
+    "UPGRADE_REQUIRED",
+    "URI_TOO_LONG",
+    "VARIANT_ALSO_NEGOTIATES");
+
+  private static final MethodMatchers STATUS_METHOD_MATCHERS = MethodMatchers.create()
+    .ofTypes(RESPONSE_ENTITY)
+    .names("status")
+    .addParametersMatcher("org.springframework.http.HttpStatus")
+    .build();
+
+  private static final MethodMatchers OK_METHOD_MATCHERS = MethodMatchers.create()
+    .ofTypes(RESPONSE_ENTITY)
+    .names("ok", "created", "accepted", "noContent")
+    .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers ERROR_METHODS_MATCHER = MethodMatchers.create()
+    .ofTypes(RESPONSE_ENTITY)
+    .names("badRequest", "notFound", "unprocessableEntity")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -121,43 +147,28 @@ public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
 
-    MethodMatchers statusMethodMatchers = MethodMatchers.create()
-      .ofTypes(RESPONSE_ENTITY)
-      .names("status")
-      .addParametersMatcher("org.springframework.http.HttpStatus")
-      .build();
-
-    MethodMatchers okMethodMatchers = MethodMatchers.create()
-      .ofTypes(RESPONSE_ENTITY)
-      .names("ok", "created", "accepted", "noContent")
-      .withAnyParameters()
-      .build();
-
-    MethodMatchers errorMethodsMatcher = MethodMatchers.create()
-      .ofTypes(RESPONSE_ENTITY)
-      .names("badRequest", "notFound", "unprocessableEntity")
-      .addWithoutParametersMatcher()
-      .build();
-
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocationTree) {
 
-      if (statusMethodMatchers.matches(methodInvocationTree)) {
+      if (STATUS_METHOD_MATCHERS.matches(methodInvocationTree)) {
         checkTryCatch(methodInvocationTree);
+        return;
       }
 
-      if (okMethodMatchers.matches(methodInvocationTree)) {
+      if (OK_METHOD_MATCHERS.matches(methodInvocationTree)) {
         Tree catchParent = checkCatch(methodInvocationTree, false);
         if (catchParent == null) {
           checkTry(methodInvocationTree, true);
         }
+        return;
       }
 
-      if (errorMethodsMatcher.matches(methodInvocationTree)) {
+      if (ERROR_METHODS_MATCHER.matches(methodInvocationTree)) {
         Tree catchParent = checkCatch(methodInvocationTree, true);
         if (catchParent == null) {
           checkTry(methodInvocationTree, false);
         }
+        return;
       }
 
       super.visitMethodInvocation(methodInvocationTree);
@@ -165,31 +176,31 @@ public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
 
     private void checkTryCatch(MethodInvocationTree methodInvocationTree) {
       Tree catchParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.CATCH);
-      boolean isError = isCodeInList(methodInvocationTree, errorCodes);
+      boolean isError = isCodeInList(methodInvocationTree, ERROR_CODES);
 
       if (catchParent != null && !isError) {
-        reportIssue(methodInvocationTree, ERROR_ISSUE_MESSAGE);
+        reportIssue(methodInvocationTree, ISSUE_MESSAGE);
+        return;
       }
 
       if (catchParent == null) {
         Tree tryParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.TRY_STATEMENT);
-        boolean isOk = isCodeInList(methodInvocationTree, okCodes);
+        boolean isOk = isCodeInList(methodInvocationTree, OK_CODES);
 
         if (tryParent != null && !isOk) {
-          reportIssue(methodInvocationTree, OK_ISSUE_MESSAGE);
+          reportIssue(methodInvocationTree, ISSUE_MESSAGE);
         }
       }
     }
 
     private boolean isCodeInList(MethodInvocationTree methodInvocationTree, List<String> codes) {
-      for (ExpressionTree arg : methodInvocationTree.arguments()) {
-        if (arg.is(Tree.Kind.MEMBER_SELECT)) {
-          MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) arg;
-          return codes.contains(memberSelectExpressionTree.identifier().name());
-        } else if (arg.is(Tree.Kind.IDENTIFIER)) {
-          IdentifierTree identifierTree = (IdentifierTree) arg;
-          return codes.contains(identifierTree.name());
-        }
+      ExpressionTree arg = methodInvocationTree.arguments().get(0);
+      if (arg.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) arg;
+        return codes.contains(memberSelectExpressionTree.identifier().name());
+      } else if (arg.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifierTree = (IdentifierTree) arg;
+        return codes.contains(identifierTree.name());
       }
       return true;
     }
@@ -198,7 +209,7 @@ public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
       Tree catchParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.CATCH);
 
       if (catchParent != null && !isError) {
-        reportIssue(methodInvocationTree, ERROR_ISSUE_MESSAGE);
+        reportIssue(methodInvocationTree, ISSUE_MESSAGE);
       }
       return catchParent;
     }
@@ -207,7 +218,7 @@ public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
       Tree tryParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.TRY_STATEMENT);
 
       if (tryParent != null && !isOk) {
-        reportIssue(methodInvocationTree, OK_ISSUE_MESSAGE);
+        reportIssue(methodInvocationTree, ISSUE_MESSAGE);
       }
       return tryParent;
     }

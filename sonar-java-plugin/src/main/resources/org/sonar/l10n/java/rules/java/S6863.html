@@ -1,8 +1,11 @@
 <h2>Why is this an issue?</h2>
 <p>The request handler function in a <code>Controller</code> should set the appropriate HTTP status code based on the operation’s success or failure.
 This is done by returning a <code>Response</code> object with the appropriate status code.</p>
-<p>If an exception is thrown during the execution of the handler, the status code should be in the range of 4xx or 5xx. The status code should be 1xx,
-2xx, or 3xx if no exception is thrown.</p>
+<p>If an exception is thrown during the execution of the handler, the status code should be in the range of 4xx or 5xx. Examples of such codes are
+<code>BAD_REQUEST</code>, <code>UNAUTHORIZED</code>, <code>FORBIDDEN</code>, <code>NOT_FOUND</code>, <code>INTERNAL_SERVER_ERROR</code>,
+<code>BAD_GATEWAY</code>, <code>SERVICE_UNAVAILABLE</code>, etc.</p>
+<p>The status code should be 1xx, 2xx, or 3xx if no exception is thrown and the operation is considered successful. Such codes include
+<code>OK</code>, <code>CREATED</code>, <code>MOVED_PERMANENTLY</code>, <code>FOUND</code>, etc.</p>
 <h2>How to fix it</h2>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -36,6 +39,10 @@ public class UserController {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/HttpStatus.html">Spring Java Documentation -
+  HttpStatus</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html">Spring Java
+  Documentation - ResponseEntity</a> </li>
   <li> <a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/responseentity.html">Spring Framework
   Documentation - ResponseEntity</a> </li>
   <li> <a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html">Spring Framework Documentation - Exception
