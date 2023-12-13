@@ -1,0 +1,133 @@
+20c20
+< package org.sonar.java.checks.ml;
+---
+> package org.sonar.java.checks;
+22,29d21
+< import com.sonar.ml.feature_engineering.CommentPreparation;
+< import com.sonar.ml.feature_engineering.VocabularyAndSemicolonFeatures;
+< import com.sonar.ml.model.LinearRegressionModel;
+< import com.sonar.ml.model.LogisticRegressionModel;
+< import com.sonar.ml.tokenization.RoBERTaBPEEncoder;
+< import com.sonar.ml.tokenization.RoBERTaTokenizer;
+< import java.io.IOException;
+< import java.io.InputStream;
+33a26
+> import org.apache.commons.lang3.StringUtils;
+42a36,37
+> import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+> import org.sonarsource.analyzer.commons.recognizers.CodeRecognizer;
+44,46c39,41
+< import static com.sonar.ml.feature_engineering.CommentPreparation.CommentType.JAVADOC;
+< import static com.sonar.ml.feature_engineering.VocabularyAndSemicolonFeatures.loadVocabulary;
+< import static com.sonar.ml.model.LinearRegressionModel.loadParams;
+---
+> @DeprecatedRuleKey(ruleKey = "CommentedOutCodeLine", repositoryKey = "squid")
+> @Rule(key = "S125")
+> public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
+48,49c43,45
+< @Rule(key = "S125-ML")
+< public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
+---
+>   private static final double THRESHOLD = 0.9;
+>   private static final String START_JSNI = "/*-{";
+>   private static final String END_JSNI = "}-*/";
+52,55c48
+<   private final CommentPreparation commentPreparation;
+<   private final RoBERTaTokenizer tokenizer;
+<   private final VocabularyAndSemicolonFeatures featureExtractor;
+<   private final LogisticRegressionModel model;
+---
+>   private final CodeRecognizer codeRecognizer;
+57,67c50,51
+<   public CommentedOutCodeLineMLCheck() {
+<     commentPreparation = CommentPreparation.newInstance();
+< 
+<     try {
+<       tokenizer = new RoBERTaTokenizer(RoBERTaBPEEncoder.from(loadResource("/ml/S125/merges.txt")));
+<       featureExtractor = new VocabularyAndSemicolonFeatures(loadVocabulary(loadResource("/ml/S125/vocab-100.json")), 500);
+<       model = new LogisticRegressionModel(new LinearRegressionModel(loadParams(loadResource("/ml/S125/model-lr-100.json"))), 0.83d);
+< 
+<     } catch (IOException e) {
+<       throw new IllegalArgumentException("Could setup ML Model.", e);
+<     }
+---
+>   public CommentedOutCodeLineCheck() {
+>     codeRecognizer = new CodeRecognizer(THRESHOLD, new JavaFootprint());
+70,73d53
+<   private InputStream loadResource(String resourceName) {
+<     return getClass().getResourceAsStream(resourceName);
+<   }
+< 
+81d60
+< 
+85d63
+< 
+88d65
+< 
+93,95c70
+<       String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
+< 
+<       if (containsCode(lines)) {
+---
+>       if (!isHeader(syntaxTrivia) && !isJavadoc(syntaxTrivia.comment()) && !isJSNI(syntaxTrivia.comment())) {
+100d74
+< 
+108d81
+< 
+111,112c84
+< 
+<       if (containsCode(List.of(line).toArray(String[]::new))) {
+---
+>       if (!isJavadocLink(line) && codeRecognizer.isLineOfCode(line)) {
+115d86
+< 
+124d94
+< 
+128,140d97
+<   private boolean containsCode(String[] lines) {
+<     return commentPreparation.toComment(List.of(lines))
+<       .filter(comment -> comment.getType() != JAVADOC)
+<       .map(comment -> {
+<         String[] tokens = tokenizer.tokenize(String.join("\n", comment.getCommentedOutText()));
+<         double[] features = featureExtractor.extractFrom(tokens);
+<         LogisticRegressionModel.Prediction prediction = model.predict(features);
+<         return prediction.getDecision();
+<       })
+<       .orElse(false);
+<   }
+< 
+<   // methods below are a copy of the methods in CommentedOutCodeLineCheck, should be refactored to a common place!
+161a119,151
+> 
+>   /**
+>    * We assume that comment on a first line - is a header with license.
+>    * However possible to imagine corner case: file may contain commented-out code starting from first line.
+>    * But we assume that probability of this is really low.
+>    */
+>   private static boolean isHeader(SyntaxTrivia syntaxTrivia) {
+>     return LineUtils.startLine(syntaxTrivia) == 1;
+>   }
+> 
+>   private static boolean isJavadocLink(String line) {
+>     return line.contains("{@link");
+>   }
+> 
+>   /**
+>    * From documentation for Javadoc-tool:
+>    * Documentation comments should be recognized only when placed
+>    * immediately before class, interface, constructor, method, or field declarations.
+>    */
+>   private static boolean isJavadoc(String comment) {
+>     return StringUtils.startsWith(comment, "/**");
+>   }
+> 
+>   /**
+>    * From GWT documentation:
+>    * JSNI methods are declared native and contain JavaScript code in a specially formatted comment block
+>    * between the end of the parameter list and the trailing semicolon.
+>    * A JSNI comment block begins with the exact token {@link #START_JSNI} and ends with the exact token {@link #END_JSNI}.
+>    */
+>   private static boolean isJSNI(String comment) {
+>     return StringUtils.startsWith(comment, START_JSNI) && StringUtils.endsWith(comment, END_JSNI);
+>   }
+> 
