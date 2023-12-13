@@ -1,0 +1,24 @@
+{
+  "title": "Set appropriate Status Codes on HTTP responses",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring",
+    "best-practice"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6863",
+  "sqKey": "S6863",
+  "scope": "Main",
+  "quickfix": "infeasible",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "DISTINCT"
+  }
+}
