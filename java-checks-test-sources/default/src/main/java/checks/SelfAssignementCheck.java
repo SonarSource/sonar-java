@@ -1,6 +1,12 @@
 package checks;
 
 class SelfAssignementCheck {
+  static int staticField = 0;
+  
+  static {
+    staticField = staticField;  // Noncompliant
+  }
+  
   int a, c = 0;
   int[] b = {0};
 

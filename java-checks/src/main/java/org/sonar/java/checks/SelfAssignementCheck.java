@@ -90,7 +90,7 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
     MethodTree methodParent = (MethodTree) ExpressionUtils.getParentOfType(tree, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
     String name = getName(tree.variable());
 
-    boolean isMethodParameter = methodParent.parameters().stream()
+    boolean isMethodParameter = methodParent != null && methodParent.parameters().stream()
       .map(p -> p.simpleName().name())
       .anyMatch(p -> p.equals(name));
 
