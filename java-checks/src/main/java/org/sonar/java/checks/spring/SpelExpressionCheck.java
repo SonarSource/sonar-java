@@ -55,7 +55,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
    * <p>
    * <pre>
    * PropertyPlaceholder ::= Identifier IndexExpression* ("." Identifier IndexExpression*)*
-   * Identifier          ::= [a-zA-Z_][a-zA-Z0-9_]*
+   * Identifier          ::= [a-zA-Z0-9_-]+
    * IndexExpression     ::= "[" [0-9]+ "]"
    * </pre>
    * <p>
@@ -69,7 +69,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
    * </pre>
    */
   private static final Pattern PROPERTY_PLACEHOLDER_PATTERN = Pattern.compile(
-    "[a-zA-Z_]\\w*+(\\[\\d++])*+(\\.[a-zA-Z_]\\w*+(\\[\\d++])*+)*+"
+    "[a-zA-Z0-9_-]++(\\[\\d++])*+(\\.[a-zA-Z0-9_-]++(\\[\\d++])*+)*+"
   );
 
   public List<Tree.Kind> nodesToVisit() {
