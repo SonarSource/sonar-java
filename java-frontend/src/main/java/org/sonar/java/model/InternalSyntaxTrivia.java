@@ -36,9 +36,7 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
   public InternalSyntaxTrivia(String comment, int line, int columnOffset) {
     this.comment = comment;
-    range = comment.startsWith("/*")
-      ? Range.at(InternalPosition.atOffset(line, columnOffset), comment)
-      : Range.at(InternalPosition.atOffset(line, columnOffset), comment.length());
+    range = Range.at(InternalPosition.atOffset(line, columnOffset), comment);
   }
 
   @Override

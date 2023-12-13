@@ -27,16 +27,15 @@ import com.sonar.ml.tokenization.RoBERTaBPEEncoder;
 import com.sonar.ml.tokenization.RoBERTaTokenizer;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
-import org.sonar.java.model.LineUtils;
+import org.sonar.java.model.InternalSyntaxTrivia;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -79,50 +78,51 @@ public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
 
-    List<AnalyzerMessage> issues = new ArrayList<>();
-    AnalyzerMessage previousRelatedIssue = null;
-    int previousCommentLine = -1;
-
-    for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
-      int currentCommentLine = LineUtils.startLine(syntaxTrivia);
-
-      if (currentCommentLine != previousCommentLine + 1 &&
-        currentCommentLine != previousCommentLine) {
-        previousRelatedIssue = null;
-      }
+    for (SyntaxTrivia syntaxTrivia : mergeAdjacentSingleLineComments(syntaxToken.trivias())) {
       String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
 
       if (containsCode(lines)) {
-        previousRelatedIssue = collectIssues(issues, syntaxTrivia, previousRelatedIssue);
-        previousCommentLine = currentCommentLine;
+        reportCommentedOutCode(syntaxTrivia);
       }
     }
-
-    DefaultJavaFileScannerContext scannerContext = (DefaultJavaFileScannerContext) this.context;
-    issues.forEach(scannerContext::reportIssue);
   }
 
-  public AnalyzerMessage collectIssues(List<AnalyzerMessage> issues, SyntaxTrivia syntaxTrivia, @Nullable AnalyzerMessage previousRelatedIssue) {
-    String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
-    AnalyzerMessage issue = previousRelatedIssue;
+  private static List<SyntaxTrivia> mergeAdjacentSingleLineComments(List<SyntaxTrivia> syntaxTrivias) {
+    var mergedTrivia = new LinkedList<SyntaxTrivia>();
+    var triviaToMerge = new LinkedList<SyntaxTrivia>();
 
-    for (int lineOffset = 0; lineOffset < lines.length; lineOffset++) {
-      String line = lines[lineOffset];
+    for (SyntaxTrivia syntaxTrivia : syntaxTrivias) {
 
-      if (containsCode(List.of(line).toArray(String[]::new))) {
-        int startLine = LineUtils.startLine(syntaxTrivia) + lineOffset;
-        int startColumnOffset = (lineOffset == 0 ? Position.startOf(syntaxTrivia).columnOffset() : 0);
-
-        if (issue != null) {
-          issue.flows.add(Collections.singletonList(createAnalyzerMessage(startLine, startColumnOffset, line, "Code")));
-        } else {
-          issue = createAnalyzerMessage(startLine, startColumnOffset, line, MESSAGE);
-          issues.add(issue);
-        }
+      if (triviaToMerge.isEmpty()
+        || (sameCommentType(triviaToMerge.getLast(), syntaxTrivia) && contiguousComments(triviaToMerge.getLast(), syntaxTrivia))) {
+        triviaToMerge.add(syntaxTrivia);
+      } else {
+        mergedTrivia.add(mergeSyntaxTrivia(triviaToMerge));
+        triviaToMerge.clear();
+        // start a new list of comments to merge
+        triviaToMerge.add(syntaxTrivia);
       }
     }
 
-    return issue;
+    if (!triviaToMerge.isEmpty()) {
+      mergedTrivia.add(mergeSyntaxTrivia(triviaToMerge));
+    }
+
+    return mergedTrivia;
+  }
+
+  private static boolean sameCommentType(SyntaxTrivia syntaxTrivia1, SyntaxTrivia syntaxTrivia2) {
+    return syntaxTrivia1.comment().startsWith("//") && syntaxTrivia2.comment().startsWith("//");
+  }
+
+  private static boolean contiguousComments(SyntaxTrivia syntaxTrivia1, SyntaxTrivia syntaxTrivia2) {
+    return syntaxTrivia1.range().end().line() + 1 == syntaxTrivia2.range().start().line();
+  }
+
+  private static SyntaxTrivia mergeSyntaxTrivia(List<SyntaxTrivia> syntaxTrivia) {
+    var mergedComments = syntaxTrivia.stream().map(SyntaxTrivia::comment).collect(Collectors.joining("\n"));
+    var firstCommentRange = syntaxTrivia.get(0).range();
+    return new InternalSyntaxTrivia(mergedComments, firstCommentRange.start().line(), firstCommentRange.start().columnOffset());
   }
 
   private boolean containsCode(String[] lines) {
@@ -137,26 +137,15 @@ public class CommentedOutCodeLineMLCheck extends IssuableSubscriptionVisitor {
       .orElse(false);
   }
 
-  // methods below are a copy of the methods in CommentedOutCodeLineCheck, should be refactored to a common place!
-  private AnalyzerMessage createAnalyzerMessage(int startLine, int startColumn, String line, String message) {
-    String lineWithoutCommentPrefix = line.replaceFirst("^(//|/\\*\\*?|[ \t]*\\*)?[ \t]*+", "");
-    int prefixSize = line.length() - lineWithoutCommentPrefix.length();
-    String lineWithoutCommentPrefixAndSuffix = removeCommentSuffix(lineWithoutCommentPrefix);
-
+  private void reportCommentedOutCode(SyntaxTrivia syntaxTrivia) {
     AnalyzerMessage.TextSpan textSpan = new AnalyzerMessage.TextSpan(
-      startLine,
-      startColumn + prefixSize,
-      startLine,
-      startColumn + prefixSize + lineWithoutCommentPrefixAndSuffix.length());
+      syntaxTrivia.range().start().line(),
+      syntaxTrivia.range().start().columnOffset(),
+      syntaxTrivia.range().end().line(),
+      syntaxTrivia.range().end().columnOffset());
 
-    return new AnalyzerMessage(this, context.getInputFile(), textSpan, message, 0);
-  }
+    AnalyzerMessage message = new AnalyzerMessage(this, context.getInputFile(), textSpan, CommentedOutCodeLineMLCheck.MESSAGE, 0);
 
-  private static String removeCommentSuffix(String line) {
-    // We do not use a regex for this task, to avoid ReDoS.
-    if (line.endsWith("*/")) {
-      line = line.substring(0, line.length() - 2);
-    }
-    return line.stripTrailing();
+    ((DefaultJavaFileScannerContext) this.context).reportIssue(message);
   }
 }

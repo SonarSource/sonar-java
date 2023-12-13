@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.ml;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
@@ -27,11 +26,11 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class CommentedOutCodeLineMLCheckTest {
 
-  @Disabled("disable to allow dogfooding")
+  //@Disabled("disable to allow dogfooding")
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CommentedCode.java"))
+      .onFile(mainCodeSourcesPath("checks/ml/CommentedCodeML.java"))
       .withCheck(new CommentedOutCodeLineMLCheck())
       .verifyIssues();
   }
