@@ -1,8 +1,8 @@
 <h2>Why is this an issue?</h2>
 <p>The request handler function in a <code>Controller</code> should set the appropriate HTTP status code based on the operation’s success or failure.
 This is done by returning a <code>Response</code> object with the appropriate status code.</p>
-<p>If an exception is thrown during the execution of the handler, the status code should be in the range of 4xx or 5xx. If no exception is thrown, the
-status code should be in the range of 2xx.</p>
+<p>If an exception is thrown during the execution of the handler, the status code should be in the range of 4xx or 5xx. The status code should be 1xx,
+2xx, or 3xx if no exception is thrown.</p>
 <h2>How to fix it</h2>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -14,7 +14,7 @@ public class UserController {
             User user = userService.getUserById(userId);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(user); // Noncompliant: Setting 500 for a successful operation
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK).build(); // Noncompliant: Set 200 for exception
+            return ResponseEntity.status(HttpStatus.OK).build(); // Noncompliant: Setting 200 for exception
         }
     }
 }
@@ -26,9 +26,9 @@ public class UserController {
     public ResponseEntity&lt;User&gt; getUserById(Long userId) {
         try {
             User user = userService.getUserById(userId);
-            return ResponseEntity.ok(user); // Compliant: Set 200 for success
+            return ResponseEntity.ok(user); // Compliant: Setting 200 for a successful operation
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Compliant: Set 400 or 500 for exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Compliant: Setting 500 for exception
         }
     }
 }

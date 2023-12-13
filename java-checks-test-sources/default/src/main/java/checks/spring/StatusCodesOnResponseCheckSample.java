@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.OK;
+
 public class StatusCodesOnResponseCheckSample {
 
   class User {
@@ -24,11 +27,11 @@ public class StatusCodesOnResponseCheckSample {
     public ResponseEntity<User> getUserNoncompliant() {
 
       try {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new User()); // Noncompliant [[sc=16;ec=71]] {{Use the "ResponseEntity.ok()" method or set the status to
-                                                                                         // "HttpStatus.OK".}}
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new User()); // Noncompliant [[sc=16;ec=60]] {{Use the "ResponseEntity.ok()" method or set the status to
+                                                                              // "HttpStatus.OK".}}
       } catch (NotFoundException e) {
-        return ResponseEntity.status(HttpStatus.OK).build(); // Noncompliant [[sc=16;ec=52]] {{Use the "ResponseEntity.badRequest()" or "ResponseEntity.notFound()" methodor set the
-                                                             // status to "HttpStatus.INTERNAL_SERVER_ERROR" or "HttpStatus.NOT_FOUND".}}
+        return ResponseEntity.status(OK).build(); // Noncompliant [[sc=16;ec=41]] {{Use the "ResponseEntity.badRequest()" or "ResponseEntity.notFound()" method or set the
+                                                  // status to "HttpStatus.INTERNAL_SERVER_ERROR" or "HttpStatus.NOT_FOUND".}}
       } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Compliant
       }
@@ -40,7 +43,7 @@ public class StatusCodesOnResponseCheckSample {
       } catch (NotFoundException e) {
         return ResponseEntity.ok().build(); // Noncompliant
       } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Compliant
+        return ResponseEntity.status(getHttpStatus()).build(); // Compliant
       }
     }
 
@@ -55,11 +58,11 @@ public class StatusCodesOnResponseCheckSample {
     }
 
     public ResponseEntity<User> getUser() {
-      return ResponseEntity.status(HttpStatus.OK).build(); // Compliant
+      return ResponseEntity.status(OK).build(); // Compliant
     }
 
     public ResponseEntity<User> getUser2() {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Compliant
+      return ResponseEntity.status(INTERNAL_SERVER_ERROR).build(); // Compliant
     }
 
     public ResponseEntity<User> getUserCompliant() {
@@ -68,17 +71,21 @@ public class StatusCodesOnResponseCheckSample {
       } catch (NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Compliant
       } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Compliant
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).build(); // Compliant
       }
     }
 
     public ResponseEntity<User> getUserCompliant2() {
       try {
-        return ResponseEntity.status(HttpStatus.OK).build(); // Compliant
+        return ResponseEntity.status(OK).build(); // Compliant
       } catch (NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Compliant
       }
     }
+  }
+
+  private HttpStatus getHttpStatus() {
+    return HttpStatus.NOT_FOUND;
   }
 
 }

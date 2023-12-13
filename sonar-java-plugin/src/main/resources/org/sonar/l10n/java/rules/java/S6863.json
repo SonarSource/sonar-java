@@ -17,7 +17,7 @@
   "quickfix": "unknown",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "LOW"
+      "RELIABILITY": "LOW"
     },
     "attribute": "DISTINCT"
   }
