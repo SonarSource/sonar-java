@@ -24,6 +24,41 @@ public class StatusCodesOnResponseCheckSample {
       return ResponseEntity.badRequest().build(); // Compliant
     }
 
+    public ResponseEntity<User> foo() {
+      User user = getUserObject();
+      if (user == null) {
+        return ResponseEntity.notFound().build(); // Compliant
+      } else {
+        return ResponseEntity.ok(user); // Compliant
+      }
+    }
+
+    public ResponseEntity<User> bar(boolean b) {
+      if (b) {
+        try {
+          return ResponseEntity.notFound().build(); // Noncompliant
+        } catch (Exception e) {
+          return ResponseEntity.status(INTERNAL_SERVER_ERROR).build(); // Compliant
+        }
+      }
+      return ResponseEntity.ok(new User());
+    }
+
+    public ResponseEntity<User> boo() {
+      try {
+        User user = getUserObject();
+        if (user == null) {
+          return ResponseEntity.notFound().build(); // Compliant
+        } else {
+          return ResponseEntity.ok(user); // Compliant
+        }
+      } catch (NotFoundException e) {
+        return ResponseEntity.status(HttpStatus.OK).build(); // Noncompliant
+      } catch (Exception e) {
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).build(); // Compliant
+      }
+    }
+
     public ResponseEntity<User> getUserNoncompliant() {
 
       try {
@@ -84,6 +119,14 @@ public class StatusCodesOnResponseCheckSample {
 
   private HttpStatus getHttpStatus() {
     return HttpStatus.NOT_FOUND;
+  }
+
+  private User getUserObject() {
+    User user = new User();
+    if (user.hashCode() == 0) {
+      return user;
+    }
+    return null;
   }
 
 }

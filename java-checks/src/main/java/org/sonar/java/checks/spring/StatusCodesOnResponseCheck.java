@@ -207,7 +207,6 @@ public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
 
     private Tree checkCatch(MethodInvocationTree methodInvocationTree, boolean isError) {
       Tree catchParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.CATCH);
-
       if (catchParent != null && !isError) {
         reportIssue(methodInvocationTree, ISSUE_MESSAGE);
       }
@@ -217,12 +216,21 @@ public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
     private Tree checkTry(MethodInvocationTree methodInvocationTree, boolean isOk) {
       Tree tryParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.TRY_STATEMENT);
 
-      if (tryParent != null && !isOk) {
-        reportIssue(methodInvocationTree, ISSUE_MESSAGE);
+      if (tryParent != null) {
+        Tree ifParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.IF_STATEMENT);
+        if (ifParent == null) {
+          if (!isOk) {
+            reportIssue(methodInvocationTree, ISSUE_MESSAGE);
+          }
+        } else {
+          tryParent = ExpressionUtils.getParentOfType(ifParent, Tree.Kind.TRY_STATEMENT);
+          if (tryParent == null && !isOk) {
+            reportIssue(methodInvocationTree, ISSUE_MESSAGE);
+          }
+        }
       }
       return tryParent;
     }
-
   }
 
   private static boolean isClassController(ClassTree classTree) {
