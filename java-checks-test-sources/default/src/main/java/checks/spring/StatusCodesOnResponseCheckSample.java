@@ -44,6 +44,17 @@ public class StatusCodesOnResponseCheckSample {
       return ResponseEntity.ok(new User());
     }
 
+    public ResponseEntity<User> bar2(boolean b) {
+      if (b) {
+        try {
+          return ResponseEntity.ok().build(); // Compliant
+        } catch (Exception e) {
+          return ResponseEntity.status(INTERNAL_SERVER_ERROR).build(); // Compliant
+        }
+      }
+      return ResponseEntity.ok(new User());
+    }
+
     public ResponseEntity<User> boo() {
       try {
         User user = getUserObject();
