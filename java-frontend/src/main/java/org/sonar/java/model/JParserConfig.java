@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -61,10 +60,12 @@ public abstract class JParserConfig {
 
   final JavaVersion javaVersion;
   final List<File> classpath;
+  final boolean shouldIgnoreUnnamedModuleForSplitPackage;
 
-  private JParserConfig(JavaVersion javaVersion, List<File> classpath) {
+  private JParserConfig(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
     this.javaVersion = javaVersion;
     this.classpath = classpath;
+    this.shouldIgnoreUnnamedModuleForSplitPackage = shouldIgnoreUnnamedModuleForSplitPackage;
   }
 
   public abstract void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
@@ -74,14 +75,21 @@ public abstract class JParserConfig {
     BATCH(Batch::new),
     FILE_BY_FILE(FileByFile::new);
 
-    private final BiFunction<JavaVersion, List<File>, JParserConfig> supplier;
+    private final ParserConfigConstructor supplier;
 
-    Mode(BiFunction<JavaVersion, List<File>, JParserConfig> supplier) {
+    Mode(ParserConfigConstructor supplier) {
       this.supplier = supplier;
     }
 
     public JParserConfig create(JavaVersion javaVersion, List<File> classpath) {
-      return supplier.apply(javaVersion, classpath);
+      return create(javaVersion, classpath, false);
+    }
+
+    public JParserConfig create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+      if (shouldIgnoreUnnamedModuleForSplitPackage) {
+        LOG.info("The Java analyzer will ignore the unnamed module for split packages.");
+      }
+      return supplier.apply(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
     }
   }
 
@@ -113,6 +121,9 @@ public abstract class JParserConfig {
     options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion.effectiveJavaVersionAsString());
     options.put(JavaCore.COMPILER_SOURCE, javaVersion.effectiveJavaVersionAsString());
     options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
+    if (shouldIgnoreUnnamedModuleForSplitPackage) {
+      options.put(JavaCore.COMPILER_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE, "enabled");
+    }
     if (shouldEnablePreviewFlag(javaVersion)) {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     }
@@ -138,8 +149,8 @@ public abstract class JParserConfig {
   @VisibleForTesting
   static class Batch extends JParserConfig {
 
-    Batch(JavaVersion javaVersion, List<File> classpath) {
-      super(javaVersion, classpath);
+    Batch(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
     }
 
     @Override
@@ -222,8 +233,8 @@ public abstract class JParserConfig {
 
   private static class FileByFile extends JParserConfig {
 
-    private FileByFile(JavaVersion javaVersion, List<File> classpath) {
-      super(javaVersion, classpath);
+    private FileByFile(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
     }
 
     @Override
@@ -277,6 +288,10 @@ public abstract class JParserConfig {
   @VisibleForTesting
   static boolean shouldEnablePreviewFlag(JavaVersion currentVersion) {
     return currentVersion.arePreviewFeaturesEnabled();
+  }
+  @FunctionalInterface
+  public interface ParserConfigConstructor {
+    JParserConfig apply(JavaVersion version, List<File> files, Boolean shouldIgnoreUnnamedModuleForSplitPackage);
   }
 
 }
