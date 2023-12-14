@@ -954,6 +954,25 @@ class SonarComponentsTest {
     }
   }
 
+  @Test
+  void shouldIgnoreUnnamedModuleForSplitPackage_returns_false_by_default() {
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+    assertThat(sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage()).isFalse();
+  }
+
+  @Test
+  void shouldIgnoreUnnamedModuleForSplitPackage_returns_true_when_analysis_parameter_is_set() {
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+
+    assertThat(sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage()).isFalse();
+    settings.setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "true");
+    assertThat(sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage()).isTrue();
+  }
+
   @Nested
   class Logging {
     private final DecimalFormat formatter = new DecimalFormat("00");
