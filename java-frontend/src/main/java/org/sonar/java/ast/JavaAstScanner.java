@@ -84,8 +84,10 @@ public class JavaAstScanner {
     List<InputFile> filesNames = filterModuleInfo(inputFiles).collect(Collectors.toList());
     AnalysisProgress analysisProgress = new AnalysisProgress(filesNames.size());
     try {
+      boolean shouldIgnoreUnnamedModuleForSplitPacakge = sonarComponents != null &&
+        sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage();
       JParserConfig.Mode.FILE_BY_FILE
-        .create(visitor.getJavaVersion(), visitor.getClasspath())
+        .create(visitor.getJavaVersion(), visitor.getClasspath(), shouldIgnoreUnnamedModuleForSplitPacakge)
         .parse(filesNames,
           this::analysisCancelled,
           analysisProgress,

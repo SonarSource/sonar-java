@@ -87,6 +87,26 @@ public class JavaPlugin implements Plugin {
         .type(PropertyType.BOOLEAN)
         .defaultValue("False")
         .build(),
+      PropertyDefinition.builder(SonarComponents.SONAR_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE)
+        .name("Ignore unnamed module for split package")
+        .description(
+          "<p>" +
+            "Prevent the Java parser from enforcing Java platform modularization by omitting package and class re-declarations gathered in the unnamed module." +
+            "</p>" +
+            "<p>" +
+            "With the Java Platform Module System introduced in Java 9, packages and classes declared outside of" +
+            " explicitly named modules are placed in a common \"unnamed module\"." +
+            " When a package or class is found in both the unnamed module and a named one, modularization is broken." +
+            " As a result, the parser may be unable to build the project semantic successfully, leading to analysis failure." +
+            " This parameter allows users to bypass Java platform modularity enforcement to prevent analysis failure." +
+            "</p>"
+        )
+        .category(JavaConstants.JAVA_CATEGORY)
+        .subCategory("Language")
+        .onQualifiers(Qualifiers.PROJECT)
+        .type(PropertyType.BOOLEAN)
+        .defaultValue("False")
+        .build(),
       JavaSensor.class,
       PostAnalysisIssueFilter.class));
 
