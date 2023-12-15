@@ -29,7 +29,7 @@ public class StatusCodesOnResponseCheckSample {
     public ResponseEntity<User> foo() {
       User user = getUserObject();
       if (user == null) {
-        return ResponseEntity.notFound().build(); // Compliant
+        return ResponseEntity.notFound().build(); // Compliant - if there is no try/catch block, we can't determine precisely if it is compliant or not
       } else {
         return ResponseEntity.ok(user); // Compliant
       }
