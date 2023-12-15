@@ -145,8 +145,9 @@
           <pluginName>Java Code Quality and Security</pluginName>
           <skipDependenciesPackaging>true</skipDependenciesPackaging>
           <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
+          <requiredForLanguages>java</requiredForLanguages>
           <sonarLintSupported>true</sonarLintSupported>
-          <sonarQubeMinVersion>9.9</sonarQubeMinVersion>
+          <pluginApiMinVersion>9.14.0.375</pluginApiMinVersion>
           <jreMinVersion>11</jreMinVersion>
           <archive>
             <manifestEntries>
