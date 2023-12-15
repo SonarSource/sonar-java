@@ -97,7 +97,6 @@
       <plugin>
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
-        <version>1.21.0.505</version>
         <extensions>true</extensions>
         <configuration>
           <pluginKey>java-custom</pluginKey>
@@ -105,7 +104,7 @@
           <pluginClass>org.sonar.samples.java.MyJavaRulesPlugin</pluginClass>
           <sonarLintSupported>true</sonarLintSupported>
           <skipDependenciesPackaging>true</skipDependenciesPackaging>
-          <sonarQubeMinVersion>8.9</sonarQubeMinVersion>
+          <pluginApiMinVersion>9.14.0.375</pluginApiMinVersion>
           <requirePlugins>java:${sonarjava.version}</requirePlugins>
         </configuration>
       </plugin>
