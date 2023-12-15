@@ -214,22 +214,42 @@ public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
     }
 
     private Tree checkTry(MethodInvocationTree methodInvocationTree, boolean isOk) {
-      Tree tryParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.TRY_STATEMENT);
-
-      if (tryParent != null) {
-        Tree ifParent = ExpressionUtils.getParentOfType(methodInvocationTree, Tree.Kind.IF_STATEMENT);
-        if (ifParent == null) {
-          if (!isOk) {
-            reportIssue(methodInvocationTree, ISSUE_MESSAGE);
-          }
-        } else {
-          tryParent = ExpressionUtils.getParentOfType(ifParent, Tree.Kind.TRY_STATEMENT);
-          if (tryParent == null && !isOk) {
-            reportIssue(methodInvocationTree, ISSUE_MESSAGE);
-          }
-        }
+      Parents parents = getParentsTryAndIf(methodInvocationTree);
+      if (!parents.foundIfWithinTry() && parents.foundTryStatement && !isOk) {
+        reportIssue(methodInvocationTree, ISSUE_MESSAGE);
       }
-      return tryParent;
+      return null;
+    }
+  }
+
+  private static Parents getParentsTryAndIf(Tree tree) {
+    Tree parent = tree.parent();
+    boolean foundIfStatement = false;
+    boolean foundTryStatement = false;
+    while (parent != null && !parent.is(Tree.Kind.METHOD)) {
+      if (parent.is(Tree.Kind.IF_STATEMENT)) {
+        foundIfStatement = true;
+      }
+      if (parent.is(Tree.Kind.TRY_STATEMENT)) {
+        foundTryStatement = true;
+        break;
+      }
+      parent = parent.parent();
+    }
+    return new Parents(foundIfStatement, foundTryStatement);
+  }
+
+  private static class Parents {
+    boolean foundIfStatement;
+    boolean foundTryStatement;
+
+    public Parents(boolean foundIfStatement, boolean foundTryStatement) {
+      this.foundIfStatement = foundIfStatement;
+      this.foundTryStatement = foundTryStatement;
+    }
+
+    boolean foundIfWithinTry() {
+      return foundIfStatement && foundTryStatement;
     }
   }
 

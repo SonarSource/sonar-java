@@ -16,6 +16,8 @@ public class StatusCodesOnResponseCheckSample {
   @Controller
   class UserController {
 
+    ResponseEntity<Object> responseEntity = ResponseEntity.ok().build();
+
     public ResponseEntity<User> getOkUser() {
       return ResponseEntity.ok(new User()); // Compliant
     }
