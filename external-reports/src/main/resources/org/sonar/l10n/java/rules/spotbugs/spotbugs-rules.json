@@ -910,6 +910,13 @@
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ei-expose-static-rep2"
   },
   {
+    "key": "ENV_USE_PROPERTY_INSTEAD_OF_ENV",
+    "name": "Bad practice - It is preferable to use portable Java property instead of environment variable.",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#env-use-property-instead-of-env"
+  },
+  {
     "key": "EOS_BAD_END_OF_STREAM_CHECK",
     "name": "Correctness - Data read is converted before comparison to -1",
     "type": "BUG",
@@ -2273,13 +2280,6 @@
     "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#pi-do-not-reuse-public-identifiers-field-names"
-  },
-  {
-    "key": "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES",
-    "name": "Bad practice - Do not reuse public identifiers from JSL as inner name",
-    "type": "CODE_SMELL",
-    "severity": "MAJOR",
-    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#pi-do-not-reuse-public-identifiers-inner-class-names"
   },
   {
     "key": "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES",
