@@ -13,13 +13,25 @@ import play.mvc.Http.CookieBuilder;
 class SecureCookieCheck {
 
   Cookie field1 = new Cookie("name", "value"); // Noncompliant
+
+  jakarta.servlet.http.Cookie jakartaField1 = new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant
+
   HttpCookie field2 = new HttpCookie("name", "value");
   javax.ws.rs.core.Cookie field3 = new javax.ws.rs.core.Cookie("name", "value"); // Noncompliant
   javax.ws.rs.core.Cookie cookie;
   NewCookie secureCookie = new NewCookie(cookie, "2", 3, true);
   NewCookie unsecureCookie = new NewCookie(cookie, "2", 3, false); // Noncompliant
+
+  jakarta.ws.rs.core.Cookie cookieJakarta;
+  jakarta.ws.rs.core.NewCookie secureCookieJakarta = new jakarta.ws.rs.core.NewCookie(cookieJakarta, "2", 3, true);
+  jakarta.ws.rs.core.NewCookie unsecureCookieJakarta = new jakarta.ws.rs.core.NewCookie(cookieJakarta, "2", 3, false); // Noncompliant
+
   Cookie field4;
   Cookie field5;
+
+  jakarta.servlet.http.Cookie field4Jakarta;
+  jakarta.servlet.http.Cookie field5Jakarta;
+
   HttpCookie field6;
 
   private static final boolean FALSE_CONSTANT = false;
@@ -61,7 +73,7 @@ class SecureCookieCheck {
 
     Cookie c7 = new Cookie("name", "value");
     boolean b = false;
-    c7.setSecure(b); // Noncompliant [[secondary=63]]
+    c7.setSecure(b); // Noncompliant [[secondary=-1]]
 
     Cookie c8 = new Cookie("name", "value");
     c8.setSecure(param);
@@ -121,6 +133,28 @@ class SecureCookieCheck {
     NewCookie c14 = new NewCookie("1", "2", "3", "4", "5", 6, true, false);
 
     return new NewCookie(cookie); // Noncompliant
+  }
+
+  jakarta.ws.rs.core.NewCookie jaxRsNewCookieJakarta(jakarta.ws.rs.core.Cookie cookie) {
+    jakarta.ws.rs.core.NewCookie c1 = new jakarta.ws.rs.core.NewCookie(cookie); // Noncompliant
+    jakarta.ws.rs.core.NewCookie c2 = new jakarta.ws.rs.core.NewCookie(cookie, "2", 3, false); // Noncompliant
+    jakarta.ws.rs.core.NewCookie c3 = new jakarta.ws.rs.core.NewCookie(cookie, "2", 3, true);
+    jakarta.ws.rs.core.NewCookie c4 = new jakarta.ws.rs.core.NewCookie(cookie, "2", 3, new Date(), false, true); // Noncompliant
+    jakarta.ws.rs.core.NewCookie c5 = new jakarta.ws.rs.core.NewCookie(cookie, "2", 3, new Date(), true, false);
+
+    jakarta.ws.rs.core.NewCookie c6 = new jakarta.ws.rs.core.NewCookie("1", "2"); // Noncompliant
+
+    jakarta.ws.rs.core.NewCookie c7 = new jakarta.ws.rs.core.NewCookie("1", "2", "3", "4", "5", 6, false, true); // Noncompliant
+    jakarta.ws.rs.core.NewCookie c8 = new jakarta.ws.rs.core.NewCookie("1", "2", "3", "4", "5", 6, true, true);
+    jakarta.ws.rs.core.NewCookie c9 = new jakarta.ws.rs.core.NewCookie("1", "2", "3", "4", 5, "6", 7, new Date(), false, true);  // Noncompliant
+    jakarta.ws.rs.core.NewCookie c10 = new jakarta.ws.rs.core.NewCookie("1", "2", "3", "4", 5, "6", 7, new Date(), true, false);
+
+    jakarta.ws.rs.core.NewCookie c11 = new jakarta.ws.rs.core.NewCookie("1", "2", "3", "4", "5", 6, true);
+    jakarta.ws.rs.core.NewCookie c12 = new jakarta.ws.rs.core.NewCookie("1", "2", "3", "4", "5", 6, false); // Noncompliant
+    jakarta.ws.rs.core.NewCookie c13 = new jakarta.ws.rs.core.NewCookie("1", "2", "3", "4", "5", 6, false, false);  // Noncompliant
+    jakarta.ws.rs.core.NewCookie c14 = new jakarta.ws.rs.core.NewCookie("1", "2", "3", "4", "5", 6, true, false);
+
+    return new jakarta.ws.rs.core.NewCookie(cookie); // Noncompliant
   }
 
   SimpleCookie apacheShiro(SimpleCookie unknownCookie) {
@@ -212,6 +246,14 @@ class SecureCookieCheckB extends Cookie {
       Cookie cookie = new Cookie("name", "value"); // Noncompliant
       response.addCookie(new Cookie("name", "value")); // Noncompliant
       return new Cookie("name", "value"); // Noncompliant
+    }
+  }
+
+  class JavaNetJakarta {
+    jakarta.servlet.http.Cookie httpCookie(jakarta.servlet.http.HttpServletResponse response) {
+      var cookie = new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant
+      response.addCookie(new jakarta.servlet.http.Cookie("name", "value")); // Noncompliant
+      return new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant
     }
   }
 

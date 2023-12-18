@@ -49,14 +49,19 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private static final String MESSAGE = "Make sure creating this cookie without the \"secure\" flag is safe here.";
 
   private static final String JAX_RS_COOKIE = "javax.ws.rs.core.Cookie";
+  private static final String JAX_RS_COOKIE_JAKARTA = "jakarta.ws.rs.core.Cookie";
   private static final String JAX_RS_NEW_COOKIE = "javax.ws.rs.core.NewCookie";
+  private static final String JAX_RS_NEW_COOKIE_JAKARTA = "jakarta.ws.rs.core.NewCookie";
   private static final String SPRING_SAVED_COOKIE = "org.springframework.security.web.savedrequest.SavedCookie";
   private static final String PLAY_COOKIE = "play.mvc.Http$Cookie";
   private static final List<String> COOKIES = Arrays.asList(
     "javax.servlet.http.Cookie",
+    "jakarta.servlet.http.Cookie",
     "java.net.HttpCookie",
     JAX_RS_COOKIE,
+    JAX_RS_COOKIE_JAKARTA,
     JAX_RS_NEW_COOKIE,
+    JAX_RS_NEW_COOKIE_JAKARTA,
     "org.apache.shiro.web.servlet.SimpleCookie",
     SPRING_SAVED_COOKIE,
     PLAY_COOKIE,

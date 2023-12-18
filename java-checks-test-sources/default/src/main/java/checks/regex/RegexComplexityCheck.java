@@ -16,6 +16,10 @@ public class RegexComplexityCheck {
   @Email(regexp = "((((a|b)|(c|d))+|((e|f)|(g|h))+)+|(((h|i)|(j|j))+|((k|l)|(m|n))+)+)")
   private String email;
 
+  // Noncompliant@+1
+  @jakarta.validation.constraints.Email(regexp = "((((a|b)|(c|d))+|((e|f)|(g|h))+)+|(((h|i)|(j|j))+|((k|l)|(m|n))+)+)")
+  private String emailJakarta;
+
   void noncompliant(String str) {
     // Noncompliant@+2 [[sc=7;ec=8]] {{Simplify this regular expression to reduce its complexity from 106 to the 20 allowed.}}
     str.matches(
