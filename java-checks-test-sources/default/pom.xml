@@ -355,7 +355,7 @@
     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-web</artifactId>
-      <version>1.12.0</version>
+      <version>1.13.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
