@@ -1,9 +1,9 @@
 <h2>Why is this an issue?</h2>
 <p>Unstable / flaky tests are tests which sometimes pass and sometimes fail, without any code change. Obviously, they slow down developments when
-engineers have to rerun failed tests. However the real problem is that you can’t completely trust these tests, they might fail for many different
+developers have to rerun failed tests. However, the real problem is that you can’t completely trust these tests, they might fail for many different
 reasons and you don’t know if any of them will happen in production.</p>
-<p>Some tools, such as TestNG, enable developers to automatically retry flaky tests. This might be ok as a temporary solution, but it should
-definitely be fixed. The more flaky tests you add, the more chances there are for a bug to arrive in production.</p>
+<p>Some tools, such as TestNG, enable developers to automatically retry flaky tests. This might be acceptable as a temporary solution, but it should
+eventually be fixed. The more flaky tests you add, the more chances there are for a bug to arrive in production.</p>
 <p>This rule raises an issue when the annotation <code>org.testng.annotations.Test</code> is given a <code>successPercentage</code> argument with a
 value lower than <code>100</code>.</p>
 <h3>Noncompliant code example</h3>
@@ -18,8 +18,9 @@ public class PercentageTest {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://testng.org/doc/documentation-main.html#annotations">TestNG documentation - Annotations</a> </li>
-  <li> <a href="https://engineering.atspotify.com/2019/11/18/test-flakiness-methods-for-identifying-and-dealing-with-flaky-tests/">Test Flakiness -
-  Methods for identifying and dealing with flaky tests</a> </li>
+  <li> TestNG documentation - <a href="https://testng.org/doc/documentation-main.html#annotations">Annotations</a> </li>
+  <li> Spotify Engineering - <a
+  href="https://engineering.atspotify.com/2019/11/18/test-flakiness-methods-for-identifying-and-dealing-with-flaky-tests/">Test Flakiness - Methods
+  for identifying and dealing with flaky tests</a> </li>
 </ul>
 

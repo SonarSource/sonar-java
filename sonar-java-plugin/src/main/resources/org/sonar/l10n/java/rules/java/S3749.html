@@ -1,9 +1,10 @@
 <h2>Why is this an issue?</h2>
-<p>Spring <code>@Component</code>, <code>@Controller</code>, <code>@Service</code>, and <code>@Repository</code> classes are singletons by default,
-meaning only one instance of the class is ever instantiated in the application. Typically such a class might have a few <code>static</code> members,
-such as a logger, but all non-<code>static</code> members should be managed by Spring.</p>
-<p>This rule raises an issue when a singleton <code>@Component</code>, <code>@Controller</code>, <code>@Service</code>, or <code>@Repository</code>,
-not annotated with <code>@ConfigurationProperties</code>, has non-<code>static</code> members that are not annotated with one of:</p>
+<p>Spring <code>@Component</code>, <code>@Controller</code>, <code>@RestController</code>,<code>@Service</code>, and <code>@Repository</code> classes
+are singletons by default, meaning only one instance of the class is ever instantiated in the application. Typically such a class might have a few
+<code>static</code> members, such as a logger, but all non-<code>static</code> members should be managed by Spring.</p>
+<p>This rule raises an issue when a singleton <code>@Component</code>, <code>@Controller</code>, <code>@RestController</code>, <code>@Service</code>,
+or <code>@Repository</code>, not annotated with <code>@ConfigurationProperties</code>, has non-<code>static</code> members that are not annotated with
+one of:</p>
 <ul>
   <li> <code>org.springframework.beans.factory.annotation.Autowired</code> </li>
   <li> <code>org.springframework.beans.factory.annotation.Value</code> </li>
