@@ -61,18 +61,20 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   private static final String SECONDARY_MESSAGE_FORMAT = "Parameter \"%s\"";
   private static final String QUICK_FIX_MESSAGE = "Remove \"%s\"";
 
-  private static final String AUTHORIZED_ANNOTATION = "javax.enterprise.event.Observes";
+  private static final Set<String> AUTHORIZED_ANNOTATIONS = Set.of("javax.enterprise.event.Observes", "jakarta.enterprise.event.Observes");
   private static final String SUPPRESS_WARNINGS_ANNOTATION = "java.lang.SuppressWarnings";
   private static final Set<String> EXCLUDED_WARNINGS_SUPPRESSIONS = SetUtils.immutableSetOf("\"rawtypes\"", "\"unchecked\"");
   private static final MethodMatchers SERIALIZABLE_METHODS = MethodMatchers.or(
     MethodMatchers.create().ofAnyType().names("writeObject").addParametersMatcher("java.io.ObjectOutputStream").build(),
     MethodMatchers.create().ofAnyType().names("readObject").addParametersMatcher("java.io.ObjectInputStream").build());
   private static final String STRUTS_ACTION_SUPERCLASS = "org.apache.struts.action.Action";
-  private static final Set<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = SetUtils.immutableSetOf(
+  private static final Set<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = Set.of(
     "org.apache.struts.action.ActionMapping",
     "org.apache.struts.action.ActionForm",
     "javax.servlet.http.HttpServletRequest",
-    "javax.servlet.http.HttpServletResponse");
+    "javax.servlet.http.HttpServletResponse",
+    "jakarta.servlet.http.HttpServletRequest",
+    "jakarta.servlet.http.HttpServletResponse");
 
   private static final UnresolvedIdentifiersVisitor UNRESOLVED_IDENTIFIERS_VISITOR = new UnresolvedIdentifiersVisitor();
 
@@ -111,7 +113,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isAnnotatedWithAuthorizedAnnotation(Symbol symbol) {
     SymbolMetadata metadata = symbol.metadata();
-    return metadata.isAnnotatedWith(AUTHORIZED_ANNOTATION) || hasUnknownAnnotation(metadata);
+    return AUTHORIZED_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith) || hasUnknownAnnotation(metadata);
   }
 
   private void reportUnusedParameters(MethodTree methodTree, List<IdentifierTree> unused) {
@@ -124,7 +126,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(firstUnused)
-      .withMessage(unused.size() > 1 ?  PRIMARY_PLURAL_MESSAGE_FORMAT : PRIMARY_SINGULAR_MESSAGE_FORMAT, parameterNames)
+      .withMessage(unused.size() > 1 ? PRIMARY_PLURAL_MESSAGE_FORMAT : PRIMARY_SINGULAR_MESSAGE_FORMAT, parameterNames)
       .withSecondaries(secondaryLocations)
       .withQuickFixes(() -> createQuickFixes(methodTree, unused))
       .report();
