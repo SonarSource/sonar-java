@@ -19,6 +19,7 @@ class UnusedPrivateMethodCheck {
   
   private void init(@Observes Object object, String test) {} // Noncompliant
   private void init(@javax.enterprise.event.Observes Object object) {} //Compliant, javax.enterprise.event.Observes is an exception to the rule
+  private void jakartaInit(@jakarta.enterprise.event.Observes Object object) {} //Compliant, jakarta.enterprise.event.Observes is an exception to the rule
   private void initNc(@AnotherAnnotation Object object) {} // Noncompliant
 
   private UnusedPrivateMethodCheck() {}
