@@ -77,19 +77,21 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private static final String BOOLEAN = "boolean";
 
   private static final MethodMatchers CONSTRUCTORS_WITH_SECURE_PARAM_LAST = MethodMatchers.create()
-    .ofTypes(JAX_RS_NEW_COOKIE)
+    .ofTypes(JAX_RS_NEW_COOKIE, JAX_RS_NEW_COOKIE_JAKARTA)
     .constructor()
     .addParametersMatcher(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, BOOLEAN)
+    .addParametersMatcher(JAX_RS_COOKIE_JAKARTA, JAVA_LANG_STRING, INT, BOOLEAN)
     .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, BOOLEAN)
     .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN)
     .build();
 
   private static final MethodMatchers CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_LAST = MethodMatchers.or(
     MethodMatchers.create()
-      .ofTypes(JAX_RS_NEW_COOKIE)
+      .ofTypes(JAX_RS_NEW_COOKIE, JAX_RS_NEW_COOKIE_JAKARTA)
       .constructor()
       .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN)
       .addParametersMatcher(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN)
+      .addParametersMatcher(JAX_RS_COOKIE_JAKARTA, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN)
       .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN)
       .build(),
     MethodMatchers.create()
