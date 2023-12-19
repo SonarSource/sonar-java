@@ -43,17 +43,26 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
   private final List<VariableTree> issuableVariables = new ArrayList<>();
   private final List<VariableTree> excludedVariables = new ArrayList<>();
-  
-  private static final MethodMatchers INIT_METHOD_WITH_PARAM_MATCHER =  MethodMatchers.create()
-    .ofSubTypes("javax.servlet.Servlet").names("init").addParametersMatcher("javax.servlet.ServletConfig").build();
 
-  private static final MethodMatchers INIT_METHOD_NO_PARAMS_MATCHER =  MethodMatchers.create()
-    .ofSubTypes("javax.servlet.GenericServlet").names("init").addWithoutParametersMatcher().build();
+  private static final MethodMatchers INIT_METHOD_WITH_PARAM_MATCHER = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofSubTypes("javax.servlet.Servlet")
+      .names("init").addParametersMatcher("javax.servlet.ServletConfig").build(),
+    MethodMatchers.create()
+      .ofSubTypes("jakarta.servlet.Servlet")
+      .names("init").addParametersMatcher("jakarta.servlet.ServletConfig").build());
+
+  private static final MethodMatchers INIT_METHOD_NO_PARAMS_MATCHER = MethodMatchers.create()
+    .ofSubTypes("javax.servlet.GenericServlet", "jakarta.servlet.GenericServlet")
+    .names("init").addWithoutParametersMatcher().build();
 
   private static final List<String> ANNOTATIONS_EXCLUDING_FIELDS = Arrays.asList(
     "javax.inject.Inject",
+    "jakarta.inject.Inject",
     "javax.ejb.EJB",
-    "javax.annotation.Resource");
+    "jakarta.ejb.EJB",
+    "javax.annotation.Resource",
+    "jakarta.annotation.Resource");
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -109,10 +118,15 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isOwnedByAServlet(VariableTree variable) {
     Symbol owner = variable.symbol().owner();
-    return owner.isTypeSymbol()
-      && variable.parent().is(Tree.Kind.CLASS)
-      && (owner.type().isSubtypeOf("javax.servlet.http.HttpServlet")
-      || owner.type().isSubtypeOf("org.apache.struts.action.Action"));
+
+    if (!owner.isTypeSymbol() || !variable.parent().is(Tree.Kind.CLASS)) {
+      return false;
+    }
+
+    var ownerType = owner.type();
+    return ownerType.isSubtypeOf("javax.servlet.http.HttpServlet")
+      || ownerType.isSubtypeOf("jakarta.servlet.http.HttpServlet")
+      || ownerType.isSubtypeOf("org.apache.struts.action.Action");
   }
 
   private static boolean isStaticOrFinal(VariableTree variable) {

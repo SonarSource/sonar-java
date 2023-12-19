@@ -39,7 +39,20 @@ class ServletInstanceFieldCheckTest {
       .withoutSemantic()
       .verifyNoIssues();
   }
-  
+
+  @Test
+  void test_jakarta() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheckJakarta.java"))
+      .withCheck(new ServletInstanceFieldCheck())
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheckJakarta.java"))
+      .withCheck(new ServletInstanceFieldCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
