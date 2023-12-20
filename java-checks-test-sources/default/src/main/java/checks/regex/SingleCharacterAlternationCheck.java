@@ -7,6 +7,9 @@ public class SingleCharacterAlternationCheck {
   @Pattern(regexp = "x|y|z") // Noncompliant [[sc=22;ec=27]] {{Replace this alternation with a character class.}}
   String pattern;
 
+  @jakarta.validation.constraints.Pattern(regexp = "x|y|z") // Noncompliant [[sc=53;ec=58]] {{Replace this alternation with a character class.}}
+  String jakartaPattern;
+
   void nonCompliant() {
     String str = "abc123";
     str.matches("a|b|c"); // Noncompliant [[sc=18;ec=23]] {{Replace this alternation with a character class.}}

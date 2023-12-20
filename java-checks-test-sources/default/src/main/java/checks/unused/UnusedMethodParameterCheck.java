@@ -1,19 +1,19 @@
 package checks.unused;
 
-import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.enterprise.event.Observes;
 import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionForm;
+import java.util.function.Supplier;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.enterprise.event.Observes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.Action;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.BaseAction;
 
 class UnusedMethodParameterCheck extends B {
@@ -344,5 +344,56 @@ class UsingMethodReference {
   private String bar(String a, String b) { // Compliant - used as method reference
     System.out.println(a);
     return a;
+  }
+}
+
+class JakartaAnnotations {
+  void fooBar(int a, // Noncompliant [[sc=19;ec=20;secondary=+1,+3,+4]] {{Remove these unused method parameters "a", "b", "d", "e".}}
+    @jakarta.annotation.Nullable Boolean b,
+    int c,
+    int d,
+    @jakarta.annotation.Nullable Object e) {
+    System.out.println(c);
+  }
+  public void foo(@jakarta.enterprise.event.Observes Object event, int arg2) { // Compliant
+    System.out.println(arg2);
+  }
+
+  public void bar(@jakarta.annotation.Nonnull Object event, int arg2) { // Noncompliant {{Remove this unused method parameter "event".}} [[sc=54;ec=59]]
+    System.out.println(arg2);
+  }
+}
+
+
+class JakartaStrutsAction extends Action {
+  void foo(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, String s) { // Compliant
+    System.out.println(s);
+  }
+
+  void bar(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, String unused) { // Noncompliant {{Remove this unused method parameter "unused".}}
+    System.out.println("");
+  }
+
+  void qix(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) { // Compliant
+    System.out.println("");
+  }
+}
+
+class JakartaStrutsAction2 extends BaseAction {
+  void foo(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, String unused) { // Noncompliant {{Remove this unused method parameter "unused".}}
+    System.out.println("");
+  }
+
+  void bar(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) { // Compliant
+    System.out.println("");
+  }
+}
+
+class JakartaNotStrutsAction {
+  void bar(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) { // Noncompliant {{Remove this unused method parameter "response".}}
+    System.out.println(mapping);
+    System.out.println(form);
+    System.out.println(request);
+    System.out.println("");
   }
 }

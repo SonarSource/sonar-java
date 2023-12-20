@@ -58,7 +58,10 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
   private final List<MethodTree> unusedPrivateMethods = new ArrayList<>();
   private final Set<String> unresolvedMethodNames = new HashSet<>();
   
-  private static final String PARAM_ANNOTATION_EXCEPTION = "javax.enterprise.event.Observes";
+  private static final Set<String> PARAM_ANNOTATION_EXCEPTIONS = Set.of(
+    "javax.enterprise.event.Observes",
+    "jakarta.enterprise.event.Observes"
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -180,7 +183,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
   
   private static boolean isAllowedAnnotation(AnnotationTree annotation) {
     Type annotationSymbolType = annotation.symbolType();
-    if (annotationSymbolType.is(PARAM_ANNOTATION_EXCEPTION)) {
+    if (PARAM_ANNOTATION_EXCEPTIONS.stream().anyMatch(annotationSymbolType::is)) {
       return true;
     }
     if (annotationSymbolType.isUnknown()) {
@@ -189,7 +192,8 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
         return "Observes".equals(((IdentifierTree) annotationType).name());
       }
       if (annotationType.is(Tree.Kind.MEMBER_SELECT)) {
-        return PARAM_ANNOTATION_EXCEPTION.equals(ExpressionsHelper.concatenate((MemberSelectExpressionTree) annotationType));
+        String concatenatedAnnotation = ExpressionsHelper.concatenate((MemberSelectExpressionTree) annotationType);
+        return PARAM_ANNOTATION_EXCEPTIONS.stream().anyMatch(concatenatedAnnotation::equals);
       }
     }
     return false;

@@ -49,4 +49,16 @@ public class UnicodeCaseCheck {
     str.matches("(?iU)söme pättern");
     str.matches("(?iU:söme) pättern");
   }
+
+  @jakarta.validation.constraints.Email(
+    regexp = "söme pättern",
+    flags = jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE // Noncompliant [[sc=13;ec=73]] {{Also use "Flag.UNICODE_CASE" to correctly handle non-ASCII letters.}}
+  )
+  String jakartaEmail1;
+
+  @jakarta.validation.constraints.Email(
+    regexp = "söme pättern",
+    flags = { jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE, jakarta.validation.constraints.Pattern.Flag.UNICODE_CASE } // Compliant
+  )
+  String jakartaEmail2;
 }

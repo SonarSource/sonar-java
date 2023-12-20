@@ -9,6 +9,8 @@ import io.micronaut.http.annotation.Patch;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.Trace;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
 public class TooManyParametersCheck {
   TooManyParametersCheck(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // Noncompliant {{Constructor has 8 parameters, which is greater than 7 authorized.}}
@@ -20,6 +22,9 @@ public class TooManyParametersCheck {
   void otherMethod(int p1) {}
 
   static void staticMethod(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) {} // Noncompliant
+
+  @CustomAnnotation
+  void customAnnotatedMethod(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) {} // Noncompliant
 }
 
 class TooManyParametersExtended extends TooManyParametersCheck {
@@ -81,4 +86,21 @@ class MicronautHttpAnnotations{
  */
 record Record1(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant 
 
- 
+class JakartaMethodsUsingAnnotations {
+  @jakarta.ws.rs.GET
+  public void foo(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+
+  @jakarta.ws.rs.POST
+  public void foo1(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+
+  @jakarta.ws.rs.PUT
+  public void foo2(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+
+  @jakarta.ws.rs.PATCH
+  public void foo3(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+
+  @jakarta.inject.Inject
+  public void foo5(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+}
+@Target(ElementType.METHOD)
+@interface CustomAnnotation { }
