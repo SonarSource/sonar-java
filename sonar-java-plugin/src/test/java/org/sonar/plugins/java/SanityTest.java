@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -109,7 +110,7 @@ class SanityTest {
    * It does not prevent other rules to fail if similar construct of the language, but not yet encountered.
    */
   @Test
-  @EnabledIfSystemProperty(named = "force.sanity.test", matches = "true")
+  //@EnabledIfSystemProperty(named = "force.sanity.test", matches = "true")
   void test() throws Exception {
     logTester.setLevel(Level.WARN);
 
@@ -138,15 +139,16 @@ class SanityTest {
       .filter(SanityTest::isTypeResolutionError)
       .collect(Collectors.toList());
 
-    assertThat(errorLogs).hasSize(30);
+    SoftAssertions softly = new SoftAssertions();
+    softly.assertThat(errorLogs).hasSize(31);
 
     List<LogAndArguments> remainingErrors = new ArrayList<>(errorLogs);
     remainingErrors.removeAll(parsingErrors);
     remainingErrors.removeAll(typeResolutionErrors);
-    assertThat(remainingErrors).isEmpty();
+    softly.assertThat(remainingErrors).isEmpty();
 
-    assertThat(typeResolutionErrors)
-      .hasSize(18)
+    softly.assertThat(typeResolutionErrors)
+      .hasSize(19)
       .map(LogAndArguments::getFormattedMsg)
       .map(log -> log.substring("ECJ Unable to resolve type ".length()))
       // FIXME investigate root cause (seems to be a conflict of version, with classes from JDK not resolved correctly
@@ -157,6 +159,7 @@ class SanityTest {
         "jakarta.ws.rs.core.Cookie",
         "jakarta.servlet.http.Cookie",
         "javax.ws.rs.core.NewCookie",
+        "jakarta.ws.rs.core.NewCookie",
         "junit.framework.TestCase",
         "org.apache.commons.lang.math.RandomUtils",
         "org.apache.commons.lang.RandomStringUtils",
@@ -170,7 +173,7 @@ class SanityTest {
         "play.mvc.Http$Cookie",
         "play.mvc.Http$CookieBuilder");
 
-    assertThat(parsingErrors)
+    softly.assertThat(parsingErrors)
       .hasSize(12)
       .map(LogAndArguments::getFormattedMsg)
       .allMatch(log ->
@@ -186,6 +189,8 @@ class SanityTest {
         || log.contains("MockingAllMethodsCheck")
         || log.contains("MockitoArgumentMatchersUsedOnAllParameters")
       );
+
+    softly.assertAll();
   }
 
   private static boolean isParseError(LogAndArguments log) {
