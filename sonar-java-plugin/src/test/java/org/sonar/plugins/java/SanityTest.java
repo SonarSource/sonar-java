@@ -110,7 +110,7 @@ class SanityTest {
    * It does not prevent other rules to fail if similar construct of the language, but not yet encountered.
    */
   @Test
-  //@EnabledIfSystemProperty(named = "force.sanity.test", matches = "true")
+  @EnabledIfSystemProperty(named = "force.sanity.test", matches = "true")
   void test() throws Exception {
     logTester.setLevel(Level.WARN);
 
