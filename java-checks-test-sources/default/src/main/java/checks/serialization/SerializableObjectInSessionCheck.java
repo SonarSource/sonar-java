@@ -98,6 +98,12 @@ class SerializableObjectInSessionCheck {
     session.setAttribute("name",  notSerializableClass); // Noncompliant {{Make "Class" and its parameters serializable or don't store it in the session.}}
   }
 
+  // Make sure we also cover Jakarta based on one example
+  void jakarta(jakarta.servlet.http.HttpServletRequest request) {
+    var session = request.getSession();
+    session.setAttribute("address", new Address()); // Noncompliant
+  }
+
   public class Address {
   }
   public class Person {

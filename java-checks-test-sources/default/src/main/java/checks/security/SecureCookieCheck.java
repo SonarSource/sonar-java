@@ -30,10 +30,10 @@ class SecureCookieCheck {
   }
 
   Cookie servletCookie(
-      Cookie firstParam,
-      Cookie secondParam,
-      Cookie thirdParam,
-      boolean param) {
+    Cookie firstParam,
+    Cookie secondParam,
+    Cookie thirdParam,
+    boolean param) {
     firstParam.setSecure(false); // Noncompliant [[sc=25;ec=32]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
     secondParam.setSecure(true);
 
@@ -61,7 +61,7 @@ class SecureCookieCheck {
 
     Cookie c7 = new Cookie("name", "value");
     boolean b = false;
-    c7.setSecure(b); // Noncompliant [[secondary=63]]
+    c7.setSecure(b); // Noncompliant [[secondary=-1]]
 
     Cookie c8 = new Cookie("name", "value");
     c8.setSecure(param);

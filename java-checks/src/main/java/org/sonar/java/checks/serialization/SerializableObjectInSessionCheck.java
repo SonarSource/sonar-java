@@ -32,10 +32,12 @@ import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 @Rule(key = "S2441")
 public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
 
+  private static final String SESSION_POSTFIX = "servlet.http.HttpSession";
+
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return MethodMatchers.create()
-      .ofTypes("javax.servlet.http.HttpSession")
+      .ofTypes("javax." + SESSION_POSTFIX, "jakarta." + SESSION_POSTFIX)
       .names("setAttribute")
       .addParametersMatcher("java.lang.String", ANY)
       .build();

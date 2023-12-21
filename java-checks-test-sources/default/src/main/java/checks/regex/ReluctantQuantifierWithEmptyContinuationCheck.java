@@ -50,6 +50,9 @@ public class ReluctantQuantifierWithEmptyContinuationCheck {
   @Email(regexp = ".*?") // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
   void fullMatch() { }
 
+  @jakarta.validation.constraints.Email(regexp = ".*?") // Noncompliant
+  void fullMatchJakarta() { }
+
   Matcher compliant(String str) {
     str.matches(".*?x");
     str.matches(".*?x?");

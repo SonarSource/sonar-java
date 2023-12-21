@@ -38,6 +38,15 @@ class SecureCookieCheckTest {
       .withCheck(new SecureCookieCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_jakarta() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/SecureCookieCheckJakarta.java"))
+      .withCheck(new SecureCookieCheck())
+      .verifyIssues();
+  }
+
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()

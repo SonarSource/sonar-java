@@ -181,7 +181,7 @@ public class AutoScanTest {
     }
 
     // store new unexpected diffs in JSON files - serializable
-    Files.createDirectory(pathFor(TARGET_ACTUAL + "autoscan-diffs/"));
+    Files.createDirectories(pathFor(TARGET_ACTUAL + "autoscan-diffs/"));
     for (var newDiff : newDiffs) {
       if (!newDiff.equals(knownDiffs.get(newDiff.ruleKey))) {
         Files.writeString(pathFor(TARGET_ACTUAL + "autoscan-diffs/diff_" + newDiff.ruleKey + ".json"), GSON.toJson(newDiff));

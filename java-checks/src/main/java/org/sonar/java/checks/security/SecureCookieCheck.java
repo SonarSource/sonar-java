@@ -49,14 +49,19 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private static final String MESSAGE = "Make sure creating this cookie without the \"secure\" flag is safe here.";
 
   private static final String JAX_RS_COOKIE = "javax.ws.rs.core.Cookie";
+  private static final String JAX_RS_COOKIE_JAKARTA = "jakarta.ws.rs.core.Cookie";
   private static final String JAX_RS_NEW_COOKIE = "javax.ws.rs.core.NewCookie";
+  private static final String JAX_RS_NEW_COOKIE_JAKARTA = "jakarta.ws.rs.core.NewCookie";
   private static final String SPRING_SAVED_COOKIE = "org.springframework.security.web.savedrequest.SavedCookie";
   private static final String PLAY_COOKIE = "play.mvc.Http$Cookie";
   private static final List<String> COOKIES = Arrays.asList(
     "javax.servlet.http.Cookie",
+    "jakarta.servlet.http.Cookie",
     "java.net.HttpCookie",
     JAX_RS_COOKIE,
+    JAX_RS_COOKIE_JAKARTA,
     JAX_RS_NEW_COOKIE,
+    JAX_RS_NEW_COOKIE_JAKARTA,
     "org.apache.shiro.web.servlet.SimpleCookie",
     SPRING_SAVED_COOKIE,
     PLAY_COOKIE,
@@ -68,23 +73,26 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
    * Some constructors have the 'secure' parameter and do not need a 'setSecure' call afterwards.
    */
   private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final String JAVA_UTIL_DATE = "java.util.Date";
   private static final String INT = "int";
   private static final String BOOLEAN = "boolean";
 
   private static final MethodMatchers CONSTRUCTORS_WITH_SECURE_PARAM_LAST = MethodMatchers.create()
-    .ofTypes(JAX_RS_NEW_COOKIE)
+    .ofTypes(JAX_RS_NEW_COOKIE, JAX_RS_NEW_COOKIE_JAKARTA)
     .constructor()
     .addParametersMatcher(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, BOOLEAN)
+    .addParametersMatcher(JAX_RS_COOKIE_JAKARTA, JAVA_LANG_STRING, INT, BOOLEAN)
     .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, BOOLEAN)
     .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN)
     .build();
 
   private static final MethodMatchers CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_LAST = MethodMatchers.or(
     MethodMatchers.create()
-      .ofTypes(JAX_RS_NEW_COOKIE)
+      .ofTypes(JAX_RS_NEW_COOKIE, JAX_RS_NEW_COOKIE_JAKARTA)
       .constructor()
-      .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN)
-      .addParametersMatcher(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN)
+      .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN)
+      .addParametersMatcher(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN)
+      .addParametersMatcher(JAX_RS_COOKIE_JAKARTA, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN)
       .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN)
       .build(),
     MethodMatchers.create()
