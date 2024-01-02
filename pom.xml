@@ -78,6 +78,7 @@
 
   <properties>
     <license.title>SonarQube Java</license.title>
+    <license.years>2012-2024</license.years>
 
     <jdk.min.version>11</jdk.min.version>
 
