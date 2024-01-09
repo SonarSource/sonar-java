@@ -11,12 +11,20 @@
 
   <artifactId>jdt</artifactId>
 
+  <properties>
+    <!--
+     This project contains some code from https://github.com/eclipse-jdt/eclipse.jdt.core with some minor changes.
+     It does not match our code quality standard and can not be analyzed like other code in this repository.
+    -->
+    <sonar.skip>true</sonar.skip>
+  </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>org.eclipse.jdt.core</artifactId>
-        <version>3.33.0</version>
+        <version>3.36.0</version>
         <exclusions>
           <exclusion>
             <groupId>org.eclipse.platform</groupId>
@@ -39,27 +47,27 @@
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.core.resources</artifactId>
-        <version>3.18.200</version>
+        <version>3.20.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.core.runtime</artifactId>
-        <version>3.26.100</version>
+        <version>3.30.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.core.jobs</artifactId>
-        <version>3.13.300</version>
+        <version>3.15.100</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.core.contenttype</artifactId>
-        <version>3.8.200</version>
+        <version>3.9.200</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.text</artifactId>
-        <version>3.12.300</version>
+        <version>3.13.100</version>
         <exclusions>
           <exclusion>
             <groupId>org.eclipse.platform</groupId>

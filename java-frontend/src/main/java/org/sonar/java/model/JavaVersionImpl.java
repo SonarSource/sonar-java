@@ -40,7 +40,9 @@ public class JavaVersionImpl implements JavaVersion {
   private static final int JAVA_17 = 17;
   private static final int JAVA_18 = 18;
   private static final int JAVA_19 = 19;
-  public static final int MAX_SUPPORTED = JAVA_19;
+  private static final int JAVA_20 = 21;
+  private static final int JAVA_21 = 21;
+  public static final int MAX_SUPPORTED = JAVA_21;
 
   private final int javaVersion;
   private final boolean previewFeaturesEnabled;
@@ -141,6 +143,16 @@ public class JavaVersionImpl implements JavaVersion {
   @Override
   public boolean isJava19Compatible() {
     return JAVA_19 <= javaVersion;
+  }
+
+  @Override
+  public boolean isJava20Compatible() {
+    return JAVA_20 <= javaVersion;
+  }
+
+  @Override
+  public boolean isJava21Compatible() {
+    return JAVA_21 <= javaVersion;
   }
 
   private boolean notSetOrAtLeast(int requiredJavaVersion) {
