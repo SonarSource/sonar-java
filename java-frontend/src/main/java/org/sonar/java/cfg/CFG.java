@@ -1307,10 +1307,6 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildRecordPattern(RecordPatternTree tree) {
-    IdentifierTree name = tree.name();
-    if (name != null) {
-      build(name);
-    }
     build(tree.patterns());
     build(tree.type());
     currentBlock.elements.add(tree);
