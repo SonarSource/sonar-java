@@ -27,8 +27,6 @@ import org.sonar.java.annotations.Beta;
  * Record pattern tree, introduced with Java 19 and JEP-405.
  *
  * <pre>
- *   case {@link #type()} ( {@link #patterns()} ) {@link #name()} : ...
- *   case {@link #type()} ( {@link #patterns()} ) {@link #name()} -> ...
  *   case {@link #type()} ( {@link #patterns()} ) : ...
  *   case {@link #type()} ( {@link #patterns()} ) -> ...
  * </pre>
@@ -42,7 +40,4 @@ public interface RecordPatternTree extends PatternTree {
   TypeTree type();
 
   List<PatternTree> patterns();
-
-  @CheckForNull
-  IdentifierTree name();
 }
