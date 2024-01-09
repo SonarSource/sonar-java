@@ -35,14 +35,11 @@ public class RecordPatternTreeImpl extends AbstractPatternTree implements Record
 
   private final TypeTree type;
   private final List<PatternTree> patterns;
-  @Nullable
-  private final IdentifierTree name;
 
-  public RecordPatternTreeImpl(TypeTree type, List<PatternTree> patterns, @Nullable IdentifierTree name) {
+  public RecordPatternTreeImpl(TypeTree type, List<PatternTree> patterns) {
     super(Kind.RECORD_PATTERN);
     this.type = type;
     this.patterns = patterns;
-    this.name = name;
   }
 
   @Override
@@ -66,17 +63,10 @@ public class RecordPatternTreeImpl extends AbstractPatternTree implements Record
   }
 
   @Override
-  @CheckForNull
-  public IdentifierTree name() {
-    return name;
-  }
-
-  @Override
   protected List<Tree> children() {
     return ListUtils.concat(
       Collections.singleton(type),
-      patterns,
-      Collections.singleton(name)
+      patterns
     );
   }
 }

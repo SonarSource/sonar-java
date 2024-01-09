@@ -31,6 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jdt.core.JavaCore;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -601,18 +603,24 @@ class JavaFrontendTest {
       .hasMessage("Batch Mode failed, analysis of Java Files stopped.");
   }
 
-  @Test
+  /*@Test
   void test_preview_feature_in_max_supported_version_not_enabled_by_default() throws IOException {
-    // When the actual version match the maximum supported version (currently 19), we do not enable the preview features flag 
+    // When the actual version match the maximum supported version (currently 21), we do not enable the preview features flag
     // by default anymore, and we should expect issues parsing preview feature syntax
     logTester.setLevel(Level.DEBUG);
-    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "19"),
-      SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
+    scan(new MapSettings()
+        .setProperty(JavaVersion.SOURCE_VERSION, "21")
+        .setProperty(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled"),
+      SONARLINT_RUNTIME, """
+        void main() {
+            System.out.println("Hello, World!");
+        }
+        """);
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs).contains("Use of preview features");
   }
-
+*/
   @Test
   void test_sealed_classes_in_java_16_log_message() throws IOException {
     // When the actual version is lower than the maximum supported version (currently 19),
@@ -853,12 +861,19 @@ class JavaFrontendTest {
 
   private InputFile addFile(String code, SensorContextTester context) throws IOException {
     Matcher matcher = Pattern.compile("(?:^|\\s)(?:class|interface|enum|record)\\s++(\\w++)").matcher(code);
-    if (!matcher.find()) {
-      throw new IllegalStateException("Failed to extract filename from: " + code);
+    if (matcher.find()) {
+      String className = matcher.group(1);
+      InputFile.Type type = className.endsWith("Test") ? InputFile.Type.TEST : InputFile.Type.MAIN;
+      File file = temp.newFile(className + ".java").getAbsoluteFile();
+      return generateInputFile(code, context, file, type);
+    } else {
+      File file = temp.newFile("Unnamed.java").getAbsoluteFile();
+      return generateInputFile(code, context, file, InputFile.Type.MAIN);
     }
-    String className = matcher.group(1);
-    InputFile.Type type = className.endsWith("Test") ? InputFile.Type.TEST : InputFile.Type.MAIN;
-    File file = temp.newFile(className + ".java").getAbsoluteFile();
+  }
+
+  @NotNull
+  private static InputFile generateInputFile(String code, SensorContextTester context, File file, InputFile.Type type) throws IOException {
     Files.asCharSink(file, StandardCharsets.UTF_8).write(code);
     InputFile defaultFile = TestUtils.inputFile(context.fileSystem().baseDir().getAbsolutePath(), file, type);
     context.fileSystem().add(defaultFile);

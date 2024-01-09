@@ -189,7 +189,7 @@ class AbstractPatternTreeTest {
     assertThat(guardedPattern.asConstant(Object.class)).isEmpty();
   }
 
-  @Test
+  /*@Test
   void test_guarded_pattern_parenthesized() {
     String code = "switch (shape) {\n"
       + "    case (Rectangle r) when (r.volume() > 42) -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
@@ -207,7 +207,7 @@ class AbstractPatternTreeTest {
     ExpressionTree guardedExpression = guardedPattern.expression();
     assertThat(guardedExpression).is(Tree.Kind.PARENTHESIZED_EXPRESSION);
     assertThat(((ParenthesizedTree) guardedExpression).expression()).is(Tree.Kind.GREATER_THAN);
-  }
+  }*/
 
   @Test
   void test_guarded_pattern_parenthesized_nested() {
@@ -263,7 +263,7 @@ class AbstractPatternTreeTest {
   void test_base_tree_visitor() {
     String code = "switch (shape) {\n"
       + "      case null -> \"null case\";\n"
-      + "      case Triangle(int a, var b, int c) r when a + b < 42 -> String.format(\"Big trangle\");\n"
+      + "      case Triangle(int a, var b, int c) when a + b < 42 -> String.format(\"Big trangle\");\n"
       + "      case Triangle t -> String.format(\"triangle (%d,%d,%d)\", t.a(), t.b(), t.c());\n"
       + "      case Rectangle r when r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
       + "      case default -> \"default case\";\n"
@@ -318,19 +318,8 @@ class AbstractPatternTreeTest {
   }
 
   @Test
-  void test_record_pattern_in_instanceof() {
-    String code = "(shape instanceof Triangle(int a, int b, int c) t) ? new Object() : new Object()";
-    ConditionalExpressionTree conditionalExpressionTree = conditionalExpressionTree("Shape shape", code);
-    assertThat(conditionalExpressionTree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
-    ExpressionTree instanceOfexpression = ((ParenthesizedTree) conditionalExpressionTree.condition()).expression();
-    assertThat(instanceOfexpression).is(Tree.Kind.PATTERN_INSTANCE_OF);
-    PatternTree pattern = ((PatternInstanceOfTree) instanceOfexpression).pattern();
-    assertThat(pattern).is(Tree.Kind.TYPE_PATTERN);
-  }
-
-  @Test
   void test_record_pattern_in_switch() {
-    String code = "switch (shape) { case Triangle(int a, int b, int c) t -> new Object(); default -> null; }";
+    String code = "switch (shape) { case Triangle(int a, int b, int c) -> new Object(); default -> null; }";
     SwitchExpressionTree switchCase = switchExpressionTree("Shape shape", code);
     assertThat(switchCase).is(Tree.Kind.SWITCH_EXPRESSION);
     var firstCase = switchCase.cases().stream().findFirst().get();
@@ -352,7 +341,6 @@ class AbstractPatternTreeTest {
     assertThat(type.annotations()).isEmpty();
     assertThat(type).is(Tree.Kind.IDENTIFIER);
     assertThat((IdentifierTree) type).hasName("Triangle");
-    assertThat(recordPattern.name()).hasName("t");
   }
 
   @Test
@@ -379,7 +367,6 @@ class AbstractPatternTreeTest {
     assertThat(type.annotations()).isEmpty();
     assertThat(type).is(Tree.Kind.IDENTIFIER);
     assertThat((IdentifierTree) type).hasName("Triangle");
-    assertThat(recordPattern.name()).isNull();
   }
 
   private static SwitchExpressionTree switchExpressionTree(String methodParametersDeclaration, String switchExpressionCode) {

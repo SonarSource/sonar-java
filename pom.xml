@@ -83,7 +83,7 @@
   <properties>
     <license.title>SonarQube Java</license.title>
 
-    <jdk.min.version>11</jdk.min.version>
+    <jdk.min.version>17</jdk.min.version>
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
@@ -300,7 +300,7 @@
         <plugin>
           <groupId>de.thetaphi</groupId>
           <artifactId>forbiddenapis</artifactId>
-          <version>3.1</version>
+          <version>3.6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

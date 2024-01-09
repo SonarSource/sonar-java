@@ -31,6 +31,8 @@ import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
+import org.sonar.plugins.java.api.tree.PatternTree;
+import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -43,14 +45,16 @@ class InstanceOfTreeImplTest {
 
   private static final String CLASS_WITH_INSTANCE_OF = "class A {\n"
     + "  void foo(Object o) {\n"
-    + "    if(%s) { }\n"
+    + "    if(%s) {"
+    + "      System.out.println(%s);\n"
+    + "    }\n"
     + "  }\n"
     + "  record Rectangle(int a, int b) {}"
     + "}\n";
 
   @Test
   void test_PatternInstanceOfTree() {
-    InstanceOfTreeImpl ioti = instanceOf("o instanceof String s");
+    InstanceOfTreeImpl ioti = instanceOf("o instanceof String s", "s");
     assertThat(ioti).is(Tree.Kind.PATTERN_INSTANCE_OF);
 
     PatternInstanceOfTree piot = ioti;
@@ -68,41 +72,23 @@ class InstanceOfTreeImplTest {
   }
 
   @Test
-  void test_PatternInstanceOfTree_not_TypePattern() {
-    InstanceOfTreeImpl ioti = instanceOf("o instanceof Rectangle(int a, var b) r");
+  void test_PatternInstanceOfTree_not_TypePattern_without_variable() {
+    InstanceOfTreeImpl ioti = instanceOf("o instanceof Rectangle(int a, var b)", "a");
     assertThat(ioti).is(Tree.Kind.PATTERN_INSTANCE_OF);
 
-    PatternInstanceOfTree piot = ioti;
-    assertThat(piot.expression()).isNotNull();
-    assertThat(piot.instanceofKeyword()).isNotNull();
-    assertThat(piot.pattern())
-      // FIXME bug in ecj (java 19 support): only supports TypePatterns. should be RecordPattern
-      .is(Tree.Kind.TYPE_PATTERN)
-      .isNotNull();
-    // should be null
-    assertThat(piot.variable()).isNotNull();
-  }
-
-  @Test
-  void test_PatternInstanceOfTree_not_TypePattern_without_variable() {
-    InstanceOfTreeImpl ioti = instanceOf("o instanceof Rectangle(int a, var b)");
-    assertThat(ioti).is(Tree.Kind.INSTANCE_OF);
-
-    InstanceOfTree iot = ioti;
+    PatternInstanceOfTree iot = ioti;
     assertThat(iot.expression()).isNotNull();
     assertThat(iot.instanceofKeyword()).isNotNull();
-    TypeTree type = iot.type();
-    assertThat(type)
-      // FIXME bug in ecj (java 19 support): only supports Identifer. should be RecordPattern
-      .is(Tree.Kind.IDENTIFIER)
-      .isNotNull();
-    // Should not be an identifier but a pattern deconstructor
+    PatternTree pattern = iot.pattern();
+    assertThat(pattern).is(Tree.Kind.RECORD_PATTERN);
+    TypeTree type = ((RecordPatternTree) pattern).type();
+    assertThat(type).is(Tree.Kind.IDENTIFIER).isNotNull();
     assertThat(((IdentifierTree) type)).hasName("Rectangle");
   }
 
   @Test
   void test_GuardedPatternInstanceOfTree() {
-    ExpressionTree condition = ifCondition("o instanceof String s && s.length() > 10");
+    ExpressionTree condition = ifCondition("o instanceof String s && s.length() > 10", "s");
     // ECJ drop the parenthesis and consider it as the two operands of a &&, while this compiles
     assertThat(condition).is(Tree.Kind.CONDITIONAL_AND);
     BinaryExpressionTree binaryExpression = (BinaryExpressionTree) condition;
@@ -121,7 +107,7 @@ class InstanceOfTreeImplTest {
 
   @Test
   void test_InstanceOfTree() {
-    InstanceOfTreeImpl ioti = instanceOf("o instanceof String");
+    InstanceOfTreeImpl ioti = instanceOf("o instanceof String", "o");
     assertThat(ioti).is(Tree.Kind.INSTANCE_OF);
     assertThat(ioti.variable()).isNull();
 
@@ -152,12 +138,12 @@ class InstanceOfTreeImplTest {
     }
   }
 
-  private static InstanceOfTreeImpl instanceOf(String instanceofExpression) {
-    return (InstanceOfTreeImpl) ifCondition(instanceofExpression);
+  private static InstanceOfTreeImpl instanceOf(String instanceofExpression, String toPrint) {
+    return (InstanceOfTreeImpl) ifCondition(instanceofExpression, toPrint);
   }
 
-  private static ExpressionTree ifCondition(String instanceofExpression) {
-    CompilationUnitTree cut = JParserTestUtils.parse(String.format(CLASS_WITH_INSTANCE_OF, instanceofExpression));
+  private static ExpressionTree ifCondition(String instanceofExpression, String toPrint) {
+    CompilationUnitTree cut = JParserTestUtils.parse(String.format(CLASS_WITH_INSTANCE_OF, instanceofExpression, toPrint));
     ClassTree classTree = (ClassTree) cut.types().get(0);
     MethodTree methodTree = (MethodTree) classTree.members().get(0);
     IfStatementTree ifStatementTree = (IfStatementTree) methodTree.block().body().get(0);
