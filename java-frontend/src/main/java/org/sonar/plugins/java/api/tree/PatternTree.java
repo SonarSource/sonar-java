@@ -33,10 +33,7 @@ import org.sonar.java.annotations.Beta;
  * </li>
  *
  * @since Java 17
- * @deprecated Preview Feature
  */
 @Beta
-@Deprecated(since = "7.7", forRemoval = false)
 public interface PatternTree extends ExpressionTree {
-
 }
