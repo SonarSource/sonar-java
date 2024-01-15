@@ -157,7 +157,7 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
 
   private static boolean isWithinSwitchExpression(YieldStatementTree tree) {
     Tree parent = tree.parent();
-    while (!parent.is(Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.SWITCH_STATEMENT)) {
+    while (!parent.is(Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.SWITCH_STATEMENT, Kind.COMPILATION_UNIT)) {
       parent = parent.parent();
     }
     return parent.is(Tree.Kind.SWITCH_EXPRESSION);
