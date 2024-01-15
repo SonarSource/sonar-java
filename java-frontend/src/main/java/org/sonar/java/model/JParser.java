@@ -1565,8 +1565,7 @@ public class JParser {
         GuardedPattern g = (GuardedPattern) p;
         return new GuardedPatternTreeImpl(
           convertPattern(g.getPattern()),
-          // FIXME java 19 support: should be "TerminalTokens.TokenNameRestrictedIdentifierWhen" instead of "TerminalTokens.TokenNameIdentifier"
-          firstTokenBefore(g.getExpression(), TerminalTokens.TokenNameIdentifier),
+          firstTokenBefore(g.getExpression(), TerminalTokens.TokenNameRestrictedIdentifierWhen),
           convertExpression(g.getExpression()));
       case ASTNode.NULL_PATTERN:
         // It is not clear how to reach this one, it seems to be possible only with badly constructed AST
@@ -1779,12 +1778,7 @@ public class JParser {
   private YieldStatementTreeImpl convertYield(YieldStatement e) {
     InternalSyntaxToken yieldKeyword = null;
     if (!e.isImplicit()) {
-      try {
-        yieldKeyword = firstTokenIn(e, TerminalTokens.TokenNameRestrictedIdentifierYield);
-      } catch (AssertionError | IndexOutOfBoundsException error) {
-        // TODO ECJ bug? should be "TerminalTokens.TokenNameRestrictedIdentifierYield" in all cases
-        yieldKeyword = firstTokenIn(e, TerminalTokens.TokenNameIdentifier);
-      }
+      yieldKeyword = firstTokenIn(e, TerminalTokens.TokenNameRestrictedIdentifierYield);
     }
     return new YieldStatementTreeImpl(
       yieldKeyword,
