@@ -21,12 +21,10 @@ package org.sonar.java.model;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -42,7 +40,8 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 public final class ExpressionUtils {
-  private static final Logger LOG = Loggers.get(ExpressionUtils.class);
+
+  private static final Logger LOG = LoggerFactory.getLogger(ExpressionUtils.class);
 
   private ExpressionUtils() {
   }
@@ -343,7 +342,7 @@ public final class ExpressionUtils {
         return longOperation.apply(((Number) left).longValue(), ((Number) right).longValue());
       }
     } catch (ArithmeticException e) {
-      LOG.warn("Arithmetic exception caught while try to resolve an operation as a constant", e);
+      LOG.debug("Arithmetic exception while resolving arithmetic operation value", e);
     }
     return null;
   }
