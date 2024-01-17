@@ -1,50 +1,50 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/ce/queue/CeQueueImpl.java':[
-212,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/ce/queue/CeQueueImpl.java": [
+212
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/ce/queue/CeTask.java':[
-127,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/ce/queue/CeTask.java": [
+127
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/batch/ProjectDataLoader.java':[
-89,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/batch/ProjectDataLoader.java": [
+89
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ce/ws/TaskFormatter.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ce/ws/TaskFormatter.java": [
 80,
-116,
+116
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStep.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStep.java": [
 154,
-184,
+184
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/BaseIssuesLoader.java':[
-65,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/BaseIssuesLoader.java": [
+65
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/BranchCoverageRule.java':[
-42,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/BranchCoverageRule.java": [
+42
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommonRule.java':[
-72,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommonRule.java": [
+72
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistEventsStep.java':[
-97,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistEventsStep.java": [
+97
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/BulkIndexer.java':[
-267,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/BulkIndexer.java": [
+267
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexingResult.java':[
-27,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexingResult.java": [
+27
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java':[
-336,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java": [
+336
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/db/migration/AutoDbMigration.java':[
-39,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/db/migration/AutoDbMigration.java": [
+39
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ws/UninstallAction.java':[
-69,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ws/UninstallAction.java": [
+69
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java": [
 401,
-443,
+443
 ],
 }

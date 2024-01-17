@@ -1,29 +1,29 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java':[
-602,
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java": [
+602
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java": [
 747,
-796,
+796
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java": [
 422,
-477,
+477
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/ArrayUtilTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/ArrayUtilTest.java": [
 49,
 78,
-100,
+100
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java": [
 297,
 298,
 299,
 302,
 315,
-318,
+318
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java": [
 825,
 829,
 856,
@@ -36,15 +36,15 @@
 1011,
 1585,
 1601,
-1624,
+1624
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/MultiExceptionTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/MultiExceptionTest.java": [
 65,
 85,
 95,
-109,
+109
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java": [
 299,
 309,
 317,
@@ -59,17 +59,17 @@
 417,
 422,
 434,
-439,
+439
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/StringUtilTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/StringUtilTest.java": [
 47,
 100,
-142,
+142
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ClassPathResourceTest.java':[
-111,
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ClassPathResourceTest.java": [
+111
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java": [
 44,
 45,
 46,
@@ -80,6 +80,6 @@
 60,
 61,
 62,
-71,
-],
+71
+]
 }

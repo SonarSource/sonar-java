@@ -1,12 +1,12 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/LongAdder.java':[
-70,
+"com.google.guava:guava:src/com/google/common/cache/LongAdder.java": [
+70
 ],
-'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
+"com.google.guava:guava:src/com/google/common/cache/Striped64.java": [
 204,
-212,
+212
 ],
-'com.google.guava:guava:src/com/google/common/escape/CharEscaper.java':[
-98,
+"com.google.guava:guava:src/com/google/common/escape/CharEscaper.java": [
+98
 ],
 }

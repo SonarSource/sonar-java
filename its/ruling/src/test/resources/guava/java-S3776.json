@@ -1,100 +1,100 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Splitter.java':[
-574,
+"com.google.guava:guava:src/com/google/common/base/Splitter.java": [
+574
 ],
-'com.google.guava:guava:src/com/google/common/base/Utf8.java':[
-142,
+"com.google.guava:guava:src/com/google/common/base/Utf8.java": [
+142
 ],
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
 235,
 2211,
 2910,
 3122,
 3978,
-4116,
+4116
 ],
-'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
-193,
+"com.google.guava:guava:src/com/google/common/cache/Striped64.java": [
+193
 ],
-'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
-75,
+"com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
+75
 ],
-'com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java':[
+"com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
 218,
 359,
-415,
+415
 ],
-'com.google.guava:guava:src/com/google/common/collect/FilteredEntryMultimap.java':[
-294,
+"com.google.guava:guava:src/com/google/common/collect/FilteredEntryMultimap.java": [
+294
 ],
-'com.google.guava:guava:src/com/google/common/collect/GeneralRange.java':[
-181,
+"com.google.guava:guava:src/com/google/common/collect/GeneralRange.java": [
+181
 ],
-'com.google.guava:guava:src/com/google/common/collect/HashBiMap.java':[
-136,
+"com.google.guava:guava:src/com/google/common/collect/HashBiMap.java": [
+136
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 197,
 2499,
 2571,
 2820,
-3461,
+3461
 ],
-'com.google.guava:guava:src/com/google/common/collect/Ordering.java':[
-689,
+"com.google.guava:guava:src/com/google/common/collect/Ordering.java": [
+689
 ],
-'com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java':[
+"com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java": [
 618,
 669,
-717,
+717
 ],
-'com.google.guava:guava:src/com/google/common/escape/Escapers.java':[
-228,
+"com.google.guava:guava:src/com/google/common/escape/Escapers.java": [
+228
 ],
-'com.google.guava:guava:src/com/google/common/escape/UnicodeEscaper.java':[
-175,
+"com.google.guava:guava:src/com/google/common/escape/UnicodeEscaper.java": [
+175
 ],
-'com.google.guava:guava:src/com/google/common/hash/AbstractCompositeHashFunction.java':[
-49,
+"com.google.guava:guava:src/com/google/common/hash/AbstractCompositeHashFunction.java": [
+49
 ],
-'com.google.guava:guava:src/com/google/common/io/BaseEncoding.java':[
-677,
+"com.google.guava:guava:src/com/google/common/io/BaseEncoding.java": [
+677
 ],
-'com.google.guava:guava:src/com/google/common/math/DoubleMath.java':[
-57,
+"com.google.guava:guava:src/com/google/common/math/DoubleMath.java": [
+57
 ],
-'com.google.guava:guava:src/com/google/common/math/IntMath.java':[
+"com.google.guava:guava:src/com/google/common/math/IntMath.java": [
 189,
-450,
+450
 ],
-'com.google.guava:guava:src/com/google/common/math/LongMath.java':[
+"com.google.guava:guava:src/com/google/common/math/LongMath.java": [
 232,
 564,
-649,
+649
 ],
-'com.google.guava:guava:src/com/google/common/net/InetAddresses.java':[
-222,
+"com.google.guava:guava:src/com/google/common/net/InetAddresses.java": [
+222
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Ints.java':[
-717,
+"com.google.guava:guava:src/com/google/common/primitives/Ints.java": [
+717
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
 186,
 344,
-426,
+426
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AtomicLongMap.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/AtomicLongMap.java": [
 105,
 154,
-189,
+189
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java':[
-546,
+"com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java": [
+546
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java':[
-676,
+"com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
+676
 ],
-'com.google.guava:guava:src/com/google/thirdparty/publicsuffix/TrieParser.java':[
-60,
+"com.google.guava:guava:src/com/google/thirdparty/publicsuffix/TrieParser.java": [
+60
 ],
 }

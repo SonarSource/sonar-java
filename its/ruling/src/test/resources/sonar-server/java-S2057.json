@@ -1,17 +1,17 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/event/AuthenticationEvent.java':[
-97,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/event/AuthenticationEvent.java": [
+97
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueDoc.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueDoc.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/notification/IssueChangeNotification.java':[
-32,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/notification/IssueChangeNotification.java": [
+32
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/notification/MyNewIssuesNotification.java':[
-28,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/notification/MyNewIssuesNotification.java": [
+28
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/index/UserDoc.java':[
-31,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/index/UserDoc.java": [
+31
 ],
 }

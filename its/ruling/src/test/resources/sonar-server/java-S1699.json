@@ -1,21 +1,21 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/container/TaskContainerImpl.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/container/TaskContainerImpl.java": [
+44
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java": [
+292
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/platformlevel/PlatformLevel.java": [
 44,
+50
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java':[
-292,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleDoc.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/platformlevel/PlatformLevel.java':[
-44,
-50,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ThreadLocalSettings.java": [
+71
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleDoc.java':[
-40,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ThreadLocalSettings.java':[
-71,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/DeprecatedPropertiesWsFilter.java':[
-140,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/DeprecatedPropertiesWsFilter.java": [
+140
 ],
 }

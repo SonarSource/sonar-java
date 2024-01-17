@@ -1,9 +1,9 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueQuery.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueQuery.java": [
 38,
-245,
+245
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleQuery.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleQuery.java": [
+34
 ],
 }

@@ -1,29 +1,29 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/DefaultRubyComponentService.java':[
-54,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/DefaultRubyComponentService.java": [
+54
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueDoc.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueDoc.java": [
 141,
 168,
-249,
+249
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/OldRestoreAction.java':[
-50,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/OldRestoreAction.java": [
+50
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/CachingRuleFinder.java':[
-98,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/CachingRuleFinder.java": [
+98
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/WebServerRuleFinderImpl.java':[
-57,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/WebServerRuleFinderImpl.java": [
+57
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/DeprecatedViews.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/DeprecatedViews.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/PageDecorations.java':[
-33,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/PageDecorations.java": [
+33
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserSession.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserSession.java": [
 119,
-143,
+143
 ],
 }

@@ -1,31 +1,31 @@
 {
-'com.google.guava:guava:src/com/google/common/hash/BloomFilter.java':[
-450,
+"com.google.guava:guava:src/com/google/common/hash/BloomFilter.java": [
+450
 ],
-'com.google.guava:guava:src/com/google/common/math/DoubleMath.java':[
+"com.google.guava:guava:src/com/google/common/math/DoubleMath.java": [
 95,
 104,
 281,
-356,
+356
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Doubles.java':[
+"com.google.guava:guava:src/com/google/common/primitives/Doubles.java": [
 125,
 149,
 180,
 206,
-554,
+554
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Floats.java':[
+"com.google.guava:guava:src/com/google/common/primitives/Floats.java": [
 121,
 145,
 176,
 202,
-549,
+549
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/SmoothRateLimiter.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/SmoothRateLimiter.java": [
 227,
 231,
 283,
-287,
+287
 ],
 }

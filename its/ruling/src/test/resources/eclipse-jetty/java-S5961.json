@@ -1,11 +1,11 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerTest.java':[
-125,
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerTest.java": [
+125
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/InetAddressSetTest.java':[
-302,
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/InetAddressSetTest.java": [
+302
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/component/ContainerLifeCycleTest.java':[
-207,
-],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/component/ContainerLifeCycleTest.java": [
+207
+]
 }

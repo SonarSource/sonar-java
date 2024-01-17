@@ -1,35 +1,35 @@
 {
-'com.google.guava:guava:src/com/google/common/base/CharMatcher.java':[
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
 228,
 242,
 249,
 294,
 307,
-310,
+310
 ],
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
 732,
-4356,
+4356
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMaker.java':[
+"com.google.guava:guava:src/com/google/common/collect/MapMaker.java": [
 117,
 127,
-479,
+479
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 615,
-3687,
+3687
 ],
-'com.google.guava:guava:src/com/google/common/collect/StandardTable.java':[
-270,
+"com.google.guava:guava:src/com/google/common/collect/StandardTable.java": [
+270
 ],
-'com.google.guava:guava:src/com/google/common/io/Closer.java':[
-107,
+"com.google.guava:guava:src/com/google/common/io/Closer.java": [
+107
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/InterruptibleTask.java':[
-33,
+"com.google.guava:guava:src/com/google/common/util/concurrent/InterruptibleTask.java": [
+33
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java':[
-566,
+"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+566
 ],
 }

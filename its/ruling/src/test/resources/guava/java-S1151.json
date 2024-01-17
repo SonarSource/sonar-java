@@ -1,34 +1,34 @@
 {
-'com.google.guava:guava:src/com/google/common/collect/ImmutableBiMap.java':[
-212,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableBiMap.java": [
+212
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableMap.java':[
-273,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableMap.java": [
+273
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
-324,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java": [
+324
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableTable.java':[
-92,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableTable.java": [
+92
 ],
-'com.google.guava:guava:src/com/google/common/io/LineBuffer.java':[
-62,
+"com.google.guava:guava:src/com/google/common/io/LineBuffer.java": [
+62
 ],
-'com.google.guava:guava:src/com/google/common/math/BigIntegerMath.java':[
-85,
+"com.google.guava:guava:src/com/google/common/math/BigIntegerMath.java": [
+85
 ],
-'com.google.guava:guava:src/com/google/common/math/DoubleMath.java':[
+"com.google.guava:guava:src/com/google/common/math/DoubleMath.java": [
 93,
-102,
+102
 ],
-'com.google.guava:guava:src/com/google/common/math/IntMath.java':[
+"com.google.guava:guava:src/com/google/common/math/IntMath.java": [
 317,
 475,
-539,
+539
 ],
-'com.google.guava:guava:src/com/google/common/math/LongMath.java':[
+"com.google.guava:guava:src/com/google/common/math/LongMath.java": [
 384,
 591,
-661,
+661
 ],
 }

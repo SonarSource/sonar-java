@@ -1,9 +1,9 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java':[
-542,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
+542
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
 710,
-730,
+730
 ],
 }

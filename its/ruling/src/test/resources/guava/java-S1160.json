@@ -1,21 +1,21 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Throwables.java':[
-127,
+"com.google.guava:guava:src/com/google/common/base/Throwables.java": [
+127
 ],
-'com.google.guava:guava:src/com/google/common/io/Closer.java':[
+"com.google.guava:guava:src/com/google/common/io/Closer.java": [
 166,
-190,
+190
 ],
-'com.google.guava:guava:src/com/google/common/io/Files.java':[
-677,
+"com.google.guava:guava:src/com/google/common/io/Files.java": [
+677
 ],
-'com.google.guava:guava:src/com/google/common/reflect/Invokable.java':[
-100,
+"com.google.guava:guava:src/com/google/common/reflect/Invokable.java": [
+100
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/CheckedFuture.java':[
-77,
+"com.google.guava:guava:src/com/google/common/util/concurrent/CheckedFuture.java": [
+77
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Uninterruptibles.java':[
-169,
+"com.google.guava:guava:src/com/google/common/util/concurrent/Uninterruptibles.java": [
+169
 ],
 }

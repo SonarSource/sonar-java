@@ -1,6 +1,6 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/BackendCleanup.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/BackendCleanup.java": [
 139,
-178,
+178
 ],
 }

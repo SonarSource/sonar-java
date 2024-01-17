@@ -1,18 +1,18 @@
 {
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java": [
 1729,
 1959,
 1961,
 1963,
 1965,
 1967,
-1969,
+1969
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java": [
 193,
-1729,
+1729
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java": [
 743,
 751,
 855,
@@ -25,23 +25,23 @@
 1503,
 1505,
 1507,
-1509,
+1509
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java": [
 1597,
-1863,
+1863
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java": [
 1381,
 1397,
 1419,
 1443,
 1445,
-1835,
+1835
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java": [
 63,
 73,
-1313,
+1313
 ],
 }

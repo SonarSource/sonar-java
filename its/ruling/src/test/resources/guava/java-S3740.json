@@ -1,57 +1,57 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Converter.java':[
+"com.google.guava:guava:src/com/google/common/base/Converter.java": [
 464,
-464,
+464
 ],
-'com.google.guava:guava:src/com/google/common/cache/RemovalNotification.java':[
-54,
+"com.google.guava:guava:src/com/google/common/cache/RemovalNotification.java": [
+54
 ],
-'com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java':[
-76,
+"com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
+76
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableMultimap.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableMultimap.java": [
 344,
 346,
-348,
+348
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java": [
 64,
 66,
-67,
+67
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultiset.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultiset.java": [
 54,
 56,
-57,
+57
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java": [
 62,
 64,
-65,
+65
 ],
-'com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java':[
+"com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
 112,
 138,
 139,
 150,
-151,
+151
 ],
-'com.google.guava:guava:src/com/google/common/collect/NaturalOrdering.java':[
-29,
+"com.google.guava:guava:src/com/google/common/collect/NaturalOrdering.java": [
+29
 ],
-'com.google.guava:guava:src/com/google/common/collect/ReverseNaturalOrdering.java':[
-30,
+"com.google.guava:guava:src/com/google/common/collect/ReverseNaturalOrdering.java": [
+30
 ],
-'com.google.guava:guava:src/com/google/common/collect/TreeRangeMap.java':[
+"com.google.guava:guava:src/com/google/common/collect/TreeRangeMap.java": [
 267,
-268,
+268
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
 106,
 107,
 108,
 842,
 845,
-848,
+848
 ],
 }
