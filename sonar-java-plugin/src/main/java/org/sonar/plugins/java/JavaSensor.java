@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Phase;
@@ -111,8 +112,10 @@ public class JavaSensor implements Sensor {
 
     JavaFrontend frontend = new JavaFrontend(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
       insertSymbolicExecutionVisitor(sonarComponents.mainChecks()));
-    frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
+    ProblemHandler.resetNumberOfIgnoredAbortCompilationException();
+    frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
+    ProblemHandler.executeIfIgnoredAbortCompilationException(count -> LOG.error("numberOfIgnoredAbortCompilationException = {}", count));
     sensorDuration.stop();
   }
 

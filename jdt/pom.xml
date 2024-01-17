@@ -11,6 +11,14 @@
 
   <artifactId>jdt</artifactId>
 
+  <properties>
+    <!--
+     This project contains some code from https://github.com/eclipse-jdt/eclipse.jdt.core with some minor changes.
+     It does not match our code quality standard and can not be analyzed like other code in this repository.
+    -->
+    <sonar.skip>true</sonar.skip>
+  </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
