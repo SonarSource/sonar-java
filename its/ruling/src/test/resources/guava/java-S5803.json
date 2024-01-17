@@ -1,8 +1,8 @@
 {
-'com.google.guava:guava:src/com/google/common/io/Closer.java':[
-252,
+"com.google.guava:guava:src/com/google/common/io/Closer.java": [
+252
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/SmoothRateLimiter.java':[
-213,
+"com.google.guava:guava:src/com/google/common/util/concurrent/SmoothRateLimiter.java": [
+213
 ],
 }

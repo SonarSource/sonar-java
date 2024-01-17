@@ -1,11 +1,11 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java':[
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
 542,
 570,
 804,
 889,
 1139,
 1203,
-1234,
+1234
 ],
 }

@@ -1,11 +1,11 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java':[
-48,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java": [
+48
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java':[
-45,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
+45
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java':[
-500,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java": [
+500
 ],
 }

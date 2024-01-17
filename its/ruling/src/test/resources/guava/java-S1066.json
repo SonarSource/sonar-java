@@ -1,13 +1,13 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
 2673,
-4322,
+4322
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
-3654,
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+3654
 ],
-'com.google.guava:guava:src/com/google/common/io/LineBuffer.java':[
+"com.google.guava:guava:src/com/google/common/io/LineBuffer.java": [
 54,
-66,
+66
 ],
 }

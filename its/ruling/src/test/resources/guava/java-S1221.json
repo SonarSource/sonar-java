@@ -1,8 +1,8 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Objects.java':[
-59,
+"com.google.guava:guava:src/com/google/common/base/Objects.java": [
+59
 ],
-'com.google.guava:guava:src/com/google/common/io/Files.java':[
-384,
+"com.google.guava:guava:src/com/google/common/io/Files.java": [
+384
 ],
 }

@@ -1,9 +1,9 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Ascii.java':[
+"com.google.guava:guava:src/com/google/common/base/Ascii.java": [
 442,
-491,
+491
 ],
-'com.google.guava:guava:src/com/google/common/base/CharMatcher.java':[
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
 644,
 703,
 1352,
@@ -11,27 +11,27 @@
 1481,
 1493,
 1494,
-1740,
+1740
 ],
-'com.google.guava:guava:src/com/google/common/escape/ArrayBasedEscaperMap.java':[
-84,
+"com.google.guava:guava:src/com/google/common/escape/ArrayBasedEscaperMap.java": [
+84
 ],
-'com.google.guava:guava:src/com/google/common/escape/CharEscaperBuilder.java':[
-117,
+"com.google.guava:guava:src/com/google/common/escape/CharEscaperBuilder.java": [
+117
 ],
-'com.google.guava:guava:src/com/google/common/escape/Escapers.java':[
-158,
+"com.google.guava:guava:src/com/google/common/escape/Escapers.java": [
+158
 ],
-'com.google.guava:guava:src/com/google/common/hash/HashCode.java':[
-439,
+"com.google.guava:guava:src/com/google/common/hash/HashCode.java": [
+439
 ],
-'com.google.guava:guava:src/com/google/common/io/BaseEncoding.java':[
+"com.google.guava:guava:src/com/google/common/io/BaseEncoding.java": [
 543,
 797,
-842,
+842
 ],
-'com.google.guava:guava:src/com/google/common/net/PercentEscaper.java':[
+"com.google.guava:guava:src/com/google/common/net/PercentEscaper.java": [
 66,
-125,
+125
 ],
 }

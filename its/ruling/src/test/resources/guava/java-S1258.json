@@ -1,11 +1,11 @@
 {
-'com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java':[
-763,
+"com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
+763
 ],
-'com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java':[
-504,
+"com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java": [
+504
 ],
-'com.google.guava:guava:src/com/google/common/reflect/TypeToken.java':[
-720,
+"com.google.guava:guava:src/com/google/common/reflect/TypeToken.java": [
+720
 ],
 }

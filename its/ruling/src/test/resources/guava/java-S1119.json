@@ -1,47 +1,47 @@
 {
-'com.google.guava:guava:src/com/google/common/base/CharMatcher.java':[
-648,
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
+648
 ],
-'com.google.guava:guava:src/com/google/common/base/Splitter.java':[
-187,
+"com.google.guava:guava:src/com/google/common/base/Splitter.java": [
+187
 ],
-'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
-78,
+"com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
+78
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Booleans.java':[
-152,
+"com.google.guava:guava:src/com/google/common/primitives/Booleans.java": [
+152
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Bytes.java':[
-128,
+"com.google.guava:guava:src/com/google/common/primitives/Bytes.java": [
+128
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Chars.java':[
-185,
+"com.google.guava:guava:src/com/google/common/primitives/Chars.java": [
+185
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Doubles.java':[
-177,
+"com.google.guava:guava:src/com/google/common/primitives/Doubles.java": [
+177
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Floats.java':[
-173,
+"com.google.guava:guava:src/com/google/common/primitives/Floats.java": [
+173
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Ints.java':[
-192,
+"com.google.guava:guava:src/com/google/common/primitives/Ints.java": [
+192
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Longs.java':[
-161,
+"com.google.guava:guava:src/com/google/common/primitives/Longs.java": [
+161
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Shorts.java':[
-191,
+"com.google.guava:guava:src/com/google/common/primitives/Shorts.java": [
+191
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
 188,
-358,
+358
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AtomicLongMap.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/AtomicLongMap.java": [
 106,
 155,
-190,
+190
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java':[
-499,
+"com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java": [
+499
 ],
 }

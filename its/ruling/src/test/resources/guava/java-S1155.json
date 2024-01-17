@@ -1,8 +1,8 @@
 {
-'com.google.guava:guava:src/com/google/common/hash/Hashing.java':[
-505,
+"com.google.guava:guava:src/com/google/common/hash/Hashing.java": [
+505
 ],
-'com.google.guava:guava:src/com/google/common/io/Files.java':[
-744,
+"com.google.guava:guava:src/com/google/common/io/Files.java": [
+744
 ],
 }

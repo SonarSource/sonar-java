@@ -1,16 +1,16 @@
 {
-'com.google.guava:guava:src/com/google/common/hash/BloomFilter.java':[
-69,
+"com.google.guava:guava:src/com/google/common/hash/BloomFilter.java": [
+69
 ],
-'com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java':[
+"com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java": [
 357,
 359,
 365,
 366,
 367,
-367,
+367
 ],
-'com.google.guava:guava:src/com/google/common/reflect/MutableTypeToInstanceMap.java':[
-131,
+"com.google.guava:guava:src/com/google/common/reflect/MutableTypeToInstanceMap.java": [
+131
 ],
 }

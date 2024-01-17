@@ -1,69 +1,69 @@
 {
-'com.google.guava:guava:src/com/google/common/collect/AbstractMapBasedMultimap.java':[
+"com.google.guava:guava:src/com/google/common/collect/AbstractMapBasedMultimap.java": [
 1005,
-1048,
+1048
 ],
-'com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java':[
-557,
+"com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
+557
 ],
-'com.google.guava:guava:src/com/google/common/collect/ContiguousSet.java':[
-42,
+"com.google.guava:guava:src/com/google/common/collect/ContiguousSet.java": [
+42
 ],
-'com.google.guava:guava:src/com/google/common/collect/DescendingImmutableSortedMultiset.java':[
-25,
+"com.google.guava:guava:src/com/google/common/collect/DescendingImmutableSortedMultiset.java": [
+25
 ],
-'com.google.guava:guava:src/com/google/common/collect/DescendingImmutableSortedSet.java':[
-28,
+"com.google.guava:guava:src/com/google/common/collect/DescendingImmutableSortedSet.java": [
+28
 ],
-'com.google.guava:guava:src/com/google/common/collect/EmptyContiguousSet.java':[
-32,
+"com.google.guava:guava:src/com/google/common/collect/EmptyContiguousSet.java": [
+32
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingNavigableMap.java':[
-331,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingNavigableMap.java": [
+331
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingNavigableSet.java':[
-163,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingNavigableSet.java": [
+163
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingSortedMap.java':[
-104,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingSortedMap.java": [
+104
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingSortedMultiset.java':[
-68,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingSortedMultiset.java": [
+68
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableRangeSet.java':[
-390,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableRangeSet.java": [
+390
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedAsList.java':[
-32,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedAsList.java": [
+32
 ],
-'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
 1033,
 2866,
 2973,
-3658,
+3658
 ],
-'com.google.guava:guava:src/com/google/common/collect/RegularContiguousSet.java':[
-36,
+"com.google.guava:guava:src/com/google/common/collect/RegularContiguousSet.java": [
+36
 ],
-'com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedMultiset.java':[
-33,
+"com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedMultiset.java": [
+33
 ],
-'com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedSet.java':[
-47,
+"com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedSet.java": [
+47
 ],
-'com.google.guava:guava:src/com/google/common/collect/Sets.java':[
-1598,
+"com.google.guava:guava:src/com/google/common/collect/Sets.java": [
+1598
 ],
-'com.google.guava:guava:src/com/google/common/collect/SortedMultisets.java':[
-90,
+"com.google.guava:guava:src/com/google/common/collect/SortedMultisets.java": [
+90
 ],
-'com.google.guava:guava:src/com/google/common/collect/TreeMultimap.java':[
-79,
+"com.google.guava:guava:src/com/google/common/collect/TreeMultimap.java": [
+79
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java':[
-568,
+"com.google.guava:guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
+568
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java':[
-2100,
+"com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java": [
+2100
 ],
 }
