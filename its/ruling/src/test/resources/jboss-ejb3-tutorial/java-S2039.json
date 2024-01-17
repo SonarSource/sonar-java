@@ -1,88 +1,88 @@
 {
-'jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java':[
-47,
+"jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java": [
+47
 ],
-'jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/Contact.java':[
+"jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/Contact.java": [
 44,
 45,
 46,
-47,
+47
 ],
-'jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/Customer.java':[
+"jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/Customer.java": [
 49,
-50,
+50
 ],
-'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/Customer.java':[
+"jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/Customer.java": [
 40,
-41,
+41
 ],
-'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/Flight.java':[
+"jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/Flight.java": [
 40,
 41,
 42,
 43,
 44,
-45,
+45
 ],
-'jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/Customer.java':[
+"jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/Customer.java": [
 37,
-38,
+38
 ],
-'jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/ShoppingCartBean.java':[
+"jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/ShoppingCartBean.java": [
+41,
+43
+],
+"jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/StatelessSessionBean.java": [
+40
+],
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java": [
 41,
 43,
+45
 ],
-'jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/StatelessSessionBean.java':[
-40,
-],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java':[
-41,
-43,
-45,
-],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java": [
 48,
 51,
 54,
-56,
+56
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/Confirmation.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/Confirmation.java": [
 38,
-39,
+39
 ],
-'jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/bean/Cat.java':[
-32,
+"jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/bean/Cat.java": [
+32
 ],
-'jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/Customer.java':[
+"jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/Customer.java": [
 49,
 50,
 51,
-52,
+52
 ],
-'jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/Flight.java':[
+"jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/Flight.java": [
 46,
 47,
 48,
 49,
 50,
-51,
+51
 ],
-'jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java':[
-41,
+"jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java": [
+41
 ],
-'jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/ServiceOne.java':[
-45,
+"jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/ServiceOne.java": [
+45
 ],
-'jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/XMBeanService.java':[
-37,
+"jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/XMBeanService.java": [
+37
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceOne.java':[
-30,
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceOne.java": [
+30
 ],
-'jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/bean/Cat.java':[
-47,
+"jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/bean/Cat.java": [
+47
 ],
-'jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/bean/Cat.java':[
-29,
+"jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/bean/Cat.java": [
+29
 ],
 }

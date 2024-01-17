@@ -1,8 +1,8 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/EvaluationResult.java':[
-46,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/EvaluationResult.java": [
+46
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewCoverageMeasuresStep.java':[
-131,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewCoverageMeasuresStep.java": [
+131
 ],
 }

@@ -1,34 +1,34 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/DateGenerator.java':[
-44,
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/DateGenerator.java": [
+44
 ],
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java':[
-58,
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java": [
+58
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java':[
-280,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
+280
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java':[
-60,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java": [
+60
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java':[
-180,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
+180
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java':[
-139,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+139
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ScopedHandler.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ScopedHandler.java": [
 104,
-124,
+124
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ClassLoadingObjectInputStream.java':[
-46,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ClassLoadingObjectInputStream.java": [
+46
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/DecoratedObjectFactory.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/DecoratedObjectFactory.java": [
 49,
-60,
+60
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Pool.java':[
-68,
-],
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Pool.java": [
+68
+]
 }

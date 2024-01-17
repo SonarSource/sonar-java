@@ -1,11 +1,11 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
-4665,
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+4665
 ],
-'com.google.guava:guava:src/com/google/common/collect/EmptyImmutableListMultimap.java':[
-34,
+"com.google.guava:guava:src/com/google/common/collect/EmptyImmutableListMultimap.java": [
+34
 ],
-'com.google.guava:guava:src/com/google/common/collect/EmptyImmutableSetMultimap.java':[
-34,
+"com.google.guava:guava:src/com/google/common/collect/EmptyImmutableSetMultimap.java": [
+34
 ],
 }

@@ -1,8 +1,8 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java':[
-24,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java": [
+24
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/QualityGates.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/QualityGates.java": [
+47
 ],
 }

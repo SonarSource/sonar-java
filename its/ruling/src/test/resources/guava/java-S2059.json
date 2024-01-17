@@ -1,8 +1,8 @@
 {
-'com.google.guava:guava:src/com/google/common/collect/HashBiMap.java':[
-526,
+"com.google.guava:guava:src/com/google/common/collect/HashBiMap.java": [
+526
 ],
-'com.google.guava:guava:src/com/google/common/reflect/TypeToken.java':[
-628,
+"com.google.guava:guava:src/com/google/common/reflect/TypeToken.java": [
+628
 ],
 }

@@ -1,8 +1,8 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ServerPluginRepository.java':[
-272,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ServerPluginRepository.java": [
+272
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/RegisterQualityProfiles.java':[
-137,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/RegisterQualityProfiles.java": [
+137
 ],
 }

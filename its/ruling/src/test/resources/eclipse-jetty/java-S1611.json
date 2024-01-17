@@ -1,18 +1,18 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java':[
-80,
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
+80
 ],
-'org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLogger.java':[
+"org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLogger.java": [
 132,
-151,
+151
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java": [
 71,
 74,
-79,
+79
 ],
-'org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java':[
+"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
 369,
-403,
-],
+403
+]
 }

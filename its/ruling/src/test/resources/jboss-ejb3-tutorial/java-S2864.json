@@ -1,20 +1,20 @@
 {
-'jboss-ejb3-tutorial:consumer/src/org/jboss/tutorial/consumer/bean/ExampleConsumerBean.java':[
-52,
+"jboss-ejb3-tutorial:consumer/src/org/jboss/tutorial/consumer/bean/ExampleConsumerBean.java": [
+52
 ],
-'jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/bean/ExampleConsumerBean.java':[
-41,
+"jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/bean/ExampleConsumerBean.java": [
+41
 ],
-'jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/client/Client.java':[
-54,
+"jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/client/Client.java": [
+54
 ],
-'jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java':[
-89,
+"jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java": [
+89
 ],
-'jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/client/Client.java':[
-52,
+"jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/client/Client.java": [
+52
 ],
-'jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/client/Client.java':[
-57,
+"jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/client/Client.java": [
+57
 ],
 }

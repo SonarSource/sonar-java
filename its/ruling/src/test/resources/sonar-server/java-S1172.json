@@ -1,8 +1,8 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/BatchMeasureToMeasure.java':[
-109,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/BatchMeasureToMeasure.java": [
+109
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/index/UserIndexer.java':[
-104,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/index/UserIndexer.java": [
+104
 ],
 }

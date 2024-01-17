@@ -1,9 +1,9 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/CompressedContentFormat.java':[
-43,
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/CompressedContentFormat.java": [
+43
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java": [
 168,
-249,
-],
+249
+]
 }

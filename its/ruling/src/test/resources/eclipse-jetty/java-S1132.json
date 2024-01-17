@@ -1,41 +1,41 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/ServletPathSpec.java':[
-280,
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/ServletPathSpec.java": [
+280
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
 664,
 678,
-692,
+692
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
 679,
-681,
+681
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java':[
-743,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
+743
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java": [
 96,
-112,
+112
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java": [
 158,
-164,
+164
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java':[
-625,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java": [
+625
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java':[
-56,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java": [
+56
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarResource.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarResource.java": [
 183,
-249,
+249
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java':[
-286,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java": [
+286
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
 506,
 510,
 517,
@@ -45,16 +45,16 @@
 537,
 577,
 597,
-617,
+617
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java':[
-92,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java": [
+92
 ],
-'org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java':[
+"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
 1084,
-1095,
+1095
 ],
-'org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java':[
-524,
-],
+"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
+524
+]
 }

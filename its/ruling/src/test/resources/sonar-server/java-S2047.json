@@ -1,8 +1,8 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/monitoring/DatabaseMonitorMBean.java':[
-65,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/monitoring/DatabaseMonitorMBean.java": [
+65
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/monitoring/SonarQubeMonitor.java':[
-103,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/monitoring/SonarQubeMonitor.java": [
+103
 ],
 }

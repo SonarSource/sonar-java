@@ -1,20 +1,20 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java':[
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java": [
 85,
-101,
+101
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/MemoryUtils.java':[
-47,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/MemoryUtils.java": [
+47
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ProcessorUtils.java':[
-42,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ProcessorUtils.java": [
+42
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java": [
 671,
-696,
+696
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
 719,
-745,
-],
+745
+]
 }

@@ -1,20 +1,20 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/ProjectMeasuresQueryFactory.java':[
-129,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/ProjectMeasuresQueryFactory.java": [
+129
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/AssignAction.java':[
-153,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/AssignAction.java": [
+153
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/PermissionWsSupport.java':[
-110,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/PermissionWsSupport.java": [
+110
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/SetDefaultAction.java':[
-71,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/SetDefaultAction.java": [
+71
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleCreator.java':[
-87,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleCreator.java": [
+87
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/AddUserAction.java':[
-102,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/AddUserAction.java": [
+102
 ],
 }

@@ -1,8 +1,8 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
+"com.google.guava:guava:src/com/google/common/cache/Striped64.java": [
 200,
 229,
 256,
-271,
+271
 ],
 }

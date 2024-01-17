@@ -1,41 +1,41 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/Syntax.java':[
-29,
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/Syntax.java": [
+29
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HomeBaseWarning.java':[
-39,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HomeBaseWarning.java": [
+39
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/resource/HttpContentRangeWriter.java':[
-34,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/resource/HttpContentRangeWriter.java": [
+34
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java':[
-95,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java": [
+95
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java':[
-46,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java": [
+46
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java':[
-31,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java": [
+31
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Loader.java':[
-41,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Loader.java": [
+41
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ProcessorUtils.java':[
-27,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ProcessorUtils.java": [
+27
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java':[
-63,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java": [
+63
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/log/Log.java':[
-28,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/log/Log.java": [
+28
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java':[
-26,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java": [
+26
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateUtils.java':[
-30,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateUtils.java": [
+30
 ],
-'org.eclipse.jetty:jetty-project:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsMatchers.java':[
-25,
-],
+"org.eclipse.jetty:jetty-project:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsMatchers.java": [
+25
+]
 }

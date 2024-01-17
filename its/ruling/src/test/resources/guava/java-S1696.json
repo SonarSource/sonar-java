@@ -1,31 +1,31 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Predicates.java':[
-565,
+"com.google.guava:guava:src/com/google/common/base/Predicates.java": [
+565
 ],
-'com.google.guava:guava:src/com/google/common/collect/Collections2.java':[
+"com.google.guava:guava:src/com/google/common/collect/Collections2.java": [
 113,
-129,
+129
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingSortedMap.java':[
-143,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingSortedMap.java": [
+143
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingSortedSet.java':[
+"com.google.guava:guava:src/com/google/common/collect/ForwardingSortedSet.java": [
 124,
-153,
+153
 ],
-'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
 3441,
 3456,
-3471,
+3471
 ],
-'com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedSet.java':[
-121,
+"com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedSet.java": [
+121
 ],
-'com.google.guava:guava:src/com/google/common/collect/Sets.java':[
-1394,
+"com.google.guava:guava:src/com/google/common/collect/Sets.java": [
+1394
 ],
-'com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java':[
+"com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java": [
 239,
-283,
+283
 ],
 }

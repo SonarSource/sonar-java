@@ -1,29 +1,29 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HomeBaseWarning.java':[
-72,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HomeBaseWarning.java": [
+72
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java": [
 675,
 677,
 822,
 824,
 1009,
-1011,
+1011
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java':[
-656,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
+656
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java':[
-142,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+142
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java':[
-246,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java": [
+246
 ],
-'org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java':[
-486,
+"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+486
 ],
-'org.eclipse.jetty:jetty-project:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java':[
+"org.eclipse.jetty:jetty-project:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java": [
 557,
-598,
-],
+598
+]
 }

@@ -1,22 +1,22 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/ResultTest.java':[
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/ResultTest.java": [
 79,
-97,
+97
 ],
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/index/PermissionIndexerDaoTest.java':[
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/index/PermissionIndexerDaoTest.java": [
 102,
 109,
 136,
 143,
-232,
+232
 ],
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualitygate/ws/CreateActionTest.java':[
-66,
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualitygate/ws/CreateActionTest.java": [
+66
 ],
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java':[
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java": [
 1107,
 1108,
 1142,
-1143,
+1143
 ],
 }

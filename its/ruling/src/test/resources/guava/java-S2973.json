@@ -1,20 +1,20 @@
 {
-'com.google.guava:guava:src/com/google/common/base/CharMatcher.java':[
-1347,
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
+1347
 ],
-'com.google.guava:guava:src/com/google/common/base/Stopwatch.java':[
-246,
+"com.google.guava:guava:src/com/google/common/base/Stopwatch.java": [
+246
 ],
-'com.google.guava:guava:src/com/google/common/collect/Cut.java':[
+"com.google.guava:guava:src/com/google/common/collect/Cut.java": [
 158,
 192,
 257,
-277,
+277
 ],
-'com.google.guava:guava:src/com/google/common/collect/GeneralRange.java':[
-281,
+"com.google.guava:guava:src/com/google/common/collect/GeneralRange.java": [
+281
 ],
-'com.google.guava:guava:src/com/google/common/net/InternetDomainName.java':[
-80,
+"com.google.guava:guava:src/com/google/common/net/InternetDomainName.java": [
+80
 ],
 }

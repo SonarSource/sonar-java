@@ -1,66 +1,66 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnector.java':[
-169,
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnector.java": [
+169
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java": [
 91,
-256,
+256
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConfiguration.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConfiguration.java": [
 268,
 291,
-314,
+314
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/LowResourceMonitor.java':[
-93,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/LowResourceMonitor.java": [
+93
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java':[
-192,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
+192
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java": [
 462,
-481,
+481
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java':[
-292,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+292
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java": [
 207,
-220,
+220
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java':[
-594,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
+594
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/StatisticsHandler.java':[
-283,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/StatisticsHandler.java": [
+283
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
 512,
-576,
+576
 ],
-'org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerConfiguration.java':[
-64,
+"org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerConfiguration.java": [
+64
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java": [
 601,
-617,
+617
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
 431,
 491,
-506,
+506
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java':[
-77,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+77
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java':[
-318,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java": [
+318
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java':[
-193,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java": [
+193
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java": [
 2113,
-2132,
-],
+2132
+]
 }

@@ -1,5 +1,5 @@
 {
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java':[
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java": [
 63,
 99,
 110,
@@ -30,18 +30,18 @@
 416,
 425,
 435,
-444,
+444
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422TestCase.java':[
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422TestCase.java": [
 51,
 64,
-71,
+71
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422bTestCase.java':[
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422bTestCase.java": [
 32,
-40,
+40
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java':[
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java": [
 51,
 57,
 63,
@@ -50,21 +50,21 @@
 80,
 93,
 100,
-110,
+110
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira493TestCase.java':[
-33,
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira493TestCase.java": [
+33
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira509TestCase.java':[
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira509TestCase.java": [
 43,
-54,
+54
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/MemoryTestCase.java':[
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/MemoryTestCase.java": [
 38,
 79,
-169,
+169
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java':[
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
 57,
 104,
 158,
@@ -72,6 +72,6 @@
 254,
 301,
 354,
-402,
+402
 ],
 }

@@ -1,14 +1,14 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/FilterParser.java':[
-45,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/FilterParser.java": [
+45
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/debt/DebtModelXMLExporter.java':[
-102,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/debt/DebtModelXMLExporter.java": [
+102
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/UrlSettings.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/UrlSettings.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/MetricKeyValidator.java':[
-50,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/MetricKeyValidator.java": [
+50
 ],
 }

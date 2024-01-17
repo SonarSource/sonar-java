@@ -1,56 +1,56 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java':[
-208,
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java": [
+208
 ],
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java':[
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java": [
 201,
-243,
+243
 ],
-'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java':[
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
 605,
 982,
-1191,
+1191
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
 388,
-422,
+422
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/InclusiveByteRange.java':[
-156,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/InclusiveByteRange.java": [
+156
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java':[
-739,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
+739
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java':[
-427,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
+427
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java':[
-337,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+337
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java':[
-1081,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+1081
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java':[
-852,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
+852
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
 900,
 1191,
 1195,
-1245,
+1245
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/AbstractLifeCycle.java':[
-94,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/AbstractLifeCycle.java": [
+94
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java':[
-265,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java": [
+265
 ],
-'org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java':[
+"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
 581,
-591,
+591
 ],
-'org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java':[
+"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
 99,
-115,
-],
+115
+]
 }

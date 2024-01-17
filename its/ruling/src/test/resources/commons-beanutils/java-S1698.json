@@ -1,7 +1,7 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WeakFastHashMap.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WeakFastHashMap.java": [
 670,
 678,
-692,
+692
 ],
 }

@@ -1,14 +1,14 @@
 {
-'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
-356,
+"com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
+356
 ],
-'com.google.guava:guava:src/com/google/common/collect/Cut.java':[
-66,
+"com.google.guava:guava:src/com/google/common/collect/Cut.java": [
+66
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
-2364,
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+2364
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
-151,
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+151
 ],
 }

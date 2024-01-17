@@ -1,5 +1,5 @@
 {
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java':[
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java": [
 58,
 64,
 70,
@@ -7,12 +7,12 @@
 81,
 94,
 101,
-111,
+111
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira509TestCase.java':[
-55,
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira509TestCase.java": [
+55
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java':[
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
 58,
 105,
 159,
@@ -20,6 +20,6 @@
 255,
 302,
 355,
-403,
+403
 ],
 }

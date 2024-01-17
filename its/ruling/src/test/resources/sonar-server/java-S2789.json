@@ -1,9 +1,9 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/QualityGateHolderImpl.java':[
-32,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/QualityGateHolderImpl.java": [
+32
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/BuildComponentTreeStep.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/BuildComponentTreeStep.java": [
 94,
-103,
+103
 ],
 }

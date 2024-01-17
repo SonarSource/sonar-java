@@ -1,83 +1,83 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/AverageFormula.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/AverageFormula.java": [
 52,
 104,
-105,
+105
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/coverage/CoverageUtils.java':[
-53,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/coverage/CoverageUtils.java": [
+53
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/coverage/CoverageVariationFormula.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/coverage/CoverageVariationFormula.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortAggregator.java':[
-160,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortAggregator.java": [
+160
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/BestValueOptimization.java':[
-71,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/BestValueOptimization.java": [
+71
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/Measure.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/Measure.java": [
 128,
 128,
-242,
+242
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureDtoToMeasure.java':[
-87,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureDtoToMeasure.java": [
+87
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureToMeasureDto.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureToMeasureDto.java": [
 92,
-92,
+92
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java':[
-124,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java": [
+124
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitor.java':[
-137,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitor.java": [
+137
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CommentMeasuresStep.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CommentMeasuresStep.java": [
 113,
 114,
 155,
-157,
+157
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComputeMeasureVariationsStep.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComputeMeasureVariationsStep.java": [
 129,
 144,
-144,
+144
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/DuplicationMeasuresStep.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/DuplicationMeasuresStep.java": [
 212,
-212,
+212
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewSizeMeasuresStep.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewSizeMeasuresStep.java": [
 238,
 239,
-239,
+239
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java": [
 115,
-116,
+116
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexingResult.java':[
-69,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexingResult.java": [
+69
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchFeatureRepertoire.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchFeatureRepertoire.java": [
 52,
 63,
 76,
 87,
 98,
 108,
-118,
+118
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureJsonWriter.java':[
-92,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureJsonWriter.java": [
+92
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureValidator.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureValidator.java": [
 93,
-93,
+93
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndex.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndex.java": [
 112,
 112,
 112,
@@ -94,25 +94,25 @@
 270,
 271,
 272,
-273,
+273
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectsTextSearchQueryFactory.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectsTextSearchQueryFactory.java": [
 63,
 70,
 78,
 89,
-96,
+96
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/MeasureValueFormatter.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/MeasureValueFormatter.java": [
 28,
-89,
+89
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndex.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndex.java": [
 194,
 195,
 196,
 200,
 201,
-202,
+202
 ],
 }

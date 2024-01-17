@@ -1,96 +1,96 @@
 {
-'jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java':[
+"jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java": [
 62,
-148,
+148
 ],
-'jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/bean/LifecycleInterceptor.java':[
-42,
+"jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/bean/LifecycleInterceptor.java": [
+42
 ],
-'jboss-ejb3-tutorial:consumer/src/org/jboss/tutorial/consumer/client/Client.java':[
-62,
+"jboss-ejb3-tutorial:consumer/src/org/jboss/tutorial/consumer/client/Client.java": [
+62
 ],
-'jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/client/Client.java':[
-62,
+"jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/client/Client.java": [
+62
 ],
-'jboss-ejb3-tutorial:dependency/src/org/jboss/tutorial/dependency/client/Client.java':[
-46,
+"jboss-ejb3-tutorial:dependency/src/org/jboss/tutorial/dependency/client/Client.java": [
+46
 ],
-'jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/bean/ShoppingCartBean.java':[
-58,
+"jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/bean/ShoppingCartBean.java": [
+58
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java": [
 61,
-65,
+65
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java": [
 81,
 95,
-99,
+99
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsInterceptor.java':[
-42,
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsInterceptor.java": [
+42
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsMDB.java':[
-52,
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsMDB.java": [
+52
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/DefaultInterceptor.java':[
-42,
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/DefaultInterceptor.java": [
+42
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/EmailSystemBean.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/EmailSystemBean.java": [
 124,
 128,
-135,
+135
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/OtherInterceptor.java':[
-37,
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/OtherInterceptor.java": [
+37
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/TracingInterceptor.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/TracingInterceptor.java": [
 38,
-42,
+42
 ],
-'jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/bean/ShoppingCartBean.java':[
-39,
+"jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/bean/ShoppingCartBean.java": [
+39
 ],
-'jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java':[
+"jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java": [
 67,
 100,
 114,
-137,
+137
 ],
-'jboss-ejb3-tutorial:jndibinding/src/org/jboss/tutorial/jndibinding/bean/CustomerBean.java':[
+"jboss-ejb3-tutorial:jndibinding/src/org/jboss/tutorial/jndibinding/bean/CustomerBean.java": [
 65,
-81,
+81
 ],
-'jboss-ejb3-tutorial:mdb/src/org/jboss/tutorial/mdb/client/Client.java':[
-60,
+"jboss-ejb3-tutorial:mdb/src/org/jboss/tutorial/mdb/client/Client.java": [
+60
 ],
-'jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/client/Client.java':[
-67,
+"jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/client/Client.java": [
+67
 ],
-'jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java':[
-46,
+"jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java": [
+46
 ],
-'jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java':[
-67,
+"jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java": [
+67
 ],
-'jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java':[
+"jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java": [
 53,
-75,
+75
 ],
-'jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java':[
+"jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java": [
 54,
-76,
+76
 ],
-'jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/bean/ShoppingCartBean.java':[
-45,
+"jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/bean/ShoppingCartBean.java": [
+45
 ],
-'jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/client/Client.java':[
-65,
+"jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/client/Client.java": [
+65
 ],
-'jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/bean/ShoppingCartBean.java':[
-39,
+"jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/bean/ShoppingCartBean.java": [
+39
 ],
-'jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/client/Client.java':[
-70,
+"jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/client/Client.java": [
+70
 ],
 }

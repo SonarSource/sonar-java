@@ -1,8 +1,8 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java':[
-697,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java": [
+697
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/expression/DefaultResolver.java':[
-67,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/expression/DefaultResolver.java": [
+67
 ],
 }

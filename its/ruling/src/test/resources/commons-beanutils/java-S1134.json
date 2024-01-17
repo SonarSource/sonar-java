@@ -1,18 +1,18 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaClass.java':[
-190,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaClass.java": [
+190
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
 213,
-425,
+425
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaClass.java':[
-60,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaClass.java": [
+60
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java':[
-247,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java": [
+247
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
 345,
 702,
 722,
@@ -23,9 +23,9 @@
 1166,
 1182,
 1280,
-1296,
+1296
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java':[
-191,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
+191
 ],
 }
