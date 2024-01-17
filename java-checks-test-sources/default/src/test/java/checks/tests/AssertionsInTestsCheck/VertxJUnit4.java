@@ -2,12 +2,13 @@ package checks.tests.AssertionsInTestsCheck;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.TestSuite;
 import org.junit.Test;
 
-class A {
+class VertxJunit4 {
   Vertx vertx;
   int port;
   String requestURI;
@@ -129,11 +130,13 @@ class A {
 
     suite.test("user_save", context -> {
 
-      client.getNow(port, host, requestURI, resp -> {
-        resp.bodyHandler(body -> {
+      client.request(HttpMethod.GET, port, host, requestURI, req -> {
+        req.result().send(resp -> {
+          resp.result().bodyHandler(body -> {
 
-          context.assertNotEquals("created", body.toString()); // assertion
-          client.close();
+            context.assertNotEquals("created", body.toString()); // assertion
+            client.close();
+          });
         });
       });
 
@@ -146,11 +149,13 @@ class A {
     HttpClient client = vertx.createHttpClient();
     Async async = contextVertx.async();
 
-    client.getNow(port, "localhost", requestURI, resp -> {
-      resp.bodyHandler(body -> {
-        contextVertx.assertEquals(urlString, body.toString()); // assertion
-        client.close();
-        async.complete();
+    client.request(HttpMethod.GET, port, "localhost", requestURI, req -> {
+      req.result().send(resp -> {
+        resp.result().bodyHandler(body -> {
+          contextVertx.assertEquals(urlString, body.toString()); // assertion
+          client.close();
+          async.complete();
+        });
       });
     });
 

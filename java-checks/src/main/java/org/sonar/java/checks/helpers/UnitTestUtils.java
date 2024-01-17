@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -39,8 +40,11 @@ import static java.util.Arrays.asList;
 public final class UnitTestUtils {
 
   private static final String ORG_JUNIT_TEST = "org.junit.Test";
-  public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile("(assert|verify|fail|should|check|expect|validate|andExpect).*");
-  public static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
+  public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile(
+      "(assert|verify|fail|should|check|expect|validate|andExpect).*" +
+      "|laxCheckpoint|succeedingThenComplete" // Eclipse Vert.x with JUnit 5 (VertxTestContext)
+    );
+  private static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
 
   public static final MethodMatchers ASSERTION_INVOCATION_MATCHERS = MethodMatchers.or(
     // fest 1.x / 2.X
@@ -67,13 +71,16 @@ public final class UnitTestUtils {
 MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpect", "andExpectAll").withAnyParameters().build(),
     // JMockit
     MethodMatchers.create().ofTypes("mockit.Verifications").constructor().withAnyParameters().build(),
-    // Eclipse Vert.x
+    // Eclipse Vert.x with JUnit 4
     MethodMatchers.create().ofTypes("io.vertx.ext.unit.TestContext").name(name -> name.startsWith("asyncAssert")).addWithoutParametersMatcher().build(),
     // Awaitility
     MethodMatchers.create().ofTypes("org.awaitility.core.ConditionFactory").name(name -> name.startsWith("until")).withAnyParameters().build());
 
   public static final MethodMatchers REACTIVE_X_TEST_METHODS =
     MethodMatchers.create().ofSubTypes("rx.Observable", "io.reactivex.Observable").names("test").withAnyParameters().build();
+
+  private static final MethodMatchers VERTX_TEST_CONTEXT_METHODS =
+    MethodMatchers.create().ofTypes("io.vertx.junit5.VertxTestContext").anyName().withAnyParameters().build();
 
   public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.or(
     MethodMatchers.create().ofTypes(
@@ -204,5 +211,19 @@ MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActi
       .filter(member -> member.is(Tree.Kind.CLASS))
       .map(ClassTree.class::cast)
       .anyMatch(UnitTestUtils::hasNestedAnnotation);
+  }
+
+  public static boolean matchesAssertionMethodPattern(IdentifierTree method, Symbol methodSymbol) {
+    String methodName = method.name();
+    if (TEST_METHODS_PATTERN.matcher(methodName).matches()) {
+      return !REACTIVE_X_TEST_METHODS.matches(methodSymbol);
+    }
+    if (ASSERTION_METHODS_PATTERN.matcher(methodName).matches()) {
+      if ("verify".equals(methodName) || "failing".equals(methodName)) {
+        return !VERTX_TEST_CONTEXT_METHODS.matches(methodSymbol);
+      }
+      return true;
+    }
+    return false;
   }
 }

@@ -28,9 +28,7 @@ import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
 import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTION_INVOCATION_MATCHERS;
-import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTION_METHODS_PATTERN;
-import static org.sonar.java.checks.helpers.UnitTestUtils.REACTIVE_X_TEST_METHODS;
-import static org.sonar.java.checks.helpers.UnitTestUtils.TEST_METHODS_PATTERN;
+import static org.sonar.java.checks.helpers.UnitTestUtils.matchesAssertionMethodPattern;
 import static org.sonar.java.model.ExpressionUtils.methodName;
 
 public abstract class AbstractAssertionVisitor extends BaseTreeVisitor {
@@ -78,12 +76,7 @@ public abstract class AbstractAssertionVisitor extends BaseTreeVisitor {
     if (method == null) {
       return false;
     }
-
-    String methodName = method.name();
-    if (TEST_METHODS_PATTERN.matcher(methodName).matches()) {
-      return !REACTIVE_X_TEST_METHODS.matches(methodSymbol);
-    }
-    return ASSERTION_METHODS_PATTERN.matcher(methodName).matches();
+    return matchesAssertionMethodPattern(method, methodSymbol);
   }
 
 }
