@@ -1,57 +1,57 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/UpdateConflictResolver.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/UpdateConflictResolver.java": [
 56,
 60,
 64,
 68,
-76,
+76
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommentDensityRule.java':[
-66,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommentDensityRule.java": [
+66
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluator.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluator.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexDefinitionHash.java':[
-86,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexDefinitionHash.java": [
+86
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/AbstractChangeTagsAction.java':[
-63,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/AbstractChangeTagsAction.java": [
+63
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueStorage.java':[
-155,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueStorage.java": [
+155
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java": [
 421,
-433,
+433
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchResponseFormat.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchResponseFormat.java": [
 122,
-354,
+354
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureJsonWriter.java':[
-85,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureJsonWriter.java": [
+85
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/PlatformServletContextListener.java':[
-56,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/PlatformServletContextListener.java": [
+56
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/SearchData.java':[
-50,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/SearchData.java": [
+50
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileCopier.java':[
-80,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileCopier.java": [
+80
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java": [
 199,
 279,
 307,
-375,
+375
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/DecorationDataHolder.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/DecorationDataHolder.java": [
 116,
-125,
+125
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/HtmlTextDecorator.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/HtmlTextDecorator.java": [
 132,
 146,
 150,
@@ -60,12 +60,12 @@
 175,
 181,
 214,
-218,
+218
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/startup/RegisterMetrics.java':[
-119,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/startup/RegisterMetrics.java": [
+119
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/CreateAction.java':[
-105,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/CreateAction.java": [
+105
 ],
 }

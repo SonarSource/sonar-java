@@ -1,19 +1,19 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
-4276,
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+4276
 ],
-'com.google.guava:guava:src/com/google/common/collect/AbstractMapEntry.java':[
+"com.google.guava:guava:src/com/google/common/collect/AbstractMapEntry.java": [
 35,
-38,
+38
 ],
-'com.google.guava:guava:src/com/google/common/collect/AbstractRangeSet.java':[
+"com.google.guava:guava:src/com/google/common/collect/AbstractRangeSet.java": [
 32,
-79,
+79
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
-3608,
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+3608
 ],
-'com.google.guava:guava:src/com/google/common/hash/Hashing.java':[
-320,
+"com.google.guava:guava:src/com/google/common/hash/Hashing.java": [
+320
 ],
 }

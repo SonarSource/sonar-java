@@ -1,22 +1,22 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
 2524,
-2528,
+2528
 ],
-'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
-319,
+"com.google.guava:guava:src/com/google/common/cache/Striped64.java": [
+319
 ],
-'com.google.guava:guava:src/com/google/common/collect/Cut.java':[
-100,
+"com.google.guava:guava:src/com/google/common/collect/Cut.java": [
+100
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 2237,
-2241,
+2241
 ],
-'com.google.guava:guava:src/com/google/common/reflect/ClassPath.java':[
-345,
+"com.google.guava:guava:src/com/google/common/reflect/ClassPath.java": [
+345
 ],
-'com.google.guava:guava:src/com/google/common/reflect/TypeResolver.java':[
-366,
+"com.google.guava:guava:src/com/google/common/reflect/TypeResolver.java": [
+366
 ],
 }

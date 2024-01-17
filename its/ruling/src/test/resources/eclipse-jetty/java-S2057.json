@@ -1,26 +1,26 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslHandshakeListener.java':[
-57,
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslHandshakeListener.java": [
+57
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayUtil.java':[
-30,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayUtil.java": [
+30
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/AtomicBiInteger.java':[
-26,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/AtomicBiInteger.java": [
+26
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java':[
-1433,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+1433
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java':[
-98,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
+98
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java':[
-29,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java": [
+29
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java':[
-34,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java": [
+34
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/AutoLock.java':[
-99,
-],
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/AutoLock.java": [
+99
+]
 }

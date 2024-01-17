@@ -1,18 +1,18 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/BestValueOptimization.java':[
-60,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/BestValueOptimization.java": [
+60
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistComponentsStep.java':[
-409,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistComponentsStep.java": [
+409
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleUpdate.java':[
-222,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleUpdate.java": [
+222
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/HtmlTextDecorator.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/HtmlTextDecorator.java": [
 170,
-176,
+176
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java':[
-251,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java": [
+251
 ],
 }

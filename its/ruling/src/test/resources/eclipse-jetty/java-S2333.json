@@ -1,28 +1,28 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpContent.java':[
-80,
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpContent.java": [
+80
 ],
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpStatus.java':[
-179,
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpStatus.java": [
+179
 ],
-'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java':[
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java": [
 49,
 58,
 84,
 84,
 154,
-154,
+154
 ],
-'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java':[
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java": [
 33,
 33,
 33,
 41,
 43,
 73,
-73,
+73
 ],
-'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java':[
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java": [
 42,
 49,
 55,
@@ -43,24 +43,24 @@
 157,
 159,
 161,
-161,
+161
 ],
-'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/EndPoint.java':[
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/EndPoint.java": [
 99,
-300,
+300
 ],
-'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/ALPNProcessor.java':[
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/ALPNProcessor.java": [
 32,
 42,
 54,
 61,
-68,
+68
 ],
-'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslHandshakeListener.java':[
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslHandshakeListener.java": [
 57,
-57,
+57
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java": [
 37,
 37,
 48,
@@ -87,16 +87,16 @@
 218,
 226,
 226,
-226,
+226
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ConnectionFactory.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ConnectionFactory.java": [
 54,
 59,
 68,
 70,
-87,
+87
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java": [
 46,
 51,
 56,
@@ -109,24 +109,24 @@
 84,
 89,
 94,
-104,
+104
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Handler.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Handler.java": [
 69,
 72,
 75,
-79,
+79
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HandlerContainer.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HandlerContainer.java": [
 39,
 45,
 51,
-58,
+58
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConfiguration.java':[
-98,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConfiguration.java": [
+98
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java": [
 40,
 47,
 54,
@@ -137,18 +137,18 @@
 99,
 106,
 111,
-116,
+116
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/UserIdentity.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/UserIdentity.java": [
 89,
 93,
 93,
-93,
+93
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java':[
-3025,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+3025
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java": [
 56,
 56,
 56,
@@ -157,26 +157,26 @@
 57,
 58,
 58,
-58,
+58
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java": [
 47,
 56,
-65,
+65
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStore.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStore.java": [
 42,
 54,
 61,
-70,
+70
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java':[
-1351,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
+1351
 ],
-'org.eclipse.jetty:jetty-project:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java':[
-1171,
+"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java": [
+1171
 ],
-'org.eclipse.jetty:jetty-project:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java':[
+"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java": [
 1526,
 1528,
 1530,
@@ -187,38 +187,38 @@
 1554,
 1568,
 1570,
-1583,
+1583
 ],
-'org.eclipse.jetty:jetty-project:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java':[
-380,
+"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java": [
+380
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Callback.java':[
-38,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Callback.java": [
+38
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
 512,
-522,
+522
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Retainable.java':[
-23,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Retainable.java": [
+23
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
 262,
 267,
 269,
 271,
 276,
 284,
-286,
+286
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java": [
 51,
 57,
 57,
 108,
-108,
+108
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java": [
 39,
 47,
 49,
@@ -233,42 +233,42 @@
 127,
 129,
 131,
-133,
+133
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Uptime.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Uptime.java": [
 31,
-33,
+33
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/Dumpable.java':[
-282,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/Dumpable.java": [
+282
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SniX509ExtendedKeyManager.java':[
-251,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SniX509ExtendedKeyManager.java": [
+251
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ExecutionStrategy.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ExecutionStrategy.java": [
 39,
 48,
-58,
+58
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Invocable.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Invocable.java": [
 44,
 52,
 63,
-98,
+98
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Sweeper.java':[
-192,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Sweeper.java": [
+192
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPool.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPool.java": [
 40,
 46,
 52,
 58,
-64,
+64
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/TryExecutor.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/TryExecutor.java": [
 44,
 51,
-51,
-],
+51
+]
 }

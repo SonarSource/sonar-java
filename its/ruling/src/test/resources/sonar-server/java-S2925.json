@@ -1,9 +1,9 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/RecoveryIndexerTest.java':[
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/RecoveryIndexerTest.java": [
 118,
-215,
+215
 ],
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/db/migration/DatabaseMigrationImplConcurrentAccessTest.java':[
-60,
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/db/migration/DatabaseMigrationImplConcurrentAccessTest.java": [
+60
 ],
 }

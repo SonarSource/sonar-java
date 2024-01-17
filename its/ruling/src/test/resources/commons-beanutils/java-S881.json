@@ -1,11 +1,11 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java':[
-350,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java": [
+350
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java':[
-260,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java": [
+260
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/RowSetDynaClass.java':[
-287,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/RowSetDynaClass.java": [
+287
 ],
 }

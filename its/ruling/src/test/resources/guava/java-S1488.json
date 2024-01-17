@@ -1,8 +1,8 @@
 {
-'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
-394,
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+394
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java':[
-698,
+"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+698
 ],
 }

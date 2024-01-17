@@ -1,20 +1,20 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/ServerProcessLogging.java':[
-134,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/ServerProcessLogging.java": [
+134
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/TomcatAccessLog.java':[
-62,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/TomcatAccessLog.java": [
+62
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/TomcatStartupLogs.java':[
-29,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/TomcatStartupLogs.java": [
+29
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsClient.java':[
-77,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsClient.java": [
+77
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/RootFilter.java':[
-49,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/RootFilter.java": [
+49
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/SecurityRealmFactory.java':[
-81,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/SecurityRealmFactory.java": [
+81
 ],
 }

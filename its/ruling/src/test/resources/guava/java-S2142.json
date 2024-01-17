@@ -1,8 +1,8 @@
 {
-'com.google.guava:guava:src/com/google/common/base/internal/Finalizer.java':[
-132,
+"com.google.guava:guava:src/com/google/common/base/internal/Finalizer.java": [
+132
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java':[
-215,
+"com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
+215
 ],
 }

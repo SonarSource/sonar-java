@@ -1,15 +1,15 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartFormInputStreamTest.java':[
-945,
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartFormInputStreamTest.java": [
+945
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java": [
 102,
-692,
+692
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java':[
-1263,
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java": [
+1263
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/BlockingArrayQueueTest.java':[
-192,
-],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/BlockingArrayQueueTest.java": [
+192
+]
 }

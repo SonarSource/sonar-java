@@ -1,77 +1,77 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Stopwatch.java':[
-19,
+"com.google.guava:guava:src/com/google/common/base/Stopwatch.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
-19,
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/collect/Collections2.java':[
-19,
+"com.google.guava:guava:src/com/google/common/collect/Collections2.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableList.java':[
-19,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableList.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableRangeSet.java':[
-16,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableRangeSet.java": [
+16
 ],
-'com.google.guava:guava:src/com/google/common/collect/Iterators.java':[
-19,
+"com.google.guava:guava:src/com/google/common/collect/Iterators.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/collect/Lists.java':[
-19,
+"com.google.guava:guava:src/com/google/common/collect/Lists.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
-19,
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java':[
-19,
+"com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedSet.java':[
-19,
+"com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedSet.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/collect/StandardTable.java':[
-19,
+"com.google.guava:guava:src/com/google/common/collect/StandardTable.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/collect/TreeRangeMap.java':[
-19,
+"com.google.guava:guava:src/com/google/common/collect/TreeRangeMap.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/io/BaseEncoding.java':[
-17,
+"com.google.guava:guava:src/com/google/common/io/BaseEncoding.java": [
+17
 ],
-'com.google.guava:guava:src/com/google/common/math/BigIntegerMath.java':[
-19,
+"com.google.guava:guava:src/com/google/common/math/BigIntegerMath.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/math/DoubleMath.java':[
-19,
+"com.google.guava:guava:src/com/google/common/math/DoubleMath.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/math/DoubleUtils.java':[
-19,
+"com.google.guava:guava:src/com/google/common/math/DoubleUtils.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/math/IntMath.java':[
-19,
+"com.google.guava:guava:src/com/google/common/math/IntMath.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/math/LongMath.java':[
-19,
+"com.google.guava:guava:src/com/google/common/math/LongMath.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/net/MediaType.java':[
-19,
+"com.google.guava:guava:src/com/google/common/net/MediaType.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Doubles.java':[
-19,
+"com.google.guava:guava:src/com/google/common/primitives/Doubles.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Floats.java':[
-19,
+"com.google.guava:guava:src/com/google/common/primitives/Floats.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/primitives/UnsignedInteger.java':[
-17,
+"com.google.guava:guava:src/com/google/common/primitives/UnsignedInteger.java": [
+17
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractService.java':[
-19,
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractService.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/RateLimiter.java':[
-19,
+"com.google.guava:guava:src/com/google/common/util/concurrent/RateLimiter.java": [
+19
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java':[
-18,
+"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+18
 ],
 }

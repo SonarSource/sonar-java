@@ -1,17 +1,17 @@
 {
-'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/EntityTestBean.java':[
-43,
+"jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/EntityTestBean.java": [
+43
 ],
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession1Bean.java':[
-37,
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession1Bean.java": [
+37
 ],
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession2Bean.java':[
-34,
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession2Bean.java": [
+34
 ],
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session1Bean.java':[
-47,
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session1Bean.java": [
+47
 ],
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session2Bean.java':[
-41,
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session2Bean.java": [
+41
 ],
 }

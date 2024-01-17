@@ -1,14 +1,14 @@
 {
-'com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java':[
-446,
+"com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java": [
+446
 ],
-'com.google.guava:guava:src/com/google/common/reflect/ClassPath.java':[
-276,
+"com.google.guava:guava:src/com/google/common/reflect/ClassPath.java": [
+276
 ],
-'com.google.guava:guava:src/com/google/common/reflect/Reflection.java':[
-69,
+"com.google.guava:guava:src/com/google/common/reflect/Reflection.java": [
+69
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/FuturesGetChecked.java':[
-190,
+"com.google.guava:guava:src/com/google/common/util/concurrent/FuturesGetChecked.java": [
+190
 ],
 }

@@ -1,9 +1,9 @@
 {
-'jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENC.java':[
-24,
+"jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENC.java": [
+24
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceThreeManagement.java':[
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceThreeManagement.java": [
 24,
-25,
+25
 ],
 }

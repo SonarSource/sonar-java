@@ -1,9 +1,9 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java':[
-1012,
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java": [
+1012
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/FileDestroyable.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/FileDestroyable.java": [
 53,
-71,
-],
+71
+]
 }

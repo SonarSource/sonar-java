@@ -1,28 +1,28 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPredicate.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPredicate.java": [
 71,
 75,
 79,
-83,
+83
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueChangeClosure.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueChangeClosure.java": [
 166,
 178,
 185,
-192,
+192
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicate.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicate.java": [
 203,
 215,
 222,
-229,
+229
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanToPropertyValueTransformer.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanToPropertyValueTransformer.java": [
 155,
 167,
-174,
+174
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java':[
-391,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
+391
 ],
 }

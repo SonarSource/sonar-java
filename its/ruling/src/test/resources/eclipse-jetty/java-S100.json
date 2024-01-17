@@ -1,9 +1,9 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/UnixCrypt.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/UnixCrypt.java": [
 340,
 349,
 395,
 415,
-470,
-],
+470
+]
 }

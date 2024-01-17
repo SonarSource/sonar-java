@@ -1,30 +1,30 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java':[
-1311,
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java": [
+1311
 ],
-'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java':[
-56,
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java": [
+56
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
 587,
 589,
 599,
-601,
+601
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
 122,
 415,
 417,
 451,
 453,
 467,
-468,
+468
 ],
-'org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerConfiguration.java':[
+"org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerConfiguration.java": [
 125,
-126,
+126
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java':[
-73,
-],
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java": [
+73
+]
 }

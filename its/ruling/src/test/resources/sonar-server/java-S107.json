@@ -1,30 +1,30 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueQueryFactory.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueQueryFactory.java": [
 205,
-243,
+243
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/SearchAction.java':[
-128,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/SearchAction.java": [
+128
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/OrganizationCreationImpl.java':[
-76,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/OrganizationCreationImpl.java": [
+76
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ChangelogLoader.java':[
-100,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ChangelogLoader.java": [
+100
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/CreateAction.java':[
-64,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/CreateAction.java": [
+64
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java':[
-82,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java": [
+82
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/test/ws/ListAction.java':[
-196,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/test/ws/ListAction.java": [
+196
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/ws/GlobalAction.java':[
-69,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/ws/GlobalAction.java": [
+69
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java':[
-83,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java": [
+83
 ],
 }

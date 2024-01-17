@@ -1,9 +1,9 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSVParser.java':[
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSVParser.java": [
 63,
 101,
 289,
 298,
-310,
+310
 ],
 }

@@ -1,11 +1,11 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
-2331,
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+2331
 ],
-'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
-178,
+"com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
+178
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
-137,
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+137
 ],
 }
