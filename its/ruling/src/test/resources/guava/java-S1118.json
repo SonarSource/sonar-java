@@ -1,17 +1,17 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/LongAddables.java':[
-31,
+"com.google.guava:guava:src/com/google/common/cache/LongAddables.java": [
+31
 ],
-'com.google.guava:guava:src/com/google/common/collect/CollectPreconditions.java':[
-27,
+"com.google.guava:guava:src/com/google/common/collect/CollectPreconditions.java": [
+27
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableMultimap.java':[
-343,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableMultimap.java": [
+343
 ],
-'com.google.guava:guava:src/com/google/common/reflect/Types.java':[
-618,
+"com.google.guava:guava:src/com/google/common/reflect/Types.java": [
+618
 ],
-'com.google.guava:guava:src/com/google/thirdparty/publicsuffix/TrieParser.java':[
-30,
+"com.google.guava:guava:src/com/google/thirdparty/publicsuffix/TrieParser.java": [
+30
 ],
 }

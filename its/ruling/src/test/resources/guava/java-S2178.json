@@ -1,42 +1,42 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Throwables.java':[
-264,
+"com.google.guava:guava:src/com/google/common/base/Throwables.java": [
+264
 ],
-'com.google.guava:guava:src/com/google/common/collect/GeneralRange.java':[
+"com.google.guava:guava:src/com/google/common/collect/GeneralRange.java": [
 134,
 162,
 162,
 171,
-171,
+171
 ],
-'com.google.guava:guava:src/com/google/common/math/DoubleMath.java':[
+"com.google.guava:guava:src/com/google/common/math/DoubleMath.java": [
 133,
 157,
 183,
 253,
-256,
+256
 ],
-'com.google.guava:guava:src/com/google/common/math/IntMath.java':[
+"com.google.guava:guava:src/com/google/common/math/IntMath.java": [
 63,
 323,
-481,
+481
 ],
-'com.google.guava:guava:src/com/google/common/math/LongMath.java':[
+"com.google.guava:guava:src/com/google/common/math/LongMath.java": [
 63,
 390,
 390,
 511,
 523,
 551,
-566,
+566
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Doubles.java':[
-110,
+"com.google.guava:guava:src/com/google/common/primitives/Doubles.java": [
+110
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Floats.java':[
-106,
+"com.google.guava:guava:src/com/google/common/primitives/Floats.java": [
+106
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
 353,
 376,
 400,
@@ -44,26 +44,26 @@
 451,
 486,
 505,
-788,
+788
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AggregateFuture.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/AggregateFuture.java": [
 65,
 184,
 184,
 184,
-243,
+243
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java": [
 762,
 762,
 763,
 1382,
-1382,
+1382
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java": [
 737,
 750,
 767,
-787,
+787
 ],
 }

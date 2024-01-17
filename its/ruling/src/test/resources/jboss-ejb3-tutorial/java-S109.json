@@ -1,22 +1,22 @@
 {
-'jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java':[
-132,
+"jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java": [
+132
 ],
-'jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/client/CachedEntityRun.java':[
-43,
+"jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/client/CachedEntityRun.java": [
+43
 ],
-'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/EntityTestBean.java':[
-53,
+"jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/EntityTestBean.java": [
+53
 ],
-'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/client/Client.java':[
-46,
+"jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/client/Client.java": [
+46
 ],
-'jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/client/Client.java':[
+"jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/client/Client.java": [
 45,
 45,
-47,
+47
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java": [
 38,
 41,
 43,
@@ -25,9 +25,9 @@
 51,
 53,
 58,
-63,
+63
 ],
-'jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java':[
+"jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java": [
 44,
 44,
 45,
@@ -35,26 +35,26 @@
 46,
 46,
 47,
-49,
+49
 ],
-'jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/EntityTestBean.java':[
-51,
+"jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/EntityTestBean.java": [
+51
 ],
-'jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/client/Client.java':[
-46,
+"jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/client/Client.java": [
+46
 ],
-'jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java':[
+"jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java": [
 73,
-73,
+73
 ],
-'jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/client/Client.java':[
+"jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/client/Client.java": [
 52,
-79,
+79
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java':[
-43,
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java": [
+43
 ],
-'jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java':[
+"jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java": [
 45,
 45,
 46,
@@ -62,15 +62,15 @@
 47,
 47,
 48,
-50,
+50
 ],
-'jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java':[
+"jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java": [
 73,
 73,
 89,
-89,
+89
 ],
-'jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java':[
+"jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java": [
 45,
 45,
 46,
@@ -78,9 +78,9 @@
 47,
 47,
 48,
-50,
+50
 ],
-'jboss-ejb3-tutorial:timer/src/org/jboss/tutorial/timer/client/Client.java':[
-35,
+"jboss-ejb3-tutorial:timer/src/org/jboss/tutorial/timer/client/Client.java": [
+35
 ],
 }

@@ -1,11 +1,11 @@
 {
-'com.google.guava:guava:src/com/google/common/io/Closeables.java':[
-73,
+"com.google.guava:guava:src/com/google/common/io/Closeables.java": [
+73
 ],
-'com.google.guava:guava:src/com/google/common/io/Flushables.java':[
-53,
+"com.google.guava:guava:src/com/google/common/io/Flushables.java": [
+53
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Booleans.java':[
-62,
+"com.google.guava:guava:src/com/google/common/primitives/Booleans.java": [
+62
 ],
 }

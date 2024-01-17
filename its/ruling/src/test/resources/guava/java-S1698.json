@@ -1,37 +1,37 @@
 {
-'com.google.guava:guava:src/com/google/common/collect/AbstractBiMap.java':[
-95,
+"com.google.guava:guava:src/com/google/common/collect/AbstractBiMap.java": [
+95
 ],
-'com.google.guava:guava:src/com/google/common/collect/Cut.java':[
+"com.google.guava:guava:src/com/google/common/collect/Cut.java": [
 73,
-76,
+76
 ],
-'com.google.guava:guava:src/com/google/common/collect/HashBiMap.java':[
+"com.google.guava:guava:src/com/google/common/collect/HashBiMap.java": [
 142,
 158,
-509,
+509
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
-281,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java": [
+281
 ],
-'com.google.guava:guava:src/com/google/common/collect/LinkedHashMultimap.java':[
-502,
+"com.google.guava:guava:src/com/google/common/collect/LinkedHashMultimap.java": [
+502
 ],
-'com.google.guava:guava:src/com/google/common/collect/LinkedListMultimap.java':[
+"com.google.guava:guava:src/com/google/common/collect/LinkedListMultimap.java": [
 364,
-533,
+533
 ],
-'com.google.guava:guava:src/com/google/common/collect/Range.java':[
+"com.google.guava:guava:src/com/google/common/collect/Range.java": [
 355,
 356,
 365,
-393,
+393
 ],
-'com.google.guava:guava:src/com/google/common/collect/TreeRangeSet.java':[
+"com.google.guava:guava:src/com/google/common/collect/TreeRangeSet.java": [
 506,
-559,
+559
 ],
-'com.google.guava:guava:src/com/google/common/io/Files.java':[
-387,
+"com.google.guava:guava:src/com/google/common/io/Files.java": [
+387
 ],
 }

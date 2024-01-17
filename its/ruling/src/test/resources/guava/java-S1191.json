@@ -1,11 +1,11 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
-104,
+"com.google.guava:guava:src/com/google/common/cache/Striped64.java": [
+104
 ],
-'com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java':[
-25,
+"com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java": [
+25
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
-858,
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+858
 ],
 }

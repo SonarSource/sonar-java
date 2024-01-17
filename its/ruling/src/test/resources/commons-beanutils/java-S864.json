@@ -1,8 +1,8 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java':[
-374,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java": [
+374
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java": [
 437,
 438,
 439,
@@ -10,21 +10,21 @@
 441,
 442,
 443,
-444,
+444
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicate.java':[
-249,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicate.java": [
+249
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java": [
 133,
-150,
+150
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java": [
 220,
 221,
-222,
+222
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java": [
 930,
 931,
 932,
@@ -32,16 +32,16 @@
 934,
 935,
 936,
-937,
+937
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java':[
-447,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java": [
+447
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java": [
 141,
-318,
+318
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverter.java':[
-220,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverter.java": [
+220
 ],
 }

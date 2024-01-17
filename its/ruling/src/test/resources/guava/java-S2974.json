@@ -1,63 +1,63 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Functions.java':[
+"com.google.guava:guava:src/com/google/common/base/Functions.java": [
 264,
-354,
+354
 ],
-'com.google.guava:guava:src/com/google/common/base/Predicates.java':[
+"com.google.guava:guava:src/com/google/common/base/Predicates.java": [
 363,
 405,
 447,
 483,
 519,
 554,
-595,
+595
 ],
-'com.google.guava:guava:src/com/google/common/base/internal/Finalizer.java':[
-49,
+"com.google.guava:guava:src/com/google/common/base/internal/Finalizer.java": [
+49
 ],
-'com.google.guava:guava:src/com/google/common/collect/AbstractBiMap.java':[
-394,
+"com.google.guava:guava:src/com/google/common/collect/AbstractBiMap.java": [
+394
 ],
-'com.google.guava:guava:src/com/google/common/collect/ArrayTable.java':[
+"com.google.guava:guava:src/com/google/common/collect/ArrayTable.java": [
 187,
 631,
-721,
+721
 ],
-'com.google.guava:guava:src/com/google/common/collect/EmptyImmutableListMultimap.java':[
-27,
+"com.google.guava:guava:src/com/google/common/collect/EmptyImmutableListMultimap.java": [
+27
 ],
-'com.google.guava:guava:src/com/google/common/collect/EmptyImmutableSetMultimap.java':[
-27,
+"com.google.guava:guava:src/com/google/common/collect/EmptyImmutableSetMultimap.java": [
+27
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableCollection.java':[
-28,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableCollection.java": [
+28
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableList.java':[
-27,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableList.java": [
+27
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableMap.java':[
-27,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableMap.java": [
+27
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableSet.java':[
-27,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableSet.java": [
+27
 ],
-'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
-541,
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+541
 ],
-'com.google.guava:guava:src/com/google/common/collect/RegularImmutableBiMap.java':[
-39,
+"com.google.guava:guava:src/com/google/common/collect/RegularImmutableBiMap.java": [
+39
 ],
-'com.google.guava:guava:src/com/google/common/collect/Sets.java':[
-532,
+"com.google.guava:guava:src/com/google/common/collect/Sets.java": [
+532
 ],
-'com.google.guava:guava:src/com/google/common/collect/Synchronized.java':[
+"com.google.guava:guava:src/com/google/common/collect/Synchronized.java": [
 105,
-1108,
+1108
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Striped.java':[
-312,
+"com.google.guava:guava:src/com/google/common/util/concurrent/Striped.java": [
+312
 ],
-'com.google.guava:guava:src/com/google/common/xml/XmlEscapers.java':[
-49,
+"com.google.guava:guava:src/com/google/common/xml/XmlEscapers.java": [
+49
 ],
 }

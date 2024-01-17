@@ -1,42 +1,42 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Ascii.java':[
-636,
+"com.google.guava:guava:src/com/google/common/base/Ascii.java": [
+636
 ],
-'com.google.guava:guava:src/com/google/common/collect/Collections2.java':[
-633,
+"com.google.guava:guava:src/com/google/common/collect/Collections2.java": [
+633
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableListMultimap.java':[
-375,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableListMultimap.java": [
+375
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
 524,
-533,
+533
 ],
-'com.google.guava:guava:src/com/google/common/collect/TreeRangeMap.java':[
-148,
+"com.google.guava:guava:src/com/google/common/collect/TreeRangeMap.java": [
+148
 ],
-'com.google.guava:guava:src/com/google/common/collect/TreeRangeSet.java':[
-143,
+"com.google.guava:guava:src/com/google/common/collect/TreeRangeSet.java": [
+143
 ],
-'com.google.guava:guava:src/com/google/common/math/DoubleMath.java':[
-235,
+"com.google.guava:guava:src/com/google/common/math/DoubleMath.java": [
+235
 ],
-'com.google.guava:guava:src/com/google/common/math/LongMath.java':[
-920,
+"com.google.guava:guava:src/com/google/common/math/LongMath.java": [
+920
 ],
-'com.google.guava:guava:src/com/google/common/net/InetAddresses.java':[
-287,
+"com.google.guava:guava:src/com/google/common/net/InetAddresses.java": [
+287
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
 189,
-348,
+348
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java": [
 388,
 491,
 496,
 547,
 766,
-786,
+786
 ],
 }

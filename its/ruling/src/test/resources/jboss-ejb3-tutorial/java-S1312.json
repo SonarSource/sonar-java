@@ -1,56 +1,56 @@
 {
-'jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/EntityTestBean.java':[
-50,
+"jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/EntityTestBean.java": [
+50
 ],
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession1Bean.java':[
-35,
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession1Bean.java": [
+35
 ],
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession2Bean.java':[
-32,
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession2Bean.java": [
+32
 ],
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session1Bean.java':[
-45,
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session1Bean.java": [
+45
 ],
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session2Bean.java':[
-39,
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session2Bean.java": [
+39
 ],
-'jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/bean/AnotherCustomerBean.java':[
-48,
+"jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/bean/AnotherCustomerBean.java": [
+48
 ],
-'jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/bean/CustomerBean.java':[
-48,
+"jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/bean/CustomerBean.java": [
+48
 ],
-'jboss-ejb3-tutorial:jca_inflow_quartz/src/org/jboss/tutorial/quartz/bean/AnnotatedQuartzMDBBean.java':[
-43,
+"jboss-ejb3-tutorial:jca_inflow_quartz/src/org/jboss/tutorial/quartz/bean/AnnotatedQuartzMDBBean.java": [
+43
 ],
-'jboss-ejb3-tutorial:jca_inflow_quartz/src/org/jboss/tutorial/quartz/bean/QuartzMDBBean.java':[
-36,
+"jboss-ejb3-tutorial:jca_inflow_quartz/src/org/jboss/tutorial/quartz/bean/QuartzMDBBean.java": [
+36
 ],
-'jboss-ejb3-tutorial:jndibinding/src/org/jboss/tutorial/jndibinding/bean/CustomerBean.java':[
-46,
+"jboss-ejb3-tutorial:jndibinding/src/org/jboss/tutorial/jndibinding/bean/CustomerBean.java": [
+46
 ],
-'jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/CompleteXMLDDBean.java':[
-42,
+"jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/CompleteXMLDDBean.java": [
+42
 ],
-'jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/ExternalCallbackListener.java':[
-40,
+"jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/ExternalCallbackListener.java": [
+40
 ],
-'jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/FirstInterceptor.java':[
-37,
+"jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/FirstInterceptor.java": [
+37
 ],
-'jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/PartialXMLDDBean.java':[
-45,
+"jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/PartialXMLDDBean.java": [
+45
 ],
-'jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/SecondInterceptor.java':[
-38,
+"jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/SecondInterceptor.java": [
+38
 ],
-'jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java':[
-36,
+"jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java": [
+36
 ],
-'jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java':[
-47,
+"jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java": [
+47
 ],
-'jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java':[
-41,
+"jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java": [
+41
 ],
 }

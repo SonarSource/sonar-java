@@ -1,8 +1,8 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
-193,
+"com.google.guava:guava:src/com/google/common/cache/Striped64.java": [
+193
 ],
-'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
-75,
+"com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
+75
 ],
 }
