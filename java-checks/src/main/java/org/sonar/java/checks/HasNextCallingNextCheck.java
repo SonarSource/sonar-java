@@ -54,7 +54,13 @@ public class HasNextCallingNextCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    hasNextBodyVisitor.clearHasNextOwner();
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
     hasNextBodyVisitor.clearHasNextOwner();
   }
 
