@@ -106,6 +106,7 @@ public class AutoScanTest {
       .setProperty("sonar.cpd.exclusions", "**/*")
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("sonar.internal.analysis.failFast", "true")
+      .setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "true")
       // start with no known issues
       .setProperty("sonar.lits.dump.old", tmpDumpOldFolder.newFolder().getAbsolutePath())
       .setProperty("sonar.lits.dump.new", correctConfigIssues)
@@ -128,6 +129,7 @@ public class AutoScanTest {
       .setProperty("sonar.cpd.exclusions", "**/*")
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("sonar.internal.analysis.failFast", "true")
+      .setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "true")
       // force AutoScan mode
       .setProperty("sonar.internal.analysis.autoscan", "true")
       .setProperty("sonar.internal.analysis.autoscan.filtering", "false")
@@ -195,7 +197,7 @@ public class AutoScanTest {
     SoftAssertions softly = new SoftAssertions();
     softly.assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs.values());
     softly.assertThat(newTotal).isEqualTo(knownTotal);
-    softly.assertThat(rulesCausingFPs).hasSize(6);
+    softly.assertThat(rulesCausingFPs).hasSize(7);
     softly.assertThat(rulesNotReporting).hasSize(7);
 
     /**

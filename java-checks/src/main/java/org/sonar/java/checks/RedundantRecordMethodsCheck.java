@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6207")
 public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
@@ -52,8 +53,10 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
     ClassTree targetRecord = (ClassTree) tree;
 
     List<Symbol.VariableSymbol> components = targetRecord.recordComponents().stream()
-      .map(component -> (Symbol.VariableSymbol) component.symbol())
-      .collect(Collectors.toList());
+      .map(VariableTree::symbol)
+      .filter(Symbol.VariableSymbol.class::isInstance)
+      .map(Symbol.VariableSymbol.class::cast)
+      .toList();
     Set<String> componentNames = components.stream()
       .map(Symbol.VariableSymbol::name)
       .collect(Collectors.toSet());

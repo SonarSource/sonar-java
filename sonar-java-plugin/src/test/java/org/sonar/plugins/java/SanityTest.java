@@ -140,7 +140,7 @@ class SanityTest {
       .collect(Collectors.toList());
 
     SoftAssertions softly = new SoftAssertions();
-    softly.assertThat(errorLogs).hasSize(31);
+    softly.assertThat(errorLogs).hasSize(6);
 
     List<LogAndArguments> remainingErrors = new ArrayList<>(errorLogs);
     remainingErrors.removeAll(parsingErrors);
@@ -148,47 +148,17 @@ class SanityTest {
     softly.assertThat(remainingErrors).isEmpty();
 
     softly.assertThat(typeResolutionErrors)
-      .hasSize(19)
-      .map(LogAndArguments::getFormattedMsg)
-      .map(log -> log.substring("ECJ Unable to resolve type ".length()))
-      // FIXME investigate root cause (seems to be a conflict of version, with classes from JDK not resolved correctly
-      .containsOnly(
-        "javax.servlet.http.Cookie",
-        "javax.validation.ConstraintValidator",
-        "javax.ws.rs.core.Cookie",
-        "jakarta.ws.rs.core.Cookie",
-        "jakarta.servlet.http.Cookie",
-        "javax.ws.rs.core.NewCookie",
-        "jakarta.ws.rs.core.NewCookie",
-        "junit.framework.TestCase",
-        "org.apache.commons.lang.math.RandomUtils",
-        "org.apache.commons.lang.RandomStringUtils",
-        "org.apache.commons.lang3.RandomStringUtils",
-        "org.apache.commons.lang3.RandomUtils",
-        "org.apache.shiro.web.servlet.SimpleCookie",
-        "org.apache.struts.action.Action",
-        "org.assertj.core.api.AbstractAssert",
-        "org.fest.assertions.GenericAssert",
-        "org.springframework.security.web.savedrequest.SavedCookie",
-        "play.mvc.Http$Cookie",
-        "play.mvc.Http$CookieBuilder");
+      .isEmpty();
 
     softly.assertThat(parsingErrors)
-      .hasSize(12)
+      .hasSize(6)
       .map(LogAndArguments::getFormattedMsg)
       .allMatch(log ->
       // ECJ error message
       log.startsWith("Parse error at line ")
         // analyzer error message mentioning the file
         || log.contains("KeywordAsIdentifierCheck")
-        || log.contains("EmptyStatementsInImportsBug")
-        || log.contains("RestrictedIdentifiersUsageCheck")
-        // Activating java 19 preview features helps to parse files containing the new switch pattern expression.
-        // But now we are not able to parse the two following files that contains method body starting with a
-        // "when(...)" method call having one argument.
-        || log.contains("MockingAllMethodsCheck")
-        || log.contains("MockitoArgumentMatchersUsedOnAllParameters")
-      );
+        || log.contains("EmptyStatementsInImportsBug"));
 
     softly.assertAll();
   }
@@ -271,7 +241,7 @@ class SanityTest {
     List<SanityCheckException> exceptions = new ArrayList<>();
     AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
     JParserConfig.Mode.BATCH
-      .create(javaVersion, classpath)
+      .create(javaVersion, classpath, true)
       .parse(inputFiles, () -> false, analysisProgress, (input, result) -> {
         try {
           scanner.simpleScan(input, result, ast -> {});
