@@ -214,7 +214,7 @@ MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActi
       .anyMatch(UnitTestUtils::hasNestedAnnotation);
   }
 
-  public static boolean matchesAssertionMethodPattern(IdentifierTree method, Symbol methodSymbol) {
+  public static boolean methodNameMatchesAssertionMethodPattern(String methodName, Symbol methodSymbol) {
     String methodName = method.name();
     if (TEST_METHODS_PATTERN.matcher(methodName).matches()) {
       return !REACTIVE_X_TEST_METHODS.matches(methodSymbol);
