@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
 import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTION_INVOCATION_MATCHERS;
-import static org.sonar.java.checks.helpers.UnitTestUtils.matchesAssertionMethodPattern;
+import static org.sonar.java.checks.helpers.UnitTestUtils.methodNameMatchesAssertionMethodPattern;
 import static org.sonar.java.model.ExpressionUtils.methodName;
 
 public abstract class AbstractAssertionVisitor extends BaseTreeVisitor {
@@ -76,7 +76,7 @@ public abstract class AbstractAssertionVisitor extends BaseTreeVisitor {
     if (method == null) {
       return false;
     }
-    return matchesAssertionMethodPattern(method, methodSymbol);
+    return methodNameMatchesAssertionMethodPattern(method.name(), methodSymbol);
   }
 
 }

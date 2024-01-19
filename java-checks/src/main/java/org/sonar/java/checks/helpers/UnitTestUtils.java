@@ -31,7 +31,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -41,10 +40,9 @@ public final class UnitTestUtils {
 
   private static final String ORG_JUNIT_TEST = "org.junit.Test";
   public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile(
-      "(assert|verify|fail|should|check|expect|validate|andExpect).*" +
-        // Eclipse Vert.x with JUnit 5 (VertxTestContext)
-      "|laxCheckpoint|succeedingThenComplete"
-    );
+    "(assert|verify|fail|should|check|expect|validate|andExpect).*" +
+    // Eclipse Vert.x with JUnit 5 (VertxTestContext)
+      "|laxCheckpoint|succeedingThenComplete");
   private static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
 
   public static final MethodMatchers ASSERTION_INVOCATION_MATCHERS = MethodMatchers.or(
@@ -52,8 +50,8 @@ public final class UnitTestUtils {
     MethodMatchers.create().ofSubTypes("org.fest.assertions.GenericAssert", "org.fest.assertions.api.AbstractAssert").anyName().withAnyParameters().build(),
     // rest assured 2.x, 3.x, 4.x
     MethodMatchers.create().ofTypes(
-      "com.jayway.restassured.response.ValidatableResponseOptions", //restassured 2.x
-      "io.restassured.response.ValidatableResponseOptions" //restassured 3.x and 4.x
+      "com.jayway.restassured.response.ValidatableResponseOptions", // restassured 2.x
+      "io.restassured.response.ValidatableResponseOptions" // restassured 3.x and 4.x
     )
       .name(name -> "body".equals(name) ||
         "time".equals(name) ||
@@ -69,7 +67,7 @@ public final class UnitTestUtils {
     MethodMatchers.create().ofSubTypes("org.assertj.core.api.AbstractAssert").anyName().withAnyParameters().build(),
     MethodMatchers.create().ofSubTypes("org.assertj.core.api.ThrowableTypeAssert").anyName().withAnyParameters().build(),
     // spring
-MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpect", "andExpectAll").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpect", "andExpectAll").withAnyParameters().build(),
     // JMockit
     MethodMatchers.create().ofTypes("mockit.Verifications").constructor().withAnyParameters().build(),
     // Eclipse Vert.x with JUnit 4
@@ -77,11 +75,10 @@ MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActi
     // Awaitility
     MethodMatchers.create().ofTypes("org.awaitility.core.ConditionFactory").name(name -> name.startsWith("until")).withAnyParameters().build());
 
-  public static final MethodMatchers REACTIVE_X_TEST_METHODS =
-    MethodMatchers.create().ofSubTypes("rx.Observable", "io.reactivex.Observable").names("test").withAnyParameters().build();
+  public static final MethodMatchers REACTIVE_X_TEST_METHODS = MethodMatchers.create().ofSubTypes("rx.Observable", "io.reactivex.Observable").names("test").withAnyParameters()
+    .build();
 
-  private static final MethodMatchers VERTX_TEST_CONTEXT_METHODS =
-    MethodMatchers.create().ofTypes("io.vertx.junit5.VertxTestContext").anyName().withAnyParameters().build();
+  private static final MethodMatchers VERTX_TEST_CONTEXT_METHODS = MethodMatchers.create().ofTypes("io.vertx.junit5.VertxTestContext").anyName().withAnyParameters().build();
 
   public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.or(
     MethodMatchers.create().ofTypes(
@@ -114,16 +111,14 @@ MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActi
       .ofTypes("org.assertj.core.api.Assertions", "org.fest.assertions.Assertions")
       .names("assertThat")
       .withAnyParameters()
-      .build()
-  );
+      .build());
 
   /**
    * Match when we are sure that the intention is to assert something, that will result in an AssertionError if the assertion fails.
    * The purpose is not to detect any assertion method (similar to S2699).
    */
   public static final MethodMatchers COMMON_ASSERTION_MATCHER = MethodMatchers.or(
-    FAIL_METHOD_MATCHER, ASSERTIONS_METHOD_MATCHER
-  );
+    FAIL_METHOD_MATCHER, ASSERTIONS_METHOD_MATCHER);
 
   private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList(ORG_JUNIT_TEST, "org.testng.annotations.Test"));
   private static final Set<String> JUNIT5_TEST_ANNOTATIONS = new HashSet<>(asList(
@@ -134,8 +129,7 @@ MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActi
     "org.junit.jupiter.params.ParameterizedTest"));
   private static final String NESTED_ANNOTATION = "org.junit.jupiter.api.Nested";
 
-  private static final Pattern UNIT_TEST_NAME_RELATED_TO_OBJECT_METHODS_REGEX =
-    Pattern.compile("equal|hash_?code|object_?method|to_?string", Pattern.CASE_INSENSITIVE);
+  private static final Pattern UNIT_TEST_NAME_RELATED_TO_OBJECT_METHODS_REGEX = Pattern.compile("equal|hash_?code|object_?method|to_?string", Pattern.CASE_INSENSITIVE);
 
   private UnitTestUtils() {
   }
@@ -215,7 +209,6 @@ MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActi
   }
 
   public static boolean methodNameMatchesAssertionMethodPattern(String methodName, Symbol methodSymbol) {
-    String methodName = method.name();
     if (TEST_METHODS_PATTERN.matcher(methodName).matches()) {
       return !REACTIVE_X_TEST_METHODS.matches(methodSymbol);
     }

@@ -45,7 +45,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTION_INVOCATION_MATCHERS;
 import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
-import static org.sonar.java.checks.helpers.UnitTestUtils.matchesAssertionMethodPattern;
+import static org.sonar.java.checks.helpers.UnitTestUtils.methodNameMatchesAssertionMethodPattern;
 import static org.sonar.java.model.ExpressionUtils.methodName;
 
 @Rule(key = "S5961")
@@ -117,9 +117,9 @@ public class TooManyAssertionsCheck extends IssuableSubscriptionVisitor {
       super.visitMethodInvocation(mit);
       if (isAssertion(methodName(mit), mit.methodSymbol())) {
         ExpressionTree methodSelect = mit.methodSelect();
-        if(methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
           ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-          if(assertions.contains(expression) || chainedAssertions.contains(expression)) {
+          if (assertions.contains(expression) || chainedAssertions.contains(expression)) {
             chainedAssertions.add(mit);
             return;
           }
@@ -137,7 +137,7 @@ public class TooManyAssertionsCheck extends IssuableSubscriptionVisitor {
     }
 
     private boolean isAssertion(IdentifierTree method, Symbol methodSymbol) {
-      return matchesAssertionMethodPattern(method, methodSymbol)
+      return methodNameMatchesAssertionMethodPattern(method.name(), methodSymbol)
         || ASSERTION_INVOCATION_MATCHERS.matches(methodSymbol)
         || !collectAssertionsInMethod(methodSymbol).isEmpty();
     }

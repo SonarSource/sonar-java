@@ -72,4 +72,9 @@ public class CallToDeprecatedMethodCheck extends AbstractCallToDeprecatedCodeChe
       // if the method is flagged for removal, it will be handled by S5738
       || isFlaggedForRemoval(method));
   }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+  }
 }
