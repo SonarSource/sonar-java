@@ -423,6 +423,7 @@ import org.sonar.java.checks.UnnecessaryBitOperationCheck;
 import org.sonar.java.checks.UnnecessaryEscapeSequencesInTextBlockCheck;
 import org.sonar.java.checks.UnnecessarySemicolonCheck;
 import org.sonar.java.checks.UnreachableCatchCheck;
+import org.sonar.java.checks.UnsupportedOperationUsageCheck;
 import org.sonar.java.checks.UppercaseSuffixesCheck;
 import org.sonar.java.checks.UseSwitchExpressionCheck;
 import org.sonar.java.checks.UselessExtendsCheck;

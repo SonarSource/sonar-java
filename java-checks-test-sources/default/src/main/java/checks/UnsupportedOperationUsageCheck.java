@@ -4,7 +4,7 @@ import static java.util.Arrays.asList;
 
 import java.util.*;
 
-class MutableMembersUsageCheck {
+class UnsupportedOperationUsageCheck {
 
   private List<String> privateStrings7 = Arrays.asList("test1", "test2");
   private static List<String> privateStaticStrings8 = Arrays.asList("test1", "test2");
