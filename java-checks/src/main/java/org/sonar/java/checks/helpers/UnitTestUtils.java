@@ -42,7 +42,8 @@ public final class UnitTestUtils {
   private static final String ORG_JUNIT_TEST = "org.junit.Test";
   public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile(
       "(assert|verify|fail|should|check|expect|validate|andExpect).*" +
-      "|laxCheckpoint|succeedingThenComplete" // Eclipse Vert.x with JUnit 5 (VertxTestContext)
+        // Eclipse Vert.x with JUnit 5 (VertxTestContext)
+      "|laxCheckpoint|succeedingThenComplete"
     );
   private static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
 
@@ -218,12 +219,10 @@ MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActi
     if (TEST_METHODS_PATTERN.matcher(methodName).matches()) {
       return !REACTIVE_X_TEST_METHODS.matches(methodSymbol);
     }
-    if (ASSERTION_METHODS_PATTERN.matcher(methodName).matches()) {
-      if ("verify".equals(methodName) || "failing".equals(methodName)) {
-        return !VERTX_TEST_CONTEXT_METHODS.matches(methodSymbol);
-      }
-      return true;
+    if ("verify".equals(methodName) || "failing".equals(methodName)) {
+      return !VERTX_TEST_CONTEXT_METHODS.matches(methodSymbol);
     }
-    return false;
+
+    return ASSERTION_METHODS_PATTERN.matcher(methodName).matches();
   }
 }
