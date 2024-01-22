@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class IssuableSubscriptionVisitorTest {
 
@@ -50,12 +50,18 @@ class IssuableSubscriptionVisitorTest {
   void check_issuable_subscription_visitor_does_not_visit_tree_on_its_own() {
     CompilationUnitTree tree = Mockito.mock(CompilationUnitTree.class);
     CustomRule visitor = new CustomRule();
-    try {
-      visitor.scanTree(tree);
-      fail("Analysis should have failed");
-    } catch (UnsupportedOperationException e) {
-      assertThat(e).hasMessage("IssuableSubscriptionVisitor should not drive visit of AST.");
-    }
+    assertThatThrownBy(() -> visitor.scanTree(tree))
+      .isInstanceOf(UnsupportedOperationException.class)
+      .hasMessage("IssuableSubscriptionVisitor should not drive visit of AST.");
+  }
+
+  @Test
+  void issuable_subscription_visitor_does_not_visit_file_on_its_own() {
+    CustomRule visitor = new CustomRule();
+    JavaFileScannerContext context = Mockito.mock(JavaFileScannerContext.class);
+    assertThatThrownBy(() -> visitor.scanFile(context))
+      .isInstanceOf(UnsupportedOperationException.class)
+      .hasMessage("IssuableSubscriptionVisitor should not drive visit of file. Use leaveFile() instead.");
   }
 
   private static class CustomRule extends IssuableSubscriptionVisitor {

@@ -151,7 +151,7 @@ class FileHeaderCheckTest {
     check.isRegularExpression = true;
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
 
-    IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> check.scanFile(context));
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> check.setContext(context));
     assertThat(e.getMessage()).isEqualTo("[FileHeaderCheck] Unable to compile the regular expression: **");
   }
 
