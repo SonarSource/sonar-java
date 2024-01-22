@@ -142,6 +142,12 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.31**
+
+Methods `org.sonar.plugins.java.api.IssuableSubscriptionVisitor#scanFile()` and `org.sonar.plugins.java.api.IssuableSubscriptionVisitor#scanTree()` are now deprecated and can not be overriden anymore.
+This change **break compile time compatibility** with any custom rules implementing any of these methods and will require update of custom rules plugin.
+Note that if the overrides were used as an attempt to clean rule state, it was never called and most probably the source of a memory leak. While we strongly adivse against having statefull rules, if the state of a class need to be cleaned, use methods `org.sonar.plugins.java.api.IssuableSubscriptionVisitor#setContext()` (called prior to the exploration of a file) or `org.sonar.plugins.java.api.IssuableSubscriptionVisitor#leaveFile()` (after ending the exploration of a file).
+
 #### **7.29**
 
 All the API changes are related to ECJ utility methods that were commonly used in the analyzer and could benefit the implementation of 

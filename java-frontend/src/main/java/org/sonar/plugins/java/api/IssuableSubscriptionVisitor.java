@@ -31,9 +31,51 @@ import java.util.List;
  */
 public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
+  /**
+   * Override this method only if you need to execute some instructions prior to start the analysis of a file.
+   * Don't forget to call <code>super.setContext()`</code>.
+   *
+   * @param context the analysis context.
+   */
   @Override
-  protected void scanTree(Tree tree) {
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    // Explicitly declares the method to make it appears in the IssuableSubscriptionVisitor's members.
+  }
+
+  /**
+   * This method is never called and should not be called. It is inherited from the {@link SubscriptionVisitor}.
+   * Implementations of {@link IssuableSubscriptionVisitor} are not able to pilot the exploration of the AST.
+   *
+   * @deprecated Use {@link #leaveFile(JavaFileScannerContext)} or {@link #setContext(JavaFileScannerContext)} instead.
+   */
+  @Deprecated(since = "7.31", forRemoval = false)
+  @Override
+  protected final void scanTree(Tree tree) {
     throw new UnsupportedOperationException("IssuableSubscriptionVisitor should not drive visit of AST.");
+  }
+
+  /**
+   * This method is never called and should not be called. It is inherited from the {@link SubscriptionVisitor}.
+   * Implementations of {@link IssuableSubscriptionVisitor} are not able to impact visit of a file.
+   *
+   * @deprecated Use {@link #leaveFile(JavaFileScannerContext)} or {@link #setContext(JavaFileScannerContext)} instead.
+   */
+  @Deprecated(since = "7.31", forRemoval = false)
+  @Override
+  public final void scanFile(JavaFileScannerContext context) {
+    throw new UnsupportedOperationException("IssuableSubscriptionVisitor should not drive visit of file. Use leaveFile() instead.");
+  }
+
+  /**
+   * Override this method only if you need to execute some instructions after the end of the analysis of a file.
+   *
+   * @param context the analysis context.
+   */
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    // Explicitly declares the method to make it appears in the IssuableSubscriptionVisitor's members.
+    // Default behaviour is to do nothing
   }
 
   /**
