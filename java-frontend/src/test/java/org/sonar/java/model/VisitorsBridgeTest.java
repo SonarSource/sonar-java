@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Fail;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -85,33 +84,6 @@ class VisitorsBridgeTest {
   private static final CompilationUnitTree COMPILATION_UNIT_TREE = JParserTestUtils.parse(FILE);
 
   private static final NullPointerException NPE = new NullPointerException("BimBadaboum");
-
-  @Test
-  @Disabled("Unable to reproduce since ECJ migration")
-  void test_semantic_exclusions() {
-    VisitorsBridge visitorsBridgeWithoutSemantic = new VisitorsBridge(Collections.singletonList((JavaFileScanner) context -> {
-      assertThat(context.getSemanticModel()).isNull();
-      assertThat(context.fileParsed()).isTrue();
-    }), new ArrayList<>(), null);
-    checkFile(constructFileName("java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
-    checkFile(constructFileName("src", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
-    checkFile(constructFileName("home", "user", "oracleSdk", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
-    checkFile(constructFileName("java", "io", "Serializable.java"), "package java.io; class A {}", visitorsBridgeWithoutSemantic);
-    checkFile(constructFileName("java", "lang", "annotation", "Annotation.java"), "package java.lang.annotation; class Annotation {}", visitorsBridgeWithoutSemantic);
-
-    VisitorsBridge visitorsBridgeWithParsingIssue = new VisitorsBridge(Collections.singletonList(new IssuableSubscriptionVisitor() {
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        assertThat(context.fileParsed()).isFalse();
-      }
-
-      @Override
-      public List<Kind> nodesToVisit() {
-        return Collections.singletonList(Tree.Kind.METHOD);
-      }
-    }), new ArrayList<>(), null);
-    checkFile(constructFileName("org", "foo", "bar", "Foo.java"), "class Foo { arrrrrrgh", visitorsBridgeWithParsingIssue);
-  }
 
   private static void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
     visitorsBridge.setCurrentFile(TestUtils.emptyInputFile(filename));
