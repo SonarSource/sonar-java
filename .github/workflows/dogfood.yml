@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - master
-      - 'dogfood/*'
+      - 'dogfood/**'
 # commenting 'delete' action, as it is triggered way too often
 #  delete:
 #    branches:
-#      - 'dogfood/*'
+#      - 'dogfood/**'
 
 env:
   SLACK_CHANNEL: team-lang-java-notifs
