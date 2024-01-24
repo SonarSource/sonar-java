@@ -62,8 +62,6 @@ import org.eclipse.jdt.internal.compiler.util.Util;
 
 public class ProblemHandler {
 
-  private static long numberOfIgnoredAbortCompilationException = 0;
-
   public final static String[] NoArgument = CharOperation.NO_STRINGS;
 
   public IErrorHandlingPolicy policy;
@@ -83,16 +81,6 @@ public class ProblemHandler {
     this.policy = policy;
     this.problemFactory = problemFactory;
     this.options = options;
-  }
-
-  public static void resetNumberOfIgnoredAbortCompilationException() {
-    numberOfIgnoredAbortCompilationException = 0;
-  }
-
-  public static void executeIfIgnoredAbortCompilationException(java.util.function.LongConsumer consumer) {
-    if (numberOfIgnoredAbortCompilationException != 0) {
-      consumer.accept(numberOfIgnoredAbortCompilationException);
-    }
   }
 
   /*
@@ -168,9 +156,6 @@ public class ProblemHandler {
       // Error is not to be exposed, but clients may need still notification as to whether there are silently-ignored-errors.
       // if no reference context, we need to abort from the current compilation process
       if (referenceContext == null) {
-        if ((severity & ProblemSeverities.Error) != 0) {
-          ProblemHandler.numberOfIgnoredAbortCompilationException++;
-        }
         return; // ignore non reportable problems
       }
       if (mandatory)
@@ -191,9 +176,6 @@ public class ProblemHandler {
 
     // if no reference context, we need to abort from the current compilation process
     if (referenceContext == null) {
-      if ((severity & ProblemSeverities.Error) != 0) {
-        ProblemHandler.numberOfIgnoredAbortCompilationException++;
-      }
       return; // ignore non reportable problems
     }
 
