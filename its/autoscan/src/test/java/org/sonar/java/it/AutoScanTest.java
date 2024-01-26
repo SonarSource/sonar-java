@@ -122,7 +122,7 @@ public class AutoScanTest {
       .setProjectName(PROJECT_NAME)
       .setProjectVersion("0.1.0-SNAPSHOT")
       .setSourceEncoding("UTF-8")
-      .setSourceDirs("aws/src/main/java/,default/src/main/java/")
+      .setSourceDirs("aws/src/main/java/,default/src/main/java/,java-17/src/main/java/")
       .setTestDirs("default/src/test/java/")
       .setProperty("sonar.java.source", "17")
       // common properties
@@ -198,7 +198,7 @@ public class AutoScanTest {
     softly.assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs.values());
     softly.assertThat(newTotal).isEqualTo(knownTotal);
     softly.assertThat(rulesCausingFPs).hasSize(7);
-    softly.assertThat(rulesNotReporting).hasSize(7);
+    softly.assertThat(rulesNotReporting).hasSize(6);
 
     /**
      * 4. Check total number of differences (FPs + FNs)
