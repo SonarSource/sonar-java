@@ -433,8 +433,16 @@ class JUtilsTest {
     void supertypes_are_called_in_all_hierarchy() {
       ClassTreeImpl b = nthClass(cu, 1);
       Set<Type> superTypes = b.symbol().superTypes();
-      assertThat(superTypes).hasSize(7);
-      assertThat(superTypes.stream().map(Type::name)).containsOnly("C", "Object", "Serializable", "Unknown", "List", "Collection", "Iterable");
+
+      if (Runtime.version().feature()>=21) {
+        assertThat(superTypes).hasSize(8);
+        assertThat(superTypes.stream().map(Type::name)).containsOnly("C", "Object", "Serializable",
+          "Unknown", "List", "Collection", "SequencedCollection", "Iterable");
+      } else {
+        assertThat(superTypes).hasSize(7);
+        assertThat(superTypes.stream().map(Type::name)).containsOnly("C", "Object", "Serializable",
+          "Unknown", "List", "Collection", "Iterable");
+      }
     }
   }
 
@@ -801,7 +809,7 @@ class JUtilsTest {
       assertThat(directSuperTypes).hasSize(2);
       assertThat(directSuperTypes.stream().map(Type::name)).containsOnly("C", "List");
       assertThat(allSuperTypes)
-        .hasSize(7)
+        .hasSizeBetween(7, 8)
         .containsAll(directSuperTypes);
     }
   }
