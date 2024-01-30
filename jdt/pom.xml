@@ -24,6 +24,7 @@
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>org.eclipse.jdt.core</artifactId>
+        <!-- see jdt/README.md before changing this version to also backport the new source code into the files of jdt/src/main/java -->
         <version>3.36.0</version>
         <exclusions>
           <exclusion>
@@ -149,6 +150,16 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>src/main/java/**</exclude>
+            <exclude>src/test/resources/**</exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>
