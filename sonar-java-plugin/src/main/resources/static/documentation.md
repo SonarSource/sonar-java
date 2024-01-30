@@ -38,20 +38,20 @@ Key | Value
 ## Project's specific JDK
 
 In some situations, you might have to analyze a project built with a different version of Java than the one executing the analysis.
-The most common case is to run the analysis with **Java 11**, while the project itself uses **Java 8** or before for its build.
+The most common case is to run the analysis with **Java 17**, while the project itself uses **Java 11** or before for its build.
 
 If this is your case, you will need to set the `sonar.java.jdkHome` property manually to point the appropriate JDK (see below).
 By doing this you will specify which JDK classes the analyzer must refer to during the analysis.
 Not setting this property, while it would have been required, usually leads to inconsistent or even impossible to fix issues being reported, especially in relation with native JDK classes.
 
 When setting `sonar.java.jdkHome`, you need to provide the path to the JDK directory used by the project being analyzed, if different from the Java runtime executing the analysis.
-For example, for a Java 8 project, by setting it as follows: `sonar.java.jdkHome=/usr/lib/jvm/jdk1.8.0_211`
+For example, for a Java 11 project, by setting it as follows: `sonar.java.jdkHome=/usr/lib/jvm/jdk11.0.22`
 
 ```bash
-# Here maven uses the default version of Java on the system but we specify that we want to analyze a Java 8 project.
+# Here maven uses the default version of Java on the system but we specify that we want to analyze a Java 11 project.
 mvn clean verify sonar:sonar \
   # other analysis parameters
-  -Dsonar.java.jdkHome=/usr/lib/jvm/java-8-openjdk/
+  -Dsonar.java.jdkHome=/usr/lib/jvm/jdk11.0.22/
   # other analysis parameters
 ```
 This option can of course be added to your `sonar.properties` configuration.
@@ -67,15 +67,15 @@ If you need to deactivate a rule (or all rules) for an entire file, then [issue 
 
 Java analysis is able to react to the java version used for sources. This feature allows the deactivation of rules that target higher versions of Java than the one in use in the project so that false positives aren't generated from irrelevant rules.
 
-The feature relies entirely on the `sonar.java.source` property, which is automatically filled by most of the scanners used for analyses (Maven, Gradle). Java version-specific rules are not disabled when `sonar.java.source` is not provided. Concretely, rules which are designed to target specific java versions (tagged "java7" or "java8") are activated by default in the Sonar Way Java profile. From a user perspective, the feature is fully automatic, but it means that you probably want your projects to be correctly configured.
+The feature relies entirely on the `sonar.java.source` property, which is automatically filled by most of the scanners used for analyses (Maven, Gradle). Java version-specific rules are not disabled when `sonar.java.source` is not provided. Concretely, rules which are designed to target specific java versions (tagged "java8" or "java11") are activated by default in the Sonar Way Java profile. From a user perspective, the feature is fully automatic, but it means that you probably want your projects to be correctly configured.
 
 When using SonarScanner to perform analyses of project, the property `sonar.java.source` can to be set manually in `sonar-project.properties`. Accepted formats are:
 * "1.X" (for instance 1.6 for java 6, 1.7 for java 7, 1.8 for java 8, etc.)
-* "X" (for instance 7 for java 7, 8 for java 8, etc. )
+* "X" (for instance 8 for java 8, 11 for java 11, etc. )
 
-Example: `sonar.java.source=1.6`
+Example: `sonar.java.source=11`
 
-If the property is provided, the analysis will take the source version into account, and execute related rules accordingly. At run time, each of these rules will be executed – or not – depending of the Java version used by sources within the project. For instance, on a correctly configured project built with Java 6, rules targeting Java 7 and Java 8 will never raise issues, even though they are enabled in the associated rule profile.
+If the property is provided, the analysis will take the source version into account, and execute related rules accordingly. At run time, each of these rules will be executed – or not – depending upon the Java version used by sources within the project. For instance, on a correctly configured project built with Java 11, rules targeting Java 17 and Java 21 will never raise issues, even though they are enabled in the associated rule profile.
 
 ## Batch mode settings
 
@@ -143,6 +143,9 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 ### API changes
 
 #### **7.31**
+
+**Breaking**  
+Now the Java analyzer requires `Java 17` to run.
 
 Methods `org.sonar.plugins.java.api.IssuableSubscriptionVisitor#scanFile()` and `org.sonar.plugins.java.api.IssuableSubscriptionVisitor#scanTree()` are now deprecated and can not be overriden anymore.
 This change **break compile time compatibility** with any custom rules implementing any of these methods and will require update of custom rules plugin.

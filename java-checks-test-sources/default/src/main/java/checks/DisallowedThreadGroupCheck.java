@@ -16,7 +16,6 @@ abstract class DisallowedThreadGroupCheck
 
     tg.activeCount(); // Compliant - not following method invocation, only declarations of ThreadGroup
     tg.activeGroupCount(); // Compliant
-    tg.allowThreadSuspension(true); // Compliant
     getThreadGroup().checkAccess(); // Compliant
     tg.destroy(); // Compliant
     tg.enumerate(new Thread[0]); // Compliant
