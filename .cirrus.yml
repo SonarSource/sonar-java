@@ -36,13 +36,11 @@ container_definition: &CONTAINER_DEFINITION
             - m4.4xlarge # 2.4 GHz Intel Xeon E5-2676 v3** Processor, 16 vCPU, 64 GiB Memory
 
 win_vm_definition: &WINDOWS_VM_DEFINITION
-  ec2_instance:
-    experimental: true # see https://github.com/cirruslabs/cirrus-ci-docs/issues/1051
-    image: base-windows-jdk17-v*
-    platform: windows
-    region: eu-central-1
-    type: c5.4xlarge # 3.6 GHz (3.9GHz single core) Intel Xeon Scalable Processor, 16 vCPU, 32 GiB Memory
-    subnet_id: ${CIRRUS_AWS_SUBNET}
+  experimental: true # see https://github.com/cirruslabs/cirrus-ci-docs/issues/1051
+  platform: windows
+  region: eu-central-1
+  type: c5.4xlarge # 3.6 GHz (3.9GHz single core) Intel Xeon Scalable Processor, 16 vCPU, 32 GiB Memory
+  subnet_id: ${CIRRUS_AWS_SUBNET}
 
 only_sonarsource_qa: &ONLY_SONARSOURCE_QA
   only_if: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_TAG == "" && ($CIRRUS_PR != "" || $CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*" || $CIRRUS_BRANCH =~ "dogfood-on-.*")
@@ -104,9 +102,9 @@ ws_scan_task:
       path: "whitesource/**/*"
 
 qa_os_win_task:
-  <<: *WINDOWS_VM_DEFINITION
   ec2_instance:
     image: base-windows-jdk21-v*
+    <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
@@ -189,7 +187,9 @@ ruling_win_task:
   depends_on:
     - build
   <<: *ONLY_SONARSOURCE_QA
-  <<: *WINDOWS_VM_DEFINITION
+  ec2_instance:
+    image: base-windows-jdk17-v*
+    <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   env:
@@ -212,6 +212,10 @@ autoscan_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
+    # For now, this autoscan_task need to execute two mvn commands:
+    # * The build of java-checks-test-sources module which requires Java 21.
+    # * The tests using Orchestrator and SonarQube that, for now, fail to work using Java 21
+    # This is why we have a local Dockerfile that provide the 2 versions of Java, 17 and 21.
     dockerfile: .cirrus/Dockerfile.jdk17And21
     builder_role: cirrus-builder
     builder_image: docker-builder-v*
