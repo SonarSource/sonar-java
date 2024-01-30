@@ -1,4 +1,7 @@
 env:
+  CIRRUS_VAULT_URL: https://vault.sonar.build:8200
+  CIRRUS_VAULT_AUTH_PATH: jwt-cirrusci
+  CIRRUS_VAULT_ROLE: cirrusci-${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}
   ARTIFACTORY_URL: VAULT[development/kv/data/repox data.url]
   ARTIFACTORY_PRIVATE_USERNAME: vault-${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-private-reader
   ARTIFACTORY_PRIVATE_PASSWORD: VAULT[development/artifactory/token/${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-private-reader access_token]
@@ -22,7 +25,6 @@ env:
   CIRRUS_CLONE_DEPTH: 50
 
 container_definition: &CONTAINER_DEFINITION
-  image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j11-latest
   cluster_name: ${CIRRUS_CLUSTER_NAME}
   region: eu-central-1
   namespace: default
@@ -34,13 +36,11 @@ container_definition: &CONTAINER_DEFINITION
             - m4.4xlarge # 2.4 GHz Intel Xeon E5-2676 v3** Processor, 16 vCPU, 64 GiB Memory
 
 win_vm_definition: &WINDOWS_VM_DEFINITION
-  ec2_instance:
-    experimental: true # see https://github.com/cirruslabs/cirrus-ci-docs/issues/1051
-    image: base-windows-jdk17-v*
-    platform: windows
-    region: eu-central-1
-    type: c5.4xlarge # 3.6 GHz (3.9GHz single core) Intel Xeon Scalable Processor, 16 vCPU, 32 GiB Memory
-    subnet_id: ${CIRRUS_AWS_SUBNET}
+  experimental: true # see https://github.com/cirruslabs/cirrus-ci-docs/issues/1051
+  platform: windows
+  region: eu-central-1
+  type: c5.4xlarge # 3.6 GHz (3.9GHz single core) Intel Xeon Scalable Processor, 16 vCPU, 32 GiB Memory
+  subnet_id: ${CIRRUS_AWS_SUBNET}
 
 only_sonarsource_qa: &ONLY_SONARSOURCE_QA
   only_if: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_TAG == "" && ($CIRRUS_PR != "" || $CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*" || $CIRRUS_BRANCH =~ "dogfood-on-.*")
@@ -48,7 +48,7 @@ only_sonarsource_qa: &ONLY_SONARSOURCE_QA
 common_build_definition: &COMMON_BUILD_DEFINITION
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j19-latest
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j21-latest
     cpu: 4
     memory: 4G
   env:
@@ -82,6 +82,7 @@ ws_scan_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 4
     memory: 4G
   # run only on master and long-term branches
@@ -101,7 +102,9 @@ ws_scan_task:
       path: "whitesource/**/*"
 
 qa_os_win_task:
-  <<: *WINDOWS_VM_DEFINITION
+  ec2_instance:
+    image: base-windows-jdk21-v*
+    <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
@@ -140,7 +143,7 @@ sanity_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j21-latest
     cpu: 4
     memory: 2G
   maven_cache:
@@ -184,7 +187,9 @@ ruling_win_task:
   depends_on:
     - build
   <<: *ONLY_SONARSOURCE_QA
-  <<: *WINDOWS_VM_DEFINITION
+  ec2_instance:
+    image: base-windows-jdk17-v*
+    <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   env:
@@ -207,7 +212,15 @@ autoscan_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
+    # For now, this autoscan_task need to execute two mvn commands:
+    # * The build of java-checks-test-sources module which requires Java 21.
+    # * The tests using Orchestrator and SonarQube that, for now, fail to work using Java 21
+    # This is why we have a local Dockerfile that provide the 2 versions of Java, 17 and 21.
+    dockerfile: .cirrus/Dockerfile.jdk17And21
+    builder_role: cirrus-builder
+    builder_image: docker-builder-v*
+    builder_instance_type: t3.small
+    builder_subnet_id: ${CIRRUS_AWS_SUBNET}
     cpu: 14
     memory: 6G
   maven_cache:
@@ -215,7 +228,7 @@ autoscan_task:
   autoscan_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
-    - mvn clean compile --projects java-checks-test-sources --also-make-dependents
+    - JAVA_HOME="${JAVA_21_HOME}" mvn clean compile --projects java-checks-test-sources --also-make-dependents
     - cd its/autoscan
     - mvn clean package --batch-mode --errors --show-version --activate-profiles it-autoscan -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
@@ -237,6 +250,7 @@ promote_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 2
     memory: 1G
   env:
