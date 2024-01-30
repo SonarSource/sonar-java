@@ -27,6 +27,7 @@ import org.sonar.java.checks.verifier.internal.InternalInputFile;
 public class TestUtils {
 
   public static final String DEFAULT_MODULE = "default";
+  public static final String JAVA_17_MODULE = "java-17";
 
   private static final String PROJECT_LOCATION = "../java-checks-test-sources/";
 

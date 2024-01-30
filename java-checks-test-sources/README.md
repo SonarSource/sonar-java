@@ -2,7 +2,7 @@ SonarQube Java Analyzer - Rules Testing Sources
 =======
 
 This project is used as input for unit tests of our rules and our ITs.
-The project requirs JDK 17.
+The project requires JDK 21.
 
 To analyze it with a **local instance of SonarQube** up and running, use the following command from its root:
 ```
