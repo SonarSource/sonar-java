@@ -19,6 +19,20 @@
     <sonar.skip>true</sonar.skip>
   </properties>
 
+  <scm>
+    <connection>scm:git:git@github.com:SonarSource/sonar-java.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarSource/sonar-java.git</developerConnection>
+    <url>https://github.com/SonarSource/sonar-java/jdt</url>
+  </scm>
+
+  <licenses>
+    <license>
+      <name>Eclipse Public License - v 2.0</name>
+      <url>https://www.eclipse.org/legal/epl-2.0/</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
