@@ -91,6 +91,8 @@ In the code snippet below, it is important to note that the **entry point of the
 You must change this configuration if you refactor your code, rename, or move the class implementing `org.sonar.api.Plugin`.
 The property `<pluginApiMinVersion>` also guarantees compatibility with the SonarQube instance you target. To determine the appropriate plugin API version, see [the plugin API compatibility documentation](https://github.com/SonarSource/sonar-plugin-api/?tab=readme-ov-file#compatibility).
 
+Starting with sonar-java 7.30, you must also include the `requiredForLanguages` property, indicating that your custom plugin will be available for projects using Java. Failing to do so will result in your plugin crashing upon initialization when analyzing a project containing no Java code. Your plugin will only be run when the analyzed project contains Java code.
+
 ```xml
 <plugin>
   <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
@@ -104,6 +106,7 @@ The property `<pluginApiMinVersion>` also guarantees compatibility with the Sona
     <sonarLintSupported>true</sonarLintSupported>
     <pluginApiMinVersion>9.14.0.375</pluginApiMinVersion>
     <requirePlugins>java:${sonarjava.version}</requirePlugins>
+    <requiredForLanguages>java</requiredForLanguages>
   </configuration>
 </plugin>
 ```
