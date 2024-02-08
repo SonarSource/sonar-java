@@ -65,6 +65,8 @@ common_build_definition: &COMMON_BUILD_DEFINITION
 # Only compile without "test and sonar:sonar". Note: Do not rename "build", it is used by "Check Releasability"
 build_task:
   <<: *COMMON_BUILD_DEFINITION
+  submodules_script:
+    - git submodule update --init jdt
   build_script:
     - source cirrus-env BUILD
     - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws'
@@ -72,6 +74,8 @@ build_task:
 
 test_analyze_task:
   <<: *COMMON_BUILD_DEFINITION
+  submodules_script:
+    - git submodule update --init jdt
   build_script:
     - source cirrus-env BUILD
     - PULL_REQUEST_SHA=$GIT_SHA1 regular_mvn_build_deploy_analyze -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true
@@ -91,6 +95,8 @@ ws_scan_task:
     WS_APIKEY: VAULT[development/kv/data/mend data.apikey]
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  submodules_script:
+    - git submodule update --init jdt
   whitesource_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
@@ -107,6 +113,8 @@ qa_os_win_task:
     <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  submodules_script:
+    - git submodule update --init jdt
   build_script:
     - source cirrus-env CI
     - mvn.cmd clean verify
@@ -148,6 +156,8 @@ sanity_task:
     memory: 2G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  submodules_script:
+    - git submodule update --init jdt
   sanity_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
@@ -197,11 +207,12 @@ ruling_win_task:
     matrix:
       - PROFILE: without-sonarqube-project
       - PROFILE: only-sonarqube-project
+  submodules_script:
+    - git submodule update --init --recursive
   ruling_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - init_git_submodules its/sources
-    - git submodule update --init --recursive
     - cd its/ruling
     - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
@@ -225,6 +236,8 @@ autoscan_task:
     memory: 6G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  submodules_script:
+    - git submodule update --init jdt
   autoscan_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
@@ -261,5 +274,7 @@ promote_task:
     ARTIFACTS: org.sonarsource.java:sonar-java-plugin:jar
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  submodules_script:
+    - git submodule update --init jdt
   script: cirrus_promote_maven
   cleanup_before_cache_script: cleanup_maven_repository
