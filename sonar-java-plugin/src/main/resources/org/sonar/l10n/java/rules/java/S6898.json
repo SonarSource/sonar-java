@@ -1,0 +1,24 @@
+{
+  "title": "High frame rates should not be used",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "android",
+    "sustainability"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6898",
+  "sqKey": "S6898",
+  "scope": "Main",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  }
+}

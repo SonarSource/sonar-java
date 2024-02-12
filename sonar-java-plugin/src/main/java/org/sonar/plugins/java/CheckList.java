@@ -723,6 +723,7 @@ public final class CheckList {
     AuthorizationsStrongDecisionsCheck.class,
     AutowiredOnConstructorWhenMultipleConstructorsCheck.class,
     AutowiredOnMultipleConstructorsCheck.class,
+    AvoidHighFrameratesOnMobileCheck.class,
     AvoidQualifierOnBeanMethodsCheck.class,
     AwsConsumerBuilderUsageCheck.class,
     AwsCredentialsShouldBeSetExplicitlyCheck.class,
