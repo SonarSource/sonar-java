@@ -1,0 +1,25 @@
+{
+  "title": "Avoid using \"FetchType.EAGER\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "sustainability",
+    "jpa",
+    "sql"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6904",
+  "sqKey": "S6904",
+  "scope": "Main",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  }
+}
