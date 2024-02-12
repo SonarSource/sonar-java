@@ -1,0 +1,80 @@
+<p><code>BluetoothGATT</code> is a class to provide a functionality to enable communication with Bluetooth Smart or Smart Ready devices.</p>
+<p>To connect to a remote peripheral device, a <code>BluetoothGattCallback</code> is used and a method <code>BluetoothDevice#connectGatt</code> is
+used to get an instance of this class. GATT-capable devices can be discovered using the Bluetooth device discovery or BLE scan process.</p>
+<h2>Why is this an issue?</h2>
+<p>Using high power consumption modes for Bluetooth operations can drain the device battery faster and may not be suitable for scenarios where power
+efficiency is crucial.</p>
+<p>This rule identifies instances where high power consumption Bluetooth operations are used, specifically when <code>requestConnectionPriority</code>
+or <code>setAdvertiseMode</code> methods are invoked with arguments other than those promoting low power consumption.</p>
+<h2>How to fix it</h2>
+<ul>
+  <li> Use <code>CONNECTION_PRIORITY_LOW_POWER</code> for <code>requestConnectionPriority</code> method. </li>
+  <li> Use <code>ADVERTISE_MODE_LOW_POWER</code> for <code>setAdvertiseMode</code> method to promote low power consumption. </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class BluetoothExample {
+    private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
+        @Override
+        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+          // ...
+        }
+
+        @Override
+        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH); // Noncompliant
+            }
+        }
+    };
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class BluetoothExample {
+   private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
+        @Override
+        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+          // ...
+        }
+
+        @Override
+        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_LOW_POWER); // Compliant
+            }
+        }
+    };
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+public class BluetoothExample {
+    private void startAdvertising() {
+        AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
+        settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY); // Noncompliant
+        // Other settings configuration...
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+public class BluetoothExample {
+    private void startAdvertising() {
+        AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
+        settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_POWER); // Compliant
+        // Other settings configuration...
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://developer.android.com/reference/android/bluetooth/BluetoothGattCallback">Android Developers - BluetoothGattCallback</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/bluetooth/BluetoothGatt">Android Developers - BluetoothGatt</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/bluetooth/BluetoothDevice">Android Developers - BluetoothDevice</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/bluetooth/le/AdvertiseSettings.Builder">Android Developers -
+  AdvertiseSettings.Builder</a> </li>
+</ul>
+
