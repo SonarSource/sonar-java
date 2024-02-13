@@ -30,7 +30,24 @@ class ReleaseSensorsCheckTest {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/ReleaseSensorsCheckSample.java"))
       .withCheck(new ReleaseSensorsCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_noncompliant() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ReleaseSensorsCheckSample_non_compliant.java"))
+      .withCheck(new ReleaseSensorsCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_no_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ReleaseSensorsCheckSample_non_compliant.java"))
+      .withCheck(new ReleaseSensorsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
   
 }

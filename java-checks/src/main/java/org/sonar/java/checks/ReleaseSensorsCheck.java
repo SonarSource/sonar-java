@@ -28,10 +28,39 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+/**
+ * Rule S6889 flags issues when any sensor defined in {@link AcquireReleaseSensor} is not released.
+ * The intent of this rule is to make the developer aware of the need to release the sensor when it is not needed anymore.
+ * <p>
+ * The implemented logic checks that after acquiring a sensor there is at least one release invocation within the same file.
+ */
 @Rule(key = "S6889")
 public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
+
+  enum AcquireReleaseSensor {
+    CAMERA("android.hardware.Camera", "open", "close"),
+    LOCATION_MANAGER("android.location.LocationManager", "requestLocationUpdates", "removeUpdates"),
+    SENSOR_MANAGER("android.hardware.SensorManager", "registerListener", "unregisterListener"),
+    WIFI_MANAGER("android.net.wifi.WifiManager$MulticastLock", "acquire", RELEASE),
+    MEDIA_PLAYER("android.media.MediaPlayer", MethodMatchers.CONSTRUCTOR, RELEASE),
+    MEDIA_RECORDER("android.media.MediaRecorder", MethodMatchers.CONSTRUCTOR, RELEASE);
+
+    private final MethodMatchers acquireMethodMatcher;
+    private final MethodMatchers releaseMethodMatcher;
+
+    AcquireReleaseSensor(String sensorClass, String acquireMethod, String releaseMethod) {
+      this.acquireMethodMatcher = MethodMatchers.create().ofTypes(sensorClass).names(acquireMethod).withAnyParameters().build();
+      this.releaseMethodMatcher = MethodMatchers.create().ofTypes(sensorClass).names(releaseMethod).withAnyParameters().build();
+    }
+  }
+
+  private static class AcquireReleaseStatus {
+    List<Tree> acquireInvocations = new LinkedList<>();
+    boolean released = false;
+  }
 
   public static final String RELEASE = "release";
   private AcquireReleaseStatus[] statuses;
@@ -48,54 +77,39 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
-
     // collect acquire invocations
     Arrays.stream(AcquireReleaseSensor.values())
-      .filter(sensor -> sensor.acquireMethodMatcher.matches(mit))
-      .forEach(sensor -> statuses[sensor.ordinal()].acquireInvocations.add(mit));
+      .filter(sensor -> isAcquireMethodInvocation(tree, sensor.acquireMethodMatcher))
+      .forEach(sensor -> statuses[sensor.ordinal()].acquireInvocations.add(tree));
 
     // flag released invocations
     Arrays.stream(AcquireReleaseSensor.values())
-      .filter(sensor -> sensor.releaseMethodMatcher.matches(mit))
+      .filter(sensor -> isAcquireMethodInvocation(tree, sensor.releaseMethodMatcher))
       .forEach(sensor -> statuses[sensor.ordinal()].released = true);
+  }
+
+  private static boolean isAcquireMethodInvocation(Tree tree, MethodMatchers methodMatchers) {
+    switch (tree.kind()) {
+      case METHOD_INVOCATION:
+        return methodMatchers.matches((MethodInvocationTree) tree);
+      case NEW_CLASS:
+        return methodMatchers.matches((NewClassTree) tree);
+      default:
+        return false;
+    }
   }
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     Arrays.stream(statuses)
       .filter(status -> !status.released)
-      .forEach(status -> status.acquireInvocations.forEach(mit -> reportIssue(mit, "Make sure to release this sensor.")));
+      .forEach(status -> status.acquireInvocations.forEach(mit -> reportIssue(mit, "Make sure to release this sensor when not needed.")));
 
     initStatuses();
-  }
-
-  private static class AcquireReleaseStatus {
-    List<MethodInvocationTree> acquireInvocations = new LinkedList<>();
-    boolean released = false;
-  }
-
-  enum AcquireReleaseSensor {
-    CAMERA("android.hardware.Camera", "open", "close"),
-    LOCATION_MANAGER("android.location.LocationManager", "requestLocationUpdates", "removeUpdates"),
-    SENSOR_MANAGER("android.hardware.SensorManager", "registerListener", "unregisterListener"),
-    WIFI_MANAGER("android.net.wifi.WifiManager$MulticastLock", "acquire", RELEASE),
-    MEDIA_PLAYER("android.media.MediaPlayer", "MediaPlayer", RELEASE),
-    // todo verify if the method matcher can match the constructor!
-    MEDIA_RECORDER("android.media.MediaRecorder", "MediaRecorder", RELEASE);
-    // todo verify if the method matcher can match the constructor!
-
-    private final MethodMatchers acquireMethodMatcher;
-    private final MethodMatchers releaseMethodMatcher;
-
-    AcquireReleaseSensor(String sensorClass, String acquireMethod, String releaseMethod) {
-      this.acquireMethodMatcher = MethodMatchers.create().ofTypes(sensorClass).names(acquireMethod).withAnyParameters().build();
-      this.releaseMethodMatcher = MethodMatchers.create().ofTypes(sensorClass).names(releaseMethod).withAnyParameters().build();
-    }
   }
 }

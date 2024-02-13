@@ -312,6 +312,7 @@ import org.sonar.java.checks.RedundantThrowsDeclarationCheck;
 import org.sonar.java.checks.RedundantTypeCastCheck;
 import org.sonar.java.checks.ReflectionOnNonRuntimeAnnotationCheck;
 import org.sonar.java.checks.RegexPatternsNeedlesslyCheck;
+import org.sonar.java.checks.ReleaseSensorsCheck;
 import org.sonar.java.checks.RepeatAnnotationCheck;
 import org.sonar.java.checks.ReplaceGuavaWithJavaCheck;
 import org.sonar.java.checks.ReplaceLambdaByMethodRefCheck;
