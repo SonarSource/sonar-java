@@ -49,7 +49,6 @@
   </developers>
 
   <modules>
-    <module>jdt</module>
     <module>java-checks-test-sources</module>
     <module>java-frontend</module>
     <module>java-symbolic-execution</module>
