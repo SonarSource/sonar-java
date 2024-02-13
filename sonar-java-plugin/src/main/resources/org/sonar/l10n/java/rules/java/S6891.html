@@ -1,0 +1,81 @@
+<p>The <code>AlarmManager</code> class provides access to the system alarm services. It allows you to schedule your application to run at some point
+in the future, even when it’s not active.</p>
+<p>From API 19 onwards, the alarm delivery is inexact in order to save battery life. The Android OS now batches together alarms from all apps that
+occur at reasonably similar times so the system wakes the device once instead of several times to handle each alarm.</p>
+<p>It is possible to use exact alarms with <code>setExact</code>, <code>setExactAndAllowWhileIdle</code>, <code>setWindow</code> and
+<code>setAlarmClock</code>. Exact alarms should be used only when strict delivery guarantees are required, for example for an alarm clock application
+or for calendar notifications.</p>
+<p>The rule raises an issue when an exact alarm is set, or when a window is set to less than 10 minutes.</p>
+<h2>Why is this an issue?</h2>
+<p>The use of exact alarms triggers the device to wake up at precise times that can lead several wake-ups in a short period of time. The wake-up
+mechanism is a significant battery drain because it requires powering up the main processor and pulling it out of a low-power state.</p>
+<p>It’s highly recommended to create an inexact alarm whenever possible.</p>
+<p>It is also recommended for normal timing operations, such as ticks and timeouts, using the <code>Handler</code>, and for long-running operations,
+such as network downloads, using <code>WorkManager</code> or <code>JobScheduler</code>.</p>
+<h3>What is the potential impact?</h3>
+<ul>
+  <li> <em>Usability</em>: the device may run out of battery faster than expected. </li>
+  <li> <em>Sustainability</em>: the extra battery usage has a negative impact on the environment. </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Replace occurrences of <code>setExact</code> with <code>set</code> and <code>setExactAndAllowWhileIdle</code> with
+<code>setAndAllowWhileIdle</code>, and avoid to use <code>setWindow</code> with a window less than 10 minutes.</p>
+<p>Alternatively, consider using <code>Handler</code>, <code>WorkManager</code> or <code>JobScheduler</code> instead of <code>AlarmManager</code> when
+possible, depending on your use case.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class AlarmScheduler {
+    private Context context;
+
+    public AlarmScheduler(Context context) {
+        this.context = context;
+    }
+
+    public void scheduleAlarm(long triggerTime) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent); // Noncompliant, avoid using exact alarms unless necessary
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent); // Noncompliant, avoid using exact alarms unless necessary
+
+        long windowLengthMillis = 5 * 60 * 1000; // 5 minutes in milliseconds
+        alarmManager.setWindow(AlarmManager.RTC_WAKEUP, triggerTime, windowLengthMillis, pendingIntent); // Noncompliant, don't use windows below 10 minutes
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class AlarmScheduler {
+    private Context context;
+
+    public AlarmScheduler(Context context) {
+        this.context = context;
+    }
+
+    public void scheduleAlarm(long triggerTime) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent); // Compliant
+        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);  // Compliant
+
+        long windowLengthMillis = 10 * 60 * 1000; // 10 minutes in milliseconds
+        alarmManager.setWindow(AlarmManager.RTC_WAKEUP, triggerTime, windowLengthMillis, pendingIntent); // Compliant
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://developer.android.com/reference/android/app/AlarmManager">Android for Developers - AlarmManager</a> </li>
+  <li> <a href="https://developer.android.com/about/versions/kitkat/android-4.4">Android for Developers - AlarmManager with SDK Version 19</a> </li>
+  <li> <a href="https://developer.android.com/develop/background-work/services/alarms/schedule#exact-acceptable-use-cases">Android for Developers -
+  Schedule alarms</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/os/Handler">Android for Developers - Handler</a> </li>
+  <li> <a href="https://developer.android.com/reference/androidx/work/WorkManager">Android for Developers - WorkManager</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/app/job/JobScheduler">Android for Developers - JobScheduler</a> </li>
+</ul>
+

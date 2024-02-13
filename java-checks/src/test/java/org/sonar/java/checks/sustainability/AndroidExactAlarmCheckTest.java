@@ -17,18 +17,30 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.sustainability;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-class AbstractClassWithoutAbstractMethodCheckTest {
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
+
+  import org.junit.jupiter.api.Test;
+  import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.plugins.java.api.InputFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
+class AndroidExactAlarmCheckTest {
 
   @Test
-  void detected() {
+  void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AbstractClassWithoutAbstractMethodCheck.java")
-      .withCheck(new AbstractClassWithoutAbstractMethodCheck())
+      .onFile(mainCodeSourcesPath("checks/sustainability/AndroidExactAlarmCheckSample.java"))
+      .withCheck(new AndroidExactAlarmCheck())
       .verifyIssues();
   }
 }

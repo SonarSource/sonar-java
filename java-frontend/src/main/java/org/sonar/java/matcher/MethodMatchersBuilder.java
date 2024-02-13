@@ -255,7 +255,7 @@ public class MethodMatchersBuilder implements MethodMatchers.TypeBuilder, Method
       typePredicate.test(type);
   }
 
-  private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
+  public static IdentifierTree getIdentifier(MethodInvocationTree mit) {
     // methodSelect can only be Tree.Kind.IDENTIFIER or Tree.Kind.MEMBER_SELECT
     if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
       return (IdentifierTree) mit.methodSelect();

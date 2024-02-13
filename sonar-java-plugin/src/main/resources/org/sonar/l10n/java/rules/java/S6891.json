@@ -1,0 +1,25 @@
+{
+  "title": "Exact alarms should not be abused",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java",
+    "android",
+    "sustainability"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6891",
+  "sqKey": "S6891",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  }
+}
