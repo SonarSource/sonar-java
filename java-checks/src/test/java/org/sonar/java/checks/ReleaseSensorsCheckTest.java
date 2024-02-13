@@ -28,7 +28,7 @@ class ReleaseSensorsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/ReleaseSensorsCheckSample.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ReleaseSensorsCheckSample_compliant.java"))
       .withCheck(new ReleaseSensorsCheck())
       .verifyNoIssues();
   }

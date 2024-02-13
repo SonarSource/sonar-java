@@ -21,9 +21,9 @@
 package android.hardware;
 
 public class Camera {
-  public boolean open() {
+  public static Camera open(int id) {
     // mock implementation
-    return true;
+    return new Camera();
   }
 
   public void release() {

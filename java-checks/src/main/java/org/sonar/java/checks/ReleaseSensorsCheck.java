@@ -41,9 +41,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
 
   enum AcquireReleaseSensor {
-    CAMERA("android.hardware.Camera", "open", "close"),
     LOCATION_MANAGER("android.location.LocationManager", "requestLocationUpdates", "removeUpdates"),
     SENSOR_MANAGER("android.hardware.SensorManager", "registerListener", "unregisterListener"),
+    CAMERA("android.hardware.Camera", "open", RELEASE),
     WIFI_MANAGER("android.net.wifi.WifiManager$MulticastLock", "acquire", RELEASE),
     MEDIA_PLAYER("android.media.MediaPlayer", MethodMatchers.CONSTRUCTOR, RELEASE),
     MEDIA_RECORDER("android.media.MediaRecorder", MethodMatchers.CONSTRUCTOR, RELEASE);

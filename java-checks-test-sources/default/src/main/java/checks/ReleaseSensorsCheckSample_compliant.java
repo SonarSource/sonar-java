@@ -7,24 +7,23 @@ public class ReleaseSensorsCheckSample_compliant {
 
   public static class MockedSensorsExample {
     public void acquireSensors(
-      android.hardware.Camera camera,
       android.location.LocationManager locationManager,
       android.hardware.SensorManager sensorManager,
       android.net.wifi.WifiManager.MulticastLock multicastLock) {
 
-      camera.open();
       locationManager.requestLocationUpdates();
       sensorManager.registerListener();
       multicastLock.acquire();
+      android.hardware.Camera camera = android.hardware.Camera.open(1);
       android.media.MediaPlayer mediaPlayer = new MediaPlayer();
       android.media.MediaRecorder mediaRecorder = new MediaRecorder();
     }
 
     public void releaseSensors(
-      android.hardware.Camera camera,
       android.location.LocationManager locationManager,
       android.hardware.SensorManager sensorManager,
       android.net.wifi.WifiManager.MulticastLock multicastLock,
+      android.hardware.Camera camera,
       android.media.MediaPlayer mediaPlayer,
       android.media.MediaRecorder mediaRecorder) {
 
