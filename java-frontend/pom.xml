@@ -15,9 +15,8 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>jdt</artifactId>
-      <version>${project.version}</version>
-      <classifier>shaded</classifier>
+      <artifactId>jdt-package</artifactId>
+      <version>1.0.0.9</version>
     </dependency>
 
     <dependency>
