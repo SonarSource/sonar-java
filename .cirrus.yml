@@ -67,7 +67,6 @@ build_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
     - source cirrus-env BUILD
-    - cd jdt && source set_maven_build_version "$BUILD_NUMBER"
     - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws'
   cleanup_before_cache_script: cleanup_maven_repository
 
@@ -75,7 +74,6 @@ test_analyze_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
     - source cirrus-env BUILD
-    - cd jdt && source set_maven_build_version $BUILD_NUMBER
     - PULL_REQUEST_SHA=$GIT_SHA1 regular_mvn_build_deploy_analyze -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
@@ -95,7 +93,6 @@ ws_scan_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   whitesource_script:
     - source cirrus-env QA
-    - cd jdt && source set_maven_build_version $BUILD_NUMBER
     - source set_maven_build_version $BUILD_NUMBER
     - mvn clean install -Dmaven.test.skip=true -pl '!java-checks-test-sources,!java-checks-test-sources/default,!java-checks-test-sources/aws'
     - source ws_scan.sh
@@ -135,7 +132,6 @@ plugin_qa_task:
     - git submodule update --init --recursive
   qa_script:
     - source cirrus-env QA
-    - cd jdt && source set_maven_build_version "$BUILD_NUMBER"
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/plugin
     - mvn package -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
@@ -154,7 +150,6 @@ sanity_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   sanity_script:
     - source cirrus-env QA
-    - cd jdt && source set_maven_build_version "$BUILD_NUMBER"
     - source set_maven_build_version $BUILD_NUMBER
     - mvn clean compile --projects java-checks-test-sources --also-make-dependents
     - mvn verify -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
@@ -180,7 +175,6 @@ ruling_task:
       - PROFILE: only-sonarqube-project
   ruling_script:
     - source cirrus-env QA
-    - cd jdt && source set_maven_build_version "$BUILD_NUMBER"
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
     - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
@@ -205,7 +199,6 @@ ruling_win_task:
       - PROFILE: only-sonarqube-project
   ruling_script:
     - source cirrus-env QA
-    - cd jdt && source set_maven_build_version "$BUILD_NUMBER"
     - source set_maven_build_version $BUILD_NUMBER
     - init_git_submodules its/sources
     - git submodule update --init --recursive
@@ -234,7 +227,6 @@ autoscan_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   autoscan_script:
     - source cirrus-env QA
-    - cd jdt && source set_maven_build_version "$BUILD_NUMBER"
     - source set_maven_build_version $BUILD_NUMBER
     - JAVA_HOME="${JAVA_21_HOME}" mvn clean compile --projects java-checks-test-sources --also-make-dependents
     - cd its/autoscan
