@@ -1,0 +1,63 @@
+<p>The <em>Java Database Connectivity (JDBC) API</em> provides the <code>java.sql.Statement</code> interface that allows to represent an SQL statement
+and to execute queries with the database.</p>
+<h2>Why is this an issue?</h2>
+<p>A common reason for a poorly performant query is because it’s processing more data than required.</p>
+<p>Querying unnecessary data demands extra work on the server, adds network overhead, and consumes memory and CPU resources on the application server.
+The effect is amplified when the query includes multiple <em>joins</em>.</p>
+<p>The rule flags an issue when a <code>SELECT *</code> query is provided as an argument to methods in <code>java.sql.Connection</code> and
+<code>java.sql.Statement</code>.</p>
+<h3>What is the potential impact?</h3>
+<ul>
+  <li> <em>Performance</em>: the unnecessary extra data being processed brings overhead. </li>
+  <li> <em>Sustainability</em>: the extra resources used have a negative impact on the environment. </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Make the <code>SELECT *</code> an explicit selection of the required fields.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class OrderRepository {
+
+    public record OrderSummary(String name, String orderId, BigDecimal price) { }
+
+    public List&lt;OrderSummary&gt; queryOrderSummaries(Connection conn) {
+            String sql = "SELECT * " +                                                         // Noncompliant
+                          "FROM Orders JOIN Customers ON Orders.customerId = Customers.id ";
+
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            return convertResultToOrderSummaryList(rs);
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class OrderRepository {
+
+    public record OrderSummary(String name, String orderId, BigDecimal price) { }
+
+    public List&lt;OrderSummary&gt; queryOrderSummaries(Connection conn) {
+            String sql = "SELECT Customers.name, Orders.id, Orders.price " +                   // Compliant
+                          "FROM Orders JOIN Customers ON Orders.customerId = Customers.id ";
+
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            return convertResultToOrderSummaryList(rs);
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.sql/java/sql/Statement.html">Oracle SDK - Statement</a> </li>
+  <li> <a href="https://www.oreilly.com/library/view/high-performance-mysql/9780596101718/ch04.html">O’Reilly - High Performance MySQL - Query
+  Performance Optimization</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.geeksforgeeks.org/difference-between-execute-query-and-update-methods-in-java/">GeeksforGeeks - Difference Between
+  Execute(), query() and Update() Methods in Java</a> </li>
+</ul>
+
