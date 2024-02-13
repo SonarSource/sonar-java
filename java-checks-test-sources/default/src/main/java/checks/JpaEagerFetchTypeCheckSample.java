@@ -18,6 +18,8 @@ public class JpaEagerFetchTypeCheckSample {
   private @interface CustomAnnotation {
     FetchType value() default FetchType.LAZY;
     CustomFetchType fetch() default CustomFetchType.LAZY;
+
+    FetchType foo() default FetchType.LAZY;
   }
 
   @Basic(fetch = FetchType.EAGER) // Noncompliant [[sc=28;ec=33]] {{Use lazy fetching instead.}}
@@ -61,4 +63,7 @@ public class JpaEagerFetchTypeCheckSample {
 
   @CustomAnnotation(EAGER) // Compliant
   private String customNoAssignment;
+
+  @CustomAnnotation(foo = FetchType.EAGER) // Compliant
+  private String customNoAssignment2;
 }

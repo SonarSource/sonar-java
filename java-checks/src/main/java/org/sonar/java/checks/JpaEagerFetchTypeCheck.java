@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -59,7 +60,8 @@ public class JpaEagerFetchTypeCheck extends IssuableSubscriptionVisitor {
   @Nullable
   private static IdentifierTree getEagerArgument(ExpressionTree tree) {
     if (tree.is(Tree.Kind.ASSIGNMENT)) {
-      var assignedExpr = ((AssignmentExpressionTree) tree).expression();
+      var assignmentTree = (AssignmentExpressionTree) tree;
+      var assignedExpr = assignmentTree.expression();
       IdentifierTree fetchType;
       if (assignedExpr.is(Tree.Kind.MEMBER_SELECT)) {
         fetchType = ((MemberSelectExpressionTree) assignedExpr).identifier();
@@ -69,8 +71,10 @@ public class JpaEagerFetchTypeCheck extends IssuableSubscriptionVisitor {
         return null;
       }
 
-      if ("EAGER".equals(fetchType.name()) &&
+      if ("fetch".equals(ExpressionUtils.extractIdentifier(assignmentTree).name()) &&
+        "EAGER".equals(fetchType.name()) &&
         FETCH_TYPE_ENUMS.contains(assignedExpr.symbolType().fullyQualifiedName())) {
+
         return fetchType;
       }
     }

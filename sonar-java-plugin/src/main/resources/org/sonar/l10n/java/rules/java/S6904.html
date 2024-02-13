@@ -5,7 +5,7 @@
   <li> <code>FetchType.EAGER</code>: the association is loaded immediately when the owning entity is loaded. </li>
   <li> <code>FetchType.LAZY</code>: the association is not loaded unless it is explicitly accessed. </li>
 </ul>
-<p>By default, the <code>FetchType</code> is <code>FetchType.LAZY</code>.</p>
+<p>This rule raises an issue when the <code>fetch</code> argument is explicitly set to <code>FetchType.EAGER</code>.</p>
 <h2>Why is this an issue?</h2>
 <p>Using <code>FetchType.EAGER</code> can lead to inefficient data loading and potential performance issues. Eager Loading initializes associated data
 on the spot, potentially fetching more data than needed.</p>
