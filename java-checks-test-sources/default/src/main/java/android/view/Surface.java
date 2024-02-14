@@ -24,4 +24,10 @@ public class Surface {
   public void release() {
     // mock implementation
   }
+
+  public void setFrameRate(float frameRate, int compatibility, int changeFrameRateStrategy) {
+  }
+
+  public void setFrameRate(float frameRate, int compatibility) {
+  }
 }

@@ -44,6 +44,7 @@ import org.sonar.java.checks.AssertionsInProductionCodeCheck;
 import org.sonar.java.checks.AssertsOnParametersOfPublicMethodCheck;
 import org.sonar.java.checks.AssignmentInSubExpressionCheck;
 import org.sonar.java.checks.AtLeastOneConstructorCheck;
+import org.sonar.java.checks.AvoidHighFrameratesOnMobileCheck;
 import org.sonar.java.checks.BasicAuthCheck;
 import org.sonar.java.checks.BigDecimalDoubleConstructorCheck;
 import org.sonar.java.checks.BooleanInversionCheck;

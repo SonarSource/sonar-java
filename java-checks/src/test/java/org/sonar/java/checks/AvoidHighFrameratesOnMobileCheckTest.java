@@ -32,5 +32,13 @@ class AvoidHighFrameratesOnMobileCheckTest {
       .withCheck(new AvoidHighFrameratesOnMobileCheck())
       .verifyIssues();
   }
-  
+
+  @Test
+  void test_no_semantics() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/AvoidHighFrameratesOnMobileCheckSample.java"))
+      .withCheck(new AvoidHighFrameratesOnMobileCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }
