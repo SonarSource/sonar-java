@@ -44,6 +44,7 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
     LOCATION_MANAGER("android.location.LocationManager", "requestLocationUpdates", "removeUpdates"),
     SENSOR_MANAGER("android.hardware.SensorManager", "registerListener", "unregisterListener"),
     CAMERA("android.hardware.Camera", "open", RELEASE),
+    CAMERA2("android.hardware.camera2.CameraManager", "openCamera", "android.hardware.camera2.CameraDevice", "close"),
     WIFI_MANAGER("android.net.wifi.WifiManager$MulticastLock", "acquire", RELEASE),
     MEDIA_PLAYER("android.media.MediaPlayer", MethodMatchers.CONSTRUCTOR, RELEASE),
     MEDIA_RECORDER("android.media.MediaRecorder", MethodMatchers.CONSTRUCTOR, RELEASE);
@@ -54,6 +55,11 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
     AcquireReleaseSensor(String sensorClass, String acquireMethod, String releaseMethod) {
       this.acquireMethodMatcher = MethodMatchers.create().ofTypes(sensorClass).names(acquireMethod).withAnyParameters().build();
       this.releaseMethodMatcher = MethodMatchers.create().ofTypes(sensorClass).names(releaseMethod).withAnyParameters().build();
+    }
+
+    AcquireReleaseSensor(String acquireSensorClass, String acquireMethod, String releaseSensorClass, String releaseMethod) {
+      this.acquireMethodMatcher = MethodMatchers.create().ofTypes(acquireSensorClass).names(acquireMethod).withAnyParameters().build();
+      this.releaseMethodMatcher = MethodMatchers.create().ofTypes(releaseSensorClass).names(releaseMethod).withAnyParameters().build();
     }
   }
 

@@ -1,5 +1,6 @@
 package checks;
 
+import android.hardware.camera2.CameraDevice;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 
@@ -9,7 +10,8 @@ public class ReleaseSensorsCheckSample_compliant {
     public void acquireSensors(
       android.location.LocationManager locationManager,
       android.hardware.SensorManager sensorManager,
-      android.net.wifi.WifiManager.MulticastLock multicastLock) {
+      android.net.wifi.WifiManager.MulticastLock multicastLock,
+      android.hardware.camera2.CameraManager cameraManager) {
 
       locationManager.requestLocationUpdates();
       sensorManager.registerListener();
@@ -17,6 +19,25 @@ public class ReleaseSensorsCheckSample_compliant {
       android.hardware.Camera camera = android.hardware.Camera.open(1);
       android.media.MediaPlayer mediaPlayer = new MediaPlayer();
       android.media.MediaRecorder mediaRecorder = new MediaRecorder();
+
+      cameraManager.openCamera("id",
+        new android.hardware.camera2.CameraDevice.StateCallback() {
+          @Override
+          public void onDisconnected(CameraDevice camera) {
+            camera.close();
+          }
+
+          @Override
+          public void onError(CameraDevice camera, int error) {
+            camera.close();
+          }
+
+          @Override
+          public void onOpened(android.hardware.camera2.CameraDevice camera) {
+            // mock implementation
+          }
+        },
+        null);
     }
 
     public void releaseSensors(
