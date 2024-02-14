@@ -1,8 +1,6 @@
 package checks;
 
 import android.hardware.camera2.CameraDevice;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 
 public class ReleaseSensorsCheckSample_compliant {
 
@@ -10,15 +8,19 @@ public class ReleaseSensorsCheckSample_compliant {
     public void acquireSensors(
       android.location.LocationManager locationManager,
       android.hardware.SensorManager sensorManager,
+      android.os.PowerManager.WakeLock wakeLock,
       android.net.wifi.WifiManager.MulticastLock multicastLock,
       android.hardware.camera2.CameraManager cameraManager) {
 
       locationManager.requestLocationUpdates();
       sensorManager.registerListener();
+      wakeLock.acquire();
       multicastLock.acquire();
-      android.hardware.Camera camera = android.hardware.Camera.open(1);
-      android.media.MediaPlayer mediaPlayer = new MediaPlayer();
-      android.media.MediaRecorder mediaRecorder = new MediaRecorder();
+      new android.media.SoundPool.Builder().build();
+      new android.media.audiofx.Visualizer(0);
+      android.hardware.Camera.open(1);
+      new android.media.MediaPlayer();
+      new android.media.MediaRecorder();
 
       cameraManager.openCamera("id",
         new android.hardware.camera2.CameraDevice.StateCallback() {
@@ -43,15 +45,21 @@ public class ReleaseSensorsCheckSample_compliant {
     public void releaseSensors(
       android.location.LocationManager locationManager,
       android.hardware.SensorManager sensorManager,
+      android.os.PowerManager.WakeLock wakeLock,
       android.net.wifi.WifiManager.MulticastLock multicastLock,
       android.hardware.Camera camera,
+      android.media.SoundPool soundPool,
+      android.media.audiofx.Visualizer visualizer,
       android.media.MediaPlayer mediaPlayer,
       android.media.MediaRecorder mediaRecorder) {
 
       camera.release();
       locationManager.removeUpdates();
       sensorManager.unregisterListener();
+      wakeLock.release();
       multicastLock.release();
+      soundPool.release();
+      visualizer.release();
       mediaPlayer.release();
       mediaRecorder.release();
     }

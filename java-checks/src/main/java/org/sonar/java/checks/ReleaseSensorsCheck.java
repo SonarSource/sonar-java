@@ -45,7 +45,10 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
     SENSOR_MANAGER("android.hardware.SensorManager", "registerListener", "unregisterListener"),
     CAMERA("android.hardware.Camera", "open", RELEASE),
     CAMERA2("android.hardware.camera2.CameraManager", "openCamera", "android.hardware.camera2.CameraDevice", "close"),
-    WIFI_MANAGER("android.net.wifi.WifiManager$MulticastLock", "acquire", RELEASE),
+    POWER_MANAGER("android.os.PowerManager$WakeLock", ACQUIRE, RELEASE),
+    WIFI_MANAGER("android.net.wifi.WifiManager$MulticastLock", ACQUIRE, RELEASE),
+    SOUND_POOL("android.media.SoundPool$Builder", "build", "android.media.SoundPool", RELEASE),
+    VISUALIZER("android.media.audiofx.Visualizer", MethodMatchers.CONSTRUCTOR, RELEASE),
     MEDIA_PLAYER("android.media.MediaPlayer", MethodMatchers.CONSTRUCTOR, RELEASE),
     MEDIA_RECORDER("android.media.MediaRecorder", MethodMatchers.CONSTRUCTOR, RELEASE);
 
@@ -68,6 +71,7 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
     boolean released = false;
   }
 
+  public static final String ACQUIRE = "acquire";
   public static final String RELEASE = "release";
   private AcquireReleaseStatus[] statuses;
 
