@@ -64,6 +64,11 @@ public class AndroidExactAlarmCheckSample {
     noAlarmManager.setWindow(0, triggerTime, windowLengthMillisTooShort, "", executor, listener); // Cmpliant
   }
 
+  public void setWindow(AlarmManager alarmManager, long triggerTime) {
+    // this function does not exist in android API, but we do it for the test coverage
+    alarmManager.setWindow(0, triggerTime); // Compliant
+  }
+
   public static final long windowLengthMillisTooShort = 5 * 60 * 1000; // 5 minutes in milliseconds
 
   public static final long windowLengthMillisLongEnough = 10 * 60 * 1000; // 10 minutes in milliseconds

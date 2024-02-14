@@ -35,6 +35,9 @@ public class AlarmManager {
     OnAlarmListener listener) {
   }
 
+  public void setWindow(int type, long windowStartMillis) {
+  }
+
   public static final class AlarmClockInfo implements Parcelable {
   }
 

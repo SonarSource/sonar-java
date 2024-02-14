@@ -35,7 +35,7 @@ public class AndroidExactAlarmCheck extends AbstractMethodDetection {
 
   private static final String SET_WINDOW_NAME = "setWindow";
 
-  private static final long SUGGESTED_MIN_LENGTH_MILLIS = 10 * 60 * 1000;
+  private static final long SUGGESTED_MIN_LENGTH_MILLIS = 10L * 60L * 1000L;
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -56,6 +56,8 @@ public class AndroidExactAlarmCheck extends AbstractMethodDetection {
       case SET_WINDOW_NAME:
         onSetWindowInvocation(tree);
         break;
+      default:
+        throw new IllegalArgumentException();
     }
   }
 
