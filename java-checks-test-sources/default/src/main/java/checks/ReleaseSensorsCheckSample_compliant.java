@@ -9,6 +9,7 @@ public class ReleaseSensorsCheckSample_compliant {
       android.location.LocationManager locationManager,
       android.hardware.SensorManager sensorManager,
       android.os.PowerManager.WakeLock wakeLock,
+      android.media.projection.MediaProjection mediaProjection,
       android.net.wifi.WifiManager.MulticastLock multicastLock,
       android.hardware.camera2.CameraManager cameraManager) {
 
@@ -16,6 +17,7 @@ public class ReleaseSensorsCheckSample_compliant {
       sensorManager.registerListener();
       wakeLock.acquire();
       multicastLock.acquire();
+      mediaProjection.createVirtualDisplay("name", 1, 1, 1, 1, null,null, null);
       new android.media.SoundPool.Builder().build();
       new android.media.audiofx.Visualizer(0);
       android.hardware.Camera.open(1);
@@ -47,6 +49,7 @@ public class ReleaseSensorsCheckSample_compliant {
       android.hardware.SensorManager sensorManager,
       android.os.PowerManager.WakeLock wakeLock,
       android.net.wifi.WifiManager.MulticastLock multicastLock,
+      android.hardware.display.VirtualDisplay virtualDisplay,
       android.hardware.Camera camera,
       android.media.SoundPool soundPool,
       android.media.audiofx.Visualizer visualizer,
@@ -58,6 +61,7 @@ public class ReleaseSensorsCheckSample_compliant {
       sensorManager.unregisterListener();
       wakeLock.release();
       multicastLock.release();
+      virtualDisplay.release();
       soundPool.release();
       visualizer.release();
       mediaPlayer.release();

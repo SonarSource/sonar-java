@@ -43,6 +43,7 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
   private enum AcquireReleaseSensor {
     LOCATION_MANAGER("android.location.LocationManager", "requestLocationUpdates", "removeUpdates"),
     SENSOR_MANAGER("android.hardware.SensorManager", "registerListener", "unregisterListener"),
+    VIRTUAL_DISPLAY("android.media.projection.MediaProjection", "createVirtualDisplay", "android.hardware.display.VirtualDisplay", RELEASE),
     CAMERA("android.hardware.Camera", "open", RELEASE),
     CAMERA2("android.hardware.camera2.CameraManager", "openCamera", "android.hardware.camera2.CameraDevice", "close"),
     POWER_MANAGER("android.os.PowerManager$WakeLock", ACQUIRE, RELEASE),
