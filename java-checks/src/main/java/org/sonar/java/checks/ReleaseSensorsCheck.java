@@ -71,6 +71,15 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
     initStatuses();
   }
 
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    Arrays.stream(statuses)
+      .filter(status -> !status.released)
+      .forEach(status -> status.acquireInvocations.forEach(mit -> reportIssue(mit, "Make sure to release this sensor after use.")));
+
+    initStatuses();
+  }
+
   private void initStatuses() {
     this.statuses = IntStream.range(0, AcquireReleaseSensor.values().length)
       .mapToObj(i -> new AcquireReleaseStatus())
@@ -106,14 +115,5 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
       default:
         return false;
     }
-  }
-
-  @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    Arrays.stream(statuses)
-      .filter(status -> !status.released)
-      .forEach(status -> status.acquireInvocations.forEach(mit -> reportIssue(mit, "Make sure to release this sensor after use.")));
-
-    initStatuses();
   }
 }
