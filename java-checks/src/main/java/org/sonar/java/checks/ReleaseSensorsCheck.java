@@ -72,8 +72,8 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
     boolean released = false;
   }
 
-  public static final String ACQUIRE = "acquire";
-  public static final String RELEASE = "release";
+  private static final String ACQUIRE = "acquire";
+  private static final String RELEASE = "release";
   private AcquireReleaseStatus[] statuses;
 
   @Override
@@ -87,8 +87,7 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
     Arrays.stream(statuses)
       .filter(status -> !status.released)
       .forEach(status -> status.acquireInvocations.forEach(mit -> reportIssue(mit, "Make sure to release this sensor after use.")));
-
-    initStatuses();
+    statuses = null;
   }
 
   private void initStatuses() {
