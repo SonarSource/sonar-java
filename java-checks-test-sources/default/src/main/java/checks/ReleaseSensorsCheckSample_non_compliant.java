@@ -2,7 +2,7 @@
 package checks;
 
 public class ReleaseSensorsCheckSample_non_compliant {
-  public void aquireSesnors(
+  public void aquireSensors(
     android.location.LocationManager locationManager,
     android.hardware.SensorManager sensorManager,
     android.net.wifi.WifiManager.MulticastLock multicastLock) {
