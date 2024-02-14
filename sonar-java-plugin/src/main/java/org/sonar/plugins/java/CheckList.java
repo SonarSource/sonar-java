@@ -205,6 +205,7 @@ import org.sonar.java.checks.IterableIteratorCheck;
 import org.sonar.java.checks.IteratorNextExceptionCheck;
 import org.sonar.java.checks.JacksonDeserializationCheck;
 import org.sonar.java.checks.JdbcDriverExplicitLoadingCheck;
+import org.sonar.java.checks.JpaEagerFetchTypeCheck;
 import org.sonar.java.checks.KeySetInsteadOfEntrySetCheck;
 import org.sonar.java.checks.KnownCapacityHashBasedCollectionCheck;
 import org.sonar.java.checks.LabelsShouldNotBeUsedCheck;
@@ -903,9 +904,10 @@ public final class CheckList {
     IsInstanceMethodCheck.class,
     IterableIteratorCheck.class,
     IteratorNextExceptionCheck.class,
-    JWTWithStrongCipherCheck.class,
     JacksonDeserializationCheck.class,
     JdbcDriverExplicitLoadingCheck.class,
+    JpaEagerFetchTypeCheck.class,
+    JWTWithStrongCipherCheck.class,
     KeySetInsteadOfEntrySetCheck.class,
     KnownCapacityHashBasedCollectionCheck.class,
     LDAPAuthenticatedConnectionCheck.class,

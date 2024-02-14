@@ -1,0 +1,36 @@
+<p><code>FetchType</code> is an enumeration in the Java Persistence API (JPA) that is used to define the fetching strategy for associations
+(relationships) between entities in a relational database.</p>
+<p>There are two main values for FetchType:</p>
+<ul>
+  <li> <code>FetchType.EAGER</code>: the association is loaded immediately when the owning entity is loaded. </li>
+  <li> <code>FetchType.LAZY</code>: the association is not loaded unless it is explicitly accessed. </li>
+</ul>
+<p>This rule raises an issue when the <code>fetch</code> argument is explicitly set to <code>FetchType.EAGER</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>Using <code>FetchType.EAGER</code> can lead to inefficient data loading and potential performance issues. Eager Loading initializes associated data
+on the spot, potentially fetching more data than needed.</p>
+<h2>How to fix it</h2>
+<p>Remove or replace <code>FetchType.EAGER</code> with <code>FetchType.LAZY</code> in JPA annotations.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER) // Noncompliant
+private List&lt;ChildEntity&gt; children;
+
+@OneToMany(mappedBy = "child", fetch = FetchType.EAGER) // Noncompliant
+private List&lt;ParentEntity&gt; parents;
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY) // Compliant
+private List&lt;ChildEntity&gt; children;
+
+@OneToMany(mappedBy = "child") // Compliant
+private List&lt;ParentEntity&gt; parents;
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javaee/7/api/javax/persistence/FetchType.html">Java EE 7 API - FetchType</a> </li>
+</ul>
+
