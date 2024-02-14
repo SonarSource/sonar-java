@@ -21,10 +21,12 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -80,16 +82,16 @@ public class QueryOnlyRequiredFieldsCheck extends IssuableSubscriptionVisitor {
       case STRING_LITERAL:
         return (LiteralTree) expression;
       case IDENTIFIER:
-        var declaration = ((IdentifierTree) expression).symbol().declaration();
-
-        if (declaration != null && declaration.is(Tree.Kind.VARIABLE)) {
-          var initializer = ((VariableTree) declaration).initializer();
-
-          if (initializer != null && initializer.is(Tree.Kind.STRING_LITERAL)) {
-            return (LiteralTree) ((VariableTree) declaration).initializer();
-          }
-        }
-        return null;
+        return Optional.of(expression)
+          .map(IdentifierTree.class::cast)
+          .map(IdentifierTree::symbol)
+          .map(Symbol::declaration)
+          .filter(VariableTree.class::isInstance)
+          .map(VariableTree.class::cast)
+          .map(VariableTree::initializer)
+          .filter(LiteralTree.class::isInstance)
+          .map(LiteralTree.class::cast)
+          .orElse(null);
       default:
         return null;
     }
