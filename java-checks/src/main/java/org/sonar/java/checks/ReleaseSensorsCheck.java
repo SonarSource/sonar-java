@@ -40,7 +40,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S6889")
 public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
 
-  enum AcquireReleaseSensor {
+  private enum AcquireReleaseSensor {
     LOCATION_MANAGER("android.location.LocationManager", "requestLocationUpdates", "removeUpdates"),
     SENSOR_MANAGER("android.hardware.SensorManager", "registerListener", "unregisterListener"),
     CAMERA("android.hardware.Camera", "open", RELEASE),
@@ -65,7 +65,9 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
   public static final String RELEASE = "release";
   private AcquireReleaseStatus[] statuses;
 
-  public ReleaseSensorsCheck() {
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
     initStatuses();
   }
 
@@ -84,16 +86,18 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     // collect acquire invocations
     Arrays.stream(AcquireReleaseSensor.values())
-      .filter(sensor -> isAcquireMethodInvocation(tree, sensor.acquireMethodMatcher))
-      .forEach(sensor -> statuses[sensor.ordinal()].acquireInvocations.add(tree));
+      .filter(sensor -> isMethodMatched(tree, sensor.acquireMethodMatcher))
+      .findAny()
+      .ifPresent(sensor -> statuses[sensor.ordinal()].acquireInvocations.add(tree));
 
     // flag released invocations
     Arrays.stream(AcquireReleaseSensor.values())
-      .filter(sensor -> isAcquireMethodInvocation(tree, sensor.releaseMethodMatcher))
-      .forEach(sensor -> statuses[sensor.ordinal()].released = true);
+      .filter(sensor -> isMethodMatched(tree, sensor.releaseMethodMatcher))
+      .findAny()
+      .ifPresent(sensor -> statuses[sensor.ordinal()].released = true);
   }
 
-  private static boolean isAcquireMethodInvocation(Tree tree, MethodMatchers methodMatchers) {
+  private static boolean isMethodMatched(Tree tree, MethodMatchers methodMatchers) {
     switch (tree.kind()) {
       case METHOD_INVOCATION:
         return methodMatchers.matches((MethodInvocationTree) tree);
@@ -108,7 +112,7 @@ public class ReleaseSensorsCheck extends IssuableSubscriptionVisitor {
   public void leaveFile(JavaFileScannerContext context) {
     Arrays.stream(statuses)
       .filter(status -> !status.released)
-      .forEach(status -> status.acquireInvocations.forEach(mit -> reportIssue(mit, "Make sure to release this sensor when not needed.")));
+      .forEach(status -> status.acquireInvocations.forEach(mit -> reportIssue(mit, "Make sure to release this sensor after use.")));
 
     initStatuses();
   }
