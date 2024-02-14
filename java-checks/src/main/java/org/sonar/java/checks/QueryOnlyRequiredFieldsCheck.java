@@ -57,7 +57,7 @@ public class QueryOnlyRequiredFieldsCheck extends IssuableSubscriptionVisitor {
     .addParametersMatcher(JAVA_LANG_STRING, "java.lang.String[]")
     .build();
 
-  private static final Predicate<String> SELECT_FROM_REGEXP = compile("select\\s*\\*\\s*from", CASE_INSENSITIVE).asPredicate();
+  private static final Predicate<String> SELECT_FROM_REGEXP = compile("select\\s+\\*\\s+from", CASE_INSENSITIVE).asPredicate();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
