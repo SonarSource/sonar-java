@@ -46,15 +46,10 @@ import static java.util.regex.Pattern.compile;
 @Rule(key = "S6905")
 public class QueryOnlyRequiredFieldsCheck extends IssuableSubscriptionVisitor {
 
-  public static final String JAVA_LANG_STRING = "java.lang.String";
-
   private static final MethodMatchers SQL_QUERY_METHODS = MethodMatchers.create()
-    .ofTypes("java.sql.Connection", "java.sql.Statement", "java.sql.PreparedStatement", "java.sql.CallableStatement")
+    .ofSubTypes("java.sql.Connection", "java.sql.Statement")
     .names("prepareStatement", "prepareCall", "execute", "executeQuery")
-    .addParametersMatcher(JAVA_LANG_STRING)
-    .addParametersMatcher(JAVA_LANG_STRING, "int")
-    .addParametersMatcher(JAVA_LANG_STRING, "int[]")
-    .addParametersMatcher(JAVA_LANG_STRING, "java.lang.String[]")
+    .addParametersMatcher(types -> !types.isEmpty() && types.get(0).is("java.lang.String"))
     .build();
 
   private static final Predicate<String> SELECT_FROM_REGEXP = compile("select\\s+\\*\\s+from", CASE_INSENSITIVE).asPredicate();
