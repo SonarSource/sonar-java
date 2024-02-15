@@ -1,0 +1,116 @@
+<h2>Why is this an issue?</h2>
+<p>Optimizing resource usage and preventing unnecessary battery drain are critical considerations in Android development. Failing to release sensor
+resources when they are no longer needed can lead to prolonged device activity, negatively impacting battery life. Common Android sensors, such as
+cameras, GPS, and microphones, provide a method to release resources after they are not in use anymore.</p>
+<p>This rule identifies situations where a sensor is not released after being utilized, helping developers maintain efficient and battery-friendly
+applications.</p>
+<ul>
+  <li> Missing call to <code>release()</code> method:
+    <ul>
+      <li> <code>android.os.PowerManager.WakeLock</code> </li>
+      <li> <code>android.net.wifi.WifiManager$MulticastLock</code> </li>
+      <li> <code>android.hardware.Camera</code> </li>
+      <li> <code>android.media.MediaPlayer</code> </li>
+      <li> <code>android.media.MediaRecorder</code> </li>
+      <li> <code>android.media.SoundPool</code> </li>
+      <li> <code>android.media.audiofx.Visualizer</code> </li>
+      <li> <code>android.hardware.display.VirtualDisplay</code> </li>
+    </ul>  </li>
+  <li> Missing call to <code>close()</code> method
+    <ul>
+      <li> <code>android.hardware.camera2.CameraDevice</code> </li>
+    </ul>  </li>
+  <li> Missing call to <code>removeUpdates()</code> method:
+    <ul>
+      <li> <code>android.location.LocationManager</code> </li>
+    </ul>  </li>
+  <li> Missing call to <code>unregisterListener()</code> method:
+    <ul>
+      <li> <code>android.hardware.SensorManager</code> </li>
+    </ul>  </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Ensure that resources are released when they are no longer needed. This can be done by calling the appropriate release method, such as
+<code>release()</code>, <code>removeUpdates()</code>, <code>unregisterListener()</code>, or <code>stop()</code>.</p>
+<h3>Code examples</h3>
+<ul>
+  <li> <code>android.os.PowerManager.WakeLock</code> </li>
+</ul>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public void method() {
+  PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+  PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "My Wake Lock");
+  wakeLock.acquire(); // Noncompliant
+  // do some work...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public void method() {
+  PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+  PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "My Wake Lock");
+  wakeLock.acquire(); // Compliant
+  // do some work...
+  wakeLock.release();
+}
+</pre>
+<ul>
+  <li> <code>android.media.MediaPlayer</code> </li>
+</ul>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+public void method() {
+  MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.sound_file_1);
+  mediaPlayer.start(); // Noncompliant
+  // do some work...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+public void onCreate() {
+  MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.sound_file_1);
+  mediaPlayer.start(); // Compliant
+  // do some work...
+  wakeLock.release();
+}
+</pre>
+<ul>
+  <li> <code>android.hardware.SensorManager</code> </li>
+</ul>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+public void method() {
+  SensorManager sensorManager = getSystemService(SENSOR_SERVICE);
+  Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+  sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL); // Noncompliant
+  // do some work...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+public void method() {
+  SensorManager sensorManager = getSystemService(SENSOR_SERVICE);
+  Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+  sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL); // Compliant
+  // do some work...
+  sensorManager.unregisterListener(this);
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://developer.android.com/reference/android/location/LocationManager">Android - LocationManager</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/os/PowerManager.WakeLock">Android - PowerManager.WakeLock</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/net/wifi/WifiManager.MulticastLock">Android - WifiManager.MulticastLock</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/media/projection/MediaProjection">Android - MediaProjection</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/media/MediaPlayer">Android - MediaPlayer</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/media/MediaRecorder">Android - MediaRecorder</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/media/SoundPool">Android - SoundPool</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/media/audiofx/Visualizer">Android - Visualizer</a> </li>
+  <li> <a href="https://developer.android.com/reference/android/hardware/SensorManager">Android - SensorManager</a> </li>
+  <li> <a href="https://developer.android.com/develop/background-work/background-tasks/scheduling/wakelock">Android - Keep the device awake</a> </li>
+  <li> <a href="https://developer.android.com/media/platform/mediaplayer">Android - MediaPlayer Overview</a> </li>
+  <li> <a href="https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview">Android - Sensors Overview</a> </li>
+</ul>
+
