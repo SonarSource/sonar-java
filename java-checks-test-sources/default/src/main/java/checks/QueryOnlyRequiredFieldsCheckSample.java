@@ -18,7 +18,8 @@ public class QueryOnlyRequiredFieldsCheckSample {
     Statement statement,
     PreparedStatement preparedStatement,
     CallableStatement callableStatement,
-    String sqlQuery) throws SQLException {
+    String sqlQuery,
+    boolean b) throws SQLException {
 
     connection.prepareStatement(NON_COMPLIANT_SQL_QUERY);
     connection.prepareStatement(COMPLIANT_SQL_QUERY);
@@ -51,6 +52,20 @@ public class QueryOnlyRequiredFieldsCheckSample {
 
     String requestNonCompiliant2 = requestNonCompiliant;
     preparedStatement.executeQuery(requestNonCompiliant2); // False Negative
+
+    String undefinedQuery;
+    if(b) {
+      undefinedQuery = "Select * FrOm myTable"; // False Negative
+    }
+    else {
+      undefinedQuery = "Select user FrOm myTable";  // Compliant
+    }
+    connection.prepareStatement(undefinedQuery);
+
+    for(int i = 0; i < 10; i++) {
+      connection.prepareStatement("SELECT * FROM table"); // Noncompliant
+      connection.prepareStatement("SELECT user FROM table"); // Compliant
+    }
 
     preparedStatement.executeQuery("SELECT * FROM table"); // Noncompliant
     callableStatement.execute("SELECT * FROM table"); // Noncompliant
