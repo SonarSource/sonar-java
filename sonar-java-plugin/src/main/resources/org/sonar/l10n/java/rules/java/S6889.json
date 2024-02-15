@@ -1,0 +1,24 @@
+{
+  "title": "Proper Sensor Resource Management",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "sustainability",
+    "android"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6889",
+  "sqKey": "S6889",
+  "scope": "Main",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  }
+}

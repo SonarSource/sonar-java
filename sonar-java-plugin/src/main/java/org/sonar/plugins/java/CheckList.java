@@ -205,6 +205,7 @@ import org.sonar.java.checks.IterableIteratorCheck;
 import org.sonar.java.checks.IteratorNextExceptionCheck;
 import org.sonar.java.checks.JacksonDeserializationCheck;
 import org.sonar.java.checks.JdbcDriverExplicitLoadingCheck;
+import org.sonar.java.checks.JpaEagerFetchTypeCheck;
 import org.sonar.java.checks.KeySetInsteadOfEntrySetCheck;
 import org.sonar.java.checks.KnownCapacityHashBasedCollectionCheck;
 import org.sonar.java.checks.LabelsShouldNotBeUsedCheck;
@@ -240,6 +241,7 @@ import org.sonar.java.checks.MissingDeprecatedCheck;
 import org.sonar.java.checks.MissingNewLineAtEndOfFileCheck;
 import org.sonar.java.checks.MissingOverridesInRecordWithArrayComponentCheck;
 import org.sonar.java.checks.MissingPackageInfoCheck;
+import org.sonar.java.checks.MissingPathVariableAnnotationCheck;
 import org.sonar.java.checks.ModifiersOrderCheck;
 import org.sonar.java.checks.ModulusEqualityCheck;
 import org.sonar.java.checks.MultilineBlocksCurlyBracesCheck;
@@ -279,7 +281,6 @@ import org.sonar.java.checks.OverrideAnnotationCheck;
 import org.sonar.java.checks.OverwrittenKeyCheck;
 import org.sonar.java.checks.ParameterReassignedToCheck;
 import org.sonar.java.checks.ParsingErrorCheck;
-import org.sonar.java.checks.MissingPathVariableAnnotationCheck;
 import org.sonar.java.checks.PopulateBeansCheck;
 import org.sonar.java.checks.PredictableSeedCheck;
 import org.sonar.java.checks.PreferStreamAnyMatchCheck;
@@ -313,6 +314,7 @@ import org.sonar.java.checks.RedundantThrowsDeclarationCheck;
 import org.sonar.java.checks.RedundantTypeCastCheck;
 import org.sonar.java.checks.ReflectionOnNonRuntimeAnnotationCheck;
 import org.sonar.java.checks.RegexPatternsNeedlesslyCheck;
+import org.sonar.java.checks.ReleaseSensorsCheck;
 import org.sonar.java.checks.RepeatAnnotationCheck;
 import org.sonar.java.checks.ReplaceGuavaWithJavaCheck;
 import org.sonar.java.checks.ReplaceLambdaByMethodRefCheck;
@@ -903,9 +905,10 @@ public final class CheckList {
     IsInstanceMethodCheck.class,
     IterableIteratorCheck.class,
     IteratorNextExceptionCheck.class,
-    JWTWithStrongCipherCheck.class,
     JacksonDeserializationCheck.class,
     JdbcDriverExplicitLoadingCheck.class,
+    JpaEagerFetchTypeCheck.class,
+    JWTWithStrongCipherCheck.class,
     KeySetInsteadOfEntrySetCheck.class,
     KnownCapacityHashBasedCollectionCheck.class,
     LDAPAuthenticatedConnectionCheck.class,
@@ -1013,6 +1016,7 @@ public final class CheckList {
     RegexLookaheadCheck.class,
     RegexPatternsNeedlesslyCheck.class,
     RegexStackOverflowCheck.class,
+    ReleaseSensorsCheck.class,
     ReluctantQuantifierCheck.class,
     ReluctantQuantifierWithEmptyContinuationCheck.class,
     ReplaceGuavaWithJavaCheck.class,
