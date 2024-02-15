@@ -1,21 +1,21 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java':[
-490,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
+490
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java':[
-56,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java": [
+56
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java": [
 208,
 210,
-212,
+212
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
 539,
 544,
 685,
 686,
 1810,
-1811,
+1811
 ],
 }

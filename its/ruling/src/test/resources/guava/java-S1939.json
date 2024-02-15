@@ -1,14 +1,14 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
-4684,
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+4684
 ],
-'com.google.guava:guava:src/com/google/common/cache/LongAdder.java':[
-50,
+"com.google.guava:guava:src/com/google/common/cache/LongAdder.java": [
+50
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMaker.java':[
-869,
+"com.google.guava:guava:src/com/google/common/collect/MapMaker.java": [
+869
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 1014,
 1061,
 1096,
@@ -17,19 +17,19 @@
 1352,
 1526,
 1574,
-1610,
+1610
 ],
-'com.google.guava:guava:src/com/google/common/collect/Synchronized.java':[
-1109,
+"com.google.guava:guava:src/com/google/common/collect/Synchronized.java": [
+1109
 ],
-'com.google.guava:guava:src/com/google/common/hash/Funnels.java':[
+"com.google.guava:guava:src/com/google/common/hash/Funnels.java": [
 92,
-173,
+173
 ],
-'com.google.guava:guava:src/com/google/common/primitives/UnsignedLong.java':[
-43,
+"com.google.guava:guava:src/com/google/common/primitives/UnsignedLong.java": [
+43
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AtomicDouble.java':[
-55,
+"com.google.guava:guava:src/com/google/common/util/concurrent/AtomicDouble.java": [
+55
 ],
 }

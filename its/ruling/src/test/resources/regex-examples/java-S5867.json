@@ -1,5 +1,5 @@
 {
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java": [
 13,
 15,
 21,
@@ -378,9 +378,9 @@
 1975,
 1979,
 1981,
-1983,
+1983
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java": [
 27,
 33,
 41,
@@ -729,9 +729,9 @@
 1989,
 1991,
 1993,
-2001,
+2001
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java": [
 9,
 11,
 17,
@@ -1138,9 +1138,9 @@
 1943,
 1945,
 1957,
-1959,
+1959
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java": [
 47,
 53,
 53,
@@ -1602,9 +1602,9 @@
 1995,
 1995,
 1997,
-2007,
+2007
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java": [
 15,
 17,
 31,
@@ -1963,9 +1963,9 @@
 1993,
 1999,
 2003,
-2005,
+2005
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java": [
 9,
 9,
 11,
@@ -2319,9 +2319,9 @@
 1939,
 1941,
 1943,
-1945,
+1945
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java": [
 21,
 23,
 29,
@@ -2670,9 +2670,9 @@
 1973,
 1979,
 1989,
-2003,
+2003
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java": [
 21,
 25,
 25,
@@ -2935,6 +2935,6 @@
 1531,
 1537,
 1539,
-1557,
+1557
 ],
 }

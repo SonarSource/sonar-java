@@ -1,29 +1,29 @@
 {
-'com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableList.java':[
-27,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableList.java": [
+27
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableMap.java':[
-27,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableMap.java": [
+27
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableSet.java':[
-27,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableSet.java": [
+27
 ],
-'com.google.guava:guava:src/com/google/common/reflect/TypeCapture.java':[
-29,
+"com.google.guava:guava:src/com/google/common/reflect/TypeCapture.java": [
+29
 ],
-'com.google.guava:guava:src/com/google/common/reflect/TypeVisitor.java':[
-61,
+"com.google.guava:guava:src/com/google/common/reflect/TypeVisitor.java": [
+61
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
-834,
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+834
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/GwtFuturesCatchingSpecialization.java':[
-27,
+"com.google.guava:guava:src/com/google/common/util/concurrent/GwtFuturesCatchingSpecialization.java": [
+27
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Service.java':[
-255,
+"com.google.guava:guava:src/com/google/common/util/concurrent/Service.java": [
+255
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java':[
-146,
+"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+146
 ],
 }

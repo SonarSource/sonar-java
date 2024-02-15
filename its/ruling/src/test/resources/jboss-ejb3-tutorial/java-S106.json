@@ -1,5 +1,5 @@
 {
-'jboss-ejb3-tutorial:asynch/src/org/jboss/tutorial/asynch/client/Client.java':[
+"jboss-ejb3-tutorial:asynch/src/org/jboss/tutorial/asynch/client/Client.java": [
 37,
 39,
 43,
@@ -7,118 +7,118 @@
 47,
 49,
 51,
-56,
+56
 ],
-'jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/client/Client.java':[
+"jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/client/Client.java": [
 43,
 44,
-45,
+45
 ],
-'jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/client/CachedEntityRun.java':[
+"jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/client/CachedEntityRun.java": [
 58,
 65,
 77,
 78,
-82,
+82
 ],
-'jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/bean/CustomerCallbackListener.java':[
+"jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/bean/CustomerCallbackListener.java": [
 41,
 47,
 53,
 59,
 65,
 71,
-77,
+77
 ],
-'jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/bean/CustomerDAOBean.java':[
+"jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/bean/CustomerDAOBean.java": [
 45,
 53,
 59,
 65,
 71,
 86,
-92,
+92
 ],
-'jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/bean/LifecycleInterceptor.java':[
-39,
+"jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/bean/LifecycleInterceptor.java": [
+39
 ],
-'jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/client/Client.java':[
+"jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/client/Client.java": [
 39,
 43,
 48,
 50,
-52,
+52
 ],
-'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/client/Client.java':[
+"jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/client/Client.java": [
 48,
 51,
 54,
-58,
+58
 ],
-'jboss-ejb3-tutorial:consumer/src/org/jboss/tutorial/consumer/bean/ExampleConsumerBean.java':[
+"jboss-ejb3-tutorial:consumer/src/org/jboss/tutorial/consumer/bean/ExampleConsumerBean.java": [
 46,
 51,
-54,
+54
 ],
-'jboss-ejb3-tutorial:consumer/src/org/jboss/tutorial/consumer/bean/TesterBean.java':[
-80,
+"jboss-ejb3-tutorial:consumer/src/org/jboss/tutorial/consumer/bean/TesterBean.java": [
+80
 ],
-'jboss-ejb3-tutorial:consumer/src/org/jboss/tutorial/consumer/client/Client.java':[
+"jboss-ejb3-tutorial:consumer/src/org/jboss/tutorial/consumer/client/Client.java": [
 52,
-60,
+60
 ],
-'jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/bean/ExampleConsumerBean.java':[
+"jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/bean/ExampleConsumerBean.java": [
 36,
 40,
-43,
+43
 ],
-'jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/bean/TesterBean.java':[
-79,
+"jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/bean/TesterBean.java": [
+79
 ],
-'jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/client/Client.java':[
+"jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/client/Client.java": [
 52,
-60,
+60
 ],
-'jboss-ejb3-tutorial:dependency/src/org/jboss/tutorial/dependency/client/Client.java':[
+"jboss-ejb3-tutorial:dependency/src/org/jboss/tutorial/dependency/client/Client.java": [
 44,
-48,
+48
 ],
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/client/Client.java':[
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/client/Client.java": [
 44,
 47,
 56,
-59,
+59
 ],
-'jboss-ejb3-tutorial:embeddable/src/org/jboss/tutorial/embeddable/client/Client.java':[
+"jboss-ejb3-tutorial:embeddable/src/org/jboss/tutorial/embeddable/client/Client.java": [
 39,
 43,
 48,
-50,
+50
 ],
-'jboss-ejb3-tutorial:enterprise_app_ejb_injection/webapp/src/main/java/org/jboss/tutorial/enterprise_app_ejb_injection/servlet/CalculatorActionServlet.java':[
+"jboss-ejb3-tutorial:enterprise_app_ejb_injection/webapp/src/main/java/org/jboss/tutorial/enterprise_app_ejb_injection/servlet/CalculatorActionServlet.java": [
 87,
-95,
+95
 ],
-'jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/client/Client.java':[
+"jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/client/Client.java": [
 44,
 46,
 49,
 51,
 54,
-57,
+57
 ],
-'jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/StatelessSessionBean.java':[
-49,
+"jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/StatelessSessionBean.java": [
+49
 ],
-'jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/client/Client.java':[
+"jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/client/Client.java": [
 54,
 58,
 62,
 76,
 80,
-84,
+84
 ],
-'jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/client/Client.java':[
+"jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/client/Client.java": [
 48,
 52,
 56,
@@ -129,47 +129,47 @@
 71,
 73,
 76,
-78,
+78
 ],
-'jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/bean/ShoppingCartBean.java':[
-72,
+"jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/bean/ShoppingCartBean.java": [
+72
 ],
-'jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/client/Client.java':[
+"jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/client/Client.java": [
 44,
 46,
 49,
 52,
 56,
-59,
+59
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java": [
 52,
 53,
-68,
+68
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java": [
 71,
 77,
 83,
 87,
-102,
+102
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsInterceptor.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsInterceptor.java": [
 37,
-44,
+44
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsMDB.java':[
-48,
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsMDB.java": [
+48
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/DefaultInterceptor.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/DefaultInterceptor.java": [
 37,
-44,
+44
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/EmailMDB.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/EmailMDB.java": [
 43,
-51,
+51
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/EmailSystemBean.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/EmailSystemBean.java": [
 47,
 52,
 58,
@@ -181,17 +181,17 @@
 84,
 85,
 94,
-122,
+122
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/OtherInterceptor.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/OtherInterceptor.java": [
 32,
-39,
+39
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/TracingInterceptor.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/TracingInterceptor.java": [
 32,
-46,
+46
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java':[
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java": [
 31,
 35,
 37,
@@ -205,15 +205,15 @@
 57,
 60,
 62,
-66,
+66
 ],
-'jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/bean/ShoppingCartBean.java':[
-57,
+"jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/bean/ShoppingCartBean.java": [
+57
 ],
-'jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/bean/StatelessTestBean.java':[
-36,
+"jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/bean/StatelessTestBean.java": [
+36
 ],
-'jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java':[
+"jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java": [
 61,
 69,
 72,
@@ -230,45 +230,45 @@
 116,
 139,
 143,
-151,
+151
 ],
-'jboss-ejb3-tutorial:jndibinding/src/org/jboss/tutorial/jndibinding/client/Client.java':[
+"jboss-ejb3-tutorial:jndibinding/src/org/jboss/tutorial/jndibinding/client/Client.java": [
 37,
 38,
 44,
-46,
+46
 ],
-'jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java':[
-52,
+"jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java": [
+52
 ],
-'jboss-ejb3-tutorial:mdb/src/org/jboss/tutorial/mdb/bean/DefaultedExampleMDB.java':[
+"jboss-ejb3-tutorial:mdb/src/org/jboss/tutorial/mdb/bean/DefaultedExampleMDB.java": [
 36,
 37,
-38,
+38
 ],
-'jboss-ejb3-tutorial:mdb/src/org/jboss/tutorial/mdb/bean/ExampleMDB.java':[
+"jboss-ejb3-tutorial:mdb/src/org/jboss/tutorial/mdb/bean/ExampleMDB.java": [
 41,
 42,
-43,
+43
 ],
-'jboss-ejb3-tutorial:mdb/src/org/jboss/tutorial/mdb/client/Client.java':[
-58,
+"jboss-ejb3-tutorial:mdb/src/org/jboss/tutorial/mdb/client/Client.java": [
+58
 ],
-'jboss-ejb3-tutorial:mdb_deployment_descriptor/src/org/jboss/tutorial/mdb_deployment_descriptor/bean/ExampleMDB.java':[
+"jboss-ejb3-tutorial:mdb_deployment_descriptor/src/org/jboss/tutorial/mdb_deployment_descriptor/bean/ExampleMDB.java": [
 33,
 34,
-35,
+35
 ],
-'jboss-ejb3-tutorial:mdb_deployment_descriptor/src/org/jboss/tutorial/mdb_deployment_descriptor/client/Client.java':[
-50,
+"jboss-ejb3-tutorial:mdb_deployment_descriptor/src/org/jboss/tutorial/mdb_deployment_descriptor/client/Client.java": [
+50
 ],
-'jboss-ejb3-tutorial:merge/src/org/jboss/tutorial/merge/client/Client.java':[
+"jboss-ejb3-tutorial:merge/src/org/jboss/tutorial/merge/client/Client.java": [
 39,
 43,
 48,
-50,
+50
 ],
-'jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/client/Client.java':[
+"jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/client/Client.java": [
 49,
 51,
 54,
@@ -282,33 +282,33 @@
 82,
 83,
 86,
-88,
+88
 ],
-'jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java':[
+"jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java": [
 59,
-62,
+62
 ],
-'jboss-ejb3-tutorial:reference21_30/webapp/src/main/java/org/jboss/tutorial/reference21_30/servlet/EJBReferenceServlet.java':[
+"jboss-ejb3-tutorial:reference21_30/webapp/src/main/java/org/jboss/tutorial/reference21_30/servlet/EJBReferenceServlet.java": [
 70,
 74,
-79,
+79
 ],
-'jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/client/Client.java':[
+"jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/client/Client.java": [
 48,
 51,
 54,
-58,
+58
 ],
-'jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/client/Client.java':[
-41,
+"jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/client/Client.java": [
+41
 ],
-'jboss-ejb3-tutorial:secondary/src/org/jboss/tutorial/secondary/client/Client.java':[
+"jboss-ejb3-tutorial:secondary/src/org/jboss/tutorial/secondary/client/Client.java": [
 40,
 44,
 49,
-51,
+51
 ],
-'jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java':[
+"jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java": [
 47,
 48,
 51,
@@ -319,26 +319,26 @@
 70,
 77,
 80,
-81,
+81
 ],
-'jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/ServiceOne.java':[
+"jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/ServiceOne.java": [
 65,
 70,
 75,
-80,
+80
 ],
-'jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/ServiceThree.java':[
+"jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/ServiceThree.java": [
 63,
 70,
 79,
 86,
-91,
+91
 ],
-'jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/ServiceTwo.java':[
+"jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/ServiceTwo.java": [
 50,
-55,
+55
 ],
-'jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/client/Client.java':[
+"jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/client/Client.java": [
 49,
 53,
 59,
@@ -349,34 +349,34 @@
 80,
 82,
 86,
-93,
+93
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceOne.java':[
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceOne.java": [
 50,
 55,
 60,
-65,
+65
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceThree.java':[
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceThree.java": [
 53,
 60,
 68,
 75,
-80,
+80
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceTwo.java':[
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceTwo.java": [
 41,
-46,
+46
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java':[
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java": [
 49,
 58,
-60,
+60
 ],
-'jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java':[
-53,
+"jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java": [
+53
 ],
-'jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java':[
+"jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java": [
 46,
 47,
 48,
@@ -391,12 +391,12 @@
 82,
 87,
 88,
-89,
+89
 ],
-'jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/bean/ShoppingCartBean.java':[
-59,
+"jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/bean/ShoppingCartBean.java": [
+59
 ],
-'jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/client/Client.java':[
+"jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/client/Client.java": [
 42,
 44,
 47,
@@ -404,12 +404,12 @@
 54,
 57,
 60,
-67,
+67
 ],
-'jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/bean/ShoppingCartBean.java':[
-52,
+"jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/bean/ShoppingCartBean.java": [
+52
 ],
-'jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/client/Client.java':[
+"jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/client/Client.java": [
 47,
 49,
 52,
@@ -417,32 +417,32 @@
 59,
 62,
 65,
-72,
+72
 ],
-'jboss-ejb3-tutorial:stateless/src/org/jboss/tutorial/stateless/client/Client.java':[
+"jboss-ejb3-tutorial:stateless/src/org/jboss/tutorial/stateless/client/Client.java": [
 36,
-37,
+37
 ],
-'jboss-ejb3-tutorial:stateless_deployment_descriptor/src/org/jboss/tutorial/stateless_deployment_descriptor/client/Client.java':[
+"jboss-ejb3-tutorial:stateless_deployment_descriptor/src/org/jboss/tutorial/stateless_deployment_descriptor/client/Client.java": [
 36,
-37,
+37
 ],
-'jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java':[
-53,
+"jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java": [
+53
 ],
-'jboss-ejb3-tutorial:timer/src/org/jboss/tutorial/timer/bean/ExampleTimerBean.java':[
+"jboss-ejb3-tutorial:timer/src/org/jboss/tutorial/timer/bean/ExampleTimerBean.java": [
 41,
 42,
 43,
 49,
 50,
-51,
+51
 ],
-'jboss-ejb3-tutorial:timer/src/org/jboss/tutorial/timer/client/Client.java':[
-36,
+"jboss-ejb3-tutorial:timer/src/org/jboss/tutorial/timer/client/Client.java": [
+36
 ],
-'jboss-ejb3-tutorial:webservice/src/org/jboss/tutorial/webservice/client/Client.java':[
+"jboss-ejb3-tutorial:webservice/src/org/jboss/tutorial/webservice/client/Client.java": [
 44,
-45,
+45
 ],
 }

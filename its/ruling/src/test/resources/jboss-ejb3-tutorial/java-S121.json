@@ -1,18 +1,18 @@
 {
-'jboss-ejb3-tutorial:enterprise_app_ejb_injection/webapp/src/main/java/org/jboss/tutorial/enterprise_app_ejb_injection/servlet/CalculatorActionServlet.java':[
+"jboss-ejb3-tutorial:enterprise_app_ejb_injection/webapp/src/main/java/org/jboss/tutorial/enterprise_app_ejb_injection/servlet/CalculatorActionServlet.java": [
 90,
-92,
+92
 ],
-'jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/bean/Order.java':[
-68,
+"jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/bean/Order.java": [
+68
 ],
-'jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/bean/ShoppingCartBean.java':[
-42,
+"jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/bean/ShoppingCartBean.java": [
+42
 ],
-'jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java':[
+"jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java": [
 60,
 69,
 78,
-86,
+86
 ],
 }

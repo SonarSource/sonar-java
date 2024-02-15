@@ -1,5 +1,5 @@
 {
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java": [
 155,
 155,
 171,
@@ -19,9 +19,9 @@
 1885,
 1885,
 1885,
-2001,
+2001
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java": [
 75,
 499,
 499,
@@ -67,9 +67,9 @@
 1913,
 1913,
 1913,
-1913,
+1913
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java": [
 187,
 191,
 193,
@@ -112,9 +112,9 @@
 1453,
 1489,
 1913,
-1921,
+1921
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java": [
 67,
 399,
 403,
@@ -159,9 +159,9 @@
 1405,
 1665,
 1667,
-1671,
+1671
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java": [
 57,
 59,
 61,
@@ -249,9 +249,9 @@
 1547,
 1563,
 1851,
-1851,
+1851
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java": [
 183,
 183,
 613,
@@ -275,9 +275,9 @@
 1973,
 1977,
 1977,
-1977,
+1977
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java": [
 147,
 155,
 255,
@@ -297,9 +297,9 @@
 1291,
 1291,
 1771,
-1827,
+1827
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java": [
 197,
 197,
 479,
@@ -312,6 +312,6 @@
 1011,
 1093,
 1477,
-1477,
+1477
 ],
 }

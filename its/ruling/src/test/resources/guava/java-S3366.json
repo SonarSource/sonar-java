@@ -1,12 +1,12 @@
 {
-'com.google.guava:guava:src/com/google/common/collect/FluentIterable.java':[
-80,
+"com.google.guava:guava:src/com/google/common/collect/FluentIterable.java": [
+80
 ],
-'com.google.guava:guava:src/com/google/common/collect/LinkedHashMultimap.java':[
+"com.google.guava:guava:src/com/google/common/collect/LinkedHashMultimap.java": [
 323,
-324,
+324
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
-155,
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+155
 ],
 }

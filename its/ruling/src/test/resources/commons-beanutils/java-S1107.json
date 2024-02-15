@@ -1,11 +1,11 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanComparator.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanComparator.java": [
 168,
 171,
 174,
-206,
+206
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java": [
 295,
 361,
 364,
@@ -16,18 +16,18 @@
 683,
 769,
 776,
-826,
+826
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java": [
 725,
 764,
 789,
-861,
+861
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ResultSetDynaClass.java':[
-243,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ResultSetDynaClass.java": [
+243
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java": [
 647,
 650,
 661,
@@ -53,21 +53,21 @@
 854,
 883,
 887,
-891,
+891
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java": [
 144,
-440,
+440
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/BigDecimalLocaleConverter.java':[
-227,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/BigDecimalLocaleConverter.java": [
+227
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/BigIntegerLocaleConverter.java':[
-232,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/BigIntegerLocaleConverter.java": [
+232
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/StringLocaleConverter.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/StringLocaleConverter.java": [
 244,
 250,
-257,
+257
 ],
 }

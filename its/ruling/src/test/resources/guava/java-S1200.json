@@ -1,51 +1,51 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/CacheBuilder.java':[
-152,
+"com.google.guava:guava:src/com/google/common/cache/CacheBuilder.java": [
+152
 ],
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
 96,
-1975,
+1975
 ],
-'com.google.guava:guava:src/com/google/common/collect/ArrayTable.java':[
-88,
+"com.google.guava:guava:src/com/google/common/collect/ArrayTable.java": [
+88
 ],
-'com.google.guava:guava:src/com/google/common/collect/FluentIterable.java':[
-73,
+"com.google.guava:guava:src/com/google/common/collect/FluentIterable.java": [
+73
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java':[
-53,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
+53
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
-73,
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+73
 ],
-'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
-85,
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+85
 ],
-'com.google.guava:guava:src/com/google/common/collect/Multimaps.java':[
-68,
+"com.google.guava:guava:src/com/google/common/collect/Multimaps.java": [
+68
 ],
-'com.google.guava:guava:src/com/google/common/collect/Sets.java':[
-65,
+"com.google.guava:guava:src/com/google/common/collect/Sets.java": [
+65
 ],
-'com.google.guava:guava:src/com/google/common/collect/Synchronized.java':[
-60,
+"com.google.guava:guava:src/com/google/common/collect/Synchronized.java": [
+60
 ],
-'com.google.guava:guava:src/com/google/common/io/Files.java':[
-66,
+"com.google.guava:guava:src/com/google/common/io/Files.java": [
+66
 ],
-'com.google.guava:guava:src/com/google/common/reflect/TypeToken.java':[
-94,
+"com.google.guava:guava:src/com/google/common/reflect/TypeToken.java": [
+94
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
-64,
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+64
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java':[
-68,
+"com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java": [
+68
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java':[
-67,
+"com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
+67
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java':[
-397,
+"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+397
 ],
 }

@@ -1,17 +1,17 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WeakFastHashMap.java':[
-128,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WeakFastHashMap.java": [
+128
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtils.java':[
-78,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtils.java": [
+78
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java':[
-160,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java": [
+160
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtils.java':[
-72,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtils.java": [
+72
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java':[
-155,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java": [
+155
 ],
 }

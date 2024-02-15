@@ -1,5 +1,5 @@
 {
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java": [
 135,
 137,
 139,
@@ -15,17 +15,17 @@
 1721,
 1723,
 1725,
-1909,
+1909
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java": [
 495,
 497,
 541,
 547,
 1021,
-1399,
+1399
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java": [
 13,
 15,
 87,
@@ -50,9 +50,9 @@
 1529,
 1531,
 1727,
-1731,
+1731
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java": [
 145,
 663,
 665,
@@ -61,9 +61,9 @@
 755,
 1037,
 1791,
-1969,
+1969
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java": [
 77,
 101,
 103,
@@ -99,9 +99,9 @@
 1647,
 1649,
 1885,
-1887,
+1887
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java": [
 45,
 55,
 57,
@@ -119,9 +119,9 @@
 1541,
 1543,
 1853,
-1949,
+1949
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java": [
 145,
 147,
 149,
@@ -152,9 +152,9 @@
 1777,
 1937,
 1939,
-1941,
+1941
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java": [
 277,
 279,
 509,
@@ -176,6 +176,6 @@
 1505,
 1521,
 1523,
-1525,
+1525
 ],
 }

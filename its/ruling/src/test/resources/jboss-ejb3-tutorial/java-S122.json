@@ -1,19 +1,19 @@
 {
-'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/CustomerPK.java':[
+"jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/CustomerPK.java": [
 77,
 78,
-79,
+79
 ],
-'jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/bean/Order.java':[
-68,
+"jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/bean/Order.java": [
+68
 ],
-'jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/bean/ShoppingCartBean.java':[
-42,
+"jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/bean/ShoppingCartBean.java": [
+42
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java':[
-67,
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java": [
+67
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java':[
-101,
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java": [
+101
 ],
 }

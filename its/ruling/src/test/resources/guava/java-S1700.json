@@ -1,11 +1,11 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Defaults.java':[
-38,
+"com.google.guava:guava:src/com/google/common/base/Defaults.java": [
+38
 ],
-'com.google.guava:guava:src/com/google/common/eventbus/Dispatcher.java':[
-130,
+"com.google.guava:guava:src/com/google/common/eventbus/Dispatcher.java": [
+130
 ],
-'com.google.guava:guava:src/com/google/common/reflect/TypeToken.java':[
-923,
+"com.google.guava:guava:src/com/google/common/reflect/TypeToken.java": [
+923
 ],
 }

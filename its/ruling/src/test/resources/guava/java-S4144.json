@@ -1,9 +1,9 @@
 {
-'com.google.guava:guava:src/com/google/common/base/CharMatcher.java':[
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
 1094,
-1149,
+1149
 ],
-'com.google.guava:guava:src/com/google/common/reflect/Types.java':[
-418,
+"com.google.guava:guava:src/com/google/common/reflect/Types.java": [
+418
 ],
 }

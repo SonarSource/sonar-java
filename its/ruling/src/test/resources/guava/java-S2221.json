@@ -1,18 +1,18 @@
 {
-'com.google.guava:guava:src/com/google/common/base/FinalizableReferenceQueue.java':[
-301,
+"com.google.guava:guava:src/com/google/common/base/FinalizableReferenceQueue.java": [
+301
 ],
-'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
+"com.google.guava:guava:src/com/google/common/cache/Striped64.java": [
 112,
-304,
+304
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
-1954,
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+1954
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
-897,
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+897
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/FuturesGetChecked.java':[
-220,
+"com.google.guava:guava:src/com/google/common/util/concurrent/FuturesGetChecked.java": [
+220
 ],
 }
