@@ -296,6 +296,7 @@ import org.sonar.java.checks.PseudoRandomCheck;
 import org.sonar.java.checks.PublicConstructorInAbstractClassCheck;
 import org.sonar.java.checks.PublicStaticFieldShouldBeFinalCheck;
 import org.sonar.java.checks.PublicStaticMutableMembersCheck;
+import org.sonar.java.checks.QueryOnlyRequiredFieldsCheck;
 import org.sonar.java.checks.RandomFloatToIntCheck;
 import org.sonar.java.checks.RawByteBitwiseOperationsCheck;
 import org.sonar.java.checks.RawExceptionCheck;
@@ -993,6 +994,7 @@ public final class CheckList {
     PublicConstructorInAbstractClassCheck.class,
     PublicStaticMutableMembersCheck.class,
     PubliclyWritableDirectoriesCheck.class,
+    QueryOnlyRequiredFieldsCheck.class,
     RandomFloatToIntCheck.class,
     ReadObjectSynchronizedCheck.class,
     ReceivingIntentsCheck.class,

@@ -1,0 +1,24 @@
+{
+  "title": "SQL queries should retrieve only necessary fields",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "sql",
+    "sustainability"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6905",
+  "sqKey": "S6905",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  }
+}
