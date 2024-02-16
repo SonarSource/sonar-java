@@ -253,7 +253,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     checkIfAllowed(tree.returnType(), "The return type of this method");
     List<VariableTree> candidateParameters = tree.parameters().stream()
       .filter(it -> getSuggestedInterface(it.type()) != null)
-      .collect(Collectors.toList());
+      .toList();
     if (candidateParameters.isEmpty()) {
       return;
     }

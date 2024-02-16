@@ -21,7 +21,6 @@ package org.sonar.java.se.xproc;
 
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -93,7 +92,7 @@ public class HappyPathYield extends MethodYield {
   @Override
   public String toString() {
     return String.format("{params: %s, result: %s (%d)}",
-      parametersConstraints.stream().map(constraints -> constraints.stream().map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
+      parametersConstraints.stream().map(constraints -> constraints.stream().map(Constraint::toString).toList()).toList(),
       resultConstraint, resultIndex);
   }
 

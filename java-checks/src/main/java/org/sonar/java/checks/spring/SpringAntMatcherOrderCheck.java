@@ -140,7 +140,7 @@ public class SpringAntMatcherOrderCheck extends AbstractMethodDetection {
     return mit.arguments().stream()
       .map(StringConstant::of)
       .filter(Objects::nonNull)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static class StringConstant {

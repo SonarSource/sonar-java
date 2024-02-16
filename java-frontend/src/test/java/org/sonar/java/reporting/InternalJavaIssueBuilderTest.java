@@ -661,7 +661,7 @@ class InternalJavaIssueBuilderTest {
     @Override
     public NewIssue setCodeVariants(@org.jetbrains.annotations.Nullable Iterable<String> iterable) {
       codeVariants = iterable == null ? null : StreamSupport.stream(iterable.spliterator(), false)
-        .collect(Collectors.toList());
+        .toList();
       return this;
     }
 

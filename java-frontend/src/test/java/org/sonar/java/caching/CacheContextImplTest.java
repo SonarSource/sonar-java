@@ -95,7 +95,7 @@ class CacheContextImplTest {
     CacheContextImpl.of(sensorContext);
     List<String> logs = logTester.getLogs(Level.DEBUG).stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs)
       .hasSize(1)
       .contains("Missing cache related method from sonar-plugin-api: bim.");

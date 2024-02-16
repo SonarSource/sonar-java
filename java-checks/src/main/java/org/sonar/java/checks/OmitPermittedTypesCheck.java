@@ -74,7 +74,7 @@ public class OmitPermittedTypesCheck extends IssuableSubscriptionVisitor {
           .withMessage(MESSAGE)
           .withSecondaries(permittedTypes.stream().map(t ->
             new JavaFileScannerContext.Location("Permitted type", t))
-            .collect(Collectors.toList()))
+            .toList())
           .withQuickFix(() -> getQuickFix(permitsKeyword, permittedTypes))
           .report();
       }

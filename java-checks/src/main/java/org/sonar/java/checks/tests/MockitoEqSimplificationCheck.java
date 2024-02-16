@@ -58,7 +58,7 @@ public class MockitoEqSimplificationCheck extends AbstractMockitoArgumentChecker
         eqs.stream()
           .skip(1)
           .map(eq -> new JavaFileScannerContext.Location("", eq.methodSelect()))
-          .collect(Collectors.toList()),
+          .toList(),
         null);
     }
   }

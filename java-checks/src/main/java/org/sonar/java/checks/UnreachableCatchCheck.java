@@ -132,7 +132,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
       targets = ((UnionTypeTree) type).typeAlternatives()
         .stream()
         .map(typeByExceptions::get)
-        .collect(Collectors.toList());
+        .toList();
     } else {
       targets = Collections.singletonList(typeByExceptions.get(type));
     }

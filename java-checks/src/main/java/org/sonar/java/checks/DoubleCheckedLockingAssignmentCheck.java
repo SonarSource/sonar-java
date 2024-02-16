@@ -147,7 +147,7 @@ public class DoubleCheckedLockingAssignmentCheck extends IssuableSubscriptionVis
     List<JavaFileScannerContext.Location> locations() {
       return usages.stream()
         .map(u -> new JavaFileScannerContext.Location("Usage after assignment", u))
-        .collect(Collectors.toList());
+        .toList();
     }
   }
 

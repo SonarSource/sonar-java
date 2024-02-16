@@ -43,7 +43,7 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
   void reportMultipleCallInTree(List<Type> expectedExceptions, Tree treeToVisit, Tree reportLocation, String placeToRefactor) {
     List<Type> checkedTypes = expectedExceptions.stream()
       .filter(e -> !isChecked(e))
-      .collect(Collectors.toList());
+      .toList();
 
     if (checkedTypes.isEmpty()) {
       return;

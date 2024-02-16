@@ -85,7 +85,7 @@ public final class JavaIssue {
           .on(file)
           .at(range(file, am.primaryLocation()))
           .message(am.getMessage()))
-        .collect(Collectors.toList()));
+        .toList());
     }
     return this;
   }

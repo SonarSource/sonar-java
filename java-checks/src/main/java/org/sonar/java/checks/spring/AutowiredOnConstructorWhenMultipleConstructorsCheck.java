@@ -56,7 +56,7 @@ public class AutowiredOnConstructorWhenMultipleConstructorsCheck extends Issuabl
     var constructors = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
       .map(MethodTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
 
     if (constructors.size() > 1) {
       boolean anyHasAutowired = constructors.stream()

@@ -83,7 +83,7 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
     tree.accept(synchronizedKeywordVisitor);
     return synchronizedKeywordVisitor.stream()
       .map(t -> new JavaFileScannerContext.Location("locking", t))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {

@@ -44,7 +44,7 @@ class HardCodedCredentialsShouldNotBeUsedCheckTest {
     assertThat(check.getMethods()).isEmpty();
     List<String> logs = logTester.getLogs(Level.ERROR).stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs)
       .containsOnly("Could not load methods from \"non-existing-file.json\".");
   }

@@ -38,7 +38,7 @@ class FlowTest {
       .add(locationWithMockTree("last"))
       .add(locationWithMockTree("first"))
       .build();
-    List<JavaFileScannerContext.Location> collect = flow1.firstFlowLocation().collect(Collectors.toList());
+    List<JavaFileScannerContext.Location> collect = flow1.firstFlowLocation().toList();
     assertThat(collect).hasSize(1);
     assertThat(collect.get(0).msg).isEqualTo("first");
 

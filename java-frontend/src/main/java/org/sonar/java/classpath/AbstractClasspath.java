@@ -115,7 +115,7 @@ public abstract class AbstractClasspath {
     Set<File> result = new LinkedHashSet<>();
     if (settings.hasKey(property)) {
       List<String> fileNames = Arrays.stream(settings.getStringArray(property))
-        .filter(s -> !s.isEmpty()).collect(Collectors.toList());
+        .filter(s -> !s.isEmpty()).toList();
       File baseDir = fs.baseDir();
       boolean hasJavaSources = hasJavaSources();
       boolean validateLibs = validateLibraries;

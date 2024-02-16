@@ -77,7 +77,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
         .forRule(this)
         .onTree(literalList.get(0))
         .withMessage("Remove the unnecessary boolean literal%s.", nLiterals > 1 ? "s" : "")
-        .withSecondaries(literalList.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit)).collect(Collectors.toList()))
+        .withSecondaries(literalList.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit)).toList())
         .withQuickFixes(() -> getQuickFix(tree))
         .report();
     }

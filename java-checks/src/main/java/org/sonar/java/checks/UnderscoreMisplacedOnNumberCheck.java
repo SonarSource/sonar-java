@@ -67,7 +67,7 @@ public class UnderscoreMisplacedOnNumberCheck extends IssuableSubscriptionVisito
       return false;
     }
     int firstGroupLength = groups.get(0).length();
-    List<Integer> lengths = groups.stream().skip(1).map(String::length).distinct().collect(Collectors.toList());
+    List<Integer> lengths = groups.stream().skip(1).map(String::length).distinct().toList();
     return lengths.size() != 1 || lengths.get(0) < firstGroupLength;
   }
 

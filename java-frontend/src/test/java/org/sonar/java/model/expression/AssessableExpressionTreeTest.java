@@ -133,7 +133,7 @@ class AssessableExpressionTreeTest {
       .map(MethodInvocationTree.class::cast)
       .map(m -> m.arguments().iterator().next())
       .map(resolver)
-      .collect(Collectors.toList());
+      .toList();
   }
 
 }

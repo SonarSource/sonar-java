@@ -105,7 +105,7 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
   private List<JavaFileScannerContext.Location> getSecondaryLocations() {
     return secondaryLocations.stream()
       .map(element -> new JavaFileScannerContext.Location("This class contributes to the tight class coupling.", element))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   @Override

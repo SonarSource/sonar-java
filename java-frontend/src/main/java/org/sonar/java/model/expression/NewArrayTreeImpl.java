@@ -75,7 +75,7 @@ public class NewArrayTreeImpl extends AssessableExpressionTree implements NewArr
   }
 
   public NewArrayTreeImpl completeDimensions(List<ArrayDimensionTree> arrayDimensions) {
-    this.dimensions = Stream.of(arrayDimensions, dimensions).flatMap(List::stream).collect(Collectors.toList());
+    this.dimensions = Stream.of(arrayDimensions, dimensions).flatMap(List::stream).toList();
     return this;
   }
 

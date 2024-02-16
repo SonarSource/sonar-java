@@ -102,6 +102,6 @@ public class RandomizedTestDataCheck extends IssuableSubscriptionVisitor {
   private static List<JavaFileScannerContext.Location> convertToLocations(Stream<Tree> trees) {
     return trees
       .map(tree -> new JavaFileScannerContext.Location(LOCATIONS_TEXT, tree))
-      .collect(Collectors.toList());
+      .toList();
   }
 }

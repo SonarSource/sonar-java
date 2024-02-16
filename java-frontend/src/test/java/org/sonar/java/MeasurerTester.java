@@ -53,7 +53,7 @@ public abstract class MeasurerTester {
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, measurer, mock(JavaResourceLocator.class), null, new JavaCheck[0]);
-    List<InputFile> files = StreamSupport.stream(fs.inputFiles().spliterator(), false).collect(Collectors.toList());
+    List<InputFile> files = StreamSupport.stream(fs.inputFiles().spliterator(), false).toList();
     frontend.scan(files, Collections.emptyList(), Collections.emptyList());
   }
 

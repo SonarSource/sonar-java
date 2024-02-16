@@ -98,7 +98,7 @@ public class AssertJAssertionsInConsumerCheck extends IssuableSubscriptionVisito
     List<Location> argumentsMissingAssertion = argumentsToCheck.stream()
       .filter(argument -> !hasAssertion(argument))
       .map(argument -> new Location("Argument missing assertion", argument))
-      .collect(Collectors.toList());
+      .toList();
 
     if (!argumentsMissingAssertion.isEmpty()) {
       IdentifierTree methodName = ExpressionUtils.methodName(invocation);

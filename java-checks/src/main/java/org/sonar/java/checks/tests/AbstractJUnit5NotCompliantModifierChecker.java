@@ -22,7 +22,6 @@ package org.sonar.java.checks.tests;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -71,12 +70,12 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
     List<MethodTree> methods = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
-      .collect(Collectors.toList());
+      .collect(Collectors.toList(/*mutable*/));
 
     List<MethodTree> testMethods = methods.stream()
       .filter(UnitTestUtils::hasJUnit5TestAnnotation)
       .filter(AbstractJUnit5NotCompliantModifierChecker::isNotOverriding)
-      .collect(Collectors.toList());
+      .toList();
 
     for (MethodTree testMethod : testMethods) {
       raiseIssueOnNotCompliantModifiers(testMethod.modifiers(), true);

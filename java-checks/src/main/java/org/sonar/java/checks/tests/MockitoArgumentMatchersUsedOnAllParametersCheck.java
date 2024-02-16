@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -98,7 +96,7 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
         nonMatchers.stream()
           .skip(1)
           .map(secondary -> new JavaFileScannerContext.Location("", secondary))
-          .collect(Collectors.toList()),
+          .toList(),
         null);
     }
   }

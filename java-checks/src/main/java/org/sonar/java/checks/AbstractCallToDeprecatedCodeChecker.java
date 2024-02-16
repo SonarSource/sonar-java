@@ -114,7 +114,7 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
     return methodSymbol.overriddenSymbols()
       .stream()
       .filter(Symbol.MethodSymbol::isDeprecated)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   abstract void checkOverridingMethod(MethodTree methodTree, List<Symbol.MethodSymbol> deprecatedSymbol);

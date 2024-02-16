@@ -283,7 +283,7 @@ public class CognitiveComplexityVisitor extends BaseTreeVisitor {
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     if (tree.is(CONDITIONAL_AND, CONDITIONAL_OR) && !ignored.contains(tree)) {
-      List<BinaryExpressionTree> flattenedLogicalExpressions = flattenLogicalExpression(tree).collect(Collectors.toList());
+      List<BinaryExpressionTree> flattenedLogicalExpressions = flattenLogicalExpression(tree).toList();
 
       BinaryExpressionTree previous = null;
       for (BinaryExpressionTree current : flattenedLogicalExpressions) {

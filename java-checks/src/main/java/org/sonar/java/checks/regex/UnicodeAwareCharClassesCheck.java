@@ -39,7 +39,7 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
         cost,
         secondaries.stream()
           .map(RegexCheck.RegexIssueLocation::fromCommonsRegexIssueLocation)
-          .collect(Collectors.toList()));
+          .toList());
     }).visit(regexForLiterals);
   }
 

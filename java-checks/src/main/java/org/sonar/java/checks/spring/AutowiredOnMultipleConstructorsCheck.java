@@ -47,7 +47,7 @@ public class AutowiredOnMultipleConstructorsCheck extends IssuableSubscriptionVi
     List<MethodTree> constructors = classTree.members().stream()
       .filter(m -> m.is(Tree.Kind.CONSTRUCTOR))
       .map(m -> (MethodTree) m)
-      .collect(Collectors.toList());
+      .toList();
 
     if (constructors.size() > 1) {
       boolean isAutowiredAlreadyFound = false;

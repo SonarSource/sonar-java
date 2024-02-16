@@ -123,7 +123,7 @@ public class RegexStackOverflowCheck extends AbstractRegexCheck {
         List<RegexIssueLocation> secondaries = offendingTrees.stream()
           .skip(1)
           .map(tree -> new RegexIssueLocation(tree, SECONDARY_MESSAGE))
-          .collect(Collectors.toList());
+          .toList();
         reportIssue(offendingTrees.get(0), MESSAGE, null, secondaries);
       }
     }

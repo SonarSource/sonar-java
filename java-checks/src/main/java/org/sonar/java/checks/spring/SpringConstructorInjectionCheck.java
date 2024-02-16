@@ -54,7 +54,7 @@ public class SpringConstructorInjectionCheck extends IssuableSubscriptionVisitor
         .stream()
         .filter(SpringConstructorInjectionCheck::isMemberAutowired)
         .map(SpringConstructorInjectionCheck::toReportTree)
-        .collect(Collectors.toList());
+        .toList();
 
       if (!toReport.isEmpty()) {
         int cost = toReport.size();

@@ -136,7 +136,7 @@ public class RecordDuplicatedGetterCheck extends IssuableSubscriptionVisitor {
       .stream()
       .filter(Symbol::isVariableSymbol)
       .map(Symbol.VariableSymbol.class::cast)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static Optional<MethodTree> findDeclaredMethod(Symbol.TypeSymbol recordSymbol, String methodName) {

@@ -353,7 +353,7 @@ class JSymbolMetadataTest {
     List<Symbol> idSymbols = collectIdentifiers(cut).stream()
       .filter(identifier -> identifier.name().startsWith("id"))
       .map(IdentifierTree::symbol)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(idSymbols).isNotEmpty();
 
     for (Symbol symbol : idSymbols) {

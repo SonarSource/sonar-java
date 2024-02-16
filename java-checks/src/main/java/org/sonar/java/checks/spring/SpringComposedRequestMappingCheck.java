@@ -64,7 +64,7 @@ public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisit
       List<ExpressionTree> methodValues = annotation.arguments().stream()
         .filter(argument -> "method".equals(attributeName(argument)))
         .flatMap(SpringComposedRequestMappingCheck::extractValues)
-        .collect(Collectors.toList());
+        .toList();
 
       if (methodValues.size() == 1) {
         ExpressionTree requestMethod = methodValues.get(0);

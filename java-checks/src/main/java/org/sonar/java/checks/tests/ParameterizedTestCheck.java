@@ -68,7 +68,7 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
       .filter(ParameterizedTestCheck::isParametrizedCandidate)
-      .collect(Collectors.toList());
+      .toList();
     if (methods.size() < MIN_SIMILAR_METHODS) {
       return;
     }

@@ -102,7 +102,7 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
     return Stream.concat(
       Stream.of(new JavaFileScannerContext.Location("Original value", firstUse)),
       rest.stream().map(t -> new JavaFileScannerContext.Location("Same " + key.indexOrKey() + " is set", t)))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static class CollectionAndKey {

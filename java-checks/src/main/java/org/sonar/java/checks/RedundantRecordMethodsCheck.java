@@ -116,7 +116,7 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
     }
     List<Symbol.VariableSymbol> parameters = constructor.parameters().stream()
       .map(parameter -> (Symbol.VariableSymbol) parameter.symbol())
-      .collect(Collectors.toList());
+      .toList();
     List<AssignmentExpressionTree> assignments = extractAssignments(constructor.block().body());
     Set<Symbol> componentsAssignedInConstructor = new HashSet<>();
     for (AssignmentExpressionTree assignment : assignments) {
@@ -130,7 +130,7 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
       .map(RedundantRecordMethodsCheck::extractAssignment)
       .filter(Optional::isPresent)
       .map(Optional::get)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static Optional<AssignmentExpressionTree> extractAssignment(StatementTree statement) {

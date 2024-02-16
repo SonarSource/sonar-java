@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
@@ -581,7 +580,7 @@ class CheckVerifierTest {
       }
       List<AnalyzerMessage> anamyerMessages = preciseIssues.values().stream()
         .flatMap(List::stream)
-        .collect(Collectors.toList());
+        .toList();
       for (AnalyzerMessage analyzerMessage : anamyerMessages) {
         Double messageCost = analyzerMessage.getCost();
         Integer cost = messageCost != null ? messageCost.intValue() : null;

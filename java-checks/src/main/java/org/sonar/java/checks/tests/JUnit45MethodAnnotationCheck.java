@@ -67,7 +67,7 @@ public class JUnit45MethodAnnotationCheck extends IssuableSubscriptionVisitor {
     List<MethodTree> methods = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
 
     int jUnitVersion = getJUnitVersion(methods);
     if (jUnitVersion > 0) {

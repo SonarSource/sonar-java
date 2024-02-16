@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -38,7 +37,6 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.AssessableExpressionTree;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
@@ -63,6 +61,7 @@ import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public abstract class JavaTree implements Tree {
 
@@ -140,7 +139,7 @@ public abstract class JavaTree implements Tree {
     if(children == null) {
       children = children().stream()
         .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        .toList();
     }
     return children;
   }

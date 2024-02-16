@@ -376,7 +376,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
 
   private static Optional<ExpressionTree> getCharsetNameArgument(Symbol symbol, Arguments arguments) {
     List<ExpressionTree> stringArguments = arguments.stream().filter(
-      argument -> argument.symbolType().is(JAVA_LANG_STRING)).collect(Collectors.toList());
+      argument -> argument.symbolType().is(JAVA_LANG_STRING)).toList();
     if (stringArguments.isEmpty()) {
       return Optional.empty();
     }

@@ -142,7 +142,7 @@ public class MethodMatchersBuilder implements MethodMatchers.TypeBuilder, Method
   public ParametersBuilder addParametersMatcher(String... parametersType) {
     return addParametersMatcher(Arrays.stream(parametersType)
       .<Predicate<Type>>map(parameterType -> substituteAny(type -> type.is(parameterType), parameterType))
-      .collect(Collectors.toList()));
+      .toList());
   }
 
   private ParametersBuilder addParametersMatcher(List<Predicate<Type>> parametersType) {

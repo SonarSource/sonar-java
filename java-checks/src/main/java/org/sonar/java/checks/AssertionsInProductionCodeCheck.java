@@ -82,7 +82,7 @@ public class AssertionsInProductionCodeCheck extends AbstractMethodDetection {
       List<Location> secondaryLocations = assertions.stream()
         .skip(1)
         .map(expr -> new Location("Assertion", expr))
-        .collect(Collectors.toList());
+        .toList();
       reportIssue(primaryLocation, "Remove this assertion from production code.", secondaryLocations, null);
     }
     assertions.clear();

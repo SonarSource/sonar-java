@@ -141,7 +141,7 @@ public class CFGDebug {
       buffer.append(SyntaxTreeDebug.toString(terminator));
     }
     boolean first = true;
-    for (Block successor : block.successors().stream().sorted(Comparator.comparingInt(Block::id).reversed()).collect(Collectors.toList())) {
+    for (Block successor : block.successors().stream().sorted(Comparator.comparingInt(Block::id).reversed()).toList()) {
       if (first) {
         first = false;
         buffer.append('\n');

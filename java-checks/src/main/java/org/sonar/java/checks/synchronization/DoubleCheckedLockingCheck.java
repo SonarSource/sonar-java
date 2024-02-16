@@ -126,7 +126,7 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
   private static List<JavaFileScannerContext.Location> createFlow(IfStatementTree parentIf, IfStatementTree nestedIf) {
     return Stream.of(parentIf.condition(), nestedIf.condition())
       .map(c -> new JavaFileScannerContext.Location("Double-checked locking", c))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private boolean insideCriticalSection() {

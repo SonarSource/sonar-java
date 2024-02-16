@@ -99,7 +99,7 @@ class ClassTreeImplTest {
       .types().get(0);
 
     assertThat(classTree).is(Tree.Kind.RECORD);
-    List<String> membersKinds = classTree.members().stream().map(Tree::kind).map(Tree.Kind::name).collect(Collectors.toList());
+    List<String> membersKinds = classTree.members().stream().map(Tree::kind).map(Tree.Kind::name).toList();
     assertThat(membersKinds).containsExactly(
       "CONSTRUCTOR",
       "VARIABLE",

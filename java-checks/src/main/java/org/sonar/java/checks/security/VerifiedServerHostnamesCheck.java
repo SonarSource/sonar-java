@@ -130,7 +130,7 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
 
     List<StatementTree> statementTreeList = innerBlock.stream()
       .filter(statementTree -> !statementTree.is(Tree.Kind.EMPTY_STATEMENT))
-      .collect(Collectors.toList());
+      .toList();
     if (isReturnTrueStatement(statementTreeList)) {
       reportIssue(statementTreeList.get(0), ISSUE_MESSAGE);
     }

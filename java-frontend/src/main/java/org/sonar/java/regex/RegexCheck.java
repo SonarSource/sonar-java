@@ -77,7 +77,7 @@ public interface RegexCheck extends JavaCheck {
       return Stream.concat(
         Stream.of(new RegexIssueLocation(locations.get(0), message)),
         locations.stream().skip(1).map(loc -> new RegexIssueLocation(loc, CONTINUATION_MESSAGE)))
-        .collect(Collectors.toList());
+        .toList();
     }
 
     private static List<AnalyzerMessage.TextSpan> textSpansFromRegexSyntaxElements(List<RegexSyntaxElement> trees) {

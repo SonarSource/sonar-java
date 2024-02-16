@@ -76,7 +76,7 @@ public class TooManyAssertionsCheck extends IssuableSubscriptionVisitor {
       if (assertionsSize > maximum) {
         List<JavaFileScannerContext.Location> locations = assertionsTree.stream()
           .map(assertionTree -> new JavaFileScannerContext.Location("Assertion", assertionTree))
-          .collect(Collectors.toList());
+          .toList();
 
         reportIssue(methodTree.simpleName(),
           String.format("Refactor this method to reduce the number of assertions from %d to less than %d.", assertionsSize, maximum),

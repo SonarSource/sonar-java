@@ -86,7 +86,7 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
         List<JavaFileScannerContext.Location> secondaries = unsecureVersions.stream()
           .skip(1)
           .map(secondary -> new JavaFileScannerContext.Location("Other weak protocol.", secondary))
-          .collect(Collectors.toList());
+          .toList();
         reportIssue(unsecureVersions.get(0), "Change this code to use a stronger protocol.", secondaries, null);
       }
     }

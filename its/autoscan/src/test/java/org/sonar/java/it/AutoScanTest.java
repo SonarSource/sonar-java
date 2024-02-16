@@ -161,13 +161,13 @@ public class AutoScanTest {
       newTotal.falsePositives,
       newTotal.falsePositives + newTotal.falseNegatives);
 
-    List<IssueDiff> rulesCausingFPs = newDiffs.stream().filter(IssueDiff::causesFPs).collect(Collectors.toList());
+    List<IssueDiff> rulesCausingFPs = newDiffs.stream().filter(IssueDiff::causesFPs).toList();
     LOG.info("{} rules causing FPs:\n{}", rulesCausingFPs.size(), IssueDiff.prettyPrint(rulesCausingFPs));
 
-    List<IssueDiff> rulesNotReporting = newDiffs.stream().filter(IssueDiff::notReporting).collect(Collectors.toList());
+    List<IssueDiff> rulesNotReporting = newDiffs.stream().filter(IssueDiff::notReporting).toList();
     LOG.info("{} rules never reporting anything:\n{}", rulesNotReporting.size(), IssueDiff.prettyPrint(rulesNotReporting));
 
-    List<IssueDiff> rulesSilenced = newDiffs.stream().filter(IssueDiff::onlyFNs).collect(Collectors.toList());
+    List<IssueDiff> rulesSilenced = newDiffs.stream().filter(IssueDiff::onlyFNs).toList();
     LOG.info("{} rules silenced without binaries (only FNs):\n{}", rulesSilenced.size(), IssueDiff.prettyPrint(rulesSilenced));
 
     // Load known diffs

@@ -60,7 +60,7 @@ public class InstanceofUsedOnExceptionCheck extends IssuableSubscriptionVisitor 
       .map(IfStatementTree.class::cast)
       .flatMap(InstanceofUsedOnExceptionCheck::getFollowingElseIf)
       .map(IfStatementTree::condition)
-      .collect(Collectors.toList());
+      .toList();
 
     if (conditions.stream().allMatch(cond -> cond.is(Tree.Kind.INSTANCE_OF) && isLeftOperandAndException((InstanceOfTree) cond, caughtVariable))) {
       conditions.stream()

@@ -59,7 +59,7 @@ public class SECheckVerifier implements CheckVerifier {
     List<SECheck> seChecks = Arrays.stream(checks)
       .filter(SECheck.class::isInstance)
       .map(SECheck.class::cast)
-      .collect(Collectors.toList());
+      .toList();
     List<JavaFileScanner> newCheckList = new ArrayList<>();
     if (!seChecks.isEmpty()) {
       newCheckList.add(new SymbolicExecutionVisitor(seChecks));

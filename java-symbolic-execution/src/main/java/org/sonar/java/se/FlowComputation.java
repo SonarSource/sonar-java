@@ -777,7 +777,8 @@ public class FlowComputation {
       List<SymbolicValue> arguments = argumentsUsedForMethodInvocation(invocationNode, mit);
       return IntStream.range(0, arguments.size())
         .filter(i -> candidates.contains(arguments.get(i)))
-        .boxed().collect(Collectors.toList());
+        .boxed()
+        .collect(Collectors.toList(/*mutable*/));
     }
 
     private List<SymbolicValue> argumentsUsedForMethodInvocation(ExplodedGraph.Node invocationNode, MethodInvocationTree mit) {

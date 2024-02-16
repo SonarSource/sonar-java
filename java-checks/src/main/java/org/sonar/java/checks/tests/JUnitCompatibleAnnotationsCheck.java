@@ -55,7 +55,7 @@ public class JUnitCompatibleAnnotationsCheck extends IssuableSubscriptionVisitor
     List<JavaFileScannerContext.Location> locations = annotationTrees.stream()
       .filter(annotation -> ANNOTATIONS.contains(annotation.annotationType().symbolType().fullyQualifiedName()))
       .map(annotationTree -> new JavaFileScannerContext.Location("Incompatible annotation", annotationTree))
-      .collect(Collectors.toList());
+      .toList();
 
     if (locations.size() > 1) {
       reportIssue(method.simpleName(), "Remove one of these conflicting annotations.", locations, null);

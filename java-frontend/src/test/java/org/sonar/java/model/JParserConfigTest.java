@@ -61,7 +61,7 @@ class JParserConfigTest {
     JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true);
     List<String> logs = logTester.getLogs().stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs).containsExactly("The Java analyzer will ignore the unnamed module for split packages.");
   }
 }

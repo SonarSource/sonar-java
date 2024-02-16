@@ -62,7 +62,7 @@ public class IterableIteratorCheck extends IssuableSubscriptionVisitor {
     if (!returnThis.issueLocations.isEmpty()) {
       reportIssue(returnThis.issueLocations.get(0), "Refactor this code so that the Iterator supports multiple traversal",
         returnThis.issueLocations.stream().skip(1)
-          .map(t -> new JavaFileScannerContext.Location("", t)).collect(Collectors.toList()),
+          .map(t -> new JavaFileScannerContext.Location("", t)).toList(),
         null);
     }
   }

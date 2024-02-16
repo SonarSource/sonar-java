@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -84,7 +83,7 @@ class BehaviorCacheTest {
     assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(4);
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
     // Then, as we explore fully a path before switching to another one (see the LIFO in EGW) : qix is handled before foo.
-    assertThat(sev.behaviorCache.behaviors.keySet().stream().collect(Collectors.toList())).containsSequence(
+    assertThat(sev.behaviorCache.behaviors.keySet().stream().toList()).containsSequence(
       "MethodBehavior#topMethod(Z)Z",
       "MethodBehavior#bar(Z)Z",
       "MethodBehavior#foo(Z)Z",
@@ -145,7 +144,7 @@ class BehaviorCacheTest {
     behavior.happyPathYields().forEach(y -> assertThat(y.resultConstraint()).isNull());
     assertThat(behavior.happyPathYields().count()).isEqualTo(1);
 
-    List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());
+    List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().toList();
     assertThat(exceptionalYields).hasSize(3);
     assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).isUnknown())).hasSize(1);
   }
@@ -163,7 +162,7 @@ class BehaviorCacheTest {
     behavior.happyPathYields().forEach(y -> assertThat(y.resultConstraint()).isNull());
     assertThat(behavior.happyPathYields().count()).isEqualTo(1);
 
-    List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());
+    List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().toList();
     assertThat(exceptionalYields).hasSize(2);
     assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).isUnknown())).hasSize(1);
   }
@@ -189,7 +188,7 @@ class BehaviorCacheTest {
       .stream()
       .map(File::new)
       .map(SETestUtils::inputFile)
-      .collect(Collectors.toList());
+      .toList();
 
     for (InputFile inputFile : inputFiles) {
       CompilationUnitTreeImpl cut = (CompilationUnitTreeImpl) JParserTestUtils.parse("test", inputFile.contents(), SETestUtils.CLASS_PATH);

@@ -52,7 +52,7 @@ class LiteralUtilsTest {
     variables = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.VARIABLE))
       .map(VariableTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   /**

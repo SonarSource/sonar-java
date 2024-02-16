@@ -62,7 +62,7 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
       .map(MethodTree.class::cast)
       .filter(methodTree -> isDuplicateCandidate(methodTree, classTree))
       .map(MethodWithUsedVariables::new)
-      .collect(Collectors.toList());
+      .toList();
     if (methods.size() <= 1) {
       return;
     }

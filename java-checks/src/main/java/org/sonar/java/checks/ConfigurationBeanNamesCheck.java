@@ -61,7 +61,7 @@ public class ConfigurationBeanNamesCheck extends IssuableSubscriptionVisitor {
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
       .filter(method -> method.symbol().metadata().isAnnotatedWith("org.springframework.context.annotation.Bean"))
-      .collect(Collectors.toList());
+      .toList();
   }
 
 }

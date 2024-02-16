@@ -159,7 +159,7 @@ public interface CheckRegistrar {
 
     private static <T> Collection<T> asCollection(@Nullable Iterable<T> iterable) {
       return iterable != null ?
-        StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.toList()) :
+        StreamSupport.stream(iterable.spliterator(), false).toList() :
         Collections.emptyList();
     }
   }

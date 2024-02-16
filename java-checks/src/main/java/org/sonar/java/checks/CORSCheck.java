@@ -93,7 +93,7 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
       visitor.addAllowedOrigin.forEach(mit -> {
         List<Location> locations = visitor.applyPermit.stream()
           .map(t -> new Location(MESSAGE, t))
-          .collect(Collectors.toList());
+          .toList();
         reportIssue(mit.methodSelect(), MESSAGE, locations, null);
       });
     } else {

@@ -151,7 +151,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
       .map(MemberSelectExpressionTree.class::cast)
       .filter(memberSelect -> ExpressionUtils.isThis(memberSelect.expression()))
       .map(memberSelect -> JavaTextEdit.removeBetweenTree(memberSelect.expression(), memberSelect.operatorToken()))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static boolean isLiveInMethodEntry(Symbol privateFieldSymbol, MethodTree methodTree) {

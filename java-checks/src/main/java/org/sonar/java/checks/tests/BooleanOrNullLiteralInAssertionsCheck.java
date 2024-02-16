@@ -196,7 +196,7 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
   private void reportDefaultMessage(IdentifierTree methodName, List<LiteralTree> literals) {
     List<JavaFileScannerContext.Location> literalLocations = literals.stream()
       .map(literal -> new JavaFileScannerContext.Location("There does not seem to be a reason to use a literal here.", literal))
-      .collect(Collectors.toList());
+      .toList();
     reportIssue(methodName, DEFAULT_MESSAGE, literalLocations, null);
   }
 }

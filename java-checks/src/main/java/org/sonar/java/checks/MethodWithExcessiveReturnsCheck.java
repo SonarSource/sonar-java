@@ -99,7 +99,7 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
       String message = String.format(ISSUE_MESSAGE, count, max);
       List<JavaFileScannerContext.Location> secondaries = returns.stream()
         .map(token -> new JavaFileScannerContext.Location("return", token))
-        .collect(Collectors.toList());
+        .toList();
       reportIssue(reportTree, message, secondaries, null);
     }
   }

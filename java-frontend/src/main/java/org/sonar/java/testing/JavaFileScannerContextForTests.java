@@ -122,7 +122,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
       .forRule(javaCheck)
       .onTree(syntaxNode)
       .withMessage(message)
-      .withFlows(StreamSupport.stream(flows.spliterator(), false).collect(Collectors.toList()))
+      .withFlows(StreamSupport.stream(flows.spliterator(), false).toList())
       .withCost(cost == null ? 0 : cost)
       .report();
   }

@@ -235,7 +235,7 @@ class ExpectationsTest {
       TEST_LINE);
     assertThat(iaf.issue).containsEntry(MESSAGE, "issue msg");
     assertThat(iaf.flows).hasSize(3);
-    List<Integer> lines = iaf.flows.stream().map(f -> f.line).collect(Collectors.toList());
+    List<Integer> lines = iaf.flows.stream().map(f -> f.line).toList();
     assertThat(lines).isEqualTo(Arrays.asList(TEST_LINE, TEST_LINE, TEST_LINE));
     Map<String, Object> idMsgMap = iaf.flows.stream().collect(Collectors.toMap(f -> f.id, f -> MESSAGE.get(f.attributes)));
     assertThat(idMsgMap).isEqualTo(MapBuilder.<String, Object>newMap()

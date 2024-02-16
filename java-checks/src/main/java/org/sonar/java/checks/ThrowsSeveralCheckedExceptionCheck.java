@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -61,7 +60,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends IssuableSubscriptionVisi
     return methodTree.symbol().thrownTypes().stream()
       .filter(type -> !type.isUnknown() && !isSubClassOfRuntimeException(type))
       .map(Type::fullyQualifiedName)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static boolean isSubClassOfRuntimeException(Type thrownClass) {

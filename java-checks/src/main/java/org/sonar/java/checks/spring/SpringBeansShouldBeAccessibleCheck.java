@@ -194,7 +194,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       .stream()
       .filter(String.class::isInstance)
       .map(String.class::cast)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private void addMessageToMap(String classPackageName, IdentifierTree classNameTree) {

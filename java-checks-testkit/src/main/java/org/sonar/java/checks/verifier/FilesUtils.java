@@ -74,6 +74,6 @@ public final class FilesUtils {
       // we already ignore errors in the visitor
     }
 
-    return files.stream().sorted().collect(Collectors.toList());
+    return files.stream().sorted().toList();
   }
 }

@@ -513,7 +513,7 @@ class Expectations {
       return IntStream.range(0, flowIds.size())
         .mapToObj(i -> createFlows(flowIds.get(i), line, flowStarts.get(i), comment.substring(flowStarts.get(i), flowStarts.get(i + 1))))
         .flatMap(Function.identity())
-        .collect(Collectors.toList());
+        .toList();
     }
 
     private static Stream<FlowComment> createFlows(List<String> ids, int line, int startColumn, String flow) {

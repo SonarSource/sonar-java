@@ -76,7 +76,7 @@ public class SpringScanDefaultPackageCheck extends IssuableSubscriptionVisitor {
       List<ExpressionTree> scanPackageAttributeValues = annotation.arguments().stream()
         .filter(argument -> scanPackageAttributeNames.contains(attributeName(argument)))
         .flatMap(SpringScanDefaultPackageCheck::extractValues)
-        .collect(Collectors.toList());
+        .toList();
 
       checkAnnotationPackageAttributes(annotation, scanPackageAttributeValues);
     }

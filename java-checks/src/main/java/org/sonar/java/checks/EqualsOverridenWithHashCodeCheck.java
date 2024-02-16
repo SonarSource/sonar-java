@@ -48,7 +48,7 @@ public class EqualsOverridenWithHashCodeCheck extends IssuableSubscriptionVisito
     List<MethodTree> methods = ((ClassTree) tree).members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
 
     Optional<MethodTree> equalsMethod = methods.stream().filter(EqualsOverridenWithHashCodeCheck::isEquals).findAny();
     Optional<MethodTree> hashCodeMethod = methods.stream().filter(EqualsOverridenWithHashCodeCheck::isHashCode).findAny();

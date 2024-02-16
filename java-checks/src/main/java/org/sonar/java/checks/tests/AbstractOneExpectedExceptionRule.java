@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -127,7 +126,7 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
 
   private void visitTryStatement(TryStatementTree tryStatementTree) {
     if (isTryCatchFail(tryStatementTree)) {
-      List<Type> expectedTypes = tryStatementTree.catches().stream().map(c -> c.parameter().type().symbolType()).collect(Collectors.toList());
+      List<Type> expectedTypes = tryStatementTree.catches().stream().map(c -> c.parameter().type().symbolType()).toList();
       reportMultipleCallInTree(expectedTypes, tryStatementTree.block(), tryStatementTree.tryKeyword(), "body of this try/catch");
     }
   }
@@ -143,7 +142,7 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
         .filter(Optional::isPresent)
         .map(Optional::get)
         .map(ExpressionTree::symbolType)
-        .collect(Collectors.toList());
+        .toList();
 
       if (!expectedExceptions.isEmpty()) {
         Tree lambda = ((LambdaExpressionTree) executable).body();
@@ -186,7 +185,7 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
   static List<JavaFileScannerContext.Location> secondaryLocations(List<Tree> methodInvocationTrees, String message) {
     return methodInvocationTrees.stream()
       .map(expr -> new JavaFileScannerContext.Location(message, expr))
-      .collect(Collectors.toList());
+      .toList();
   }
 
 }

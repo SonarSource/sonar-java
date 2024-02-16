@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -27,10 +29,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Rule(key = "S1191")
 public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -62,7 +60,7 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
     List<JavaFileScannerContext.Location> secondaries = reportedTrees.stream()
       .skip(1)
       .map(tree -> new JavaFileScannerContext.Location("Replace also this \"Sun\" reference.", tree))
-      .collect(Collectors.toList());
+      .toList();
 
     int effortToFix = reportedTrees.size();
     context.reportIssue(this, reportedTrees.get(0), "Use classes from the Java API instead of Sun classes.", secondaries, effortToFix);

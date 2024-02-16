@@ -34,7 +34,7 @@ public class OneExpectedCheckedExceptionCheck extends AbstractOneExpectedExcepti
   void reportMultipleCallInTree(List<Type> expectedExceptions, Tree treeToVisit, Tree reportLocation, String placeToRefactor) {
     List<Type> checkedTypes = expectedExceptions.stream()
       .filter(AbstractOneExpectedExceptionRule::isChecked)
-      .collect(Collectors.toList());
+      .toList();
 
     if (checkedTypes.isEmpty()) {
       return;

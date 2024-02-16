@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
@@ -113,7 +112,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
       reportIssue(catchTree.parameter(), String.format(MESSAGE, "InterruptedException"),
         invocationInterrupting.stream()
           .map(t -> new JavaFileScannerContext.Location("Statement throwing InterruptedException.", t))
-          .collect(Collectors.toList()),
+          .toList(),
         null);
     }
   }
@@ -129,7 +128,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     if (parameter.type().is(Tree.Kind.UNION_TYPE)) {
       return ((UnionTypeTree) parameter.type()).typeAlternatives().stream()
         .map(TypeTree::symbolType)
-        .collect(Collectors.toList());
+        .toList();
     }
     return Collections.singletonList(parameter.symbol().type());
   }

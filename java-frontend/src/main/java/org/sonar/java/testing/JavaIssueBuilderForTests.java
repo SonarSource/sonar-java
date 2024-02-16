@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.Preconditions;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -64,7 +63,7 @@ public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
       .map(flows -> listOfLocationsToListOfAnalyzerMessages(flows, rule, inputFile))
       .ifPresent(issue.flows::addAll);
 
-    quickFixes.put(textSpan, quickFixes().stream().map(Supplier::get).flatMap(Collection::stream).collect(Collectors.toList()));
+    quickFixes.put(textSpan, quickFixes().stream().map(Supplier::get).flatMap(Collection::stream).toList());
 
     issues.add(issue);
     reported = true;
@@ -73,19 +72,19 @@ public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
   private static List<List<JavaFileScannerContext.Location>> toSingletonList(List<JavaFileScannerContext.Location> secondaries) {
     return secondaries.stream()
       .map(Collections::singletonList)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static List<List<AnalyzerMessage>> listOfLocationsToListOfAnalyzerMessages(List<List<JavaFileScannerContext.Location>> locations, JavaCheck rule, InputFile inputFile) {
     return locations.stream()
       .map(listOfLocations -> locationsToAnalyzerMessages(listOfLocations, rule, inputFile))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static List<AnalyzerMessage> locationsToAnalyzerMessages(List<JavaFileScannerContext.Location> locations, JavaCheck rule, InputFile inputFile) {
     return locations.stream()
       .map(location -> locationToAnalyzerMessage(location, rule, inputFile))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static AnalyzerMessage locationToAnalyzerMessage(JavaFileScannerContext.Location location, JavaCheck rule, InputFile inputFile) {

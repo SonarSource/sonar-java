@@ -118,7 +118,7 @@ class SonarSymbolTableVisitorTest {
     if(tps.length == 0) {
       assertThat(textRanges).isEmpty();
     } else {
-      assertThat(textRanges.stream().map(TextRange::start).collect(Collectors.toList())).isNotEmpty().containsOnly(tps);
+      assertThat(textRanges.stream().map(TextRange::start).toList()).isNotEmpty().containsOnly(tps);
     }
   }
 

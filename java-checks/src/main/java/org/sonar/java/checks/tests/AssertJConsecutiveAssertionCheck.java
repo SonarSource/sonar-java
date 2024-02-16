@@ -146,7 +146,7 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
     if (assertSubject != null && !equivalentAssertions.isEmpty()) {
       reportIssue(assertSubject.methodName(),
         "Join these multiple assertions subject to one assertion chain.",
-        equivalentAssertions.stream().map(AssertSubject::toSecondaryLocation).collect(Collectors.toList()),
+        equivalentAssertions.stream().map(AssertSubject::toSecondaryLocation).toList(),
         null);
     }
   }

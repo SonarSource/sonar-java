@@ -88,7 +88,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     if (parameters == null) {
       MethodTree declaration = declaration();
       if (declaration != null && !isCompactConstructor(declaration)) {
-        parameters = declaration.parameters().stream().map(VariableTree::symbol).collect(Collectors.toList());
+        parameters = declaration.parameters().stream().map(VariableTree::symbol).toList();
       } else {
         parameters = new ArrayList<>();
         IMethodBinding methodBinding = methodBinding();

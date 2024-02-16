@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -150,14 +149,14 @@ class SpringBeansShouldBeAccessibleCheckTest {
     var unchangedFiles = Stream.of(
       "app/SpringBootApp1.java",
       "fourthApp/SpringBootApp4.java"
-    ).map(path -> mainCodeSourcesPath(BASE_PATH + "springBootApplication/" + path)).collect(Collectors.toList());
+    ).map(path -> mainCodeSourcesPath(BASE_PATH + "springBootApplication/" + path)).toList();
     var changedFiles = Stream.of(
       "app/Ok/Ok.java",
       "fourthApp/controller/Controller.java",
       "fourthApp/domain/SomeClass.java",
       "fourthApp/utility/SomeUtilityClass.java",
       "Ko/Ko.java"
-    ).map(path -> mainCodeSourcesPath(BASE_PATH + "springBootApplication/" + path)).collect(Collectors.toList());
+    ).map(path -> mainCodeSourcesPath(BASE_PATH + "springBootApplication/" + path)).toList();
 
     ReadCache existingReadCache = HashCacheTestHelper.internalReadCacheFromFiles(unchangedFiles);
     writeCache.bind(existingReadCache);
