@@ -1,11 +1,11 @@
 {
-'jboss-ejb3-tutorial:asynch/src/org/jboss/tutorial/asynch/client/Client.java':[
-55,
+"jboss-ejb3-tutorial:asynch/src/org/jboss/tutorial/asynch/client/Client.java": [
+55
 ],
-'jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/ServiceThree.java':[
-64,
+"jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/bean/ServiceThree.java": [
+64
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceThree.java':[
-54,
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceThree.java": [
+54
 ],
 }

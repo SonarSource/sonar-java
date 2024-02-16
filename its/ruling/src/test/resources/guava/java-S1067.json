@@ -1,26 +1,26 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Utf8.java':[
-170,
+"com.google.guava:guava:src/com/google/common/base/Utf8.java": [
+170
 ],
-'com.google.guava:guava:src/com/google/common/cache/LongAdder.java':[
-73,
+"com.google.guava:guava:src/com/google/common/cache/LongAdder.java": [
+73
 ],
-'com.google.guava:guava:src/com/google/common/collect/GeneralRange.java':[
-277,
+"com.google.guava:guava:src/com/google/common/collect/GeneralRange.java": [
+277
 ],
-'com.google.guava:guava:src/com/google/common/collect/TreeBasedTable.java':[
-212,
+"com.google.guava:guava:src/com/google/common/collect/TreeBasedTable.java": [
+212
 ],
-'com.google.guava:guava:src/com/google/common/hash/BloomFilter.java':[
-213,
+"com.google.guava:guava:src/com/google/common/hash/BloomFilter.java": [
+213
 ],
-'com.google.guava:guava:src/com/google/common/net/InetAddresses.java':[
-553,
+"com.google.guava:guava:src/com/google/common/net/InetAddresses.java": [
+553
 ],
-'com.google.guava:guava:src/com/google/common/net/MediaType.java':[
-521,
+"com.google.guava:guava:src/com/google/common/net/MediaType.java": [
+521
 ],
-'com.google.guava:guava:src/com/google/thirdparty/publicsuffix/TrieParser.java':[
-72,
+"com.google.guava:guava:src/com/google/thirdparty/publicsuffix/TrieParser.java": [
+72
 ],
 }

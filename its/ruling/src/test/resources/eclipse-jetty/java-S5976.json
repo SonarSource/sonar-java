@@ -1,47 +1,47 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpParserTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpParserTest.java": [
 1584,
 1728,
-1900,
+1900
 ],
-'org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/ServletPathSpecTest.java':[
-89,
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/ServletPathSpecTest.java": [
+89
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ErrorHandlerTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ErrorHandlerTest.java": [
 187,
-240,
+240
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java": [
 296,
 352,
 425,
 467,
-545,
+545
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartFormInputStreamTest.java':[
-782,
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartFormInputStreamTest.java": [
+782
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerGetResourceTest.java':[
-146,
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerGetResourceTest.java": [
+146
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerTest.java':[
-691,
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerTest.java": [
+691
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/SecuredRedirectHandlerTest.java':[
-160,
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/SecuredRedirectHandlerTest.java": [
+160
 ],
-'org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerConfigurationTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerConfigurationTest.java": [
 56,
-109,
+109
 ],
-'org.eclipse.jetty:jetty-project:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONTest.java": [
 147,
-201,
+201
 ],
-'org.eclipse.jetty:jetty-project:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java':[
+"org.eclipse.jetty:jetty-project:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java": [
 523,
 782,
 1102,
-1124,
-],
+1124
+]
 }

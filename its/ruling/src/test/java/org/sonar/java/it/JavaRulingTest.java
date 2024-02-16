@@ -269,7 +269,8 @@ public class JavaRulingTest {
         "sonar.scm.provider", "git",
         "sonar.scm.disabled", "false",
         INCREMENTAL_ANALYSIS_KEY, "true",
-        SONAR_CACHING_ENABLED_KEY, "true"
+        SONAR_CACHING_ENABLED_KEY, "true",
+        "sonar.java.ignoreUnnamedModuleForSplitPackage", "true"
       );
 
     var before2 = System.currentTimeMillis();

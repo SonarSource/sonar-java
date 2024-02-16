@@ -1,42 +1,42 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/ServerProcessLogging.java':[
-125,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/ServerProcessLogging.java": [
+125
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ComponentFinder.java':[
-101,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ComponentFinder.java": [
+101
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/index/ComponentHit.java':[
-59,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/index/ComponentHit.java": [
+59
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/index/ComponentIndex.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/index/ComponentIndex.java": [
 88,
-127,
+127
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/index/ComponentIndexer.java':[
-120,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/index/ComponentIndexer.java": [
+120
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerDefinitionImpl.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerDefinitionImpl.java": [
 90,
-96,
+96
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ComponentImpl.java':[
-172,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ComponentImpl.java": [
+172
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/VisitException.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/VisitException.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCreationDateCalculator.java':[
-136,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCreationDateCalculator.java": [
+136
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/source/RangeOffsetConverter.java':[
-63,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/source/RangeOffsetConverter.java": [
+63
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java": [
 311,
 315,
-323,
+323
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsClient.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsClient.java": [
 85,
 89,
 93,
@@ -46,89 +46,89 @@
 125,
 129,
 133,
-177,
+177
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsUtils.java':[
-102,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsUtils.java": [
+102
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexDefinitionHash.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexDefinitionHash.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexType.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexType.java": [
 46,
 50,
-54,
+54
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/NewIndex.java':[
-222,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/NewIndex.java": [
+222
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/SearchOptions.java':[
-118,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/SearchOptions.java": [
+118
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/StickyFacetBuilder.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/StickyFacetBuilder.java": [
 65,
 83,
 87,
 92,
 102,
-139,
+139
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchQueryFactory.java':[
-52,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchQueryFactory.java": [
+52
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/exceptions/BadRequestException.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/exceptions/BadRequestException.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/exceptions/Message.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/exceptions/Message.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/Action.java':[
-56,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/Action.java": [
+56
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueQueryFactory.java':[
-237,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueQueryFactory.java": [
+237
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/Result.java':[
-103,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/Result.java": [
+103
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIndex.java':[
-408,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIndex.java": [
+408
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/workflow/StateMachine.java':[
-71,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/workflow/StateMachine.java": [
+71
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/workflow/Transition.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/workflow/Transition.java": [
 152,
-157,
+157
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndex.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndex.java": [
 189,
 193,
-232,
+232
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/platformlevel/PlatformLevel.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/platformlevel/PlatformLevel.java": [
 124,
 138,
 151,
-157,
+157
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/QualityGateConditionsUpdater.java':[
-218,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/QualityGateConditionsUpdater.java": [
+218
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java':[
-232,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java": [
+232
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleQuery.java':[
-136,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleQuery.java": [
+136
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/SettingsUpdater.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/SettingsUpdater.java": [
 47,
-56,
+56
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/WsUtils.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/WsUtils.java": [
 69,
 85,
 97,
-105,
+105
 ],
 }

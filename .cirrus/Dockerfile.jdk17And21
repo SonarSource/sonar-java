@@ -1,0 +1,58 @@
+ARG CIRRUS_AWS_ACCOUNT=275878209202
+FROM ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
+
+LABEL maintainer="JVM Squad at SonarSource"
+
+USER root
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# The current image is `FROM public.ecr.aws/docker/library/eclipse-temurin:17-jammy`
+# Use a similar method to install Java 21 copied from https://github.com/adoptium/containers/blob/main/21/jdk/ubuntu/jammy/Dockerfile
+
+ENV JAVA_21_HOME /opt/java/openjdk21
+ENV JAVA_21_VERSION jdk-21.0.2+13
+
+RUN set -eux; \
+    ARCH="$(dpkg --print-architecture)"; \
+    case "${ARCH}" in \
+       aarch64|arm64) \
+         ESUM='3ce6a2b357e2ef45fd6b53d6587aa05bfec7771e7fb982f2c964f6b771b7526a'; \
+         BINARY_URL='https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2%2B13/OpenJDK21U-jdk_aarch64_linux_hotspot_21.0.2_13.tar.gz'; \
+         ;; \
+       amd64|i386:x86-64) \
+         ESUM='454bebb2c9fe48d981341461ffb6bf1017c7b7c6e15c6b0c29b959194ba3aaa5'; \
+         BINARY_URL='https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2%2B13/OpenJDK21U-jdk_x64_linux_hotspot_21.0.2_13.tar.gz'; \
+         ;; \
+       ppc64el|powerpc:common64) \
+         ESUM='d08de863499d8851811c893e8915828f2cd8eb67ed9e29432a6b4e222d80a12f'; \
+         BINARY_URL='https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2%2B13/OpenJDK21U-jdk_ppc64le_linux_hotspot_21.0.2_13.tar.gz'; \
+         ;; \
+       s390x|s390:64-bit) \
+         ESUM='0d5676c50821e0d0b951bf3ffd717e7a13be2a89d8848a5c13b4aedc6f982c78'; \
+         BINARY_URL='https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2%2B13/OpenJDK21U-jdk_s390x_linux_hotspot_21.0.2_13.tar.gz'; \
+         ;; \
+       *) \
+         echo "Unsupported arch: ${ARCH}"; \
+         exit 1; \
+         ;; \
+    esac; \
+    wget --progress=dot:giga -O /tmp/openjdk.tar.gz ${BINARY_URL}; \
+    echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
+    mkdir -p "$JAVA_21_HOME"; \
+    tar --extract \
+        --file /tmp/openjdk.tar.gz \
+        --directory "$JAVA_21_HOME" \
+        --strip-components 1 \
+        --no-same-owner \
+    ; \
+    rm -f /tmp/openjdk.tar.gz ${JAVA_21_HOME}/lib/src.zip; \
+    # https://github.com/docker-library/openjdk/issues/331#issuecomment-498834472
+    find "$JAVA_21_HOME/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
+    ldconfig; \
+    # https://github.com/docker-library/openjdk/issues/212#issuecomment-420979840
+    # https://openjdk.java.net/jeps/341
+    java -Xshare:dump;
+
+USER sonarsource
+WORKDIR /home/sonarsource

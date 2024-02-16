@@ -1,64 +1,64 @@
 {
-'com.google.guava:guava:src/com/google/common/base/CharMatcher.java':[
-59,
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
+59
 ],
-'com.google.guava:guava:src/com/google/common/cache/CacheBuilder.java':[
-152,
+"com.google.guava:guava:src/com/google/common/cache/CacheBuilder.java": [
+152
 ],
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
 96,
-1975,
+1975
 ],
-'com.google.guava:guava:src/com/google/common/collect/ForwardingNavigableMap.java':[
-52,
+"com.google.guava:guava:src/com/google/common/collect/ForwardingNavigableMap.java": [
+52
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableList.java':[
-54,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableList.java": [
+54
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
-57,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java": [
+57
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java':[
-59,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java": [
+59
 ],
-'com.google.guava:guava:src/com/google/common/collect/Iterables.java':[
-61,
+"com.google.guava:guava:src/com/google/common/collect/Iterables.java": [
+61
 ],
-'com.google.guava:guava:src/com/google/common/collect/Iterators.java':[
-70,
+"com.google.guava:guava:src/com/google/common/collect/Iterators.java": [
+70
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 73,
-1986,
+1986
 ],
-'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
-85,
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+85
 ],
-'com.google.guava:guava:src/com/google/common/collect/Multimaps.java':[
-68,
+"com.google.guava:guava:src/com/google/common/collect/Multimaps.java": [
+68
 ],
-'com.google.guava:guava:src/com/google/common/collect/Ordering.java':[
-132,
+"com.google.guava:guava:src/com/google/common/collect/Ordering.java": [
+132
 ],
-'com.google.guava:guava:src/com/google/common/collect/Range.java':[
-115,
+"com.google.guava:guava:src/com/google/common/collect/Range.java": [
+115
 ],
-'com.google.guava:guava:src/com/google/common/collect/Sets.java':[
-65,
+"com.google.guava:guava:src/com/google/common/collect/Sets.java": [
+65
 ],
-'com.google.guava:guava:src/com/google/common/io/Files.java':[
-66,
+"com.google.guava:guava:src/com/google/common/io/Files.java": [
+66
 ],
-'com.google.guava:guava:src/com/google/common/net/InetAddresses.java':[
-115,
+"com.google.guava:guava:src/com/google/common/net/InetAddresses.java": [
+115
 ],
-'com.google.guava:guava:src/com/google/common/reflect/TypeToken.java':[
-94,
+"com.google.guava:guava:src/com/google/common/reflect/TypeToken.java": [
+94
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java':[
-68,
+"com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java": [
+68
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java':[
-202,
+"com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java": [
+202
 ],
 }

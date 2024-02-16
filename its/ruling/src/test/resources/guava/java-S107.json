@@ -1,49 +1,49 @@
 {
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
-4606,
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+4606
 ],
-'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
-403,
+"com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
+403
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableBiMap.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableBiMap.java": [
 75,
-85,
+85
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableList.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableList.java": [
 138,
 147,
 156,
 166,
-180,
+180
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableListMultimap.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableListMultimap.java": [
 88,
-101,
+101
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableMap.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableMap.java": [
 95,
-105,
+105
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableMultimap.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableMultimap.java": [
 105,
-114,
+114
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
 102,
-117,
+117
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java": [
 144,
-157,
+157
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMapFauxverideShim.java':[
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMapFauxverideShim.java": [
 95,
-110,
+110
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
-3917,
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+3917
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Longs.java':[
-305,
+"com.google.guava:guava:src/com/google/common/primitives/Longs.java": [
+305
 ],
 }

@@ -1,20 +1,20 @@
 {
-'com.google.guava:guava:src/com/google/common/io/AppendableWriter.java':[
-54,
+"com.google.guava:guava:src/com/google/common/io/AppendableWriter.java": [
+54
 ],
-'com.google.guava:guava:src/com/google/common/io/ByteArrayDataInput.java':[
+"com.google.guava:guava:src/com/google/common/io/ByteArrayDataInput.java": [
 36,
-38,
+38
 ],
-'com.google.guava:guava:src/com/google/common/io/ByteArrayDataOutput.java':[
+"com.google.guava:guava:src/com/google/common/io/ByteArrayDataOutput.java": [
 31,
-32,
+32
 ],
-'com.google.guava:guava:src/com/google/common/io/ByteStreams.java':[
+"com.google.guava:guava:src/com/google/common/io/ByteStreams.java": [
 254,
-262,
+262
 ],
-'com.google.guava:guava:src/com/google/common/io/MultiReader.java':[
-52,
+"com.google.guava:guava:src/com/google/common/io/MultiReader.java": [
+52
 ],
 }

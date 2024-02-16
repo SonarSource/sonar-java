@@ -49,7 +49,6 @@
   </developers>
 
   <modules>
-    <module>jdt</module>
     <module>java-checks-test-sources</module>
     <module>java-frontend</module>
     <module>java-symbolic-execution</module>
@@ -83,7 +82,7 @@
   <properties>
     <license.title>SonarQube Java</license.title>
 
-    <jdk.min.version>11</jdk.min.version>
+    <jdk.min.version>17</jdk.min.version>
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
@@ -100,8 +99,8 @@
     <!-- Release: enable publication to Bintray -->
     <artifactsToPublish>${project.groupId}:sonar-java-plugin:jar</artifactsToPublish>
 
-    <!-- FIXME: Overrides OSS parent pom for java 19 compatibility -->
-    <version.jacoco.plugin>0.8.10</version.jacoco.plugin>
+    <!-- Overrides parent pom to use a more recent version of jacoco -->
+    <version.jacoco.plugin>0.8.11</version.jacoco.plugin>
   </properties>
 
   <distributionManagement>
@@ -300,7 +299,7 @@
         <plugin>
           <groupId>de.thetaphi</groupId>
           <artifactId>forbiddenapis</artifactId>
-          <version>3.1</version>
+          <version>3.6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

@@ -129,6 +129,22 @@ public interface JavaVersion {
   boolean isJava19Compatible();
 
   /**
+   * Test if java version of the project is greater than or equal to 20.
+   * Remark - Contrary to other isJava*Compatible methods, this one will NOT return true if version is not set
+   * @return true if java version used is >= 120
+   * @since SonarJava 8.0: Support of Java 20
+   */
+  boolean isJava20Compatible();
+
+  /**
+   * Test if java version of the project is greater than or equal to 21.
+   * Remark - Contrary to other isJava*Compatible methods, this one will NOT return true if version is not set
+   * @return true if java version used is >= 21
+   * @since SonarJava 8.0: Support of Java 21
+   */
+  boolean isJava21Compatible();
+
+  /**
    * get java version as integer
    * @return an int representing the java version
    */

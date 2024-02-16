@@ -1,13 +1,13 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluatorTest.java':[
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluatorTest.java": [
 69,
 77,
-85,
+85
 ],
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/debt/DebtModelPluginRepositoryTest.java':[
-94,
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/debt/DebtModelPluginRepositoryTest.java": [
+94
 ],
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/db/EmbeddedDatabaseTest.java':[
-166,
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/db/EmbeddedDatabaseTest.java": [
+166
 ],
 }

@@ -1,632 +1,632 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/ce/queue/CeQueueImpl.java':[
-42,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/ce/queue/CeQueueImpl.java": [
+42
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/BasicAuthenticator.java':[
-32,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/BasicAuthenticator.java": [
+32
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/JwtHttpHandler.java':[
-39,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/JwtHttpHandler.java": [
+39
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/OAuthCsrfVerifier.java':[
-30,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/OAuthCsrfVerifier.java": [
+30
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/UserSessionInitializer.java':[
-39,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/UserSessionInitializer.java": [
+39
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/ws/LoginAction.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/ws/LoginAction.java": [
+43
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/batch/ProjectDataLoader.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/batch/ProjectDataLoader.java": [
+43
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ce/ws/ActivityAction.java':[
-54,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ce/ws/ActivityAction.java": [
+54
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ce/ws/TaskFormatter.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ce/ws/TaskFormatter.java": [
+43
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/NewComponent.java':[
-26,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/NewComponent.java": [
+26
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/index/ComponentIndex.java':[
-49,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/index/ComponentIndex.java": [
+49
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/ProjectMeasuresQueryFactory.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/ProjectMeasuresQueryFactory.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/ProjectMeasuresQueryValidator.java':[
-29,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/ProjectMeasuresQueryValidator.java": [
+29
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/SearchAction.java':[
-45,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/SearchAction.java": [
+45
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/SearchProjectsAction.java':[
-63,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/SearchProjectsAction.java": [
+63
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/ShowAction.java':[
-41,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/ShowAction.java": [
+41
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/SuggestionsAction.java':[
-62,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/SuggestionsAction.java": [
+62
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/TreeAction.java':[
-56,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/TreeAction.java": [
+56
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/queue/ReportSubmitter.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/queue/ReportSubmitter.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureImpl.java':[
-27,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureImpl.java": [
+27
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/posttask/PostProjectAnalysisTasksExecutor.java':[
-46,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/posttask/PostProjectAnalysisTasksExecutor.java": [
+46
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ComponentImpl.java':[
-29,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ComponentImpl.java": [
+29
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ComponentRootBuilder.java':[
-33,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ComponentRootBuilder.java": [
+33
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/PathAwareCrawler.java':[
-27,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/PathAwareCrawler.java": [
+27
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStep.java':[
-59,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStep.java": [
+59
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounter.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounter.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/filter/IssueFilter.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/filter/IssueFilter.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/metric/MetricImpl.java':[
-28,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/metric/MetricImpl.java": [
+28
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitor.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitor.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewReliabilityAndSecurityRatingMeasuresVisitor.java':[
-37,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewReliabilityAndSecurityRatingMeasuresVisitor.java": [
+37
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/RatingSettings.java':[
-30,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/RatingSettings.java": [
+30
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/ReliabilityAndSecurityRatingMeasuresVisitor.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/ReliabilityAndSecurityRatingMeasuresVisitor.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ReportScmInfo.java':[
-31,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ReportScmInfo.java": [
+31
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoImpl.java':[
-28,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoImpl.java": [
+28
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CommentMeasuresStep.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CommentMeasuresStep.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComplexityMeasuresStep.java':[
-33,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComplexityMeasuresStep.java": [
+33
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComputeMeasureVariationsStep.java':[
-50,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComputeMeasureVariationsStep.java": [
+50
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CoverageMeasuresStep.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CoverageMeasuresStep.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/DuplicationMeasuresStep.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/DuplicationMeasuresStep.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LanguageDistributionMeasuresStep.java':[
-45,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LanguageDistributionMeasuresStep.java": [
+45
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStep.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStep.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PeriodResolver.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PeriodResolver.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistComponentsStep.java':[
-52,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistComponentsStep.java": [
+52
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistMeasuresStep.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistMeasuresStep.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java':[
-59,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java": [
+59
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/SizeMeasuresStep.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/SizeMeasuresStep.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java':[
-39,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java": [
+39
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookCallerImpl.java':[
-32,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookCallerImpl.java": [
+32
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java':[
-46,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java": [
+46
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java':[
-29,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java": [
+29
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/NewIndex.java':[
-39,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/NewIndex.java": [
+39
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchFeatureRepertoire.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchFeatureRepertoire.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/favorite/ws/SearchAction.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/favorite/ws/SearchAction.java": [
+43
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ActionFinder.java':[
-27,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ActionFinder.java": [
+27
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueQueryFactory.java':[
-57,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueQueryFactory.java": [
+57
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIndex.java':[
-75,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIndex.java": [
+75
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/notification/NewIssuesNotification.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/notification/NewIssuesNotification.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/notification/NewIssuesStatistics.java':[
-33,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/notification/NewIssuesStatistics.java": [
+33
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/AddCommentAction.java':[
-41,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/AddCommentAction.java": [
+41
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/AssignAction.java':[
-48,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/AssignAction.java": [
+48
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/BulkChangeAction.java':[
-64,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/BulkChangeAction.java": [
+64
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/ChangelogAction.java':[
-46,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/ChangelogAction.java": [
+46
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/ComponentTagsAction.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/ComponentTagsAction.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/DeleteCommentAction.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/DeleteCommentAction.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/EditCommentAction.java':[
-42,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/EditCommentAction.java": [
+42
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java':[
-53,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java": [
+53
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchResponseFormat.java':[
-52,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchResponseFormat.java": [
+52
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchResponseLoader.java':[
-48,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchResponseLoader.java": [
+48
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/license/ws/ListAction.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/license/ws/ListAction.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/CreateAction.java':[
-37,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/CreateAction.java": [
+37
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/SearchAction.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/SearchAction.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresDoc.java':[
-33,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresDoc.java": [
+33
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndex.java':[
-53,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndex.java": [
+53
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectsTextSearchQueryFactory.java':[
-32,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectsTextSearchQueryFactory.java": [
+32
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/ComponentAction.java':[
-57,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/ComponentAction.java": [
+57
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/ComponentTreeAction.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/ComponentTreeAction.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/ComponentTreeDataLoader.java':[
-65,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/ComponentTreeDataLoader.java": [
+65
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/ComponentTreeSort.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/ComponentTreeSort.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/MeasuresWsParametersBuilder.java':[
-25,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/MeasuresWsParametersBuilder.java": [
+25
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/SearchAction.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/SearchAction.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/SearchHistoryAction.java':[
-50,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/SearchHistoryAction.java": [
+50
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/SearchHistoryResult.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/SearchHistoryResult.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/ws/AddAction.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/ws/AddAction.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/ws/ListAction.java':[
-50,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/ws/ListAction.java": [
+50
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/ws/RemoveAction.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/ws/RemoveAction.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/OrganizationCreationImpl.java':[
-54,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/OrganizationCreationImpl.java": [
+54
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/ws/AddMemberAction.java':[
-42,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/ws/AddMemberAction.java": [
+42
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/ws/DeleteAction.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/ws/DeleteAction.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/ws/RemoveMemberAction.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/ws/RemoveMemberAction.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/ws/SearchMembersAction.java':[
-51,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/ws/SearchMembersAction.java": [
+51
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/ws/UpdateAction.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/ws/UpdateAction.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/GroupPermissionChanger.java':[
-29,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/GroupPermissionChanger.java": [
+29
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/PermissionTemplateService.java':[
-52,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/PermissionTemplateService.java": [
+52
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/AddGroupAction.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/AddGroupAction.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/AddUserAction.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/AddUserAction.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/GroupsAction.java':[
-46,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/GroupsAction.java": [
+46
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/PermissionRequestValidator.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/PermissionRequestValidator.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/PermissionWsSupport.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/PermissionWsSupport.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/PermissionsWsParametersBuilder.java':[
-28,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/PermissionsWsParametersBuilder.java": [
+28
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/RemoveGroupAction.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/RemoveGroupAction.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/RemoveUserAction.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/RemoveUserAction.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/SearchGlobalPermissionsAction.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/SearchGlobalPermissionsAction.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/SearchProjectPermissionsAction.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/SearchProjectPermissionsAction.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/UsersAction.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/UsersAction.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/AddGroupToTemplateAction.java':[
-33,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/AddGroupToTemplateAction.java": [
+33
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/AddProjectCreatorToTemplateAction.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/AddProjectCreatorToTemplateAction.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/AddUserToTemplateAction.java':[
-37,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/AddUserToTemplateAction.java": [
+37
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/ApplyTemplateAction.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/ApplyTemplateAction.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/BulkApplyTemplateAction.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/BulkApplyTemplateAction.java": [
+43
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/CreateTemplateAction.java':[
-39,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/CreateTemplateAction.java": [
+39
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/DeleteTemplateAction.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/DeleteTemplateAction.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/RemoveGroupFromTemplateAction.java':[
-33,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/RemoveGroupFromTemplateAction.java": [
+33
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/RemoveProjectCreatorFromTemplateAction.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/RemoveProjectCreatorFromTemplateAction.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/RemoveUserFromTemplateAction.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/RemoveUserFromTemplateAction.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/SearchTemplatesAction.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/SearchTemplatesAction.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/SetDefaultTemplateAction.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/SetDefaultTemplateAction.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/TemplateGroupsAction.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/TemplateGroupsAction.java": [
+43
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/TemplateUsersAction.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/TemplateUsersAction.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/UpdateTemplateAction.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/UpdateTemplateAction.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/db/EmbeddedDatabase.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/db/EmbeddedDatabase.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/WebPagesFilter.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/WebPagesFilter.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ws/DbMigrationStatusAction.java':[
-32,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ws/DbMigrationStatusAction.java": [
+32
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ws/MigrateDbAction.java':[
-33,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ws/MigrateDbAction.java": [
+33
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/PluginDownloader.java':[
-42,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/PluginDownloader.java": [
+42
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ServerPluginRepository.java':[
-54,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ServerPluginRepository.java": [
+54
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ws/InstalledAction.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ws/InstalledAction.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ws/PluginWSCommons.java':[
-45,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ws/PluginWSCommons.java": [
+45
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/BulkUpdateKeyAction.java':[
-41,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/BulkUpdateKeyAction.java": [
+41
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/CreateAction.java':[
-37,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/CreateAction.java": [
+37
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/GhostsAction.java':[
-41,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/GhostsAction.java": [
+41
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/ProvisionedAction.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/ProvisionedAction.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/SearchAction.java':[
-41,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/SearchAction.java": [
+41
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/UpdateKeyAction.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/UpdateKeyAction.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/UpdateVisibilityAction.java':[
-42,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/UpdateVisibilityAction.java": [
+42
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/CreateEventAction.java':[
-46,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/CreateEventAction.java": [
+46
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/DeleteEventAction.java':[
-37,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/DeleteEventAction.java": [
+37
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/SearchAction.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/SearchAction.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/UpdateEventAction.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/UpdateEventAction.java": [
+43
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectlink/ws/CreateAction.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectlink/ws/CreateAction.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectlink/ws/SearchAction.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectlink/ws/SearchAction.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/property/ws/IndexAction.java':[
-48,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/property/ws/IndexAction.java": [
+48
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/QualityGateConditionsUpdater.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/QualityGateConditionsUpdater.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/RegisterQualityGates.java':[
-30,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/RegisterQualityGates.java": [
+30
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/AppAction.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/AppAction.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/CreateConditionAction.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/CreateConditionAction.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/GetByProjectAction.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/GetByProjectAction.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/ProjectStatusAction.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/ProjectStatusAction.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/QualityGatesWs.java':[
-29,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/QualityGatesWs.java": [
+29
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/SelectAction.java':[
-39,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/SelectAction.java": [
+39
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/UpdateConditionAction.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/UpdateConditionAction.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileRepositoryImpl.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileRepositoryImpl.java": [
+43
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotification.java':[
-29,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotification.java": [
+29
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotificationTemplate.java':[
-31,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotificationTemplate.java": [
+31
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleDoc.java':[
-29,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleDoc.java": [
+29
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ActivateRuleAction.java':[
-36,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ActivateRuleAction.java": [
+36
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ActivateRulesAction.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ActivateRulesAction.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/AddProjectAction.java':[
-37,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/AddProjectAction.java": [
+37
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ChangeParentAction.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ChangeParentAction.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ChangelogAction.java':[
-37,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ChangelogAction.java": [
+37
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/CopyAction.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/CopyAction.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/CreateAction.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/CreateAction.java": [
+43
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/DeactivateRulesAction.java':[
-33,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/DeactivateRulesAction.java": [
+33
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ExportAction.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ExportAction.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ProjectsAction.java':[
-44,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ProjectsAction.java": [
+44
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/QProfileReference.java':[
-31,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/QProfileReference.java": [
+31
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/RemoveProjectAction.java':[
-37,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/RemoveProjectAction.java": [
+37
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/RenameAction.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/RenameAction.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/RestoreAction.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/RestoreAction.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/SearchAction.java':[
-56,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/SearchAction.java": [
+56
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ShowAction.java':[
-46,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ShowAction.java": [
+46
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleUpdater.java':[
-52,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleUpdater.java": [
+52
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndex.java':[
-66,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndex.java": [
+66
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndexer.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndexer.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/RuleMapper.java':[
-42,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/RuleMapper.java": [
+42
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/RuleQueryFactory.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/RuleQueryFactory.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java':[
-63,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java": [
+63
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/UpdateAction.java':[
-51,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/UpdateAction.java": [
+51
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/serverid/ws/ShowAction.java':[
-40,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/serverid/ws/ShowAction.java": [
+40
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/ListDefinitionsAction.java':[
-39,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/ListDefinitionsAction.java": [
+39
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/ResetAction.java':[
-41,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/ResetAction.java": [
+41
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/ScannerSettings.java':[
-31,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/ScannerSettings.java": [
+31
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/SetAction.java':[
-59,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/SetAction.java": [
+59
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/ValuesAction.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/ValuesAction.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/test/index/TestDoc.java':[
-30,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/test/index/TestDoc.java": [
+30
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/test/index/TestIndex.java':[
-31,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/test/index/TestIndex.java": [
+31
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/test/index/TestResultSetIterator.java':[
-45,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/test/index/TestResultSetIterator.java": [
+45
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/PageRepository.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/PageRepository.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/ws/ComponentAction.java':[
-65,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/ws/ComponentAction.java": [
+65
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/ws/GlobalAction.java':[
-41,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/ws/GlobalAction.java": [
+41
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java':[
-50,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java": [
+50
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/index/UserIndex.java':[
-42,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/index/UserIndex.java": [
+42
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/CreateAction.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/CreateAction.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/CurrentAction.java':[
-37,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/CurrentAction.java": [
+37
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/DeactivateAction.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/DeactivateAction.java": [
+43
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/GroupsAction.java':[
-48,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/GroupsAction.java": [
+48
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/SearchAction.java':[
-47,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/SearchAction.java": [
+47
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/UpdateAction.java':[
-39,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/UpdateAction.java": [
+39
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/AddUserAction.java':[
-35,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/AddUserAction.java": [
+35
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/CreateAction.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/CreateAction.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/DeleteAction.java':[
-32,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/DeleteAction.java": [
+32
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/GroupWsSupport.java':[
-37,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/GroupWsSupport.java": [
+37
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/RemoveUserAction.java':[
-33,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/RemoveUserAction.java": [
+33
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/SearchAction.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/SearchAction.java": [
+43
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/UpdateAction.java':[
-37,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/UpdateAction.java": [
+37
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usertoken/ws/GenerateAction.java':[
-38,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usertoken/ws/GenerateAction.java": [
+38
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usertoken/ws/SearchAction.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usertoken/ws/SearchAction.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/DeprecatedPropertiesWsFilter.java':[
-42,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/DeprecatedPropertiesWsFilter.java": [
+42
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/ServletRequest.java':[
-34,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/ServletRequest.java": [
+34
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/WebServiceEngine.java':[
-43,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/WebServiceEngine.java": [
+43
 ],
 }

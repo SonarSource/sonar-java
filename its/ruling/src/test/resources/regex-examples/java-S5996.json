@@ -1,5 +1,5 @@
 {
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java": [
 347,
 347,
 347,
@@ -7,9 +7,9 @@
 1613,
 1613,
 1695,
-1695,
+1695
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java": [
 533,
 533,
 749,
@@ -22,15 +22,15 @@
 753,
 773,
 1305,
-1987,
+1987
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java": [
 1377,
-1377,
+1377
 ],
-'org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java':[
+"org.regex-examples:regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java": [
 651,
 651,
-807,
+807
 ],
 }

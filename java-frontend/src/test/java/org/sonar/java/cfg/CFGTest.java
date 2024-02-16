@@ -1012,9 +1012,9 @@ class CFGTest {
       // guarded pattern
       + "      case Rectangle r when r.volume() > 42 -> -1;\n"
       // record pattern
-      + "      case Triangle(int a, var b, int c) t -> 0;\n"
+      + "      case Triangle(int a, var b, int c) -> 0;\n"
       // default and null pattern
-      + "      case default, null -> 42;\n"
+      + "      case null, default -> 42;\n"
       + "    };\n"
       + "  }\n"
       + " record Triangle(int a, int b, int c) {}\n");
@@ -1052,10 +1052,10 @@ class CFGTest {
         element(VARIABLE, "b"),
         element(TYPE_PATTERN),
         element(VARIABLE, "c"),
-        element(IDENTIFIER, "t"),
-        element(DEFAULT_PATTERN),
         element(NULL_PATTERN),
-        element(NULL_LITERAL)).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6),
+        element(NULL_LITERAL),
+        element(DEFAULT_PATTERN)
+      ).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6),
       terminator(RETURN_STATEMENT).successors(0));
     cfgChecker.check(cfg);
   }

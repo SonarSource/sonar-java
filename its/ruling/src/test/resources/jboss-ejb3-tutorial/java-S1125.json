@@ -1,8 +1,8 @@
 {
-'jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java':[
+"jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java": [
 60,
 69,
 78,
-86,
+86
 ],
 }

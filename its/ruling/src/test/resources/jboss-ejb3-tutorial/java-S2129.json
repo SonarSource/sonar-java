@@ -1,18 +1,18 @@
 {
-'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/EntityTestBean.java':[
+"jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/EntityTestBean.java": [
 49,
-53,
+53
 ],
-'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/client/Client.java':[
+"jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/client/Client.java": [
 44,
-46,
+46
 ],
-'jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/EntityTestBean.java':[
+"jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/EntityTestBean.java": [
 47,
-51,
+51
 ],
-'jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/client/Client.java':[
+"jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/client/Client.java": [
 44,
-46,
+46
 ],
 }

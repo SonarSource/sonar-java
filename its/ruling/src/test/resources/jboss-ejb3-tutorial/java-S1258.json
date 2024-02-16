@@ -1,17 +1,17 @@
 {
-'jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/bean/ExampleConsumerBean.java':[
-28,
+"jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/bean/ExampleConsumerBean.java": [
+28
 ],
-'jboss-ejb3-tutorial:enterprise_app_ejb_injection/webapp/src/main/java/org/jboss/tutorial/enterprise_app_ejb_injection/servlet/CalculatorActionServlet.java':[
-41,
+"jboss-ejb3-tutorial:enterprise_app_ejb_injection/webapp/src/main/java/org/jboss/tutorial/enterprise_app_ejb_injection/servlet/CalculatorActionServlet.java": [
+41
 ],
-'jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/Customer.java':[
-32,
+"jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/Customer.java": [
+32
 ],
-'jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/CompleteXMLDDBean.java':[
-36,
+"jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/CompleteXMLDDBean.java": [
+36
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceThree.java':[
-36,
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceThree.java": [
+36
 ],
 }

@@ -1,36 +1,36 @@
 {
-'jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/Contact.java':[
-49,
+"jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/Contact.java": [
+49
 ],
-'jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/Customer.java':[
-53,
+"jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/Customer.java": [
+53
 ],
-'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/Customer.java':[
-43,
+"jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/Customer.java": [
+43
 ],
-'jboss-ejb3-tutorial:dependency/src/org/jboss/tutorial/dependency/bean/HasXmlMBeanDependencyBean.java':[
-35,
+"jboss-ejb3-tutorial:dependency/src/org/jboss/tutorial/dependency/bean/HasXmlMBeanDependencyBean.java": [
+35
 ],
-'jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/Customer.java':[
-41,
+"jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/Customer.java": [
+41
 ],
-'jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/ShoppingCartBean.java':[
-83,
+"jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/ShoppingCartBean.java": [
+83
 ],
-'jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java':[
+"jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java": [
 52,
 57,
 62,
 67,
-72,
+72
 ],
-'jboss-ejb3-tutorial:reference21_30/webapp/src/main/java/org/jboss/tutorial/reference21_30/servlet/EJBReferenceServlet.java':[
-50,
+"jboss-ejb3-tutorial:reference21_30/webapp/src/main/java/org/jboss/tutorial/reference21_30/servlet/EJBReferenceServlet.java": [
+50
 ],
-'jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/Customer.java':[
-54,
+"jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/Customer.java": [
+54
 ],
-'jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java':[
-92,
+"jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java": [
+92
 ],
 }

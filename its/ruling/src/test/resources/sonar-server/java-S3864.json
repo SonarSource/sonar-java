@@ -1,38 +1,38 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchQueryFactory.java':[
-67,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchQueryFactory.java": [
+67
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/workflow/State.java':[
-73,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/workflow/State.java": [
+73
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/ChangelogAction.java':[
-103,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/ChangelogAction.java": [
+103
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/DeleteCommentAction.java':[
-89,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/DeleteCommentAction.java": [
+89
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/EditCommentAction.java':[
-100,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/EditCommentAction.java": [
+100
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/DeleteEventAction.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/DeleteEventAction.java": [
 84,
-85,
+85
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/UpdateEventAction.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/UpdateEventAction.java": [
 101,
 102,
 104,
-105,
+105
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImpl.java':[
-175,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImpl.java": [
+175
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/SetAction.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/SetAction.java": [
 207,
-209,
+209
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/PageRepository.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/PageRepository.java": [
 79,
-80,
+80
 ],
 }

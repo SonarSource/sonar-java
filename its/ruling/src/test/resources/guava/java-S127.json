@@ -1,32 +1,32 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Ascii.java':[
+"com.google.guava:guava:src/com/google/common/base/Ascii.java": [
 443,
-492,
+492
 ],
-'com.google.guava:guava:src/com/google/common/base/CharMatcher.java':[
-859,
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
+859
 ],
-'com.google.guava:guava:src/com/google/common/base/Utf8.java':[
-98,
+"com.google.guava:guava:src/com/google/common/base/Utf8.java": [
+98
 ],
-'com.google.guava:guava:src/com/google/common/collect/RegularImmutableSet.java':[
-56,
+"com.google.guava:guava:src/com/google/common/collect/RegularImmutableSet.java": [
+56
 ],
-'com.google.guava:guava:src/com/google/common/io/BaseEncoding.java':[
+"com.google.guava:guava:src/com/google/common/io/BaseEncoding.java": [
 876,
 877,
 880,
-883,
+883
 ],
-'com.google.guava:guava:src/com/google/common/math/IntMath.java':[
-216,
+"com.google.guava:guava:src/com/google/common/math/IntMath.java": [
+216
 ],
-'com.google.guava:guava:src/com/google/common/math/LongMath.java':[
-261,
+"com.google.guava:guava:src/com/google/common/math/LongMath.java": [
+261
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java": [
 401,
 567,
-806,
+806
 ],
 }
