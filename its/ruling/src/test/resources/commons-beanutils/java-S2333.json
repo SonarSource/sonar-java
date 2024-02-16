@@ -1,8 +1,8 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/Converter.java':[
-53,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/Converter.java": [
+53
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaBean.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaBean.java": [
 46,
 58,
 77,
@@ -11,23 +11,23 @@
 116,
 132,
 151,
-168,
+168
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaClass.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaClass.java": [
 39,
 52,
 66,
-81,
+81
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MutableDynaClass.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MutableDynaClass.java": [
 47,
 62,
 81,
 93,
 109,
-117,
+117
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConverter.java':[
-46,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConverter.java": [
+46
 ],
 }

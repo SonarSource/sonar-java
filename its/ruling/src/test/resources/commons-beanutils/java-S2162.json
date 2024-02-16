@@ -1,20 +1,20 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java':[
-369,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java": [
+369
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanComparator.java':[
-191,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanComparator.java": [
+191
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java':[
-217,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java": [
+217
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java':[
-1344,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java": [
+1344
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WeakFastHashMap.java':[
-336,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WeakFastHashMap.java": [
+336
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java':[
-403,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
+403
 ],
 }

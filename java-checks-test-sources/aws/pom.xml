@@ -51,7 +51,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.20</version>
+      <version>1.18.30</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
@@ -117,9 +117,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <release>17</release>
-          <source>17</source>
-          <target>17</target>
+          <release>21</release>
+          <source>21</source>
+          <target>21</target>
         </configuration>
       </plugin>
       <plugin>

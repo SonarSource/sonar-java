@@ -1,17 +1,17 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java':[
-124,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java": [
+124
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java": [
 408,
 415,
 771,
-778,
+778
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java':[
-915,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java": [
+915
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaClass.java':[
-361,
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaClass.java": [
+361
 ],
 }

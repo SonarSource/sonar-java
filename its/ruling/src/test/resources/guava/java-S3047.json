@@ -1,29 +1,29 @@
 {
-'com.google.guava:guava:src/com/google/common/net/PercentEscaper.java':[
-130,
+"com.google.guava:guava:src/com/google/common/net/PercentEscaper.java": [
+130
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Booleans.java':[
-203,
+"com.google.guava:guava:src/com/google/common/primitives/Booleans.java": [
+203
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Bytes.java':[
-179,
+"com.google.guava:guava:src/com/google/common/primitives/Bytes.java": [
+179
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Chars.java':[
-274,
+"com.google.guava:guava:src/com/google/common/primitives/Chars.java": [
+274
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Doubles.java':[
-265,
+"com.google.guava:guava:src/com/google/common/primitives/Doubles.java": [
+265
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Floats.java':[
-261,
+"com.google.guava:guava:src/com/google/common/primitives/Floats.java": [
+261
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Ints.java':[
-281,
+"com.google.guava:guava:src/com/google/common/primitives/Ints.java": [
+281
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Longs.java':[
-250,
+"com.google.guava:guava:src/com/google/common/primitives/Longs.java": [
+250
 ],
-'com.google.guava:guava:src/com/google/common/primitives/Shorts.java':[
-280,
+"com.google.guava:guava:src/com/google/common/primitives/Shorts.java": [
+280
 ],
 }

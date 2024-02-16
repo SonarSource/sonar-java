@@ -1,8 +1,8 @@
 {
-'jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/client/Client.java':[
-42,
+"jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/client/Client.java": [
+42
 ],
-'jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/client/Client.java':[
-41,
+"jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/client/Client.java": [
+41
 ],
 }

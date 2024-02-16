@@ -1,8 +1,8 @@
 {
-'com.google.guava:guava:src/com/google/common/io/Files.java':[
-678,
+"com.google.guava:guava:src/com/google/common/io/Files.java": [
+678
 ],
-'com.google.guava:guava:src/com/google/common/io/LittleEndianDataInputStream.java':[
-222,
+"com.google.guava:guava:src/com/google/common/io/LittleEndianDataInputStream.java": [
+222
 ],
 }

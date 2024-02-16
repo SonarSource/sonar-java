@@ -1,22 +1,22 @@
 {
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession1Bean.java':[
-24,
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession1Bean.java": [
+24
 ],
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session1RemoteHome.java':[
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session1RemoteHome.java": [
 24,
-25,
+25
 ],
-'jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session2LocalHome.java':[
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session2LocalHome.java": [
 24,
-25,
+25
 ],
-'jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/ShoppingCartBean.java':[
-27,
+"jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/bean/ShoppingCartBean.java": [
+27
 ],
-'jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Home.java':[
-24,
+"jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Home.java": [
+24
 ],
-'jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Home.java':[
-24,
+"jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Home.java": [
+24
 ],
 }

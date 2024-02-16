@@ -1,32 +1,32 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Ascii.java':[
-643,
+"com.google.guava:guava:src/com/google/common/base/Ascii.java": [
+643
 ],
-'com.google.guava:guava:src/com/google/common/base/CharMatcher.java':[
-651,
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
+651
 ],
-'com.google.guava:guava:src/com/google/common/base/Splitter.java':[
-582,
+"com.google.guava:guava:src/com/google/common/base/Splitter.java": [
+582
 ],
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
-2711,
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+2711
 ],
-'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
-203,
+"com.google.guava:guava:src/com/google/common/cache/Striped64.java": [
+203
 ],
-'com.google.guava:guava:src/com/google/common/collect/Collections2.java':[
-641,
+"com.google.guava:guava:src/com/google/common/collect/Collections2.java": [
+641
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSet.java':[
-153,
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSet.java": [
+153
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
-2404,
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+2404
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
-195,
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+195
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java':[
-530,
+"com.google.guava:guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
+530
 ],
 }

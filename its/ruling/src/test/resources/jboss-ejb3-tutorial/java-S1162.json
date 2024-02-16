@@ -1,11 +1,11 @@
 {
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/TracingInterceptor.java':[
-40,
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/TracingInterceptor.java": [
+40
 ],
-'jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java':[
+"jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java": [
 61,
 70,
 79,
-87,
+87
 ],
 }

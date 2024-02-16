@@ -1,11 +1,11 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java": [
 364,
 367,
 370,
-413,
+413
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java':[
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
 1344,
 1346,
 1390,
@@ -14,6 +14,6 @@
 1435,
 1479,
 1481,
-2150,
+2150
 ],
 }

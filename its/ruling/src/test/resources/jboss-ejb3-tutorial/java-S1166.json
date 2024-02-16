@@ -1,40 +1,40 @@
 {
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java':[
-67,
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java": [
+67
 ],
-'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java':[
-101,
+"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java": [
+101
 ],
-'jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java':[
+"jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java": [
 67,
 100,
 114,
-137,
+137
 ],
-'jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/client/Client.java':[
-67,
+"jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/client/Client.java": [
+67
 ],
-'jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java':[
-46,
+"jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java": [
+46
 ],
-'jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java':[
-67,
+"jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java": [
+67
 ],
-'jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java':[
+"jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java": [
 53,
-75,
+75
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java':[
-61,
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java": [
+61
 ],
-'jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java':[
+"jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java": [
 54,
-76,
+76
 ],
-'jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/client/Client.java':[
-65,
+"jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/client/Client.java": [
+65
 ],
-'jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/client/Client.java':[
-70,
+"jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/client/Client.java": [
+70
 ],
 }

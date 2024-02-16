@@ -1,11 +1,11 @@
 {
-'jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java':[
-48,
+"jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java": [
+48
 ],
-'jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java':[
-69,
+"jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java": [
+69
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java':[
-63,
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java": [
+63
 ],
 }

@@ -1,15 +1,15 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounter.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounter.java": [
 198,
-210,
+210
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java':[
-122,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java": [
+122
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComputeMeasureVariationsStep.java':[
-124,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComputeMeasureVariationsStep.java": [
+124
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/AbstractChangeTagsAction.java':[
-58,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/AbstractChangeTagsAction.java": [
+58
 ],
 }

@@ -1,25 +1,25 @@
 {
-'com.google.guava:guava:src/com/google/common/io/Closer.java':[
-252,
+"com.google.guava:guava:src/com/google/common/io/Closer.java": [
+252
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
-822,
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+822
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/ExecutionList.java':[
-148,
+"com.google.guava:guava:src/com/google/common/util/concurrent/ExecutionList.java": [
+148
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java':[
-151,
+"com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java": [
+151
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/ListenerCallQueue.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/ListenerCallQueue.java": [
 93,
-121,
+121
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/SerializingExecutor.java':[
-192,
+"com.google.guava:guava:src/com/google/common/util/concurrent/SerializingExecutor.java": [
+192
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java':[
+"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
 283,
-763,
+763
 ],
 }

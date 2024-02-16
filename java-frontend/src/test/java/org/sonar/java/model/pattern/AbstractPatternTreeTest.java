@@ -21,8 +21,14 @@ package org.sonar.java.model.pattern;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -36,12 +42,10 @@ import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NullPatternTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
-import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
-import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -183,30 +187,117 @@ class AbstractPatternTreeTest {
     GuardedPatternTree guardedPattern = (GuardedPatternTree) expression;
     assertThat(guardedPattern.pattern()).is(Tree.Kind.TYPE_PATTERN);
     assertThat(guardedPattern.whenOperator()).is("when");
+    assertThat(guardedPattern.whenOperator().range()).hasToString("(4:22)-(4:26)");
     assertThat(guardedPattern.expression()).is(Tree.Kind.GREATER_THAN);
     assertThat(guardedPattern.symbolType()).isUnknown();
     assertThat(guardedPattern.asConstant()).isEmpty();
     assertThat(guardedPattern.asConstant(Object.class)).isEmpty();
   }
 
-  @Test
-  void test_guarded_pattern_parenthesized() {
-    String code = "switch (shape) {\n"
-      + "    case (Rectangle r) when (r.volume() > 42) -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
-      + "    default -> \"default case\";\n"
-      + "  }";
-    SwitchExpressionTree s = switchExpressionTree("Shape shape", code);
-    List<CaseLabelTree> labels = s.cases().get(0).labels();
-    assertThat(labels).hasSize(1);
-    List<ExpressionTree> expressions = labels.get(0).expressions();
-    assertThat(expressions).hasSize(1);
-    ExpressionTree expression = expressions.get(0);
-    assertThat(expression).is(Tree.Kind.GUARDED_PATTERN);
-    GuardedPatternTree guardedPattern = (GuardedPatternTree) expression;
-    assertThat(guardedPattern.pattern()).is(Tree.Kind.TYPE_PATTERN);
-    ExpressionTree guardedExpression = guardedPattern.expression();
-    assertThat(guardedExpression).is(Tree.Kind.PARENTHESIZED_EXPRESSION);
-    assertThat(((ParenthesizedTree) guardedExpression).expression()).is(Tree.Kind.GREATER_THAN);
+  static Stream<Arguments> parsing_when_token_as_identifier_or_guarded_pattern_arguments() {
+    return Stream.of(
+      // JDT core 3.33.0 raises RecognitionException:
+      // Parse error at line 3 column 4: Syntax error on token "RestrictedIdentifierWhen", while expected
+      Arguments.of("""
+        public class X {
+          public static void main(String argv[]) {
+            when("Pass");
+          }
+          static void when(String arg) {
+            System.out.println(arg);
+          }
+        }
+        """,
+        "IDENTIFIER,IDENTIFIER"),
+      // JDT core 3.33.0 raises RecognitionException:
+      // Parse error at line 3 column 4: Syntax error on token "RestrictedIdentifierWhen", delete this token
+      Arguments.of("""
+        public class when {
+          public static void main(String argv[]) {
+            when x = new when();
+            System.out.println(x);
+          }
+          public String toString() {
+            return "Pass";
+          }
+        }
+        """,
+        "IDENTIFIER,IDENTIFIER,IDENTIFIER"),
+      // JDT core 3.33.0 raises RecognitionException:
+      // Parse error at line 4 column 16: Syntax error on token "x", delete this token
+      Arguments.of("""
+        public class when {
+          public String toString() {
+            return switch((Object) this) {
+              case when x -> "Pass";
+              default -> "Fail";
+            };
+          }
+          public static void main(String argv[]) {
+            System.out.println(new when());
+          }
+        }
+        """,
+        "IDENTIFIER,IDENTIFIER,IDENTIFIER"),
+      // JDT core 3.33.0 raises RecognitionException:
+      // Parse error at line 3 column 34: Syntax error on token "RestrictedIdentifierWhen", delete this token
+      Arguments.of("""
+        public class X {
+          public static void main(String argv[]) {
+            System.out.println( (Boolean) when(true) );
+          }
+          static Object when(Object arg) {
+            return arg;
+          }
+        }
+        """,
+        "IDENTIFIER,IDENTIFIER"),
+      // JDT core 3.33.0 raises RecognitionException:
+      // Parse error at line 5 column 6: Syntax error on token "case", BeginCaseElement expected after this token
+      Arguments.of("""
+        class when {
+          boolean when = true;
+          static boolean when(when arg) {
+            return switch(arg) {
+              case when when when when.when && when.when(null) -> when.when;
+              case null -> true;
+              default -> false;
+            };
+          }
+          public static void main(String[] args) {
+            System.out.println(when(new when()));
+          }
+        }
+        """,
+        "IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,GUARDED_PATTERN," +
+          "IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("parsing_when_token_as_identifier_or_guarded_pattern_arguments")
+  void parsing_when_token_as_identifier_or_guarded_pattern(String code, String expectedWhenTokenParentKinds) {
+    // JDT core 3.33.0 had a bug that prevented to parse java code when the "when" token was used as an identifier
+    // starting a method body. See: https://github.com/eclipse-jdt/eclipse.jdt.core/issues/456#issuecomment-1520710765
+    // this test ensure this bug has been fixed by JDT core 3.36.0 and does not reappear later.
+    Tree tree = JParserTestUtils.parse(code);
+    String actual = recursivelyExtractWhenTokenParentKinds(tree).stream()
+        .map(Enum::name)
+          .collect(Collectors.joining(","));
+    assertThat(actual).isEqualTo(expectedWhenTokenParentKinds);
+  }
+
+  static List<Tree.Kind> recursivelyExtractWhenTokenParentKinds(Tree parent) {
+    List<Tree.Kind> kinds = new ArrayList<>();
+    for (Tree child : ((JavaTree) parent).getChildren()) {
+      if (child.is(Tree.Kind.TOKEN)) {
+        if ("when".equals(((SyntaxToken) child).text())) {
+          kinds.add(parent.kind());
+        }
+      } else {
+        kinds.addAll(recursivelyExtractWhenTokenParentKinds(child));
+      }
+    }
+    return kinds;
   }
 
   @Test
@@ -263,7 +354,7 @@ class AbstractPatternTreeTest {
   void test_base_tree_visitor() {
     String code = "switch (shape) {\n"
       + "      case null -> \"null case\";\n"
-      + "      case Triangle(int a, var b, int c) r when a + b < 42 -> String.format(\"Big trangle\");\n"
+      + "      case Triangle(int a, var b, int c) when a + b < 42 -> String.format(\"Big trangle\");\n"
       + "      case Triangle t -> String.format(\"triangle (%d,%d,%d)\", t.a(), t.b(), t.c());\n"
       + "      case Rectangle r when r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
       + "      case default -> \"default case\";\n"
@@ -318,19 +409,8 @@ class AbstractPatternTreeTest {
   }
 
   @Test
-  void test_record_pattern_in_instanceof() {
-    String code = "(shape instanceof Triangle(int a, int b, int c) t) ? new Object() : new Object()";
-    ConditionalExpressionTree conditionalExpressionTree = conditionalExpressionTree("Shape shape", code);
-    assertThat(conditionalExpressionTree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
-    ExpressionTree instanceOfexpression = ((ParenthesizedTree) conditionalExpressionTree.condition()).expression();
-    assertThat(instanceOfexpression).is(Tree.Kind.PATTERN_INSTANCE_OF);
-    PatternTree pattern = ((PatternInstanceOfTree) instanceOfexpression).pattern();
-    assertThat(pattern).is(Tree.Kind.TYPE_PATTERN);
-  }
-
-  @Test
   void test_record_pattern_in_switch() {
-    String code = "switch (shape) { case Triangle(int a, int b, int c) t -> new Object(); default -> null; }";
+    String code = "switch (shape) { case Triangle(int a, int b, int c) -> new Object(); default -> null; }";
     SwitchExpressionTree switchCase = switchExpressionTree("Shape shape", code);
     assertThat(switchCase).is(Tree.Kind.SWITCH_EXPRESSION);
     var firstCase = switchCase.cases().stream().findFirst().get();
@@ -352,7 +432,6 @@ class AbstractPatternTreeTest {
     assertThat(type.annotations()).isEmpty();
     assertThat(type).is(Tree.Kind.IDENTIFIER);
     assertThat((IdentifierTree) type).hasName("Triangle");
-    assertThat(recordPattern.name()).hasName("t");
   }
 
   @Test
@@ -379,7 +458,6 @@ class AbstractPatternTreeTest {
     assertThat(type.annotations()).isEmpty();
     assertThat(type).is(Tree.Kind.IDENTIFIER);
     assertThat((IdentifierTree) type).hasName("Triangle");
-    assertThat(recordPattern.name()).isNull();
   }
 
   private static SwitchExpressionTree switchExpressionTree(String methodParametersDeclaration, String switchExpressionCode) {

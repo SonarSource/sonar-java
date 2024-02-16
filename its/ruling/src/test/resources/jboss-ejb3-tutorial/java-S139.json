@@ -1,12 +1,12 @@
 {
-'jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/client/Client.java':[
+"jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/client/Client.java": [
 66,
 67,
 89,
-90,
+90
 ],
-'jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java':[
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java": [
 54,
-55,
+55
 ],
 }

@@ -1,12 +1,12 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsUtils.java':[
-69,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsUtils.java": [
+69
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/Facets.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/Facets.java": [
 50,
-156,
+156
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAdditionalField.java':[
-71,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAdditionalField.java": [
+71
 ],
 }

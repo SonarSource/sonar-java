@@ -1,29 +1,29 @@
 {
-'com.google.guava:guava:src/com/google/common/base/CharMatcher.java':[
-0,
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
+0
 ],
-'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
-0,
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+0
 ],
-'com.google.guava:guava:src/com/google/common/collect/AbstractMapBasedMultimap.java':[
-0,
+"com.google.guava:guava:src/com/google/common/collect/AbstractMapBasedMultimap.java": [
+0
 ],
-'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
-0,
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+0
 ],
-'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
-0,
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+0
 ],
-'com.google.guava:guava:src/com/google/common/collect/Multimaps.java':[
-0,
+"com.google.guava:guava:src/com/google/common/collect/Multimaps.java": [
+0
 ],
-'com.google.guava:guava:src/com/google/common/collect/Sets.java':[
-0,
+"com.google.guava:guava:src/com/google/common/collect/Sets.java": [
+0
 ],
-'com.google.guava:guava:src/com/google/common/collect/Synchronized.java':[
-0,
+"com.google.guava:guava:src/com/google/common/collect/Synchronized.java": [
+0
 ],
-'com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java':[
-0,
+"com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java": [
+0
 ],
 }

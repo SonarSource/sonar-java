@@ -1,8 +1,8 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnreadableSessionDataException.java':[
-31,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnreadableSessionDataException.java": [
+31
 ],
-'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnwriteableSessionDataException.java':[
-27,
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnwriteableSessionDataException.java": [
+27
 ],
 }

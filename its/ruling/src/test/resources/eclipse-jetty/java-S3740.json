@@ -1,10 +1,10 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IncludeExcludeSet.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IncludeExcludeSet.java": [
 98,
-107,
+107
 ],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/Dumpable.java':[
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/Dumpable.java": [
 239,
-255,
-],
+255
+]
 }

@@ -1,9 +1,9 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/ce/http/CeHttpClient.java':[
-147,
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/ce/http/CeHttpClient.java": [
+147
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/db/migration/AutoDbMigration.java':[
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/db/migration/AutoDbMigration.java": [
 94,
-113,
+113
 ],
 }
