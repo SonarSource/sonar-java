@@ -32,15 +32,13 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
-import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 @Rule(key = "S6909")
 public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVisitor {
@@ -61,18 +59,18 @@ public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVis
     var invocvationCollector = new MethodInvocationCollector(matchers);
     tree.accept(invocvationCollector);
 
-    var candidatesByLoopBody = new HashMap<StatementTree, List<Candidate>>();
+    var candidatesByLoop = new HashMap<StatementTree, List<Candidate>>();
     invocvationCollector.invocations.stream()
       .map(PreparedStatementLoopInvariantCheck::getCandidate)
       .filter(Objects::nonNull)
       .forEach(candidate -> {
-        var candidates = candidatesByLoopBody.computeIfAbsent(candidate.enclosingLoopBody, key -> new ArrayList<>());
+        var candidates = candidatesByLoop.computeIfAbsent(candidate.enclosingLoop, key -> new ArrayList<>());
         candidates.add(candidate);
       });
 
-    candidatesByLoopBody.forEach((loopBody, candidates) -> {
+    candidatesByLoop.forEach((loop, candidates) -> {
       var localsCollector = new DeclaredOrAssignedLocalsCollector();
-      loopBody.accept(localsCollector);
+      loop.accept(localsCollector);
       candidates.forEach(it -> reportIfLoopInvariant(localsCollector.declaredOrAssignedLocals, it));
     });
   }
@@ -81,7 +79,7 @@ public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVis
     if (isLoopInvariant(declaredOrAssignedLocals, candidate)) {
       var secondaryLocation = new JavaFileScannerContext.Location(
         "Enclosing loop",
-        Objects.requireNonNull(candidate.enclosingLoopBody.parent())
+        Objects.requireNonNull(candidate.enclosingLoop)
       );
       reportIssue(
         candidate.invocation,
@@ -107,48 +105,45 @@ public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVis
       }
     }
 
-    var loopBody = findEnclosingLoopBody(invocation);
-    if (loopBody == null) {
+    var loop = findEnclosingLoop(invocation);
+    if (loop == null) {
       return null;
     }
-    return new Candidate(invocation, identifierArguments, loopBody);
+    return new Candidate(invocation, identifierArguments, loop);
   }
 
-  private static StatementTree findEnclosingLoopBody(Tree tree) {
+  private static StatementTree findEnclosingLoop(Tree tree) {
     while (!Objects.requireNonNull(tree).is(Tree.Kind.METHOD)) {
-      var loopBody = getLoopBodyIfLoop(tree);
-      if (loopBody != null) {
-        return loopBody;
+      if (isLoop(tree)) {
+        return (StatementTree) tree;
       }
       tree = tree.parent();
     }
     return null;
   }
 
-  private static StatementTree getLoopBodyIfLoop(Tree tree) {
+  // TODO: refactor with is...
+  private static boolean isLoop(Tree tree) {
     switch (tree.kind()) {
       case FOR_STATEMENT:
-        return ((ForStatementTree) tree).statement();
       case FOR_EACH_STATEMENT:
-        return ((ForEachStatement) tree).statement();
       case WHILE_STATEMENT:
-        return ((WhileStatementTree) tree).statement();
       case DO_STATEMENT:
-        return ((DoWhileStatementTree) tree).statement();
+        return true;
       default:
-        return null;
+        return false;
     }
   }
 
   private static class Candidate {
     public final MethodInvocationTree invocation;
     public final List<String> identifierArguments;
-    public final StatementTree enclosingLoopBody;
+    public final StatementTree enclosingLoop;
 
-    private Candidate(MethodInvocationTree invocation, List<String> argumentVariables, StatementTree enclosingLoopBody) {
+    private Candidate(MethodInvocationTree invocation, List<String> argumentVariables, StatementTree enclosingLoop) {
       this.invocation = invocation;
       this.identifierArguments = argumentVariables;
-      this.enclosingLoopBody = enclosingLoopBody;
+      this.enclosingLoop = enclosingLoop;
     }
   }
 
@@ -187,6 +182,27 @@ public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVis
     public void visitVariable(VariableTree tree) {
       super.visitVariable(tree);
       declaredOrAssignedLocals.add(tree.simpleName().name());
+    }
+
+    @Override
+    public void visitUnaryExpression(UnaryExpressionTree tree) {
+      super.visitUnaryExpression(tree);
+      switch (tree.kind()) {
+        case POSTFIX_INCREMENT:
+        case POSTFIX_DECREMENT:
+        case PREFIX_INCREMENT:
+        case PREFIX_DECREMENT:
+          var expression = tree.expression();
+          if (expression.is(Tree.Kind.IDENTIFIER)) {
+            declaredOrAssignedLocals.add(((IdentifierTree) expression).name());
+          }
+      }
+    }
+
+    @Override
+    public void visitForEachStatement(ForEachStatement tree) {
+      super.visitForEachStatement(tree);
+      visitVariable(tree.variable());
     }
   }
 }

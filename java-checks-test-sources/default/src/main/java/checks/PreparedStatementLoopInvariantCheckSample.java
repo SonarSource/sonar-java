@@ -127,6 +127,40 @@ public class PreparedStatementLoopInvariantCheckSample {
     }
   }
 
+  private void incDec(PreparedStatement preparedStatement, List<String> uids) throws SQLException {
+    int index = 0;
+    for (String uid : uids) {
+      preparedStatement.setString(index, ""); // Compliant
+      index++;
+    }
+
+    for (String uid : uids) {
+      preparedStatement.setString(index, ""); // Compliant
+      index--;
+    }
+
+    for (String uid : uids) {
+      preparedStatement.setString(index, ""); // Noncompliant
+    }
+  }
+
+  private void forLoop(PreparedStatement preparedStatement) throws SQLException {
+    for (int i = 0; i < 10; i++ ) {
+      preparedStatement.setString(i, ""); // Compliant
+    }
+
+    int index = 0;
+    for (int i = 0; i < 10; i++ ) {
+      preparedStatement.setString(index, ""); // Noncompliant
+    }
+  }
+
+  private void loopVarIsNoInvariant(PreparedStatement preparedStatement, List<String> uids) throws SQLException {
+    for (String uid: uids) {
+      preparedStatement.setString(0, uid); // Compliant
+    }
+  }
+
   public record Order(String id, String price) {}
 
   private static class NoPreparedStatement {
