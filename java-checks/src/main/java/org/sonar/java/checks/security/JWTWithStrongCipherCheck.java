@@ -150,9 +150,9 @@ public class JWTWithStrongCipherCheck extends IssuableSubscriptionVisitor {
   private static boolean declarationIsSigned(Symbol symbol) {
     if (symbol.isLocalVariable()) {
       Tree declaration = symbol.declaration();
-      if (declaration instanceof VariableTree) {
-        ExpressionTree initializer = ((VariableTree) declaration).initializer();
-        return initializer instanceof MethodInvocationTree && isSigned((MethodInvocationTree) initializer);
+      if (declaration instanceof VariableTree variableTree) {
+        ExpressionTree initializer = variableTree.initializer();
+        return initializer instanceof MethodInvocationTree methodInvocationTree && isSigned(methodInvocationTree);
       }
     }
     // Can be signed anywhere (field, other file), we consider it as signed

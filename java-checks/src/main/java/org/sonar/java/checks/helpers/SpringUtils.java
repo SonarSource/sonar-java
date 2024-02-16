@@ -39,11 +39,7 @@ public final class SpringUtils {
     for (SymbolMetadata.AnnotationValue annotationValue : values) {
       if ("value".equals(annotationValue.name()) || "scopeName".equals(annotationValue.name())) {
         Object value = annotationValue.value();
-        String stringValue = null;
-        if (value instanceof String) {
-          stringValue = (String) value;
-        }
-        if (stringValue != null && !"singleton".equals(stringValue)) {
+        if (value instanceof String stringValue && !"singleton".equals(stringValue)) {
           return false;
         }
       }

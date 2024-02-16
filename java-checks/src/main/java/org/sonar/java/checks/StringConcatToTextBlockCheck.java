@@ -86,8 +86,8 @@ public class StringConcatToTextBlockCheck extends IssuableSubscriptionVisitor im
       visitedNodes.add(binaryExpression);
       return concatStringLiterals(concatenatedContent, ExpressionUtils.skipParentheses(binaryExpression.leftOperand())) &&
         concatStringLiterals(concatenatedContent, ExpressionUtils.skipParentheses(binaryExpression.rightOperand()));
-    } else if (tree instanceof LiteralTree) {
-      String treeValue = LiteralUtils.getAsStringValue(((LiteralTree) tree));
+    } else if (tree instanceof LiteralTree literalTree) {
+      String treeValue = LiteralUtils.getAsStringValue((literalTree));
       concatenatedContent.append(treeValue);
       return true;
     } else {

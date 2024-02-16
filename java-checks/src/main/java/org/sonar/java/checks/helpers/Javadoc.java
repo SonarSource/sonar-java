@@ -82,8 +82,7 @@ public final class Javadoc {
     public boolean equals(Object o) {
       if (this == o) {
         return true;
-      } else if (o instanceof BlockTagKey) {
-        BlockTagKey other = ((BlockTagKey) o);
+      } else if (o instanceof BlockTagKey other) {
         return tag == other.tag && Objects.equals(name, other.name);
       }
       return false;

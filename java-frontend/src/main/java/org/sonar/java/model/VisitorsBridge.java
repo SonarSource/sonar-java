@@ -119,10 +119,10 @@ public class VisitorsBridge {
     StreamSupport.stream(visitors.spliterator(), false)
       .filter(predicate)
       .forEach(visitor -> {
-        if (visitor instanceof IssuableSubscriptionVisitor) {
-          runner.add((IssuableSubscriptionVisitor) visitor);
-        } else if (visitor instanceof JavaFileScanner) {
-          scanners.add((JavaFileScanner) visitor);
+        if (visitor instanceof IssuableSubscriptionVisitor issuableSubscriptionVisitor) {
+          runner.add(issuableSubscriptionVisitor);
+        } else if (visitor instanceof JavaFileScanner javaFileScanner) {
+          scanners.add(javaFileScanner);
         }
       });
 
@@ -145,8 +145,8 @@ public class VisitorsBridge {
   }
 
   boolean isVisitorJavaVersionCompatible(Object visitor) {
-    return !(visitor instanceof JavaVersionAwareVisitor) ||
-      ((JavaVersionAwareVisitor) visitor).isCompatibleWithJavaVersion(javaVersion);
+    return !(visitor instanceof JavaVersionAwareVisitor javaVersionAwareVisitor) ||
+      javaVersionAwareVisitor.isCompatibleWithJavaVersion(javaVersion);
   }
 
   static boolean canVisitorBeSkippedOnUnchangedFiles(Object visitor) {

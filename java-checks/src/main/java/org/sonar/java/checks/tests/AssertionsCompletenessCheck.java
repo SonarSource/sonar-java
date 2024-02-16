@@ -209,10 +209,9 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
   }
 
   private static boolean isSoftAssertionsExtensionClass(Object value) {
-    if (value instanceof Object[]) {
-      Object[] values = (Object[]) value;
+    if (value instanceof Object[] values) {
       for (Object v : values) {
-        if (v instanceof Symbol && ((Symbol) v).type().is("org.assertj.core.api.junit.jupiter.SoftAssertionsExtension")) {
+        if (v instanceof Symbol vSymbol && vSymbol.type().is("org.assertj.core.api.junit.jupiter.SoftAssertionsExtension")) {
           return true;
         }
       }

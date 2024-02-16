@@ -75,8 +75,8 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
 
   public void checkCompareToOperand(BinaryExpressionTree binaryExpression, ExpressionTree operand, boolean compareToIsLeft) {
     Object resolvedOperandValue = ExpressionUtils.resolveAsConstant(operand);
-    if (resolvedOperandValue instanceof Number) {
-      long operandValue = ((Number)resolvedOperandValue).longValue();
+    if (resolvedOperandValue instanceof Number number) {
+      long operandValue = number.longValue();
       if (operandValue != 0) {
         reportIssue(binaryExpression, operandValue, compareToIsLeft);
       }

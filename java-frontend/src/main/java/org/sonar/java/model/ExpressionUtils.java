@@ -237,8 +237,8 @@ public final class ExpressionUtils {
     if (expression.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
       return LiteralUtils.getAsStringValue((LiteralTree) expression);
     }
-    if (expression instanceof UnaryExpressionTree) {
-      return resolveUnaryExpression((UnaryExpressionTree) expression);
+    if (expression instanceof UnaryExpressionTree unaryExpressionTree) {
+      return resolveUnaryExpression(unaryExpressionTree);
     }
     if (expression.is(Tree.Kind.INT_LITERAL)) {
       return LiteralUtils.intLiteralValue(expression);
@@ -273,19 +273,19 @@ public final class ExpressionUtils {
     if (unaryExpression.is(Tree.Kind.UNARY_PLUS)) {
       return value;
     } else if (unaryExpression.is(Tree.Kind.UNARY_MINUS)) {
-      if (value instanceof Long) {
-        return -(Long) value;
-      } else if (value instanceof Integer) {
-        return -(Integer) value;
+      if (value instanceof Long longValue) {
+        return -longValue;
+      } else if (value instanceof Integer intValue) {
+        return -intValue;
       }
     } else if (unaryExpression.is(Tree.Kind.BITWISE_COMPLEMENT)) {
-      if (value instanceof Long) {
-        return ~(Long) value;
-      } else if (value instanceof Integer) {
-        return ~(Integer) value;
+      if (value instanceof Long longValue) {
+        return ~longValue;
+      } else if (value instanceof Integer intValue) {
+        return ~intValue;
       }
-    } else if (unaryExpression.is(Tree.Kind.LOGICAL_COMPLEMENT) && value instanceof Boolean) {
-      return !(Boolean) value;
+    } else if (unaryExpression.is(Tree.Kind.LOGICAL_COMPLEMENT) && value instanceof Boolean bool) {
+      return !bool;
     }
     return null;
   }
@@ -313,10 +313,10 @@ public final class ExpressionUtils {
     Object right = resolveAsConstant(binaryExpression.rightOperand());
     if (left == null || right == null) {
       return null;
-    } else if (left instanceof String) {
-      return ((String) left) + right;
-    } else if (right instanceof String) {
-      return left + ((String) right);
+    } else if (left instanceof String leftString) {
+      return leftString + right;
+    } else if (right instanceof String rightString) {
+      return left + rightString;
     }
     return resolveArithmeticOperation(left, right, Long::sum, Integer::sum);
   }
@@ -336,8 +336,8 @@ public final class ExpressionUtils {
   @CheckForNull
   private static Object resolveArithmeticOperation(Object left, Object right, BiFunction<Long, Long, Object> longOperation, BiFunction<Integer, Integer, Object> intOperation) {
     try {
-      if (left instanceof Integer && right instanceof Integer) {
-        return intOperation.apply(((Number) left).intValue(), ((Number) right).intValue());
+      if (left instanceof Integer leftInt && right instanceof Integer rightInt) {
+        return intOperation.apply(leftInt, rightInt);
       } else if ((left instanceof Long || right instanceof Long) && (left instanceof Integer || right instanceof Integer)) {
         return longOperation.apply(((Number) left).longValue(), ((Number) right).longValue());
       }
@@ -353,14 +353,14 @@ public final class ExpressionUtils {
     Object right = resolveAsConstant(binaryExpression.rightOperand());
     if (left == null || right == null) {
       return null;
-    } else if (left instanceof Long && right instanceof Long) {
-      return ((Long) left) | ((Long) right);
-    } else if (left instanceof Long && right instanceof Integer) {
-      return ((Long) left) | ((Integer) right);
-    } else if (left instanceof Integer && right instanceof Long) {
-      return ((Integer) left) | ((Long) right);
-    } else if (left instanceof Integer && right instanceof Integer) {
-      return ((Integer) left) | ((Integer) right);
+    } else if (left instanceof Long leftLong && right instanceof Long rightLong) {
+      return leftLong | rightLong;
+    } else if (left instanceof Long leftLong && right instanceof Integer rightInt) {
+      return leftLong | rightInt;
+    } else if (left instanceof Integer leftInt && right instanceof Long rightLong) {
+      return leftInt | rightLong;
+    } else if (left instanceof Integer leftInt && right instanceof Integer rightInt) {
+      return leftInt | rightInt;
     }
     return null;
   }

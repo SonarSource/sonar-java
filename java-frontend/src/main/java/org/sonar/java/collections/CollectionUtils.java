@@ -35,7 +35,7 @@ public final class CollectionUtils {
   }
 
   public static int size(Iterable<?> iterable) {
-    return iterable instanceof Collection ? ((Collection<?>)iterable).size() : size(iterable.iterator());
+    return iterable instanceof Collection<?> collection ? collection.size() : size(iterable.iterator());
   }
 
   private static int size(Iterator<?> iterator) {

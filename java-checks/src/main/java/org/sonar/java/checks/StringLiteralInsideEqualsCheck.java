@@ -50,9 +50,9 @@ public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor 
   }
 
   private void check(MethodInvocationTree tree) {
-    if (tree.methodSelect() instanceof MemberSelectExpressionTree && isEquals(tree)) {
+    if (tree.methodSelect() instanceof MemberSelectExpressionTree memberSelectExpressionTree && isEquals(tree)) {
       LiteralTree stringLiteral = (LiteralTree) tree.arguments().get(0);
-      ExpressionTree leftSideMember = ((MemberSelectExpressionTree) tree.methodSelect()).expression();
+      ExpressionTree leftSideMember = memberSelectExpressionTree.expression();
       if (!leftSideMember.is(Kind.STRING_LITERAL)) {
         QuickFixHelper.newIssue(context)
           .forRule(this)

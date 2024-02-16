@@ -442,8 +442,8 @@ public class DivisionByZeroCheck extends SECheck {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (BIG_INT_DEC_VALUE_OF.matches(tree)) {
         ExpressionTree arg = tree.arguments().get(0);
-        if (arg instanceof LiteralTree) {
-          handleLiteral(((LiteralTree) arg));
+        if (arg instanceof LiteralTree literalTree) {
+          handleLiteral(literalTree);
           return;
         }
       }
@@ -553,8 +553,8 @@ public class DivisionByZeroCheck extends SECheck {
 
     private void checkDeferredConstraint() {
       SymbolicValue sv = programState.peekValue();
-      if (sv instanceof DeferredConstraintHolderSV) {
-        addZeroConstraint(sv, ((DeferredConstraintHolderSV) sv).deferredConstraint);
+      if (sv instanceof DeferredConstraintHolderSV deferredConstraintHolderSV) {
+        addZeroConstraint(sv, deferredConstraintHolderSV.deferredConstraint);
       }
     }
 

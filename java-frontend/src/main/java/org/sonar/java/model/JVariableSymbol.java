@@ -61,12 +61,12 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
         constantValue = Optional.empty();
       } else {
         Object c = ((IVariableBinding) binding).getConstantValue();
-        if (c instanceof Short) {
-          c = Integer.valueOf((Short) c);
-        } else if (c instanceof Byte) {
-          c = Integer.valueOf((Byte) c);
-        } else if (c instanceof Character) {
-          c = Integer.valueOf((Character) c);
+        if (c instanceof Short shortValue) {
+          c = Integer.valueOf(shortValue);
+        } else if (c instanceof Byte byteValue) {
+          c = Integer.valueOf(byteValue);
+        } else if (c instanceof Character characterValue) {
+          c = Integer.valueOf(characterValue);
         }
         constantValue = Optional.ofNullable(c);
       }

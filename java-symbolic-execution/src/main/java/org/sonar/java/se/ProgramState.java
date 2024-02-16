@@ -545,8 +545,8 @@ public class ProgramState {
   }
 
   public boolean exitingOnRuntimeException() {
-    if (exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      Type exceptionType = ((SymbolicValue.ExceptionalSymbolicValue) exitSymbolicValue).exceptionType();
+    if (exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue exceptionalSymbolicValue) {
+      Type exceptionType = exceptionalSymbolicValue.exceptionType();
       return exceptionType == null || exceptionType.isUnknown() || exceptionType.isSubtypeOf("java.lang.RuntimeException");
     }
     return false;

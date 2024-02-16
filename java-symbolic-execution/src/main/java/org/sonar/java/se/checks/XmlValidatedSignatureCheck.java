@@ -100,8 +100,8 @@ public class XmlValidatedSignatureCheck extends SECheck {
       ProgramState.SymbolicValueSymbol peek = programState.peekValueSymbol();
       Symbol symbol = peek.symbol();
       SymbolicValue sv = peek.symbolicValue();
-      if (symbol != null && sv instanceof DomValidateContextSymbolicValue) {
-        ((DomValidateContextSymbolicValue) sv).setField(ProgramState.isField(symbol));
+      if (symbol != null && sv instanceof DomValidateContextSymbolicValue domValidateContextSymbolicValue) {
+        domValidateContextSymbolicValue.setField(ProgramState.isField(symbol));
       }
     }
   }

@@ -133,8 +133,8 @@ public class AndroidUnencryptedDatabaseCheck extends IssuableSubscriptionVisitor
   private static boolean declarationIsEncrypted(Symbol symbol) {
     if (symbol.isLocalVariable()) {
       Tree declaration = symbol.declaration();
-      if (declaration instanceof VariableTree) {
-        ExpressionTree initializer = ((VariableTree) declaration).initializer();
+      if (declaration instanceof VariableTree variableTree) {
+        ExpressionTree initializer = variableTree.initializer();
         return initializer instanceof MethodInvocationTree && isEncrypted(initializer);
       }
     }

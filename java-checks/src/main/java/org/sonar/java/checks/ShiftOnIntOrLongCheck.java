@@ -124,8 +124,8 @@ public class ShiftOnIntOrLongCheck extends IssuableSubscriptionVisitor {
   }
 
   private static SyntaxToken operatorToken(Tree tree) {
-    if (tree instanceof BinaryExpressionTree) {
-      return ((BinaryExpressionTree) tree).operatorToken();
+    if (tree instanceof BinaryExpressionTree binaryExpressionTree) {
+      return binaryExpressionTree.operatorToken();
     }
     return ((AssignmentExpressionTree) tree).operatorToken();
   }
