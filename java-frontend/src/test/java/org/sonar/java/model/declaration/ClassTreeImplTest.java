@@ -21,7 +21,6 @@ package org.sonar.java.model.declaration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;

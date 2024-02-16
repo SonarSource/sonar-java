@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LineUtils;

@@ -21,7 +21,6 @@ package org.sonar.java.checks.tests;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;

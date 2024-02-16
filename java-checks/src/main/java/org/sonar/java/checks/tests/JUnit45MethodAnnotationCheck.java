@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.checks.helpers.UnitTestUtils;

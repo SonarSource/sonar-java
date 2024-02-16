@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -81,7 +80,7 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
         }
       });
     } else if (OK_HTTP_TLS_VERSION.matches(mit)) {
-      List<Tree> unsecureVersions = getUnsecureVersionsInArguments(arguments);
+      List<ExpressionTree> unsecureVersions = getUnsecureVersionsInArguments(arguments);
       if (!unsecureVersions.isEmpty()) {
         List<JavaFileScannerContext.Location> secondaries = unsecureVersions.stream()
           .skip(1)
@@ -97,10 +96,10 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
     return STRONG_PROTOCOLS.contains(protocol) || (javaVersionNotSetOr8OrHigher && STRONG_AFTER_JAVA_8.contains(protocol));
   }
 
-  private static List<Tree> getUnsecureVersionsInArguments(Arguments arguments) {
+  private static List<ExpressionTree> getUnsecureVersionsInArguments(Arguments arguments) {
     return arguments.stream()
       .filter(WeakSSLContextCheck::isUnsecureVersion)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static boolean isUnsecureVersion(ExpressionTree expressionTree) {

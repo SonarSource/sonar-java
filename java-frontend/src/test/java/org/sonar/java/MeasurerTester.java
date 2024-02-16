@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;

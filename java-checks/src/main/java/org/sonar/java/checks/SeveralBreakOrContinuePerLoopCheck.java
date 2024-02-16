@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;

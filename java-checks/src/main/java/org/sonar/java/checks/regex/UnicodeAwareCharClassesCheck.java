@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.regex;
 
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.plugins.java.api.tree.ExpressionTree;

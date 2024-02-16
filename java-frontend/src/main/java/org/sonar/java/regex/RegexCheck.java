@@ -22,7 +22,6 @@ package org.sonar.java.regex;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;

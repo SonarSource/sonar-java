@@ -20,7 +20,6 @@
 package org.sonar.java.checks.regex;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexCheck;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;

@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Rule(key = "S5967")
 public class JUnitCompatibleAnnotationsCheck extends IssuableSubscriptionVisitor {

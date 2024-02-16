@@ -20,7 +20,6 @@
 package org.sonar.java.checks.tests;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;

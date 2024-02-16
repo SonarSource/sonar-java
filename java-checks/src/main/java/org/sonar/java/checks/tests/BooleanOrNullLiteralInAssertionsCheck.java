@@ -37,7 +37,6 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Rule(key = "S2701")
 public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetection {

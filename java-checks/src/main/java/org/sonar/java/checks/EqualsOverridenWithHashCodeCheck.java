@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Rule(key = "S1206")
 public class EqualsOverridenWithHashCodeCheck extends IssuableSubscriptionVisitor {

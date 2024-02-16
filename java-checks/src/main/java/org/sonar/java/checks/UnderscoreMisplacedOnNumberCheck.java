@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Rule(key = "S3937")
 public class UnderscoreMisplacedOnNumberCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {

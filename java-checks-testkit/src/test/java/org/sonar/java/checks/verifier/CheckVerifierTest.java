@@ -39,7 +39,6 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -588,7 +587,7 @@ class CheckVerifierTest {
         if (!analyzerMessage.flows.isEmpty()) {
           List<List<JavaFileScannerContext.Location>> flows = analyzerMessage.flows.stream()
             .map(FakeVisitor::messagesToLocations)
-            .collect(toList());
+            .toList();
           context.reportIssueWithFlow(this, mockTree(analyzerMessage), analyzerMessage.getMessage(), flows, null);
         } else {
           reportIssue(mockTree(analyzerMessage), analyzerMessage.getMessage(), secLocations, cost);
@@ -600,7 +599,7 @@ class CheckVerifierTest {
     }
 
     private static List<JavaFileScannerContext.Location> messagesToLocations(List<AnalyzerMessage> flow) {
-      return flow.stream().map(m -> new JavaFileScannerContext.Location(m.getMessage(), mockTree(m))).collect(toList());
+      return flow.stream().map(m -> new JavaFileScannerContext.Location(m.getMessage(), mockTree(m))).toList();
     }
 
     private static Tree mockTree(final AnalyzerMessage analyzerMessage) {

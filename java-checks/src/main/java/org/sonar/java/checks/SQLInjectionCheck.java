@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -128,7 +129,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     String identifierName) {
     List<JavaFileScannerContext.Location> secondaryLocations = reassignments.stream()
       .map(assignment -> new JavaFileScannerContext.Location(String.format("SQL Query is assigned to '%s'", getVariableName(assignment)), assignment.expression()))
-      .collect(Collectors.toList(/*mutable*/));
+      .collect(Collectors.toCollection(ArrayList::new));
 
     if (initializerOrExpression != null) {
       secondaryLocations.add(new JavaFileScannerContext.Location(String.format("SQL Query is dynamically formatted and assigned to '%s'",

@@ -22,7 +22,6 @@ package org.sonar.java.checks.tests;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.AbstractAssertionVisitor;

@@ -603,9 +603,9 @@ public class InternalCheckVerifier implements CheckVerifier {
     List<String> expectedMessages = expected.stream()
       .map(Expectations.FlowComment::message)
       .map(InternalCheckVerifier::addQuotes)
-      .collect(Collectors.toList(/*mutable*/));
+      .toList();
 
-    replaceExpectedNullWithActual(actualMessages, expectedMessages);
+    expectedMessages = replaceExpectedNullWithActual(actualMessages, expectedMessages);
     if (!actualMessages.equals(expectedMessages)) {
       throw new AssertionError(
         String.format("Wrong messages in flow %s [%s]. Expected: %s but was: %s",
@@ -620,14 +620,16 @@ public class InternalCheckVerifier implements CheckVerifier {
     return s != null ? String.format("\"%s\"", s) : s;
   }
 
-  private static void replaceExpectedNullWithActual(List<String> actualMessages, List<String> expectedMessages) {
-    if (actualMessages.size() == expectedMessages.size()) {
+  private static List<String> replaceExpectedNullWithActual(List<String> actualMessages, List<String> expectedMessages) {
+    List<String> newExceptedMessages = new ArrayList<>(expectedMessages);
+    if (actualMessages.size() == newExceptedMessages.size()) {
       for (int i = 0; i < actualMessages.size(); i++) {
-        if (expectedMessages.get(i) == null) {
-          expectedMessages.set(i, actualMessages.get(i));
+        if (newExceptedMessages.get(i) == null) {
+          newExceptedMessages.set(i, actualMessages.get(i));
         }
       }
     }
+    return newExceptedMessages;
   }
 
   private static String flowToString(List<AnalyzerMessage> flow) {
