@@ -6,10 +6,10 @@ to read, understand, test, and modify.</p>
 <h3>Which syntax in code does impact cognitive complexity score?</h3>
 <p>Here are the core concepts:</p>
 <ul>
-  <li> <strong>Cognitive complexity is incremented each time the code breaks the normal linear reading flow.</strong><br> This concerns, for example:
-  Loop structures, Conditionals, Catches, Switches, Jumps to label and mixed operators in condition. </li>
-  <li> <strong>Each nesting level adds a malus to the breaking call.</strong><br> During code reading, the deeper you go through nested layers, the
-  harder it becomes to keep the context in mind. </li>
+  <li> <strong>Cognitive complexity is incremented each time the code breaks the normal linear reading flow.</strong><br> This concerns, for example,
+  loop structures, conditionals, catches, switches, jumps to labels, and conditions mixing multiple operators. </li>
+  <li> <strong>Each nesting level increases complexity.</strong><br> During code reading, the deeper you go through nested layers, the harder it
+  becomes to keep the context in mind. </li>
   <li> <strong>Method calls are free</strong><br> A well-picked method name is a summary of multiple lines of code. A reader can first explore a
   high-level view of what the code is performing then go deeper and deeper by looking at called functions content.<br> <em>Note:</em> This does not
   apply to recursive calls, those will increment cognitive score. </li>

@@ -20,9 +20,6 @@
   "sqKey": "S3329",
   "scope": "Main",
   "securityStandards": {
-    "CERT": [
-      "MSC61-J."
-    ],
     "CWE": [
       327,
       780
@@ -30,12 +27,6 @@
     "OWASP": [
       "A6",
       "A3"
-    ],
-    "OWASP Mobile": [
-      "M5"
-    ],
-    "MASVS": [
-      "MSTG-CRYPTO-3"
     ],
     "OWASP Top 10 2021": [
       "A2"
@@ -53,6 +44,15 @@
       "2.9.3",
       "6.2.2",
       "8.3.7"
+    ],
+    "CERT": [
+      "MSC61-J."
+    ],
+    "OWASP Mobile": [
+      "M5"
+    ],
+    "MASVS": [
+      "MSTG-CRYPTO-3"
     ]
   },
   "quickfix": "unknown"
