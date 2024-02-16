@@ -11,7 +11,7 @@ public class QueryOnlyRequiredFieldsCheckSample {
   private static final String NON_COMPLIANT_SQL_QUERY = "SELECT * FROM table"; // Noncompliant {{Don't use the query "SELECT *".}}
   private static final String COMPLIANT_SQL_QUERY = "SELECT user FROM table"; // Compliant
   private String nonCompliantSqlQuery = "SELECT * FROM table"; // Noncompliant
-  private String compliantSqlQuery = "SELECT user FROM table";  // Compliant
+  private String compliantSqlQuery = "SELECT user FROM table"; // Compliant
 
   public void examples(
     Connection connection,
@@ -23,18 +23,24 @@ public class QueryOnlyRequiredFieldsCheckSample {
 
     connection.prepareStatement(NON_COMPLIANT_SQL_QUERY);
     connection.prepareStatement(COMPLIANT_SQL_QUERY);
-    connection.prepareStatement(nonCompliantSqlQuery);
-    connection.prepareStatement(compliantSqlQuery);
+
+    try (PreparedStatement s = connection.prepareStatement(nonCompliantSqlQuery)) {
+      s.execute();
+    }
+
+    try (PreparedStatement s = connection.prepareStatement(compliantSqlQuery)) {
+      s.execute();
+    }
 
     connection.prepareStatement("   selEcT * fRoM myTable"); // Noncompliant {{Don't use the query "SELECT *".}}
-    connection.prepareStatement("   sElEcT user fRoM myTable");  // Compliant
-    connection.prepareStatement("SELECTABLE 2*2 FROMAGE");  // Compliant
+    connection.prepareStatement("   sElEcT user fRoM myTable"); // Compliant
+    connection.prepareStatement("SELECTABLE 2*2 FROMAGE"); // Compliant
     connection.prepareCall("   sElEcT * fRoM myTable"); // Noncompliant
 
     String requestNonCompiliant = "   SeLeCt * FrOm myTable"; // Noncompliant
     connection.prepareStatement(requestNonCompiliant);
 
-    String requestCompiliant = "   SeLeCt user FrOm myTable";  // Compliant
+    String requestCompiliant = "   SeLeCt user FrOm myTable"; // Compliant
     connection.prepareStatement(requestCompiliant);
 
     connection.prepareCall("   sElEcT * fRoM myTable"); // Noncompliant
@@ -54,15 +60,14 @@ public class QueryOnlyRequiredFieldsCheckSample {
     preparedStatement.executeQuery(requestNonCompiliant2); // False Negative
 
     String undefinedQuery;
-    if(b) {
+    if (b) {
       undefinedQuery = "Select * FrOm myTable"; // False Negative
-    }
-    else {
-      undefinedQuery = "Select user FrOm myTable";  // Compliant
+    } else {
+      undefinedQuery = "Select user FrOm myTable"; // Compliant
     }
     connection.prepareStatement(undefinedQuery);
 
-    for(int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
       connection.prepareStatement("SELECT * FROM table"); // Noncompliant
       connection.prepareStatement("SELECT user FROM table"); // Compliant
     }
