@@ -127,7 +127,7 @@ public class PreparedStatementLoopInvariantCheckSample {
     }
   }
 
-  private void incDec(PreparedStatement preparedStatement, List<String> uids) throws SQLException {
+  private void postIncDec(PreparedStatement preparedStatement, List<String> uids) throws SQLException {
     int index = 0;
     for (String uid : uids) {
       preparedStatement.setString(index, ""); // Compliant
@@ -143,6 +143,43 @@ public class PreparedStatementLoopInvariantCheckSample {
       preparedStatement.setString(index, ""); // Noncompliant
     }
   }
+
+  private void preIncDec(PreparedStatement preparedStatement, List<String> uids) throws SQLException {
+    int index = -1;
+    for (String uid : uids) {
+      preparedStatement.setString(index, ""); // Compliant
+      ++index;
+    }
+
+    for (String uid : uids) {
+      preparedStatement.setString(index, ""); // Compliant
+      --index;
+    }
+
+    for (String uid : uids) {
+      preparedStatement.setString(index, ""); // Compliant
+      foo(++index);
+    }
+
+    for (String uid : uids) {
+      preparedStatement.setString(index, ""); // Noncompliant
+      foo(~index);
+    }
+
+    for (String uid : uids) {
+      preparedStatement.setString(index, ""); // Noncompliant
+    }
+  }
+
+  private void forCoverage(PreparedStatement preparedStatement, List<String> uids, int[] buf) throws SQLException {
+    int index = -1;
+    for (String uid : uids) {
+      preparedStatement.setString(index, ""); // Noncompliant
+      buf[index]++;
+    }
+  }
+
+  private static void foo(int arg) {}
 
   private void forLoop(PreparedStatement preparedStatement) throws SQLException {
     for (int i = 0; i < 10; i++ ) {

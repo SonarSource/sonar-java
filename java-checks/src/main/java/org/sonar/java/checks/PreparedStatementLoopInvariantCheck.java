@@ -122,7 +122,6 @@ public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVis
     return null;
   }
 
-  // TODO: refactor with is...
   private static boolean isLoop(Tree tree) {
     switch (tree.kind()) {
       case FOR_STATEMENT:
@@ -196,6 +195,9 @@ public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVis
           if (expression.is(Tree.Kind.IDENTIFIER)) {
             declaredOrAssignedLocals.add(((IdentifierTree) expression).name());
           }
+          break;
+        default:
+          break;
       }
     }
 
