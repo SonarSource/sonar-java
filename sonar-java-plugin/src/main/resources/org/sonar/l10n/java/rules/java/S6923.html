@@ -1,0 +1,52 @@
+<p>The <code>android.hardware.SensorManager#getDefaultSensor</code> offers two types of Motion Sensors:</p>
+<ul>
+  <li> <code>TYPE_ROTATION_VECTOR:</code> a combination of the gyroscope, accelerometer, and magnetometer. </li>
+  <li> <code>TYPE_GEOMAGNETIC_ROTATION_VECTOR:</code> a combination of the accelerometer and magnetometer. </li>
+</ul>
+<h2>Why is this an issue?</h2>
+<p>The battery life is a major concern for mobile devices and choosing the right Sensor is very important to reduce the power usage and extend the
+battery life.</p>
+<p>It is recommended, for reducing the power usage, to use <code>TYPE_GEOMAGNETIC_ROTATION_VECTOR</code> for <em>background tasks</em>,
+<em>long-running tasks</em> and other tasks not requiring accurate motion detection.</p>
+<p>The rule reports an issue when <code>android.hardware.SensorManager#getDefaultSensor</code> uses <code>TYPE_ROTATION_VECTOR</code> instead of
+<code>TYPE_GEOMAGNETIC_ROTATION_VECTOR</code>.</p>
+<h2>How to fix it</h2>
+<p>Replace <code>TYPE_ROTATION_VECTOR</code> with <code>TYPE_GEOMAGNETIC_ROTATION_VECTOR</code> when retrieving the Motion Sensor.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class BackGroundActivity extends Activity {
+
+    private Sensor motionSensor;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        motionSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR); // Noncompliant
+        // ..
+    }
+    //..
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class BackGroundActivity extends Activity {
+
+    private Sensor motionSensor;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        motionSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR); // Compliant
+        // ..
+    }
+    //..
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://source.android.com/docs/core/interaction/sensors/power-use">Android - Low Power Sensors</a> </li>
+  <li> <a href="https://developer.android.com/develop/sensors-and-location/sensors/sensors_motion">Android - Motion Sensors</a> </li>
+</ul>
+

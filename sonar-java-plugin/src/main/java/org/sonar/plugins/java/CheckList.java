@@ -427,6 +427,7 @@ import org.sonar.java.checks.UnnecessaryEscapeSequencesInTextBlockCheck;
 import org.sonar.java.checks.UnnecessarySemicolonCheck;
 import org.sonar.java.checks.UnreachableCatchCheck;
 import org.sonar.java.checks.UppercaseSuffixesCheck;
+import org.sonar.java.checks.UseMotionSensorWithoutGyroscopeCheck;
 import org.sonar.java.checks.UseSwitchExpressionCheck;
 import org.sonar.java.checks.UselessExtendsCheck;
 import org.sonar.java.checks.UselessImportCheck;
@@ -1168,6 +1169,7 @@ public final class CheckList {
     UnusedThrowableCheck.class,
     UnusedTypeParameterCheck.class,
     UppercaseSuffixesCheck.class,
+    UseMotionSensorWithoutGyroscopeCheck.class,
     UseSwitchExpressionCheck.class,
     UselessExtendsCheck.class,
     UselessImportCheck.class,
