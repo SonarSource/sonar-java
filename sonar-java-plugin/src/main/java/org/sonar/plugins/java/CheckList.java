@@ -596,6 +596,7 @@ import org.sonar.java.checks.spring.StatusCodesOnResponseCheck;
 import org.sonar.java.checks.spring.SuperfluousResponseBodyAnnotationCheck;
 import org.sonar.java.checks.spring.TransactionalMethodVisibilityCheck;
 import org.sonar.java.checks.spring.ValueAnnotationShouldInjectPropertyOrSpELCheck;
+import org.sonar.java.checks.sustainability.AndroidExactAlarmCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
 import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
@@ -705,6 +706,7 @@ public final class CheckList {
     AnchorPrecedenceCheck.class,
     AndroidBroadcastingCheck.class,
     AndroidUnencryptedFilesCheck.class,
+    AndroidExactAlarmCheck.class,
     AndroidExternalStorageCheck.class,
     AndroidMobileDatabaseEncryptionKeysCheck.class,
     AndroidNonAuthenticatedUsersCheck.class,
