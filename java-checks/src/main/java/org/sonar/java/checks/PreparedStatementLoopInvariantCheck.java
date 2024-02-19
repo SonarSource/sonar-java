@@ -20,12 +20,14 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.TreeHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -43,11 +45,15 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S6909")
 public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatchers matchers = MethodMatchers.create()
+  private static final MethodMatchers MATCHERS = MethodMatchers.create()
     .ofSubTypes("java.sql.PreparedStatement")
     .name(it -> it.startsWith("set"))
     .withAnyParameters()
     .build();
+
+  private static final Set<Tree.Kind> LOOP_KINDS = EnumSet.of(
+    Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT, Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -56,23 +62,20 @@ public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVis
 
   @Override
   public void visitNode(Tree tree) {
-    var invocvationCollector = new MethodInvocationCollector(matchers);
-    tree.accept(invocvationCollector);
+    var invocationCollector = new MethodInvocationCollector(MATCHERS);
+    tree.accept(invocationCollector);
 
-    var candidatesByLoop = new HashMap<StatementTree, List<Candidate>>();
-    invocvationCollector.invocations.stream()
+    invocationCollector.invocations.stream()
       .map(PreparedStatementLoopInvariantCheck::getCandidate)
       .filter(Objects::nonNull)
-      .forEach(candidate -> {
-        var candidates = candidatesByLoop.computeIfAbsent(candidate.enclosingLoop, key -> new ArrayList<>());
-        candidates.add(candidate);
-      });
+      .collect(Collectors.groupingBy(candidate -> candidate.enclosingLoop))
+      .forEach(this::checkCandidatesInLoop);
+  }
 
-    candidatesByLoop.forEach((loop, candidates) -> {
-      var localsCollector = new DeclaredOrAssignedLocalsCollector();
-      loop.accept(localsCollector);
-      candidates.forEach(it -> reportIfLoopInvariant(localsCollector.declaredOrAssignedLocals, it));
-    });
+  void checkCandidatesInLoop(StatementTree loop, List<Candidate> candidates) {
+    var localsCollector = new DeclaredOrAssignedLocalsCollector();
+    loop.accept(localsCollector);
+    candidates.forEach(it -> reportIfLoopInvariant(localsCollector.declaredOrAssignedLocals, it));
   }
 
   private void reportIfLoopInvariant(Set<String> declaredOrAssignedLocals, Candidate candidate) {
@@ -105,33 +108,11 @@ public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVis
       }
     }
 
-    var loop = findEnclosingLoop(invocation);
-    if (loop == null) {
-      return null;
-    }
-    return new Candidate(invocation, identifierArguments, loop);
-  }
-
-  private static StatementTree findEnclosingLoop(Tree tree) {
-    while (!Objects.requireNonNull(tree).is(Tree.Kind.METHOD)) {
-      if (isLoop(tree)) {
-        return (StatementTree) tree;
-      }
-      tree = tree.parent();
+    var loop = TreeHelper.findClosestParentOfKind(invocation, LOOP_KINDS);
+    if (loop != null) {
+      return new Candidate(invocation, identifierArguments, (StatementTree) loop);
     }
     return null;
-  }
-
-  private static boolean isLoop(Tree tree) {
-    switch (tree.kind()) {
-      case FOR_STATEMENT:
-      case FOR_EACH_STATEMENT:
-      case WHILE_STATEMENT:
-      case DO_STATEMENT:
-        return true;
-      default:
-        return false;
-    }
   }
 
   private static class Candidate {
