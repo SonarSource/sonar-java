@@ -32,13 +32,13 @@ public class AndroidExactAlarmCheckSample {
   }
 
   public void setWindow(AlarmManager alarmManager, long triggerTime, PendingIntent pendingIntent) {
-    alarmManager.setWindow(0, triggerTime, 300000, pendingIntent); // Noncompliant [[sc=44;ec=50]] {{Don't use alarm windows below 10 minutes.}}
+    alarmManager.setWindow(0, triggerTime, 300000, pendingIntent); // Noncompliant [[sc=44;ec=50]] {{Use alarm windows of 10 minutes or more instead.}}
     alarmManager.setWindow(0, triggerTime, 600000, pendingIntent); // Compliant
     alarmManager.setWindow(0, triggerTime, 900000, pendingIntent); // Compliant
     alarmManager.setWindow(0, triggerTime, 300000L, pendingIntent); // Noncompliant
     alarmManager.setWindow(0, triggerTime, 600000L, pendingIntent); // Compliant
     alarmManager.setWindow(0, triggerTime, 900000L, pendingIntent); // Compliant
-    alarmManager.setWindow(0, triggerTime, windowLengthMillisTooShort, pendingIntent); // Noncompliant [[sc=44;ec=70]] {{Don't use alarm windows below 10 minutes.}}
+    alarmManager.setWindow(0, triggerTime, windowLengthMillisTooShort, pendingIntent); // Noncompliant
     alarmManager.setWindow(0, triggerTime, windowLengthMillisLongEnough, pendingIntent); // Compliant
     alarmManager.setWindow(0, triggerTime, triggerTime, pendingIntent); // Compliant
 
@@ -61,7 +61,7 @@ public class AndroidExactAlarmCheckSample {
     alarmManager.setWindow(0, triggerTime, windowLengthMillisLongEnough, "", executor, listener); // Compliant
 
     var noAlarmManager = new NoAlarmManager();
-    noAlarmManager.setWindow(0, triggerTime, windowLengthMillisTooShort, "", executor, listener); // Cmpliant
+    noAlarmManager.setWindow(0, triggerTime, windowLengthMillisTooShort, "", executor, listener); // Compliant
   }
 
   public void setWindow(AlarmManager alarmManager, long triggerTime) {

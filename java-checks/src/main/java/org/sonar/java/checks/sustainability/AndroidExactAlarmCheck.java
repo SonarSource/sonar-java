@@ -21,10 +21,10 @@ package org.sonar.java.checks.sustainability;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatchersBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6891")
 public class AndroidExactAlarmCheck extends AbstractMethodDetection {
@@ -48,7 +48,7 @@ public class AndroidExactAlarmCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    switch (MethodMatchersBuilder.getIdentifier(tree).name()) {
+    switch (ExpressionUtils.methodName(tree).name()) {
       case SET_EXACT_NAME:
       case SET_EXACT_AND_ALLOW_WHILE_IDLE_NAME:
         onSetExactInvocation(tree);
@@ -62,10 +62,10 @@ public class AndroidExactAlarmCheck extends AbstractMethodDetection {
   }
 
   private void onSetExactInvocation(MethodInvocationTree tree) {
-    var identifier = MethodMatchersBuilder.getIdentifier(tree);
+    var identifier = ExpressionUtils.methodName(tree);
     var methodName = identifier.name();
     var replacementName = methodName.replace("Exact", "");
-    reportIssue(identifier, String.format("Use \"%s\" instead of \"%s\".", replacementName, methodName));
+    reportIfInAndroidContext(identifier, String.format("Use \"%s\" instead of \"%s\".", replacementName, methodName));
   }
 
   private void onSetWindowInvocation(MethodInvocationTree tree) {
@@ -74,7 +74,13 @@ public class AndroidExactAlarmCheck extends AbstractMethodDetection {
     var windowLengthMillis = ExpressionUtils.resolveAsConstant(windowLengthMillisArg);
 
     if (windowLengthMillis instanceof Number && ((Number) windowLengthMillis).longValue() < SUGGESTED_MIN_LENGTH_MILLIS) {
-      reportIssue(windowLengthMillisArg, "Don't use alarm windows below 10 minutes.");
+      reportIfInAndroidContext(windowLengthMillisArg, "Use alarm windows of 10 minutes or more instead.");
+    }
+  }
+
+  private void reportIfInAndroidContext(Tree tree, String message) {
+    if (context.inAndroidContext()) {
+      reportIssue(tree, message);
     }
   }
 }

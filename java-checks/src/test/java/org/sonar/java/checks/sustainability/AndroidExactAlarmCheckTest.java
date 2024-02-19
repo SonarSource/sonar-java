@@ -22,6 +22,7 @@ package org.sonar.java.checks.sustainability;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
+import org.sonar.java.checks.security.AndroidUnencryptedFilesCheck;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
@@ -41,6 +42,16 @@ class AndroidExactAlarmCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/sustainability/AndroidExactAlarmCheckSample.java"))
       .withCheck(new AndroidExactAlarmCheck())
+      .withinAndroidContext(true)
       .verifyIssues();
+  }
+
+  @Test
+  void test_not_android_context() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/sustainability/AndroidExactAlarmCheckSample.java"))
+      .withCheck(new AndroidExactAlarmCheck())
+      .withinAndroidContext(false)
+      .verifyNoIssues();
   }
 }
