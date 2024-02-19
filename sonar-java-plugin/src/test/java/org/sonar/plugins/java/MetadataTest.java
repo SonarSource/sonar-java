@@ -34,7 +34,7 @@ import java.util.stream.StreamSupport;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
-public class MetadataTest {
+class MetadataTest {
   @Test
   void ensure_sane_Sonar_way_profile() throws FileNotFoundException {
     var profilePath = Path.of("src/main/resources/" + JavaSonarWayProfile.SONAR_WAY_PATH);
