@@ -23,7 +23,9 @@ import java.util.List;
 import org.sonar.java.annotations.Beta;
 
 /**
- * Record pattern tree, introduced with Java 19 and JEP-405.
+ * Record pattern tree.
+ * Introduced with Java 19 and JEP-405.
+ * Finalized with Java 21 and JEP-440.
  *
  * <pre>
  *   case {@link #type()} ( {@link #patterns()} ) : ...
@@ -31,10 +33,8 @@ import org.sonar.java.annotations.Beta;
  * </pre>
  *
  * @since Java 19
- * @deprecated Preview Feature
  */
 @Beta
-@Deprecated(since = "7.19", forRemoval = false)
 public interface RecordPatternTree extends PatternTree {
   TypeTree type();
 

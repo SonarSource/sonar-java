@@ -22,7 +22,9 @@ package org.sonar.plugins.java.api.tree;
 import org.sonar.java.annotations.Beta;
 
 /**
- * Guarded pattern tree, introduced with Java 17 and JEP-406.
+ * Guarded pattern tree
+ * Introduced with Java 17 and JEP-406.
+ * Finalized with Java 21 and JEP-441.
  *
  * <pre>
  *   case {@link #pattern()} {@link #whenOperator()} {@link #expression()} : ...
@@ -30,10 +32,8 @@ import org.sonar.java.annotations.Beta;
  * </pre>
  *
  * @since Java 17
- * @deprecated Preview Feature
  */
 @Beta
-@Deprecated(since = "7.7", forRemoval = false)
 public interface GuardedPatternTree extends PatternTree {
 
   PatternTree pattern();

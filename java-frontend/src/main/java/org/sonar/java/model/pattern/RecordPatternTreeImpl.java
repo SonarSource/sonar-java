@@ -28,6 +28,9 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 
+/**
+ * JDK 19 Preview feature (JEP-405), finalized in JDK 21 (JEP-440).
+ */
 public class RecordPatternTreeImpl extends AbstractPatternTree implements RecordPatternTree {
 
   private final TypeTree type;
