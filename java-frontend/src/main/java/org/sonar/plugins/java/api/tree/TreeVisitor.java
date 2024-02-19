@@ -157,11 +157,11 @@ public interface TreeVisitor {
 
   void visitArrayDimension(ArrayDimensionTree tree);
 
-   void visitTypePattern(TypePatternTree tree);
+  void visitTypePattern(TypePatternTree tree);
 
   void visitNullPattern(NullPatternTree tree);
 
-   void visitDefaultPattern(DefaultPatternTree tree);
+  void visitDefaultPattern(DefaultPatternTree tree);
 
   void visitGuardedPattern(GuardedPatternTree tree);
 
