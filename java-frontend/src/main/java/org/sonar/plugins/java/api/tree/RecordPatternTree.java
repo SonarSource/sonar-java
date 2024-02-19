@@ -20,7 +20,6 @@
 package org.sonar.plugins.java.api.tree;
 
 import java.util.List;
-import javax.annotation.CheckForNull;
 import org.sonar.java.annotations.Beta;
 
 /**
