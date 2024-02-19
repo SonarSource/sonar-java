@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.LongSupplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -305,7 +304,7 @@ class SonarComponentsTest {
       null, checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
     sonarComponents.setCheckFilter(checks -> checks.stream()
-      .filter(c -> !c.getClass().getSimpleName().equals("CheckB")).collect(Collectors.toList()));
+      .filter(c -> !c.getClass().getSimpleName().equals("CheckB")).toList());
 
     List<JavaCheck> mainChecks = sonarComponents.mainChecks();
     assertThat(mainChecks).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
@@ -638,7 +637,7 @@ class SonarComponentsTest {
     File plugin = new File("target/classes");
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, mock(ClasspathForTest.class),
       checkFactory, context.activeRules());
-    List<String> jspClassPath = sonarComponents.getJspClasspath().stream().map(File::getAbsolutePath).collect(Collectors.toList());
+    List<String> jspClassPath = sonarComponents.getJspClasspath().stream().map(File::getAbsolutePath).toList();
     assertThat(jspClassPath).containsExactly(plugin.getAbsolutePath(), someJar.getAbsolutePath());
   }
 
@@ -1100,7 +1099,7 @@ class SonarComponentsTest {
       List<String> linesInDebugMessage = debugMessage.stream()
         .map(line -> Arrays.asList(line.split(System.lineSeparator())))
         .flatMap(List::stream)
-        .collect(Collectors.toList());
+        .toList();
 
       assertThat(linesInDebugMessage)
         .containsExactly(
@@ -1211,7 +1210,7 @@ class SonarComponentsTest {
   private List<RuleKey> ruleKeys(String... repositoryAndKeys) {
     return Arrays.stream(repositoryAndKeys)
       .map(RuleKey::parse)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static ActiveRules activeRules(String... repositoryAndKeys) {

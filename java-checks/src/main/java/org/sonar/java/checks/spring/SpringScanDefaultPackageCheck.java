@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -76,7 +75,7 @@ public class SpringScanDefaultPackageCheck extends IssuableSubscriptionVisitor {
       List<ExpressionTree> scanPackageAttributeValues = annotation.arguments().stream()
         .filter(argument -> scanPackageAttributeNames.contains(attributeName(argument)))
         .flatMap(SpringScanDefaultPackageCheck::extractValues)
-        .collect(Collectors.toList());
+        .toList();
 
       checkAnnotationPackageAttributes(annotation, scanPackageAttributeValues);
     }

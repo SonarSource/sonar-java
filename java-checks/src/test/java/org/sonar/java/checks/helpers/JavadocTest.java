@@ -67,7 +67,7 @@ class JavadocTest {
       .filter(name -> name.startsWith("emptyJavadoc"))
       .map(methods::get)
       .map(Javadoc::new)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   @Test

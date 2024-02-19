@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -733,7 +734,7 @@ public class FlowComputation {
         return Collections.emptySet();
       }
 
-      List<Integer> argumentIndices = correspondingArgumentIndices(symbolicValues, edge.parent);
+      List<Integer> argumentIndices = new ArrayList<>(correspondingArgumentIndices(symbolicValues, edge.parent));
 
       MethodInvocationTree mit = (MethodInvocationTree) edge.parent.programPoint.syntaxTree();
       // computes flow messages for arguments being passed to the called method
@@ -777,7 +778,8 @@ public class FlowComputation {
       List<SymbolicValue> arguments = argumentsUsedForMethodInvocation(invocationNode, mit);
       return IntStream.range(0, arguments.size())
         .filter(i -> candidates.contains(arguments.get(i)))
-        .boxed().collect(Collectors.toList());
+        .boxed()
+        .toList();
     }
 
     private List<SymbolicValue> argumentsUsedForMethodInvocation(ExplodedGraph.Node invocationNode, MethodInvocationTree mit) {

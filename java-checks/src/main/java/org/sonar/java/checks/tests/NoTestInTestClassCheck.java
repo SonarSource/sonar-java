@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
@@ -90,7 +89,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
         checkTestNGmembers(simpleName, members);
       } else {
         boolean isJunit3TestClass = classSymbol.type().isSubtypeOf("junit.framework.TestCase");
-        List<Symbol> membersList = members.collect(Collectors.toList());
+        List<Symbol> membersList = members.toList();
         if (isJunit3TestClass && containsJUnit3Tests(membersList)) {
           return;
         }

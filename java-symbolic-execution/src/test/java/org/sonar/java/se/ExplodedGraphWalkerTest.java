@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.cfg.CFG;
@@ -698,7 +697,7 @@ class ExplodedGraphWalkerTest {
       XmlParserLoadsExternalSchemasCheck.class,
       XmlValidatedSignatureCheck.class)
       .map(Class::getSimpleName)
-      .collect(Collectors.toList());
+      .toList();
     // Compute the list of SEChecks defined in package
     List<String> seChecks = ClassPath.from(ExplodedGraphWalkerTest.class.getClassLoader())
       .getTopLevelClasses("org.sonar.java.se.checks")
@@ -707,10 +706,10 @@ class ExplodedGraphWalkerTest {
       .filter(name -> name.endsWith("Check") && !name.equals(SECheck.class.getSimpleName()))
       .filter(name -> !nonDefaultChecks.contains(name))
       .sorted()
-      .collect(Collectors.toList());
+      .toList();
 
     ExplodedGraphWalker.ExplodedGraphWalkerFactory factory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(new ArrayList<>());
-    assertThat(factory.seChecks.stream().map(c -> c.getClass().getSimpleName()).sorted().collect(Collectors.toList())).isEqualTo(seChecks);
+    assertThat(factory.seChecks.stream().map(c -> c.getClass().getSimpleName()).sorted().toList()).isEqualTo(seChecks);
   }
 
   @Test
@@ -750,12 +749,12 @@ class ExplodedGraphWalkerTest {
 
     MethodBehavior mb = sev.behaviorCache.behaviors
       .get("org.sonar.java.resolve.targets.se.ExceptionEnqueue#testCatchBlockEnqueue(Lorg/sonar/java/resolve/targets/se/ExceptionEnqueue;)Z");
-    List<HappyPathYield> happyPathYields = mb.happyPathYields().collect(Collectors.toList());
+    List<HappyPathYield> happyPathYields = mb.happyPathYields().toList();
     assertThat(happyPathYields).hasSize(1);
     assertThat(happyPathYields.get(0).resultConstraint()).isNull();
 
     mb = sev.behaviorCache.behaviors.get("org.sonar.java.resolve.targets.se.ExceptionEnqueue#testCatchBlockEnqueue2()Z");
-    happyPathYields = mb.happyPathYields().collect(Collectors.toList());
+    happyPathYields = mb.happyPathYields().toList();
     assertThat(happyPathYields).hasSize(1);
     // correctly result constraint should be TRUE, but we enqueue also unreachable catch block which creates yield with FALSE result
     // and yields are reduced consequently

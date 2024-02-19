@@ -287,9 +287,9 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     }
     List<? extends JavaCheck> orderedChecks = createdChecks.all().stream()
       .sorted(Comparator.comparing(check -> classIndexes.getOrDefault(check.getClass(), Integer.MAX_VALUE)))
-      .collect(Collectors.toList());
+      .toList();
     destinationList.addAll(orderedChecks);
-    jspChecks.addAll(orderedChecks.stream().filter(JspCodeVisitor.class::isInstance).collect(Collectors.toList()));
+    jspChecks.addAll(orderedChecks.stream().filter(JspCodeVisitor.class::isInstance).toList());
   }
 
   public List<JavaCheck> mainChecks() {
@@ -585,7 +585,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
         paths.forEach(path -> problemAndPaths.add("  * " + path));
         return problemAndPaths;
       })
-      .collect(Collectors.toList());
+      .toList();
 
     if (messagesList.isEmpty()) {
       return;

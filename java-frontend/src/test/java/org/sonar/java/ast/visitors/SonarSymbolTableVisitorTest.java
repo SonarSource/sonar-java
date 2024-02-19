@@ -24,7 +24,6 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -118,7 +117,7 @@ class SonarSymbolTableVisitorTest {
     if(tps.length == 0) {
       assertThat(textRanges).isEmpty();
     } else {
-      assertThat(textRanges.stream().map(TextRange::start).collect(Collectors.toList())).isNotEmpty().containsOnly(tps);
+      assertThat(textRanges.stream().map(TextRange::start).toList()).isNotEmpty().containsOnly(tps);
     }
   }
 

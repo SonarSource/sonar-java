@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
@@ -93,7 +92,7 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
       visitor.addAllowedOrigin.forEach(mit -> {
         List<Location> locations = visitor.applyPermit.stream()
           .map(t -> new Location(MESSAGE, t))
-          .collect(Collectors.toList());
+          .toList();
         reportIssue(mit.methodSelect(), MESSAGE, locations, null);
       });
     } else {

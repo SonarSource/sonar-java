@@ -37,7 +37,6 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Rule(key = "S2701")
 public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetection {
@@ -196,7 +195,7 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
   private void reportDefaultMessage(IdentifierTree methodName, List<LiteralTree> literals) {
     List<JavaFileScannerContext.Location> literalLocations = literals.stream()
       .map(literal -> new JavaFileScannerContext.Location("There does not seem to be a reason to use a literal here.", literal))
-      .collect(Collectors.toList());
+      .toList();
     reportIssue(methodName, DEFAULT_MESSAGE, literalLocations, null);
   }
 }

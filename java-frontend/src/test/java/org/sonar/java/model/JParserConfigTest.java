@@ -21,7 +21,6 @@ package org.sonar.java.model;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
@@ -61,7 +60,7 @@ class JParserConfigTest {
     JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true);
     List<String> logs = logTester.getLogs().stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs).containsExactly("The Java analyzer will ignore the unnamed module for split packages.");
   }
 }

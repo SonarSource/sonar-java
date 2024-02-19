@@ -105,7 +105,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     // kill the noise regarding unresolved identifiers, and remove the one with matching names from the list of unused
     unused = unused.stream()
       .filter(id -> !unresolvedIdentifierNames.contains(id.name()))
-      .collect(Collectors.toList());
+      .toList();
     if (!unused.isEmpty()) {
       reportUnusedParameters(methodTree, unused);
     }
@@ -121,7 +121,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     List<JavaFileScannerContext.Location> secondaryLocations = unused.stream()
       .skip(1)
       .map(identifier -> new JavaFileScannerContext.Location(String.format(SECONDARY_MESSAGE_FORMAT, identifier.name()), identifier))
-      .collect(Collectors.toList());
+      .toList();
     String parameterNames = unused.stream().map(identifier -> "\"" + identifier.name() + "\"").collect(Collectors.joining(", "));
     QuickFixHelper.newIssue(context)
       .forRule(this)

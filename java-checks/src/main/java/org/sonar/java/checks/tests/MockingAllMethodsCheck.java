@@ -96,7 +96,7 @@ public class MockingAllMethodsCheck extends AbstractMethodDetection {
           if (declaredMethods.size() > 1 && mockedMethods.containsAll(declaredMethods)) {
             List<JavaFileScannerContext.Location> secondaries = mockedMethods.stream()
               .map(method -> new JavaFileScannerContext.Location("Method mocked here", whenCalls.get(method)))
-              .collect(Collectors.toList());
+              .toList();
             reportIssue(declaration, "Refactor this test instead of mocking every non-private member of this class.", secondaries, null);
           }
         }

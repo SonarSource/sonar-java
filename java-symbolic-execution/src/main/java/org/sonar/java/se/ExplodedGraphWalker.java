@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -390,7 +389,7 @@ public class ExplodedGraphWalker {
         stateStream = stateStream.flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream());
       }
     }
-    return stateStream.collect(Collectors.toList());
+    return stateStream.toList();
   }
 
   private static List<VariableTree> methodOrRecordConstructorParameters(MethodTree methodTree) {
@@ -818,7 +817,7 @@ public class ExplodedGraphWalker {
       && methodInvokedBehavior.isComplete()
       && !EQUALS_METHODS.matches(mit)) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
-      List<Type> invocationTypes = mit.arguments().stream().map(ExpressionTree::symbolType).collect(Collectors.toList());
+      List<Type> invocationTypes = mit.arguments().stream().map(ExpressionTree::symbolType).toList();
 
       Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptionsByExceptionType = new HashMap<>();
 
@@ -886,7 +885,7 @@ public class ExplodedGraphWalker {
 
   private void enqueueExceptionalPaths(ProgramState ps, Symbol methodSymbol, @Nullable MethodYield methodYield) {
     Set<CFG.Block> exceptionBlocks = ((CFG.Block) node.programPoint.block).exceptions();
-    List<CFG.Block> catchBlocks = exceptionBlocks.stream().filter(CFG.Block.IS_CATCH_BLOCK).collect(Collectors.toList());
+    List<CFG.Block> catchBlocks = exceptionBlocks.stream().filter(CFG.Block.IS_CATCH_BLOCK).toList();
     SymbolicValue peekValue = ps.peekValue();
 
     Preconditions.checkState(peekValue instanceof SymbolicValue.ExceptionalSymbolicValue, "Top of stack should always contains exceptional SV");
@@ -895,7 +894,7 @@ public class ExplodedGraphWalker {
     List<CFG.Block> caughtBlocks = catchBlocks.stream()
       .filter(b -> isCaughtByBlock(exceptionSV.exceptionType(), b))
       .sorted((b1, b2) -> Integer.compare(b2.id(), b1.id()))
-      .collect(Collectors.toList());
+      .toList();
     if (!caughtBlocks.isEmpty()) {
       caughtBlocks.forEach(b -> enqueue(new ProgramPoint(b), ps, methodYield));
       return;
@@ -912,7 +911,7 @@ public class ExplodedGraphWalker {
     // use other exceptional blocks, i.e. finally block and exit blocks
     List<CFG.Block> otherBlocks = exceptionBlocks.stream()
       .filter(CFG.Block.IS_CATCH_BLOCK.negate().or(b -> methodSymbol.isUnknown()))
-      .collect(Collectors.toList());
+      .toList();
     if (otherBlocks.isEmpty()) {
       // explicitly add the exception branching to method exit
       CFG.Block methodExit = node.programPoint.block.successors()

@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,7 +214,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
 
     if (secondaries != null) {
       // Transform secondaries into flows: List(size:N)<Location> -> List(size:N)<List(size:1)<Location>>"
-      flows = secondaries.stream().map(Collections::singletonList).collect(Collectors.toList());
+      flows = secondaries.stream().map(Collections::singletonList).toList();
       // Keep secondaries and flows mutually exclusive.
       secondaries = null;
     }
@@ -227,7 +226,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
             .on(inputFile)
             .at(range(inputFile, location))
             .message(location.msg))
-          .collect(Collectors.toList()));
+          .toList());
       }
     }
 
@@ -243,7 +242,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     }
     final List<JavaQuickFix> flatQuickFixes = quickFixes.stream()
       .flatMap(s -> s.get().stream())
-      .collect(Collectors.toList());
+      .toList();
     if (flatQuickFixes.isEmpty()) {
       return;
     }

@@ -109,7 +109,7 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       .stream()
       .filter(Symbol::isMethodSymbol)
       .map(Symbol.MethodSymbol.class::cast)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static List<Symbol.VariableSymbol> classFields(Symbol.TypeSymbol classSymbol) {
@@ -120,7 +120,7 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       // records can have constant, so discarding them
       .filter(s -> !isConstant(s))
       .map(Symbol.VariableSymbol.class::cast)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static List<Symbol.MethodSymbol> classConstructors(List<Symbol.MethodSymbol> methods) {
@@ -128,7 +128,7 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       .filter(m -> "<init>".equals(m.name()))
       // only explicit constructors
       .filter(m -> m.declaration() != null)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static boolean hasOnlyPrivateFinalFields(List<Symbol.VariableSymbol> fields) {

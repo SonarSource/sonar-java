@@ -25,7 +25,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ASTUtils;
@@ -88,7 +87,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     if (parameters == null) {
       MethodTree declaration = declaration();
       if (declaration != null && !isCompactConstructor(declaration)) {
-        parameters = declaration.parameters().stream().map(VariableTree::symbol).collect(Collectors.toList());
+        parameters = declaration.parameters().stream().map(VariableTree::symbol).toList();
       } else {
         parameters = new ArrayList<>();
         IMethodBinding methodBinding = methodBinding();

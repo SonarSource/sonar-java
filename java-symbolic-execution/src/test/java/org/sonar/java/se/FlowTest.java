@@ -24,7 +24,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +37,7 @@ class FlowTest {
       .add(locationWithMockTree("last"))
       .add(locationWithMockTree("first"))
       .build();
-    List<JavaFileScannerContext.Location> collect = flow1.firstFlowLocation().collect(Collectors.toList());
+    List<JavaFileScannerContext.Location> collect = flow1.firstFlowLocation().toList();
     assertThat(collect).hasSize(1);
     assertThat(collect.get(0).msg).isEqualTo("first");
 

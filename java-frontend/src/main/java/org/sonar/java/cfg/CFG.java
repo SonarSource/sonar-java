@@ -836,7 +836,7 @@ public class CFG implements ControlFlowGraph {
       .map(CaseGroupTree::labels)
       .flatMap(List::stream)
       .map(CaseLabelTree::expressions)
-      .flatMap(List::stream).collect(Collectors.toList());
+      .flatMap(List::stream).toList();
     ListUtils.reverse(switchCasesExpressions).forEach(this::build);
 
     build(switchTree.expression());

@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -61,7 +60,7 @@ public class ConfigurationBeanNamesCheck extends IssuableSubscriptionVisitor {
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
       .filter(method -> method.symbol().metadata().isAnnotatedWith("org.springframework.context.annotation.Bean"))
-      .collect(Collectors.toList());
+      .toList();
   }
 
 }

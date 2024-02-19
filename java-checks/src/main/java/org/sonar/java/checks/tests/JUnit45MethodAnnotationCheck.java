@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.checks.helpers.UnitTestUtils;
@@ -67,7 +66,7 @@ public class JUnit45MethodAnnotationCheck extends IssuableSubscriptionVisitor {
     List<MethodTree> methods = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
 
     int jUnitVersion = getJUnitVersion(methods);
     if (jUnitVersion > 0) {

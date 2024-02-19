@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -146,7 +145,7 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
     if (assertSubject != null && !equivalentAssertions.isEmpty()) {
       reportIssue(assertSubject.methodName(),
         "Join these multiple assertions subject to one assertion chain.",
-        equivalentAssertions.stream().map(AssertSubject::toSecondaryLocation).collect(Collectors.toList()),
+        equivalentAssertions.stream().map(AssertSubject::toSecondaryLocation).toList(),
         null);
     }
   }

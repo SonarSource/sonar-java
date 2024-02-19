@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -64,7 +63,7 @@ public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisit
       List<ExpressionTree> methodValues = annotation.arguments().stream()
         .filter(argument -> "method".equals(attributeName(argument)))
         .flatMap(SpringComposedRequestMappingCheck::extractValues)
-        .collect(Collectors.toList());
+        .toList();
 
       if (methodValues.size() == 1) {
         ExpressionTree requestMethod = methodValues.get(0);

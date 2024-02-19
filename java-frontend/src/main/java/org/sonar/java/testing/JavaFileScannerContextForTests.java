@@ -25,7 +25,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
@@ -122,7 +121,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
       .forRule(javaCheck)
       .onTree(syntaxNode)
       .withMessage(message)
-      .withFlows(StreamSupport.stream(flows.spliterator(), false).collect(Collectors.toList()))
+      .withFlows(StreamSupport.stream(flows.spliterator(), false).toList())
       .withCost(cost == null ? 0 : cost)
       .report();
   }

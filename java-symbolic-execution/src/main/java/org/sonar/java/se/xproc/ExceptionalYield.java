@@ -21,7 +21,6 @@ package org.sonar.java.se.xproc;
 
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -77,7 +76,7 @@ public class ExceptionalYield extends MethodYield {
   @Override
   public String toString() {
     return String.format("{params: %s, exceptional%s}",
-      parametersConstraints.stream().map(constraints -> constraints.stream().map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
+      parametersConstraints.stream().map(constraints -> constraints.stream().map(Constraint::toString).toList()).toList(),
       exceptionType == null ? "" : (" (" + exceptionType + ")"));
   }
 

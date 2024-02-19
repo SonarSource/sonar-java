@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -61,10 +60,10 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
     ClassTree classTree = (ClassTree) tree;
     List<MethodTree> methods = classTree.members()
       .stream()
-        .filter(member -> member.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR))
-        .map(MethodTree.class::cast)
-        .filter(method ->  countNonPublic || method.symbol().isPublic())
-        .collect(Collectors.toList());
+      .filter(member -> member.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR))
+      .map(MethodTree.class::cast)
+      .filter(method -> countNonPublic || method.symbol().isPublic())
+      .toList();
 
     if(shouldNotReportIssue(classTree, methods)) {
       return;
@@ -72,7 +71,7 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
 
     List<JavaFileScannerContext.Location> secondary = methods.stream()
       .map(method -> new JavaFileScannerContext.Location("Method + 1", method.simpleName()))
-      .collect(Collectors.toList());
+      .toList();
 
     TypeTree reportTree = ExpressionsHelper.reportOnClassTree(classTree);
     String classType;

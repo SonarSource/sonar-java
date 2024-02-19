@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.java.regex.RegexCheck;
@@ -210,7 +209,7 @@ class DefaultJavaFileScannerContextTest extends DefaultInputFileScannerContextTe
     assertThat(reportedMessage.flows).hasSize(2);
 
     assertMessagePosition(reportedMessage, 3, 6, 3, 7);
-    List<AnalyzerMessage> secondaries = reportedMessage.flows.stream().map(flow -> flow.get(0)).collect(Collectors.toList());
+    List<AnalyzerMessage> secondaries = reportedMessage.flows.stream().map(flow -> flow.get(0)).toList();
     assertThat(secondaries).hasSize(2);
     assertMessagePosition(secondaries.get(0), 4, 2, 4, 13);
     assertMessagePosition(secondaries.get(1), 5, 2, 5, 15);

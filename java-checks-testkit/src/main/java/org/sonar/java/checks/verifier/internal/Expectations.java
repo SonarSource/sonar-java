@@ -67,7 +67,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.EFFORT_TO_FIX;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_LINE;
@@ -124,7 +123,9 @@ class Expectations {
     }
 
     private static <T> Function<String, List<T>> multiValueAttribute(Function<String, T> convert) {
-      return (String input) -> isNullOrEmpty(input) ? Collections.emptyList() : Arrays.stream(input.split(",")).map(String::trim).map(convert).collect(toList());
+      return (String input) -> isNullOrEmpty(input) ?
+        Collections.emptyList() :
+        Arrays.stream(input.split(",")).map(String::trim).map(convert).collect(Collectors.toCollection(ArrayList::new));
     }
 
     private static boolean isNullOrEmpty(@Nullable String input) {
@@ -309,14 +310,14 @@ class Expectations {
       return Optional.of(flowId);
     }
     // more than 1 flow with same lines, let's check messages
-    List<String> actualMessages = actual.stream().map(AnalyzerMessage::getMessage).collect(toList());
+    List<String> actualMessages = actual.stream().map(AnalyzerMessage::getMessage).toList();
     Optional<String> foundFlow = expectedFlows.stream().filter(flowId -> hasSameMessages(flowId, actualMessages)).findFirst();
     foundFlow.ifPresent(flowId -> seenFlowIds.add(flowId));
     return foundFlow;
   }
 
   private boolean hasSameMessages(String flowId, List<String> actualMessages) {
-    List<String> expectedMessages = flows.get(flowId).stream().map(FlowComment::message).collect(toList());
+    List<String> expectedMessages = flows.get(flowId).stream().map(FlowComment::message).toList();
     return expectedMessages.equals(actualMessages);
   }
 
@@ -330,7 +331,7 @@ class Expectations {
     return flow.stream()
       .mapToInt(toLineFunction)
       .boxed()
-      .collect(toList());
+      .toList();
   }
 
   String flowToLines(String flowId) {
@@ -467,7 +468,7 @@ class Expectations {
           JavaQuickFix javaQuickFix = JavaQuickFix.newQuickFix(message).addTextEdits(
             edits.stream()
               .map(edit -> getEdit(edit, issueTextSpan, quickFixId))
-              .collect(toList())
+              .toList()
           ).build();
           quickFixesForIssue.add(javaQuickFix);
         }
@@ -513,7 +514,7 @@ class Expectations {
       return IntStream.range(0, flowIds.size())
         .mapToObj(i -> createFlows(flowIds.get(i), line, flowStarts.get(i), comment.substring(flowStarts.get(i), flowStarts.get(i + 1))))
         .flatMap(Function.identity())
-        .collect(Collectors.toList());
+        .toList();
     }
 
     private static Stream<FlowComment> createFlows(List<String> ids, int line, int startColumn, String flow) {
@@ -616,7 +617,7 @@ class Expectations {
         EnumMap<IssueAttribute, Object> copy = new EnumMap<>(attributes);
         copy.put(SECONDARY_LOCATIONS, secondaryLocation.stream()
           .map(stringValue -> relativeValueToInt(line, (String) stringValue))
-          .collect(toList()));
+          .collect(Collectors.toCollection(ArrayList::new)));
         return copy;
       }
       return attributes;

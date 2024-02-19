@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -54,7 +53,7 @@ public class SpringConstructorInjectionCheck extends IssuableSubscriptionVisitor
         .stream()
         .filter(SpringConstructorInjectionCheck::isMemberAutowired)
         .map(SpringConstructorInjectionCheck::toReportTree)
-        .collect(Collectors.toList());
+        .toList();
 
       if (!toReport.isEmpty()) {
         int cost = toReport.size();

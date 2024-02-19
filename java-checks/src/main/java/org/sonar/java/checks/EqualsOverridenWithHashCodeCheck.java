@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Rule(key = "S1206")
 public class EqualsOverridenWithHashCodeCheck extends IssuableSubscriptionVisitor {
@@ -48,7 +47,7 @@ public class EqualsOverridenWithHashCodeCheck extends IssuableSubscriptionVisito
     List<MethodTree> methods = ((ClassTree) tree).members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
 
     Optional<MethodTree> equalsMethod = methods.stream().filter(EqualsOverridenWithHashCodeCheck::isEquals).findAny();
     Optional<MethodTree> hashCodeMethod = methods.stream().filter(EqualsOverridenWithHashCodeCheck::isHashCode).findAny();

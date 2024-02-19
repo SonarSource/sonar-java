@@ -26,7 +26,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.ModifiersUtils;
@@ -76,7 +75,7 @@ public class TooManyAssertionsCheck extends IssuableSubscriptionVisitor {
       if (assertionsSize > maximum) {
         List<JavaFileScannerContext.Location> locations = assertionsTree.stream()
           .map(assertionTree -> new JavaFileScannerContext.Location("Assertion", assertionTree))
-          .collect(Collectors.toList());
+          .toList();
 
         reportIssue(methodTree.simpleName(),
           String.format("Refactor this method to reduce the number of assertions from %d to less than %d.", assertionsSize, maximum),

@@ -70,7 +70,7 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends SubscriptionVisitor 
           .forRule(this)
           .onTree(lastLabel)
           .withMessage(MESSAGE)
-          .withSecondaries(caseLabels.stream().map(label -> new JavaFileScannerContext.Location("", label)).collect(Collectors.toList()))
+          .withSecondaries(caseLabels.stream().map(label -> new JavaFileScannerContext.Location("", label)).toList())
           .report();
       }
 

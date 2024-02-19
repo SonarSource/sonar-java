@@ -21,7 +21,6 @@ package org.sonar.plugins.java.api;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
@@ -159,7 +158,7 @@ public interface CheckRegistrar {
 
     private static <T> Collection<T> asCollection(@Nullable Iterable<T> iterable) {
       return iterable != null ?
-        StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.toList()) :
+        StreamSupport.stream(iterable.spliterator(), false).toList() :
         Collections.emptyList();
     }
   }

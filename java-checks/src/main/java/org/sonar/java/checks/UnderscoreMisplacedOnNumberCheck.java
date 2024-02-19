@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Rule(key = "S3937")
 public class UnderscoreMisplacedOnNumberCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -67,7 +66,7 @@ public class UnderscoreMisplacedOnNumberCheck extends IssuableSubscriptionVisito
       return false;
     }
     int firstGroupLength = groups.get(0).length();
-    List<Integer> lengths = groups.stream().skip(1).map(String::length).distinct().collect(Collectors.toList());
+    List<Integer> lengths = groups.stream().skip(1).map(String::length).distinct().toList();
     return lengths.size() != 1 || lengths.get(0) < firstGroupLength;
   }
 

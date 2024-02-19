@@ -23,7 +23,6 @@ package org.sonar.java.se.checks;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -191,7 +190,7 @@ public class MinMaxRangeCheck extends SECheck {
     ProgramState psBeforeInvocation = context.getNode().programState;
 
     List<SymbolicValue> args = psBeforeInvocation.peekValues(2);
-    List<ConstraintsByDomain> constraintsByArgs = args.stream().map(programState::getConstraints).collect(Collectors.toList());
+    List<ConstraintsByDomain> constraintsByArgs = args.stream().map(programState::getConstraints).toList();
 
     checkRangeInconsistencies(context, syntaxNode, constraintsByArgs);
 

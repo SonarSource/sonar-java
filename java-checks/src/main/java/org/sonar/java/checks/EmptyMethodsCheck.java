@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LineUtils;
@@ -85,7 +84,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
     List<MethodTree> constructors = members.stream()
       .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
       .map(MethodTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
     if (constructors.size() == 1 && isPublicNoArgConstructor(constructors.get(0))) {
       // In case that there is only a single public default constructor with empty body, we raise an issue, as this is equivalent to not
       // defining a constructor at all and hence redundant.

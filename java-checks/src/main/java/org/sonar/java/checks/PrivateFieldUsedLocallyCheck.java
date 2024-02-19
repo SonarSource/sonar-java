@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
@@ -151,7 +150,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
       .map(MemberSelectExpressionTree.class::cast)
       .filter(memberSelect -> ExpressionUtils.isThis(memberSelect.expression()))
       .map(memberSelect -> JavaTextEdit.removeBetweenTree(memberSelect.expression(), memberSelect.operatorToken()))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static boolean isLiveInMethodEntry(Symbol privateFieldSymbol, MethodTree methodTree) {

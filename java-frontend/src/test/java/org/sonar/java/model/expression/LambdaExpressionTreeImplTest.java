@@ -20,7 +20,6 @@
 package org.sonar.java.model.expression;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -87,14 +86,14 @@ class LambdaExpressionTreeImplTest {
     assertThat(cfg).isNotNull();
     assertThat(cfg.blocks()).hasSize(4);
 
-    List<Symbol> methodInvocations = cfg.blocks()
+    List<Symbol.MethodSymbol> methodInvocations = cfg.blocks()
       .stream()
       .map(ControlFlowGraph.Block::elements)
       .flatMap(List::stream)
       .filter(t -> t.is(Tree.Kind.METHOD_INVOCATION))
       .map(MethodInvocationTree.class::cast)
       .map(MethodInvocationTree::methodSymbol)
-      .collect(Collectors.toList());
+      .toList();
 
     assertThat(methodInvocations)
       .hasSize(3)

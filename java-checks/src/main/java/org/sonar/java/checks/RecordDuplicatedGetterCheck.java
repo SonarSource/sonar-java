@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
@@ -136,7 +135,7 @@ public class RecordDuplicatedGetterCheck extends IssuableSubscriptionVisitor {
       .stream()
       .filter(Symbol::isVariableSymbol)
       .map(Symbol.VariableSymbol.class::cast)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static Optional<MethodTree> findDeclaredMethod(Symbol.TypeSymbol recordSymbol, String methodName) {

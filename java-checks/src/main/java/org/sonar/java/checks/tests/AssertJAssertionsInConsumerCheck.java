@@ -22,7 +22,6 @@ package org.sonar.java.checks.tests;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.AbstractAssertionVisitor;
@@ -98,7 +97,7 @@ public class AssertJAssertionsInConsumerCheck extends IssuableSubscriptionVisito
     List<Location> argumentsMissingAssertion = argumentsToCheck.stream()
       .filter(argument -> !hasAssertion(argument))
       .map(argument -> new Location("Argument missing assertion", argument))
-      .collect(Collectors.toList());
+      .toList();
 
     if (!argumentsMissingAssertion.isEmpty()) {
       IdentifierTree methodName = ExpressionUtils.methodName(invocation);

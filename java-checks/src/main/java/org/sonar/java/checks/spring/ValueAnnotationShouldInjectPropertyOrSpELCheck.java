@@ -20,7 +20,6 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -50,7 +49,7 @@ public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubs
       .stream()
       .filter(m -> m.is(Tree.Kind.VARIABLE))
       .flatMap(field -> ((VariableTree) field).modifiers().annotations().stream())
-      .collect(Collectors.toList());
+      .toList();
 
     List<AnnotationTree> interfaceAnnotations = cls.is(Tree.Kind.ANNOTATION_TYPE) ? cls.modifiers().annotations() : List.of();
 

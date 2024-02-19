@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -68,13 +67,13 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
       return;
     }
     ParametersList formalParameterList = parametersByMethod.computeIfAbsent(methodInvTree.methodSymbol(), m -> new ParametersList(methodDeclaration));
-    List<IdentifierTree> argumentsList = methodInvTree.arguments().stream().map(this::argumentToIdentifier).collect(Collectors.toList());
+    List<IdentifierTree> argumentsList = methodInvTree.arguments().stream().map(this::argumentToIdentifier).toList();
     if (matchingNames(formalParameterList, argumentsList)) {
       List<VariableTree> matchingTypesWrongOrder = matchingTypesWrongOrder(formalParameterList, argumentsList);
       if (!matchingTypesWrongOrder.isEmpty()) {
         List<JavaFileScannerContext.Location> flow = matchingTypesWrongOrder.stream()
           .map(param -> new JavaFileScannerContext.Location("Misplaced Parameter", param))
-          .collect(Collectors.toList());
+          .toList();
         QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(methodInvTree.arguments())
@@ -86,7 +85,7 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean matchingNames(ParametersList formalParameters, List<IdentifierTree> argumentsList) {
-    List<String> argListNames = argumentsList.stream().filter(Objects::nonNull).map(arg -> arg.name().toLowerCase(Locale.ENGLISH)).collect(Collectors.toList());
+    List<String> argListNames = argumentsList.stream().filter(Objects::nonNull).map(arg -> arg.name().toLowerCase(Locale.ENGLISH)).toList();
     return allUnique(argListNames)
       && argListNames.stream().allMatch(formalParameters::hasArgumentWithName);
   }

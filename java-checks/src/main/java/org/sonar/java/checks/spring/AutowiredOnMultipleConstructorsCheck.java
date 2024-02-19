@@ -21,7 +21,6 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -47,7 +46,7 @@ public class AutowiredOnMultipleConstructorsCheck extends IssuableSubscriptionVi
     List<MethodTree> constructors = classTree.members().stream()
       .filter(m -> m.is(Tree.Kind.CONSTRUCTOR))
       .map(m -> (MethodTree) m)
-      .collect(Collectors.toList());
+      .toList();
 
     if (constructors.size() > 1) {
       boolean isAutowiredAlreadyFound = false;

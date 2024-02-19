@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.LiteralUtils;
@@ -67,7 +65,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
       int literalOccurrence = literalTrees.size();
       if (constants.containsKey(key)) {
         VariableTree constant = constants.get(key);
-        List<LiteralTree> duplications = literalTrees.stream().filter(literal -> literal.parent() != constant).collect(Collectors.toList());
+        List<LiteralTree> duplications = literalTrees.stream().filter(literal -> literal.parent() != constant).toList();
         context.reportIssue(this, duplications.iterator().next(),
           "Use already-defined constant '" + constant.simpleName() + "' instead of duplicating its value here.",
           secondaryLocations(duplications.subList(1, duplications.size())), literalOccurrence);
@@ -85,7 +83,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   }
 
   private static List<JavaFileScannerContext.Location> secondaryLocations(Collection<LiteralTree> literalTrees) {
-    return literalTrees.stream().map(element -> new JavaFileScannerContext.Location("Duplication", element)).collect(Collectors.toList());
+    return literalTrees.stream().map(element -> new JavaFileScannerContext.Location("Duplication", element)).toList();
   }
 
   @Override

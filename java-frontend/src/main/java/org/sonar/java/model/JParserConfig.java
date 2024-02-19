@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.JavaCore;
@@ -200,7 +199,7 @@ public abstract class JParserConfig {
         List<InputFile> notYetAnalyzedFiles = sourceFilePaths.stream()
           .filter(file -> !analyzedSourceFilePaths.contains(file))
           .map(file -> inputs.get(new File(file)))
-          .collect(Collectors.toList());
+          .toList();
 
         if (!notYetAnalyzedFiles.isEmpty()) {
           action.accept(notYetAnalyzedFiles.get(0), new Result(e));
@@ -247,7 +246,7 @@ public abstract class JParserConfig {
       ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
       List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false)
         .map(InputFile::toString)
-        .collect(Collectors.toList());
+        .toList();
       progressReport.start(filesNames);
       try {
         for (InputFile inputFile : inputFiles) {

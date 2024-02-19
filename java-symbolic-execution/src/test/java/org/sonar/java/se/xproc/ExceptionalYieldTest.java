@@ -96,7 +96,7 @@ class ExceptionalYieldTest {
     MethodBehavior mb = getMethodBehavior(sev, "myMethod");
     assertThat(mb.yields()).hasSize(4);
 
-    List<ExceptionalYield> exceptionalYields = mb.exceptionalPathYields().collect(Collectors.toList());
+    List<ExceptionalYield> exceptionalYields = mb.exceptionalPathYields().toList();
     assertThat(exceptionalYields).hasSize(3);
 
     // runtime exception
@@ -131,7 +131,7 @@ class ExceptionalYieldTest {
     MethodBehavior mb = getMethodBehavior(sev, "myVoidMethod");
     assertThat(mb.yields()).hasSize(4);
 
-    List<ExceptionalYield> exceptionalYields = mb.exceptionalPathYields().collect(Collectors.toList());
+    List<ExceptionalYield> exceptionalYields = mb.exceptionalPathYields().toList();
     assertThat(exceptionalYields).hasSize(3);
     assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).isUnknown()).count()).isEqualTo(1);
 

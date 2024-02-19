@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -67,7 +66,7 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
         List<JavaFileScannerContext.Location> secondaries = secondaryTargets.getOrDefault(symbol, Collections.emptyList())
           .stream()
           .map(mit -> new JavaFileScannerContext.Location(SECONDARY_MESSAGE, mit))
-          .collect(Collectors.toList());
+          .toList();
         reportIssue(setInvocation, MESSAGE, secondaries, null);
       }
     }

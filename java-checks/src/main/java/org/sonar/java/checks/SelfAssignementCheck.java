@@ -43,7 +43,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
@@ -99,7 +98,7 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
         .filter(m -> m.is(Tree.Kind.VARIABLE))
         .map(VariableTree.class::cast)
         .map(m -> m.simpleName().name())
-        .collect(Collectors.toList());
+        .toList();
 
       if (memberNames.contains(name)) {
         return JavaQuickFix.newQuickFix("Disambiguate this self-assignment")

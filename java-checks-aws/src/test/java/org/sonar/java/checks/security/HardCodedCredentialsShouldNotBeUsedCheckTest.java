@@ -21,7 +21,6 @@ package org.sonar.java.checks.security;
 
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
@@ -44,7 +43,7 @@ class HardCodedCredentialsShouldNotBeUsedCheckTest {
     assertThat(check.getMethods()).isEmpty();
     List<String> logs = logTester.getLogs(Level.ERROR).stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs)
       .containsOnly("Could not load methods from \"non-existing-file.json\".");
   }

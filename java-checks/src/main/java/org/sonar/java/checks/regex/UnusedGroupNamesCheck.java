@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.regex.RegexCheck;
@@ -83,7 +82,7 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheckTrackingMatchers {
     if (trackedMethodsCalled.isEmpty() && !didEscape && !namedGroups.isEmpty() && !knownGroups.usesBackReferences) {
       List<RegexIssueLocation> secondaries = namedGroups.stream()
         .map(group -> toLocation(group, "Named group '%s'", g -> g.getName().get()))
-        .collect(Collectors.toList());
+        .toList();
       reportIssue(namedGroups.get(0), ISSUE_USE_GROUPS_OR_REMOVE, null, secondaries);
     }
     for (MethodInvocationTree groupInvocation : trackedMethodsCalled) {
@@ -136,7 +135,7 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheckTrackingMatchers {
       List<RegexIssueLocation> secondaries = knownGroups.groupsByName.values()
         .stream()
         .map(group -> toLocation(group, "Named group '%s'", g -> g.getName().get()))
-        .collect(Collectors.toList());
+        .toList();
       reportIssue(arg0, message, null, secondaries);
     }
   }

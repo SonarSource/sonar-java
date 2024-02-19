@@ -19,6 +19,11 @@
  */
 package org.sonar.java.checks.security;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,13 +40,6 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalInputFile;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
-
-import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -112,7 +110,7 @@ class ExcessiveContentRequestCheckTest {
       verify(check, times(3)).leaveFile(any());
 
       assertThat(writeCache.getData()).containsAllEntriesOf(expectedFinalCacheState);
-      List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
+      List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
       assertThat(logs).
         contains(
           "No cached data for rule java:S5693 on file " + safeSourceFile,
@@ -272,7 +270,7 @@ class ExcessiveContentRequestCheckTest {
       verify(check, times(3)).scanWithoutParsing(any());
       verify(check, times(3)).leaveFile(any());
 
-      List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
+      List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
 
       assertThat(logs).contains(
         "Cached entry is unreadable for rule java:S5693 on file " + unsafeSourceFile,

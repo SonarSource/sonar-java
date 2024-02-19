@@ -23,7 +23,6 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.sonarqube.ws.Issues.Issue;
@@ -55,11 +54,11 @@ public class PackageInfoTest {
     assertThat(issues.stream().map(Issue::getLine)).allMatch(line -> line == 0);
 
     Pattern packagePattern = Pattern.compile("'org\\.package[12]'");
-    List<Issue> s1228Issues = issues.stream().filter(issue -> issue.getRule().equals("java:S1228")).collect(Collectors.toList());
+    List<Issue> s1228Issues = issues.stream().filter(issue -> issue.getRule().equals("java:S1228")).toList();
     assertThat(s1228Issues).hasSize(2);
     assertThat(s1228Issues).extracting(Issue::getMessage).allMatch(msg -> packagePattern.matcher(msg).find());
 
-    List<Issue> s4032Issues = issues.stream().filter(issue -> issue.getRule().equals("java:S4032")).collect(Collectors.toList());
+    List<Issue> s4032Issues = issues.stream().filter(issue -> issue.getRule().equals("java:S4032")).toList();
     assertThat(s4032Issues).hasSize(1);
     assertThat(s4032Issues.get(0).getMessage()).isEqualTo("Remove this package.");
     assertThat(s4032Issues.get(0).getComponent()).isEqualTo(projectKey + ":src/main/other-src/org/package4/package-info.java");

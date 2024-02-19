@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
@@ -108,7 +107,7 @@ class RelationalSymbolicValueTest {
 
   private RelationalSymbolicValue relationalSV(Tree.Kind kind, SymbolicValue... computedFrom) {
     List<ProgramState.SymbolicValueSymbol> computedFromSymbols = Arrays.stream(computedFrom).map(sv -> new ProgramState.SymbolicValueSymbol(sv, null))
-      .collect(Collectors.toList());
+      .toList();
     return (RelationalSymbolicValue) constraintManager
       .createBinarySymbolicValue(new BinaryExpressionTreeImpl(kind, mock(ExpressionTree.class), mock(InternalSyntaxToken.class), mock(ExpressionTree.class)),
         computedFromSymbols);

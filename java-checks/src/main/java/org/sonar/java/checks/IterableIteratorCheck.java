@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -62,7 +61,7 @@ public class IterableIteratorCheck extends IssuableSubscriptionVisitor {
     if (!returnThis.issueLocations.isEmpty()) {
       reportIssue(returnThis.issueLocations.get(0), "Refactor this code so that the Iterator supports multiple traversal",
         returnThis.issueLocations.stream().skip(1)
-          .map(t -> new JavaFileScannerContext.Location("", t)).collect(Collectors.toList()),
+          .map(t -> new JavaFileScannerContext.Location("", t)).toList(),
         null);
     }
   }

@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -244,7 +243,7 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatchers.create().ofSubTypes(SAX_READER).names("read").withAnyParameters().build()
   );
 
-  private static final List<XxeProperty> PROPERTIES_TO_CHECK = Arrays.asList(
+  private static final List<? extends XxeProperty> PROPERTIES_TO_CHECK = Stream.of(
     FeatureSupportDtd.values(),
     FeatureIsSupportingExternalEntities.values(),
     FeatureDisallowDoctypeDecl.values(),
@@ -255,9 +254,8 @@ public class XxeProcessingCheck extends SECheck {
     AttributeDTD.values(),
     AttributeSchema.values(),
     AttributeStyleSheet.values())
-    .stream()
     .flatMap(Stream::of)
-    .collect(Collectors.toList());
+    .toList();
 
   private static final List<Class<? extends Constraint>> FLOW_CONSTRAINT_DOMAIN = Arrays.asList(
     AttributeDTD.class,

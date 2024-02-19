@@ -68,7 +68,7 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
         List<String> suppressedWarnings = getSuppressedWarnings(annotationTree.arguments().get(0));
         List<String> issues = suppressedWarnings.stream()
           .filter(currentWarning -> !ruleWarnings.contains(currentWarning))
-          .collect(Collectors.toList());
+          .toList();
         if (!issues.isEmpty()) {
           StringBuilder sb = new StringBuilder("Suppressing the '").append(String.join(", ", issues))
             .append("' warning").append(issues.size() > 1 ? "s" : "").append(" is not allowed");

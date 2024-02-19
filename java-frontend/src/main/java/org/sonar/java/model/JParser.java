@@ -280,7 +280,7 @@ public class JParser {
   }
 
   static JavaTree.CompilationUnitTreeImpl convert(String version, String unitName, String source, CompilationUnit astNode) {
-    List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).collect(Collectors.toList());
+    List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).toList();
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
     if (possibleSyntaxError.isPresent()) {
       IProblem syntaxError = possibleSyntaxError.get();
@@ -1557,7 +1557,7 @@ public class JParser {
         RecordPattern recordPattern = (RecordPattern) p;
         List<PatternTree> nestedPatterns = recordPattern.patterns().stream()
           .map(this::convertPattern)
-          .collect(Collectors.toList());
+          .toList();
 
         TypeTree patternType = convertType(recordPattern.getPatternType());
         return new RecordPatternTreeImpl(patternType, nestedPatterns);

@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +127,7 @@ public class JavaSensor implements Sensor {
 
       return checks -> checks.stream()
         .filter(check -> sonarComponents.getRuleKey(check).map(autoScanCompatibleRules::contains).orElse(false))
-        .collect(Collectors.toList());
+        .toList();
     } else {
       return UnaryOperator.identity();
     }
@@ -152,7 +151,7 @@ public class JavaSensor implements Sensor {
     List<SECheck> seChecks = checks.stream()
       .filter(SECheck.class::isInstance)
       .map(SECheck.class::cast)
-      .collect(Collectors.toList());
+      .toList();
     if (seChecks.isEmpty()) {
       LOG.info("No rules with 'symbolic-execution' tag were enabled,"
         + " the Symbolic Execution Engine will not run during the analysis.");

@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
@@ -99,7 +98,7 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
       String message = String.format(ISSUE_MESSAGE, count, max);
       List<JavaFileScannerContext.Location> secondaries = returns.stream()
         .map(token -> new JavaFileScannerContext.Location("return", token))
-        .collect(Collectors.toList());
+        .toList();
       reportIssue(reportTree, message, secondaries, null);
     }
   }

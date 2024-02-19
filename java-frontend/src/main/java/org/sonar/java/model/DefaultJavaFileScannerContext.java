@@ -24,11 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.metrics.MetricsComputer;
@@ -44,6 +42,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -145,7 +144,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-    List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
+    List<List<Location>> flows = secondary.stream().map(Collections::singletonList).toList();
     reportIssueWithFlow(javaCheck, syntaxNode, message, flows, cost);
   }
 
@@ -165,7 +164,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
     throwIfEndOfAnalysisCheck(javaCheck);
 
-    List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
+    List<List<Location>> flows = secondary.stream().map(Collections::singletonList).toList();
     reportIssue(createAnalyzerMessage(inputFile, javaCheck, startTree, endTree, message, flows, cost));
   }
 
@@ -210,7 +209,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
     for (List<L> flow : flows) {
       List<AnalyzerMessage> sonarqubeFlow = flow.stream()
         .map(l -> new AnalyzerMessage(check, component, flowItemLocationProdivder.apply(l), flowItemMessageProvider.apply(l),0))
-        .collect(Collectors.toList());
+        .toList();
       analyzerMessage.flows.add(sonarqubeFlow);
     }
   }

@@ -22,7 +22,6 @@ package org.sonar.plugins.surefire;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -200,7 +199,7 @@ class SurefireJavaParserTest {
   private static List<File> getDirs(String... directoryNames) throws URISyntaxException {
     return Stream.of(directoryNames)
       .map(directoryName -> new File("src/test/resources/org/sonar/plugins/surefire/api/SurefireParserTest/" + directoryName))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static SensorContextTester mockContext() {

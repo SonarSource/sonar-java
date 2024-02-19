@@ -19,6 +19,11 @@
  */
 package org.sonar.java.model;
 
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -34,13 +39,6 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
@@ -193,14 +191,14 @@ class ExpressionUtilsTest {
       .filter(t -> t instanceof VariableTree)
       .map(VariableTree.class::cast)
       .map(VariableTree::symbol)
-      .collect(Collectors.toList());
+      .toList();
 
     List<MethodInvocationTree> invocations = staticInitializer.body().stream()
       .filter(t -> t instanceof ExpressionStatementTree)
       .map(ExpressionStatementTree.class::cast)
       .map(ExpressionStatementTree::expression)
       .map(MethodInvocationTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
 
     assertThat(isInvocationOnVariable(invocations.get(0), variablesSymbols.get(0), true)).isTrue();
     assertThat(isInvocationOnVariable(invocations.get(0), variablesSymbols.get(1), true)).isFalse();
@@ -243,7 +241,7 @@ class ExpressionUtilsTest {
     List<ExpressionTree> expressions = staticInitializer.body().stream()
       .map(VariableTree.class::cast)
       .map(VariableTree::initializer)
-      .collect(Collectors.toList());
+      .toList();
 
     assertThat(ExpressionUtils.isSecuringByte(expressions.get(0))).isFalse();
     assertThat(ExpressionUtils.isSecuringByte(expressions.get(1))).isTrue();
@@ -258,14 +256,14 @@ class ExpressionUtilsTest {
       .map(ExpressionStatementTree::expression)
       .filter(e -> e instanceof AssignmentExpressionTree)
       .map(AssignmentExpressionTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private List<VariableTree> findVariableTrees(MethodTree methodTree) {
     return methodTree.block().body().stream()
       .filter(s -> s.is(Tree.Kind.VARIABLE))
       .map(VariableTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   @Test

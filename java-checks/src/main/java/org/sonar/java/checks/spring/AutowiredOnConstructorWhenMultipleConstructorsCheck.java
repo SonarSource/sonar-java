@@ -20,7 +20,6 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -56,7 +55,7 @@ public class AutowiredOnConstructorWhenMultipleConstructorsCheck extends Issuabl
     var constructors = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
       .map(MethodTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
 
     if (constructors.size() > 1) {
       boolean anyHasAutowired = constructors.stream()

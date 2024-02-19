@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ClassPatternsUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -59,11 +58,10 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   }
 
   private static List<MethodTree> getExplicitConstructors(ClassTree classTree) {
-    return Collections.unmodifiableList(
-      classTree.members().stream()
+    return classTree.members().stream()
         .filter(UtilityClassWithPublicConstructorCheck::isConstructor)
         .map(MethodTree.class::cast)
-        .collect(Collectors.toList()));
+        .toList();
   }
 
   private static boolean isConstructor(Tree tree) {
