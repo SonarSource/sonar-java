@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2012-2023 SonarSource SA
+ * Copyright (C) 2012-2024 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,27 +17,27 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+package org.sonar.java.checks;
 
-package android.hardware;
+import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
-public class SensorManager {
+class UseMotionSensorWithoutGyroscopeCheckTest {
 
-  public Sensor getDefaultSensor(int type) {
-    // mock implementation
-    return new Sensor();
+  @Test
+  void test() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/UseMotionSensorWithoutGyroscopeCheckSample.java"))
+      .withCheck(new UseMotionSensorWithoutGyroscopeCheck())
+      .verifyIssues();
   }
-
-  public Sensor getDefaultSensor(int type, boolean wakeUp) {
-    // mock implementation
-    return new Sensor();
-  }
-
-  public boolean registerListener() {
-    // mock implementation
-    return true;
-  }
-
-  public void unregisterListener() {
-    // mock implementation
+  @Test
+  void test_no_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/UseMotionSensorWithoutGyroscopeCheckSample.java"))
+      .withCheck(new UseMotionSensorWithoutGyroscopeCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }
