@@ -34,7 +34,7 @@ public class UseMotionSensorWithoutGyroscopeCheck extends AbstractMethodDetectio
     return MethodMatchers.create()
       .ofTypes("android.hardware.SensorManager")
       .names("getDefaultSensor")
-      .addParametersMatcher(types -> !types.isEmpty() && types.get(0).is("int"))
+      .withAnyParameters()
       .build();
   }
 
