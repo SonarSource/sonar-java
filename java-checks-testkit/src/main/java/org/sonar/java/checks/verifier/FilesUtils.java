@@ -29,7 +29,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.java.annotations.VisibleForTesting;
 
 public final class FilesUtils {
@@ -74,6 +73,6 @@ public final class FilesUtils {
       // we already ignore errors in the visitor
     }
 
-    return files.stream().sorted().collect(Collectors.toList());
+    return files.stream().sorted().toList();
   }
 }

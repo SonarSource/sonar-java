@@ -14,9 +14,9 @@ for several important reasons:</p>
 </ol>
 <p>For these reasons, as soon as cryptography is included in a project, it is important to choose encryption algorithms that are considered strong and
 secure by the cryptography community.</p>
-<p>For AES, the weakest modes are CBC (Cipher Block Chaining) and ECB</p>
-<p>(Electronic Codebook), as they are either vulnerable to padding oracles or do not provide authentication mechanisms.</p>
-<p>And for RSA, the weakest algorithms are either using it without padding or using the PKCS1v1.5 padding scheme.</p>
+<p>For AES, the weakest modes are CBC (Cipher Block Chaining) and ECB (Electronic Codebook) because they are either vulnerable to padding oracles or
+do not provide authentication mechanisms.</p>
+<p>For RSA, the weakest algorithms are either using it without padding or using the PKCS1v1.5 padding scheme.</p>
 <h3>What is the potential impact?</h3>
 <p>The cleartext of an encrypted message might be recoverable. Additionally, it might be possible to modify the cleartext of an encrypted message.</p>
 <p>Below are some real-world scenarios that illustrate possible impacts of an attacker exploiting the vulnerability.</p>
@@ -26,7 +26,7 @@ secure by the cryptography community.</p>
 <h4>Additional attack surface</h4>
 <p>By modifying the cleartext of the encrypted message it might be possible for an attacker to trigger other vulnerabilities in the code. Encrypted
 values are often considered trusted, since under normal circumstances it would not be possible for a third party to modify them.</p>
-<h2>How to fix it in Java Cryptographic Extension</h2>
+<h2>How to fix it in Java Cryptography Extension</h2>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <p>Example with a symmetric cipher, AES:</p>
@@ -119,15 +119,17 @@ RSA.</p>
 </ul>
 <h3>Standards</h3>
 <ul>
-  <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
-  <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
-  Misconfiguration </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/327">MITRE, CWE-327</a> - Use of a Broken or Risky Cryptographic Algorithm </li>
-  <li> <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x08-v3-cryptography_verification_requirements">Mobile AppSec
-  Verification Standard</a> - Cryptography Requirements </li>
-  <li> <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m5-insufficient-cryptography">OWASP Mobile Top 10 2016 Category M5</a> -
-  Insufficient Cryptography </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/327">MITRE, CWE-327</a> - Use of a Broken or Risky Cryptographic Algorithm </li>
+  <li> OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
+  Exposure</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
+  Misconfiguration</a> </li>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/327">CWE-327 - Use of a Broken or Risky Cryptographic Algorithm</a> </li>
+  <li> OWASP - <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x08-v3-cryptography_verification_requirements">Mobile AppSec
+  Verification Standard - Cryptography Requirements</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m5-insufficient-cryptography">Mobile Top 10 2016 Category M5 -
+  Insufficient Cryptography</a> </li>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/327">CWE-327 - Use of a Broken or Risky Cryptographic Algorithm</a> </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/hDdGBQ">CERT, MSC61-J.</a> - Do not use insecure or weak cryptographic algorithms </li>
 </ul>
 

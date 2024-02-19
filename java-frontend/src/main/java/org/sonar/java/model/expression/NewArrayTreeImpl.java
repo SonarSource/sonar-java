@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
@@ -75,7 +74,7 @@ public class NewArrayTreeImpl extends AssessableExpressionTree implements NewArr
   }
 
   public NewArrayTreeImpl completeDimensions(List<ArrayDimensionTree> arrayDimensions) {
-    this.dimensions = Stream.of(arrayDimensions, dimensions).flatMap(List::stream).collect(Collectors.toList());
+    this.dimensions = Stream.of(arrayDimensions, dimensions).flatMap(List::stream).toList();
     return this;
   }
 

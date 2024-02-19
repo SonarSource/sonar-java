@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -86,7 +85,7 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
         // We know there is at least one usage, i.e. the one we just got above.
         List<IdentifierTree> localUsages = invokeRequest.symbol().usages().stream()
           .filter(u -> u.symbol().isLocalVariable() && !u.equals(invokeRequest))
-          .collect(Collectors.toList());
+          .toList();
 
         if (invokeRequest.symbol().isParameter()
           || localUsages.stream().anyMatch(lu -> isArgumentToACall(lu) || statementSetsAsyncCall(lu))

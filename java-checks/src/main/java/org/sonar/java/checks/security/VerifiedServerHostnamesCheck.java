@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -130,7 +129,7 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
 
     List<StatementTree> statementTreeList = innerBlock.stream()
       .filter(statementTree -> !statementTree.is(Tree.Kind.EMPTY_STATEMENT))
-      .collect(Collectors.toList());
+      .toList();
     if (isReturnTrueStatement(statementTreeList)) {
       reportIssue(statementTreeList.get(0), ISSUE_MESSAGE);
     }

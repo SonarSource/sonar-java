@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -60,7 +59,7 @@ public class InstanceofUsedOnExceptionCheck extends IssuableSubscriptionVisitor 
       .map(IfStatementTree.class::cast)
       .flatMap(InstanceofUsedOnExceptionCheck::getFollowingElseIf)
       .map(IfStatementTree::condition)
-      .collect(Collectors.toList());
+      .toList();
 
     if (conditions.stream().allMatch(cond -> cond.is(Tree.Kind.INSTANCE_OF) && isLeftOperandAndException((InstanceOfTree) cond, caughtVariable))) {
       conditions.stream()

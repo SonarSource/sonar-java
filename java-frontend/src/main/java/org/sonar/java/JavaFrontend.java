@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -101,7 +100,7 @@ public class JavaFrontend {
       inAndroidContext = sonarComponents.inAndroidContext();
     }
     globalClasspath = Stream.of(classpath, testClasspath, jspClasspath)
-      .flatMap(Collection::stream).distinct().collect(Collectors.toList());
+      .flatMap(Collection::stream).distinct().toList();
 
     //AstScanner for main files
     astScanner = new JavaAstScanner(sonarComponents);
@@ -186,7 +185,7 @@ public class JavaFrontend {
   private void scanAsBatch(BatchModeContext context, Iterable<? extends InputFile>... inputFiles) {
     List<InputFile> files = new ArrayList<>();
     for (Iterable<? extends InputFile> group : inputFiles) {
-      files.addAll(astScanner.filterModuleInfo(group).collect(Collectors.toList()));
+      files.addAll(astScanner.filterModuleInfo(group).toList());
     }
     try {
       try {

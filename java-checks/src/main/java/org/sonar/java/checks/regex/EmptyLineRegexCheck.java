@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -126,7 +125,7 @@ public class EmptyLineRegexCheck extends AbstractRegexCheck {
         .filter(Optional::isPresent)
         .map(Optional::get)
         .filter(EmptyLineRegexCheck::canBeEmpty)
-        .collect(Collectors.toList());
+        .toList();
     } else {
       // Pattern can be used directly
       return getStringInMatcherFind(mit)
@@ -163,7 +162,7 @@ public class EmptyLineRegexCheck extends AbstractRegexCheck {
   private void reportWithSecondaries(Tree regex, List<Tree> secondaries) {
     List<JavaFileScannerContext.Location> secondariesLocation =
       secondaries.stream().map(secondary -> new JavaFileScannerContext.Location("This string can be empty.", secondary))
-        .collect(Collectors.toList());
+        .toList();
     reportIssue(regex, MESSAGE, secondariesLocation, null);
   }
 
@@ -176,7 +175,7 @@ public class EmptyLineRegexCheck extends AbstractRegexCheck {
     public void visitSequence(SequenceTree tree) {
       List<RegexTree> items = tree.getItems().stream()
         .filter(item -> !isNonCapturingWithoutChild(item))
-        .collect(Collectors.toList());
+        .toList();
 
       if (items.size() == 1 && items.get(0).is(RegexTree.Kind.CAPTURING_GROUP)) {
         super.visitSequence(tree);

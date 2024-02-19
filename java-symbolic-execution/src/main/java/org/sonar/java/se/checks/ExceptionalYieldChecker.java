@@ -19,9 +19,13 @@
  */
 package org.sonar.java.se.checks;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
-
-import org.sonarsource.analyzer.commons.collections.ListUtils;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
@@ -38,14 +42,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class ExceptionalYieldChecker {
 
@@ -137,7 +134,7 @@ public class ExceptionalYieldChecker {
       .filter(Objects::nonNull)
       .flatMap(ConstraintsByDomain::domains)
       .distinct()
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static Flow flowsForArgumentsChangingName(ExceptionalCheckBasedYield exceptionalYield, MethodInvocationTree mit) {

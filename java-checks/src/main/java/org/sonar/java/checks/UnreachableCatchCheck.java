@@ -26,7 +26,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
@@ -132,7 +131,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
       targets = ((UnionTypeTree) type).typeAlternatives()
         .stream()
         .map(typeByExceptions::get)
-        .collect(Collectors.toList());
+        .toList();
     } else {
       targets = Collections.singletonList(typeByExceptions.get(type));
     }

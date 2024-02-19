@@ -20,7 +20,6 @@
 package org.sonar.java.checks.tests;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -43,7 +42,7 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
   void reportMultipleCallInTree(List<Type> expectedExceptions, Tree treeToVisit, Tree reportLocation, String placeToRefactor) {
     List<Type> checkedTypes = expectedExceptions.stream()
       .filter(e -> !isChecked(e))
-      .collect(Collectors.toList());
+      .toList();
 
     if (checkedTypes.isEmpty()) {
       return;

@@ -22,7 +22,6 @@ package org.sonar.java.regex;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -77,7 +76,7 @@ public interface RegexCheck extends JavaCheck {
       return Stream.concat(
         Stream.of(new RegexIssueLocation(locations.get(0), message)),
         locations.stream().skip(1).map(loc -> new RegexIssueLocation(loc, CONTINUATION_MESSAGE)))
-        .collect(Collectors.toList());
+        .toList();
     }
 
     private static List<AnalyzerMessage.TextSpan> textSpansFromRegexSyntaxElements(List<RegexSyntaxElement> trees) {

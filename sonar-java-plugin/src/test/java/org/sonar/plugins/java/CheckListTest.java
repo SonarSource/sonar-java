@@ -32,7 +32,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -66,7 +65,7 @@ class CheckListTest {
       .stream()
       .map(ClassPath.ClassInfo::getSimpleName)
       .filter(name -> name.endsWith("Check") && !name.equals(SECheck.class.getSimpleName()))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   /**

@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -123,7 +122,7 @@ public class RegexStackOverflowCheck extends AbstractRegexCheck {
         List<RegexIssueLocation> secondaries = offendingTrees.stream()
           .skip(1)
           .map(tree -> new RegexIssueLocation(tree, SECONDARY_MESSAGE))
-          .collect(Collectors.toList());
+          .toList();
         reportIssue(offendingTrees.get(0), MESSAGE, null, secondaries);
       }
     }

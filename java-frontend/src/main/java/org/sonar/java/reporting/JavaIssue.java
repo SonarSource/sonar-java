@@ -20,7 +20,6 @@
 package org.sonar.java.reporting;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
@@ -85,7 +84,7 @@ public final class JavaIssue {
           .on(file)
           .at(range(file, am.primaryLocation()))
           .message(am.getMessage()))
-        .collect(Collectors.toList()));
+        .toList());
     }
     return this;
   }

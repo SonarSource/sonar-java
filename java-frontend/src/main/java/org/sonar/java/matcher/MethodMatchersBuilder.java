@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
@@ -142,7 +141,7 @@ public class MethodMatchersBuilder implements MethodMatchers.TypeBuilder, Method
   public ParametersBuilder addParametersMatcher(String... parametersType) {
     return addParametersMatcher(Arrays.stream(parametersType)
       .<Predicate<Type>>map(parameterType -> substituteAny(type -> type.is(parameterType), parameterType))
-      .collect(Collectors.toList()));
+      .toList());
   }
 
   private ParametersBuilder addParametersMatcher(List<Predicate<Type>> parametersType) {

@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -156,7 +155,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   public Set<Flow> exceptionFlows(int maxReturnedFlows) {
-    List<Class<? extends Constraint>> domains = node.programState.getConstraints(svCausingException).domains().collect(Collectors.toList());
+    List<Class<? extends Constraint>> domains = node.programState.getConstraints(svCausingException).domains().toList();
     return FlowComputation.flow(node, svCausingException, domains, maxReturnedFlows);
   }
 

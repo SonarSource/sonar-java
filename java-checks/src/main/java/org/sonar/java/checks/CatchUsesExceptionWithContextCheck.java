@@ -348,7 +348,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     }
 
     private static List<AssignmentExpressionTree> getAssignments(List<IdentifierTree> usages) {
-      return usages.stream().map(UsageStatus::getAssignmentToIdentifier).filter(Objects::nonNull).collect(Collectors.toList());
+      return usages.stream().map(UsageStatus::getAssignmentToIdentifier).filter(Objects::nonNull).toList();
     }
 
     @CheckForNull

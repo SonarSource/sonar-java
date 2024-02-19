@@ -21,7 +21,6 @@ package org.sonar.java.caching;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
@@ -95,7 +94,7 @@ class CacheContextImplTest {
     CacheContextImpl.of(sensorContext);
     List<String> logs = logTester.getLogs(Level.DEBUG).stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs)
       .hasSize(1)
       .contains("Missing cache related method from sonar-plugin-api: bim.");

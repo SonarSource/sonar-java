@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
@@ -59,7 +58,7 @@ public class SECheckVerifier implements CheckVerifier {
     List<SECheck> seChecks = Arrays.stream(checks)
       .filter(SECheck.class::isInstance)
       .map(SECheck.class::cast)
-      .collect(Collectors.toList());
+      .toList();
     List<JavaFileScanner> newCheckList = new ArrayList<>();
     if (!seChecks.isEmpty()) {
       newCheckList.add(new SymbolicExecutionVisitor(seChecks));

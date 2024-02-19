@@ -19,10 +19,8 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
-import org.sonar.java.se.ProgramState;
-
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import org.sonar.java.se.ProgramState;
 
 public class SymbolicValueTestUtil {
 
@@ -31,7 +29,7 @@ public class SymbolicValueTestUtil {
   }
 
   public static void computedFrom(SymbolicValue symbolicValue, SymbolicValue... from) {
-    symbolicValue.computedFrom(Arrays.stream(from).map(sv -> new ProgramState.SymbolicValueSymbol(sv, null)).collect(Collectors.toList()));
+    symbolicValue.computedFrom(Arrays.stream(from).map(sv -> new ProgramState.SymbolicValueSymbol(sv, null)).toList());
   }
 
 }

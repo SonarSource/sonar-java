@@ -43,7 +43,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
@@ -126,7 +125,7 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
   private static List<JavaFileScannerContext.Location> createFlow(IfStatementTree parentIf, IfStatementTree nestedIf) {
     return Stream.of(parentIf.condition(), nestedIf.condition())
       .map(c -> new JavaFileScannerContext.Location("Double-checked locking", c))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private boolean insideCriticalSection() {

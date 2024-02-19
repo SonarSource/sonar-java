@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
@@ -140,7 +139,7 @@ public class SpringAntMatcherOrderCheck extends AbstractMethodDetection {
     return mit.arguments().stream()
       .map(StringConstant::of)
       .filter(Objects::nonNull)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static class StringConstant {

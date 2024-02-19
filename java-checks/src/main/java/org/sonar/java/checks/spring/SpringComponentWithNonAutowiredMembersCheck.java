@@ -131,7 +131,7 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
       .map(s -> (Symbol.MethodSymbol) s)
       .filter(m -> "<init>".equals(m.name()))
       .filter(m -> m.declaration() != null)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static class IdentifierCollector extends BaseTreeVisitor {

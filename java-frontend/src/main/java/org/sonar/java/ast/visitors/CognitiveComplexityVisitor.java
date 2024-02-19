@@ -47,7 +47,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CONDITIONAL_AND;
@@ -283,7 +282,7 @@ public class CognitiveComplexityVisitor extends BaseTreeVisitor {
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     if (tree.is(CONDITIONAL_AND, CONDITIONAL_OR) && !ignored.contains(tree)) {
-      List<BinaryExpressionTree> flattenedLogicalExpressions = flattenLogicalExpression(tree).collect(Collectors.toList());
+      List<BinaryExpressionTree> flattenedLogicalExpressions = flattenLogicalExpression(tree).toList();
 
       BinaryExpressionTree previous = null;
       for (BinaryExpressionTree current : flattenedLogicalExpressions) {

@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
@@ -77,7 +76,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
         .forRule(this)
         .onTree(literalList.get(0))
         .withMessage("Remove the unnecessary boolean literal%s.", nLiterals > 1 ? "s" : "")
-        .withSecondaries(literalList.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit)).collect(Collectors.toList()))
+        .withSecondaries(literalList.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit)).toList())
         .withQuickFixes(() -> getQuickFix(tree))
         .report();
     }

@@ -42,7 +42,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Rule(key = "S4144")
 public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVisitor {
@@ -62,7 +61,7 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
       .map(MethodTree.class::cast)
       .filter(methodTree -> isDuplicateCandidate(methodTree, classTree))
       .map(MethodWithUsedVariables::new)
-      .collect(Collectors.toList());
+      .toList();
     if (methods.size() <= 1) {
       return;
     }

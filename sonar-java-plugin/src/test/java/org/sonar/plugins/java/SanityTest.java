@@ -134,10 +134,10 @@ class SanityTest {
     List<LogAndArguments> errorLogs = logTester.getLogs(Level.ERROR);
     List<LogAndArguments> parsingErrors = errorLogs.stream()
       .filter(SanityTest::isParseError)
-      .collect(Collectors.toList());
+      .toList();
     List<LogAndArguments> typeResolutionErrors = errorLogs.stream()
       .filter(SanityTest::isTypeResolutionError)
-      .collect(Collectors.toList());
+      .toList();
 
     SoftAssertions softly = new SoftAssertions();
     softly.assertThat(errorLogs).hasSize(6);

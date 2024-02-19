@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.regex;
 
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -39,7 +38,7 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
         cost,
         secondaries.stream()
           .map(RegexCheck.RegexIssueLocation::fromCommonsRegexIssueLocation)
-          .collect(Collectors.toList()));
+          .toList());
     }).visit(regexForLiterals);
   }
 

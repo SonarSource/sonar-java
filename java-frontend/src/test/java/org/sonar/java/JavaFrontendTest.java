@@ -29,9 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.core.JavaCore;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
@@ -234,7 +232,7 @@ class JavaFrontendTest {
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs)
       .isNotEmpty()
       .containsExactly(
@@ -270,7 +268,7 @@ class JavaFrontendTest {
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs)
       .isNotEmpty()
       .containsExactly(
@@ -306,7 +304,7 @@ class JavaFrontendTest {
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs)
       .isNotEmpty()
       .containsExactly(
@@ -341,7 +339,7 @@ class JavaFrontendTest {
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs)
       .isNotEmpty()
       .containsExactly(
@@ -376,7 +374,7 @@ class JavaFrontendTest {
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs)
       .isNotEmpty()
       .containsExactly(
@@ -404,7 +402,7 @@ class JavaFrontendTest {
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     List<String> logs = logTester.getLogs(Level.INFO).stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(logs)
       .isNotEmpty()
       .containsExactly(
@@ -800,7 +798,7 @@ class JavaFrontendTest {
     scan(settings, SONARQUBE_RUNTIME, "package com.acme; class Anvil {}");
     List<String> formattedLogs = logTester.getLogs().stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(formattedLogs).doesNotContain("The Java analyzer will ignore the unnamed module for split packages.");
 
     settings.setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "true");
@@ -808,7 +806,7 @@ class JavaFrontendTest {
 
     formattedLogs = logTester.getLogs().stream()
       .map(LogAndArguments::getFormattedMsg)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(formattedLogs).contains("The Java analyzer will ignore the unnamed module for split packages.");
   }
 

@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +52,7 @@ public abstract class MeasurerTester {
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, measurer, mock(JavaResourceLocator.class), null, new JavaCheck[0]);
-    List<InputFile> files = StreamSupport.stream(fs.inputFiles().spliterator(), false).collect(Collectors.toList());
+    List<InputFile> files = StreamSupport.stream(fs.inputFiles().spliterator(), false).toList();
     frontend.scan(files, Collections.emptyList(), Collections.emptyList());
   }
 

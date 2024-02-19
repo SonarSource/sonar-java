@@ -115,17 +115,17 @@ public final class Javadoc {
       elementParameters = ((MethodTree) tree).parameters().stream()
         .map(VariableTree::simpleName)
         .map(IdentifierTree::name)
-        .collect(Collectors.toList());
+        .toList();
       elementExceptionNames = ((MethodTree) tree).throwsClauses().stream()
         .map(Javadoc::exceptionName)
         .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        .toList();
     } else if (tree.is(CLASS_KINDS)) {
       elementParameters = ((ClassTree) tree).typeParameters().stream()
         .map(TypeParameterTree::identifier)
         .map(IdentifierTree::name)
         .map(name -> "<" + name + ">")
-        .collect(Collectors.toList());
+        .toList();
       elementExceptionNames = Collections.emptyList();
     } else {
       elementParameters = Collections.emptyList();
@@ -157,7 +157,7 @@ public final class Javadoc {
   private List<String> computeUndocumentedParameters() {
     return elementParameters.stream()
       .filter(name -> isEmptyDescription(blockTagDescriptions.get(BlockTagKey.of(BlockTag.PARAM, name))))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private List<String> computeUndocumentedThrownExceptions() {
@@ -171,12 +171,12 @@ public final class Javadoc {
         .filter(e -> isEmptyDescription(e.getValue()))
         .map(Map.Entry::getKey)
         .map(Javadoc::toSimpleName)
-        .collect(Collectors.toList());
+        .toList();
     }
     return exceptionNames.stream()
       .map(Javadoc::toSimpleName)
       .filter(simpleName -> noDescriptionForException(thrownExceptionsMap, simpleName))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static boolean noDescriptionForException(Map<String, List<String>> thrownExceptionsMap, String exceptionSimpleName) {
@@ -187,7 +187,7 @@ public final class Javadoc {
         .filter(e -> toSimpleName(e.getKey()).equals(exceptionSimpleName))
         .map(Map.Entry::getValue)
         .flatMap(List::stream)
-        .collect(Collectors.toList());
+        .toList();
     }
     return isEmptyDescription(descriptions);
   }
@@ -257,7 +257,7 @@ public final class Javadoc {
       .replaceAll("(?m)^\\s*\\*", "")
       .trim()
       .split("\\r?\\n");
-    return Arrays.stream(lines).map(String::trim).collect(Collectors.toList());
+    return Arrays.stream(lines).map(String::trim).toList();
   }
 
   private static String getDescription(List<String> lines, int lineIndex, @Nullable String currentValue) {

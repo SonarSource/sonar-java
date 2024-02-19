@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -94,7 +93,7 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
     List<VariableTree> mocksToInitialize = testClass.members().stream()
       .filter(MockitoAnnotatedObjectsShouldBeInitializedCheck::isFieldWithTargetAnnotation)
       .map(VariableTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
 
     if (!mocksToInitialize.isEmpty() && !mocksAreProperlyInitialized(testClass)) {
       AnnotationTree firstAnnotation = mocksToInitialize.get(0).modifiers().annotations().get(0);
@@ -151,7 +150,7 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
     List<VariableTree> collected = clazz.members().stream()
       .filter(member -> member.is(Tree.Kind.VARIABLE))
       .map(VariableTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
     for (VariableTree field : collected) {
       if (field.type().symbolType().is("org.mockito.junit.MockitoRule")) {
         ExpressionTree initializer = field.initializer();
@@ -204,7 +203,7 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
       .filter(MockitoAnnotatedObjectsShouldBeInitializedCheck::isTaggedWithBefore)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static boolean isTaggedWithBefore(MethodTree method) {

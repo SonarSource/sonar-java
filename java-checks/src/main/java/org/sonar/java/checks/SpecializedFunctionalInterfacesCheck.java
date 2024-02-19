@@ -64,13 +64,13 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
       .map(typeTree -> matchFunctionalInterface(typeTree.symbolType(), Collections.emptyList())
       .map(rs -> new InterfaceTreeAndStringPairReport(rs, typeTree)).orElse(null))
       .filter(Objects::nonNull)
-      .collect(Collectors.toList());
+      .toList();
     if (reportTreeAndStringInterfaces.isEmpty()) {
       return;
     }
     List<JavaFileScannerContext.Location> secondaryLocations = reportTreeAndStringInterfaces.stream()
       .map(interf -> new JavaFileScannerContext.Location("Replace this interface.", interf.classInterface))
-      .collect(Collectors.toList());
+      .toList();
     reportIssue(tree.simpleName(), reportMessage(reportTreeAndStringInterfaces), secondaryLocations, null);
   }
 

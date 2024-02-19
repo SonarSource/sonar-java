@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
@@ -194,7 +193,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       .stream()
       .filter(String.class::isInstance)
       .map(String.class::cast)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private void addMessageToMap(String classPackageName, IdentifierTree classNameTree) {

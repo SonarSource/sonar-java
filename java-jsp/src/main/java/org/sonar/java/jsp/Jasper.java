@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.servlet.jsp.JspFactory;
 import org.apache.jasper.JasperException;
@@ -134,7 +133,7 @@ public class Jasper {
     }
     List<WildcardPattern> exclusionsPatterns = sonarExclusions.stream()
       .map(pattern -> WildcardPattern.create(pattern.trim().replace('\\', '/'), "/"))
-      .collect(Collectors.toList());
+      .toList();
     return path -> {
       String sanitizedPath = PathUtils.sanitize(path);
       return sanitizedPath == null || exclusionsPatterns.stream().anyMatch(pattern -> pattern.match(sanitizedPath));
@@ -191,7 +190,7 @@ public class Jasper {
   private static List<InputFile> jspFiles(FileSystem fs) {
     Iterable<InputFile> inputFiles = fs.inputFiles(fs.predicates().hasLanguage("jsp"));
     return StreamSupport.stream(inputFiles.spliterator(), false)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static ClassLoader initClassLoader(List<File> classPath) {

@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -55,7 +54,7 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
       List<JavaFileScannerContext.Location> locations = symbol.usages().stream()
         .filter(identifierTree -> !tree.equals(identifierTree))
         .map(identifierTree -> new JavaFileScannerContext.Location("usage of @VisibleForTesting in production", identifierTree))
-        .collect(Collectors.toList());
+        .toList();
 
       reportIssue(identifier, String.format("Remove this usage of \"%s\", it is annotated with @VisibleForTesting and should not be accessed from production code.",
         identifier.name()), locations, null);

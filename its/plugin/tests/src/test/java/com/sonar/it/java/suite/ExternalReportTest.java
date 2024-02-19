@@ -23,7 +23,6 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.sonarqube.ws.Common.Severity;
@@ -97,7 +96,7 @@ public class ExternalReportTest {
     return TestUtils.issuesForComponent(orchestrator, projectKey)
       .stream()
       .filter(issue -> issue.getRule().startsWith("external_"))
-      .collect(Collectors.toList());
+      .toList();
   }
 
 }

@@ -22,7 +22,6 @@ package org.sonar.java.checks.tests;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
@@ -285,18 +284,18 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
         if (assertThatCalled) {
           assertThatCalled = false;
         } else {
-          List<MethodInvocationTree> allLocations = Stream.concat(intermediateMethodInvocations.stream(), Stream.of(mit)).collect(Collectors.toList());
+          List<MethodInvocationTree> allLocations = Stream.concat(intermediateMethodInvocations.stream(), Stream.of(mit)).toList();
           MethodInvocationTree mainLocation = allLocations.get(0);
           List<Location> secondaries = allLocations.stream()
             .skip(1L)
             .map(methodInvocation -> new Location("", methodInvocation.methodSelect()))
-            .collect(Collectors.toList());
+            .toList();
           context.reportIssue(AssertionsCompletenessCheck.this, mainLocation, "Add one or more 'assertThat' before 'assertAll'.", secondaries, null);
         }
       } else if (ASSERTJ_ASSERT_THAT.matches(mit) && !isJUnitSoftAssertions(mit)) {
         assertThatCalled = true;
       } else if (mit.methodSymbol().declaration() != null && intermediateMethodInvocations.stream().noneMatch(invocation -> invocation.methodSymbol().equals(mit.methodSymbol()))) {
-        List<MethodInvocationTree> allLocations = Stream.concat(intermediateMethodInvocations.stream(), Stream.of(mit)).collect(Collectors.toList());
+        List<MethodInvocationTree> allLocations = Stream.concat(intermediateMethodInvocations.stream(), Stream.of(mit)).toList();
         SoftAssertionsVisitor softAssertionsVisitor = new SoftAssertionsVisitor(assertThatCalled, allLocations);
         mit.methodSymbol().declaration().accept(softAssertionsVisitor);
         assertThatCalled = softAssertionsVisitor.assertThatCalled;
@@ -317,7 +316,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
         } else {
           List<Location> secondaries = intermediateMethodInvocations.stream()
             .map(methodInvocation -> new Location("", methodInvocation.methodSelect()))
-            .collect(Collectors.toList());
+            .toList();
           context.reportIssue(AssertionsCompletenessCheck.this,
             tree.block().closeBraceToken(),
             "Add one or more 'assertThat' before the end of this try block.",

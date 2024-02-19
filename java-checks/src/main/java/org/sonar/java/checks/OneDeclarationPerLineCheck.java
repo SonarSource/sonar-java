@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LineUtils;
@@ -96,7 +95,7 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
         .forRule(this)
         .onTree(firstLocation)
         .withMessage("Declare \"%s\"%s on a separate line.", firstLocation.name(), moreThanOneMessage)
-        .withSecondaries(nodesToReport.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit.simpleName())).collect(Collectors.toList()))
+        .withSecondaries(nodesToReport.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit.simpleName())).toList())
         .withQuickFix(() -> getQuickFixes(nodesToReport))
         .report();
 

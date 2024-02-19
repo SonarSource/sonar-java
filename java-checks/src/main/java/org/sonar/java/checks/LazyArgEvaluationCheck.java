@@ -24,7 +24,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -246,7 +245,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
   private void onMethodInvocationFound(MethodInvocationTree mit) {
     List<JavaFileScannerContext.Location> flow = findStringArg(mit)
       .flatMap(LazyArgEvaluationCheck::checkArgument)
-      .collect(Collectors.toList());
+      .toList();
     if (!flow.isEmpty()) {
       context.reportIssue(this, flow.get(0).syntaxNode, flow.get(0).msg, flow.subList(1, flow.size()), null);
     }

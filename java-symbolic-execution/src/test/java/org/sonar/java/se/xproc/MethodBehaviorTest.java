@@ -59,7 +59,7 @@ class MethodBehaviorTest {
     List<MethodYield> yields = mb.yields();
     assertThat(yields).hasSize(3);
 
-    List<HappyPathYield> trueResults = mb.happyPathYields().filter(my -> BooleanConstraint.TRUE.equals(my.resultConstraint().get(BooleanConstraint.class))).collect(Collectors.toList());
+    List<HappyPathYield> trueResults = mb.happyPathYields().filter(my -> BooleanConstraint.TRUE.equals(my.resultConstraint().get(BooleanConstraint.class))).toList();
     assertThat(trueResults).hasSize(1);
     HappyPathYield trueResult = trueResults.get(0);
 
@@ -70,7 +70,7 @@ class MethodBehaviorTest {
     // result SV is a different SV than 'a' and 'b'
     assertThat(trueResult.resultIndex()).isEqualTo(-1);
 
-    List<HappyPathYield> falseResults = mb.happyPathYields().filter(my -> BooleanConstraint.FALSE.equals(my.resultConstraint().get(BooleanConstraint.class))).collect(Collectors.toList());
+    List<HappyPathYield> falseResults = mb.happyPathYields().filter(my -> BooleanConstraint.FALSE.equals(my.resultConstraint().get(BooleanConstraint.class))).toList();
     assertThat(falseResults).hasSize(2);
     // for both "False" results, 'a' has the constraint "not null"
     assertThat(falseResults.stream().filter(my -> !((ObjectConstraint) my.parametersConstraints.get(0).get(ObjectConstraint.class)).isNull()).count()).isEqualTo(2);
@@ -159,7 +159,7 @@ class MethodBehaviorTest {
     addYield(mb, BooleanConstraint.FALSE, ObjectConstraint.NOT_NULL);
     mb.completed();
     assertThat(mb.yields()).hasSize(2);
-    List<Constraint> resultConstraints = mb.yields().stream().map(y -> ((HappyPathYield) y).resultConstraint().get(BooleanConstraint.class)).collect(Collectors.toList());
+    List<Constraint> resultConstraints = mb.yields().stream().map(y -> ((HappyPathYield) y).resultConstraint().get(BooleanConstraint.class)).toList();
     assertThat(resultConstraints).contains(BooleanConstraint.TRUE, BooleanConstraint.FALSE);
   }
 
@@ -170,7 +170,7 @@ class MethodBehaviorTest {
     addYield(mb, ObjectConstraint.NULL);
     mb.completed();
     assertThat(mb.yields()).hasSize(2);
-    List<Constraint> resultConstraints = mb.yields().stream().map(y -> ((HappyPathYield) y).resultConstraint().get(ObjectConstraint.class)).collect(Collectors.toList());
+    List<Constraint> resultConstraints = mb.yields().stream().map(y -> ((HappyPathYield) y).resultConstraint().get(ObjectConstraint.class)).toList();
     assertThat(resultConstraints).contains(ObjectConstraint.NULL, ObjectConstraint.NOT_NULL);
   }
 
@@ -244,7 +244,7 @@ class MethodBehaviorTest {
     SymbolicExecutionVisitor sev = visitorAndSemantic.a;
     Sema semanticModel = visitorAndSemantic.b;
     MethodBehavior mb = getMethodBehavior(sev, "throwException");
-    List<ExceptionalYield> exceptionYields = mb.exceptionalPathYields().collect(Collectors.toList());
+    List<ExceptionalYield> exceptionYields = mb.exceptionalPathYields().toList();
     assertThat(exceptionYields).hasSize(3);
     assertThat(exceptionYields.stream()
       .map(ey -> ey.exceptionType(semanticModel))

@@ -104,7 +104,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
   private static List<JavaFileScannerContext.Location> getSecondaries(Map<Symbol, Tree> updatesInBody) {
     return updatesInBody.entrySet().stream()
       .map(entry -> new JavaFileScannerContext.Location(String.format("Move this update of \"%s\".", entry.getKey().name()), entry.getValue()))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static Map<Symbol, Tree> updatedOnlyOnceWithUnaryExpression(Map<Symbol, List<Tree>> updatesInBody, StatementTree forStatementBody) {

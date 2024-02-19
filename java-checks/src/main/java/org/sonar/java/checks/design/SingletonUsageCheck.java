@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -65,7 +64,7 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
   }
 
   private void visitEnum(ClassTree classTree) {
-    var enumConstants = classTree.members().stream().filter(member -> member.is(Tree.Kind.ENUM_CONSTANT)).collect(Collectors.toList());
+    var enumConstants = classTree.members().stream().filter(member -> member.is(Tree.Kind.ENUM_CONSTANT)).toList();
     if (enumConstants.size() == 1) {
       EnumConstantTree constant = (EnumConstantTree) enumConstants.get(0);
       if (isInitializedWithParameterFreeConstructor(constant) &&
@@ -87,7 +86,7 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
     var allConstructors = singletonClass.members().stream()
       .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
       .map(MethodTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
 
     if (allConstructors.size() <= 1 &&
       allConstructors.stream().allMatch(constructor -> constructor.symbol().isPrivate() && constructor.parameters().isEmpty()) &&
@@ -143,7 +142,7 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
       .filter(field -> {
         Type fieldType = field.symbol().type();
         return fieldType.equals(type) || (wrappingType != null && fieldType.equals(wrappingType));
-      }).collect(Collectors.toList());
+      }).toList();
   }
 
   private static boolean isEffectivelyFinal(Symbol symbol) {
@@ -174,6 +173,6 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
       .map(Tree::parent)
       .filter(usage -> usage.is(Tree.Kind.ASSIGNMENT))
       .map(AssignmentExpressionTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
   }
 }

@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -114,7 +113,7 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
     return methodSymbol.overriddenSymbols()
       .stream()
       .filter(Symbol.MethodSymbol::isDeprecated)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   abstract void checkOverridingMethod(MethodTree methodTree, List<Symbol.MethodSymbol> deprecatedSymbol);

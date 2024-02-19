@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -147,7 +146,7 @@ public class DoubleCheckedLockingAssignmentCheck extends IssuableSubscriptionVis
     List<JavaFileScannerContext.Location> locations() {
       return usages.stream()
         .map(u -> new JavaFileScannerContext.Location("Usage after assignment", u))
-        .collect(Collectors.toList());
+        .toList();
     }
   }
 

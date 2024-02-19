@@ -220,9 +220,9 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     var filesToAdd = modifiedFileNames.stream()
       .map(name -> InternalInputFile.inputFile("", new File(name), status))
-      .collect(Collectors.toList());
+      .toList();
 
-    var filesToAddStrings = filesToAdd.stream().map(Object::toString).collect(Collectors.toList());
+    var filesToAddStrings = filesToAdd.stream().map(Object::toString).toList();
 
     files.forEach(inputFile -> {
       if (filesToAddStrings.contains(inputFile.toString())) {
@@ -411,7 +411,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
     if (!expected.isEmpty() || !unexpectedLines.isEmpty()) {
       Collections.sort(unexpectedLines);
-      List<Integer> expectedLines = expected.keySet().stream().sorted().collect(Collectors.toList());
+      List<Integer> expectedLines = expected.keySet().stream().sorted().toList();
       throw new AssertionError(new StringBuilder()
         .append(expectedLines.isEmpty() ? "" : String.format("Expected at %s", expectedLines))
         .append(expectedLines.isEmpty() || unexpectedLines.isEmpty() ? "" : ", ")
@@ -488,7 +488,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     validateLocation(analyzerMessage, attrs);
     if (attrs.containsKey(SECONDARY_LOCATIONS)) {
-      List<AnalyzerMessage> actual = analyzerMessage.flows.stream().map(l -> l.isEmpty() ? null : l.get(0)).filter(Objects::nonNull).collect(Collectors.toList());
+      List<AnalyzerMessage> actual = analyzerMessage.flows.stream().map(l -> l.isEmpty() ? null : l.get(0)).filter(Objects::nonNull).toList();
       List<Integer> expected = (List<Integer>) attrs.get(SECONDARY_LOCATIONS);
       validateSecondaryLocations(analyzerMessage, actual, expected);
     }
@@ -498,7 +498,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   private static void validateSecondaryLocations(AnalyzerMessage parentIssue, List<AnalyzerMessage> actual, List<Integer> expected) {
-    List<Integer> actualLines = actual.stream().map(AnalyzerMessage::getLine).collect(Collectors.toList());
+    List<Integer> actualLines = actual.stream().map(AnalyzerMessage::getLine).toList();
     List<Integer> unexpected = new ArrayList<>();
     for (Integer actualLine : actualLines) {
       if (expected.contains(actualLine)) {
@@ -559,8 +559,8 @@ public class InternalCheckVerifier implements CheckVerifier {
 
   private void assertSoleFlowDiscrepancy(String expectedId, List<AnalyzerMessage> actualFlow) {
     Set<Expectations.FlowComment> expected = expectations.flows.get(expectedId);
-    List<Integer> expectedLines = expected.stream().map(flow -> flow.line).collect(Collectors.toList());
-    List<Integer> actualLines = actualFlow.stream().map(AnalyzerMessage::getLine).collect(Collectors.toList());
+    List<Integer> expectedLines = expected.stream().map(flow -> flow.line).toList();
+    List<Integer> actualLines = actualFlow.stream().map(AnalyzerMessage::getLine).toList();
     if (!actualLines.equals(expectedLines)) {
       throw new AssertionError(String.format("Flow %s has line differences. Expected: %s but was: %s", expectedId, expectedLines, actualLines));
     }
@@ -599,13 +599,13 @@ public class InternalCheckVerifier implements CheckVerifier {
     List<String> actualMessages = actual.stream()
       .map(AnalyzerMessage::getMessage)
       .map(InternalCheckVerifier::addQuotes)
-      .collect(Collectors.toList());
+      .toList();
     List<String> expectedMessages = expected.stream()
       .map(Expectations.FlowComment::message)
       .map(InternalCheckVerifier::addQuotes)
-      .collect(Collectors.toList());
+      .toList();
 
-    replaceExpectedNullWithActual(actualMessages, expectedMessages);
+    expectedMessages = replaceExpectedNullWithActual(actualMessages, expectedMessages);
     if (!actualMessages.equals(expectedMessages)) {
       throw new AssertionError(
         String.format("Wrong messages in flow %s [%s]. Expected: %s but was: %s",
@@ -620,14 +620,16 @@ public class InternalCheckVerifier implements CheckVerifier {
     return s != null ? String.format("\"%s\"", s) : s;
   }
 
-  private static void replaceExpectedNullWithActual(List<String> actualMessages, List<String> expectedMessages) {
-    if (actualMessages.size() == expectedMessages.size()) {
+  private static List<String> replaceExpectedNullWithActual(List<String> actualMessages, List<String> expectedMessages) {
+    List<String> newExceptedMessages = new ArrayList<>(expectedMessages);
+    if (actualMessages.size() == newExceptedMessages.size()) {
       for (int i = 0; i < actualMessages.size(); i++) {
-        if (expectedMessages.get(i) == null) {
-          expectedMessages.set(i, actualMessages.get(i));
+        if (newExceptedMessages.get(i) == null) {
+          newExceptedMessages.set(i, actualMessages.get(i));
         }
       }
     }
+    return newExceptedMessages;
   }
 
   private static String flowToString(List<AnalyzerMessage> flow) {

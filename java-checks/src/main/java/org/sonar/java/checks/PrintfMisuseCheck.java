@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -72,7 +71,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   private static final MethodMatchers SLF4J_METHOD_MATCHERS = MethodMatchers.or(LEVELS.stream()
     .map(l -> MethodMatchers.create().ofTypes(ORG_SLF4J_LOGGER).names(l).withAnyParameters().build())
-    .collect(Collectors.toList()));
+    .toList());
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {

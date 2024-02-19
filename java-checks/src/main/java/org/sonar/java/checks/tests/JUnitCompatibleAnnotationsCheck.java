@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Rule(key = "S5967")
 public class JUnitCompatibleAnnotationsCheck extends IssuableSubscriptionVisitor {
@@ -55,7 +54,7 @@ public class JUnitCompatibleAnnotationsCheck extends IssuableSubscriptionVisitor
     List<JavaFileScannerContext.Location> locations = annotationTrees.stream()
       .filter(annotation -> ANNOTATIONS.contains(annotation.annotationType().symbolType().fullyQualifiedName()))
       .map(annotationTree -> new JavaFileScannerContext.Location("Incompatible annotation", annotationTree))
-      .collect(Collectors.toList());
+      .toList();
 
     if (locations.size() > 1) {
       reportIssue(method.simpleName(), "Remove one of these conflicting annotations.", locations, null);

@@ -22,7 +22,6 @@ package org.sonar.plugins.java;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
@@ -151,7 +150,7 @@ class JavaRulesDefinitionTest {
     List<String> rulesWithManyDeprecatedKeys = repository.rules().stream()
       .filter(r -> r.deprecatedRuleKeys().size() >= 2)
       .map(RulesDefinition.Rule::key)
-      .collect(Collectors.toList());
+      .toList();
     assertThat(rulesWithManyDeprecatedKeys).isEmpty();
   }
 

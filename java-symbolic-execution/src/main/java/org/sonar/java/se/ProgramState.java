@@ -65,7 +65,7 @@ public class ProgramState {
 
     public Pop(ProgramState programState, List<SymbolicValueSymbol> result) {
       state = programState;
-      values = result.stream().map(SymbolicValueSymbol::symbolicValue).collect(Collectors.toList());
+      values = result.stream().map(SymbolicValueSymbol::symbolicValue).toList();
       valuesAndSymbols = result;
     }
 
@@ -247,7 +247,7 @@ public class ProgramState {
   }
 
   public List<SymbolicValue> peekValues(int n) {
-    return peekValuesAndSymbols(n).stream().map(SymbolicValueSymbol::symbolicValue).collect(Collectors.toList());
+    return peekValuesAndSymbols(n).stream().map(SymbolicValueSymbol::symbolicValue).toList();
   }
 
   public List<SymbolicValueSymbol> peekValuesAndSymbols(int n) {
@@ -297,7 +297,7 @@ public class ProgramState {
     List<SymbolicValue> transitiveSymbolicValues = knownRelations().stream()
       .filter(rsv -> rsv.isEquality() && (rsv.getLeftOp() == symbolicValue || rsv.getRightOp() == symbolicValue))
       .map(rsv -> rsv.getLeftOp() == symbolicValue ? rsv.getRightOp() : rsv.getLeftOp())
-      .collect(Collectors.toList());
+      .toList();
     ProgramState ps = addConstraint(symbolicValue, constraint);
     for (SymbolicValue sv : transitiveSymbolicValues) {
       ps = ps.addConstraint(sv, constraint);

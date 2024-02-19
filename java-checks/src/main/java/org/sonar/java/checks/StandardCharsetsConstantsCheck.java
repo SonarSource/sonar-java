@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -376,7 +375,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
 
   private static Optional<ExpressionTree> getCharsetNameArgument(Symbol symbol, Arguments arguments) {
     List<ExpressionTree> stringArguments = arguments.stream().filter(
-      argument -> argument.symbolType().is(JAVA_LANG_STRING)).collect(Collectors.toList());
+      argument -> argument.symbolType().is(JAVA_LANG_STRING)).toList();
     if (stringArguments.isEmpty()) {
       return Optional.empty();
     }

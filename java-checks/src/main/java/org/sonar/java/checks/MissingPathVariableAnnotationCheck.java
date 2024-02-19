@@ -63,7 +63,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     List<MethodTree> methods = clazzTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
-      .collect(Collectors.toList());
+      .toList();
 
     Set<String> modelAttributePathVariable = methods.stream()
       .filter(method -> method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION))

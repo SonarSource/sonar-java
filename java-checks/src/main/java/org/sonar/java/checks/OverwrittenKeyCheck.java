@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -102,7 +101,7 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
     return Stream.concat(
       Stream.of(new JavaFileScannerContext.Location("Original value", firstUse)),
       rest.stream().map(t -> new JavaFileScannerContext.Location("Same " + key.indexOrKey() + " is set", t)))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static class CollectionAndKey {

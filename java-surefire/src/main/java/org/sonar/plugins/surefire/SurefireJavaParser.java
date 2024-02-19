@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +65,7 @@ public class SurefireJavaParser {
     return dirs.stream()
       .map(dir -> getReports(dir, reportDirSetByUser))
       .flatMap(Arrays::stream)
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static File[] getReports(File dir, boolean reportDirSetByUser) {

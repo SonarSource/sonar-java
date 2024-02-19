@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -135,7 +134,7 @@ public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implemen
 
       List<JavaFileScannerContext.Location> secondaryLocations = breakAndContinues.stream()
           .map(t -> new JavaFileScannerContext.Location(String.format("\"%s\" statement.", t.is(Tree.Kind.BREAK_STATEMENT) ? "break" : "continue"), t))
-          .collect(Collectors.toList());
+        .toList();
 
       context.reportIssue(this, primaryLocationTree,
         "Reduce the total number of break and continue statements in this loop to use at most one.",
