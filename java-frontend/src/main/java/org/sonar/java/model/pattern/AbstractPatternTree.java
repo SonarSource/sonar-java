@@ -27,10 +27,8 @@ import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 /**
- * JDK 17 Preview feature  (JEP-406), deprecated by design until it will be final
- * java:S1874 = "@Deprecated" code should not be used
+ * JDK 17 Preview feature  (JEP-405, JEP-406), finalized in JDK 21 (JEP-440, JEP-441).
  */
-@SuppressWarnings("java:S1874")
 public abstract class AbstractPatternTree extends JavaTree implements PatternTree {
 
   private final Tree.Kind kind;
