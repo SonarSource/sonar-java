@@ -22,7 +22,9 @@ package org.sonar.plugins.java.api.tree;
 import org.sonar.java.annotations.Beta;
 
 /**
- * Default pattern tree, introduced with Java 17 and JEP-406.
+ * Default pattern tree.
+ * Introduced with Java 17 and JEP-406.
+ * Finalized with Java 21 and JEP-441.
  *
  * <pre>
  *   case {@link #defaultToken()} : ...
@@ -30,10 +32,8 @@ import org.sonar.java.annotations.Beta;
  * </pre>
  *
  * @since Java 17
- * @deprecated Preview Feature
  */
 @Beta
-@Deprecated(since = "7.7", forRemoval = false)
 public interface DefaultPatternTree extends PatternTree {
 
   SyntaxToken defaultToken();

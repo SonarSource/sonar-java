@@ -708,51 +708,40 @@ public interface Tree {
     /**
      * {@link TypePatternTree}
      *
-     * @since Java 17
-     * @deprecated Preview Feature
+     * @since Java 17 (Preview Feature) and Java 21 (Final)
      */
-    @Deprecated(since = "7.7", forRemoval = false)
     TYPE_PATTERN(TypePatternTree.class),
 
     /**
      * {@link GuardedPatternTree}
      *
-     * @since Java 17
-     * @deprecated Preview Feature
+     * @since Java 17 (Preview Feature) and Java 21 (Final)
      */
-    @Deprecated(since = "7.7", forRemoval = false)
     GUARDED_PATTERN(GuardedPatternTree.class),
 
     /**
      * {@link NullPatternTree}
      *
-     * @since Java 17
-     * @deprecated Preview Feature
+     * @since Java 17 (Preview Feature) and Java 21 (Final)
      */
-    @Deprecated(since = "7.7", forRemoval = false)
     NULL_PATTERN(NullPatternTree.class),
 
     /**
      * {@link DefaultPatternTree}
      *
-     * @since Java 17
-     * @deprecated Preview Feature
+     * @since Java 17 (Preview Feature) and Java 21 (Final)
      */
-    @Deprecated(since = "7.7", forRemoval = false)
     DEFAULT_PATTERN(DefaultPatternTree.class),
 
     /**
      * {@link RecordPatternTree}
      *
-     * @since Java 19
-     * @deprecated Preview feature
+     * @since Java 19 (Preview Feature) and Java 21 (Final)
      */
-    @Deprecated(since = "7.19", forRemoval = false)
     RECORD_PATTERN(RecordPatternTree.class),
 
     /**
-     *An implementation-reserved node.
-     *
+     * An implementation-reserved node.
      */
     OTHER(Tree.class),
 

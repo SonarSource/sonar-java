@@ -29,10 +29,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 /**
- * JDK 17 Preview feature  (JEP-406), deprecated by design until it will be final
- * java:S1874 = "@Deprecated" code should not be used
+ * JDK 17 Preview feature (JEP-406), finalized in JDK 21 (JEP-441).
  */
-@SuppressWarnings("java:S1874")
 public class GuardedPatternTreeImpl extends AbstractPatternTree implements GuardedPatternTree {
 
   private final PatternTree pattern;
