@@ -44,6 +44,7 @@ import org.sonar.java.checks.AssertionsInProductionCodeCheck;
 import org.sonar.java.checks.AssertsOnParametersOfPublicMethodCheck;
 import org.sonar.java.checks.AssignmentInSubExpressionCheck;
 import org.sonar.java.checks.AtLeastOneConstructorCheck;
+import org.sonar.java.checks.AvoidHighFrameratesOnMobileCheck;
 import org.sonar.java.checks.BasicAuthCheck;
 import org.sonar.java.checks.BigDecimalDoubleConstructorCheck;
 import org.sonar.java.checks.BluetoothLowPowerModeCheck;
@@ -724,6 +725,7 @@ public final class CheckList {
     AuthorizationsStrongDecisionsCheck.class,
     AutowiredOnConstructorWhenMultipleConstructorsCheck.class,
     AutowiredOnMultipleConstructorsCheck.class,
+    AvoidHighFrameratesOnMobileCheck.class,
     AvoidQualifierOnBeanMethodsCheck.class,
     AwsConsumerBuilderUsageCheck.class,
     AwsCredentialsShouldBeSetExplicitlyCheck.class,

@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2012-2023 SonarSource SA
+ * Copyright (C) 2012-2024 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,17 +17,28 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+package org.sonar.java.checks;
 
-package android.view;
+import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
-public class Surface {
-  public void release() {
-    // mock implementation
+class AvoidHighFrameratesOnMobileCheckTest {
+
+  @Test
+  void test() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/AvoidHighFrameratesOnMobileCheckSample.java"))
+      .withCheck(new AvoidHighFrameratesOnMobileCheck())
+      .verifyIssues();
   }
 
-  public void setFrameRate(float frameRate, int compatibility, int changeFrameRateStrategy) {
-  }
-
-  public void setFrameRate(float frameRate, int compatibility) {
+  @Test
+  void test_no_semantics() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/AvoidHighFrameratesOnMobileCheckSample.java"))
+      .withCheck(new AvoidHighFrameratesOnMobileCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }
