@@ -46,6 +46,7 @@ import org.sonar.java.checks.AssignmentInSubExpressionCheck;
 import org.sonar.java.checks.AtLeastOneConstructorCheck;
 import org.sonar.java.checks.BasicAuthCheck;
 import org.sonar.java.checks.BigDecimalDoubleConstructorCheck;
+import org.sonar.java.checks.BluetoothLowPowerModeCheck;
 import org.sonar.java.checks.BooleanInversionCheck;
 import org.sonar.java.checks.BooleanLiteralCheck;
 import org.sonar.java.checks.BooleanMethodReturnCheck;
@@ -741,6 +742,7 @@ public final class CheckList {
     BigDecimalDoubleConstructorCheck.class,
     AndroidBiometricAuthWithoutCryptoCheck.class,
     BlindSerialVersionUidCheck.class,
+    BluetoothLowPowerModeCheck.class,
     BooleanInversionCheck.class,
     BooleanLiteralCheck.class,
     BooleanMethodNameCheck.class,

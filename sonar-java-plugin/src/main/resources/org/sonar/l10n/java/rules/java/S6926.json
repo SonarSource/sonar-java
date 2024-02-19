@@ -1,0 +1,24 @@
+{
+  "title": "Bluetooth should be configured to use low power",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "android",
+    "sustainability"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6926",
+  "sqKey": "S6926",
+  "scope": "Main",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  }
+}
