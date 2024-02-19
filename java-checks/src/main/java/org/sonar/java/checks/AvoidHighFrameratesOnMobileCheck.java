@@ -48,7 +48,7 @@ public class AvoidHighFrameratesOnMobileCheck extends IssuableSubscriptionVisito
       var frameRateArg = mit.arguments().get(e.getValue());
       var frameRateArgVal = ExpressionUtils.resolveAsConstant(frameRateArg);
 
-      if (frameRateArgVal instanceof Number && ((Number) frameRateArgVal).intValue() > DEFAULT_THRESHOLD) {
+      if (frameRateArgVal instanceof Number frameRateNumber && frameRateNumber.intValue() > DEFAULT_THRESHOLD) {
         reportIssue(frameRateArg, "Avoid setting high frame rates higher than " + DEFAULT_THRESHOLD + " on mobile devices.");
       }
     });
