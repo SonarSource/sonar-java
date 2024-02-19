@@ -501,9 +501,6 @@ public abstract class JavaTree implements Tree {
 
   public static class NotImplementedTreeImpl extends AssessableExpressionTree {
 
-    public NotImplementedTreeImpl() {
-    }
-
     @Override
     public Kind kind() {
       return Kind.OTHER;
