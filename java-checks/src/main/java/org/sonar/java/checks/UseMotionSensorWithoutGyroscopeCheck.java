@@ -21,14 +21,13 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S6923")
 public class UseMotionSensorWithoutGyroscopeCheck extends AbstractMethodDetection {
+  private static final String MESSAGE = "Replace `TYPE_ROTATION_VECTOR` (11) with `TYPE_GEOMAGNETIC_ROTATION_VECTOR` (20) to optimize battery life.";
   private static final int TYPE_ROTATION_VECTOR = 11;
-
   private static final MethodMatchers GET_DEFAULT_SENSOR_MATCHER = MethodMatchers.create()
     .ofTypes("android.hardware.SensorManager")
     .names("getDefaultSensor")
@@ -42,9 +41,9 @@ public class UseMotionSensorWithoutGyroscopeCheck extends AbstractMethodDetectio
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    var sensorType = (Integer) ExpressionUtils.resolveAsConstant(mit.arguments().get(0));
-    if (sensorType!= null && sensorType == TYPE_ROTATION_VECTOR) {
-      reportIssue(mit, "Replace `TYPE_ROTATION_VECTOR` (11) with `TYPE_GEOMAGNETIC_ROTATION_VECTOR` (20) to optimize battery life.");
-    }
+    mit.arguments().get(0)
+      .asConstant(Integer.class)
+      .filter(argValue -> argValue == TYPE_ROTATION_VECTOR)
+      .ifPresent(unused -> reportIssue(mit, MESSAGE));
   }
 }
