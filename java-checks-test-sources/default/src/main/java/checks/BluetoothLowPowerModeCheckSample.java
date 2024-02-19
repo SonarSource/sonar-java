@@ -11,11 +11,11 @@ public class BluetoothLowPowerModeCheckSample {
 
   public void nonCompliant(android.bluetooth.BluetoothGatt gatt, android.bluetooth.le.AdvertiseSettings.Builder builder) {
     gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH); // Noncompliant {{Use the low power mode for this Bluetooth operation.}}
-    gatt.requestConnectionPriority(1); // Noncompliant
+    gatt.requestConnectionPriority(1); // Noncompliant [[sc=5;ec=35]]
 
     builder.setAdvertiseMode(android.bluetooth.le.AdvertiseSettings.ADVERTISE_MODE_BALANCED); // Noncompliant {{Use the low power mode for this Bluetooth operation.}}
     builder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY); // Noncompliant
-    builder.setAdvertiseMode(1); // Noncompliant
+    builder.setAdvertiseMode(1); // Noncompliant [[sc=5;ec=29]]
   }
 
   public void compliant(android.bluetooth.BluetoothGatt gatt, android.bluetooth.le.AdvertiseSettings.Builder builder) {
