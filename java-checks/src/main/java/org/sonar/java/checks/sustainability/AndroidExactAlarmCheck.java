@@ -48,10 +48,10 @@ public class AndroidExactAlarmCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    switch (ExpressionUtils.methodName(tree).name()) {
-      case SET_EXACT_NAME, SET_EXACT_AND_ALLOW_WHILE_IDLE_NAME -> onSetExactInvocation(tree);
-      case SET_WINDOW_NAME -> onSetWindowInvocation(tree);
-      default -> throw new IllegalArgumentException();
+    if (SET_WINDOW_NAME.equals(tree.methodSymbol().name())) {
+      onSetWindowInvocation(tree);
+    } else {
+      onSetExactInvocation(tree);
     }
   }
 
