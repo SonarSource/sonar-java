@@ -26,12 +26,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -87,7 +87,7 @@ public class StringConcatToTextBlockCheck extends IssuableSubscriptionVisitor im
       return concatStringLiterals(concatenatedContent, ExpressionUtils.skipParentheses(binaryExpression.leftOperand())) &&
         concatStringLiterals(concatenatedContent, ExpressionUtils.skipParentheses(binaryExpression.rightOperand()));
     } else if (tree instanceof LiteralTree literalTree) {
-      String treeValue = LiteralUtils.getAsStringValue((literalTree));
+      String treeValue = LiteralUtils.getAsStringValue(literalTree);
       concatenatedContent.append(treeValue);
       return true;
     } else {

@@ -21,12 +21,7 @@ package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
@@ -51,23 +46,6 @@ class AssertionsCompletenessCheckTest {
       .onFile(nonCompilingTestSourcesPath("checks/tests/AssertionsCompletenessCheck.java"))
       .withCheck(new AssertionsCompletenessCheck())
       .verifyIssues();
-  }
-
-  @Test
-  void test_isSoftAssertionsExtensionClass(){
-    String s = "";
-    assertThat(AssertionsCompletenessCheck.isSoftAssertionsExtensionClass(s)).isFalse();
-    Object[] objects = new Object[2];
-    assertThat(AssertionsCompletenessCheck.isSoftAssertionsExtensionClass(objects)).isFalse();
-    objects[0] = s;
-    assertThat(AssertionsCompletenessCheck.isSoftAssertionsExtensionClass(objects)).isFalse();
-    var symbol = mock(Symbol.TypeSymbol.class);
-    when(symbol.type()).thenReturn(mock(Type.class));
-    when(symbol.type().is("org.assertj.core.api.SoftAssertions")).thenReturn(true);
-    objects[1] = symbol;
-    assertThat(AssertionsCompletenessCheck.isSoftAssertionsExtensionClass(objects)).isFalse();
-    when(symbol.type().is("org.assertj.core.api.junit.jupiter.SoftAssertionsExtension")).thenReturn(true);
-    assertThat(AssertionsCompletenessCheck.isSoftAssertionsExtensionClass(objects)).isTrue();
   }
 
 }

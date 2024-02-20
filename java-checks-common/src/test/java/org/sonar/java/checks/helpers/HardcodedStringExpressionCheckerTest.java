@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -37,20 +38,24 @@ class HardcodedStringExpressionCheckerTest {
 
   @Test
   void isExpressionDerivedFromPlainTextTest() {
-    IdentifierTree expression = mock(IdentifierTree.class);
-    when(expression.kind()).thenReturn(Tree.Kind.IDENTIFIER);
     Symbol.VariableSymbol symbol = mockSymbol(true, false, true);
-    Symbol owner = mockOwner(true);
-    when(symbol.owner()).thenReturn(owner);
-    VariableTree declaration = mock(VariableTree.class);
-    when(symbol.declaration()).thenReturn(declaration);
-    when(expression.symbol()).thenReturn(symbol);
+    IdentifierTree expression = mockIdentifierWithSymbol(symbol);
 
     assertThat(isExpressionDerivedFromPlainText(expression, new ArrayList<>(), new HashSet<>())).isFalse();
 
     when(symbol.declaration()).thenReturn(null);
     when(symbol.constantValue()).thenReturn(Optional.of("SOME VALUE"));
     assertThat(isExpressionDerivedFromPlainText(expression, new ArrayList<>(), new HashSet<>())).isTrue();
+
+    BinaryExpressionTree binaryExpressionTree = mock(BinaryExpressionTree.class);
+    when(binaryExpressionTree.kind()).thenReturn(Tree.Kind.PLUS);
+    when(binaryExpressionTree.leftOperand()).thenReturn(expression);
+    var rightOpSymbol = mockSymbol(true, false, true);
+    var rightOp = mockIdentifierWithSymbol(rightOpSymbol);
+    when(rightOpSymbol.declaration()).thenReturn(null);
+    when(rightOpSymbol.constantValue()).thenReturn(Optional.of("SOME VALUE"));
+    when(binaryExpressionTree.rightOperand()).thenReturn(rightOp);
+    assertThat(isExpressionDerivedFromPlainText(binaryExpressionTree, new ArrayList<>(), new HashSet<>())).isTrue();
 
     when(symbol.isVariableSymbol()).thenReturn(false);
     assertThat(isExpressionDerivedFromPlainText(expression, new ArrayList<>(), new HashSet<>())).isFalse();
@@ -59,20 +64,34 @@ class HardcodedStringExpressionCheckerTest {
     when(symbol.isParameter()).thenReturn(true);
     assertThat(isExpressionDerivedFromPlainText(expression, new ArrayList<>(), new HashSet<>())).isFalse();
 
+    when(expression.kind()).thenReturn(Tree.Kind.ARGUMENTS); // to test default case not matching
+    assertThat(isExpressionDerivedFromPlainText(expression, new ArrayList<>(), new HashSet<>())).isFalse();
+
   }
 
-  private Symbol mockOwner(boolean isTypeSymbol){
+  private Symbol mockOwner(boolean isTypeSymbol) {
     Symbol owner = mock(Symbol.class);
     when(owner.isTypeSymbol()).thenReturn(isTypeSymbol);
     return owner;
   }
 
-  private Symbol.VariableSymbol mockSymbol(boolean isVariableSymbol, boolean isParameter, boolean isFinal){
+  private Symbol.VariableSymbol mockSymbol(boolean isVariableSymbol, boolean isParameter, boolean isFinal) {
     Symbol.VariableSymbol symbol = mock(Symbol.VariableSymbol.class);
     when(symbol.isVariableSymbol()).thenReturn(isVariableSymbol);
     when(symbol.isParameter()).thenReturn(isParameter);
     when(symbol.isFinal()).thenReturn(isFinal);
     return symbol;
+  }
+
+  private IdentifierTree mockIdentifierWithSymbol(Symbol symbol) {
+    IdentifierTree expression = mock(IdentifierTree.class);
+    when(expression.kind()).thenReturn(Tree.Kind.IDENTIFIER);
+    Symbol owner = mockOwner(true);
+    when(symbol.owner()).thenReturn(owner);
+    VariableTree declaration = mock(VariableTree.class);
+    when(symbol.declaration()).thenReturn(declaration);
+    when(expression.symbol()).thenReturn(symbol);
+    return expression;
   }
 
 }

@@ -102,7 +102,7 @@ public final class ReassignmentFinder {
       nonParenthesisParent = previousTree.parent();
     }
 
-    if (nonParenthesisParent instanceof AssignmentExpressionTree assignment && (assignment.variable().equals(previousTree))) {
+    if (nonParenthesisParent instanceof AssignmentExpressionTree assignment && assignment.variable().equals(previousTree)) {
       return Optional.of(assignment);
     }
     return Optional.empty();
