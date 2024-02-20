@@ -24,8 +24,10 @@ import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
@@ -42,16 +44,33 @@ class TreeHelperTest extends JParserTestUtils {
       "    if (condition) {",
       "      bar();",
       "    }",
-      "    for (var a: b) {",
-      "      baz();",
+      "    for (var a: x) {",
+      "      for (var b: x) {",
+      "        baz();",
+      "      }",
       "    }",
       "  }",
       "}");
 
     MethodTree method = methodTree(code);
     var whileBody = ((BlockTree) ((WhileStatementTree) method.block().body().get(1)).statement()).body();
-    var barCall = ((BlockTreeImpl) ((IfStatementTree) whileBody.get(0)).thenStatement()).body().get(0);
-    var bazCall = ((BlockTreeImpl) (((ForEachStatement) whileBody.get(1)).statement())).body().get(0);
+    var barCall = (MethodInvocationTree) (
+      (ExpressionStatementTree) (
+        (BlockTreeImpl) (
+          (IfStatementTree) whileBody.get(0)
+        ).thenStatement()
+      ).body().get(0)
+    ).expression();
+
+    var bazCall = ((ExpressionStatementTree) (
+      (BlockTreeImpl) (
+        (ForEachStatement) (
+          (BlockTreeImpl) (
+            ((ForEachStatement) whileBody.get(1)).statement()
+          )
+        ).body().get(0)
+      ).statement()
+    ).body().get(0)).expression();
 
     assertFoundNode(barCall, Set.of(Tree.Kind.IF_STATEMENT), Tree.Kind.IF_STATEMENT);
     assertFoundNode(barCall, Set.of(Tree.Kind.WHILE_STATEMENT), Tree.Kind.WHILE_STATEMENT);
@@ -62,11 +81,14 @@ class TreeHelperTest extends JParserTestUtils {
     assertFoundNode(barCall, Set.of(Tree.Kind.DO_STATEMENT, Tree.Kind.WHILE_STATEMENT), Tree.Kind.WHILE_STATEMENT);
     assertFoundNode(barCall, Set.of(Tree.Kind.FOR_EACH_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.WHILE_STATEMENT),
       Tree.Kind.WHILE_STATEMENT);
-    assertFoundNode(bazCall, Set.of(Tree.Kind.FOR_EACH_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.WHILE_STATEMENT),
-      Tree.Kind.FOR_EACH_STATEMENT);
+
+    var loopOverB = (ForEachStatement) assertFoundNode(bazCall,
+      Set.of(Tree.Kind.FOR_EACH_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.WHILE_STATEMENT), Tree.Kind.FOR_EACH_STATEMENT);
+    assertThat(loopOverB.variable().simpleName().name()).isEqualTo("b");
+
   }
 
-  private void assertFoundNode(Tree tree, Set<Tree.Kind> kinds, @Nullable Tree.Kind expected) {
+  private static Tree assertFoundNode(Tree tree, Set<Tree.Kind> kinds, @Nullable Tree.Kind expected) {
     var actual = TreeHelper.findClosestParentOfKind(tree, kinds);
     if (expected != null) {
       assertThat(actual).isNotNull();
@@ -74,5 +96,6 @@ class TreeHelperTest extends JParserTestUtils {
     } else {
       assertThat(actual).isNull();
     }
+    return actual;
   }
 }

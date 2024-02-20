@@ -168,17 +168,15 @@ public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVis
     public void visitUnaryExpression(UnaryExpressionTree tree) {
       super.visitUnaryExpression(tree);
       switch (tree.kind()) {
-        case POSTFIX_INCREMENT:
-        case POSTFIX_DECREMENT:
-        case PREFIX_INCREMENT:
-        case PREFIX_DECREMENT:
+        case POSTFIX_INCREMENT, POSTFIX_DECREMENT, PREFIX_INCREMENT, PREFIX_DECREMENT -> {
           var expression = tree.expression();
           if (expression.is(Tree.Kind.IDENTIFIER)) {
             declaredOrAssignedLocals.add(((IdentifierTree) expression).name());
           }
-          break;
-        default:
-          break;
+        }
+        default -> {
+          // empty
+        }
       }
     }
 
