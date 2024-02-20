@@ -443,6 +443,7 @@ import org.sonar.java.checks.ValueBasedObjectsShouldNotBeSerializedCheck;
 import org.sonar.java.checks.VarArgCheck;
 import org.sonar.java.checks.VarCanBeUsedCheck;
 import org.sonar.java.checks.VariableDeclarationScopeCheck;
+import org.sonar.java.checks.VirtualThreadUnsupportedMethodsCheck;
 import org.sonar.java.checks.VisibleForTestingUsageCheck;
 import org.sonar.java.checks.VolatileNonPrimitiveFieldCheck;
 import org.sonar.java.checks.VolatileVariablesOperationsCheck;
@@ -1197,6 +1198,7 @@ public final class CheckList {
     VariableDeclarationScopeCheck.class,
     VerboseRegexCheck.class,
     VerifiedServerHostnamesCheck.class,
+    VirtualThreadUnsupportedMethodsCheck.class,
     VisibleForTestingUsageCheck.class,
     VolatileNonPrimitiveFieldCheck.class,
     VolatileVariablesOperationsCheck.class,
