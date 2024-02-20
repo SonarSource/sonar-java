@@ -24,7 +24,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.Nullable;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -50,11 +52,13 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 public class SerializableFieldInSerializableClassCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVAX_INJECT = "javax.inject.Inject";
+  private static final String JAKARTA_INJECT = "jakarta.inject.Inject";
   private static final String[] EXCLUDED_ANNOTATIONS = new String[]{
     "jakarta.annotation.Resource",
     "javax.annotation.Resource",
     "javax.ejb.EJB",
     JAVAX_INJECT,
+    JAKARTA_INJECT,
     "org.apache.wicket.spring.injection.annot.SpringBean"
   };
 

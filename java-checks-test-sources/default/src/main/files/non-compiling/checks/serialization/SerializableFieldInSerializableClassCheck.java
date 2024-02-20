@@ -3,8 +3,8 @@ package checks.serialization;
 import java.io.Serializable;
 import java.util.Map;
 
-class Address {
-}
+class Address {}
+
 class Person implements Serializable {
   Address address; // Noncompliant [[sc=11;ec=18]] {{Make "address" transient or serializable.}}
   UnknownField unknownField; // Compliant
@@ -30,7 +30,7 @@ class Person777 implements Serializable {
     i = 5;
   }
 
-  @Inject
+  @jakarta.inject.Inject
   public Person777(Address _address) {
     int i = 0;
     address = _address;
