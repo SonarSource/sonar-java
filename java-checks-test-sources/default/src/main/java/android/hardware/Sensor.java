@@ -20,24 +20,9 @@
 
 package android.hardware;
 
-public class SensorManager {
+public class Sensor {
 
-  public Sensor getDefaultSensor(int type) {
-    // mock implementation
-    return new Sensor();
-  }
-
-  public Sensor getDefaultSensor(int type, boolean wakeUp) {
-    // mock implementation
-    return new Sensor();
-  }
-
-  public boolean registerListener() {
-    // mock implementation
-    return true;
-  }
-
-  public void unregisterListener() {
-    // mock implementation
-  }
+  public static final int TYPE_ROTATION_VECTOR = 11;
+  public static final int TYPE_GEOMAGNETIC_ROTATION_VECTOR = 20;
+  public static final int TYPE_STEP_COUNTER = 19;
 }
