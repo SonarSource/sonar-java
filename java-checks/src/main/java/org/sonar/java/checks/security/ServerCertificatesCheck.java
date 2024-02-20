@@ -33,10 +33,13 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+/**
+ * This rules deprecates "java:S4424" (also known as "squid:S4424").
+ * Due to a limitation of SQ API, it is not however possible to mark both deprecation links using the dedicated
+ * {@code @org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey} annotations (see SONAR-17167 - marked as Won't Fix).
+ * It has therefore been decided to NOT declare any deprecations for this S4830, explicitly.
+ */
 @Rule(key = "S4830")
-// FIXME SONAR-17167: S4424 has been dropped and causes crashes in SQ - Only keeping the implicit "squid:S4830" (see JavaRulesDefinition)
-// @DeprecatedRuleKey(ruleKey = "S4424", repositoryKey = "squid")
-// @DeprecatedRuleKey(ruleKey = "S4424", repositoryKey = "java")
 public class ServerCertificatesCheck extends IssuableSubscriptionVisitor {
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String X509_CERTIFICATE_ARRAY = "java.security.cert.X509Certificate[]";
