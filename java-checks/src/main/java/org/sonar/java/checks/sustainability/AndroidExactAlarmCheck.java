@@ -48,16 +48,10 @@ public class AndroidExactAlarmCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    switch (ExpressionUtils.methodName(tree).name()) {
-      case SET_EXACT_NAME:
-      case SET_EXACT_AND_ALLOW_WHILE_IDLE_NAME:
-        onSetExactInvocation(tree);
-        break;
-      case SET_WINDOW_NAME:
-        onSetWindowInvocation(tree);
-        break;
-      default:
-        throw new IllegalArgumentException();
+    if (SET_WINDOW_NAME.equals(tree.methodSymbol().name())) {
+      onSetWindowInvocation(tree);
+    } else {
+      onSetExactInvocation(tree);
     }
   }
 
@@ -73,7 +67,7 @@ public class AndroidExactAlarmCheck extends AbstractMethodDetection {
     var windowLengthMillisArg = tree.arguments().get(2);
     var windowLengthMillis = ExpressionUtils.resolveAsConstant(windowLengthMillisArg);
 
-    if (windowLengthMillis instanceof Number && ((Number) windowLengthMillis).longValue() < SUGGESTED_MIN_LENGTH_MILLIS) {
+    if (windowLengthMillis instanceof Number num && num.longValue() < SUGGESTED_MIN_LENGTH_MILLIS) {
       reportIfInAndroidContext(windowLengthMillisArg, "Use alarm windows of 10 minutes or more instead.");
     }
   }
