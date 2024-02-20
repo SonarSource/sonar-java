@@ -1,0 +1,93 @@
+<h2>Why is this an issue?</h2>
+<p>Executing a batch of SQL queries instead of individual queries improves performance by reducing communication overhead with the database.</p>
+<p>Batching SQL statements is beneficial in common situations where a SQL statement is executed within a loop. In such cases, adding the statement to
+a batch and subsequently executing it reduces the number of interactions with the database. This results in improved efficiency and faster execution
+times.</p>
+<p>The rule raises an issue when it detects multiple SQL statements, like <code>java.sql.Statement</code> and <code>java.sql.PreparedStatement</code>,
+being executed individually or within a loop.</p>
+<h2>How to fix it</h2>
+<p>Group SQL statements by using the method <code>addBatch</code> to add them to a batch and then execute them using <code>executeBatch</code> to send
+them to the database in a single call.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public void execute(Connection connection) {
+  try {
+    Statement statement = connection.createStatement();
+
+    statement.execute("INSERT INTO myTable (column1, column2) VALUES (123, 'value1')"); // Noncompliant
+    statement.execute("INSERT INTO myTable (column1, column2) VALUES (456, 'value2')"); // Noncompliant
+    statement.execute("INSERT INTO myTable (column1, column2) VALUES (789, 'value3')"); // Noncompliant
+
+    statement.close();
+    connection.close();
+  } catch (SQLException e) {
+    e.printStackTrace();
+  }
+}
+</pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+public void execute(Connection connection) {
+  try {
+    Statement statement = connection.createStatement();
+
+    for (int i = 0; i &lt; 10; i++) {
+      statement.execute("INSERT INTO myTable (column1, column2) VALUES (" + i + ", 'value" + i + "')"); // Noncompliant
+    }
+
+    statement.close();
+    connection.close();
+  } catch (SQLException e) {
+    e.printStackTrace();
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public void execute(Connection connection) {
+  try {
+    Statement statement = connection.createStatement();
+
+    statement.addBatch("INSERT INTO myTable (column1, column2) VALUES (123, 'value1')"); // Compliant
+    statement.addBatch("INSERT INTO myTable (column1, column2) VALUES (456, 'value2')"); // Compliant
+    statement.addBatch("INSERT INTO myTable (column1, column2) VALUES (789, 'value3')"); // Compliant
+
+    statement.executeBatch();
+
+    statement.close();
+    connection.close();
+  } catch (SQLException e) {
+    e.printStackTrace();
+  }
+}
+</pre>
+<pre data-diff-id="2" data-diff-type="compliant">
+public void execute(Connection connection) {
+  try {
+    Statement statement = connection.createStatement();
+
+    for (int i = 0; i &lt; 10; i++) {
+      statement.addBatch("INSERT INTO myTable (column1, column2) VALUES (" + i + ", 'value" + i + "')"); // Compliant
+    }
+    statement.executeBatch();
+
+    statement.close();
+    connection.close();
+  } catch (SQLException e) {
+    e.printStackTrace();
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.sql/java/sql/Statement.html">Oracle Java SE 21 API - java.sql.Statement</a>
+  </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.sql/java/sql/PreparedStatement.html">Oracle Java SE 21 API -
+  java.sql.PreparedStatement</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.baeldung.com/jdbc-batch-processing">Baeldung - JDBC Batch Processing</a> </li>
+</ul>
+
