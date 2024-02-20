@@ -206,10 +206,10 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     if (!COMPONENT_SCAN_ARGUMENTS.contains(annotationValue.name())) {
       return;
     }
-    if (annotationValue.value() instanceof Object[]) {
-      for (Object o : (Object[]) annotationValue.value()) {
-        if (o instanceof String) {
-          packagesScannedBySpringAtProjectLevel.add((String) o);
+    if (annotationValue.value() instanceof Object[] objects) {
+      for (Object o : objects) {
+        if (o instanceof String oString) {
+          packagesScannedBySpringAtProjectLevel.add(oString);
         }
       }
     }

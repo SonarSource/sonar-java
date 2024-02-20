@@ -182,9 +182,9 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
     for (AnnotationValue annotationValue : values) {
       if (attributeName.equals(annotationValue.name())) {
         Object value = annotationValue.value();
-        if (value instanceof Symbol.VariableSymbol) {
+        if (value instanceof Symbol.VariableSymbol variableSymbol) {
           // expected values are constant from a Enum, translated into variable symbol
-          return Optional.of(((Symbol.VariableSymbol) value).name());
+          return Optional.of(variableSymbol.name());
         } else {
           return Optional.empty();
         }

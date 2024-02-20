@@ -57,7 +57,7 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
   @Nullable
   @Override
   public IdentifierTree label() {
-    return labelOrValue instanceof IdentifierTree ? (IdentifierTree) labelOrValue : null;
+    return labelOrValue instanceof IdentifierTree identifierTree ? identifierTree : null;
   }
 
   @Override

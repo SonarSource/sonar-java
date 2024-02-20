@@ -183,8 +183,7 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
 
   private boolean checkIntegerDivisionInsideFloatingPointExpression(BinaryExpressionTree integerDivision) {
     Tree parent = integerDivision.parent();
-    while (parent instanceof ExpressionTree) {
-      ExpressionTree expressionTree = (ExpressionTree) parent;
+    while (parent instanceof ExpressionTree expressionTree) {
       if (isFloatingPoint(expressionTree.symbolType())) {
         context.reportIssue(this, integerDivision, "Cast one of the operands of this integer division to a \"double\".");
         return false;

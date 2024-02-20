@@ -84,10 +84,10 @@ public final class ModifiersUtils {
   public static List<AnnotationTree> getAnnotations(Tree tree) {
     if (tree.kind() == Tree.Kind.VARIABLE) {
       return ((VariableTree) tree).modifiers().annotations();
-    } else if (tree instanceof MethodTree) {
-      return ((MethodTree) tree).modifiers().annotations();
-    } else if (tree instanceof ClassTree) {
-      return ((ClassTree) tree).modifiers().annotations();
+    } else if (tree instanceof MethodTree methodTree) {
+      return methodTree.modifiers().annotations();
+    } else if (tree instanceof ClassTree classTree) {
+      return classTree.modifiers().annotations();
     } else if (tree.kind() == Tree.Kind.PACKAGE) {
       return ((PackageDeclarationTree) tree).annotations();
     }

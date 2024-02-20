@@ -70,8 +70,8 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
 
   @Nullable
   private static String getRetentionValue(Object value) {
-    if (value instanceof Symbol.VariableSymbol) {
-      return ((Symbol.VariableSymbol) value).name();
+    if (value instanceof Symbol.VariableSymbol variableSymbol) {
+      return variableSymbol.name();
     }
     return null;
   }

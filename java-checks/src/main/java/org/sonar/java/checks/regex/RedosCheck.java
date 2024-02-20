@@ -258,10 +258,9 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
     }
 
     private boolean canMatchAnything(AutomatonState state) {
-      if (!(state instanceof RepetitionTree)) {
+      if (!(state instanceof RepetitionTree repetition)) {
         return false;
       }
-      RepetitionTree repetition = (RepetitionTree) state;
       return repetition.getQuantifier().getMinimumRepetitions() == 0 && repetition.getQuantifier().isOpenEnded()
         && canMatchAnyCharacter(repetition.getElement());
     }
@@ -288,8 +287,8 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
         for (RegexTree alternative : ((DisjunctionTree) tree).getAlternatives()) {
           collectSingleCharacters(alternative, accumulator);
         }
-      } else if (tree instanceof GroupTree) {
-        collectSingleCharacters(((GroupTree) tree).getElement(), accumulator);
+      } else if (tree instanceof GroupTree groupTree) {
+        collectSingleCharacters(groupTree.getElement(), accumulator);
       } else if (tree.is(RegexTree.Kind.REPETITION)) {
         RepetitionTree repetition = (RepetitionTree) tree;
         if (repetition.getQuantifier().getMinimumRepetitions() <= 1) {

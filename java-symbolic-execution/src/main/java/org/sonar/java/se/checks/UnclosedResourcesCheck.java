@@ -500,8 +500,8 @@ public class UnclosedResourcesCheck extends SECheck {
     }
 
     private boolean passedCloseableParameter(SymbolicValue resource) {
-      return resource instanceof ResourceWrapperSymbolicValue
-        && programState.getConstraint(((ResourceWrapperSymbolicValue) resource).dependent, ResourceConstraint.class) == null;
+      return resource instanceof ResourceWrapperSymbolicValue resourceWrapperSymbolicValue
+        && programState.getConstraint(resourceWrapperSymbolicValue.dependent, ResourceConstraint.class) == null;
     }
 
     @Override

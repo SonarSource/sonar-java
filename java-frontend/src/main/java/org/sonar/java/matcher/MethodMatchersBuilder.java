@@ -222,8 +222,8 @@ public class MethodMatchersBuilder implements MethodMatchers.TypeBuilder, Method
   @CheckForNull
   private static Type getCallSiteType(MethodReferenceTree referenceTree) {
     Tree expression = referenceTree.expression();
-    if (expression instanceof ExpressionTree) {
-      return ((ExpressionTree) expression).symbolType();
+    if (expression instanceof ExpressionTree expressionTree) {
+      return expressionTree.symbolType();
     }
     return null;
   }

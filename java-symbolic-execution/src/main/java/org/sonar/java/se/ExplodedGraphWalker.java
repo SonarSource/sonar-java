@@ -473,9 +473,9 @@ public class ExplodedGraphWalker {
           ProgramState.Pop unstack = programState.unstackValue(1);
           SymbolicValue sv = unstack.values.get(0);
           SymbolicValue.ExceptionalSymbolicValue exceptionalSV;
-          if (sv instanceof SymbolicValue.CaughtExceptionSymbolicValue) {
+          if (sv instanceof SymbolicValue.CaughtExceptionSymbolicValue caughtExceptionSymbolicValue) {
             // retrowing the exception from a catch block
-            exceptionalSV = ((SymbolicValue.CaughtExceptionSymbolicValue) sv).exception();
+            exceptionalSV = caughtExceptionSymbolicValue.exception();
           } else {
             exceptionalSV = constraintManager.createExceptionalSymbolicValue(((ThrowStatementTree) terminator).expression().symbolType());
           }
@@ -999,8 +999,8 @@ public class ExplodedGraphWalker {
     SymbolicValue.ExceptionalSymbolicValue sv = null;
     Type exceptionType = null;
     // FIXME SONARJAVA-2069 every path conducting to a catch block should have an exceptional symbolic value on top of the stack
-    if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      sv = (SymbolicValue.ExceptionalSymbolicValue) peekValue;
+    if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue exceptionalSymbolicValue) {
+      sv = exceptionalSymbolicValue;
       exceptionType = sv.exceptionType();
     }
     if (exceptionType == null || exceptionType.isUnknown()) {

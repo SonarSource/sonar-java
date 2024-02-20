@@ -153,12 +153,11 @@ public class NullDereferenceCheck extends SECheck {
         inspectReturnStatement(context, (ReturnStatementTree) syntaxNode, peekValue);
         break;
       default:
-        if (syntaxNode instanceof AssignmentExpressionTree) {
-          inspectAssignment(context, (AssignmentExpressionTree) syntaxNode, peekValue);
-        } else if (syntaxNode instanceof BinaryExpressionTree) {
-          inspectBinaryExpression(context, (BinaryExpressionTree) syntaxNode, peekValue);
-        } else if (syntaxNode instanceof UnaryExpressionTree) {
-          var unaryOperation = (UnaryExpressionTree) syntaxNode;
+        if (syntaxNode instanceof AssignmentExpressionTree assignmentExpressionTree) {
+          inspectAssignment(context, assignmentExpressionTree, peekValue);
+        } else if (syntaxNode instanceof BinaryExpressionTree binaryExpressionTree) {
+          inspectBinaryExpression(context, binaryExpressionTree, peekValue);
+        } else if (syntaxNode instanceof UnaryExpressionTree unaryOperation) {
           extractUnboxingExpression(unaryOperation).ifPresent(expression ->
             checkUnboxingConstraint(context, expression, peekValue)
           );

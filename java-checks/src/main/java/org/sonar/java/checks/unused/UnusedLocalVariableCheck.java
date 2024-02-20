@@ -92,8 +92,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
    */
   private static boolean isRValue(IdentifierTree tree) {
     Tree parent = skipParenthesesUpwards(tree.parent());
-    if (parent instanceof AssignmentExpressionTree) {
-      AssignmentExpressionTree assignment = (AssignmentExpressionTree) parent;
+    if (parent instanceof AssignmentExpressionTree assignment) {
       return assignment.variable() != tree;
     }
     // Note that an expression statement can't be a parenthesized expression, so we don't need to skip parentheses here

@@ -64,8 +64,8 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
   @Override
   public void visitNode(Tree tree) {
     ExpressionTree expression;
-    if (tree instanceof UnaryExpressionTree) {
-      expression = ExpressionUtils.skipParentheses(((UnaryExpressionTree) tree).expression());
+    if (tree instanceof UnaryExpressionTree unaryExpressionTree) {
+      expression = ExpressionUtils.skipParentheses(unaryExpressionTree.expression());
     } else {
       expression = ((AssignmentExpressionTree) tree).variable();
     }

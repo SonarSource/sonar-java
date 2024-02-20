@@ -139,8 +139,7 @@ public class HardcodedStringExpressionChecker {
       case LONG_LITERAL:
         return true;
       default:
-        if (arg instanceof BinaryExpressionTree) {
-          BinaryExpressionTree binaryExpression = (BinaryExpressionTree) arg;
+        if (arg instanceof BinaryExpressionTree binaryExpression) {
           return isDerivedFromPlainText(binaryExpression, secondaryLocations, visited);
         }
         return false;

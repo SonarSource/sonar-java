@@ -357,9 +357,9 @@ public class FlowComputation {
       if (exception == null) {
         exception = edge.child.programState.peekValue();
       }
-      if (exception instanceof SymbolicValue.ExceptionalSymbolicValue) {
+      if (exception instanceof SymbolicValue.ExceptionalSymbolicValue exceptionalSymbolicValue) {
         if (isMethodInvocationNode(edge.parent)) {
-          Type type = ((SymbolicValue.ExceptionalSymbolicValue) exception).exceptionType();
+          Type type = exceptionalSymbolicValue.exceptionType();
           String msg = String.format("%s is thrown.", exceptionName(type));
           return Optional.of(location(edge.parent, msg));
         } else if (isDivByZeroExceptionalYield(edge)) {
@@ -645,8 +645,7 @@ public class FlowComputation {
       if (sv.equals(peekValue)) {
         return programState.peekValueSymbol().symbol;
       }
-      if (peekValue instanceof BinarySymbolicValue) {
-        BinarySymbolicValue bsv = (BinarySymbolicValue) peekValue;
+      if (peekValue instanceof BinarySymbolicValue bsv) {
         if (sv.equals(bsv.getRightOp())) {
           return bsv.rightSymbol();
         }

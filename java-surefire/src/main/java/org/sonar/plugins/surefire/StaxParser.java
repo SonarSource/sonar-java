@@ -40,8 +40,7 @@ public class StaxParser {
   public StaxParser(UnitTestIndex index) {
     this.streamHandler = new SurefireStaxHandler(index);
     XMLInputFactory xmlInputFactory = SafeStaxParserFactory.createXMLInputFactory();
-    if (xmlInputFactory instanceof WstxInputFactory) {
-      WstxInputFactory wstxInputfactory = (WstxInputFactory) xmlInputFactory;
+    if (xmlInputFactory instanceof WstxInputFactory wstxInputfactory) {
       wstxInputfactory.configureForLowMemUsage();
       wstxInputfactory.getConfig().setUndeclaredEntityResolver((String publicID, String systemID, String baseURI, String namespace) -> namespace);
       wstxInputfactory.setProperty(WstxInputProperties.P_MAX_ATTRIBUTE_SIZE, Integer.MAX_VALUE);

@@ -73,8 +73,8 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   public static Tree skipParentheses(Tree tree) {
-    if (tree instanceof ExpressionTree) {
-      return ExpressionUtils.skipParentheses((ExpressionTree) tree);
+    if (tree instanceof ExpressionTree expressionTree) {
+      return ExpressionUtils.skipParentheses(expressionTree);
     }
     return tree;
   }

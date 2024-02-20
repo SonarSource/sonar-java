@@ -55,8 +55,7 @@ public abstract class AbstractXMLProcessing extends SECheck {
       if (getParsingMethods().matches(mit)) {
         SymbolicValue peek = programState.peekValue(mit.arguments().size());
 
-        if (peek instanceof XxeProcessingCheck.XxeSymbolicValue) {
-          XxeProcessingCheck.XxeSymbolicValue xxeSymbolicValue = (XxeProcessingCheck.XxeSymbolicValue) peek;
+        if (peek instanceof XxeProcessingCheck.XxeSymbolicValue xxeSymbolicValue) {
           reportIfNotSecured(context, xxeSymbolicValue, programState.getConstraints(xxeSymbolicValue));
         }
       }
@@ -74,8 +73,7 @@ public abstract class AbstractXMLProcessing extends SECheck {
 
     // We want to report only when the unsecured factory is returned, if it is the case, it will be on the top of the stack.
     SymbolicValue peek = endState.peekValue();
-    if (peek instanceof XxeProcessingCheck.XxeSymbolicValue) {
-      XxeProcessingCheck.XxeSymbolicValue xxeSV = (XxeProcessingCheck.XxeSymbolicValue) peek;
+    if (peek instanceof XxeProcessingCheck.XxeSymbolicValue xxeSV) {
       reportIfNotSecured(context, xxeSV, endState.getConstraints(xxeSV));
     }
   }

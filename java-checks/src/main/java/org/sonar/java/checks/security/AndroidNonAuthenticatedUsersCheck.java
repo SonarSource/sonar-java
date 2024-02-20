@@ -106,8 +106,8 @@ public class AndroidNonAuthenticatedUsersCheck extends AbstractMethodDetection {
   private static Optional<NewClassTree> getNotAuthenticatedConstructorInDeclaration(Symbol symbol) {
     if (symbol.isLocalVariable()) {
       Tree declaration = symbol.declaration();
-      if (declaration instanceof VariableTree) {
-        ExpressionTree initializer = ((VariableTree) declaration).initializer();
+      if (declaration instanceof VariableTree variableTree) {
+        ExpressionTree initializer = variableTree.initializer();
         if (initializer != null) {
           return getNotAuthenticatedConstructor(initializer);
         }

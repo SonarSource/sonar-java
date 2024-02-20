@@ -132,8 +132,8 @@ public final class SyntacticEquivalence {
    * Caller must guarantee that nodes of the same kind.
    */
   private static boolean areLeafsEquivalent(JavaTree leftNode, JavaTree rightNode) {
-    if (leftNode instanceof SyntaxToken) {
-      return Objects.equals(((SyntaxToken) leftNode).text(), ((SyntaxToken) rightNode).text());
+    if (leftNode instanceof SyntaxToken syntaxToken) {
+      return Objects.equals(syntaxToken.text(), ((SyntaxToken) rightNode).text());
     } else if (leftNode.is(Tree.Kind.INFERED_TYPE)) {
       return rightNode.is(Tree.Kind.INFERED_TYPE);
     } else {

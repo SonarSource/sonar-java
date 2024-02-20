@@ -171,13 +171,13 @@ public class RegexStackOverflowCheck extends AbstractRegexCheck {
         return new PathInfo(0, 0);
       }
       AutomatonState next = start.continuation();
-      if (start instanceof RegexTree) {
+      if (start instanceof RegexTree startRegex) {
         if (start instanceof CharacterTree && next instanceof CharacterTree) {
           // Consecutive characters don't create an extra recursion, so we skip the character edge between them and use
           // a 1,0 edge instead.
           return new PathInfo(1, 0).add(shortestPath(next, end, shortestPathComparator));
         }
-        PathInfo path = shortestInnerPath((RegexTree) start, shortestPathComparator);
+        PathInfo path = shortestInnerPath(startRegex, shortestPathComparator);
         path.add(edgeCost(next));
         path.add(shortestPath(next, end, shortestPathComparator));
         return path;

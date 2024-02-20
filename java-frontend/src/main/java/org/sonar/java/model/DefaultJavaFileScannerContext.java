@@ -227,8 +227,8 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
 
   @Override
   public Optional<SourceMap> sourceMap() {
-    if (inputFile instanceof GeneratedFile) {
-      return Optional.of(((GeneratedFile) inputFile).sourceMap());
+    if (inputFile instanceof GeneratedFile generatedFile) {
+      return Optional.of(generatedFile.sourceMap());
     }
     return Optional.empty();
   }

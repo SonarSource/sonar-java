@@ -54,6 +54,29 @@ class ExplodedGraphTest {
     assertThat(child.parents()).hasSize(2);
   }
 
+  @Test
+  void test_node_equality() {
+    ExplodedGraph eg = new ExplodedGraph();
+
+    ProgramPoint pp1 = mockProgramPoint("pp1");
+    ProgramPoint pp2 = mockProgramPoint("pp2");
+    ProgramState ps1 = mock(ProgramState.class);
+    ProgramState ps2 = mock(ProgramState.class);
+
+    ExplodedGraph.Node node1 = eg.node(pp1, ps1);
+    ExplodedGraph.Node node2 = eg.node(pp1, ps1);
+    assertThat(node1).isEqualTo(node2);
+
+    node2 = eg.node(pp1, ps2);
+    assertThat(node1).isNotEqualTo(node2);
+
+    node2 = eg.node(pp2, ps1);
+    assertThat(node1).isNotEqualTo(node2);
+
+    String notANode = "not a node";
+    assertThat(node1).isNotEqualTo(notANode);
+  }
+
   private ProgramPoint mockProgramPoint(String toString) {
     ProgramPoint mock = mock(ProgramPoint.class);
     when(mock.toString()).thenReturn(toString);

@@ -386,10 +386,10 @@ public class JSymbolMetadataNullabilityHelper {
   }
 
   private static boolean isExpectedValue(Object annotationValue, String expectedValue) {
-    if (annotationValue instanceof Object[]) {
-      return containsValue((Object[]) annotationValue, expectedValue);
+    if (annotationValue instanceof Object[] objects) {
+      return containsValue(objects, expectedValue);
     }
-    return annotationValue instanceof Symbol && expectedValue.equals(((Symbol) annotationValue).name());
+    return annotationValue instanceof Symbol symbol && expectedValue.equals(symbol.name());
   }
 
   private static boolean containsValue(Object[] annotationValue, String expectedValue) {
