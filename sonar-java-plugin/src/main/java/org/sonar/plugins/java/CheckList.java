@@ -229,6 +229,7 @@ import org.sonar.java.checks.LoopsOnSameSetCheck;
 import org.sonar.java.checks.MagicNumberCheck;
 import org.sonar.java.checks.MainMethodThrowsExceptionCheck;
 import org.sonar.java.checks.MapKeyNotComparableCheck;
+import org.sonar.java.checks.MathClampMethodsCheck;
 import org.sonar.java.checks.MathClampRangeCheck;
 import org.sonar.java.checks.MathOnFloatCheck;
 import org.sonar.java.checks.MembersDifferOnlyByCapitalizationCheck;
@@ -942,6 +943,7 @@ public final class CheckList {
     LoopsOnSameSetCheck.class,
     MainMethodThrowsExceptionCheck.class,
     MapKeyNotComparableCheck.class,
+    MathClampMethodsCheck.class,
     MathClampRangeCheck.class,
     MembersDifferOnlyByCapitalizationCheck.class,
     MethodComplexityCheck.class,
