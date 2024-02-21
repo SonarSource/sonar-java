@@ -1,0 +1,24 @@
+{
+  "title": "Constant parameters in a \"PreparedStatement\" should not be set more than once",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "sql",
+    "sustainability"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6909",
+  "sqKey": "S6909",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  }
+}

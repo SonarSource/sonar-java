@@ -287,6 +287,7 @@ import org.sonar.java.checks.PopulateBeansCheck;
 import org.sonar.java.checks.PredictableSeedCheck;
 import org.sonar.java.checks.PreferStreamAnyMatchCheck;
 import org.sonar.java.checks.PreparedStatementAndResultSetCheck;
+import org.sonar.java.checks.PreparedStatementLoopInvariantCheck;
 import org.sonar.java.checks.PrimitiveTypeBoxingWithToStringCheck;
 import org.sonar.java.checks.PrimitiveWrappersInTernaryOperatorCheck;
 import org.sonar.java.checks.PrimitivesMarkedNullableCheck;
@@ -990,6 +991,7 @@ public final class CheckList {
     PredictableSeedCheck.class,
     PreferStreamAnyMatchCheck.class,
     PreparedStatementAndResultSetCheck.class,
+    PreparedStatementLoopInvariantCheck.class,
     PrimitiveWrappersInTernaryOperatorCheck.class,
     PrimitivesMarkedNullableCheck.class,
     PrintfFailCheck.class,
