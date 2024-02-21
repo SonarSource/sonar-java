@@ -66,8 +66,8 @@ public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisito
       } else {
         builder.withMessage("Use \"new BigDecimal(String, MathContext)\" instead.");
         ExpressionTree firstArgument = arguments.get(0);
-        if (firstArgument instanceof LiteralTree) {
-          builder.withQuickFix(() -> stringConstructorQuickFix((LiteralTree) firstArgument));
+        if (firstArgument instanceof LiteralTree literalTree) {
+          builder.withQuickFix(() -> stringConstructorQuickFix(literalTree));
         }
       }
       builder.report();

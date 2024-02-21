@@ -165,8 +165,7 @@ public class CFG implements ControlFlowGraph {
     if (symbol != null) {
       if (symbol.isUnknown()) {
         markSemanticAsIncomplete(reason, location);
-      } else if (symbol instanceof Symbol.MethodSymbol) {
-        Symbol.MethodSymbol method = (Symbol.MethodSymbol) symbol;
+      } else if (symbol instanceof Symbol.MethodSymbol method) {
         if (method.returnType().isUnknown()) {
           markSemanticAsIncomplete("unknown return type", location);
         } else if (method.parameterTypes().stream().anyMatch(Type::isUnknown)) {

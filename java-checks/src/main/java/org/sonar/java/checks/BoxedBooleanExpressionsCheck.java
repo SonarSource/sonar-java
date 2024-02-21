@@ -223,8 +223,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
     if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
       return findBoxedBoolean(((UnaryExpressionTree) tree).expression());
     }
-    if (tree instanceof BinaryExpressionTree) {
-      BinaryExpressionTree expr = (BinaryExpressionTree) tree;
+    if (tree instanceof BinaryExpressionTree expr) {
       if (findBoxedBoolean(expr.leftOperand()) != null && expr.rightOperand().symbolType().isPrimitive(Primitives.BOOLEAN)) {
         return expr.leftOperand();
       }

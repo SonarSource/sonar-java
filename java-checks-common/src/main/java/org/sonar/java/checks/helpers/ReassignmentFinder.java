@@ -74,9 +74,9 @@ public final class ReassignmentFinder {
       return ((VariableTree) tree).initializer();
     } else if (tree.is(Tree.Kind.ENUM_CONSTANT)) {
       return ((EnumConstantTree) tree).initializer();
-    } else if (tree instanceof AssignmentExpressionTree) {
+    } else if (tree instanceof AssignmentExpressionTree assignmentExpressionTree) {
       // All kinds of Assignment
-      return ((AssignmentExpressionTree) tree).expression();
+      return assignmentExpressionTree.expression();
     }
     // Can be other declaration, like class
     return null;
@@ -102,11 +102,8 @@ public final class ReassignmentFinder {
       nonParenthesisParent = previousTree.parent();
     }
 
-    if (nonParenthesisParent instanceof AssignmentExpressionTree) {
-      AssignmentExpressionTree assignment = (AssignmentExpressionTree) nonParenthesisParent;
-      if (assignment.variable().equals(previousTree)) {
-        return Optional.of(assignment);
-      }
+    if (nonParenthesisParent instanceof AssignmentExpressionTree assignment && assignment.variable().equals(previousTree)) {
+      return Optional.of(assignment);
     }
     return Optional.empty();
   }

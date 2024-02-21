@@ -262,8 +262,8 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       SymbolicValue optional = pop.values.get(1);
       List<ProgramState> psEmpty = optional.setConstraint(pop.state.stackValue(orElseValue), OptionalConstraint.NOT_PRESENT);
       SymbolicValue symbolicValue;
-      if(optional instanceof OptionalSymbolicValue) {
-        symbolicValue = ((OptionalSymbolicValue) optional).wrappedValue;
+      if(optional instanceof OptionalSymbolicValue optionalSymbolicValue) {
+        symbolicValue = optionalSymbolicValue.wrappedValue;
       } else {
         symbolicValue = constraintManager.createSymbolicValue(tree);
       }

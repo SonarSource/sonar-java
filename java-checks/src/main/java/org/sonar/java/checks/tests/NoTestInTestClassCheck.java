@@ -160,7 +160,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbol.metadata().valuesForAnnotation("org.junit.runner.RunWith");
     if (annotationValues != null && annotationValues.size() == 1) {
       Object value = annotationValues.get(0).value();
-      return value instanceof Symbol.TypeSymbol && checkRunWithType((Symbol.TypeSymbol) value, runnerClasses);
+      return value instanceof Symbol.TypeSymbol typeSymbol && checkRunWithType(typeSymbol, runnerClasses);
     }
     return false;
   }

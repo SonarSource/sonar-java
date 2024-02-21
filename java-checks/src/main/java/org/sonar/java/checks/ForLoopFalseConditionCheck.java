@@ -98,7 +98,7 @@ public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
 
   private static Integer eval(ExpressionTree expression, Iterable<ForLoopInitializer> initializers) {
     Object resolvedConstant = ExpressionUtils.resolveAsConstant(expression);
-    Integer intLiteralValue = resolvedConstant instanceof Integer? ((Integer) resolvedConstant) : null;
+    Integer intLiteralValue = resolvedConstant instanceof Integer integer ? integer : null;
     if (intLiteralValue == null) {
       for (ForLoopInitializer initializer : initializers) {
         if (initializer.hasSameIdentifier(expression)) {

@@ -1505,13 +1505,12 @@ public class JParser {
     StatementListTreeImpl body = null;
 
     for (Object o : list) {
-      if (o instanceof SwitchCase) {
+      if (o instanceof SwitchCase c) {
         if (caselabels == null) {
           caselabels = new ArrayList<>();
           body = StatementListTreeImpl.emptyList();
         }
 
-        SwitchCase c = (SwitchCase) o;
         List<ExpressionTree> expressions = new ArrayList<>();
         for (Object oo : c.expressions()) {
           expressions.add(convertExpressionFromCase((Expression) oo));
@@ -1543,8 +1542,8 @@ public class JParser {
     if (e.getNodeType() == ASTNode.NULL_LITERAL) {
       return new NullPatternTreeImpl((LiteralTreeImpl) convertExpression(e));
     }
-    if (e instanceof Pattern) {
-      return convertPattern((Pattern) e);
+    if (e instanceof Pattern pattern) {
+      return convertPattern(pattern);
     }
     return convertExpression(e);
   }
@@ -2449,11 +2448,11 @@ public class JParser {
   private KeywordSuper unqualifiedKeywordSuper(ASTNode node) {
     InternalSyntaxToken token = firstTokenIn(node, TerminalTokens.TokenNamesuper);
     do {
-      if (node instanceof AbstractTypeDeclaration) {
-        return new KeywordSuper(token, ((AbstractTypeDeclaration) node).resolveBinding());
+      if (node instanceof AbstractTypeDeclaration abstractTypeDeclaration) {
+        return new KeywordSuper(token, abstractTypeDeclaration.resolveBinding());
       }
-      if (node instanceof AnonymousClassDeclaration) {
-        return new KeywordSuper(token, ((AnonymousClassDeclaration) node).resolveBinding());
+      if (node instanceof AnonymousClassDeclaration anonymousClassDeclaration) {
+        return new KeywordSuper(token, anonymousClassDeclaration.resolveBinding());
       }
       node = node.getParent();
     } while (true);

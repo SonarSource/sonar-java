@@ -117,7 +117,7 @@ public class AssertJAssertionsInConsumerCheck extends IssuableSubscriptionVisito
 
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
       Tree argumentDeclaration = ((IdentifierTree) expressionTree).symbol().declaration();
-      return argumentDeclaration instanceof VariableTree && hasAssertion(((VariableTree) argumentDeclaration).initializer());
+      return argumentDeclaration instanceof VariableTree variableTree && hasAssertion(variableTree.initializer());
     } else {
       AssertionVisitor assertionVisitor = new AssertionVisitor();
       expressionTree.accept(assertionVisitor);

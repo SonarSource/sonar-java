@@ -59,8 +59,7 @@ public class ProgramPoint {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof ProgramPoint) {
-      ProgramPoint other = (ProgramPoint) obj;
+    if (obj instanceof ProgramPoint other) {
       return this.block.id() == other.block.id()
         && this.i == other.i;
     }
@@ -70,8 +69,8 @@ public class ProgramPoint {
   @Override
   public String toString() {
     String tree = "";
-    if (block instanceof CFG.Block) {
-      List<Tree> elements = ((CFG.Block) block).elements();
+    if (block instanceof CFG.Block cfgBlock) {
+      List<Tree> elements = cfgBlock.elements();
       if (i < elements.size()) {
         tree = "" + elements.get(i).kind() + LineUtils.startLine(elements.get(i));
       }

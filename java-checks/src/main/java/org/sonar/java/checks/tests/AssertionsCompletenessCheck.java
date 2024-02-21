@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -208,11 +209,11 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     return false;
   }
 
-  private static boolean isSoftAssertionsExtensionClass(Object value) {
-    if (value instanceof Object[]) {
-      Object[] values = (Object[]) value;
+  @VisibleForTesting
+  static boolean isSoftAssertionsExtensionClass(Object value) {
+    if (value instanceof Object[] values) {
       for (Object v : values) {
-        if (v instanceof Symbol && ((Symbol) v).type().is("org.assertj.core.api.junit.jupiter.SoftAssertionsExtension")) {
+        if (v instanceof Symbol vSymbol && vSymbol.type().is("org.assertj.core.api.junit.jupiter.SoftAssertionsExtension")) {
           return true;
         }
       }

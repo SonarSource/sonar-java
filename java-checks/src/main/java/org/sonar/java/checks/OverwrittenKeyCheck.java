@@ -218,8 +218,8 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
 
   @CheckForNull
   private static Object extractKey(ExpressionTree keyArgument) {
-    if (keyArgument instanceof LiteralTree) {
-      return ((LiteralTree) keyArgument).value();
+    if (keyArgument instanceof LiteralTree literalTree) {
+      return literalTree.value();
     }
     return symbolFromIdentifier(keyArgument);
   }

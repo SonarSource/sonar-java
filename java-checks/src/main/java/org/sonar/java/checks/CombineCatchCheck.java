@@ -128,8 +128,7 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
   }
 
   private String formatType(TypeTree type) {
-    if(type instanceof MemberSelectExpressionTreeImpl) {
-      MemberSelectExpressionTreeImpl mtype = (MemberSelectExpressionTreeImpl) type;
+    if(type instanceof MemberSelectExpressionTreeImpl mtype) {
       return QuickFixHelper.contentForTree(mtype, context);
     }
     return type.toString();
@@ -137,8 +136,7 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
 
   private static List<TypeTree> getExceptionTypesCaught(CatchTree catchTree){
     TypeTree catchType = catchTree.parameter().type();
-    if(catchType instanceof UnionTypeTreeImpl) {
-      UnionTypeTreeImpl unionTypes = (UnionTypeTreeImpl) catchType;
+    if(catchType instanceof UnionTypeTreeImpl unionTypes) {
       unionTypes.symbolType();
       return unionTypes.typeAlternatives();
     }else {

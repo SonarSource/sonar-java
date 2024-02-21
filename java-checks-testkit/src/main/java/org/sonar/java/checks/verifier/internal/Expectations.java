@@ -599,8 +599,7 @@ class Expectations {
 
     private static Map<IssueAttribute, Object> adjustEndLine(Map<IssueAttribute, Object> attributes, int line) {
       Object endLine = attributes.get(END_LINE);
-      if (endLine instanceof LineRef.RelativeLineRef) {
-        LineRef.RelativeLineRef relativeLineRef = (LineRef.RelativeLineRef) endLine;
+      if (endLine instanceof LineRef.RelativeLineRef relativeLineRef) {
         if (relativeLineRef.offset < 0) {
           throw new AssertionError("endLine attribute should be relative to the line and must be +N with N integer");
         }

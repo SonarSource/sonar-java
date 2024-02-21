@@ -239,15 +239,15 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
   @Nullable
   private static String getAccessLevelValue(Object value) {
-    if (value instanceof Symbol) {
-      return ((Symbol) value).name();
+    if (value instanceof Symbol symbol) {
+      return symbol.name();
     }
     return null;
   }
 
   private static boolean getMakeFinalValue(Object value) {
-    if (value instanceof Boolean) {
-      return (Boolean) value;
+    if (value instanceof Boolean bool) {
+      return bool;
     }
     return false;
   }

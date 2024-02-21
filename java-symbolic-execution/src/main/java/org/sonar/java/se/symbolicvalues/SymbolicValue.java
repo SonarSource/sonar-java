@@ -49,8 +49,8 @@ public class SymbolicValue {
 
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, Constraint constraint) {
-      if(constraint instanceof ObjectConstraint) {
-        return super.setConstraint(programState, (ObjectConstraint) constraint);
+      if(constraint instanceof ObjectConstraint objectConstraint) {
+        return super.setConstraint(programState, objectConstraint);
       }
       return Collections.singletonList(programState);
     }
@@ -108,8 +108,7 @@ public class SymbolicValue {
   }
 
   public static boolean isDisposable(SymbolicValue symbolicValue) {
-    if (symbolicValue instanceof NotSymbolicValue) {
-      NotSymbolicValue notSV = (NotSymbolicValue) symbolicValue;
+    if (symbolicValue instanceof NotSymbolicValue notSV) {
       return !(notSV.operand instanceof RelationalSymbolicValue);
     }
     return !PROTECTED_SYMBOLIC_VALUES.contains(symbolicValue) && !(symbolicValue instanceof RelationalSymbolicValue);
@@ -161,10 +160,10 @@ public class SymbolicValue {
   }
 
   public List<ProgramState> setConstraint(ProgramState programState, Constraint constraint) {
-    if(constraint instanceof BooleanConstraint) {
-      return setConstraint(programState, (BooleanConstraint) constraint);
-    } else if(constraint instanceof ObjectConstraint) {
-      return setConstraint(programState, (ObjectConstraint) constraint);
+    if(constraint instanceof BooleanConstraint booleanConstraint) {
+      return setConstraint(programState, booleanConstraint);
+    } else if(constraint instanceof ObjectConstraint objectConstraint) {
+      return setConstraint(programState, objectConstraint);
     }
     Constraint csrtaint = programState.getConstraint(this, constraint.getClass());
     if (constraint.isValidWith(csrtaint)) {

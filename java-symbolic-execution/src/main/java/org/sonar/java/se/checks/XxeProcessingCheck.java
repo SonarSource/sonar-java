@@ -332,8 +332,7 @@ public class XxeProcessingCheck extends SECheck {
       if (PARSING_METHODS.matches(mit)) {
         SymbolicValue peek = programState.peekValue(mit.arguments().size());
 
-        if (peek instanceof XxeSymbolicValue) {
-          XxeSymbolicValue xxeSymbolicValue = (XxeSymbolicValue) peek;
+        if (peek instanceof XxeSymbolicValue xxeSymbolicValue) {
           reportIfNotSecured(context, xxeSymbolicValue, programState.getConstraints(xxeSymbolicValue));
         }
       }
@@ -434,8 +433,8 @@ public class XxeProcessingCheck extends SECheck {
       SymbolicValueSymbol peek = programState.peekValueSymbol();
       Symbol symbol = peek.symbol();
       SymbolicValue sv = peek.symbolicValue();
-      if (symbol != null && sv instanceof XxeSymbolicValue) {
-        ((XxeSymbolicValue) sv).setField(ProgramState.isField(symbol));
+      if (symbol != null && sv instanceof XxeSymbolicValue xxeSymbolicValue) {
+        xxeSymbolicValue.setField(ProgramState.isField(symbol));
       }
 
       // Add a constraint when the tree assign the property key to a variable.
@@ -452,8 +451,7 @@ public class XxeProcessingCheck extends SECheck {
 
     // We want to report only when the unsecured factory is returned, if it is the case, it will be on the top of the stack.
     SymbolicValue peek = endState.peekValue();
-    if (peek instanceof XxeSymbolicValue) {
-      XxeSymbolicValue xxeSV = (XxeSymbolicValue) peek;
+    if (peek instanceof XxeSymbolicValue xxeSV) {
       reportIfNotSecured(context, xxeSV, endState.getConstraints(xxeSV));
     }
   }

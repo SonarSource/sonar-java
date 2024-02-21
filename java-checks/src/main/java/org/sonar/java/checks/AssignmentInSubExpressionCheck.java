@@ -88,8 +88,7 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
 
   private ExpressionTree skipChainedAssignments(ExpressionTree expressionTree) {
     ExpressionTree tree = ExpressionUtils.skipParentheses(expressionTree);
-    while (tree instanceof AssignmentExpressionTree) {
-      AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) tree;
+    while (tree instanceof AssignmentExpressionTree assignmentExpressionTree) {
       scan(assignmentExpressionTree.variable());
       tree = ExpressionUtils.skipParentheses(assignmentExpressionTree.expression());
     }

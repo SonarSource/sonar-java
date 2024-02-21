@@ -118,8 +118,7 @@ public class ExplodedGraph {
 
     @Override
     public boolean equals(Object obj) {
-      if (obj instanceof Node) {
-        Node other = (Node) obj;
+      if (obj instanceof Node other) {
         return this.programPoint.equals(other.programPoint)
           && Objects.equals(this.programState, other.programState);
       }
