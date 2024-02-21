@@ -1,5 +1,6 @@
 package checks;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -56,7 +57,7 @@ public class BatchSQLStatementsCheckSample {
       .count();
   }
 
-  void nonCompliantIterableForEach(Statement statement, List<String> queries) {
+  void nonCompliantIterableForEach(PreparedStatement statement, List<String> queries) {
     queries.forEach(query -> {
       try {
         statement.execute(query); // Noncompliant
@@ -138,7 +139,7 @@ public class BatchSQLStatementsCheckSample {
     statement.executeBatch();
   }
 
-  void compliantSingleStatement(Statement statement, String query) throws SQLException {
+  void compliantSingleStatement(PreparedStatement statement, String query) throws SQLException {
     statement.execute(query);
   }
 

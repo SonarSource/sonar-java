@@ -1,0 +1,60 @@
+<p>The <code>java.sql.PreparedStatement</code> represents a precompiled SQL statement that can be efficiently executed multiple times.</p>
+<h2>Why is this an issue?</h2>
+<p>The <code>PreparedStatement</code> is frequently used in loops because it allows to conveniently set parameters. A small optimization is possible
+by setting constant parameters outside the loop or hard-coding them in the query whenever possible.</p>
+<h3>What is the potential impact?</h3>
+<ul>
+  <li> <em>Performance</em>: the unnecessary calls to the setter methods bring overhead. </li>
+  <li> <em>Sustainability</em>: the extra overhead has a negative impact on the environment. </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Place calls to setter methods that take a constant argument outside the loop.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class DatabaseExample {
+
+    public record Order(String id, BigDecimal price) {}
+
+    public void updateTodayOrders(Connection connection, List&lt;Order&gt; orders) {
+            Date today = java.sql.Date.valueOf(LocalDate.now());
+            String insertQuery = "INSERT INTO Order (id, price, executionDate) VALUES (?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT);
+
+            for(Order order: orders) {
+                preparedStatement.setString(1, order.id());
+                preparedStatement.setString(2, order.price());
+                preparedStatement.setDate(3, today); // Noncompliant
+                preparedStatement.executeUpdate();
+            }
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class DatabaseExample {
+
+    public record Order(String id, BigDecimal price) {}
+
+    public void updateTodayOrders(Connection connection, List&lt;Order&gt; orders) {
+            Date today = java.sql.Date.valueOf(LocalDate.now());
+            String insertQuery = "INSERT INTO Order (id, price, executionDate) VALUES (?, ?, ?)";
+            preparedStatement.setDate(3, today); // Compliant
+
+            PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT);
+
+            for(Order order: orders) {
+                preparedStatement.setString(1, order.id());
+                preparedStatement.setString(2, order.price());
+                preparedStatement.executeUpdate();
+            }
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.sql/java/sql/PreparedStatement.html">Oracle SDK - PreparedStatement</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/jdbc/basics/prepared.html">Oracle Tutorial - Using Prepared Statements</a> </li>
+</ul>
+

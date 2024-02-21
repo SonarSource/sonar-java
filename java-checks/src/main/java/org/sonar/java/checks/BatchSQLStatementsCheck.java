@@ -19,9 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -31,6 +32,11 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.java.checks.helpers.TreeHelper.findClosestParentOfKind;
+
+/**
+ *
+ */
 @Rule(key = "S6912")
 public class BatchSQLStatementsCheck extends IssuableSubscriptionVisitor {
   private static final String MESSAGE = "Use \"addBatch\" and \"executeBatch\" to execute multiple SQL statements in a single call.";
@@ -62,7 +68,11 @@ public class BatchSQLStatementsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static class StatementExecuteInvocationsCollector extends BaseTreeVisitor {
-
+    private static final Set<Tree.Kind> LOOP_KINDS = EnumSet.of(
+      Tree.Kind.FOR_STATEMENT,
+      Tree.Kind.FOR_EACH_STATEMENT,
+      Tree.Kind.WHILE_STATEMENT,
+      Tree.Kind.DO_STATEMENT);
     private final List<MethodInvocationTree> invocations = new LinkedList<>();
     private boolean foundInvocationInLoop = false;
 
@@ -78,11 +88,7 @@ public class BatchSQLStatementsCheck extends IssuableSubscriptionVisitor {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (EXECUTE_METHODS.matches(tree)) {
         invocations.add(tree);
-
-        if (!foundInvocationInLoop) {
-          foundInvocationInLoop = findClosestParentOfKind(tree, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT, Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT)
-            .isPresent();
-        }
+        foundInvocationInLoop |= findClosestParentOfKind(tree, LOOP_KINDS) != null;
       }
     }
   }
@@ -106,35 +112,10 @@ public class BatchSQLStatementsCheck extends IssuableSubscriptionVisitor {
     }
 
     @Override
-    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-      lambdaExpressionTree.accept(invocationsCollector);
-
-      if (!foundInvocationInForEach) {
-        foundInvocationInForEach = findClosestParentOfKind(lambdaExpressionTree, Tree.Kind.METHOD_INVOCATION, MethodInvocationTree.class)
-          .filter(FOR_EACH_MATCHER::matches)
-          .isPresent();
-      }
+    public void visitLambdaExpression(LambdaExpressionTree tree) {
+      tree.accept(invocationsCollector);
+      foundInvocationInForEach |= findClosestParentOfKind(tree, Set.of(Tree.Kind.METHOD_INVOCATION)) instanceof MethodInvocationTree mit
+        && FOR_EACH_MATCHER.matches(mit);
     }
-  }
-
-  static Optional<Tree.Kind> findClosestParentOfKind(Tree tree, Tree.Kind... nodeKinds) {
-    while (tree != null) {
-      if (tree.is(nodeKinds)) {
-        return Optional.of(tree).map(Tree::kind);
-      }
-      tree = tree.parent();
-    }
-    return Optional.empty();
-  }
-
-  // todo use it form the TreeHelper once Marco PR is merged
-  static <T extends Tree> Optional<T> findClosestParentOfKind(Tree tree, Tree.Kind nodeKind, Class<T> type) {
-    while (tree != null) {
-      if (tree.is(nodeKind)) {
-        return Optional.of(tree).map(type::cast);
-      }
-      tree = tree.parent();
-    }
-    return Optional.empty();
   }
 }

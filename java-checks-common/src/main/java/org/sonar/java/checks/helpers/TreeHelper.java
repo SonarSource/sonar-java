@@ -41,8 +41,18 @@ public class TreeHelper {
     return finder.getReachableMethods();
   }
 
+  public static Tree findClosestParentOfKind(Tree tree, Set<Tree.Kind> nodeKinds) {
+    while (tree != null) {
+      if (nodeKinds.contains(tree.kind())) {
+        return tree;
+      }
+      tree = tree.parent();
+    }
+    return null;
+  }
+
   private static class ReachableMethodsFinder extends BaseTreeVisitor {
-    private Map<MethodTree, Void> reachableMethods = new IdentityHashMap<>();
+    private final Map<MethodTree, Void> reachableMethods = new IdentityHashMap<>();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
