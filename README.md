@@ -164,6 +164,7 @@ Make sure that the `java-checks-tests-sources` module has been compiled (ie: the
 
 In doubt, go the top-level of the project and run:
 ```shell
+# Use java 21!
 mvn clean compile --projects java-checks-test-sources --also-make-dependents
 ```
 
@@ -172,6 +173,7 @@ mvn clean compile --projects java-checks-test-sources --also-make-dependents
 To run the tests, move to the [`its/autoscan`](its/autoscan) folder and run:
 ```shell
 # cd its/autoscan
+# use Java 17!
 mvn clean package --batch-mode --errors --show-version \
    --activate-profiles it-autoscan \
   -Dsonar.runtimeVersion=LATEST_RELEASE[9.9]
