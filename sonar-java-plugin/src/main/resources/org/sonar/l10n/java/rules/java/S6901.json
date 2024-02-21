@@ -1,0 +1,24 @@
+{
+  "title": "\"setDaemon\", \"setPriority\" and \"getThreadGroup\" should not be invoked on virtual threads",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java21",
+    "bug"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6901",
+  "sqKey": "S6901",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
