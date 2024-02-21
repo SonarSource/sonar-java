@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S6901")
 public class VirtualThreadUnsupportedMethodsCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
-  private static final String issueMessage = "Method '%s' is not supported on virtual threads.";
+  private static final String ISSUE_MESSAGE = "Method '%s' is not supported on virtual threads.";
 
   private static final MethodMatchers VIRTUAL_THREAD_BUILDER_METHODS = MethodMatchers.or(
     MethodMatchers.create()
@@ -77,19 +77,19 @@ public class VirtualThreadUnsupportedMethodsCheck extends IssuableSubscriptionVi
     var memberSelect = (MemberSelectExpressionTree) methodInvocation.methodSelect();
     var expression = memberSelect.expression();
     if (isIdentifierAndVirtualThread(expression) || isMethodInvocationAndReturningVirtualThread(expression)) {
-      reportIssue(memberSelect.identifier(), String.format(issueMessage, memberSelect.identifier().name()));
+      reportIssue(memberSelect.identifier(), String.format(ISSUE_MESSAGE, memberSelect.identifier().name()));
     }
   }
 
-  private boolean isIdentifierAndVirtualThread(ExpressionTree expression) {
+  private static boolean isIdentifierAndVirtualThread(ExpressionTree expression) {
     return expression instanceof IdentifierTree identifier && isSymbolVirtualThread(identifier.symbol());
   }
 
-  private boolean isMethodInvocationAndReturningVirtualThread(ExpressionTree expression) {
+  private static boolean isMethodInvocationAndReturningVirtualThread(ExpressionTree expression) {
     return expression instanceof MethodInvocationTree mit && VIRTUAL_THREAD_BUILDER_METHODS.matches(mit);
   }
 
-  private boolean isSymbolVirtualThread(Symbol symbol) {
+  private static boolean isSymbolVirtualThread(Symbol symbol) {
     if (symbol.declaration() instanceof VariableTree variableTree) {
       return variableTree.initializer() instanceof MethodInvocationTree mit && VIRTUAL_THREAD_BUILDER_METHODS.matches(mit);
     }
