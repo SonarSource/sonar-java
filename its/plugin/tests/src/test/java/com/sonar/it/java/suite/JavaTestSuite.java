@@ -73,8 +73,6 @@ public class JavaTestSuite {
       .addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")))
       // making sure the tutorial is still working
       .addPlugin(TUTORIAL_EXAMPLE_PLUGIN_LOCATION)
-      // for suppress-warnings tests
-      .addPlugin(MavenLocation.of("org.sonarsource.pmd", "sonar-pmd-plugin", "3.2.1"))
       // profiles for each test projects
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-extension.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-tutorial.xml"))

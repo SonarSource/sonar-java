@@ -51,6 +51,13 @@ public class SuppressWarningTest {
     assertThat(parseInt(getMeasure(projectKey, "violations").getValue())).isEqualTo(5);
   }
 
+  // NOTE: This test is currently disabled due to SONARJAVA-4553.
+  // Even when SONARJAVA-4553 is fixed, we cannot simply re-enable the test, as it will fail for other reasons:
+  //   - PMD does not seem to support Java 17 (to be confirmed)
+  //   - The PMD plugin is not compatible with on-demand plugin downloading
+  // It may be easier to rely on a simple internal plugin for testing suppression of issues from other analyzers.
+  // In case you want to try with PMD regardless, you will have to add the plugin to the orchestrator again:
+  //     .addPlugin(MavenLocation.of("org.sonarsource.pmd", "sonar-pmd-plugin", "3.2.1"))
   @Test
   @Ignore("temporarily ignored until SONARJAVA-4553 is fixed")
   public void suppressWarnings_also_supress_issues_of_other_analyzers() throws Exception {
