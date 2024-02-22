@@ -1,0 +1,17 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21",
+      "jdkDistro": "tem",
+      "installGradle": true,
+      "gradleVersion": "7.6.4",
+      "installMaven": true,
+      "mavenVersion": "3.8.8"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:1": {
+      "version": "latest",
+      "moby": true
+    }
+  }
+}
