@@ -346,6 +346,7 @@ import org.sonar.java.checks.SillyEqualsCheck;
 import org.sonar.java.checks.SillyStringOperationsCheck;
 import org.sonar.java.checks.SimpleClassNameCheck;
 import org.sonar.java.checks.SimpleStringLiteralForSingleLineStringsCheck;
+import org.sonar.java.checks.SingleIfInsteadOfPatternMatchGuardCheck;
 import org.sonar.java.checks.SpecializedFunctionalInterfacesCheck;
 import org.sonar.java.checks.StandardCharsetsConstantsCheck;
 import org.sonar.java.checks.StandardFunctionalInterfaceCheck;
@@ -1050,6 +1051,7 @@ public final class CheckList {
     RightCurlyBraceSameLineAsNextBlockCheck.class,
     RightCurlyBraceStartLineCheck.class,
     RunFinalizersCheck.class,
+    SingleIfInsteadOfPatternMatchGuardCheck.class,
     SQLInjectionCheck.class,
     ScheduledThreadPoolExecutorZeroCheck.class,
     SecureCookieCheck.class,

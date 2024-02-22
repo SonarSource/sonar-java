@@ -1,0 +1,66 @@
+<h2>Why is this an issue?</h2>
+<p>In Java 21 switch statements and expressions are extended to work on any type, and case labels now also allow patterns instead of just
+constants.</p>
+<pre>
+// As of Java 21
+String patternMatchSwitch(Object obj) {
+    return switch (obj) {
+        case String s  -&gt; String.format("String %s", s);
+        case Integer i -&gt; String.format("int %d", i);
+        default        -&gt; obj.toString();
+    };
+}
+</pre>
+<p>This allows to use the <code>when</code> keyword to specify a condition for a case label, also called a guarded case label.</p>
+<pre>
+String guardedCaseSwitch(Object obj) {
+    return switch (obj) {
+        case String s when s.length() &gt; 0 -&gt; String.format("String %s", s);
+        case Integer i when i &gt; 0 -&gt; String.format("int %d", i);
+        default        -&gt; obj.toString();
+    };
+}
+</pre>
+<p>This syntax is more readable and less error-prone than using an if statement inside the case block and should be preferred.</p>
+<p>This rule reports an issue when a single <code>if</code> statement is used inside a case block.</p>
+<h2>How to fix it</h2>
+<p>Replace the <code>if</code> statement with a guarded case label.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+void testObject(Object response) {
+    switch (response) {
+        case String s -&gt; {
+            if(s.length() &gt; 80) { // Noncompliant; use the "when" keyword
+                System.out.println("This string is too long");
+            }
+        }
+        case Integer i -&gt; {
+            if(i &gt; 80) { // Noncompliant; use the "when" keyword
+                System.out.println("This integer is too big");
+            }
+        }
+        default -&gt; System.out.println("Unknown type");
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+void testObject(Object response) {
+    switch (response) {
+        case String s when s.length() &gt; 80 -&gt; {
+            System.out.println("This string is too long");
+        }
+        case Integer i when i &gt; 80 -&gt; {
+            System.out.println("This integer is too big");
+        }
+        default -&gt; System.out.println("Unknown type");
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Java Documentation - <a href="https://openjdk.org/jeps/441">Pattern Matching for switch</a> </li>
+</ul>
+
