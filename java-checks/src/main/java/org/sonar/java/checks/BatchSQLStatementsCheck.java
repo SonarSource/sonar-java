@@ -21,10 +21,9 @@ package org.sonar.java.checks;
 
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -38,9 +37,9 @@ import static org.sonar.java.checks.helpers.TreeHelper.findClosestParentOfKind;
  * on a Statement inside a loop or a "forEach" on Iterables, Maps and Streams.
  */
 @Rule(key = "S6912")
-public class BatchSQLStatementsCheck extends IssuableSubscriptionVisitor {
+public class BatchSQLStatementsCheck extends AbstractMethodDetection {
   private static final String MESSAGE = "Use \"addBatch\" and \"executeBatch\" to execute multiple SQL statements in a single call.";
-
+  private static final Set<Tree.Kind> LOOP_TREE_KINDS = EnumSet.of(Tree.Kind.FOR_STATEMENT, Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT);
   private static final MethodMatchers EXECUTE_METHODS = MethodMatchers.create()
     .ofSubTypes("java.sql.Statement")
     .names("execute", "executeQuery", "executeUpdate")
@@ -53,11 +52,6 @@ public class BatchSQLStatementsCheck extends IssuableSubscriptionVisitor {
     .build();
 
   private final Set<MethodInvocationTree> invocations = new HashSet<>();
-
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.METHOD_INVOCATION);
-  }
 
   @Override
   public void setContext(JavaFileScannerContext context) {
@@ -73,17 +67,19 @@ public class BatchSQLStatementsCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return EXECUTE_METHODS;
+  }
 
-    if (EXECUTE_METHODS.matches(mit) && (isInsideLoop(mit) || isLambdaInsideForEach(mit))) {
+  @Override
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    if (isInsideLoop(mit) || isLambdaInsideForEach(mit)) {
       invocations.add(mit);
     }
   }
 
   private static boolean isInsideLoop(MethodInvocationTree mit) {
-    var loopTreeKinds = EnumSet.of(Tree.Kind.FOR_STATEMENT, Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT);
-    return findClosestParentOfKind(mit, loopTreeKinds) != null;
+    return findClosestParentOfKind(mit, LOOP_TREE_KINDS) != null;
   }
 
   private static boolean isLambdaInsideForEach(MethodInvocationTree mit) {
