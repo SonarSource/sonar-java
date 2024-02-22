@@ -2,10 +2,11 @@ package checks.sustainability;
 
 import android.app.PendingIntent;
 import android.content.Context;
+import java.util.Optional;
 
 public class AndroidFusedLocationProviderClientCheckSample {
 
-  public void getLocationService(Context context, NoContext noContext, PendingIntent operation) {
+  public void getLocationService(Context context, NoContext noContext, Optional<Context> opt, PendingIntent operation) {
     var service1 = context.getSystemService("location"); // Noncompliant [[sc=45;ec=55]] {{Use "FusedLocationProviderClient" instead of "LocationManager".}}
     context.getSystemService("location"); // Noncompliant
 
@@ -16,6 +17,8 @@ public class AndroidFusedLocationProviderClientCheckSample {
     var location = "location";
     var service5 = context.getSystemService(location); // Compliant due to current limitation in constant resolving
     var service6 = noContext.getSystemService("location"); // Compliant
+
+    opt.ifPresent(it -> context.getSystemService("location")); // Noncompliant
   }
 
   private abstract static class NoContext {
