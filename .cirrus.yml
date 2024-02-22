@@ -33,7 +33,7 @@ container_definition: &CONTAINER_DEFINITION
         - key: node.kubernetes.io/instance-type
           operator: In
           values:
-            - m4.4xlarge # 2.4 GHz Intel Xeon E5-2676 v3** Processor, 16 vCPU, 64 GiB Memory
+            - m6a.8xlarge # 3.6 GHz 3rd generation AMD EPYC processors (AMD EPYC 7R13), 18 vCPU, 64 GiB Memory
 
 win_vm_definition: &WINDOWS_VM_DEFINITION
   experimental: true # see https://github.com/cirruslabs/cirrus-ci-docs/issues/1051
