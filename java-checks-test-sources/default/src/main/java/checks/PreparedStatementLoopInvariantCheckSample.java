@@ -1,10 +1,10 @@
 package checks;
 
 import java.sql.Blob;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.sql.Date;
 import java.util.List;
 
 public class PreparedStatementLoopInvariantCheckSample {
