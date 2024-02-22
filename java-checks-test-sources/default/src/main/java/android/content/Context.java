@@ -28,6 +28,9 @@ import java.io.File;
 
 public abstract class Context {
 
+  public static final String LOCALE_SERVICE = "locale";
+  public static final String LOCATION_SERVICE = "location";
+
   public abstract File getExternalFilesDir(String type);
   public abstract File[] getExternalFilesDirs(String type);
   public abstract File[] getExternalMediaDirs();
@@ -60,4 +63,5 @@ public abstract class Context {
   public abstract SQLiteDatabase openOrCreateDatabase(String name, int mode, SQLiteDatabase.CursorFactory factory);
   public abstract SQLiteDatabase openOrCreateDatabase(String name, int mode, SQLiteDatabase.CursorFactory factory, DatabaseErrorHandler errorHandler);
 
+  public abstract Object getSystemService(String name);
 }

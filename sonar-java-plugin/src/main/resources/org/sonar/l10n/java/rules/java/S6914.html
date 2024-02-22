@@ -1,0 +1,69 @@
+<p>Location awareness is a common feature for mobile application that enhance the user experience by providing context-specific services.</p>
+<h2>Why is this an issue?</h2>
+<p>The location awareness feature can significantly drain the device’s battery.</p>
+<p>The recommended way to maximize the battery life is to use the <em>fused location provider</em> which combines signals from GPS, Wi-Fi, and cell
+networks, as well as accelerometer, gyroscope, magnetometer and other sensors. The <code>FusedLocationProviderClient</code> automatically chooses the
+best method to retrieve a device’s location based on the device’s context.</p>
+<p>The rule flags an issue when <code>android.location.LocationManager</code> or <code>com.google.android.gms.location.LocationClient</code> is used
+instead of <code>com.google.android.gms.location.FusedLocationProviderClient</code>.</p>
+<h3>What is the potential impact?</h3>
+<ul>
+  <li> <em>Usability</em>: the non-optimized location API consumer more battery. </li>
+  <li> <em>Sustainability</em>: the extra energy required has a negative impact on the environment. </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Replace the usages of <code>android.location.LocationManager</code> or <code>com.google.android.gms.location.LocationClient</code> with
+<code>com.google.android.gms.location.FusedLocationProviderClient</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class LocationsActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // ...
+
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE); // Noncompliant
+
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Use the location object as needed
+            }
+        };
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class LocationsActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // ...
+
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this); // Compliant
+
+        fusedLocationClient.getLastLocation()
+            .addOnSuccessListener(this, location -&gt; {
+                // Use the location object as needed
+            });
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://developers.google.com/android/reference/com/google/android/gms/location/FusedLocationProviderClient.html">Google Play Services
+  - FusedLocationProviderClient</a> </li>
+  <li> <a href="https://developer.android.com/develop/sensors-and-location/location/battery">Android Developers - Optimize location for battery</a>
+  </li>
+  <li> <a href="https://developer.android.com/reference/android/location/package-summary">Android Developers - Android Location</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a
+  href="https://timeero.com/post/do-gps-tracking-apps-drain-mobile-battery-heres-what-you-need-to-know#toc-how-much-battery-does-location-services-use-">Timeero - How Much Battery Does Location Services Use?</a> </li>
+</ul>
+

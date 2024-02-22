@@ -137,4 +137,9 @@ public class ContextWrapper extends Context {
   public SQLiteDatabase openOrCreateDatabase(String name, int mode, SQLiteDatabase.CursorFactory factory, DatabaseErrorHandler errorHandler) {
     return null;
   }
+
+  @Override
+  public Object getSystemService(String name) {
+    return null;
+  }
 }
