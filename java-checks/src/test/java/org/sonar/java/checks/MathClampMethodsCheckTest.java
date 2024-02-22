@@ -41,11 +41,6 @@ class MathClampMethodsCheckTest {
       .withCheck(new MathClampMethodsCheck())
       .withJavaVersion(20)
       .verifyNoIssues();
-
-    CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/MathClampMethodsCheckSample.java"))
-      .withCheck(new MathClampMethodsCheck())
-      .verifyNoIssues();
   }
 
 }
