@@ -60,6 +60,12 @@ public class BatchSQLStatementsCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    invocations.clear();
+  }
+
+  @Override
   public void leaveFile(JavaFileScannerContext context) {
     // Collecting invocations in a Set and reporting issues when leaving the file to avoid duplicates in case of nested loops or lambdas
     invocations.forEach(mit -> reportIssue(mit, MESSAGE));
