@@ -1,11 +1,13 @@
 package checks;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 public class BatchSQLStatementsCheckSample {
@@ -46,15 +48,14 @@ public class BatchSQLStatementsCheckSample {
       }
     });
 
-    queries.stream().map(query -> {
-      try {
-        return statement.execute(query); // Noncompliant
-      } catch (SQLException e) {
-        return false;
-      }
-    })
-      .filter(Boolean::booleanValue)
-      .count();
+    queries.stream()
+      .forEach(query -> {
+        try {
+          statement.execute(query); // Noncompliant
+        } catch (SQLException e) {
+          // do nothing
+        }
+      });
   }
 
   void nonCompliantIterableForEach(PreparedStatement statement, List<String> queries) {
@@ -87,29 +88,6 @@ public class BatchSQLStatementsCheckSample {
     });
   }
 
-  void nonCompliantMultipleStatements(Statement statement, String query) throws SQLException {
-    statement.executeQuery(query); // Noncompliant
-    statement.execute("SELECT id, orderId FROM Users"); // Noncompliant
-    statement.executeUpdate("SELECT id, price FROM Orders"); // Noncompliant
-  }
-
-  void nonComplaintMultipleOptionals(Statement statement, Optional<String> query) {
-    query.map(q -> {
-      try {
-        return statement.executeQuery(q); // Noncompliant
-      } catch (SQLException e) {
-        return false;
-      }
-    });
-    query.map(q -> {
-      try {
-        return statement.execute(q); // Noncompliant
-      } catch (SQLException e) {
-        return false;
-      }
-    });
-  }
-
   void compliantRequestsInLoop(Statement statement, List<String> queries) throws SQLException {
     for (int i = 0; i < queries.size(); i++) {
       statement.addBatch(queries.get(i));
@@ -137,19 +115,65 @@ public class BatchSQLStatementsCheckSample {
     } while (j < queries.size());
 
     statement.executeBatch();
-  }
 
-  void compliantSingleStatement(PreparedStatement statement, String query) throws SQLException {
-    statement.execute(query);
-  }
-
-  void complaintInOptional(Statement statement, Optional<String> query) {
-    query.map(q -> {
+    queries.stream().map(query -> {
       try {
-        return statement.executeQuery(q);
+        return statement.execute(query); // Compliant
       } catch (SQLException e) {
         return false;
       }
-    });
+    })
+      .filter(Boolean::booleanValue)
+      .forEach(b -> {
+        // do nothing
+      });
   }
+
+  void compliantSingleStatement(PreparedStatement statement, String query) throws SQLException {
+    statement.execute(query); // Compliant
+  }
+
+  void compliantMultipleStatements(Statement statement, String query) throws SQLException {
+    statement.executeQuery(query); // Compliant
+    statement.execute("SELECT id, orderId FROM Users"); // Compliant
+    statement.executeUpdate("SELECT id, price FROM Orders"); // Compliant
+  }
+
+  void complaintInOptional(Statement statement, String query) {
+    Optional.ofNullable(query)
+      .map(q -> {
+        try {
+          return statement.executeQuery(q); // Compliant
+        } catch (SQLException e) {
+          return false;
+        }
+      });
+  }
+
+  void complaintMultipleOptionals(Statement statement, String query) {
+    Optional.ofNullable(query)
+      .map(q -> {
+        try {
+          return statement.executeQuery(q); // Compliant
+        } catch (SQLException e) {
+          return false;
+        }
+      });
+    Optional.ofNullable(query)
+      .map(q -> {
+        try {
+          return statement.execute(q); // Compliant
+        } catch (SQLException e) {
+          return false;
+        }
+      });
+  }
+
+  private BiFunction<Statement, String, ResultSet> lambda = (statement, query) -> {
+    try {
+      return statement.executeQuery(query); // Compliant
+    } catch (SQLException e) {
+      return null;
+    }
+  };
 }

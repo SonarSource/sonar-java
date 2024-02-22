@@ -3,30 +3,15 @@
 <p>Batching SQL statements is beneficial in common situations where a SQL statement is executed within a loop. In such cases, adding the statement to
 a batch and subsequently executing it reduces the number of interactions with the database. This results in improved efficiency and faster execution
 times.</p>
-<p>The rule raises an issue when it detects multiple SQL statements, like <code>java.sql.Statement</code> and <code>java.sql.PreparedStatement</code>,
-being executed individually or within a loop.</p>
+<p>The rule raises an issue when it detects a <code>java.sql.Statement</code> being executed within a loop instruction, such as <code>for</code>,
+<code>while</code> or the <code>forEach</code> method of <code>java.lang.Iterable</code>, <code>java.util.Map</code> and
+<code>java.util.stream.Stream</code>.</p>
 <h2>How to fix it</h2>
 <p>Group SQL statements by using the method <code>addBatch</code> to add them to a batch and then execute them using <code>executeBatch</code> to send
 them to the database in a single call.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
-public void execute(Connection connection) {
-  try {
-    Statement statement = connection.createStatement();
-
-    statement.execute("INSERT INTO myTable (column1, column2) VALUES (123, 'value1')"); // Noncompliant
-    statement.execute("INSERT INTO myTable (column1, column2) VALUES (456, 'value2')"); // Noncompliant
-    statement.execute("INSERT INTO myTable (column1, column2) VALUES (789, 'value3')"); // Noncompliant
-
-    statement.close();
-    connection.close();
-  } catch (SQLException e) {
-    e.printStackTrace();
-  }
-}
-</pre>
-<pre data-diff-id="2" data-diff-type="noncompliant">
 public void execute(Connection connection) {
   try {
     Statement statement = connection.createStatement();
@@ -44,24 +29,6 @@ public void execute(Connection connection) {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
-public void execute(Connection connection) {
-  try {
-    Statement statement = connection.createStatement();
-
-    statement.addBatch("INSERT INTO myTable (column1, column2) VALUES (123, 'value1')"); // Compliant
-    statement.addBatch("INSERT INTO myTable (column1, column2) VALUES (456, 'value2')"); // Compliant
-    statement.addBatch("INSERT INTO myTable (column1, column2) VALUES (789, 'value3')"); // Compliant
-
-    statement.executeBatch();
-
-    statement.close();
-    connection.close();
-  } catch (SQLException e) {
-    e.printStackTrace();
-  }
-}
-</pre>
-<pre data-diff-id="2" data-diff-type="compliant">
 public void execute(Connection connection) {
   try {
     Statement statement = connection.createStatement();
