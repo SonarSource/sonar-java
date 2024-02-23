@@ -176,7 +176,7 @@ To run the tests, move to the [`its/autoscan`](its/autoscan) folder and run:
 # use Java 17!
 mvn clean package --batch-mode --errors --show-version \
    --activate-profiles it-autoscan \
-  -Dsonar.runtimeVersion=LATEST_RELEASE[9.9]
+  -Dsonar.runtimeVersion=LATEST_RELEASE
 ```
 
 The artifacts produced during the test execution will be found in [`its/autoscan/target/actual`](its/autoscan/target/actual).
