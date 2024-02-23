@@ -284,7 +284,6 @@ inspect_orchestrator_cache_task:
   <<: *ONLY_SONARSOURCE_QA
   depends_on: ruling # To improve cache usage we should introduce a task to warm the cache.
   eks_container:
-    dockerfile: .cirrus/Dockerfile_jdk17
     <<: *CONTAINER_DEFINITION
     cpu: 1
     memory: 1G
