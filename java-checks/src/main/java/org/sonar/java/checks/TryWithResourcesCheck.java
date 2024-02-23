@@ -19,25 +19,31 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
-import org.sonar.java.cfg.CFG;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import org.sonar.check.Rule;
+import org.sonar.java.cfg.CFG;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 @Rule(key = "S2093")
 public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+
+  private static final MethodMatchers AUTOCLOSEABLE_BUILDER_MATCHER = MethodMatchers.or(
+    MethodMatchers.create().ofTypes("java.net.http.HttpClient$Builder").names("build").addWithoutParametersMatcher().build(),
+    MethodMatchers.create().ofTypes("java.net.http.HttpClient").names("newHttpClient").addWithoutParametersMatcher().build()
+  );
 
   private final Deque<TryStatementTree> withinTry = new LinkedList<>();
   private final Deque<List<Tree>> toReport = new LinkedList<>();
@@ -50,7 +56,7 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.TRY_STATEMENT, Tree.Kind.NEW_CLASS);
+    return Arrays.asList(Tree.Kind.TRY_STATEMENT, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
@@ -60,7 +66,7 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
       if (withinTry.size() != toReport.size()) {
         toReport.push(new ArrayList<>());
       }
-    } else if (((NewClassTree) tree).symbolType().isSubtypeOf("java.lang.AutoCloseable")) {
+    } else if (isNewAutocloseableOrBuilder(tree)) {
       if (withinStandardTryWithFinally()) {
         toReport.peek().add(tree);
       } else if (isFollowedByTryWithFinally(tree)) {
@@ -71,6 +77,11 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
         toReport.peek().add(tree);
       }
     }
+  }
+
+  private static boolean isNewAutocloseableOrBuilder(Tree tree) {
+    return (tree instanceof NewClassTree newClass && newClass.symbolType().isSubtypeOf("java.lang.AutoCloseable")) ||
+      (tree instanceof MethodInvocationTree mit && AUTOCLOSEABLE_BUILDER_MATCHER.matches(mit));
   }
 
   private static boolean isFollowedByTryWithFinally(Tree tree) {
