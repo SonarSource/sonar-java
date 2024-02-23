@@ -2,6 +2,34 @@ package checks;
 
 public class SingleIfInsteadOfPatternMatchGuardCheckSample {
 
+  // fix@qf1 {{Replace this "if" statement with a pattern match guard.}}
+  // edit@qf1 [[sl=+0;el=+2;sc=9;ec=10]] {{System.out.println("two");}}
+  // edit@qf1 [[sl=-2;el=-2;sc=21;ec=21]] {{ when s.length() == 2 }}
+  void quickFix(Object o) {
+    switch (o) {
+      case String s -> {
+        // Noncompliant@+1 [[sl=+1;el=+3;sc=9;ec=10;quickfixes=qf1]]
+        if (s.length() == 2) {
+          System.out.println("two");
+        }
+      }
+      default -> System.out.println("many");
+    }
+  }
+
+  // fix@qf2 {{Replace this "if" statement with a pattern match guard.}}
+  // edit@qf2 [[sl=+0;el=+0;sc=9;ec=56]] {{System.out.println("two");}}
+  // edit@qf2 [[sl=-2;el=-2;sc=21;ec=21]] {{ when s.length() == 2 }}
+  void quickFix2(Object o) {
+    switch (o) {
+      case String s -> {
+        // Noncompliant@+1 [[sl=+1;el=+1;sc=9;ec=56;quickfixes=qf2]]
+        if (s.length() == 2) System.out.println("two");
+      }
+      default -> System.out.println("many");
+    }
+  }
+
   void coverage(Object o, int i) {
     switch (i) {
       case 1 -> System.out.println("one");

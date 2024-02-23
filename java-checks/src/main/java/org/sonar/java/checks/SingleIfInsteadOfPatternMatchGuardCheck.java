@@ -21,7 +21,11 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -34,6 +38,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6916")
 public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+
+  private static final String ISSUE_MESSAGE = "Replace this \"if\" statement with a pattern match guard.";
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -60,7 +66,10 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
     }
     var ifStatement = getFirstIfStatementInCaseBody(caseGroup);
     if (ifStatement != null && ifStatement.elseStatement() == null) {
-      reportIssue(ifStatement, "Replace this \"if\" statement with a pattern match guard.");
+      QuickFixHelper.newIssue(context).forRule(this)
+        .onTree(ifStatement).withMessage(ISSUE_MESSAGE)
+        .withQuickFix(() -> computeQuickFix(ifStatement, caseLabel, context))
+        .report();
     }
   }
 
@@ -78,6 +87,25 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
 
   private static boolean isCaseDefaultOrNull(CaseLabelTree caseLabel) {
     return caseLabel.expressions().isEmpty();
+  }
+
+  private static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, CaseLabelTree caseLabel, JavaFileScannerContext context) {
+    var quickFixBuilder = JavaQuickFix.newQuickFix(ISSUE_MESSAGE);
+    String replacement;
+    if (ifStatement.thenStatement() instanceof BlockTree block) {
+      var firstToken = QuickFixHelper.nextToken(block.openBraceToken());
+      var lastToken = QuickFixHelper.previousToken(block.closeBraceToken());
+      replacement = QuickFixHelper.contentForRange(firstToken, lastToken, context);
+    } else {
+      replacement = QuickFixHelper.contentForTree(ifStatement.thenStatement(), context);
+    }
+    quickFixBuilder.addTextEdit(
+      JavaTextEdit.replaceTree(ifStatement, replacement)
+    );
+    quickFixBuilder.addTextEdit(
+      JavaTextEdit.insertBeforeTree(caseLabel.colonOrArrowToken(), " when " + QuickFixHelper.contentForTree(ifStatement.condition(), context) + " ")
+    );
+    return quickFixBuilder.build();
   }
 
 }

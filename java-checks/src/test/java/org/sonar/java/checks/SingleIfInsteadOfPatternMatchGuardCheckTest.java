@@ -20,17 +20,18 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 class SingleIfInsteadOfPatternMatchGuardCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(TestUtils.mainCodeSourcesPath("checks/SingleIfInsteadOfPatternMatchGuardCheckSample.java"))
       .withCheck(new SingleIfInsteadOfPatternMatchGuardCheck())
       .withJavaVersion(21)
+      .withQuickFixes()
       .verifyIssues();
   }
 
