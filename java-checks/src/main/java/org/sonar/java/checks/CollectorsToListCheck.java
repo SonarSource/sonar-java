@@ -26,6 +26,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -91,11 +92,24 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
     } else {
       return;
     }
-    Symbol assignedVariable = findAssignedVariable(mit.parent());
-    if (!mutable || assignedVariable == null
-      || assignedVariable.usages().stream().noneMatch(CollectorsToListCheck::isListBeingModified)) {
+    if (isInvariantTypeArgument(mit) && (!mutable || isReturnedListUnmodified(mit))) {
       reportIssue(collector, mutable);
     }
+  }
+
+  private static boolean isReturnedListUnmodified(MethodInvocationTree mit) {
+    Symbol assignedVariable = findAssignedVariable(mit.parent());
+    return assignedVariable == null || assignedVariable.usages().stream().noneMatch(CollectorsToListCheck::isListBeingModified);
+  }
+
+  private static boolean isInvariantTypeArgument(MethodInvocationTree collectMethodInvocation) {
+    Type streamType = collectMethodInvocation.methodSymbol().owner().type();
+    if (streamType.isRawType()) {
+      return true;
+    }
+    Type collectArgType = collectMethodInvocation.symbolType().typeArguments().get(0);
+    Type streamArgType = streamType.typeArguments().get(0);
+    return collectArgType.is(streamArgType.fullyQualifiedName());
   }
 
   private void reportIssue(MethodInvocationTree collector, boolean mutable) {
