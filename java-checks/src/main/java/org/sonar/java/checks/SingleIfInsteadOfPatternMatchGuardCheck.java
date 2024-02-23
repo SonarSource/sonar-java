@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -31,7 +33,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 
 @Rule(key = "S6916")
-public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptionVisitor {
+public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava21Compatible();
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -48,7 +55,7 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
     var caseExpression = caseLabel.expressions().get(0);
 
     // We only want to inspect type patterns that do not already have a guard
-    if (!caseExpression.is(Tree.Kind.TYPE_PATTERN) || caseExpression instanceof GuardedPatternTree) {
+    if (caseExpression instanceof GuardedPatternTree || !caseExpression.is(Tree.Kind.TYPE_PATTERN)) {
       return;
     }
     var ifStatement = getFirstIfStatementInCaseBody(caseGroup);

@@ -2,6 +2,19 @@ package checks;
 
 public class SingleIfInsteadOfPatternMatchGuardCheckSample {
 
+  void coverage(Object o, int i) {
+    switch (i) {
+      case 1 -> System.out.println("one");
+      default -> System.out.println("many");
+    }
+    switch (o) {
+      case Long l when l == 1 -> System.out.println("long");
+      case Double d -> System.out.println("double");
+      case String s -> System.out.println("string");
+      default -> System.out.println("many");
+    }
+  }
+
   void foo(Object o) {
     switch (o) {
       case Long l -> {
@@ -19,6 +32,13 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
         }
       }
       case String s when s.length() == 1 -> System.out.println("one");
+      case Character c -> {
+        switch (c) {
+          case 'a' -> System.out.println("a");
+          case 'b' -> System.out.println("b");
+          default -> System.out.println("many");
+        }
+      }
       case Integer i -> {
       }
       case String s -> {
@@ -40,8 +60,10 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
 
   void compliant(int i) {
     switch (i) {
-      case 1 -> { }
-      case 2, 3 -> { }
+      case 1 -> {
+      }
+      case 2, 3 -> {
+      }
     }
   }
 
