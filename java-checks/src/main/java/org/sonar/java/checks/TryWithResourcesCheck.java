@@ -140,7 +140,8 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
         for (Tree autoCloseable : secondaryTrees) {
           secondary.add(new JavaFileScannerContext.Location("AutoCloseable resource", autoCloseable));
         }
-        reportIssue(tryStatementTree.tryKeyword(), "Change this \"try\" to a try-with-resources." + context.getJavaVersion().java7CompatibilityMessage(), secondary, null);
+        reportIssue(tryStatementTree.tryKeyword(),
+          "Change this \"try\" to a try-with-resources." + context.getJavaVersion().java7CompatibilityMessage(), secondary, null);
       }
     }
   }
