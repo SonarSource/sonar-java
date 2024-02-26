@@ -70,7 +70,7 @@ common_build_definition: &COMMON_BUILD_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
 
-orchestrator_cache_elements_definition: &ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+orchestrator_cache_preparation_definition: &ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
   set_orchestrator_home_script: |
     export TODAY=$(date '+%Y-%m-%d')
     echo "TODAY=${TODAY}" >> $CIRRUS_ENV
@@ -78,10 +78,11 @@ orchestrator_cache_elements_definition: &ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   mkdir_orchestrator_home_script: |
     echo "Create dir ${ORCHESTRATOR_HOME} if needed"
     mkdir -p ${ORCHESTRATOR_HOME}
-  orchestrator_cache:
-    folder: ${ORCHESTRATOR_HOME}
-    fingerprint_script: echo ${TODAY}
-    reupload_on_changes: "true"
+
+orchestrator_cache_elements_definition: &ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+  folder: ${ORCHESTRATOR_HOME}
+  fingerprint_script: echo ${TODAY}
+  reupload_on_changes: "true"
 
 # Only compile without "test and sonar:sonar". Note: Do not rename "build", it is used by "Check Releasability"
 build_task:
@@ -142,13 +143,19 @@ plugin_qa_task:
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 14
     memory: 6G
-  env:
-    matrix:
-      - SQ_VERSION: LATEST_RELEASE
-      - SQ_VERSION: DEV
+  <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
+  matrix:
+    - env:
+        SQ_VERSION: LATEST_RELEASE
+      orchestrator_LATEST_RELEASE_cache:
+        <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+    - env:
+        SQ_VERSION: DEV
+      orchestrator_DEV_cache:
+        <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   submodules_script:
     - git submodule update --init --recursive
   qa_script:
@@ -187,7 +194,9 @@ ruling_task:
     memory: 6G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+  <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
+  orchestrator_LATEST_RELEASE_cache:
+    <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   submodules_script:
     - git submodule update --init --recursive
   env:
@@ -214,7 +223,9 @@ ruling_win_task:
     <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+  <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
+  orchestrator_LATEST_RELEASE_cache:
+    <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   env:
     MAVEN_OPTS: "-Xmx3g"
     matrix:
@@ -243,7 +254,9 @@ autoscan_task:
     memory: 6G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+  <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
+  orchestrator_LATEST_RELEASE_cache:
+    <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   autoscan_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
@@ -292,7 +305,12 @@ inspect_orchestrator_cache_task:
     <<: *CONTAINER_WITH_DOCKER_DEFINITION
     cpu: 1
     memory: 1G
-  <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+  <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
+  matrix:
+    - orchestrator_LATEST_RELEASE_cache:
+        <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+    - orchestrator_DEV_cache:
+        <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   inspect_cache_script: |
     echo "Inspecting cache ${ORCHESTRATOR_HOME}..."
     cd "${ORCHESTRATOR_HOME}"
