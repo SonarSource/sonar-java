@@ -41,7 +41,6 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
 
   private int nestedClassesLevel;
 
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
@@ -87,23 +86,28 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
   private static boolean hasConstantInitializer(VariableTree variableTree) {
     ExpressionTree init = variableTree.initializer();
     if (init != null) {
-      if (ExpressionUtils.skipParentheses(init).is(Tree.Kind.METHOD_REFERENCE)) {
+      var deparenthesized = ExpressionUtils.skipParentheses(init);
+
+      if (deparenthesized.is(Tree.Kind.METHOD_REFERENCE)) {
         MethodReferenceTree methodRef = (MethodReferenceTree) ExpressionUtils.skipParentheses(init);
         if (isInstanceIdentifier(methodRef.expression())) {
           return false;
         }
-      }
-      if (init.is(Tree.Kind.NEW_ARRAY)) {
+      } else if (deparenthesized.is(Tree.Kind.NEW_ARRAY)) {
         return false;
+      } else if (deparenthesized.is(Tree.Kind.IDENTIFIER)) {
+        var symbol = ((IdentifierTree) deparenthesized).symbol();
+        return symbol.isStatic() && symbol.isFinal();
       }
-      return !containsChildMatchingPredicate((JavaTree) init,
-        (tree -> isIgnoredKind(tree) || isThisOrSuper(tree)));
+      return !containsChildMatchingPredicate((JavaTree) deparenthesized, (tree -> isIgnoredKind(tree) || isThisOrSuper(tree)));
     }
     return false;
   }
 
   private static boolean isIgnoredKind(Tree tree) {
-    return tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    return tree.is(
+      Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_INCREMENT,
+      Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.PREFIX_DECREMENT);
   }
 
   private static boolean isThisOrSuper(Tree tree) {

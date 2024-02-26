@@ -79,6 +79,19 @@ class ConstantsShouldBeStaticFinalCheck {
   }
 }
 
+class AvoidFPsWhenUsingFieldInInstance_SONARJAVA_4749 {
+  private static long nextID = 1L;
+  private final long localID = nextID++; // Compliant
+
+  private final String foo = new String("test"); // Compliant
+  private final String bar = foo; // Compliant
+
+  public long getID()
+  {
+    return localID;
+  }
+}
+
 enum ConstantsShouldBeStaticFinalCheckEnumTest {
   TEST1(4);
   final static int MY_CONSTANT = 1;
@@ -114,5 +127,18 @@ class ConstantsShouldBeStaticFinalCheckDemo {
       }
     };
   }
+}
+
+class FieldAssignments {
+  private final int[] finalFoo = new int[42]; // Compliant
+  private final Object finalObject = finalFoo; // Compliant - foo is not static
+
+  private static int[] staticFoo = new int[42]; // Compliant
+
+  private final Object staticObject = staticFoo; // Compliant - foo is not final
+
+  private static final int[] foo = new int[42];
+  private final Object object = foo; // Noncompliant
+
 }
 
