@@ -66,7 +66,7 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
       if (withinTry.size() != toReport.size()) {
         toReport.push(new ArrayList<>());
       }
-    } else if (isNewAutocloseableOrBuilder(tree)) {
+    } else if (isNewAutocloseableOrBuilder(tree, context)) {
       if (withinStandardTryWithFinally()) {
         toReport.peek().add(tree);
       } else if (isFollowedByTryWithFinally(tree)) {
@@ -79,9 +79,9 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
     }
   }
 
-  private static boolean isNewAutocloseableOrBuilder(Tree tree) {
+  private static boolean isNewAutocloseableOrBuilder(Tree tree, JavaFileScannerContext context) {
     return (tree instanceof NewClassTree newClass && newClass.symbolType().isSubtypeOf("java.lang.AutoCloseable")) ||
-      (tree instanceof MethodInvocationTree mit && AUTOCLOSEABLE_BUILDER_MATCHER.matches(mit));
+      (context.getJavaVersion().isJava21Compatible() && tree instanceof MethodInvocationTree mit && AUTOCLOSEABLE_BUILDER_MATCHER.matches(mit));
   }
 
   private static boolean isFollowedByTryWithFinally(Tree tree) {
