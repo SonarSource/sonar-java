@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -73,13 +74,18 @@ public class BatchSQLStatementsCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (isInsideLoop(mit) || isLambdaInsideForEach(mit)) {
+    if (hasLoopParent(mit) || isLambdaInsideForEach(mit)) {
       invocations.add(mit);
     }
   }
 
-  private static boolean isInsideLoop(MethodInvocationTree mit) {
-    return findClosestParentOfKind(mit, LOOP_TREE_KINDS) != null;
+  private static boolean hasLoopParent(MethodInvocationTree mit) {
+    return Optional.ofNullable(mit.parent()) // ExpressionStatementTree
+      .map(Tree::parent)// BlockTree
+      .map(Tree::parent)
+      .map(Tree::kind)
+      .filter(LOOP_TREE_KINDS::contains)
+      .isPresent();
   }
 
   private static boolean isLambdaInsideForEach(MethodInvocationTree mit) {
