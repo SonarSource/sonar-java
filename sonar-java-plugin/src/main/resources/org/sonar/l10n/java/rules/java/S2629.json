@@ -1,12 +1,6 @@
 {
   "title": "\"Preconditions\" and logging arguments should not require evaluation",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
-    },
-    "attribute": "EFFICIENT"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -19,5 +13,11 @@
   "ruleSpecification": "RSPEC-2629",
   "sqKey": "S2629",
   "scope": "Main",
-  "quickfix": "unknown"
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "EFFICIENT"
+  }
 }

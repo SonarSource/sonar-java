@@ -17,12 +17,15 @@ discouraged.</p>
 public class MyClass {
 
   @Override
-  protected void finalize() {
-    releaseSomeResources();    // Noncompliant
+  protected void finalize() { // Noncompliant
+    releaseSomeResources();
   }
 
 }
 </pre>
+<h3>Exceptions</h3>
+<p>It is allowed to override the <code>finalize()</code> method as <code>final</code> method with an empty body, to prevent the <em>finalizer
+attack</em> as described in <em>MET12-J-EX1</em>.</p>
 <h2>Resources</h2>
 <ul>
   <li> <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html#jls-12.6">docs.oracle.com</a> - Finalization of Class Instances </li>
