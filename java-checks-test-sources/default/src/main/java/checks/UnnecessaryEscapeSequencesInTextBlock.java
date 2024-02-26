@@ -80,5 +80,13 @@ public class UnnecessaryEscapeSequencesInTextBlock {
               the 
               point,
               really\\n?"""; // Compliant
+
+    String notEscapedDoubleQuote = """
+                                "\\\\\\\\SERVER\\\\SHARE\\\\ETC\\\\" 
+                                """; // Compliant
+
+    String notEscapedSingleQuote = """
+                                'C:\\\\foo\\\\bar\\\\' 
+                                """; // Compliant
   }
 }
