@@ -315,5 +315,5 @@ inspect_orchestrator_cache_task:
     echo "Inspecting cache ${ORCHESTRATOR_HOME}..."
     cd "${ORCHESTRATOR_HOME}"
     ls -l
-    find .
+    find . -ls
     echo "Inspecting cache done."
