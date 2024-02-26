@@ -17,33 +17,11 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package checks;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+public class VirtualThreadUnsupportedMethodsParentSample {
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
-
-class VirtualThreadUnsupportedMethodsCheckTest {
-
-  @Test
-  void test() {
-    InternalCheckVerifier
-      .newInstance()
-      .onFile(mainCodeSourcesPath("checks/VirtualThreadUnsupportedMethodsSample.java"))
-      .withCheck(new VirtualThreadUnsupportedMethodsCheck())
-      .withJavaVersion(21)
-      .verifyIssues();
-  }
-
-  @Test
-  void test_prior_java21() {
-    InternalCheckVerifier
-      .newInstance()
-      .onFile(mainCodeSourcesPath("checks/VirtualThreadUnsupportedMethodsSample.java"))
-      .withCheck(new VirtualThreadUnsupportedMethodsCheck())
-      .withJavaVersion(20)
-      .verifyNoIssues();
-  }
+  public Thread outerVirtualThread = Thread.startVirtualThread(() -> {
+  });
 
 }

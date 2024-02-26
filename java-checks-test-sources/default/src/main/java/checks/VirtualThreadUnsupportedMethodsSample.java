@@ -19,17 +19,17 @@
  */
 package checks;
 
-public class VirtualThreadUnsupportedMethodsSample {
+public class VirtualThreadUnsupportedMethodsSample extends VirtualThreadUnsupportedMethodsParentSample{
 
   void noncompliant(Thread.Builder.OfVirtual builder) {
-    Thread.startVirtualThread(() -> {
-    }).setDaemon(true); // Noncompliant
-
     var vt = builder.unstarted(() -> {
     });
-    vt.setDaemon(true); // Noncompliant
-    vt.setPriority(1); // Noncompliant
-    vt.getThreadGroup(); // Noncompliant
+    vt.setDaemon(true); // Noncompliant [[secondary=-2]]
+    vt.setPriority(1); // Noncompliant [[secondary=-3]]
+    vt.getThreadGroup(); // Noncompliant [[secondary=-4]]
+
+    Thread.startVirtualThread(() -> {
+    }).setDaemon(true); // Noncompliant [[secondary=-1]]
 
     var newBuilder = Thread.ofVirtual();
     var vt1 = newBuilder.unstarted(() -> {
@@ -85,6 +85,7 @@ public class VirtualThreadUnsupportedMethodsSample {
 
   void falseNegatives(Thread virtualAtRuntime){
     virtualAtRuntime.setDaemon(true); // False negative
+    outerVirtualThread.setDaemon(true); // False negative
   }
 
 }

@@ -20,23 +20,25 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6901")
-public class VirtualThreadUnsupportedMethodsCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+public class VirtualThreadUnsupportedMethodsCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   private static final String ISSUE_MESSAGE = "Method '%s' is not supported on virtual threads.";
+  private static final String SECONDARY_LOCATION_ISSUE_MESSAGE = "Virtual thread initialized here.";
 
   private static final MethodMatchers VIRTUAL_THREAD_BUILDER_METHODS = MethodMatchers.or(
     MethodMatchers.create()
@@ -61,39 +63,49 @@ public class VirtualThreadUnsupportedMethodsCheck extends IssuableSubscriptionVi
   }
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.METHOD_INVOCATION);
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return VIRTUAL_THREAD_UNSUPPORTED_METHODS;
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
-    if (VIRTUAL_THREAD_UNSUPPORTED_METHODS.matches(mit)) {
-      checkMethodCalledOnVirtualThread(mit);
-    }
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    checkMethodCalledOnVirtualThread(mit);
   }
 
   private void checkMethodCalledOnVirtualThread(MethodInvocationTree methodInvocation) {
     var memberSelect = (MemberSelectExpressionTree) methodInvocation.methodSelect();
     var expression = memberSelect.expression();
-    if (isIdentifierAndVirtualThread(expression) || isMethodInvocationAndReturningVirtualThread(expression)) {
-      reportIssue(memberSelect.identifier(), String.format(ISSUE_MESSAGE, memberSelect.identifier().name()));
+    var virtualThreadExpression = getVirtualThreadInitializer(expression);
+    if(virtualThreadExpression.isPresent()){
+      reportIssue(
+        memberSelect.identifier(),
+        String.format(ISSUE_MESSAGE, memberSelect.identifier().name()),
+        List.of(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, ExpressionUtils.methodName(virtualThreadExpression.get()))),
+        null);
     }
   }
 
-  private static boolean isIdentifierAndVirtualThread(ExpressionTree expression) {
-    return expression instanceof IdentifierTree identifier && isSymbolVirtualThread(identifier.symbol());
-  }
-
-  private static boolean isMethodInvocationAndReturningVirtualThread(ExpressionTree expression) {
-    return expression instanceof MethodInvocationTree mit && VIRTUAL_THREAD_BUILDER_METHODS.matches(mit);
-  }
-
-  private static boolean isSymbolVirtualThread(Symbol symbol) {
-    if (symbol.declaration() instanceof VariableTree variableTree) {
-      return variableTree.initializer() instanceof MethodInvocationTree mit && VIRTUAL_THREAD_BUILDER_METHODS.matches(mit);
+  private static Optional<MethodInvocationTree> getVirtualThreadInitializer(ExpressionTree expression) {
+    var isMit = isMethodInvocationAndReturningVirtualThread(expression);
+    if (isMit.isPresent()) {
+      return isMit;
+    } else {
+      return isIdentifierAndVirtualThread(expression);
     }
-    return false;
+  }
+
+  private static Optional<MethodInvocationTree> isIdentifierAndVirtualThread(ExpressionTree expression) {
+    if (expression instanceof IdentifierTree identifier && identifier.symbol().declaration() instanceof VariableTree variableTree) {
+      return isMethodInvocationAndReturningVirtualThread(variableTree.initializer());
+    }
+    return Optional.empty();
+  }
+
+  private static Optional<MethodInvocationTree> isMethodInvocationAndReturningVirtualThread(ExpressionTree expression) {
+    if (expression instanceof MethodInvocationTree mit && VIRTUAL_THREAD_BUILDER_METHODS.matches(mit)) {
+      return Optional.of(mit);
+    }
+    return Optional.empty();
   }
 
 }
