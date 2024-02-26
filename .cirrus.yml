@@ -35,6 +35,14 @@ container_definition: &CONTAINER_DEFINITION
           values:
             - m6a.8xlarge # 3.6 GHz 3rd generation AMD EPYC processors (AMD EPYC 7R13), 18 vCPU, 64 GiB Memory
 
+container_with_docker_definition: &CONTAINER_WITH_DOCKER_DEFINITION
+  <<: *CONTAINER_DEFINITION
+  dockerfile: .cirrus/Dockerfile.jdk17And21
+  builder_role: cirrus-builder
+  builder_image: docker-builder-v*
+  builder_instance_type: t3.small
+  builder_subnet_id: ${CIRRUS_AWS_SUBNET}
+
 win_vm_definition: &WINDOWS_VM_DEFINITION
   experimental: true # see https://github.com/cirruslabs/cirrus-ci-docs/issues/1051
   platform: windows
@@ -62,7 +70,7 @@ common_build_definition: &COMMON_BUILD_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
 
-orchestrator_cache_elements: &ORCHESTRATOR_CACHE_ELEMENTS
+orchestrator_cache_elements_definition: &ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   set_orchestrator_home_script: |
     export TODAY=$(date '+%Y-%m-%d')
     echo "TODAY=${TODAY}" >> $CIRRUS_ENV
@@ -140,7 +148,7 @@ plugin_qa_task:
       - SQ_VERSION: DEV
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  <<: *ORCHESTRATOR_CACHE_ELEMENTS
+  <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   submodules_script:
     - git submodule update --init --recursive
   qa_script:
@@ -179,7 +187,7 @@ ruling_task:
     memory: 6G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  <<: *ORCHESTRATOR_CACHE_ELEMENTS
+  <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   submodules_script:
     - git submodule update --init --recursive
   env:
@@ -206,7 +214,7 @@ ruling_win_task:
     <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  <<: *ORCHESTRATOR_CACHE_ELEMENTS
+  <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   env:
     MAVEN_OPTS: "-Xmx3g"
     matrix:
@@ -226,21 +234,16 @@ autoscan_task:
     - build
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
-    <<: *CONTAINER_DEFINITION
+    <<: *CONTAINER_WITH_DOCKER_DEFINITION
     # For now, this autoscan_task need to execute two mvn commands:
     # * The build of java-checks-test-sources module which requires Java 21.
     # * The tests using Orchestrator and SonarQube that, for now, fail to work using Java 21
     # This is why we have a local Dockerfile that provide the 2 versions of Java, 17 and 21.
-    dockerfile: .cirrus/Dockerfile.jdk17And21
-    builder_role: cirrus-builder
-    builder_image: docker-builder-v*
-    builder_instance_type: t3.small
-    builder_subnet_id: ${CIRRUS_AWS_SUBNET}
     cpu: 14
     memory: 6G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  <<: *ORCHESTRATOR_CACHE_ELEMENTS
+  <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   autoscan_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
@@ -280,19 +283,16 @@ promote_task:
   script: cirrus_promote_maven
   cleanup_before_cache_script: cleanup_maven_repository
 
+# This task can be enabled to debug the cache content
 inspect_orchestrator_cache_task:
   <<: *ONLY_SONARSOURCE_QA
   depends_on: ruling # To improve cache usage we should introduce a task to warm the cache.
+  only_if: false
   eks_container:
-    <<: *CONTAINER_DEFINITION
-    dockerfile: .cirrus/Dockerfile.jdk17And21
-    builder_role: cirrus-builder
-    builder_image: docker-builder-v*
-    builder_instance_type: t3.small
-    builder_subnet_id: ${CIRRUS_AWS_SUBNET}
+    <<: *CONTAINER_WITH_DOCKER_DEFINITION
     cpu: 1
     memory: 1G
-  <<: *ORCHESTRATOR_CACHE_ELEMENTS
+  <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   inspect_cache_script: |
     echo "Inspecting cache ${ORCHESTRATOR_HOME}..."
     cd "${ORCHESTRATOR_HOME}"
