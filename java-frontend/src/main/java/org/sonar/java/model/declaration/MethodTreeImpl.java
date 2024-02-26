@@ -320,6 +320,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE);
   }
 
+
   public boolean isAnnotatedOverride() {
     for (AnnotationTree annotationTree : modifiers.annotations()) {
       if (isJavaLangOverride(annotationTree.annotationType())) {

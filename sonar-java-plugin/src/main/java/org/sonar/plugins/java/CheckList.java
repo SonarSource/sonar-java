@@ -270,8 +270,8 @@ import org.sonar.java.checks.OSCommandsPathCheck;
 import org.sonar.java.checks.ObjectCreatedOnlyToCallGetClassCheck;
 import org.sonar.java.checks.ObjectFinalizeCheck;
 import org.sonar.java.checks.ObjectFinalizeOverloadedCheck;
+import org.sonar.java.checks.ObjectFinalizeOverriddenCheck;
 import org.sonar.java.checks.ObjectFinalizeOverridenCallsSuperFinalizeCheck;
-import org.sonar.java.checks.ObjectFinalizeOverridenCheck;
 import org.sonar.java.checks.ObjectFinalizeOverridenNotPublicCheck;
 import org.sonar.java.checks.OctalValuesCheck;
 import org.sonar.java.checks.OmitPermittedTypesCheck;
@@ -976,7 +976,7 @@ public final class CheckList {
     ObjectFinalizeCheck.class,
     ObjectFinalizeOverloadedCheck.class,
     ObjectFinalizeOverridenCallsSuperFinalizeCheck.class,
-    ObjectFinalizeOverridenCheck.class,
+    ObjectFinalizeOverriddenCheck.class,
     ObjectFinalizeOverridenNotPublicCheck.class,
     OmitPermittedTypesCheck.class,
     OneClassInterfacePerFileCheck.class,

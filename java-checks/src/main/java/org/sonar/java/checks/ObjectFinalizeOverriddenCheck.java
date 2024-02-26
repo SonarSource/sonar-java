@@ -19,19 +19,27 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
-import org.sonar.plugins.java.api.tree.Tree;
-
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "ObjectFinalizeOverridenCheck", repositoryKey = "squid")
 @Rule(key = "S1113")
-public class ObjectFinalizeOverridenCheck extends IssuableSubscriptionVisitor {
+public class ObjectFinalizeOverriddenCheck extends IssuableSubscriptionVisitor {
+
+  private static final MethodMatchers FINALIZE_MATCHER = MethodMatchers.create()
+    .ofSubTypes("java.lang.Object")
+    .names("finalize")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -41,19 +49,19 @@ public class ObjectFinalizeOverridenCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (isFinalize(methodTree)) {
+    if (FINALIZE_MATCHER.matches(methodTree) && (isNotFinal(methodTree) || isFinalWithNonEmptyBody(methodTree))) {
       reportIssue(methodTree.simpleName(), "Do not override the Object.finalize() method.");
     }
+
   }
 
-  private static boolean isFinalize(MethodTree methodTree) {
-    if ("finalize".equals(methodTree.simpleName().name())) {
-      Tree returnType = methodTree.returnType();
-      if (returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
-        return "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
-      }
-    }
-    return false;
+  private static boolean isNotFinal(MethodTree methodTree) {
+    return !ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.FINAL);
+  }
+
+  private static boolean isFinalWithNonEmptyBody(MethodTree methodTree) {
+    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.FINAL)
+      && !Objects.requireNonNull(methodTree.block()).body().isEmpty();
   }
 
 }
