@@ -48,6 +48,7 @@ public class UnnecessaryEscapeSequencesInTextBlockCheck extends IssuableSubscrip
     String[] lines = value.split("\r?\n|\r");
     
     for (int i = 0; i < lines.length; ++i) {
+      lines[i] = lines[i].replace("\\\\","");
       if (lines[i].contains("\\\"\\\"\\\"")) {
         addIssue(startLine + i, TRIPLE_QUOTE_MESSAGE);
       } else {
