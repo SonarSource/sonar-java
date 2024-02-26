@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 public class BatchSQLStatementsCheckSample {
 
-  void nonCompliantRequestsInLoop(Statement statement, List<String> queries) throws SQLException {
+  void requestsInLoop(Statement statement, List<String> queries) throws SQLException {
     for (int i = 0; i < queries.size(); i++) {
       statement.execute(queries.get(i)); // Noncompliant [sc=7,ec=40] {{Use "addBatch" and "executeBatch" to execute multiple SQL statements in a single call.}}
     }
@@ -34,9 +34,18 @@ public class BatchSQLStatementsCheckSample {
       if (i % 2 == 0) {
         for (String query : queries) {
           if (i % 3 == 0) {
-            statement.execute(query); // Noncompliant
+            statement.execute(query); // Compliant
           }
         }
+      }
+    }
+
+    for (int i = 0; i < 10; i++) {
+      try {
+        statement.execute(queries.get(i)); // Compliant
+        // do something
+      } catch (SQLException e) {
+        // do nothing
       }
     }
 
@@ -55,6 +64,44 @@ public class BatchSQLStatementsCheckSample {
         } catch (SQLException e) {
           // do nothing
         }
+      });
+
+    for (int i = 0; i < queries.size(); i++) {
+      statement.addBatch(queries.get(i)); // Compliant
+    }
+
+    for (String query : queries) {
+      statement.addBatch(query); // Compliant
+    }
+
+    while (queries.iterator().hasNext()) {
+      statement.addBatch(queries.iterator().next()); // Compliant
+    }
+
+    queries.forEach(query -> {
+      try {
+        statement.addBatch(query); // Compliant
+      } catch (SQLException e) {
+        // do nothing
+      }
+    });
+
+    do {
+      statement.addBatch(queries.get(j)); // Compliant
+    } while (j < queries.size());
+
+    statement.executeBatch();
+
+    queries.stream().map(query -> {
+      try {
+        return statement.execute(query); // Compliant
+      } catch (SQLException e) {
+        return false;
+      }
+    })
+      .filter(Boolean::booleanValue)
+      .forEach(b -> {
+        // do nothing
       });
   }
 
@@ -86,47 +133,6 @@ public class BatchSQLStatementsCheckSample {
         // do nothing
       }
     });
-  }
-
-  void compliantRequestsInLoop(Statement statement, List<String> queries) throws SQLException {
-    for (int i = 0; i < queries.size(); i++) {
-      statement.addBatch(queries.get(i));
-    }
-
-    for (String query : queries) {
-      statement.addBatch(query);
-    }
-
-    while (queries.iterator().hasNext()) {
-      statement.addBatch(queries.iterator().next());
-    }
-
-    queries.forEach(query -> {
-      try {
-        statement.addBatch(query);
-      } catch (SQLException e) {
-        // do nothing
-      }
-    });
-
-    int j = 0;
-    do {
-      statement.addBatch(queries.get(j));
-    } while (j < queries.size());
-
-    statement.executeBatch();
-
-    queries.stream().map(query -> {
-      try {
-        return statement.execute(query); // Compliant
-      } catch (SQLException e) {
-        return false;
-      }
-    })
-      .filter(Boolean::booleanValue)
-      .forEach(b -> {
-        // do nothing
-      });
   }
 
   void compliantSingleStatement(PreparedStatement statement, String query) throws SQLException {
@@ -176,4 +182,43 @@ public class BatchSQLStatementsCheckSample {
       return null;
     }
   };
+
+  private void retryLoop(Statement statement, String query) {
+    int numOfTires = 3;
+
+    while (numOfTires > 0) {
+      try (ResultSet rs = statement.executeQuery(query)) { // Compliant
+        if (rs.next()) {
+          // do something
+        }
+        numOfTires = 0;
+      } catch (SQLException e) {
+        // do nothing
+      }
+      numOfTires--;
+    }
+
+    do {
+      try {
+        if (statement.execute(query)) { // Compliant
+          // do something
+          numOfTires = 0;
+        }
+      } catch (SQLException e) {
+        // do nothing
+      }
+      numOfTires--;
+    } while (numOfTires > 0);
+  }
+
+  void executeQuery(Statement statement, String query) throws SQLException {
+    statement.execute(query); // Compliant
+  }
+
+  void executeMultipleQueries(Statement statement, List<String> queries) throws SQLException {
+    for (String query : queries) {
+      executeQuery(statement, query); // Compliant
+    }
+  }
+
 }
