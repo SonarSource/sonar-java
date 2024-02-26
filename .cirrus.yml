@@ -283,11 +283,11 @@ promote_task:
   script: cirrus_promote_maven
   cleanup_before_cache_script: cleanup_maven_repository
 
-# This task can be enabled to debug the cache content
+# This task can be used to debug the cache content
 inspect_orchestrator_cache_task:
   <<: *ONLY_SONARSOURCE_QA
   depends_on: ruling # To improve cache usage we should introduce a task to warm the cache.
-  only_if: false
+  trigger_type: manual
   eks_container:
     <<: *CONTAINER_WITH_DOCKER_DEFINITION
     cpu: 1
