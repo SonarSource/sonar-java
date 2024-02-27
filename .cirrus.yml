@@ -35,6 +35,14 @@ container_definition: &CONTAINER_DEFINITION
           values:
             - m6a.8xlarge # 3.6 GHz 3rd generation AMD EPYC processors (AMD EPYC 7R13), 18 vCPU, 64 GiB Memory
 
+container_with_docker_definition: &CONTAINER_WITH_DOCKER_DEFINITION
+  <<: *CONTAINER_DEFINITION
+  dockerfile: .cirrus/Dockerfile.jdk17And21
+  builder_role: cirrus-builder
+  builder_image: docker-builder-v*
+  builder_instance_type: t3.small
+  builder_subnet_id: ${CIRRUS_AWS_SUBNET}
+
 win_vm_definition: &WINDOWS_VM_DEFINITION
   experimental: true # see https://github.com/cirruslabs/cirrus-ci-docs/issues/1051
   platform: windows
@@ -61,6 +69,20 @@ common_build_definition: &COMMON_BUILD_DEFINITION
     DEPLOY_PULL_REQUEST: true
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+
+orchestrator_cache_preparation_definition: &ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
+  set_orchestrator_home_script: |
+    export TODAY=$(date '+%Y-%m-%d')
+    echo "TODAY=${TODAY}" >> $CIRRUS_ENV
+    echo "ORCHESTRATOR_HOME=${CIRRUS_WORKING_DIR}/orchestrator/${TODAY}" >> $CIRRUS_ENV
+  mkdir_orchestrator_home_script: |
+    echo "Create dir ${ORCHESTRATOR_HOME} if needed"
+    mkdir -p ${ORCHESTRATOR_HOME}
+
+orchestrator_cache_elements_definition: &ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+  folder: ${ORCHESTRATOR_HOME}
+  fingerprint_script: echo ${TODAY}
+  reupload_on_changes: "true"
 
 # Only compile without "test and sonar:sonar". Note: Do not rename "build", it is used by "Check Releasability"
 build_task:
@@ -121,11 +143,17 @@ plugin_qa_task:
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 14
     memory: 6G
-  env:
-    matrix:
-      - SQ_VERSION: LATEST_RELEASE[9.9]
-      - SQ_VERSION: LATEST_RELEASE
-      - SQ_VERSION: DEV
+  <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
+  matrix:
+    - env:
+        SQ_VERSION: LATEST_RELEASE
+      orchestrator_LATEST_RELEASE_cache:
+        <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+    - env:
+        SQ_VERSION: DEV
+      orchestrator_DEV_cache:
+        <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
@@ -166,6 +194,9 @@ ruling_task:
     memory: 6G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
+  orchestrator_LATEST_RELEASE_cache:
+    <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   submodules_script:
     - git submodule update --init --recursive
   env:
@@ -177,7 +208,7 @@ ruling_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
-    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
   on_failure:
     actual_artifacts:
@@ -192,6 +223,9 @@ ruling_win_task:
     <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
+  orchestrator_LATEST_RELEASE_cache:
+    <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   env:
     MAVEN_OPTS: "-Xmx3g"
     matrix:
@@ -203,7 +237,7 @@ ruling_win_task:
     - init_git_submodules its/sources
     - git submodule update --init --recursive
     - cd its/ruling
-    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 autoscan_task:
@@ -211,26 +245,24 @@ autoscan_task:
     - build
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
-    <<: *CONTAINER_DEFINITION
+    <<: *CONTAINER_WITH_DOCKER_DEFINITION
     # For now, this autoscan_task need to execute two mvn commands:
     # * The build of java-checks-test-sources module which requires Java 21.
     # * The tests using Orchestrator and SonarQube that, for now, fail to work using Java 21
     # This is why we have a local Dockerfile that provide the 2 versions of Java, 17 and 21.
-    dockerfile: .cirrus/Dockerfile.jdk17And21
-    builder_role: cirrus-builder
-    builder_image: docker-builder-v*
-    builder_instance_type: t3.small
-    builder_subnet_id: ${CIRRUS_AWS_SUBNET}
     cpu: 14
     memory: 6G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
+  orchestrator_LATEST_RELEASE_cache:
+    <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   autoscan_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - JAVA_HOME="${JAVA_21_HOME}" mvn clean compile --projects java-checks-test-sources --also-make-dependents
     - cd its/autoscan
-    - mvn clean package --batch-mode --errors --show-version --activate-profiles it-autoscan -Dsonar.runtimeVersion=LATEST_RELEASE[9.9] -Dmaven.test.redirectTestOutputToFile=false -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn clean package --batch-mode --errors --show-version --activate-profiles it-autoscan -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
   on_failure:
     actual_artifacts:
@@ -263,3 +295,25 @@ promote_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   script: cirrus_promote_maven
   cleanup_before_cache_script: cleanup_maven_repository
+
+# This task can be used to debug the cache content
+inspect_orchestrator_cache_task:
+  <<: *ONLY_SONARSOURCE_QA
+  depends_on: ruling # To improve cache usage we should introduce a task to warm the cache.
+  trigger_type: manual
+  eks_container:
+    <<: *CONTAINER_WITH_DOCKER_DEFINITION
+    cpu: 1
+    memory: 1G
+  <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
+  matrix:
+    - orchestrator_LATEST_RELEASE_cache:
+        <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+    - orchestrator_DEV_cache:
+        <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+  inspect_cache_script: |
+    echo "Inspecting cache ${ORCHESTRATOR_HOME}..."
+    cd "${ORCHESTRATOR_HOME}"
+    ls -l
+    find . -ls
+    echo "Inspecting cache done."
