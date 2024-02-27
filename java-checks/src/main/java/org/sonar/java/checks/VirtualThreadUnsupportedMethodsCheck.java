@@ -69,14 +69,10 @@ public class VirtualThreadUnsupportedMethodsCheck extends AbstractMethodDetectio
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    checkMethodCalledOnVirtualThread(mit);
-  }
-
-  private void checkMethodCalledOnVirtualThread(MethodInvocationTree methodInvocation) {
-    var memberSelect = (MemberSelectExpressionTree) methodInvocation.methodSelect();
+    var memberSelect = (MemberSelectExpressionTree) mit.methodSelect();
     var expression = memberSelect.expression();
     var virtualThreadExpression = getVirtualThreadInitializer(expression);
-    if(virtualThreadExpression.isPresent()){
+    if (virtualThreadExpression.isPresent()) {
       reportIssue(
         memberSelect.identifier(),
         String.format(ISSUE_MESSAGE, memberSelect.identifier().name()),
@@ -86,22 +82,22 @@ public class VirtualThreadUnsupportedMethodsCheck extends AbstractMethodDetectio
   }
 
   private static Optional<MethodInvocationTree> getVirtualThreadInitializer(ExpressionTree expression) {
-    var isMit = isMethodInvocationAndReturningVirtualThread(expression);
+    var isMit = getMethodInvocationAndReturningVirtualThread(expression);
     if (isMit.isPresent()) {
       return isMit;
     } else {
-      return isIdentifierAndVirtualThread(expression);
+      return getIdentifierAndVirtualThread(expression);
     }
   }
 
-  private static Optional<MethodInvocationTree> isIdentifierAndVirtualThread(ExpressionTree expression) {
+  private static Optional<MethodInvocationTree> getIdentifierAndVirtualThread(ExpressionTree expression) {
     if (expression instanceof IdentifierTree identifier && identifier.symbol().declaration() instanceof VariableTree variableTree) {
-      return isMethodInvocationAndReturningVirtualThread(variableTree.initializer());
+      return getMethodInvocationAndReturningVirtualThread(variableTree.initializer());
     }
     return Optional.empty();
   }
 
-  private static Optional<MethodInvocationTree> isMethodInvocationAndReturningVirtualThread(ExpressionTree expression) {
+  private static Optional<MethodInvocationTree> getMethodInvocationAndReturningVirtualThread(ExpressionTree expression) {
     if (expression instanceof MethodInvocationTree mit && VIRTUAL_THREAD_BUILDER_METHODS.matches(mit)) {
       return Optional.of(mit);
     }
