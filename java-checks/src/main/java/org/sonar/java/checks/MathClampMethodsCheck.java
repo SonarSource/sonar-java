@@ -25,6 +25,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -49,52 +50,52 @@ public class MathClampMethodsCheck extends IssuableSubscriptionVisitor implement
       checkConditionalExpression((ConditionalExpressionTree) tree);
     }
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      checkMethodInvocation(tree);
+      checkMethodInvocation((MethodInvocationTree) tree);
     }
     if (tree.is(Tree.Kind.IF_STATEMENT)) {
       checkIfStatement((IfStatementTree) tree);
     }
   }
 
-  private void checkIfStatement(IfStatementTree tree) {
-    if (isGreaterThanOrLessThan(tree.condition())
-      && (tree.elseStatement() != null && tree.elseStatement().is(Tree.Kind.IF_STATEMENT))) {
-      IfStatementTree elseIfStatement = (IfStatementTree) tree.elseStatement();
-      if (isGreaterThanOrLessThan(elseIfStatement.condition())) {
-        reportIssue(tree, "Use \"Math.clamp\" instead of a conditional expression.");
-      }
-    }
-  }
-
-  private void checkMethodInvocation(Tree tree) {
-    MethodInvocationTree mit = getMethodInvocationTree(tree);
-    if (mit != null) {
-      boolean isArgMathMinMax = mit.arguments().stream().anyMatch(arg -> getMethodInvocationTree(arg) != null);
-      if (isArgMathMinMax) {
-        reportIssue(mit, "Use \"Math.clamp\" instead of \"Math.min\" or \"Math.max\".");
-      }
-    }
-  }
-
   private void checkConditionalExpression(ConditionalExpressionTree tree) {
-    if (isGreaterThanOrLessThan(tree.condition())
-      && (tree.trueExpression().is(Tree.Kind.CONDITIONAL_EXPRESSION) || tree.falseExpression().is(Tree.Kind.CONDITIONAL_EXPRESSION))) {
+    if (isGreaterThanOrLessThan(tree.condition()) && (areConditionalOrMathMethodInvocation(tree.trueExpression(), tree.falseExpression()))) {
       reportIssue(tree, "Use \"Math.clamp\" instead of a conditional expression.");
     }
   }
 
-  private static MethodInvocationTree getMethodInvocationTree(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) mit.methodSelect();
-        if (memberSelectExpressionTree.expression().symbolType().is("java.lang.Math")
-          && ("min".equals(memberSelectExpressionTree.identifier().name()) || "max".equals(memberSelectExpressionTree.identifier().name()))) {
-          return mit;
-        }
+  private void checkMethodInvocation(MethodInvocationTree tree) {
+    var mit = getMethodInvocationTree(tree);
+    if (mit != null && (areConditionalOrMathMethodInvocation(mit.arguments().get(0), mit.arguments().get(1)))) {
+      reportIssue(mit, "Use \"Math.clamp\" instead of \"Math.min\" or \"Math.max\".");
+    }
+  }
+
+  private static boolean areConditionalOrMathMethodInvocation(ExpressionTree tree1, ExpressionTree tree2) {
+    return (tree1.is(Tree.Kind.CONDITIONAL_EXPRESSION) && isGreaterThanOrLessThan(((ConditionalExpressionTree) tree1).condition()))
+      || (tree2.is(Tree.Kind.CONDITIONAL_EXPRESSION) && isGreaterThanOrLessThan(((ConditionalExpressionTree) tree2).condition()))
+      || (tree1.is(Tree.Kind.METHOD_INVOCATION) && getMethodInvocationTree((MethodInvocationTree) tree1) != null)
+      || (tree2.is(Tree.Kind.METHOD_INVOCATION) && getMethodInvocationTree((MethodInvocationTree) tree2) != null);
+  }
+
+  private static MethodInvocationTree getMethodInvocationTree(MethodInvocationTree mit) {
+    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      var memberSelectExpressionTree = (MemberSelectExpressionTree) mit.methodSelect();
+      if (memberSelectExpressionTree.expression().symbolType().is("java.lang.Math")
+        && ("min".equals(memberSelectExpressionTree.identifier().name()) || "max".equals(memberSelectExpressionTree.identifier().name()))) {
+        return mit;
       }
     }
     return null;
+  }
+
+  private void checkIfStatement(IfStatementTree tree) {
+    if (isGreaterThanOrLessThan(tree.condition())
+      && (tree.elseStatement() != null && tree.elseStatement().is(Tree.Kind.IF_STATEMENT))) {
+      var elseIfStatement = (IfStatementTree) tree.elseStatement();
+      if (isGreaterThanOrLessThan(elseIfStatement.condition())) {
+        reportIssue(tree, "Use \"Math.clamp\" instead of an if-else statement.");
+      }
+    }
   }
 
   private static boolean isGreaterThanOrLessThan(Tree tree) {
