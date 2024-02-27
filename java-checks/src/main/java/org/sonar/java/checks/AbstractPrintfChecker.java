@@ -224,7 +224,7 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   protected static Integer getIndex(String param) {
     try {
       return Integer.valueOf(param.substring(0, param.indexOf('$')));
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       return Integer.MAX_VALUE;
     }
   }
