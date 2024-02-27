@@ -79,9 +79,7 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
   }
 
   private static IfStatementTree getFirstIfStatementInCaseBody(CaseGroupTree caseGroup) {
-    // For type patterns without the guard we are guaranteed to have a single block for the case group body
-    // This excludes standard cases on constants that ends with colons eg. "case 1:" and allows us to ignore break statements
-    if (caseGroup.body().get(0) instanceof BlockTree caseBlock) {
+    if (!caseGroup.body().isEmpty() && caseGroup.body().get(0) instanceof BlockTree caseBlock) {
       // We need to check if the first and only element of the body is an if statement
       var blockBody = caseBlock.body();
       if (blockBody.size() == 1 && blockBody.get(0) instanceof IfStatementTree ifStatement) {

@@ -111,6 +111,8 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
           System.out.println("one, two");
         }
         break;
+
+      case 0:
     }
   }
 
