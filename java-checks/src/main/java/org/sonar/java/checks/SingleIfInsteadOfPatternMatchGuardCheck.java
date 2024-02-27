@@ -33,13 +33,15 @@ import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.NullPatternTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 
 @Rule(key = "S6916")
 public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
-  private static final String ISSUE_MESSAGE = "Replace this \"if\" statement with a pattern match guard.";
+  private static final String ISSUE_MESSAGE_REPLACE = "Replace this \"if\" statement with a pattern match guard.";
+  private static final String ISSUE_MESSAGE_MERGE = "Merge this \"if\" statement with the enclosing pattern match guard.";
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -54,27 +56,31 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
   @Override
   public void visitNode(Tree tree) {
     var caseGroup = (CaseGroupTree) tree;
+
+    var ifStatement = getFirstIfStatementInCaseBody(caseGroup);
+    // We do not want to inspect case groups where the body does not have an if statement or if it has also an else statement
+    if (ifStatement == null || ifStatement.elseStatement() != null) {
+      return;
+    }
     var caseLabel = caseGroup.labels().get(0);
     if (isCaseDefaultOrNull(caseLabel)) {
       return;
     }
-    var caseExpression = caseLabel.expressions().get(0);
 
-    // We only want to inspect type patterns that do not already have a guard
-    if (caseExpression instanceof GuardedPatternTree || !caseExpression.is(Tree.Kind.TYPE_PATTERN)) {
-      return;
-    }
-    var ifStatement = getFirstIfStatementInCaseBody(caseGroup);
-    if (ifStatement != null && ifStatement.elseStatement() == null) {
-      QuickFixHelper.newIssue(context).forRule(this)
-        .onTree(ifStatement).withMessage(ISSUE_MESSAGE)
-        .withQuickFix(() -> computeQuickFix(ifStatement, caseLabel, context))
-        .report();
-    }
+    var caseExpression = caseLabel.expressions().get(0);
+    boolean isGuardedPattern = caseExpression instanceof GuardedPatternTree;
+
+    QuickFixHelper.newIssue(context).forRule(this)
+      .onTree(ifStatement)
+      .withMessage(isGuardedPattern ? ISSUE_MESSAGE_MERGE : ISSUE_MESSAGE_REPLACE)
+      .withQuickFix(() -> computeQuickFix(ifStatement, caseLabel, isGuardedPattern, context))
+      .report();
+
   }
 
   private static IfStatementTree getFirstIfStatementInCaseBody(CaseGroupTree caseGroup) {
     // For type patterns without the guard we are guaranteed to have a single block for the case group body
+    // This excludes standard cases on constants that ends with colons eg. "case 1:" and allows us to ignore break statements
     if (caseGroup.body().get(0) instanceof BlockTree caseBlock) {
       // We need to check if the first and only element of the body is an if statement
       var blockBody = caseBlock.body();
@@ -86,11 +92,11 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
   }
 
   private static boolean isCaseDefaultOrNull(CaseLabelTree caseLabel) {
-    return caseLabel.expressions().isEmpty();
+    return caseLabel.expressions().isEmpty() || caseLabel.expressions().get(0) instanceof NullPatternTree;
   }
 
-  private static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, CaseLabelTree caseLabel, JavaFileScannerContext context) {
-    var quickFixBuilder = JavaQuickFix.newQuickFix(ISSUE_MESSAGE);
+  private static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, CaseLabelTree caseLabel, boolean shouldMergeConditions, JavaFileScannerContext context) {
+    var quickFixBuilder = JavaQuickFix.newQuickFix(shouldMergeConditions ? ISSUE_MESSAGE_MERGE : ISSUE_MESSAGE_REPLACE);
     String replacement;
     if (ifStatement.thenStatement() instanceof BlockTree block) {
       var firstToken = QuickFixHelper.nextToken(block.openBraceToken());
@@ -102,8 +108,9 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
     quickFixBuilder.addTextEdit(
       JavaTextEdit.replaceTree(ifStatement, replacement)
     );
+    var replacementStringPrefix = shouldMergeConditions ? " && " : " when ";
     quickFixBuilder.addTextEdit(
-      JavaTextEdit.insertBeforeTree(caseLabel.colonOrArrowToken(), " when " + QuickFixHelper.contentForTree(ifStatement.condition(), context) + " ")
+      JavaTextEdit.insertBeforeTree(caseLabel.colonOrArrowToken(), replacementStringPrefix + QuickFixHelper.contentForTree(ifStatement.condition(), context) + " ")
     );
     return quickFixBuilder.build();
   }

@@ -2,18 +2,43 @@ package checks;
 
 public class SingleIfInsteadOfPatternMatchGuardCheckSample {
 
+  // fix@qf3 {{Merge this "if" statement with the enclosing pattern match guard.}}
+  // edit@qf3 [[sl=+0;el=+2;sc=9;ec=10]] {{System.out.println("two");}}
+  // edit@qf3 [[sl=-2;el=-2;sc=44;ec=44]] {{ && s.length() == 2 }}
+  void conditionsShouldBeMerged(Object o) {
+    switch (o) {
+      case String s when s.startsWith("a") -> {
+        // Noncompliant@+1 [[sl=+1;el=+3;sc=9;ec=10;quickfixes=qf3]] {{Merge this "if" statement with the enclosing pattern match guard.}}
+        if (s.length() == 2) {
+          System.out.println("two");
+        }
+      }
+      default -> {
+      }
+    }
+  }
+
   // fix@qf1 {{Replace this "if" statement with a pattern match guard.}}
   // edit@qf1 [[sl=+0;el=+2;sc=9;ec=10]] {{System.out.println("two");}}
   // edit@qf1 [[sl=-2;el=-2;sc=21;ec=21]] {{ when s.length() == 2 }}
   void quickFix(Object o) {
     switch (o) {
+      case null -> {
+        if (true) {
+          System.out.println("null");
+        }
+      }
       case String s -> {
         // Noncompliant@+1 [[sl=+1;el=+3;sc=9;ec=10;quickfixes=qf1]]
         if (s.length() == 2) {
           System.out.println("two");
         }
       }
-      default -> System.out.println("many");
+      default -> {
+        if (o instanceof Integer) {
+          System.out.println("many");
+        }
+      }
     }
   }
 
@@ -29,6 +54,7 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
       default -> System.out.println("many");
     }
   }
+
 
   void coverage(Object o, int i) {
     switch (i) {
@@ -81,12 +107,14 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
   void standardSwitch(Integer i) {
     switch (i) {
       case 1, 2, 3:
-        System.out.println("one, two or three");
+        if (i < 3) {
+          System.out.println("one, two");
+        }
         break;
     }
   }
 
-  void compliant(int i) {
+  void compliant(int i, Object o) {
     switch (i) {
       case 1 -> {
       }
