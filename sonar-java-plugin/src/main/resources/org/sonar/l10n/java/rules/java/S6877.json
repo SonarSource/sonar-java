@@ -1,0 +1,23 @@
+{
+  "title": "Reverse view should be used instead of reverse copy in read-only cases",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java21"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6877",
+  "sqKey": "S6877",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
