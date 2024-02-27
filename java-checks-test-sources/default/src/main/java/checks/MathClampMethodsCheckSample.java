@@ -6,12 +6,20 @@ public class MathClampMethodsCheckSample {
     int clampedValueConditional1 = value > max ? max : value < min ? min : value; // Noncompliant [[sc=36;ec=81]] {{Use "Math.clamp" instead of a conditional expression.}}
     int clampedValueConditional2 = value < min ? min : value > max ? max : value; // Noncompliant
     int clampedValueConditional3 = value < min ? value < min ? min : value : max; // Noncompliant
+    int clampedValueConditional4 = value > max ? max : Math.min(min, value); // Noncompliant
+    int clampedValueConditional5 = value < min ? Math.max(max, value) : value; // Noncompliant
+    int clampedValueConditional6 = value < min ? Math.max(max, value) : value > max ? max : value; // Noncompliant
+    int clampedValueConditional7 = value < min ? Math.max(max, value) : value < max ? value : max; // Noncompliant
     int conditionalValue = value == max ? max : value; // Compliant
+    int conditionalValue2 = value > max ? max : value; // Compliant
 
     int clampedValueMethodInvocation1 = Math.min(min, Math.max(max, value)); // Noncompliant [[sc=41;ec=76]] {{Use "Math.clamp" instead of "Math.min" or "Math.max".}}
     int clampedValueMethodInvocation2 = Math.max(min, Math.min(max, value)); // Noncompliant
     int clampedValueMethodInvocation3 = Math.min(Math.min(min, value), max); // Noncompliant
     int clampedValueMethodInvocation4 = Math.max(Math.max(min, value), min); // Noncompliant
+    int clampValueMethodInvocation5 = Math.min(Math.max(min, value), min > value ? min : value); // Noncompliant
+    int clampValueMethodInvocation6 = Math.max(Math.min(min, value), max < value ? max : value); // Noncompliant
+    int clampValueMethodInvocation7 = Math.min(max < value ? max : value, Math.min(min, value)); // Noncompliant
 
     int nonClamped1 = Math.min(min, value); // Compliant
     int nonClamped2 = Math.max(value, max); // Compliant
@@ -20,7 +28,7 @@ public class MathClampMethodsCheckSample {
     double clamped = Double.min(min, Double.max(max, value));// Compliant
 
     int clampedValue = value;
-    if (value > max) { // Noncompliant [[sc=5;ec=6]] {{Use "Math.clamp" instead of a conditional expression.}}
+    if (value > max) { // Noncompliant [[sc=5;ec=6]] {{Use "Math.clamp" instead of an if-else statement.}}
       clampedValue = max;
     } else if (value < min) {
       clampedValue = min;
