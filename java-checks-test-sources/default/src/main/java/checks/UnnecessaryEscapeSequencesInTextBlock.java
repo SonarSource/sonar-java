@@ -31,5 +31,62 @@ public class UnnecessaryEscapeSequencesInTextBlock {
              What's the point, really
              """; // Compliant
 
+    String question8 = """
+              "What's the point, really
+              ?"""; // Compliant
+
+    String question9 = """
+              \\"What's the point, really
+              ?"""; // Compliant
+
+    String question10 = """
+              \\\"What's the point, really
+              ?"""; // Noncompliant@-1
+
+    String question11 = """
+              \\\\"What's the point, really
+              ?"""; // Compliant
+
+    String question12 = """
+              \\\\\"What's the point, really
+              ?"""; // Noncompliant@-1
+
+    String question13 = """
+              \\"\"\"What's the point, really
+              ?"""; // Noncompliant@-1 {{Remove this unnecessary escape sequence.}}
+
+    String question14 = """
+              \\"\\"\"What's the point, really
+              ?"""; // Noncompliant@-1 {{Remove this unnecessary escape sequence.}}
+
+    String question15 = """
+              \\"\\"\\"What's the point, really
+              ?"""; // Compliant
+
+    String question16 = """
+              \\"\\\"\\"What's the point, really
+              ?"""; // Noncompliant@-1 {{Remove this unnecessary escape sequence.}}
+
+    String question17 = """
+              \\\\\\\\'What's the point, really\\\\\\\\'
+              ?"""; // Compliant
+
+    String question19 = """
+              \\\\\\\\\'What's the point, really\\\\\\\\\'
+              ?"""; // Noncompliant@-1 {{Remove this unnecessary escape sequence.}}
+
+    String question20 = """
+              What's
+              the 
+              point,
+              really\\n?"""; // Compliant
+
+    String notEscapedDoubleQuote = """
+                                "\\\\\\\\SERVER\\\\SHARE\\\\ETC\\\\" 
+                                """; // Compliant
+
+    String notEscapedSingleQuote = """
+                                'C:\\\\foo\\\\bar\\\\' 
+                                """; // Compliant
   }
 }
