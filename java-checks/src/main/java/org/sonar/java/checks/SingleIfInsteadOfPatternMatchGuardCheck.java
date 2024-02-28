@@ -93,10 +93,11 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
     return caseLabel.expressions().isEmpty() || caseLabel.expressions().get(0) instanceof NullPatternTree;
   }
 
-  private static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, CaseLabelTree caseLabel, boolean shouldMergeConditions, JavaFileScannerContext context) {
+  private static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, CaseLabelTree caseLabel, boolean shouldMergeConditions,
+    JavaFileScannerContext context) {
     var quickFixBuilder = JavaQuickFix.newQuickFix(shouldMergeConditions ? ISSUE_MESSAGE_MERGE : ISSUE_MESSAGE_REPLACE);
     String replacement;
-    if (ifStatement.thenStatement() instanceof BlockTree block) {
+    if (ifStatement.thenStatement() instanceof BlockTree block && !block.body().isEmpty()) {
       var firstToken = QuickFixHelper.nextToken(block.openBraceToken());
       var lastToken = QuickFixHelper.previousToken(block.closeBraceToken());
       replacement = QuickFixHelper.contentForRange(firstToken, lastToken, context);
@@ -108,7 +109,8 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
     );
     var replacementStringPrefix = shouldMergeConditions ? " && " : " when ";
     quickFixBuilder.addTextEdit(
-      JavaTextEdit.insertBeforeTree(caseLabel.colonOrArrowToken(), replacementStringPrefix + QuickFixHelper.contentForTree(ifStatement.condition(), context) + " ")
+      JavaTextEdit.insertBeforeTree(caseLabel.colonOrArrowToken(),
+        replacementStringPrefix + QuickFixHelper.contentForTree(ifStatement.condition(), context) + " ")
     );
     return quickFixBuilder.build();
   }
