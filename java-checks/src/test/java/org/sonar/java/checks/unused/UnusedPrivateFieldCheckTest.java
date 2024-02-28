@@ -31,7 +31,7 @@ class UnusedPrivateFieldCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldCheckSample.java"))
       .withCheck(new UnusedPrivateFieldCheck())
       .withQuickFixes()
       .verifyIssues();

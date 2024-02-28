@@ -30,7 +30,7 @@ class MapKeyNotComparableCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MapKeyNotComparableCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MapKeyNotComparableCheckSample.java"))
       .withCheck(new MapKeyNotComparableCheck())
       .verifyIssues();
   }

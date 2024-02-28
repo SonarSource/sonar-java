@@ -29,7 +29,7 @@ class ArrayHashCodeAndToStringCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/ArrayHashCodeAndToStringCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ArrayHashCodeAndToStringCheckSample.java"))
       .withCheck(new ArrayHashCodeAndToStringCheck())
       .withQuickFixes()
       .verifyIssues();

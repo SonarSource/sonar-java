@@ -30,7 +30,7 @@ class UselessExtendsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/UselessExtendsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/UselessExtendsCheckSample.java"))
       .withCheck(new UselessExtendsCheck())
       .verifyIssues();
   }

@@ -28,7 +28,7 @@ class CompareToNotOverloadedCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CompareToNotOverloadedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CompareToNotOverloadedCheckSample.java"))
       .withCheck(new CompareToNotOverloadedCheck())
       .verifyIssues();
   }

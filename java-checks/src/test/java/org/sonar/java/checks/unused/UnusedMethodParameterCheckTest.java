@@ -31,7 +31,7 @@ class UnusedMethodParameterCheckTest {
   @Test
   void test() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(mainCodeSourcesPath("checks/unused/UnusedMethodParameterCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedMethodParameterCheckSample.java"))
       .withCheck(new UnusedMethodParameterCheck())
       .withQuickFixes()
       .verifyIssues();

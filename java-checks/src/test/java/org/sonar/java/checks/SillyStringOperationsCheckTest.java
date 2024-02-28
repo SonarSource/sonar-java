@@ -29,7 +29,7 @@ class SillyStringOperationsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SillyStringOperationsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SillyStringOperationsCheckSample.java"))
       .withCheck(new SillyStringOperationsCheck())
       .verifyIssues();
   }

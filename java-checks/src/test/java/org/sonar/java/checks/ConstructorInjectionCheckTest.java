@@ -29,11 +29,11 @@ class ConstructorInjectionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ConstructorInjectionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ConstructorInjectionCheckSample.java"))
       .withCheck(new ConstructorInjectionCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ConstructorInjectionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ConstructorInjectionCheckSample.java"))
       .withCheck(new ConstructorInjectionCheck())
       .withoutSemantic()
       .verifyNoIssues();

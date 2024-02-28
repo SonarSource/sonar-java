@@ -29,7 +29,7 @@ class WrongAssignmentOperatorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/WrongAssignmentOperatorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/WrongAssignmentOperatorCheckSample.java"))
       .withCheck(new WrongAssignmentOperatorCheck())
       .verifyIssues();
   }

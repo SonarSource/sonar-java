@@ -30,7 +30,7 @@ class RecordInsteadOfClassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RecordInsteadOfClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RecordInsteadOfClassCheckSample.java"))
       .withCheck(new RecordInsteadOfClassCheck())
       .withJavaVersion(16)
       .verifyIssues();

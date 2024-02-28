@@ -30,7 +30,7 @@ class AccessibilityChangeCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AccessibilityChangeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AccessibilityChangeCheckSample.java"))
       .withCheck(new AccessibilityChangeCheck())
       .withJavaVersion(15)
       .verifyIssues();

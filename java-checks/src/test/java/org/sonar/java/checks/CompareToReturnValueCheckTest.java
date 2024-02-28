@@ -29,7 +29,7 @@ class CompareToReturnValueCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CompareToReturnValueCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CompareToReturnValueCheckSample.java"))
       .withCheck(new CompareToReturnValueCheck())
       .verifyIssues();
   }

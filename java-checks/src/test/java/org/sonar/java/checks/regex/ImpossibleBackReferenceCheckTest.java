@@ -29,7 +29,7 @@ class ImpossibleBackReferenceCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/ImpossibleBackReferenceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/ImpossibleBackReferenceCheckSample.java"))
       .withCheck(new ImpossibleBackReferenceCheck())
       .verifyIssues();
   }

@@ -30,7 +30,7 @@ class PreparedStatementAndResultSetCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PreparedStatementAndResultSetCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PreparedStatementAndResultSetCheckSample.java"))
       .withCheck(new PreparedStatementAndResultSetCheck())
       .verifyIssues();
   }

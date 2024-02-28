@@ -30,7 +30,7 @@ class DisableAutoEscapingCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/DisableAutoEscapingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/DisableAutoEscapingCheckSample.java"))
       .withCheck(new DisableAutoEscapingCheck())
       .verifyIssues();
   }

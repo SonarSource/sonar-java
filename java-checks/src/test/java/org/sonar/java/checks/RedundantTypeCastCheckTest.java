@@ -30,7 +30,7 @@ class RedundantTypeCastCheckTest {
   @Test
   void test() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(mainCodeSourcesPath("checks/RedundantTypeCastCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RedundantTypeCastCheckSample.java"))
       .withCheck(new RedundantTypeCastCheck())
       .withQuickFixes()
       .verifyIssues();
@@ -47,7 +47,7 @@ class RedundantTypeCastCheckTest {
   @Test
   void testWithoutSemantic() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(mainCodeSourcesPath("checks/RedundantTypeCastCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RedundantTypeCastCheckSample.java"))
       .withCheck(new RedundantTypeCastCheck())
       .withoutSemantic()
       .withQuickFixes()

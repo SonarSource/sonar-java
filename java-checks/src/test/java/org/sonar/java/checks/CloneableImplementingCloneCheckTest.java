@@ -29,7 +29,7 @@ class CloneableImplementingCloneCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CloneableImplementingCloneCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CloneableImplementingCloneCheckSample.java"))
       .withCheck(new CloneableImplementingCloneCheck())
       .verifyIssues();
   }

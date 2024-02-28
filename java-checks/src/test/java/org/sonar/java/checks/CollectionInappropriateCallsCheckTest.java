@@ -29,7 +29,7 @@ class CollectionInappropriateCallsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CollectionInappropriateCallsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CollectionInappropriateCallsCheckSample.java"))
       .withCheck(new CollectionInappropriateCallsCheck())
       .verifyIssues();
   }

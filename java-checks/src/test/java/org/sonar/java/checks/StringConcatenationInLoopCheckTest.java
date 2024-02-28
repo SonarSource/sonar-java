@@ -29,7 +29,7 @@ class StringConcatenationInLoopCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/StringConcatenationInLoopCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringConcatenationInLoopCheckSample.java"))
       .withCheck(new StringConcatenationInLoopCheck())
       .verifyIssues();
   }

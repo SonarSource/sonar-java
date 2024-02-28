@@ -31,7 +31,7 @@ class AwsCredentialsShouldBeSetExplicitlyCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsCredentialsShouldBeSetExplicitlyCheck.java"))
+      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsCredentialsShouldBeSetExplicitlyCheckSample.java"))
       .withCheck(new AwsCredentialsShouldBeSetExplicitlyCheck())
       .withClassPath(AWS_CLASSPATH)
       .verifyIssues();

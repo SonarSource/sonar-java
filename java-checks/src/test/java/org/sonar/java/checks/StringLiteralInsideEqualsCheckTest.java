@@ -29,7 +29,7 @@ class StringLiteralInsideEqualsCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/StringLiteralInsideEqualsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringLiteralInsideEqualsCheckSample.java"))
       .withCheck(new StringLiteralInsideEqualsCheck())
       .withQuickFixes()
       .verifyIssues();

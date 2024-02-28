@@ -26,7 +26,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BrainMethodCheckTest {
 
-  private static final String highComplexityFilePath = mainCodeSourcesPath("checks/BrainMethodCheck.java");
+  private static final String highComplexityFilePath = mainCodeSourcesPath("checks/BrainMethodCheckSample.java");
   private static final String lowComplexityFilePath = mainCodeSourcesPath("checks/BrainMethodCheckLowerThresholds.java");
   private static final String subsetFilePath = mainCodeSourcesPath("checks/BrainMethodCheckSubsetOfIssues.java");
 

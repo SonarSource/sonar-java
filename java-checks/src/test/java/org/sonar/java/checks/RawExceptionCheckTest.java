@@ -30,7 +30,7 @@ class RawExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RawExceptionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RawExceptionCheckSample.java"))
       .withCheck(new RawExceptionCheck())
       .verifyIssues();
   }

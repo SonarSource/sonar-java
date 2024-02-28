@@ -30,7 +30,7 @@ class IsInstanceMethodCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/IsInstanceMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/IsInstanceMethodCheckSample.java"))
       .withCheck(new IsInstanceMethodCheck())
       .verifyIssues();
   }

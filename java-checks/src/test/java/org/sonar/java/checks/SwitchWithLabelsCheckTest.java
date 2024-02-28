@@ -30,7 +30,7 @@ class SwitchWithLabelsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchWithLabelsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchWithLabelsCheckSample.java"))
       .withCheck(new SwitchWithLabelsCheck())
       .verifyIssues();
   }

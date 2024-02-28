@@ -30,7 +30,7 @@ class ClassNamedLikeExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/naming/ClassNamedLikeExceptionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/ClassNamedLikeExceptionCheckSample.java"))
       .withCheck(new ClassNamedLikeExceptionCheck())
       .verifyIssues();
   }

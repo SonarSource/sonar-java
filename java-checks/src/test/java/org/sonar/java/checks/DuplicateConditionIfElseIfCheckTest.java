@@ -29,7 +29,7 @@ class DuplicateConditionIfElseIfCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/DuplicateConditionIfElseIfCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/DuplicateConditionIfElseIfCheckSample.java"))
       .withCheck(new DuplicateConditionIfElseIfCheck())
       .verifyIssues();
   }

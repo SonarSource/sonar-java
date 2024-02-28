@@ -30,7 +30,7 @@ class CollectionIsEmptyCheckTest {
   @Test
   void test() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(mainCodeSourcesPath("checks/CollectionIsEmptyCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CollectionIsEmptyCheckSample.java"))
       .withCheck(new CollectionIsEmptyCheck())
       .withQuickFixes()
       .verifyIssues();

@@ -30,7 +30,7 @@ class SwitchLastCaseIsDefaultCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchLastCaseIsDefaultCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchLastCaseIsDefaultCheckSample.java"))
       .withCheck(new SwitchLastCaseIsDefaultCheck())
       .verifyIssues();
   }
@@ -47,7 +47,7 @@ class SwitchLastCaseIsDefaultCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchLastCaseIsDefaultCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchLastCaseIsDefaultCheckSample.java"))
       .withCheck(new SwitchLastCaseIsDefaultCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();

@@ -31,7 +31,7 @@ class StaticFieldUpateCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/StaticFieldUpateCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/StaticFieldUpateCheckSample.java"))
       .withCheck(new StaticFieldUpateCheck())
       .verifyIssues();
   }

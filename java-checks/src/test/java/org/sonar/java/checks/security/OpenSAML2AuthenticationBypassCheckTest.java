@@ -29,7 +29,7 @@ class OpenSAML2AuthenticationBypassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/OpenSAML2AuthenticationBypassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/OpenSAML2AuthenticationBypassCheckSample.java"))
       .withCheck(new OpenSAML2AuthenticationBypassCheck())
       .verifyIssues();
   }

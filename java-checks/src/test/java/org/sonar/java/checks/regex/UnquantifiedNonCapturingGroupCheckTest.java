@@ -29,7 +29,7 @@ class UnquantifiedNonCapturingGroupCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/UnquantifiedNonCapturingGroupCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/UnquantifiedNonCapturingGroupCheckSample.java"))
       .withCheck(new UnquantifiedNonCapturingGroupCheck())
       .verifyIssues();
   }

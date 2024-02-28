@@ -29,7 +29,7 @@ class DeprecatedArgumentsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/DeprecatedArgumentsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/DeprecatedArgumentsCheckSample.java"))
       .withCheck(new DeprecatedArgumentsCheck())
       .withJavaVersion(9)
       .verifyIssues();

@@ -29,7 +29,7 @@ class EmptyDatabasePasswordCheckTest {
   @Test
   void test() throws Exception {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/EmptyDatabasePasswordCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/EmptyDatabasePasswordCheckSample.java"))
       .withCheck(new EmptyDatabasePasswordCheck())
       .verifyIssues();
   }

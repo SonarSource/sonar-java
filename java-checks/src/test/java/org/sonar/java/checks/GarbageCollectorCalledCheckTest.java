@@ -30,7 +30,7 @@ class GarbageCollectorCalledCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/GarbageCollectorCalledCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/GarbageCollectorCalledCheckSample.java"))
       .withCheck(new GarbageCollectorCalledCheck())
       .verifyIssues();
   }

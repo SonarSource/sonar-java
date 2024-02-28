@@ -32,7 +32,7 @@ class LocksNotUnlockedCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheckSample.java"))
       .withCheck(new LocksNotUnlockedCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -41,7 +41,7 @@ class LocksNotUnlockedCheckTest {
   @Test
   void object_constraint_cache_issues() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheckCache.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheckCacheSample.java"))
       .withCheck(new LocksNotUnlockedCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

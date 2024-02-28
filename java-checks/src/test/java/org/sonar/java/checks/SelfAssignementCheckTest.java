@@ -29,7 +29,7 @@ class SelfAssignementCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/SelfAssignementCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SelfAssignementCheckSample.java"))
       .withCheck(new SelfAssignementCheck())
       .withQuickFixes()
       .verifyIssues();

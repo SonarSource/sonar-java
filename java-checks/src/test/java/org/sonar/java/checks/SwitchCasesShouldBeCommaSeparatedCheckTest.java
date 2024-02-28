@@ -29,7 +29,7 @@ class SwitchCasesShouldBeCommaSeparatedCheckTest {
   @Test
   void test_switch_statements() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheckSample.java"))
       .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
       .withJavaVersion(14)
       .verifyIssues();
@@ -47,7 +47,7 @@ class SwitchCasesShouldBeCommaSeparatedCheckTest {
   @Test
   void test_unsupported_java_version() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheckSample.java"))
       .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
       .withJavaVersion(13)
       .verifyNoIssues();

@@ -29,7 +29,7 @@ class XxeActiveMQCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/XxeActiveMQCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/XxeActiveMQCheckSample.java"))
       .withCheck(new XxeActiveMQCheck())
       .verifyIssues();
   }

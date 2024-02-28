@@ -29,7 +29,7 @@ class ZipEntryCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/ZipEntryCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/ZipEntryCheckSample.java"))
       .withCheck(new ZipEntryCheck())
       .verifyIssues();
   }

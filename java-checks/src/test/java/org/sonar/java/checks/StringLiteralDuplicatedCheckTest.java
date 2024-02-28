@@ -30,7 +30,7 @@ class StringLiteralDuplicatedCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/StringLiteralDuplicatedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringLiteralDuplicatedCheckSample.java"))
       .withCheck(new StringLiteralDuplicatedCheck())
       .verifyIssues();
   }

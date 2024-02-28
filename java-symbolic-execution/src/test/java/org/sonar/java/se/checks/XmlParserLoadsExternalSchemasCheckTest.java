@@ -29,7 +29,7 @@ class XmlParserLoadsExternalSchemasCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/XmlParserLoadsExternalSchemasCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/XmlParserLoadsExternalSchemasCheckSample.java"))
       .withChecks(new XxeProcessingCheck(), new XmlParserLoadsExternalSchemasCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

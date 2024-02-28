@@ -29,7 +29,7 @@ class UselessIncrementCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/UselessIncrementCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/UselessIncrementCheckSample.java"))
       .withCheck(new UselessIncrementCheck())
       .verifyIssues();
   }

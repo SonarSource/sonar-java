@@ -28,7 +28,7 @@ class LeftCurlyBraceStartLineCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/LeftCurlyBraceStartLineCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/LeftCurlyBraceStartLineCheckSample.java"))
       .withCheck(new LeftCurlyBraceStartLineCheck())
       .verifyIssues();
   }

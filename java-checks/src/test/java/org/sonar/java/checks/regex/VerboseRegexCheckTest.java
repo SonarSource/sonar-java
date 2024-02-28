@@ -29,7 +29,7 @@ class VerboseRegexCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/VerboseRegexCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/VerboseRegexCheckSample.java"))
       .withCheck(new VerboseRegexCheck())
       .verifyIssues();
   }

@@ -29,7 +29,7 @@ class UnicodeCaseCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/UnicodeCaseCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/UnicodeCaseCheckSample.java"))
       .withCheck(new UnicodeCaseCheck())
       .verifyIssues();
   }

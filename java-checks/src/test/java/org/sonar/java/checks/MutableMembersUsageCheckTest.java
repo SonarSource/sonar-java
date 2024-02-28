@@ -30,7 +30,7 @@ class MutableMembersUsageCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MutableMembersUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MutableMembersUsageCheckSample.java"))
       .withCheck(new MutableMembersUsageCheck())
       .verifyIssues();
   }

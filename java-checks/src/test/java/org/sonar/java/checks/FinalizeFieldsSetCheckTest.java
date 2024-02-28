@@ -30,7 +30,7 @@ class FinalizeFieldsSetCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/FinalizeFieldsSetCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/FinalizeFieldsSetCheckSample.java"))
       .withCheck(new FinalizeFieldsSetCheck())
       .verifyIssues();
   }

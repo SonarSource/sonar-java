@@ -29,7 +29,7 @@ class GetRequestedSessionIdCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/GetRequestedSessionIdCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/GetRequestedSessionIdCheckSample.java"))
       .withCheck(new GetRequestedSessionIdCheck())
       .verifyIssues();
   }

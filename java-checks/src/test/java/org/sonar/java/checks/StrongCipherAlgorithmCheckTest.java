@@ -30,7 +30,7 @@ class StrongCipherAlgorithmCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/StrongCipherAlgorithmCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StrongCipherAlgorithmCheckSample.java"))
       .withCheck(new StrongCipherAlgorithmCheck())
       .verifyIssues();
   }

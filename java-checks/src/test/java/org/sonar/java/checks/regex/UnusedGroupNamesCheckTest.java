@@ -29,7 +29,7 @@ class UnusedGroupNamesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/UnusedGroupNamesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/UnusedGroupNamesCheckSample.java"))
       .withCheck(new UnusedGroupNamesCheck())
       .verifyIssues();
   }

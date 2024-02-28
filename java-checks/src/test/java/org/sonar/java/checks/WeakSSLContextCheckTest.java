@@ -37,7 +37,7 @@ class WeakSSLContextCheckTest {
   @Test
   void test_java_7() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/WeakSSLContextCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/WeakSSLContextCheckSample.java"))
       .withCheck(new WeakSSLContextCheck())
       .withJavaVersion(7)
       .verifyIssues();

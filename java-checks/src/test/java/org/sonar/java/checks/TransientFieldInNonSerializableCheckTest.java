@@ -30,7 +30,7 @@ class TransientFieldInNonSerializableCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TransientFieldInNonSerializableCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TransientFieldInNonSerializableCheckSample.java"))
       .withCheck(new TransientFieldInNonSerializableCheck())
       .verifyIssues();
   }

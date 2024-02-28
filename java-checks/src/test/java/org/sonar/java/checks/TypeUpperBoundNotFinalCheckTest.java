@@ -30,7 +30,7 @@ class TypeUpperBoundNotFinalCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TypeUpperBoundNotFinalCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TypeUpperBoundNotFinalCheckSample.java"))
       .withCheck(new TypeUpperBoundNotFinalCheck())
       .verifyIssues();
   }

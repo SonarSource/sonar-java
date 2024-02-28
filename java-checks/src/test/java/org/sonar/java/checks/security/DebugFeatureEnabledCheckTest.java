@@ -43,7 +43,7 @@ class DebugFeatureEnabledCheckTest {
   @Test
   void testPrintStackTrace() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/DebugFeatureEnabledCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/DebugFeatureEnabledCheckSample.java"))
       .withCheck(new DebugFeatureEnabledCheck())
       .verifyIssues();
   }

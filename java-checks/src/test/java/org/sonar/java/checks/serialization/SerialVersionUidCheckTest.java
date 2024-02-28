@@ -27,7 +27,7 @@ class SerialVersionUidCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/serialization/SerialVersionUidCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/serialization/SerialVersionUidCheckSample.java"))
       .withCheck(new SerialVersionUidCheck())
       .verifyIssues();
   }

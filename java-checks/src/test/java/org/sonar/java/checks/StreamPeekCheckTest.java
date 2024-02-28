@@ -29,7 +29,7 @@ class StreamPeekCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/StreamPeekCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StreamPeekCheckSample.java"))
       .withCheck(new StreamPeekCheck())
       .verifyIssues();
   }

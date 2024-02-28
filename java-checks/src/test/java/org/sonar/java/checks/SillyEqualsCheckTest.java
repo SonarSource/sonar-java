@@ -30,7 +30,7 @@ class SillyEqualsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SillyEqualsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SillyEqualsCheckSample.java"))
       .withCheck(new SillyEqualsCheck())
       .verifyIssues();
   }

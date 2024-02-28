@@ -30,7 +30,7 @@ class DoubleCheckedLockingCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/DoubleCheckedLockingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/DoubleCheckedLockingCheckSample.java"))
       .withCheck(new DoubleCheckedLockingCheck())
       .verifyIssues();
   }

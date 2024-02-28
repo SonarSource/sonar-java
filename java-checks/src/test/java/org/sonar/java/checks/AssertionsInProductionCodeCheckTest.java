@@ -30,7 +30,7 @@ class AssertionsInProductionCodeCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AssertionsInProductionCodeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AssertionsInProductionCodeCheckSample.java"))
       .withCheck(new AssertionsInProductionCodeCheck())
       .verifyIssues();
   }
@@ -46,7 +46,7 @@ class AssertionsInProductionCodeCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AssertionsInProductionCodeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AssertionsInProductionCodeCheckSample.java"))
       .withCheck(new AssertionsInProductionCodeCheck())
       .withoutSemantic()
       .verifyNoIssues();

@@ -26,7 +26,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class JdbcDriverExplicitLoadingCheckTest {
 
-  private static final String FILENAME = mainCodeSourcesPath("checks/JdbcDriverExplicitLoadingCheck.java");
+  private static final String FILENAME = mainCodeSourcesPath("checks/JdbcDriverExplicitLoadingCheckSample.java");
 
   @Test
   void java6() {

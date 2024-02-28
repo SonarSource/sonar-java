@@ -29,7 +29,7 @@ class VolatileVariablesOperationsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/VolatileVariablesOperationsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/VolatileVariablesOperationsCheckSample.java"))
       .withCheck(new VolatileVariablesOperationsCheck())
       .verifyIssues();
   }

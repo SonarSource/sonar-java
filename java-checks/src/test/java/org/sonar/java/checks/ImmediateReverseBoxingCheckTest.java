@@ -31,7 +31,7 @@ class ImmediateReverseBoxingCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/ImmediateReverseBoxingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ImmediateReverseBoxingCheckSample.java"))
       .withCheck(new ImmediateReverseBoxingCheck())
       .withQuickFixes()
       .verifyIssues();

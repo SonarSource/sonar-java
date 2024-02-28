@@ -30,7 +30,7 @@ class AtLeastOneConstructorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AtLeastOneConstructorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AtLeastOneConstructorCheckSample.java"))
       .withCheck(new AtLeastOneConstructorCheck())
       .verifyIssues();
   }

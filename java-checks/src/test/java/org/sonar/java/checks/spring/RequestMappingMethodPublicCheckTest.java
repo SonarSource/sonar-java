@@ -29,11 +29,11 @@ class RequestMappingMethodPublicCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/RequestMappingMethodPublicCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/RequestMappingMethodPublicCheckSample.java"))
       .withCheck(new RequestMappingMethodPublicCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/RequestMappingMethodPublicCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/RequestMappingMethodPublicCheckSample.java"))
       .withCheck(new RequestMappingMethodPublicCheck())
       .withoutSemantic()
       .verifyNoIssues();

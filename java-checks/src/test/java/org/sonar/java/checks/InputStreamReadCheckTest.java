@@ -29,7 +29,7 @@ class InputStreamReadCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InputStreamReadCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InputStreamReadCheckSample.java"))
       .withCheck(new InputStreamReadCheck())
       .verifyIssues();
   }

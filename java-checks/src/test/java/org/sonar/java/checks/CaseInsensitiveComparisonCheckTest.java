@@ -29,7 +29,7 @@ class CaseInsensitiveComparisonCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CaseInsensitiveComparisonCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CaseInsensitiveComparisonCheckSample.java"))
       .withCheck(new CaseInsensitiveComparisonCheck())
       .verifyIssues();
   }

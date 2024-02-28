@@ -30,7 +30,7 @@ class NestedBlocksCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/NestedBlocksCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NestedBlocksCheckSample.java"))
       .withCheck(new NestedBlocksCheck())
       .verifyIssues();
   }

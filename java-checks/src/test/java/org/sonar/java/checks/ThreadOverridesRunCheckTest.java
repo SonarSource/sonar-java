@@ -30,7 +30,7 @@ class ThreadOverridesRunCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ThreadOverridesRunCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ThreadOverridesRunCheckSample.java"))
       .withCheck(new ThreadOverridesRunCheck())
       .verifyIssues();
   }
