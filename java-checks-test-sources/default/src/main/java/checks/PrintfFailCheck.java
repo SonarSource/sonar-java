@@ -124,7 +124,7 @@ public class PrintfFailCheck {
 
     pr.format("value is "+"asd");
     pr.format("value is "+
-        "asd"); // Compliant
+      "asd"); // Compliant
 
     // MessageFormat ===================================================================================================
     MessageFormat messageFormat = new MessageFormat("{0}");
@@ -292,5 +292,10 @@ public class PrintfFailCheck {
     log4j.error("message: {}" + value, value); // Compliant, reported by S3457
     log4j.error("message:" + value, new Exception()); // Compliant, reported by S3457
     log4j.error("message: {}", value, new Exception()); // Compliant
+
+    String.format("%2147483648$g", 42.0); // Noncompliant {{Not enough arguments to feed formater at index 2147483647: '%2147483648$'.}}
+    String.format("%2147483648g", 42.0); // Compliant
+    String.format("%.2147483648g", 42.0); // Compliant
+    String.format("%1000000000000$g", 42.0); // Noncompliant {{Not enough arguments to feed formater at index 2147483647: '%1000000000000$'.}}
   }
 }

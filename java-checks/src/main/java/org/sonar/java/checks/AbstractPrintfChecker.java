@@ -222,7 +222,11 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   }
 
   protected static Integer getIndex(String param) {
-    return Integer.valueOf(param.substring(0, param.indexOf('$')));
+    try {
+      return Integer.valueOf(param.substring(0, param.indexOf('$')));
+    } catch (NumberFormatException e) {
+      return Integer.MAX_VALUE;
+    }
   }
 
   protected static void cleanupLineSeparator(List<String> params) {
@@ -281,7 +285,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
       }
       if (argIndex >= args.size()) {
         int formatIndex = argIndex + 1;
-        reportIssue(mit, "Not enough arguments to feed formater at index " + formatIndex + ": '%" + formatIndex + "$'.");
+        var rawIndex = rawParam.substring(0, rawParam.indexOf('$') + 1);
+        reportIssue(mit, "Not enough arguments to feed formater at index " + formatIndex + ": '%" + rawIndex + "'.");
         return;
       }
       ExpressionTree argExpressionTree = args.get(argIndex);
