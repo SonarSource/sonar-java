@@ -9,7 +9,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CollectorsToList {
+public class CollectorsToListCheckSample {
   static class ListWrapper {
     List<String> strings;
   }

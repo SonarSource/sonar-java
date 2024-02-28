@@ -46,7 +46,7 @@ class CollectorsToListCheckTest {
 
   private static CheckVerifier createCheckVerifier() {
     return CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CollectorsToList.java"))
+      .onFile(mainCodeSourcesPath("checks/CollectorsToListCheckSample.java"))
       .withCheck(new CollectorsToListCheck());
   }
 }
