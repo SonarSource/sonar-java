@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,26 +20,6 @@ public class CollectorsToListCheckSample {
   void noncompliant() {
     List<String> list1 = Stream.of("A", "B", "C")
       .collect(Collectors.toList()); // Noncompliant [[sc=16;ec=35]] {{Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'}}
-
-    // Not modifying the list
-    list1.contains("B");
-
-    List<String> list2 = Stream.of("A", "B", "C")
-      .collect(Collectors.toUnmodifiableList()); // Noncompliant [[sc=16;ec=47]] {{Replace this usage of 'Stream.collect(Collectors.toUnmodifiableList())' with 'Stream.toList()'}}
-
-    Stream.of("A", "B", "C")
-      .collect(Collectors.toList()); // Noncompliant [[sc=16;ec=35]] {{Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'}}
-
-    Stream.of("A", "B", "C")
-      .collect(Collectors.toUnmodifiableList()); // Noncompliant [[sc=16;ec=47]] {{Replace this usage of 'Stream.collect(Collectors.toUnmodifiableList())' with 'Stream.toList()'}}
-
-    List<List<String>> listOfLists = new ArrayList<>();
-    // list1 appears in a call to List.add, but it is not the receiver, so it should not be interpreted as mutable:
-    listOfLists.add(list1);
-
-    listWrapper.strings = Stream.of("A", "B", "C").collect(Collectors.toList());
-    // listWrapper.strings appears in a call to List.add, but it is not the receiver, so it should not be interpreted as mutable:
-    listOfLists.add(listWrapper.strings);
   }
 
   void compliant_collections_methods() {
@@ -124,20 +105,20 @@ public class CollectorsToListCheckSample {
 
   private List<String> memberList2;
 
-  List<String> FPs() {
+  List<String> fixedFPs() {
     List<String> list1 = Stream.of("A", "B", "C")
-      .collect(Collectors.toList()); // Noncompliant - FP because we don't track lists across methods
+      .collect(Collectors.toList()); // Compliant
     addX(list1);
 
-    addX(Stream.of("A", "B", "C").collect(Collectors.toList())); // Noncompliant - same reason
+    addX(Stream.of("A", "B", "C").collect(Collectors.toList())); // Compliant
 
-    memberList2 = Stream.of("A", "B", "C").collect(Collectors.toList()); // Noncompliant - FP, see addX2
+    memberList2 = Stream.of("A", "B", "C").collect(Collectors.toList()); // Compliant
 
-    return Stream.of("A", "B", "C").collect(Collectors.toList()); // Noncompliant - FP because we don't check how the return value is used
+    return Stream.of("A", "B", "C").collect(Collectors.toList()); // Compliant
   }
 
-  void useFPs() {
-    FPs().add("X");
+  void useFixedFPs() {
+    fixedFPs().add("X");
   }
 
   void addX(List<String> string) {
@@ -159,27 +140,288 @@ public class CollectorsToListCheckSample {
     }
   }
 
-  Collection<CharSequence> upcast(Stream<String> stream) {
+  private Collection<CharSequence> upcast(Stream<String> stream) {
     return stream.collect(Collectors.toList()); // Compliant
   }
 
-  Collection<CharSequence> noUpcast(Stream<CharSequence> stream) {
+  private Collection<CharSequence> noUpcast(Stream<CharSequence> stream) {
     return stream.collect(Collectors.toList()); // Noncompliant
   }
 
-  Collection<CharSequence> upcastInlineStream() {
+  private Collection<CharSequence> upcastInlineStream() {
     return Stream.of(1, 2)
       .map(String::valueOf)
       .collect(Collectors.toList()); // Compliant
   }
 
-  Collection rawReceiver() {
+  private Collection rawReceiver() {
     return Stream.of(1, 2)
       .map(String::valueOf)
       .collect(Collectors.toList()); // Noncompliant
   }
 
-  Object rawReceiverAndArgument(Stream stream) {
+  private Object rawReceiverAndArgument(Stream stream) {
     return stream.collect(Collectors.toList()); // Noncompliant
+  }
+
+  public Object returnFromPublic1(Stream stream) {
+    return stream.collect(Collectors.toList()); // Compliant
+  }
+
+  public Object returnFromPublic2(Stream<String> stream) {
+    return stream.collect(Collectors.toUnmodifiableList()); // Noncompliant
+  }
+
+  public Object returnFromPublic3(Stream<String> stream) {
+    return (Object) stream.collect(Collectors.toList()); // Compliant
+  }
+
+  private Object returnFromPublic4(Stream<String> stream) {
+    return (Object) stream.collect(Collectors.toList()); // Compliant; FN due to simplified data flow analysis
+  }
+
+  Object returnFromPackageProtected(Stream stream) {
+    return stream.collect(Collectors.toList()); // Compliant
+  }
+
+  private void lambda1(Stream<String> stream) {
+    Supplier<List<String>> x = () -> stream.collect(Collectors.toList()); // Compliant
+  }
+
+  private List<String> lambda2(Stream<String> stream) {
+    Supplier<List<String>> x = () -> stream.collect(Collectors.toList()); // Compliant
+    return x.get();
+  }
+
+  public List<String> lambda3(Stream<String> stream) {
+    Supplier<List<String>> x = () -> stream.collect(Collectors.toList()); // Compliant
+    return x.get();
+  }
+
+  private void lambda4(Stream<String> stream) {
+    Supplier<List<String>> x = () -> {
+      var list = stream.collect(Collectors.toList()); // Noncompliant
+      return null;
+    };
+  }
+
+  private void lambda5(Stream<String> stream) {
+    Supplier<List<String>> x = () -> {
+      var list = stream.collect(Collectors.toList()); // Compliant
+      return list;
+    };
+  }
+
+  private List<String> yield1(int code, Stream<String> stream) {
+    switch (code) {
+      case 0 -> {
+        return List.of("Hello", "world");
+      }
+      case 1 -> {
+        return stream.collect(Collectors.toList()); // Noncompliant
+      }
+      default -> {
+        return null;
+      }
+    }
+  }
+
+  private List<String> yield2(int code, Stream<String> stream) {
+    return switch (code) {
+      case 0 -> List.of("Hello", "world");
+      case 1 -> stream.collect(Collectors.toList()); // Noncompliant
+      default -> null;
+    };
+  }
+
+  public List<String> yield3(int code, Stream<String> stream) {
+    var x = switch (code) {
+      case 0 -> List.of("Hello", "world");
+      case 1 -> {
+        System.out.println();
+        yield stream.collect(Collectors.toList()); // Noncompliant
+      }
+      default -> null;
+    };
+    return null;
+  }
+
+  public List<String> yield4(int code, Stream<String> stream) {
+    var x = switch (code) {
+      case 0 -> List.of("Hello", "world");
+      case 1 -> {
+        System.out.println();
+        yield stream.collect(Collectors.toList()); // Compliant
+      }
+      default -> null;
+    };
+    return x;
+  }
+
+  public List<String> yield5(int code, Stream<String> stream) {
+    var x = switch (code) {
+      case 0 -> List.of("Hello", "world");
+      case 1 -> {
+        var y = stream.collect(Collectors.toList()); // Noncompliant
+        System.out.println();
+        yield y;
+      }
+      default -> null;
+    };
+    return null;
+  }
+
+  public List<String> graylist1(int code, Stream<String> stream) {
+    List<String> z = null;
+    var x = switch (code) {
+      case 0 -> List.of("Hello", "world");
+      case 1 -> {
+        var y = stream.collect(Collectors.toList()); // Noncompliant
+        System.out.println();
+        yield y;
+      }
+      default -> null;
+    };
+    return z;
+  }
+
+  public List<String> graylist2(int code, Stream<String> stream) {
+    List<String> z = null;
+    var x = switch (code) {
+      case 0 -> List.of("Hello", "world");
+      case 1 -> {
+        var y = stream.collect(Collectors.toList()); // Compliant
+        System.out.println();
+        yield y;
+      }
+      default -> null;
+    };
+    z = x;
+    return z;
+  }
+
+  private Object graylist3(int code, Stream<String> stream) {
+    List<String> z = null;
+    var x = switch (code) {
+      case 0 -> List.of("Hello", "world");
+      case 1 -> {
+        var y = stream.collect(Collectors.toList()); // Noncompliant
+        System.out.println();
+        yield y;
+      }
+      default -> null;
+    };
+    z = x;
+    Object a = z;
+    return a;
+  }
+
+  public Object graylist4(int code, Stream<String> stream) {
+    List<String> z = null;
+    var x = switch (code) {
+      case 0 -> List.of("Hello", "world");
+      case 1 -> {
+        var y = stream.collect(Collectors.toList()); // Compliant
+        System.out.println();
+        yield y;
+      }
+      default -> null;
+    };
+    z = x;
+    Object a = z;
+    return a;
+  }
+
+  public Object graylist5(int code, Stream<String> stream) {
+    List<String> z = null;
+    var x = switch (code) {
+      case 0 -> List.of("Hello", "world");
+      case 1 -> {
+        var y = stream.collect(Collectors.toList()); // Compliant; FN due to simplified data flow analysis
+        System.out.println();
+        yield y;
+      }
+      default -> null;
+    };
+    Object a = z;
+    z = x;
+    return a;
+  }
+
+  private void assignment(Stream<String> stream) {
+    var a0 = stream.collect(Collectors.toList()); // Noncompliant
+    var a1 = stream.collect(Collectors.toList()); // Compliant
+    var a2 = stream.collect(Collectors.toList()); // Noncompliant
+
+    var b = new Object[10];
+    b[1] = stream.collect(Collectors.toList()); // Compliant
+    b[2] = a1;
+    var c = a2;
+  }
+
+  private void callTarget(Stream<String> stream) {
+
+    var d0 = stream.collect(Collectors.toList()); // Compliant
+    var e0 = d0;
+    var f0 = e0;
+    var g0 = f0;
+    g0.add("foo");
+
+    var d1 = stream.collect(Collectors.toList()); // Noncompliant
+    var e1 = d1;
+    var f1 = e1;
+    var g1 = f1;
+    g0.contains("foo");
+  }
+
+  private Object argument0(Stream<String> stream) {
+    return foo(stream.collect(Collectors.toList())); // Compliant
+  }
+
+  private Object argument1(Stream<String> stream) {
+    return bar(stream.collect(Collectors.toList())); // Compliant; FN due to simplified data flow analysis
+  }
+
+  private void argument2(Stream<String> stream) {
+    Collections.reverse(stream.collect(Collectors.toList())); // Compliant
+  }
+
+  private void argument3(Stream<String> stream) {
+    Collections.max(stream.collect(Collectors.toList())); // Noncompliant
+  }
+
+  private void standalone(Stream<String> stream) {
+    stream.collect(Collectors.toList()); // Noncompliant
+  }
+
+  private Object foo(List<String> list) {
+    return list;
+  }
+
+  private Object bar(List<String> list) {
+    return null;
+  }
+
+  private void field(Stream<String> stream) {
+    var localList = stream.collect(Collectors.toList()); // Noncompliant
+    nonLocalList = stream.collect(Collectors.toList()); // Compliant
+    staticNonLocalList = stream.collect(Collectors.toList()); // Compliant
+    this.nonLocalList = stream.collect(Collectors.toList()); // Compliant
+    CollectorsToListCheckSample.staticNonLocalList = stream.collect(Collectors.toList()); // Compliant
+  }
+
+  private Object nonLocalList;
+
+  private static Object staticNonLocalList;
+
+  public static void sonarjava4422Sample1()
+  {
+    final List<String> test = sonarjava4422Sample2();
+    test.add("C"); // Here we NEED the list to be modifiable
+  }
+
+  public static List<String> sonarjava4422Sample2()
+  {
+    return Stream.of("A", "B").collect(Collectors.toList()); // Compliant
   }
 }

@@ -181,11 +181,16 @@ public final class ExpressionUtils {
 
   @CheckForNull
   public static MethodTree getEnclosingElement(ExpressionTree expr, Tree.Kind... kinds) {
+    return (MethodTree) getEnclosingElementAnyType(expr, kinds);
+  }
+
+  @CheckForNull
+  public static Tree getEnclosingElementAnyType(ExpressionTree expr, Tree.Kind... kinds) {
     Tree result = expr.parent();
     while (result != null && !result.is(kinds)) {
       result = result.parent();
     }
-    return (MethodTree) result;
+    return result;
   }
 
   @Nullable
