@@ -86,6 +86,13 @@ class AvoidFPsWhenUsingFieldInInstance_SONARJAVA_4749 {
   private final String foo = new String("test"); // Compliant
   private final String bar = foo; // Compliant
 
+  private static final String sf1 = "Foo";
+  private static final String sf2 = "Bar";
+
+  private final String selection = nextID == 1 ? sf1 : sf2; // Compliant
+  private final String selection2 = sf1 == "foo" ? sf1 : sf2; // Noncompliant
+  private final String selection3 = sf1.equals("foo") ? sf1 : sf2; // Compliant, as we don't know whether `equals` always yields the same result.
+
   public long getID()
   {
     return localID;
@@ -131,11 +138,11 @@ class ConstantsShouldBeStaticFinalCheckDemo {
 
 class FieldAssignments {
   private final int[] finalFoo = new int[42]; // Compliant
-  private final Object finalObject = finalFoo; // Compliant - foo is not static
+  private final Object finalObject = finalFoo; // Compliant - finalFoo is not static
 
   private static int[] staticFoo = new int[42]; // Compliant
 
-  private final Object staticObject = staticFoo; // Compliant - foo is not final
+  private final Object staticObject = staticFoo; // Compliant - staticFoo is not final
 
   private static final int[] foo = new int[42];
   private final Object object = foo; // Noncompliant

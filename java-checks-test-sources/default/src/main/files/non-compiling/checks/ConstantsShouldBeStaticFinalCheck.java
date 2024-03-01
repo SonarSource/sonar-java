@@ -1,8 +1,11 @@
 package checks;
 
 class A {
-  private final int object = (Type<?>) foo; // Noncompliant
+  private final int object = (Type<?>) foo; // Compliant
   private final int[] foo = new int[42];    // Compliant
+
+  private final int object2 = (Type<?>) foo2; // Noncompliant
+  private static final int[] foo2 = new int[42];    // Compliant
 }
 
 static class C { // Does not compile, can not be static

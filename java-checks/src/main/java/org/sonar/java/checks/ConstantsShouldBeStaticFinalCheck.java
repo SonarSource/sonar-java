@@ -85,37 +85,36 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
 
   private static boolean hasConstantInitializer(VariableTree variableTree) {
     ExpressionTree init = variableTree.initializer();
-    if (init != null) {
-      var deparenthesized = ExpressionUtils.skipParentheses(init);
+    if (init == null) {
+      return false;
+    }
 
-      if (deparenthesized.is(Tree.Kind.METHOD_REFERENCE)) {
-        MethodReferenceTree methodRef = (MethodReferenceTree) ExpressionUtils.skipParentheses(init);
-        if (isInstanceIdentifier(methodRef.expression())) {
-          return false;
-        }
-      } else if (deparenthesized.is(Tree.Kind.NEW_ARRAY)) {
+    var deparenthesized = ExpressionUtils.skipParentheses(init);
+
+    if (deparenthesized.is(Tree.Kind.METHOD_REFERENCE)) {
+      MethodReferenceTree methodRef = (MethodReferenceTree) deparenthesized;
+      if (isInstanceIdentifier(methodRef.expression())) {
         return false;
-      } else if (deparenthesized.is(Tree.Kind.IDENTIFIER)) {
-        var symbol = ((IdentifierTree) deparenthesized).symbol();
-        return symbol.isStatic() && symbol.isFinal();
       }
-      return !containsChildMatchingPredicate((JavaTree) deparenthesized, (tree -> isIgnoredKind(tree) || isThisOrSuper(tree)));
     }
-    return false;
+    return !containsChildMatchingPredicate((JavaTree) deparenthesized,
+      (ConstantsShouldBeStaticFinalCheck::isNonStaticOrFinal));
   }
 
-  private static boolean isIgnoredKind(Tree tree) {
-    return tree.is(
-      Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_INCREMENT,
-      Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.PREFIX_DECREMENT);
-  }
-
-  private static boolean isThisOrSuper(Tree tree) {
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      String name = ((IdentifierTree) tree).name();
-      return "super".equals(name) || "this".equals(name);
-    }
-    return false;
+  private static boolean isNonStaticOrFinal(Tree tree) {
+    return switch (tree.kind()) {
+      case METHOD_INVOCATION, NEW_CLASS, NEW_ARRAY -> true;
+      case IDENTIFIER -> {
+        String name = ((IdentifierTree) tree).name();
+        if ("super".equals(name) || "this".equals(name)) {
+          yield true;
+        } else {
+          var symbol = ((IdentifierTree) tree).symbol();
+          yield symbol.isVariableSymbol() && !(symbol.isStatic() && symbol.isFinal());
+        }
+      }
+      default -> false;
+    };
   }
 
   private static boolean isInstanceIdentifier(Tree expression) {
