@@ -39,7 +39,7 @@ class RestrictedIdentifiersUsageCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/RestrictedIdentifiersUsageCheckSample.java"))
       .withCheck(new RestrictedIdentifiersUsageCheck())
       .withJavaVersion(8)
       .verifyIssues();

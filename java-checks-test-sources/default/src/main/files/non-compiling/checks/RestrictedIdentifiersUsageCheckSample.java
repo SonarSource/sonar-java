@@ -1,6 +1,6 @@
 package checks;
 
-public class RestrictedIdentifiersUsageCheck {
+public class RestrictedIdentifiersUsageCheckSample {
 
   void noncompliant() {
     String var = "var"; // Noncompliant [[sc=12;ec=15]]{{Rename this variable to not match a restricted identifier.}}
