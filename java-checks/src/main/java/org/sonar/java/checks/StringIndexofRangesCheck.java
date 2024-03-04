@@ -118,11 +118,11 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
     var beginIdxDelta = lengthDelta(beginIdxExpr, lengthReceiverVarName);
     var endIdxDelta = lengthDelta(endIdxExpr, lengthReceiverVarName);
     if (beginIdxDelta.isPresent() && beginIdxDelta.get() >= 0) {
-      reportIssue(methodInvocation, "Begin index should be smaller than the length of the string.",
+      reportIssue(beginIdxExpr, "Begin index should be smaller than the length of the string.",
         callAsSingletonSecondaryLocation(methodInvocation), null);
     }
     if (endIdxDelta.isPresent() && endIdxDelta.get() > 0) {
-      reportIssue(methodInvocation, "End index should be at most the length of the string.",
+      reportIssue(endIdxExpr, "End index should be at most the length of the string.",
         callAsSingletonSecondaryLocation(methodInvocation), null);
     }
     if (beginIdxDelta.isPresent() && endIdxDelta.isPresent() && beginIdxDelta.get() > endIdxDelta.get()) {
