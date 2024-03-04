@@ -170,7 +170,7 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
     return Optional.empty();
   }
 
-  private boolean isCallToLengthOnVariable(ExpressionTree expr, String varName) {
+  private static boolean isCallToLengthOnVariable(ExpressionTree expr, String varName) {
     if (expr instanceof MethodInvocationTree mit) {
       return LENGTH_MATCHERS.matches(mit.methodSymbol())
         && mit.methodSelect() instanceof MemberSelectExpressionTree memberSelect
