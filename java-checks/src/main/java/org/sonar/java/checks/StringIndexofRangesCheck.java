@@ -150,6 +150,10 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
    * or an empty Optional if the expression is too complex for delta to be computed
    */
   private Optional<Integer> lengthDelta(ExpressionTree expr, String varName) {
+    if (isCallToLengthOnVariable(expr, varName)){
+      // 1st pattern: var.length()
+      return Optional.of(0);
+    }
     if (expr instanceof BinaryExpressionTree binaryExpr) {
       var isPlus = binaryExpr.kind() == Tree.Kind.PLUS;
       var isMinus = binaryExpr.kind() == Tree.Kind.MINUS;
@@ -159,11 +163,11 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
       var leftCst = binaryExpr.leftOperand().asConstant();
       var rightCst = binaryExpr.rightOperand().asConstant();
       if (isCallToLengthOnVariable(binaryExpr.leftOperand(), varName) && rightCst.isPresent() && rightCst.get() instanceof Integer rightVal) {
-        // 1st pattern: var.length() + cst  or  var.length() - cst
+        // 2nd pattern:  var.length() + cst  or  var.length() - cst
         return Optional.of(isPlus ? rightVal : -rightVal);
       } else if (isPlus && leftCst.isPresent() && leftCst.get() instanceof Integer leftVal
         && isCallToLengthOnVariable(binaryExpr.rightOperand(), varName)) {
-        // 2nd pattern: cst + var.length()
+        // 3rd pattern: cst + var.length()
         return Optional.of(leftVal);
       }
     }
