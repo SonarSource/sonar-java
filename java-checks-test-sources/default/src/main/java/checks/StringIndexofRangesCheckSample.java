@@ -23,7 +23,12 @@ public class StringIndexofRangesCheckSample {
       3);  // Noncompliant [[secondary=22]]
     index += "Hi".indexOf('i', 0, 3);  // Noncompliant
 
+    var i = 2;
+    index += "Hi".indexOf('i', i, 2);  // Compliant
+    index += "Hi".indexOf('i', 0, i);  // Compliant
+
     index += hello.indexOf('o', 0, hello.length() + 1); // Noncompliant
+    index += hello.indexOf('o', 0, 1 + hello.length()); // Noncompliant
     index += hello.indexOf('o', 0, hello.length() + 1 - 5 + 2 + 3); // Compliant
     index += hello.indexOf('o', 0, 1 + hello.length() + 1 - 2 + 5*4); // Compliant
 
@@ -47,6 +52,9 @@ public class StringIndexofRangesCheckSample {
 
     var hi = "Hi!";
     index += hello.indexOf('o', 1, hi.length() + 2);  // Compliant
+    index += hello.indexOf('o', 0, 1 + hi.length()); // Compliant
+
+    index += hello.indexOf('o', 1, "Abc".length() + 2);  // Compliant
 
     return index;
   }
