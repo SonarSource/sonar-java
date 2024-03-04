@@ -25,10 +25,12 @@ import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6218")
 public class MissingOverridesInRecordWithArrayComponentCheck extends IssuableSubscriptionVisitor {
@@ -61,14 +63,22 @@ public class MissingOverridesInRecordWithArrayComponentCheck extends IssuableSub
   public void visitNode(Tree tree) {
     ClassTree targetRecord = (ClassTree) tree;
 
-    boolean recordHasArrayComponent = targetRecord.recordComponents().stream()
-      .anyMatch(component -> component.symbol().type().isArray());
-    if (!recordHasArrayComponent) {
+    List<VariableTree> recordArrayComponents = targetRecord.recordComponents().stream()
+      .filter(component -> component.symbol().type().isArray())
+      .toList();
+
+    if (recordArrayComponents.isEmpty()) {
       return;
     }
 
-    Optional<String> message = inspectRecord(targetRecord);
-    message.ifPresent(composedMessage -> reportIssue(targetRecord, composedMessage));
+    inspectRecord(targetRecord)
+      .ifPresent(composedMessage -> reportIssue(targetRecord.simpleName(), composedMessage, secondaries(recordArrayComponents), null));
+  }
+
+  private static List<JavaFileScannerContext.Location> secondaries(List<VariableTree> recordArrayComponents) {
+    return recordArrayComponents.stream()
+      .map(arrayComponent -> new JavaFileScannerContext.Location("Array", arrayComponent))
+      .toList();
   }
 
   public static Optional<String> inspectRecord(ClassTree tree) {
