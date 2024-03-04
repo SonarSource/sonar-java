@@ -37,10 +37,22 @@ public class StringIndexofRangesCheckSample {
     index += hello.indexOf('o', hello.length() - 2, hello.length() - 5); // Noncompliant
     index += hello.indexOf('o', hello.length() - 5, hello.length() - 2); // Compliant
 
+    index += hello.indexOf('o', hello.length(), // Noncompliant
+      hello.length() - 2); // Noncompliant
+
+    index += hello.indexOf('o', hello.length() - 2, hello.hashCode() - 5); // Compliant
+    index += hello.indexOf('o', 0, hello.hashCode() + 1); // Compliant
+
+    index += makeAString().indexOf('o', 0, makeAString().length() + 1); // Compliant
+
     var hi = "Hi!";
-    index += hello.indexOf('o', 1, hi.length());  // Compliant
+    index += hello.indexOf('o', 1, hi.length() + 2);  // Compliant
 
     return index;
+  }
+
+  static String makeAString(){
+    return "This is" + " a string";
   }
 
 }
