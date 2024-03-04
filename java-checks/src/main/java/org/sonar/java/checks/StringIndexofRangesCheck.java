@@ -147,7 +147,7 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
    * @param expr    the expression
    * @param varName name of the variable
    * @return an Optional containing the difference delta such that the value of expr is var.length() + delta (delta may be negative),
-   * or an empty Optional if the expression is too complex for this expression to be computed
+   * or an empty Optional if the expression is too complex for delta to be computed
    */
   private Optional<Integer> lengthDelta(ExpressionTree expr, String varName) {
     if (expr instanceof BinaryExpressionTree binaryExpr) {
