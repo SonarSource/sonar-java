@@ -310,6 +310,7 @@ import org.sonar.java.checks.RawTypeCheck;
 import org.sonar.java.checks.ReadObjectSynchronizedCheck;
 import org.sonar.java.checks.RecordDuplicatedGetterCheck;
 import org.sonar.java.checks.RecordInsteadOfClassCheck;
+import org.sonar.java.checks.RecordPatternInsteadOfFieldAccessCheck;
 import org.sonar.java.checks.RedundantAbstractMethodCheck;
 import org.sonar.java.checks.RedundantCloseCheck;
 import org.sonar.java.checks.RedundantJumpCheck;
@@ -1021,6 +1022,7 @@ public final class CheckList {
     ReceivingIntentsCheck.class,
     RecordDuplicatedGetterCheck.class,
     RecordInsteadOfClassCheck.class,
+    RecordPatternInsteadOfFieldAccessCheck.class,
     RecordSerializationIgnoredMembersCheck.class,
     RedosCheck.class,
     RedundantAbstractMethodCheck.class,
