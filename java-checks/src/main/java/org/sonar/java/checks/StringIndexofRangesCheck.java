@@ -130,7 +130,7 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private List<JavaFileScannerContext.Location> callAsSingletonSecondaryLocation(MethodInvocationTree methodInvocation) {
+  private static List<JavaFileScannerContext.Location> callAsSingletonSecondaryLocation(MethodInvocationTree methodInvocation) {
     return List.of(new JavaFileScannerContext.Location("Call", methodInvocation));
   }
 
@@ -149,7 +149,7 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
    * @return an Optional containing the difference delta such that the value of expr is var.length() + delta (delta may be negative),
    * or an empty Optional if the expression is too complex for delta to be computed
    */
-  private Optional<Integer> lengthDelta(ExpressionTree expr, String varName) {
+  private static Optional<Integer> lengthDelta(ExpressionTree expr, String varName) {
     if (isCallToLengthOnVariable(expr, varName)){
       // 1st pattern: var.length()
       return Optional.of(0);
