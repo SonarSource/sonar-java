@@ -19,85 +19,139 @@
  */
 package org.sonar.java.checks;
 
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Objects;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.List;
+import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 @Rule(key = "S2438")
-public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
+public class ThreadAsRunnableArgumentCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  private JavaFileScannerContext context;
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
+  }
+
+  private static final String RUNNABLE_TYPE = "java.lang.Runnable";
+  private static final String THREAD_TYPE = "java.lang.Thread";
+  private static final String RUNNABLE_ARRAY_TYPE = RUNNABLE_TYPE + "[]";
+  private static final String THREAD_ARRAY_TYPE = THREAD_TYPE + "[]";
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    super.visitVariable(tree);
+    var initializer = tree.initializer();
+    if (initializer != null) {
+      checkTypeCoercion(tree.symbol().type(), initializer);
+    }
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    List<ExpressionTree> arguments;
-    Symbol.MethodSymbol methodSymbol;
-    if (tree.is(Tree.Kind.NEW_CLASS)) {
-      NewClassTree nct = (NewClassTree) tree;
-      methodSymbol = nct.methodSymbol();
-      arguments = nct.arguments();
-    } else {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      methodSymbol = mit.methodSymbol();
-      arguments = mit.arguments();
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    super.visitAssignmentExpression(tree);
+    checkTypeCoercion(tree.variable().symbolType(), tree.expression());
+  }
+
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    super.visitMethodInvocation(tree);
+    visitInvocation(tree.methodSymbol(), tree.arguments());
+  }
+
+  @Override
+  public void visitNewClass(NewClassTree tree) {
+    super.visitNewClass(tree);
+    visitInvocation(tree.methodSymbol(), tree.arguments());
+  }
+
+  private void visitInvocation(Symbol.MethodSymbol methodSymbol, Arguments rhsValues) {
+    List<Type> lhsTypes = methodSymbol.parameterTypes();
+
+    var nonVarargCount = lhsTypes.size() - (methodSymbol.isVarArgsMethod() ? 1 : 0);
+    for (int i = 0; i < nonVarargCount; i++) {
+      checkTypeCoercion(lhsTypes.get(i), rhsValues.get(i));
     }
-    if (!arguments.isEmpty() && !methodSymbol.isUnknown()) {
-      checkArgumentsTypes(arguments, methodSymbol);
+    var argumentCount = rhsValues.size();
+    if (!methodSymbol.isVarArgsMethod() || argumentCount == nonVarargCount) {
+      return;
+    }
+
+    var arrayType = (Type.ArrayType) lhsTypes.get(nonVarargCount);
+    var elementType = arrayType.elementType();
+    checkTypeCoercion(arrayType, rhsValues.get(nonVarargCount));
+    for (int i = nonVarargCount; i < argumentCount; i++) {
+      checkTypeCoercion(elementType, rhsValues.get(i));
     }
   }
 
-  private void checkArgumentsTypes(List<ExpressionTree> arguments, Symbol.MethodSymbol methodSymbol) {
-    List<Type> parametersTypes = methodSymbol.parameterTypes();
-    // FIXME static imports.
-    // FIXME As arguments are not handled for method resolution using static imports, the provided methodSymbol may not match.
-    if (!parametersTypes.isEmpty()) {
-      for (int index = 0; index < arguments.size(); index++) {
-        ExpressionTree argument = arguments.get(index);
-        Type providedType = argument.symbolType();
-        if (!argument.is(Tree.Kind.NULL_LITERAL) && isThreadAsRunnable(providedType, parametersTypes, index, methodSymbol.isVarArgsMethod())) {
-          reportIssue(argument, getMessage(argument, providedType, index));
-        }
-      }
+  @Override
+  public void visitNewArray(NewArrayTree tree) {
+    super.visitNewArray(tree);
+    var lhsType = tree.type();
+    if (lhsType != null && lhsType.symbolType().is(RUNNABLE_TYPE)) {
+      tree.initializers().forEach(rhsValue -> checkTypeCoercion(lhsType.symbolType(), rhsValue));
     }
   }
 
-  private static boolean isThreadAsRunnable(Type providedType, List<Type> parametersTypes, int index, boolean varargs) {
-    Type expectedType = getExpectedType(providedType, parametersTypes, index, varargs);
-    return (expectedType.is("java.lang.Runnable") && providedType.isSubtypeOf("java.lang.Thread"))
-      || (expectedType.is("java.lang.Runnable[]") && providedType.isSubtypeOf("java.lang.Thread[]"));
-  }
-
-  private static Type getExpectedType(Type providedType, List<Type> parametersTypes, int index, boolean varargs) {
-    int lastParameterIndex = parametersTypes.size() - 1;
-    Type lastParameterType = parametersTypes.get(lastParameterIndex);
-    Type lastExpectedType = varargs ? ((Type.ArrayType) lastParameterType).elementType() : lastParameterType;
-    if (index > lastParameterIndex || (index == lastParameterIndex && varargs && !providedType.isArray())) {
-      return lastExpectedType;
+  @Override
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    super.visitReturnStatement(tree);
+    var expression = tree.expression();
+    if (expression == null) {
+      return;
     }
-    return parametersTypes.get(index);
-  }
 
-  private static String getMessage(ExpressionTree argument, Type providedType, int index) {
-    String array = providedType.isArray() ? "[]" : "";
-    return MessageFormat.format("Replace \"{0}\" of type Thread{1} with an instance of Runnable{1}.", getArgName(argument, index), array);
-  }
-
-  private static String getArgName(ExpressionTree tree, int index) {
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      return ((IdentifierTree) tree).name();
+    Tree enclosing = ExpressionUtils.getEnclosingElementAnyType(tree, Tree.Kind.METHOD,
+      Tree.Kind.LAMBDA_EXPRESSION);
+    if (enclosing != null) {
+      var lhsType = enclosing instanceof LambdaExpressionTree lambda ?
+        lambda.symbol().returnType().type() : ((MethodTree) enclosing).returnType().symbolType();
+      checkTypeCoercion(lhsType, expression);
     }
-    return "argument " + (index + 1);
+  }
+
+  @Override
+  public void visitYieldStatement(YieldStatementTree tree) {
+    super.visitYieldStatement(tree);
+    Tree enclosing = ExpressionUtils.getEnclosingElementAnyType(tree, Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.SWITCH_STATEMENT);
+    if (enclosing == null || enclosing.is(Tree.Kind.SWITCH_STATEMENT)) {
+      return;
+    }
+    var lhsType = ((ExpressionTree) enclosing).symbolType();
+    checkTypeCoercion(lhsType, tree.expression());
+  }
+
+  private void checkTypeCoercion(Type lhsType, ExpressionTree rhsValue) {
+    var rhsType = rhsValue.symbolType();
+    if ((lhsType.is(RUNNABLE_TYPE) && isNonNullSubtypeOf(rhsType, THREAD_TYPE)) ||
+      (lhsType.is(RUNNABLE_ARRAY_TYPE) && isNonNullSubtypeOf(rhsType, THREAD_ARRAY_TYPE))) {
+      var message = MessageFormat.format("Replace this {0} instance with an instance of {1}.", rhsType.name(), lhsType.name());
+      context.reportIssue(this, rhsValue, message);
+    }
+  }
+
+  private static boolean isNonNullSubtypeOf(Type type, String superTypeName) {
+    return !type.isNullType() && type.isSubtypeOf(superTypeName);
   }
 }
