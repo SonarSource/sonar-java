@@ -32,6 +32,18 @@ public class RecordPatternInsteadOfFieldAccessCheckSample {
     };
   }
 
+  int compliantBecausePIsUsed(Object obj, Point a) {
+    if (obj instanceof Point p) {
+      if(p == a){
+        return -1;
+      }
+      int x = p.x(); // Compliant
+      int y = p.y(); // Compliant
+      return x + y;
+    }
+    return 0;
+  }
+
   record Point(int x, int y) {
   }
 

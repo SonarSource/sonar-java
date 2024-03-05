@@ -30,7 +30,17 @@ class RecordPatternInsteadOfFieldAccessCheckTest {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/RecordPatternInsteadOfFieldAccessCheckSample.java"))
       .withCheck(new RecordPatternInsteadOfFieldAccessCheck())
+      .withJavaVersion(21)
       .verifyIssues();
+  }
+
+  @Test
+  void test_before_java_21() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/RecordPatternInsteadOfFieldAccessCheckSample.java"))
+      .withCheck(new RecordPatternInsteadOfFieldAccessCheck())
+      .withJavaVersion(20)
+      .verifyNoIssues();
   }
   
 }

@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
@@ -29,7 +31,12 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 
 @Rule(key = "S6878")
-public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscriptionVisitor {
+public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava21Compatible();
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -51,9 +58,5 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
       reportIssue(usage, "Use the record pattern instead of field access.");
     }
   }
-
-
-
-
 
 }
