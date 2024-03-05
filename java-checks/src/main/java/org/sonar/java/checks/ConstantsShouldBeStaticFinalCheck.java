@@ -91,11 +91,8 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
 
     var deparenthesized = ExpressionUtils.skipParentheses(init);
 
-    if (deparenthesized.is(Tree.Kind.METHOD_REFERENCE)) {
-      MethodReferenceTree methodRef = (MethodReferenceTree) deparenthesized;
-      if (isInstanceIdentifier(methodRef.expression())) {
-        return false;
-      }
+    if (deparenthesized instanceof MethodReferenceTree methodRef && isInstanceIdentifier(methodRef.expression())) {
+      return false;
     }
     return !containsChildMatchingPredicate((JavaTree) deparenthesized,
       (ConstantsShouldBeStaticFinalCheck::isNonStaticOrFinal));
@@ -103,7 +100,7 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
 
   private static boolean isNonStaticOrFinal(Tree tree) {
     return switch (tree.kind()) {
-      case METHOD_INVOCATION, NEW_CLASS, NEW_ARRAY -> true;
+      case METHOD_INVOCATION, NEW_CLASS, NEW_ARRAY, ARRAY_ACCESS_EXPRESSION -> true;
       case IDENTIFIER -> {
         String name = ((IdentifierTree) tree).name();
         if ("super".equals(name) || "this".equals(name)) {

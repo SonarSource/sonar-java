@@ -147,5 +147,6 @@ class FieldAssignments {
   private static final int[] foo = new int[42];
   private final Object object = foo; // Noncompliant
 
+  private final int bar = foo[2]; // Compliant (array access)
 }
 
