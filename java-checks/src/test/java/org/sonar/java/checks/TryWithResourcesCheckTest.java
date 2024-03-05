@@ -42,4 +42,17 @@ class TryWithResourcesCheckTest {
       .withCheck(new TryWithResourcesCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_java_21() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/TryWithResourcesCheck_java_21.java"))
+      .withCheck(new TryWithResourcesCheck())
+      .verifyNoIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/TryWithResourcesCheck_java_21.java"))
+      .withCheck(new TryWithResourcesCheck())
+      .withJavaVersion(21)
+      .verifyIssues();
+  }
 }
