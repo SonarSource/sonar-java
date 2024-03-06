@@ -23,14 +23,24 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
-class StringIndexofRangesCheckTest {
+class StringIndexOfRangesCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/StringIndexofRangesCheckSample.java"))
-      .withCheck(new StringIndexofRangesCheck())
+      .withCheck(new StringIndexOfRangesCheck())
+      .withJavaVersion(21)
       .verifyIssues();
+  }
+
+  @Test
+  void test_before_java_21(){
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/StringIndexofRangesCheckSample.java"))
+      .withCheck(new StringIndexOfRangesCheck())
+      .withJavaVersion(20)
+      .verifyNoIssues();
   }
   
 }

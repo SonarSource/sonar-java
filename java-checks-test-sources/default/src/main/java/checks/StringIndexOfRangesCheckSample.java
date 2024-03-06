@@ -1,6 +1,6 @@
 package checks;
 
-public class StringIndexofRangesCheckSample {
+public class StringIndexOfRangesCheckSample {
 
   int foo(){
 
@@ -19,8 +19,7 @@ public class StringIndexofRangesCheckSample {
 
     index += hello.indexOf("!", 0, hello.length()); // Compliant
 
-    index += "Hi".indexOf('i', 2, // Noncompliant
-      3);  // Noncompliant [[secondary=22]]
+    index += "Hi".indexOf('i', 2, 3); // Noncompliant
     index += "Hi".indexOf('i', 0, 3);  // Noncompliant
 
     var i = 2;
@@ -42,8 +41,7 @@ public class StringIndexofRangesCheckSample {
     index += hello.indexOf('o', hello.length() - 2, hello.length() - 5); // Noncompliant
     index += hello.indexOf('o', hello.length() - 5, hello.length() - 2); // Compliant
 
-    index += hello.indexOf('o', hello.length(), // Noncompliant
-      hello.length() - 2); // Noncompliant
+    index += hello.indexOf('o', hello.length(), hello.length() - 2); // Noncompliant
 
     index += hello.indexOf('o', hello.length() - 2, hello.hashCode() - 5); // Compliant
     index += hello.indexOf('o', 0, hello.hashCode() + 1); // Compliant
@@ -59,8 +57,11 @@ public class StringIndexofRangesCheckSample {
     return index;
   }
 
-  static String makeAString(){
-    return "This is" + " a string";
+  private String someString = "abcdefg";
+
+  String makeAString(){
+    someString = someString.substring(1);
+    return someString;
   }
 
 }
