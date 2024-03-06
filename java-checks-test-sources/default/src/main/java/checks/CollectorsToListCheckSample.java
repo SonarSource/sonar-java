@@ -18,8 +18,32 @@ public class CollectorsToListCheckSample {
   ListWrapper listWrapper = new ListWrapper();
 
   void noncompliant() {
-    List<String> list1 = Stream.of("A", "B", "C")
+    List<String> list1a = Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Compliant
+
+    List<String> list1b = Stream.of("A", "B", "C")
       .collect(Collectors.toList()); // Noncompliant [[sc=16;ec=35]] {{Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'}}
+
+    // Not modifying the list
+    list1a.contains("B");
+    list1b.contains("B");
+
+    List<String> list2 = Stream.of("A", "B", "C")
+      .collect(Collectors.toUnmodifiableList()); // Noncompliant [[sc=16;ec=47]] {{Replace this usage of 'Stream.collect(Collectors.toUnmodifiableList())' with 'Stream.toList()'}}
+
+    Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Noncompliant [[sc=16;ec=35]] {{Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'}}
+
+    Stream.of("A", "B", "C")
+      .collect(Collectors.toUnmodifiableList()); // Noncompliant [[sc=16;ec=47]] {{Replace this usage of 'Stream.collect(Collectors.toUnmodifiableList())' with 'Stream.toList()'}}
+
+    List<List<String>> listOfLists = new ArrayList<>();
+    // We don't make the assumption that a function won't make a change to its list argument
+    listOfLists.add(list1a);
+
+    listWrapper.strings = Stream.of("A", "B", "C").collect(Collectors.toList());
+    // listWrapper.strings appears in a call to List.add, but it is not the receiver, so it should not be interpreted as mutable:
+    listOfLists.add(listWrapper.strings);
   }
 
   void compliant_collections_methods() {
