@@ -37,13 +37,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
-  private static final String INDEX_OF = "indexOf";
-  private static final String LENGTH = "length";
 
   private static final MethodMatchers INDEX_OF_MATCHERS =
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
-      .names(INDEX_OF)
+      .names("indexOf")
       .addParametersMatcher("int", "int", "int")
       .addParametersMatcher(JAVA_LANG_STRING, "int", "int")
       .build();
@@ -51,7 +49,7 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers LENGTH_MATCHERS =
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
-      .names(LENGTH)
+      .names("length")
       .addWithoutParametersMatcher()
       .build();
 
