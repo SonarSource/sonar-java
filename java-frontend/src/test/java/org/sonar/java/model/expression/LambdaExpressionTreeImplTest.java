@@ -33,7 +33,9 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.assertions.SymbolAssert.assertThat;
@@ -110,5 +112,31 @@ class LambdaExpressionTreeImplTest {
     ExpressionStatementTree statement = (ExpressionStatementTree) methodTree.block().body().get(0);
     MethodInvocationTree mit = (MethodInvocationTree) statement.expression();
     return (LambdaExpressionTree) mit.arguments().get(0);
+  }
+
+  @Test
+  void lambda_method_symbol_and_return_type() {
+    var lambda = extractLambda(parseStatement("Runnable a = () -> {};"));
+    assertThat(lambda.symbol()).isNotNull();
+
+    assertLambdaReturnType("Runnable a = () -> {};", "void");
+    assertLambdaReturnType("IntSupplier a = () -> 42;", "int");
+    assertLambdaReturnType("Runnable a = () -> { var a = 42; };", "void");
+    assertLambdaReturnType("IntSupplier a = () -> { return 42; };", "int");
+  }
+
+  private static void assertLambdaReturnType(String lambdaExpressionCode, String expectedFunctionReturnType) {
+    var functionReturnType = extractLambda(parseStatement(lambdaExpressionCode)).symbol().returnType();
+    assertThat(functionReturnType.type().fullyQualifiedName()).isEqualTo(expectedFunctionReturnType);
+  }
+
+  private static LambdaExpressionTree extractLambda(StatementTree tree) {
+    return (LambdaExpressionTree) ((VariableTree) tree).initializer();
+  }
+
+  private static StatementTree parseStatement(String statementCode) {
+    var code = "import java.util.function.IntSupplier; class A { void foo() {" + statementCode + "} }";
+    var tree = JParserTestUtils.parse(code);
+    return ((MethodTree) ((ClassTree) tree.types().get(0)).members().get(0)).block().body().get(0);
   }
 }
