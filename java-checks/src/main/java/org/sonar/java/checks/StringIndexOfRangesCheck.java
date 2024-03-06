@@ -71,7 +71,6 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
       && memberSelect.expression() instanceof IdentifierTree idTree) {
       checkBoundsThatDependOnLength(methodInvocation, idTree.name());
     }
-
   }
 
   private void checkConstantBounds(MethodInvocationTree methodInvocation) {
@@ -146,7 +145,7 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
    * or an empty Optional if the expression is too complex for delta to be computed
    */
   private static Optional<Integer> lengthDelta(ExpressionTree expr, String varName) {
-    if (isCallToLengthOnVariable(expr, varName)){
+    if (isCallToLengthOnVariable(expr, varName)) {
       // 1st pattern: var.length()
       return Optional.of(0);
     }
