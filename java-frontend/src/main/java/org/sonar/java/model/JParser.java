@@ -2280,13 +2280,15 @@ public class JParser {
       }
     }
     ASTNode body = e.getBody();
-    return new LambdaExpressionTreeImpl(
+    var tree = new LambdaExpressionTreeImpl(
       e.hasParentheses() ? firstTokenIn(e, TerminalTokens.TokenNameLPAREN) : null,
       parameters,
       e.hasParentheses() ? firstTokenBefore(body, TerminalTokens.TokenNameRPAREN) : null,
       firstTokenBefore(body, TerminalTokens.TokenNameARROW),
       body.getNodeType() == ASTNode.BLOCK ? convertBlock((Block) body) : convertExpression((Expression) body)
     );
+    tree.methodBinding = e.resolveMethodBinding();
+    return tree;
   }
 
   private MethodReferenceTreeImpl convertMethodReference(CreationReference e) {
