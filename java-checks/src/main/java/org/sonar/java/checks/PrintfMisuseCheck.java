@@ -190,7 +190,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
         }
         param = param.substring(param.indexOf('$') + 1);
       } else if (param.charAt(0) == '<') {
-        //refers to previous argument
+        // refers to previous argument
         argIndex = Math.max(0, argIndex - 1);
       } else {
         index++;
@@ -231,6 +231,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     if (LEVELS.contains(mit.methodSymbol().name())) {
       return false;
     }
+
     String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
     int numberQuote = 0;
     for (int i = 0; i < withoutParam.length(); ++i) {
@@ -238,10 +239,14 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
         numberQuote++;
       }
     }
+
     boolean unbalancedQuotes = (numberQuote % 2) != 0;
-    if (unbalancedQuotes) {
+
+    if (unbalancedQuotes && MESSAGE_FORMAT_PATTERN_PREDICATE.test(formatString)) {
+      // Single quotes should be escaped only when unbalanced and in MessageFormat pattern.
       reportIssue(mit.arguments().get(0), "Single quote \"'\" must be escaped.");
     }
+
     return unbalancedQuotes;
   }
 
