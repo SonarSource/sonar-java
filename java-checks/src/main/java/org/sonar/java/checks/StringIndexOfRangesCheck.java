@@ -78,31 +78,29 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
     var beginIdxExpr = methodInvocation.arguments().get(1);
     var endIdxExpr = methodInvocation.arguments().get(2);
 
-    var receiverConst = methodInvocation.methodSelect() instanceof MemberSelectExpressionTree memberSelect
-      ? memberSelect.expression().asConstant() : Optional.empty();
-    var beginIdxConst = beginIdxExpr.asConstant();
-    var endIdxConst = endIdxExpr.asConstant();
+    Optional<String> receiverConst = methodInvocation.methodSelect() instanceof MemberSelectExpressionTree memberSelect
+      ? memberSelect.expression().asConstant(String.class) : Optional.empty();
+    var beginIdxConst = beginIdxExpr.asConstant(Integer.class);
+    var endIdxConst = endIdxExpr.asConstant(Integer.class);
 
-    if (beginIdxConst.isPresent() && ((int) beginIdxConst.get()) < 0) {
+    if (beginIdxConst.isPresent() && beginIdxConst.get() < 0) {
       reportIssue(beginIdxExpr, "Begin index should be non-negative.",
         callAsSingletonSecondaryLocation(methodInvocation), null);
     }
 
     if (beginIdxConst.isPresent() && endIdxConst.isPresent()
-      && ((int) beginIdxConst.get()) > ((int) endIdxConst.get())) {
+      && beginIdxConst.get() > endIdxConst.get()) {
       reportBeginLargerThanEnd(methodInvocation, beginIdxExpr, endIdxExpr);
     }
 
     if (receiverConst.isPresent() && beginIdxConst.isPresent()
-      && receiverConst.get() instanceof String s
-      && ((int) beginIdxConst.get()) >= s.length()) {
+      && beginIdxConst.get() >= receiverConst.get().length()) {
       reportIssue(beginIdxExpr, "Begin index should be smaller than string length.",
         callAsSingletonSecondaryLocation(methodInvocation), null);
     }
 
     if (receiverConst.isPresent() && endIdxConst.isPresent()
-      && receiverConst.get() instanceof String s
-      && ((int) endIdxConst.get()) > s.length()) {
+      && endIdxConst.get() > receiverConst.get().length()) {
       reportIssue(endIdxExpr, "End index should not be larger than string length.",
         callAsSingletonSecondaryLocation(methodInvocation), null
       );
@@ -158,15 +156,15 @@ public class StringIndexofRangesCheck extends IssuableSubscriptionVisitor {
       if (!(isPlus || isMinus)) {
         return Optional.empty();
       }
-      var leftCst = binaryExpr.leftOperand().asConstant();
-      var rightCst = binaryExpr.rightOperand().asConstant();
-      if (isCallToLengthOnVariable(binaryExpr.leftOperand(), varName) && rightCst.isPresent() && rightCst.get() instanceof Integer rightVal) {
+      var leftCst = binaryExpr.leftOperand().asConstant(Integer.class);
+      var rightCst = binaryExpr.rightOperand().asConstant(Integer.class);
+      if (isCallToLengthOnVariable(binaryExpr.leftOperand(), varName) && rightCst.isPresent()) {
         // 2nd pattern:  var.length() + cst  or  var.length() - cst
-        return Optional.of(isPlus ? rightVal : -rightVal);
-      } else if (isPlus && leftCst.isPresent() && leftCst.get() instanceof Integer leftVal
+        return isPlus ? rightCst : rightCst.map(x -> -x);
+      } else if (isPlus && leftCst.isPresent()
         && isCallToLengthOnVariable(binaryExpr.rightOperand(), varName)) {
         // 3rd pattern: cst + var.length()
-        return Optional.of(leftVal);
+        return leftCst;
       }
     }
     return Optional.empty();
