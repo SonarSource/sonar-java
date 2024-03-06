@@ -22,6 +22,7 @@ package org.sonar.java.model.expression;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
@@ -33,12 +34,12 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.assertions.SymbolAssert.assertThat;
+import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
 class LambdaExpressionTreeImplTest {
 
@@ -114,29 +115,32 @@ class LambdaExpressionTreeImplTest {
     return (LambdaExpressionTree) mit.arguments().get(0);
   }
 
-  @Test
-  void lambda_method_symbol_and_return_type() {
-    var lambda = extractLambda(parseStatement("Runnable a = () -> {};"));
-    assertThat(lambda.symbol()).isNotNull();
-
-    assertLambdaReturnType("Runnable a = () -> {};", "void");
-    assertLambdaReturnType("IntSupplier a = () -> 42;", "int");
-    assertLambdaReturnType("Runnable a = () -> { var a = 42; };", "void");
-    assertLambdaReturnType("IntSupplier a = () -> { return 42; };", "int");
+  @ParameterizedTest
+  @CsvSource({
+    "Runnable a = () -> {},run,void",
+    "IntSupplier a = () -> 42,getAsInt,int",
+    "Runnable a = () -> { var a = 42; },run,void",
+    "IntSupplier a = () -> { return 42; },getAsInt,int",
+    "UnknownFunctionalInterface<Object> a = x -> x.foo(),!unknownMethod!,!Unknown!"
+  })
+  void lambda_method_symbol_and_return_type(String lambdaDeclaration, String resolvedMethodName, String returnType) {
+    var lambda = parseFieldLambda(lambdaDeclaration);
+    Symbol.MethodSymbol methodSymbol = lambda.symbol();
+    assertThat(methodSymbol)
+      .isNotNull()
+      .hasName(resolvedMethodName);
+    assertThat(methodSymbol.returnType().type()).is(returnType);
   }
 
-  private static void assertLambdaReturnType(String lambdaExpressionCode, String expectedFunctionReturnType) {
-    var functionReturnType = extractLambda(parseStatement(lambdaExpressionCode)).symbol().returnType();
-    assertThat(functionReturnType.type().fullyQualifiedName()).isEqualTo(expectedFunctionReturnType);
-  }
-
-  private static LambdaExpressionTree extractLambda(StatementTree tree) {
-    return (LambdaExpressionTree) ((VariableTree) tree).initializer();
-  }
-
-  private static StatementTree parseStatement(String statementCode) {
-    var code = "import java.util.function.IntSupplier; class A { void foo() {" + statementCode + "} }";
+  private static LambdaExpressionTree parseFieldLambda(String fieldCode) {
+    var code = String.format(
+      "import java.util.function.IntSupplier;\n" +
+      "class A {\n" +
+      "  %s;\n" +
+      "}\n", fieldCode);
     var tree = JParserTestUtils.parse(code);
-    return ((MethodTree) ((ClassTree) tree.types().get(0)).members().get(0)).block().body().get(0);
+    var firstClass = (ClassTree) tree.types().get(0);
+    var firstField = (VariableTree) firstClass.members().get(0);
+    return (LambdaExpressionTree) firstField.initializer();
   }
 }
