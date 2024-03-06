@@ -142,6 +142,10 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.32**
+
+* New method: `LambdaExpressionTree#symbol()`. Use this method to get the associated method symbol the lambda expression has been resolved to.
+
 #### **7.31**
 
 **Breaking**  
