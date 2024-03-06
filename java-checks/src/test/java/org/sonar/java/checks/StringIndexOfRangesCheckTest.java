@@ -28,7 +28,7 @@ class StringIndexOfRangesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/StringIndexofRangesCheckSample.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/StringIndexOfRangesCheckSample.java"))
       .withCheck(new StringIndexOfRangesCheck())
       .withJavaVersion(21)
       .verifyIssues();
@@ -37,7 +37,7 @@ class StringIndexOfRangesCheckTest {
   @Test
   void test_before_java_21(){
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/StringIndexofRangesCheckSample.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/StringIndexOfRangesCheckSample.java"))
       .withCheck(new StringIndexOfRangesCheck())
       .withJavaVersion(20)
       .verifyNoIssues();
