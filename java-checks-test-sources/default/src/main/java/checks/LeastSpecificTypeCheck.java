@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.UnaryOperator;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -256,4 +256,33 @@ class LeastSpecificTypeCheck {
     return func.apply(BigDecimal.ONE);
   }
 
+
+  public static class A {
+    public A getMe() {
+      return this;
+    }
+  }
+
+  public static class B extends A {
+    @Override
+    public B getMe() {
+      return this;
+    }
+
+    public void doSomethingOnlyOnB() {
+    }
+  }
+
+  public B getB(B b) { // Compliant, don't raise issue when the return type is the same as the non-least specific parameter type
+    return b.getMe();
+  }
+
+  public A getA(B b) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheck.A' here; it is a more general type than 'B'.}}
+    return b.getMe();
+  }
+
+  public A getAFromB(B b) { // Complaint
+    b.doSomethingOnlyOnB();
+    return b.getMe();
+  }
 }

@@ -48,8 +48,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     "javax.inject.Inject",
     "jakarta.inject.Inject",
     "javax.annotation.Resource",
-    "jakarta.annotation.Resource"
-  );
+    "jakarta.annotation.Resource");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -86,7 +85,8 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
 
   private void handleParameter(Symbol parameter, boolean springInjectionAnnotated) {
     Type parameterType = parameter.type();
-    if (parameterType.symbol().metadata().isAnnotatedWith("java.lang.FunctionalInterface")) {
+    if (parameterType.symbol().metadata().isAnnotatedWith("java.lang.FunctionalInterface")
+      || isEqualToOwnerMethodReturnType(parameter)) {
       // Exclude functional interface, it's wrong to have issues on UnaryOperator<T> and ask the user to use Function<T,T> instead
       return;
     }
@@ -96,6 +96,15 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       String suggestedType = getSuggestedType(springInjectionAnnotated, leastSpecificType);
       reportIssue(parameter.declaration(), String.format("Use '%s' here; it is a more general type than '%s'.", suggestedType, parameterType.erasure().name()));
     }
+  }
+
+  private static boolean isEqualToOwnerMethodReturnType(Symbol parameter) {
+    return Optional.ofNullable(parameter.owner())
+      .map(Symbol.MethodSymbol.class::cast)
+      .map(Symbol.MethodSymbol::returnType)
+      .map(Symbol.TypeSymbol::type)
+      .filter(returnType -> returnType == parameter.type())
+      .isPresent();
   }
 
   private static String getSuggestedType(boolean springInjectionAnnotated, Type leastSpecificType) {
