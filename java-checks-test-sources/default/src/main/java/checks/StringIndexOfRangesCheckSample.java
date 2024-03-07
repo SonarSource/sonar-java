@@ -30,6 +30,7 @@ public class StringIndexOfRangesCheckSample {
     index += hello.indexOf('o', 0, 1 + hello.length()); // Noncompliant
     index += hello.indexOf('o', 0, hello.length() + 1 - 5 + 2 + 3); // Compliant
     index += hello.indexOf('o', 0, 1 + hello.length() + 1 - 2 + 5*4); // Compliant
+    index += hello.indexOf('o', 0, hello.length() + i); // Compliant
 
     index += hello.indexOf('o', 0, hello.length() - 1); // Compliant
     index += hello.indexOf('o', 0, hello.length() + 1 - 2*2); // Compliant
