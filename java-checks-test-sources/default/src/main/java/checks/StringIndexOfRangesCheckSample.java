@@ -7,27 +7,27 @@ public class StringIndexOfRangesCheckSample {
     String hello = "Hello, world!";
     int index = 0;
 
-    index += hello.indexOf('o', 11, 7); // Noncompliant
+    index += hello.indexOf('o', 11, 7); // Noncompliant [[sc=33;ec=35]] {{Begin index should not be larger than endIndex.}}
     index += hello.indexOf('o', 7, 11); // Compliant
-    index += hello.indexOf('o', -1, 11); // Noncompliant
+    index += hello.indexOf('o', -1, 11); // Noncompliant [[sc=33;ec=35]] {{Begin index should be non-negative.}}
     index += hello.indexOf('o', 0, 11); // Compliant
 
-    index += hello.indexOf("o", 11, 7); // Noncompliant
+    index += hello.indexOf("o", 11, 7); // Noncompliant [[sc=33;ec=35]] {{Begin index should not be larger than endIndex.}}
     index += hello.indexOf("llo", 7, 11); // Compliant
-    index += hello.indexOf("world", -1, 11); // Noncompliant
+    index += hello.indexOf("world", -1, 11); // Noncompliant [[sc=37;ec=39]] {{Begin index should be non-negative.}}
     index += hello.indexOf("!", 0, 11); // Compliant
 
     index += hello.indexOf("!", 0, hello.length()); // Compliant
 
-    index += "Hi".indexOf('i', 2, 3); // Noncompliant
-    index += "Hi".indexOf('i', 0, 3);  // Noncompliant
+    index += "Hi".indexOf('i', 2, 3); // Noncompliant [[sc=32;ec=33]] {{Begin index should be smaller than the length of the string.}}
+    index += "Hi".indexOf('i', 0, 3);  // Noncompliant [[sc=35;ec=36]] {{End index should be at most the length of the string.}}
 
     var i = 2;
     index += "Hi".indexOf('i', i, 2);  // Compliant
     index += "Hi".indexOf('i', 0, i);  // Compliant
 
-    index += hello.indexOf('o', 0, hello.length() + 1); // Noncompliant
-    index += hello.indexOf('o', 0, 1 + hello.length()); // Noncompliant
+    index += hello.indexOf('o', 0, hello.length() + 1); // Noncompliant [[sc=36;ec=54]] {{End index should be at most the length of the string.}}
+    index += hello.indexOf('o', 0, 1 + hello.length()); // Noncompliant [[sc=36;ec=54]] {{End index should be at most the length of the string.}}
     index += hello.indexOf('o', 0, hello.length() + 1 - 5 + 2 + 3); // Compliant
     index += hello.indexOf('o', 0, 1 + hello.length() + 1 - 2 + 5*4); // Compliant
     index += hello.indexOf('o', 0, hello.length() + i); // Compliant
@@ -39,10 +39,10 @@ public class StringIndexOfRangesCheckSample {
     index += hello.indexOf('o', 215 - hello.length(), 0); // Compliant
     index += hello.indexOf('o', 0, hello.length() * hello.length()); // Compliant
 
-    index += hello.indexOf('o', hello.length() - 2, hello.length() - 5); // Noncompliant
+    index += hello.indexOf('o', hello.length() - 2, hello.length() - 5); // Noncompliant [[sc=33;ec=51]] {{Begin index should not be larger than endIndex.}}
     index += hello.indexOf('o', hello.length() - 5, hello.length() - 2); // Compliant
 
-    index += hello.indexOf('o', hello.length(), hello.length() - 2); // Noncompliant
+    index += hello.indexOf('o', hello.length(), hello.length() - 2); // Noncompliant [[sc=33;ec=47]] {{Begin index should be smaller than the length of the string.}}
 
     index += hello.indexOf('o', hello.length() - 2, hello.hashCode() - 5); // Compliant
     index += hello.indexOf('o', 0, hello.hashCode() + 1); // Compliant
