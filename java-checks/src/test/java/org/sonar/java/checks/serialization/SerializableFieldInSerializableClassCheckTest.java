@@ -33,6 +33,10 @@ class SerializableFieldInSerializableClassCheckTest {
       .onFile(mainCodeSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
@@ -46,6 +50,10 @@ class SerializableFieldInSerializableClassCheckTest {
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .withoutSemantic()
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
