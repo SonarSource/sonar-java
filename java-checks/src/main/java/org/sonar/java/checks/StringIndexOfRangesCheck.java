@@ -40,6 +40,12 @@ public class StringIndexOfRangesCheck extends AbstractMethodDetection implements
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
 
+  private static final String BEGIN_IDX_SMALLER_THAN_STR_LENGTH = "Begin index should be smaller than the length of the string.";
+  private static final String END_IDX_AT_MOST_STR_LENGTH = "End index should be at most the length of the string.";
+  private static final String BEGIN_IDX_NOT_LARGER_THAN_END_IDX = "Begin index should not be larger than endIndex.";
+  private static final String END_INDEX = "End index";
+  private static final String RECEIVER_STRING = "Receiver string";
+
   private static final MethodMatchers INDEX_OF_MATCHERS =
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
@@ -81,35 +87,29 @@ public class StringIndexOfRangesCheck extends AbstractMethodDetection implements
     var beginIdxExpr = methodInvocation.arguments().get(1);
     var endIdxExpr = methodInvocation.arguments().get(2);
 
-    Optional<String> receiverConst = methodInvocation.methodSelect() instanceof MemberSelectExpressionTree memberSelect
-      ? memberSelect.expression().asConstant(String.class) : Optional.empty();
     var beginIdxConst = beginIdxExpr.asConstant(Integer.class);
     var endIdxConst = endIdxExpr.asConstant(Integer.class);
 
     if (beginIdxConst.isPresent() && beginIdxConst.get() < 0) {
-      reportIssue(beginIdxExpr, "Begin index should be non-negative.",
-        callAsSingletonSecondaryLocation(methodInvocation), null);
+      reportIssue(beginIdxExpr, "Begin index should be non-negative.");
       return true;
     }
 
-    if (beginIdxConst.isPresent() && endIdxConst.isPresent()
-      && beginIdxConst.get() > endIdxConst.get()) {
-      reportBeginLargerThanEnd(methodInvocation, beginIdxExpr, endIdxExpr);
+    if (beginIdxConst.isPresent() && endIdxConst.isPresent() && beginIdxConst.get() > endIdxConst.get()) {
+      reportWithSecondaryLocation(beginIdxExpr, BEGIN_IDX_NOT_LARGER_THAN_END_IDX, endIdxExpr, END_INDEX);
       return true;
     }
 
-    if (receiverConst.isPresent() && beginIdxConst.isPresent()
-      && beginIdxConst.get() >= receiverConst.get().length()) {
-      reportIssue(beginIdxExpr, "Begin index should be smaller than string length.",
-        callAsSingletonSecondaryLocation(methodInvocation), null);
+    Optional<String> receiverConst = methodInvocation.methodSelect() instanceof MemberSelectExpressionTree memberSelect
+      ? memberSelect.expression().asConstant(String.class) : Optional.empty();
+
+    if (receiverConst.isPresent() && beginIdxConst.isPresent() && beginIdxConst.get() >= receiverConst.get().length()) {
+      reportWithSecondaryLocation(beginIdxExpr, BEGIN_IDX_SMALLER_THAN_STR_LENGTH, methodInvocation.methodSelect(), RECEIVER_STRING);
       return true;
     }
 
-    if (receiverConst.isPresent() && endIdxConst.isPresent()
-      && endIdxConst.get() > receiverConst.get().length()) {
-      reportIssue(endIdxExpr, "End index should not be larger than string length.",
-        callAsSingletonSecondaryLocation(methodInvocation), null
-      );
+    if (receiverConst.isPresent() && endIdxConst.isPresent() && endIdxConst.get() > receiverConst.get().length()) {
+      reportWithSecondaryLocation(endIdxExpr, END_IDX_AT_MOST_STR_LENGTH, methodInvocation.methodSelect(), RECEIVER_STRING);
       return true;
     }
 
@@ -122,27 +122,16 @@ public class StringIndexOfRangesCheck extends AbstractMethodDetection implements
     var beginIdxDelta = lengthDelta(beginIdxExpr, lengthReceiverVarName);
     var endIdxDelta = lengthDelta(endIdxExpr, lengthReceiverVarName);
     if (beginIdxDelta.isPresent() && beginIdxDelta.get() >= 0) {
-      reportIssue(beginIdxExpr, "Begin index should be smaller than the length of the string.",
-        callAsSingletonSecondaryLocation(methodInvocation), null);
+      reportIssue(beginIdxExpr, BEGIN_IDX_SMALLER_THAN_STR_LENGTH);
     } else if (endIdxDelta.isPresent() && endIdxDelta.get() > 0) {
-      reportIssue(endIdxExpr, "End index should be at most the length of the string.",
-        callAsSingletonSecondaryLocation(methodInvocation), null);
+      reportIssue(endIdxExpr, END_IDX_AT_MOST_STR_LENGTH);
     } else if (beginIdxDelta.isPresent() && endIdxDelta.isPresent() && beginIdxDelta.get() > endIdxDelta.get()) {
-      reportBeginLargerThanEnd(methodInvocation, beginIdxExpr, endIdxExpr);
+      reportWithSecondaryLocation(beginIdxExpr, BEGIN_IDX_NOT_LARGER_THAN_END_IDX, endIdxExpr, END_INDEX);
     }
   }
 
-  private static List<JavaFileScannerContext.Location> callAsSingletonSecondaryLocation(MethodInvocationTree methodInvocation) {
-    return List.of(new JavaFileScannerContext.Location("Call", methodInvocation));
-  }
-
-  private void reportBeginLargerThanEnd(MethodInvocationTree methodInvocation, ExpressionTree beginIdxExpr, ExpressionTree endIdxExpr) {
-    reportIssue(endIdxExpr, "Begin index should not be larger than endIndex.",
-      List.of(
-        new JavaFileScannerContext.Location("Call", methodInvocation),
-        new JavaFileScannerContext.Location("Begin index", beginIdxExpr)
-      ), null
-    );
+  private void reportWithSecondaryLocation(ExpressionTree tree, String msg, ExpressionTree secondaryLocation, String secondaryMsg) {
+    reportIssue(tree, msg, List.of(new JavaFileScannerContext.Location(secondaryMsg, secondaryLocation)), null);
   }
 
   /**
@@ -167,8 +156,7 @@ public class StringIndexOfRangesCheck extends AbstractMethodDetection implements
       if (isCallToLengthOnVariable(binaryExpr.leftOperand(), varName) && rightCst.isPresent()) {
         // 2nd pattern:  var.length() + cst  or  var.length() - cst
         return isPlus ? rightCst : rightCst.map(x -> -x);
-      } else if (isPlus && leftCst.isPresent()
-        && isCallToLengthOnVariable(binaryExpr.rightOperand(), varName)) {
+      } else if (isPlus && leftCst.isPresent() && isCallToLengthOnVariable(binaryExpr.rightOperand(), varName)) {
         // 3rd pattern: cst + var.length()
         return leftCst;
       }
