@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.checks.MathClampRangeCheck.isLessTan;
+import static org.sonar.java.checks.MathClampRangeCheck.isLessThan;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class MathClampRangeCheckTest {
@@ -53,31 +53,31 @@ class MathClampRangeCheckTest {
   @Test
   void test_less_than() {
     // conversion to integer
-    assertThat(isLessTan(Integer.MIN_VALUE,Integer.MAX_VALUE)).isTrue();
-    assertThat(isLessTan(Integer.MAX_VALUE,Integer.MIN_VALUE)).isFalse();
-    assertThat(isLessTan(20,(byte)'A')).isTrue();
+    assertThat(isLessThan(Integer.MIN_VALUE,Integer.MAX_VALUE)).isTrue();
+    assertThat(isLessThan(Integer.MAX_VALUE,Integer.MIN_VALUE)).isFalse();
+    assertThat(isLessThan(20,(byte)'A')).isTrue();
 
     // conversion to long
-    assertThat(isLessTan(Long.MIN_VALUE,Long.MAX_VALUE)).isTrue();
-    assertThat(isLessTan(Long.MAX_VALUE,Long.MIN_VALUE)).isFalse();
-    assertThat(isLessTan(Integer.MIN_VALUE,Long.MIN_VALUE)).isFalse();
-    assertThat(isLessTan(Long.MAX_VALUE,Integer.MAX_VALUE)).isFalse();
+    assertThat(isLessThan(Long.MIN_VALUE,Long.MAX_VALUE)).isTrue();
+    assertThat(isLessThan(Long.MAX_VALUE,Long.MIN_VALUE)).isFalse();
+    assertThat(isLessThan(Integer.MIN_VALUE,Long.MIN_VALUE)).isFalse();
+    assertThat(isLessThan(Long.MAX_VALUE,Integer.MAX_VALUE)).isFalse();
 
     // conversion to float
-    assertThat(isLessTan(1.0f, 2.0f)).isTrue();
-    assertThat(isLessTan(1.0f, -2.0f)).isFalse();
-    assertThat(isLessTan(9_223_372_036_854_775_806L, 9_223_372_036_854_775_805f)).isFalse();
-    assertThat(isLessTan(9_223_372_036_854_775_805f, 9_223_372_036_854_775_806L)).isFalse(); // a == b because of float low precision
+    assertThat(isLessThan(1.0f, 2.0f)).isTrue();
+    assertThat(isLessThan(1.0f, -2.0f)).isFalse();
+    assertThat(isLessThan(9_223_372_036_854_775_806L, 9_223_372_036_854_775_805f)).isFalse();
+    assertThat(isLessThan(9_223_372_036_854_775_805f, 9_223_372_036_854_775_806L)).isFalse(); // a == b because of float low precision
 
-    assertThat(isLessTan(Float.NEGATIVE_INFINITY,Float.POSITIVE_INFINITY)).isTrue();
-    assertThat(isLessTan(Float.NaN,Float.POSITIVE_INFINITY)).isFalse();
-    assertThat(isLessTan(Float.NaN,Float.NaN)).isFalse();
+    assertThat(isLessThan(Float.NEGATIVE_INFINITY,Float.POSITIVE_INFINITY)).isTrue();
+    assertThat(isLessThan(Float.NaN,Float.POSITIVE_INFINITY)).isFalse();
+    assertThat(isLessThan(Float.NaN,Float.NaN)).isFalse();
 
     // conversion to double
-    assertThat(isLessTan(1.0d, 2.0d)).isTrue();
-    assertThat(isLessTan(1, 2.0d)).isTrue();
-    assertThat(isLessTan(1.0d, -2.0d)).isFalse();
-    assertThat(isLessTan(9_223_372_036_854_775_807L, 9_223_372_036_854_775_806d)).isFalse();
-    assertThat(isLessTan(9_223_372_036_854_775_806d, 9_223_372_036_854_775_807L)).isFalse(); // a == b because of double low precision
+    assertThat(isLessThan(1.0d, 2.0d)).isTrue();
+    assertThat(isLessThan(1, 2.0d)).isTrue();
+    assertThat(isLessThan(1.0d, -2.0d)).isFalse();
+    assertThat(isLessThan(9_223_372_036_854_775_807L, 9_223_372_036_854_775_806d)).isFalse();
+    assertThat(isLessThan(9_223_372_036_854_775_806d, 9_223_372_036_854_775_807L)).isFalse(); // a == b because of double low precision
   }
 }

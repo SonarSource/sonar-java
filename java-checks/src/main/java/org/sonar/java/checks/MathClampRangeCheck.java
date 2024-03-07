@@ -66,6 +66,8 @@ public class MathClampRangeCheck extends AbstractMethodDetection implements Java
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    // according to the MethodMatchers, MethodSymbol.parameterTypes().size() is always 3
+    // but it's not a 100% guarantee that mit.arguments().size() is 3 when there is a semantic recovery approximation
     if (mit.arguments().size() == 3) {
       checkMathClampArguments(
         mit.arguments().get(0),
@@ -88,14 +90,14 @@ public class MathClampRangeCheck extends AbstractMethodDetection implements Java
       return false;
     }
     reportIssue(
-      exprA, "Change the \"clamp(value,min,max)\"'s arguments so \"" + nameA + "\" is not equals to \"" + nameB + "\".",
+      exprA, String.format("Change the \"clamp(value,min,max)\"'s arguments so \"%s\" is not equals to \"%s\".", nameA, nameB),
       List.of(new JavaFileScannerContext.Location(nameB + " argument", exprB)),
       null);
     return true;
   }
 
   private boolean checkLessThan(ExpressionTree exprA, String nameA, ExpressionTree exprB, String nameB) {
-    if (!isLessTan(exprA, exprB)) {
+    if (!isLessThan(exprA, exprB)) {
       return false;
     }
     QuickFixHelper.newIssue(context)
@@ -111,14 +113,14 @@ public class MathClampRangeCheck extends AbstractMethodDetection implements Java
     return true;
   }
 
-  private static boolean isLessTan(ExpressionTree exprA, ExpressionTree exprB) {
+  private static boolean isLessThan(ExpressionTree exprA, ExpressionTree exprB) {
     return exprA.asConstant().orElse(null) instanceof Number a &&
       exprB.asConstant().orElse(null) instanceof Number b &&
-      isLessTan(a, b);
+      isLessThan(a, b);
   }
 
   @VisibleForTesting
-  static boolean isLessTan(Number a, Number b) {
+  static boolean isLessThan(Number a, Number b) {
     if (a instanceof Double || b instanceof Double) {
       return a.doubleValue() < b.doubleValue();
     } else if (a instanceof Float || b instanceof Float) {
