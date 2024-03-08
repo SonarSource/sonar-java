@@ -6,10 +6,14 @@ on:
 #  merge_group:
 #    branches:
 #      - main
+  merge_group:
+    paths-ignore:
+      - '.github/workflows/*.yml'
 jobs:
     validate-commit-message:
         runs-on: ubuntu-latest
+        if: ! ( startsWith('SONARJAVA-', github.event.head_commit.message) || startsWith('[maintenance]', github.event.head_commit.message)
         steps:
-          - name: Logging
+          - name: Validate commit message before merge
             run: |
-              echo "${{toJSON(github.event)}}"
+              echo "${{toJSON(github.event)}}" && false
