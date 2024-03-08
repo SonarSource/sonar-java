@@ -1,0 +1,15 @@
+name: "Validate commit message before merge"
+on:
+#  merge_group:
+  branch_protection_rule:
+    types: [created, edited]
+    branches:
+      - 'alban/**'
+#      - main
+jobs:
+    validate-commit-message:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Logging
+            run: |
+              echo "${{toJSON(github.event)}}"
