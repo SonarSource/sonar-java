@@ -89,7 +89,7 @@ class Fruit {
   }
 
   public void noncompliant() {
-    class Seed implements Interface { // Noncompliant {{Make this local class a "static" inner class.}}
+    class Seed implements Interface { // Noncompliant {{Extract this local class into a "static" inner class.}}
       public void foo() {
         return;
       }
@@ -222,3 +222,59 @@ class Other {
   static class Generic<X> {}
 }
 
+class Foo2 {
+  private String string;
+
+  public Foo2() {
+    class Bar { // Noncompliant {{Extract this local class into a "static" inner class.}}
+    }
+  }
+
+  public void method() {
+    class Baz { // Noncompliant {{Extract this local class into a "static" inner class.}}
+    }
+  }
+
+  record InnerFoo2Record() { // Compliant
+  }
+
+  enum InnerEnum { // Compliant
+    A, B, C;
+  }
+
+  @interface InnerAnnotation { // Compliant
+  }
+}
+
+record FooRecord() {
+  public FooRecord() {
+    class InnerBar { // Noncompliant {{Extract this local class into a "static" inner class.}}
+    }
+  }
+
+  public void method() {
+    class InnerBaz { // Noncompliant {{Extract this local class into a "static" inner class.}}
+    }
+  }
+
+  class InnerFoo { // Noncompliant
+  }
+
+  record InnerFooRecord() { // Compliant
+  }
+
+  enum InnerEnum { // Compliant
+    A, B, C;
+  }
+
+  @interface InnerAnnotation { // Compliant
+  }
+}
+
+@interface FooAnnotation {
+  class InnerFoo { // Compliant
+  }
+
+  record InnerFooRecord() { // Compliant
+  }
+}

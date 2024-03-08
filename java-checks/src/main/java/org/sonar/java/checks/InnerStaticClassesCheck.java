@@ -52,9 +52,6 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
 
   @Override
   public void visitClass(ClassTree tree) {
-    if (!tree.is(Tree.Kind.CLASS)) {
-      return;
-    }
     Symbol.TypeSymbol symbol = tree.symbol();
     outerClasses.push(symbol);
     atLeastOneReference.push(Boolean.FALSE);
@@ -72,7 +69,7 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
       }
       String message = "Make this a \"static\" inner class.";
       if(symbol.owner().isMethodSymbol()) {
-        message = "Make this local class a \"static\" inner class.";
+        message = "Extract this local class into a \"static\" inner class.";
       }
       context.reportIssue(this, reportTree, message);
     }
