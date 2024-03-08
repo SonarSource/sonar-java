@@ -12,7 +12,7 @@ on:
 jobs:
     validate-commit-message:
         runs-on: ubuntu-latest
-        if: ! ( startsWith('SONARJAVA-', github.event.head_commit.message) || startsWith('[maintenance]', github.event.head_commit.message) )
+        if: ${{ ! ( startsWith('SONARJAVA-', github.event.head_commit.message) || startsWith('[maintenance]', github.event.head_commit.message) ) }}
         steps:
           - name: Validate commit message before merge
             run: |
