@@ -1,0 +1,42 @@
+<h2>Why is this an issue?</h2>
+<p>Java 21 adds new <code>String.indexOf</code> methods that accept ranges (<code>beginIndex</code>, to <code>endIndex</code>) rather than just a
+start index. A <code>StringIndexOutOfBounds</code> can be thrown when indicating an invalid range, namely when:</p>
+<ul>
+  <li> <code>beginIndex &gt; endIndex</code> (eg: <code>beginIndex</code> and <code>endIndex</code> arguments are mistakenly reversed) </li>
+  <li> <code>beginIndex &lt; 0</code> (eg: because the older <code>String.indexOf(what, fromIndex)</code> accepts negative values) </li>
+</ul>
+<h2>How to fix it</h2>
+<ul>
+  <li> Use <code>String.indexOf(what, beginIndex, endIndex)</code> instead of <code>String.indexOf(what, endIndex, beginIndex)</code>. </li>
+  <li> Use <code>String.indexOf(what, 0, endIndex)</code> instead of <code>String.indexOf(what, -1, endIndex)</code>. </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String hello = "Hello, world!";
+int index = hello.indexOf('o', 11, 7); // Noncompliant, 11..7 is not a valid range
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+String hello = "Hello, world!";
+int index = hello.indexOf('o', 7, 11); // Compliant
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+String hello = "Hello, world!";
+int index = hello.indexOf('o', -1, 11); // Noncompliant, because beginIndex is negative
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+String hello = "Hello, world!";
+int index = hello.indexOf('o', 0, 11); // Compliant
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li> Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html#indexOf(int,int,int)">String.indexOf(int, int, int)</a>
+  </li>
+  <li> Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html#indexOf(java.lang.String,int,int)">String.indexOf(java.lang.String,int,int)</a> </li>
+</ul>
+

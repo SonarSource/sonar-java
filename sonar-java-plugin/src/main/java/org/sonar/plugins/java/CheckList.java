@@ -362,6 +362,7 @@ import org.sonar.java.checks.StringBufferAndBuilderWithCharCheck;
 import org.sonar.java.checks.StringCallsBeyondBoundsCheck;
 import org.sonar.java.checks.StringConcatToTextBlockCheck;
 import org.sonar.java.checks.StringConcatenationInLoopCheck;
+import org.sonar.java.checks.StringIndexOfRangesCheck;
 import org.sonar.java.checks.StringLiteralDuplicatedCheck;
 import org.sonar.java.checks.StringLiteralInsideEqualsCheck;
 import org.sonar.java.checks.StringMethodsWithLocaleCheck;
@@ -1065,6 +1066,7 @@ public final class CheckList {
     ServletMethodsExceptionsThrownCheck.class,
     ShiftOnIntOrLongCheck.class,
     StatusCodesOnResponseCheck.class,
+    StringIndexOfRangesCheck.class,
     UnnecessaryBitOperationCheck.class,
     SillyEqualsCheck.class,
     SillyStringOperationsCheck.class,
