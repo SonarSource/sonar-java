@@ -20,8 +20,8 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
@@ -30,16 +30,16 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.model.ExpressionUtils.skipParentheses;
 
 @Rule(key = "S6885")
 public class MathClampMethodsCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   public static final String CONDITIONAL_EXPRESSION_MESSAGE = "Use \"Math.clamp\" instead of a conditional expression.";
   public static final String METHOD_INVOCATION_MESSAGE = "Use \"Math.clamp\" instead of \"Math.min\" or \"Math.max\".";
-  public static final String IF_ELSE_STATEMENT_MESSAGE = "Use \"Math.clamp\" instead of an if-else statement.";
 
   public static final String JAVA_LANG_MATH = "java.lang.Math";
   private static final MethodMatchers MATH_MIN_METHOD_MATCHERS = MethodMatchers.create()
@@ -61,63 +61,43 @@ public class MathClampMethodsCheck extends IssuableSubscriptionVisitor implement
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CONDITIONAL_EXPRESSION, Tree.Kind.METHOD_INVOCATION, Tree.Kind.IF_STATEMENT);
+    return List.of(Tree.Kind.CONDITIONAL_EXPRESSION, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
       checkConditionalExpression((ConditionalExpressionTree) tree);
-    }
-    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       checkMethodInvocation((MethodInvocationTree) tree);
     }
-    if (tree.is(Tree.Kind.IF_STATEMENT)) {
-      checkIfStatement((IfStatementTree) tree);
-    }
   }
 
-  private void checkConditionalExpression(ConditionalExpressionTree tree) {
-    if (isGreaterThanOrEqual(tree.condition())) {
-      var condition = (BinaryExpressionTree) tree.condition();
-      var trueExpression = ExpressionUtils.skipParentheses(tree.trueExpression());
-      var falseExpression = ExpressionUtils.skipParentheses(tree.falseExpression());
-
-      if (shouldReportOnConditional(condition.rightOperand(), trueExpression, falseExpression, MATH_MAX_METHOD_MATCHERS, true)) {
-        reportIssue(tree, CONDITIONAL_EXPRESSION_MESSAGE);
-      }
-
-      if (shouldReportOnConditional(condition.rightOperand(), falseExpression, trueExpression, MATH_MIN_METHOD_MATCHERS, false)) {
-        reportIssue(tree, CONDITIONAL_EXPRESSION_MESSAGE);
-      }
-    }
-    if (isLessThanOrEqual(tree.condition())) {
-      var condition = (BinaryExpressionTree) tree.condition();
-      var trueExpression = tree.trueExpression();
-      var falseExpression = tree.falseExpression();
-
-      if (shouldReportOnConditional(condition.rightOperand(), trueExpression, falseExpression, MATH_MIN_METHOD_MATCHERS, false)) {
-        reportIssue(tree, CONDITIONAL_EXPRESSION_MESSAGE);
-      }
-
-      if (shouldReportOnConditional(condition.rightOperand(), falseExpression, trueExpression, MATH_MAX_METHOD_MATCHERS, true)) {
-        reportIssue(tree, CONDITIONAL_EXPRESSION_MESSAGE);
+  private void checkConditionalExpression(ConditionalExpressionTree firstConditionalExpression) {
+    BinaryExpressionTree condition = greaterOrLessBinaryExpression(firstConditionalExpression.condition());
+    if (condition != null) {
+      boolean isGreater = isGreaterThanOrEqual(condition);
+      var trueExpression = skipParentheses(firstConditionalExpression.trueExpression());
+      var falseExpression = skipParentheses(firstConditionalExpression.falseExpression());
+      if (shouldReportOnConditional(condition.rightOperand(), trueExpression, falseExpression, isGreater) ||
+        shouldReportOnConditional(condition.rightOperand(), falseExpression, trueExpression, !isGreater)) {
+        reportIssue(firstConditionalExpression, CONDITIONAL_EXPRESSION_MESSAGE);
       }
     }
   }
 
-  private static boolean shouldReportOnConditional(ExpressionTree condition, ExpressionTree tree1, ExpressionTree tree2, MethodMatchers matcher, boolean isMax) {
+  private static boolean shouldReportOnConditional(ExpressionTree condition, ExpressionTree tree1, ExpressionTree tree2, boolean isMax) {
     if (condition.is(Tree.Kind.IDENTIFIER) && tree1.is(Tree.Kind.IDENTIFIER) && (((IdentifierTree) condition).name().equals(((IdentifierTree) tree1).name()))) {
       if (tree2.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
-        var innerExpression = (ConditionalExpressionTree) ExpressionUtils.skipParentheses(tree2);
-        var innerCondition = (BinaryExpressionTree) ExpressionUtils.skipParentheses(innerExpression.condition());
+        var innerExpression = (ConditionalExpressionTree) skipParentheses(tree2);
+        var innerCondition = (BinaryExpressionTree) skipParentheses(innerExpression.condition());
 
         return (isLessThanOrEqual(innerExpression.condition())
           && checkInnerExpression(innerCondition, innerExpression.trueExpression(), innerExpression.falseExpression(), isMax))
           || (isGreaterThanOrEqual(innerExpression.condition())
             && checkInnerExpression(innerCondition, innerExpression.trueExpression(), innerExpression.falseExpression(), !isMax));
       } else {
-        return tree2.is(Tree.Kind.METHOD_INVOCATION) && (matcher.matches((MethodInvocationTree) tree2));
+        return matches(isMax ? MATH_MAX_METHOD_MATCHERS : MATH_MIN_METHOD_MATCHERS, tree2);
       }
     }
     return false;
@@ -138,34 +118,17 @@ public class MathClampMethodsCheck extends IssuableSubscriptionVisitor implement
   }
 
   private void checkMethodInvocation(MethodInvocationTree tree) {
-    if (MATH_MIN_METHOD_MATCHERS.matches(tree)) {
-      var firstArg = tree.arguments().get(0);
-      var secondArg = tree.arguments().get(1);
-
-      if ((firstArg.is(Tree.Kind.METHOD_INVOCATION) && MATH_MAX_METHOD_MATCHERS.matches((MethodInvocationTree) firstArg)) ||
-        (secondArg.is(Tree.Kind.METHOD_INVOCATION) && MATH_MAX_METHOD_MATCHERS.matches((MethodInvocationTree) secondArg))) {
-        reportIssue(tree, METHOD_INVOCATION_MESSAGE);
-      }
-    }
-    if (MATH_MAX_METHOD_MATCHERS.matches(tree)) {
-      var firstArg = tree.arguments().get(0);
-      var secondArg = tree.arguments().get(1);
-
-      if ((firstArg.is(Tree.Kind.METHOD_INVOCATION) && MATH_MIN_METHOD_MATCHERS.matches((MethodInvocationTree) firstArg)) ||
-        (secondArg.is(Tree.Kind.METHOD_INVOCATION) && MATH_MIN_METHOD_MATCHERS.matches((MethodInvocationTree) secondArg))) {
-        reportIssue(tree, METHOD_INVOCATION_MESSAGE);
-      }
+    boolean isMinMax = isMin(tree) && isMax(tree.arguments().get(0), tree.arguments().get(1));
+    boolean isMaxMin = isMax(tree) && isMin(tree.arguments().get(0), tree.arguments().get(1));
+    if (isMinMax || isMaxMin) {
+      reportIssue(tree, METHOD_INVOCATION_MESSAGE);
     }
   }
 
-  private void checkIfStatement(IfStatementTree tree) {
-    if (isGreaterThanOrLessThan(tree.condition())
-      && (tree.elseStatement() != null && tree.elseStatement().is(Tree.Kind.IF_STATEMENT))) {
-      var elseIfStatement = (IfStatementTree) tree.elseStatement();
-      if (isGreaterThanOrLessThan(elseIfStatement.condition())) {
-        reportIssue(tree, IF_ELSE_STATEMENT_MESSAGE);
-      }
-    }
+  @CheckForNull
+  private static BinaryExpressionTree greaterOrLessBinaryExpression(ExpressionTree tree) {
+    ExpressionTree expr = skipParentheses(tree);
+    return isGreaterThanOrEqual(expr) || isLessThanOrEqual(expr) ? (BinaryExpressionTree) expr : null;
   }
 
   private static boolean isGreaterThanOrEqual(ExpressionTree tree) {
@@ -176,8 +139,21 @@ public class MathClampMethodsCheck extends IssuableSubscriptionVisitor implement
     return tree.is(Tree.Kind.LESS_THAN) || tree.is(Tree.Kind.LESS_THAN_OR_EQUAL_TO);
   }
 
-  private static boolean isGreaterThanOrLessThan(Tree tree) {
-    return tree.is(Tree.Kind.GREATER_THAN) || tree.is(Tree.Kind.LESS_THAN);
+  private static boolean isMax(Tree... trees) {
+    return matches(MATH_MAX_METHOD_MATCHERS, trees);
+  }
+
+  private static boolean isMin(Tree... trees) {
+    return matches(MATH_MIN_METHOD_MATCHERS, trees);
+  }
+
+  private static boolean matches(MethodMatchers methodMatchers, Tree... trees) {
+    for (Tree tree : trees) {
+      if (tree.is(Tree.Kind.METHOD_INVOCATION) && methodMatchers.matches((MethodInvocationTree) tree)) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }

@@ -32,29 +32,6 @@ public class MathClampMethodsCheckSample {
     int methodInvocation = getMin(); // Compliant
     double clamped = Double.min(min, Double.max(max, value));// Compliant
 
-    int clampedValue = value;
-    if (value > max) { // Noncompliant [[sc=5;ec=6]] {{Use "Math.clamp" instead of an if-else statement.}}
-      clampedValue = max;
-    } else if (value < min) {
-      clampedValue = min;
-    }
-
-    if (value == max) { // Compliant
-      clampedValue = max;
-    }
-
-    if (value < max) {
-      clampedValue = value;
-    } else {
-      clampedValue = min;
-    }
-
-    if (value > min) {
-      clampedValue = value;
-    } else if (value == max) {
-
-    }
-
     int clampedMath = Math.clamp(value, min, max); // Compliant
   }
 
@@ -86,9 +63,6 @@ public class MathClampMethodsCheckSample {
     int maxValue = value > min ? min : value > max ? max : value; // Compliant
 
     int b4 = value > max ? max : (value < min ? min : value); // Noncompliant
-  }
-
-  private void testMethodInvocation(int min, int max, int value) {
   }
 
   private int getMin() {
