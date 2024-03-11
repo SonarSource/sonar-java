@@ -255,6 +255,7 @@ public class PrintfMisuseCheck {
     logger4.log(level, "message " + param1, new Exception()); // Noncompliant {{Lambda should be used to defer string concatenation.}}
 
     logger4.log(level, "Can't load library \"{0}\"!", "foo"); // Noncompliant {{Single quote "'" must be escaped.}}
+    logger4.log(level, "Can''t load library \"{0}\"!", "foo"); // Compliant, escaping the single quote with ''
     logger4.log(level, "Can't load library \"\"!", new Throwable()); // Compliant, will print: Can't load library ""!
     logger4.log(level, "Can't load library \"\"!"); // Compliant, will print: Can't load library ""!
 
