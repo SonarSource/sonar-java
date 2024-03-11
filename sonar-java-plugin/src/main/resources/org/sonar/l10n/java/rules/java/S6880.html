@@ -1,0 +1,130 @@
+<h2>Why is this an issue?</h2>
+<p>Comparing a variable to multiple cases is a frequent operation. This can be done using a sequence of if-else statements. However, for many cases
+like enums or simple value comparisons, a <code>switch</code> statement is the better alternative. With Java 21, the <code>switch</code> statement has
+been significantly improved to support pattern matching and record pattern.</p>
+<p>Using a <code>switch</code> statement instead of an if-else chain provides benefits like clearer code, certainty of covering all cases, and may
+even improve performance.</p>
+<p>This rule raises an issue when an if-else chain should be replaced by a <code>switch</code> statement.</p>
+<h2>How to fix it</h2>
+<p>Replace the chain of if-else with a switch expression.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+sealed interface Expression {}
+record Plus(Expression left, Expression right) implements Expression {}
+record Minus(Expression left, Expression right) implements Expression {}
+record Div(Expression left, Expression right) implements Expression {}
+
+int eval(Expression expr){
+  if(expr instanceof Plus plus){ // Noncompliant; should be replaced by a switch expression
+    return eval(plus.left) + eval(plus.right);
+  }else if(expr instanceof Div div){
+    return eval(div.left) / eval(div.right);
+  }else if(expr instanceof Minus minus){
+    return eval(minus.left) - eval(minus.right);
+  } else {
+    throw new IllegalArgumentException("Unknown expression");
+  }
+}
+</pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+enum Color{RED,GREEN,YELLOW}
+
+String name(Color c){
+  if(c == Color.RED){ // Noncompliant; should be replaced by a switch expression
+    return "red";
+  }else if(c == Color.GREEN){
+    return "green";
+  }else if(c == Color.YELLOW){
+    return "yellow";
+  }else{
+    throw new IllegalArgumentException("Unknown color");
+  }
+}
+</pre>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+int points(int result){
+  if(result == 2){ // Noncompliant; should be replaced by a switch expression
+    return 10;
+  } else if(result == 3 || result==4 ){
+    return 20;
+  } else if (result == 5) {
+    return 50;
+  }else{
+    return 0;
+  }
+}
+</pre>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+class Circle{}
+class Rectangle{}
+class Square{}
+
+String name(Object shape){
+  if (shape instanceof Circle) { // Noncompliant; should be replaced by a switch expression
+    return "circle";
+  } else if (shape instanceof Rectangle) {
+     return "rectangle";
+  } else if (shape instanceof Square) {
+    return "square";
+  } else {
+    throw new IllegalArgumentException();
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+sealed interface Expression {}
+record Plus(Expression left, Expression right) implements Expression {}
+record Minus(Expression left, Expression right) implements Expression {}
+record Div(Expression left, Expression right) implements Expression {}
+
+int eval(Expression expr){
+  return switch(expr){
+    case Div(var left, var right) -&gt; eval(left) / eval(right);
+    case Plus(var left, var right) -&gt; eval(left) + eval(right);
+    case Minus(var left, var right) -&gt; eval(left) - eval(right);
+  };
+}
+</pre>
+<pre data-diff-id="2" data-diff-type="compliant">
+enum Color{RED,GREEN,YELLOW}
+String name(Color c){
+  return switch(c){
+    case RED -&gt; "red";
+    case GREEN -&gt; "green";
+    case YELLOW -&gt; "yellow";
+  };
+}
+</pre>
+<pre data-diff-id="3" data-diff-type="compliant">
+int points(int result){
+  return switch(result){
+    case 2 -&gt; 10;
+    case 3,4 -&gt; 20;
+    case 5 -&gt; 50;
+    default -&gt; 0;
+  };
+}
+</pre>
+<pre data-diff-id="4" data-diff-type="compliant">
+class Circle{}
+class Rectangle{}
+class Square{}
+
+String name(Object shape){
+  return switch(shape){
+    case Circle c -&gt; "circle";
+    case Rectangle r -&gt; "rectangle";
+    case Square s -&gt; "square";
+    default -&gt; throw new IllegalArgumentException();
+  };
+}
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://openjdk.org/jeps/440">Record Patterns</a> </li>
+  <li> <a href="https://openjdk.org/jeps/441">Pattern Matching for switch</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/switch.html">The switch Statement</a> </li>
+</ul>
+
