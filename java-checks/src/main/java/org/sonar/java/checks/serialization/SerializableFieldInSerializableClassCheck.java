@@ -50,11 +50,14 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 public class SerializableFieldInSerializableClassCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVAX_INJECT = "javax.inject.Inject";
+  private static final String JAKARTA_INJECT = "jakarta.inject.Inject";
+
   private static final String[] EXCLUDED_ANNOTATIONS = new String[]{
     "jakarta.annotation.Resource",
     "javax.annotation.Resource",
     "javax.ejb.EJB",
     JAVAX_INJECT,
+    JAKARTA_INJECT,
     "org.apache.wicket.spring.injection.annot.SpringBean"
   };
 
@@ -80,15 +83,15 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
         .forEach(this::checkVariableMember);
     }
   }
-  
+
   private static Set<String> getConstructorOrMethodInjectedFields(ClassTree classTree) {
     AssignmentsVisitor assignmentsVisitor = new AssignmentsVisitor();
     classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
-      .filter(methodTree -> isAnnotatedWith(methodTree.symbol().metadata(), JAVAX_INJECT))
+      .filter(methodTree -> isAnnotatedWith(methodTree.symbol().metadata(), JAVAX_INJECT, JAKARTA_INJECT))
       .forEach(methodTree -> methodTree.accept(assignmentsVisitor));
-    
+
     return assignmentsVisitor.getAssignedVariables();
   }
 

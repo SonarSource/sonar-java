@@ -9,10 +9,11 @@ could cause application crashes and open the door to attackers. In general, a <c
 not exhibit unexpected behaviour when an instance is serialized.</p>
 <p>This rule raises an issue on:</p>
 <ul>
-  <li> non-<code>Serializable</code> fields, </li>
-  <li> collection fields when they are not <code>private</code> (because they could be assigned non-<code>Serializable</code> values externally),
-  </li>
-  <li> when a field is assigned a non-<code>Serializable</code> type within the class. </li>
+  <li> Non-<code>Serializable</code> fields. </li>
+  <li> When a field is assigned a non-<code>Serializable</code> type within the class. </li>
+  <li> Collection fields when they are not <code>private</code>. Values that are not serializable could be added to these collections externally. Due
+  to type erasure, it cannot be guaranteed that the collection will only contain serializable objects at runtime despite being declared as a
+  collection of serializable types. </li>
 </ul>
 <h2>How to fix it</h2>
 <p>Consider the following scenario.</p>

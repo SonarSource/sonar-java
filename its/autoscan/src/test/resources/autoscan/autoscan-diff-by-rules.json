@@ -2968,5 +2968,11 @@
     "hasTruePositives": false,
     "falseNegatives": 0,
     "falsePositives": 0
+  },
+  {
+    "ruleKey": "S6915",
+    "hasTruePositives": false,
+    "falseNegatives": 0,
+    "falsePositives": 0
   }
 ]

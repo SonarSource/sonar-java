@@ -41,7 +41,6 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
 
   private int nestedClassesLevel;
 
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
@@ -86,32 +85,33 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
 
   private static boolean hasConstantInitializer(VariableTree variableTree) {
     ExpressionTree init = variableTree.initializer();
-    if (init != null) {
-      if (ExpressionUtils.skipParentheses(init).is(Tree.Kind.METHOD_REFERENCE)) {
-        MethodReferenceTree methodRef = (MethodReferenceTree) ExpressionUtils.skipParentheses(init);
-        if (isInstanceIdentifier(methodRef.expression())) {
-          return false;
+    if (init == null) {
+      return false;
+    }
+
+    var deparenthesized = ExpressionUtils.skipParentheses(init);
+
+    if (deparenthesized instanceof MethodReferenceTree methodRef && isInstanceIdentifier(methodRef.expression())) {
+      return false;
+    }
+    return !containsChildMatchingPredicate((JavaTree) deparenthesized,
+      (ConstantsShouldBeStaticFinalCheck::isNonStaticOrFinal));
+  }
+
+  private static boolean isNonStaticOrFinal(Tree tree) {
+    return switch (tree.kind()) {
+      case METHOD_INVOCATION, NEW_CLASS, NEW_ARRAY, ARRAY_ACCESS_EXPRESSION -> true;
+      case IDENTIFIER -> {
+        String name = ((IdentifierTree) tree).name();
+        if ("super".equals(name) || "this".equals(name)) {
+          yield true;
+        } else {
+          var symbol = ((IdentifierTree) tree).symbol();
+          yield symbol.isVariableSymbol() && !(symbol.isStatic() && symbol.isFinal());
         }
       }
-      if (init.is(Tree.Kind.NEW_ARRAY)) {
-        return false;
-      }
-      return !containsChildMatchingPredicate((JavaTree) init,
-        (tree -> isIgnoredKind(tree) || isThisOrSuper(tree)));
-    }
-    return false;
-  }
-
-  private static boolean isIgnoredKind(Tree tree) {
-    return tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
-  }
-
-  private static boolean isThisOrSuper(Tree tree) {
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      String name = ((IdentifierTree) tree).name();
-      return "super".equals(name) || "this".equals(name);
-    }
-    return false;
+      default -> false;
+    };
   }
 
   private static boolean isInstanceIdentifier(Tree expression) {

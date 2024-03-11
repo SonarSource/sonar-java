@@ -37,3 +37,23 @@ class Person777 implements Serializable {
     i = 5;
   }
 }
+
+class JakartaPerson777 implements Serializable {
+  Address address; // Compliant
+  Address address1; // Compliant
+
+  @jakarta.inject.Inject
+  public JakartaPerson777(Address _address, Address _address1) {
+    int i = 0;
+    address = _address;
+    address1 = _address1;
+    i = 5;
+  }
+
+  @jakarta.inject.Inject
+  public JakartaPerson777(Address _address) {
+    int i = 0;
+    address = _address;
+    i = 5;
+  }
+}

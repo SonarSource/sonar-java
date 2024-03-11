@@ -21,38 +21,26 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
-
-class TryWithResourcesCheckTest {
+class StringIndexOfRangesCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TryWithResourcesCheck.java"))
-      .withCheck(new TryWithResourcesCheck())
-      .withJavaVersion(7)
-      .verifyIssues();
-  }
-
-  @Test
-  void test_no_java_version() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TryWithResourcesCheck_no_java_version.java"))
-      .withCheck(new TryWithResourcesCheck())
-      .verifyIssues();
-  }
-
-  @Test
-  void test_java_21() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TryWithResourcesCheck_java_21.java"))
-      .withCheck(new TryWithResourcesCheck())
-      .verifyNoIssues();
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TryWithResourcesCheck_java_21.java"))
-      .withCheck(new TryWithResourcesCheck())
+      .onFile(TestUtils.mainCodeSourcesPath("checks/StringIndexOfRangesCheckSample.java"))
+      .withCheck(new StringIndexOfRangesCheck())
       .withJavaVersion(21)
       .verifyIssues();
   }
+
+  @Test
+  void test_before_java_21(){
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/StringIndexOfRangesCheckSample.java"))
+      .withCheck(new StringIndexOfRangesCheck())
+      .withJavaVersion(20)
+      .verifyNoIssues();
+  }
+  
 }

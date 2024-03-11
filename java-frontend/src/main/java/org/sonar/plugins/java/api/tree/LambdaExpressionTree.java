@@ -23,6 +23,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.Beta;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 /**
  * Lambda expression.
@@ -51,6 +52,8 @@ public interface LambdaExpressionTree extends ExpressionTree {
   SyntaxToken arrowToken();
 
   Tree body();
+
+  Symbol.MethodSymbol symbol();
 
   /**
    * Compute a CFG for the body of the lambda.
