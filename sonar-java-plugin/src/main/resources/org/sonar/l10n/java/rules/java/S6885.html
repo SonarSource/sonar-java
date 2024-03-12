@@ -12,22 +12,11 @@ int clampedValue = value &gt; max ? max : value &lt; min ? min : value; // Nonco
 <pre data-diff-id="2" data-diff-type="noncompliant">
 int clampedValue = Math.max(min, Math.min(max, value)); // Noncompliant; Replace with "Math.clamp"
 </pre>
-<pre data-diff-id="3" data-diff-type="noncompliant">
-int clampedValue = value; // Noncompliant; Replace with "Math.clamp"
-if(value&gt;max){
-  clampedValue = max;
-}else if(value&lt;min){
-  clampedValue = min;
-}
-</pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 int clampedValue = Math.clamp(value, min, max);
 </pre>
 <pre data-diff-id="2" data-diff-type="compliant">
-int clampedValue = Math.clamp(value, min, max);
-</pre>
-<pre data-diff-id="3" data-diff-type="compliant">
 int clampedValue = Math.clamp(value, min, max);
 </pre>
 
