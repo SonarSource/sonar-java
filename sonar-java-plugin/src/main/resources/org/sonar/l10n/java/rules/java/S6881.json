@@ -1,0 +1,24 @@
+{
+  "title": "Virtual threads should be used for tasks that include heavy blocking operations",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java21",
+    "multi-threading"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6881",
+  "sqKey": "S6881",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  }
+}

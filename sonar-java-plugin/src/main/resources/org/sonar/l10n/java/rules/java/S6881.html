@@ -1,0 +1,52 @@
+<p>With the introduction of virtual threads in Java 21, it is now possible to optimize the usage of the operating system threads by avoiding blocking
+them for asynchronous operations. Furthermore, virtual threads’s instantiation has very little overhead and they can be created in large quantities.
+This means that it can be more efficient to use them over the default platform threads for tasks that involve I/O or some other blocking
+operations.</p>
+<h2>Why is this an issue?</h2>
+<p>Whenever a virtual thread is started, the JVM will mount it on an OS thread. As soon as the virtual thread runs into a blocking operation like an
+HTTP request or a filesystem read/write operation, the JVM will detect this and unmount the virtual thread. This allows another virtual thread to take
+over the OS thread and continue its execution.</p>
+<p>This is why virtual threads should be preferred to platform threads for tasks that involve blocking operations. By default, a Java thread is a
+platform thread. To use a virtual thread it must be started either with <code>Thread.startVirtualThread(Runnable)</code> or
+<code>Thread.ofVirtual().start(Runnable)</code>.</p>
+<p>This rule raises an issue when a platform thread is created with a task that includes heavy blocking operations.</p>
+<h2>How to fix it</h2>
+<p>Replace platform thread instances or platform thread pools with virtual threads, if their task involves blocking operations.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>The following example creates a platform thread to handle a blocking operation, here denoted by <code>Thread.sleep(1000)</code>. The overhead for
+instantiating a platform thread is higher than for a virtual thread. Further, instantiating too many platform threads can lead to problems if the
+number of instantiated threads exceeds the maximum number of platform threads allowed by the OS.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+new Thread(() -&gt; {
+    try {
+        Thread.sleep(1000); // Noncompliant blocking operation in platform thread
+    } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+    }
+});
+</pre>
+<p>In the context of thread pools, using platform threads for heavy blocking operations can lead to the thread pool running out of available threads.
+Even though the threads spend most of their time waiting for e.g. I/O operations to complete and subsequently the CPU usage is low, the application
+cannot continue processing efficiently, due to the lack of available threads.</p>
+<h4>Compliant solution</h4>
+<p>Using virtual threads allows the developer to abstract from any pooling logic as they are much lighter than platform threads, and the number of
+virtual threads that can be instantiated is only limited by the available memory. In this example, the execution of 10000 requests would take just
+over ~1 second without any risk of exceeding the allowed number of platform threads.</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+Thread.ofVirtual().start(() -&gt; {
+    try {
+        Thread.sleep(1000); // Compliant
+    } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+    }
+});
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Java Documentation - <a href="https://docs.oracle.com/en/java/javase/21/core/virtual-threads.html">Virtual Threads</a> </li>
+  <li> Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.html#startVirtualThread(java.lang.Runnable)">Thread.startVirtualThread(Runnable)</a> </li>
+</ul>
+
