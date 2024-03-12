@@ -1,5 +1,7 @@
 package checks;
 
+import java.util.Objects;
+
 public class PatternMatchUsingIfCheckSample {
 
 
@@ -80,16 +82,21 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
-  abstract class Animal {
+  static abstract class Animal {
+    private String name = "?";
   }
 
-  class Dog extends Animal {
+  static abstract class WalkingAnimal extends Animal {
+    void walk(){}
+  }
+
+  class Dog extends WalkingAnimal {
     void bark() {
       System.out.println("Wouf");
     }
   }
 
-  class Cat extends Animal {
+  static class Cat extends WalkingAnimal {
   }
 
   class Snake extends Animal {
@@ -99,7 +106,7 @@ public class PatternMatchUsingIfCheckSample {
     if (animal instanceof Dog dog) { // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
       dog.bark();
     } else if (animal instanceof Cat) {
-      System.out.println("Miaou");
+      System.out.println("Meow");
     } else if (animal instanceof Snake) {
       System.out.println("Ssssssssss");
     } else {
@@ -111,7 +118,7 @@ public class PatternMatchUsingIfCheckSample {
     if (animal instanceof Dog) { // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
       System.out.println("Wouf");
     } else if (animal instanceof Cat) {
-      System.out.println("Miaou");
+      System.out.println("Meow");
     } else if (animal instanceof Snake) {
       System.out.println("Ssssssssss");
     } else {
@@ -119,13 +126,92 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
-  static void goodSound(Animal animal) {
+  static void badSound3(Animal animal) {
+    if (animal instanceof Dog && !Objects.equals(animal.name, "?") && animal.name.length() < 10) { // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
+      System.out.println("Wouf");
+    } else if (animal instanceof Cat) {
+      System.out.println("Meow");
+    } else if (animal instanceof Snake) {
+      System.out.println("Ssssssssss");
+    } else {
+      System.out.println("Unknown sound");
+    }
+  }
+
+  static void goodSound1(Animal animal) {
     switch (animal) {
       case Dog dog -> dog.bark();
-      case Cat ignored -> System.out.println("Miaou");
+      case Cat ignored -> System.out.println("Meow");
       case Snake ignored -> System.out.println("Ssssssssss");
       default -> System.out.println("Unknown sound");
     }
+  }
+
+  static void goodSound2(Animal animal){
+    if (animal instanceof Dog dog){
+      dog.bark();
+    } else {
+      System.out.println("Unknown sound");
+    }
+  }
+
+  static void goodSound3(){ // Compliant because we are not sure that getAnimal always returns the same specie
+    if (getAnimal() instanceof Dog dog){
+      dog.bark();
+    } else if (getAnimal() instanceof Cat){
+      System.out.println("Meow");
+    } else if (getAnimal() instanceof Snake){
+      System.out.println("Ssssssssss");
+    } else {
+      System.out.println("Unknown sound");
+    }
+  }
+
+  static void badSoundMin(Animal animal){
+    if (animal instanceof Dog dog){ // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
+      dog.bark();
+    } else if (animal instanceof Cat){
+      System.out.println("Meow");
+    } else {
+      System.out.println("Unknown sound");
+    }
+  }
+
+  static void goodSound2Args(Animal animal1, Animal animal2) {
+    if (animal1 instanceof Dog dog){
+      dog.bark();
+    } else if (animal2 instanceof Dog dog){
+      dog.bark();
+    } else if (animal1 instanceof Cat){
+      System.out.println("Meow");
+    } else {
+      System.out.println("Unknown sound");
+    }
+  }
+
+  static void badSound2Args(Animal animal1, Animal animal2) {
+    if (animal1 instanceof Dog dog1 && animal2 instanceof Dog dog2){  // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
+      dog1.bark();
+      dog2.bark();
+    } else if (animal1 instanceof Cat){
+      System.out.println("Meow");
+    } else {
+      System.out.println("Unknown sound");
+    }
+  }
+
+  static void bar(WalkingAnimal animal, int x, int y){
+    if (x < y){
+      animal.walk();
+    } else if (animal instanceof Dog dog){
+      dog.bark();
+    } else {
+      System.out.println("Hello world");
+    }
+  }
+
+  static Animal getAnimal(){
+    return new Cat();
   }
 
 }
