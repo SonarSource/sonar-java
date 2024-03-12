@@ -136,15 +136,13 @@ val checkListPath = listOf("..", "sonar-java-plugin", "src", "main", "java", "or
 val remainingLines = checkListPath.readLines().toMutableList()
 val newLines = mutableListOf<String>()
 
-if (checkQualifier.isNotEmpty()) {
-  while (!remainingLines.first().startsWith("import")) newLines.add(remainingLines.removeFirst())
+while (!remainingLines.first().startsWith("import")) newLines.add(remainingLines.removeFirst())
 
-  val newCheckImportLine = "import ${pckg.joinToString(".")}.${checkName};"
-  while (remainingLines.first()
-      .startsWith("import") && remainingLines.first().lowercase() < newCheckImportLine.lowercase()
-  ) newLines.add(remainingLines.removeFirst())
-  newLines.add(newCheckImportLine)
-}
+val newCheckImportLine = "import ${pckg.joinToString(".")}.${checkName};"
+while (remainingLines.first()
+    .startsWith("import") && remainingLines.first().lowercase() < newCheckImportLine.lowercase()
+) newLines.add(remainingLines.removeFirst())
+newLines.add(newCheckImportLine)
 
 while (newLines.isEmpty() || !newLines.last().contains("// IssuableSubscriptionVisitor")) newLines.add(remainingLines.removeFirst())
 
@@ -157,7 +155,7 @@ newLines.addAll(remainingLines)
 checkListPath.writeText(newLines.joinToString("\n", postfix = "\n"))
 
 // License headers using "mvn license:format"
-val mvnCmd = if(System.getProperty("os.name").lowercase().startsWith("windows")) {
+val mvnCmd = if (System.getProperty("os.name").lowercase().startsWith("windows")) {
   "mvn.cmd"
 } else {
   "mvn"
