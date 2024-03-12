@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
@@ -29,7 +30,6 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -68,7 +68,7 @@ public class MathClampMethodsCheck extends IssuableSubscriptionVisitor implement
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
       checkConditionalExpression((ConditionalExpressionTree) tree);
-    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+    } else { // METHOD_INVOCATION
       checkMethodInvocation((MethodInvocationTree) tree);
     }
   }
@@ -79,15 +79,17 @@ public class MathClampMethodsCheck extends IssuableSubscriptionVisitor implement
       boolean isGreater = isGreaterThanOrEqual(condition);
       var trueExpression = skipParentheses(firstConditionalExpression.trueExpression());
       var falseExpression = skipParentheses(firstConditionalExpression.falseExpression());
-      if (shouldReportOnConditional(condition.rightOperand(), trueExpression, falseExpression, isGreater) ||
-        shouldReportOnConditional(condition.rightOperand(), falseExpression, trueExpression, !isGreater)) {
+      if ((shouldReportOnConditional(condition.rightOperand(), trueExpression, falseExpression, isGreater) ||
+        shouldReportOnConditional(condition.rightOperand(), falseExpression, trueExpression, !isGreater))
+        || (shouldReportOnConditional(condition.leftOperand(), falseExpression, trueExpression, isGreater) ||
+          shouldReportOnConditional(condition.leftOperand(), trueExpression, falseExpression, !isGreater))) {
         reportIssue(firstConditionalExpression, CONDITIONAL_EXPRESSION_MESSAGE);
       }
     }
   }
 
   private static boolean shouldReportOnConditional(ExpressionTree condition, ExpressionTree tree1, ExpressionTree tree2, boolean isMax) {
-    if (condition.is(Tree.Kind.IDENTIFIER) && tree1.is(Tree.Kind.IDENTIFIER) && (((IdentifierTree) condition).name().equals(((IdentifierTree) tree1).name()))) {
+    if (ExpressionUtils.areVariablesSame(condition, tree1, false)) {
       if (tree2.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
         var innerExpression = (ConditionalExpressionTree) skipParentheses(tree2);
         var innerCondition = (BinaryExpressionTree) skipParentheses(innerExpression.condition());
@@ -104,17 +106,11 @@ public class MathClampMethodsCheck extends IssuableSubscriptionVisitor implement
   }
 
   private static boolean checkInnerExpression(BinaryExpressionTree innerCondition, ExpressionTree innerTrueExpression, ExpressionTree innerFalseExpression, boolean isMax) {
-    if (innerCondition.leftOperand().is(Tree.Kind.IDENTIFIER) && innerCondition.rightOperand().is(Tree.Kind.IDENTIFIER)
-      && innerTrueExpression.is(Tree.Kind.IDENTIFIER) && innerFalseExpression.is(Tree.Kind.IDENTIFIER)) {
-      var leftOperandName = ((IdentifierTree) innerCondition.leftOperand()).name();
-      var rightOperandName = ((IdentifierTree) innerCondition.rightOperand()).name();
-      var trueExpressionName = ((IdentifierTree) innerTrueExpression).name();
-      var falseExpressionName = ((IdentifierTree) innerFalseExpression).name();
-
-      return isMax ? (leftOperandName.equals(falseExpressionName) && rightOperandName.equals(trueExpressionName))
-        : (leftOperandName.equals(trueExpressionName) && rightOperandName.equals(falseExpressionName));
-    }
-    return false;
+    return isMax
+      ? (ExpressionUtils.areVariablesSame(innerCondition.leftOperand(), innerFalseExpression, false)
+        && ExpressionUtils.areVariablesSame(innerCondition.rightOperand(), innerTrueExpression, false))
+      : (ExpressionUtils.areVariablesSame(innerCondition.leftOperand(), innerTrueExpression, false)
+        && ExpressionUtils.areVariablesSame(innerCondition.rightOperand(), innerFalseExpression, false));
   }
 
   private void checkMethodInvocation(MethodInvocationTree tree) {

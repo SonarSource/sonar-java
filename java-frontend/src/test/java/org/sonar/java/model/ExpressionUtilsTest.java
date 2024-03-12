@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -366,7 +367,7 @@ class ExpressionUtilsTest {
     assertResolveAsConstant("8 - (3 + x) % 5 * 2", null);
     assertResolveAsConstant("8 - (x + x) % 5 * 2", null);
   }
-  
+
   @Test
   void resolve_as_constant_division_by_zero() {
     assertResolveAsConstant("5 / 0", null);
@@ -403,6 +404,62 @@ class ExpressionUtilsTest {
         .hasSameClassAs(expected)
         .isEqualTo(expected);
     }
+  }
+
+  @Test
+  void areVariablesSame_identifier_assert_true() {
+    var unit = JParserTestUtils.parse("class A { void m(int min, int max, int value) { int conditionalValue = value == max ? max : value; }}");
+    var classTree = (ClassTree) unit.types().get(0);
+    var methodTree = (MethodTree) classTree.members().get(0);
+    var variableTree = (VariableTree) methodTree.block().body().get(0);
+    var initializer = (ConditionalExpressionTree) variableTree.initializer();
+    assertThat(ExpressionUtils.areVariablesSame(((BinaryExpressionTree) initializer.condition()).leftOperand(), initializer.falseExpression(), false)).isTrue();
+  }
+
+  @Test
+  void areVariablesSame_identifier_assert_false() {
+    var unit = JParserTestUtils.parse("class A { void m(int min, int max, int value) { int conditionalValue = value == max ? max : value; }}");
+    var classTree = (ClassTree) unit.types().get(0);
+    var methodTree = (MethodTree) classTree.members().get(0);
+    var variableTree = (VariableTree) methodTree.block().body().get(0);
+    var initializer = (ConditionalExpressionTree) variableTree.initializer();
+    assertThat(ExpressionUtils.areVariablesSame(((BinaryExpressionTree) initializer.condition()).leftOperand(), initializer.trueExpression(), false)).isFalse();
+  }
+
+  @Test
+  void areVariablesSame_member_select_assert_true() {
+    var unit = JParserTestUtils.parse("class A { int min; void m(int min, int max, int value) { int conditionalValue = value == this.min ? min : value; }}");
+    var classTree = (ClassTree) unit.types().get(0);
+    var variable = (VariableTree) classTree.members().get(0);
+    var methodTree = (MethodTree) classTree.members().get(1);
+    var variableTree = (VariableTree) methodTree.block().body().get(0);
+    var initializer = (ConditionalExpressionTree) variableTree.initializer();
+    assertThat(ExpressionUtils.areVariablesSame(((BinaryExpressionTree) initializer.condition()).rightOperand(), initializer.trueExpression(), false)).isTrue();
+  }
+
+  @Test
+  void areVariablesSame_member_select_assert_false() {
+    var unit = JParserTestUtils.parse("class A { int min; void m(int min, int max, int value) { int conditionalValue = value == this.min ? max : value; }}");
+    var classTree = (ClassTree) unit.types().get(0);
+    var variable = (VariableTree) classTree.members().get(0);
+    var methodTree = (MethodTree) classTree.members().get(1);
+    var variableTree = (VariableTree) methodTree.block().body().get(0);
+    var initializer = (ConditionalExpressionTree) variableTree.initializer();
+    assertThat(ExpressionUtils.areVariablesSame(((BinaryExpressionTree) initializer.condition()).rightOperand(), initializer.trueExpression(), false)).isFalse();
+  }
+
+  @Test
+  void areVariablesSame_unknown_symbol() {
+    var unit = JParserTestUtils.parse("class A { void m(int min, int max, int value) { int conditionalValue = getValue() == Math.MIN ? max : value; }}");
+    var classTree = (ClassTree) unit.types().get(0);
+    var methodTree = (MethodTree) classTree.members().get(0);
+    var variableTree = (VariableTree) methodTree.block().body().get(0);
+    var initializer = (ConditionalExpressionTree) variableTree.initializer();
+    var condition = (BinaryExpressionTree) initializer.condition();
+    assertThat(ExpressionUtils.areVariablesSame(condition.leftOperand(), initializer.trueExpression(), false)).isFalse();
+    assertThat(ExpressionUtils.areVariablesSame(condition.rightOperand(), initializer.trueExpression(), false)).isFalse();
+    assertThat(ExpressionUtils.areVariablesSame(initializer.trueExpression(), condition.leftOperand(), false)).isFalse();
+    assertThat(ExpressionUtils.areVariablesSame(initializer.falseExpression(), condition.rightOperand(), false)).isFalse();
   }
 
 }

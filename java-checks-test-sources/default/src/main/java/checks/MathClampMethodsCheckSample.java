@@ -24,7 +24,7 @@ public class MathClampMethodsCheckSample {
     int clampValueMethodInvocation6 = Math.max(Math.min(min, value), max < value ? max : value); // Noncompliant
     int clampValueMethodInvocation7 = Math.min(max < value ? max : value, Math.min(min, value)); // Compliant
     int a = Math.max(min, Math.max(value, max)); // Compliant
-    int maxValue = Math.max(Math.max(value,min),max); // Compliant
+    int maxValue = Math.max(Math.max(value, min), max); // Compliant
 
     int nonClamped1 = Math.min(min, value); // Compliant
     int nonClamped2 = Math.max(value, max); // Compliant
@@ -63,6 +63,47 @@ public class MathClampMethodsCheckSample {
     int maxValue = value > min ? min : value > max ? max : value; // Compliant
 
     int b4 = value > max ? max : (value < min ? min : value); // Noncompliant
+
+    // -----
+    int c1 = max > value ? min > value ? min : value : max; // Noncompliant
+    int c2 = max > value ? min < value ? value : min : max; // Noncompliant
+    int c3 = max < value ? max : min > value ? min : value; // Noncompliant
+    int c4 = max < value ? max : min < value ? value : min; // Noncompliant
+
+    int c11 = max > value ? value > min ? value : min : max; // Noncompliant
+    int c12 = max > value ? value < min ? min : value : max; // Noncompliant
+    int c13 = max < value ? max : value > min ? value : min; // Noncompliant
+    int c14 = max < value ? max : value < min ? min : value; // Noncompliant
+
+    int c5 = min > value ? min : max > value ? value : max; // Noncompliant
+    int c6 = min > value ? min : max < value ? max : value; // Noncompliant
+    int c7 = min < value ? max > value ? value : max : min; // Noncompliant
+    int c8 = min < value ? max < value ? max : value : min; // Noncompliant
+
+    int c15 = min > value ? min : value > max ? max : value; // Noncompliant
+    int c16 = min > value ? min : value < max ? value : max; // Noncompliant
+    int c17 = min < value ? value > max ? max : value : min; // Noncompliant
+    int c18 = min < value ? value < max ? value : max : min; // Noncompliant
+
+    var testCases = new int[] {
+      value > max ? max : (value < min ? min : value), // Noncompliant
+      max < value ? max : (value < min ? min : value), // Noncompliant
+      value <= max ? (value < min ? min : value) : max, // Noncompliant
+      max >= value ? (value < min ? min : value) : max, // Noncompliant
+      max >= value ? (min > value ? min : value) : max, // Noncompliant
+      max >= value ? (value >= min ? value : min) : max, // Noncompliant
+      value > max ? max : (min > value ? min : value), // Noncompliant
+      value > max ? max : (value >= min ? value : min), // Noncompliant
+      value > max ? max : (min <= value ? value : min) // Noncompliant
+    };
+
+    int t1 = value > min ? value > max ? value : max : min; // Complaint - coverage
+    int t2 = value > min ? value > max ? value : value : min; // Complaint - coverage
+    int t3 = value > min ? value > max ? max : max : min; // Complaint - coverage
+
+    int t4 = value > max ? max : value > min ? min : value; // Complaint - coverage
+    int t5 = value > max ? max : value > min ? value : value; // Complaint - coverage
+    int t6 = value > max ? max : value > min ? min : min; // Complaint - coverage
   }
 
   private int getMin() {
