@@ -103,6 +103,7 @@ class LeastSpecificTypeCheck {
       o.toString();
     }
   }
+
   @jakarta.annotation.Resource
   public void jakartaRAnnotatedMethod4(Collection<Object> list) { // Compliant - since Spring annotated methods cannot take 'Iterable' as argument
     for (Object o : list) {
@@ -176,10 +177,12 @@ class LeastSpecificTypeCheck {
 
   protected static class ProtectedBase extends Base {
     @Override
-    public void b2() { }
+    public void b2() {
+    }
 
     @Override
-    public void b() { }
+    public void b() {
+    }
   }
 
   public static class Visibility extends ProtectedBase {
@@ -191,7 +194,8 @@ class LeastSpecificTypeCheck {
     vis.b();
   }
 
-  protected static class Visibility2 extends ProtectedBase { }
+  protected static class Visibility2 extends ProtectedBase {
+  }
 
   public static void visibility(Visibility2 vis) { // False-Negative
     vis.b();
@@ -224,9 +228,12 @@ class LeastSpecificTypeCheck {
   }
 
   private static class PrivateClass implements IBase {
-    void m2() {}
+    void m2() {
+    }
+
     @Override
-    public void b2() { }
+    public void b2() {
+    }
   }
 
   protected static class ProtectedClass extends PrivateClass {
@@ -237,7 +244,7 @@ class LeastSpecificTypeCheck {
 
   }
 
-  public static void coverage(PrivateClass c) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheck.IBase' here; it is a more general type than 'PrivateClass'.}}
+  public static void coverage(PrivateClass c) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheck.IBase' here; it is a more general type than 'PrivateClass'.}}
     c.b2();
   }
 
@@ -245,7 +252,8 @@ class LeastSpecificTypeCheck {
     c.m2();
   }
 
-  public static void primitiveTypesAreIgnored(int i, long l, double d, float f, byte b, short s, char c, boolean boo) { }
+  public static void primitiveTypesAreIgnored(int i, long l, double d, float f, byte b, short s, char c, boolean boo) {
+  }
 
   public BigDecimal getUnaryOperator(UnaryOperator<BigDecimal> func) { // Compliant
     // issue exception because UnaryOperator<BigDecimal> is a better functional interface usage than Function<BigDecimal, BigDecimal>
@@ -255,7 +263,6 @@ class LeastSpecificTypeCheck {
   public BigDecimal getFunction(Function<BigDecimal, BigDecimal> func) { // S4276 issue to promote UnaryOperator<BigDecimal>
     return func.apply(BigDecimal.ONE);
   }
-
 
   public static class A {
     public A getMe() {
@@ -277,12 +284,52 @@ class LeastSpecificTypeCheck {
     return b.getMe();
   }
 
-  public A getA(B b) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheck.A' here; it is a more general type than 'B'.}}
+  public A getA(A b) { // Compliant
     return b.getMe();
   }
 
   public A getAFromB(B b) { // Complaint
     b.doSomethingOnlyOnB();
     return b.getMe();
+  }
+
+  public static class X {
+    public Number getOtherThanOwnerType() {
+      return 23;
+    }
+  }
+
+  public static class Y extends X {
+    @Override
+    public Integer getOtherThanOwnerType() {
+      return 42;
+    }
+  }
+
+  public Integer getNonRelated(Y y) { // Compliant
+    return y.getOtherThanOwnerType();
+  }
+
+  interface A1 {
+    default void a(){}
+  }
+  interface A2 {
+    default void a(String a){}
+  }
+  interface A3 {
+    default int a(String a, String b){ return 0;}
+  }
+
+  public static class OverloadedA1A2 implements A1, A2 {
+
+  }
+
+  public static class OverloadedA1A2A3 extends OverloadedA1A2 implements A3 {
+  }
+
+  public OverloadedA1A2 overloaded(OverloadedA1A2A3 a) { // FN it should suggest to use "OverloadedA1A2" as parameter type
+    a.a();
+    a.a("a");
+    return a;
   }
 }
