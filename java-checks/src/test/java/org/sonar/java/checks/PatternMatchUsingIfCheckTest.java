@@ -20,17 +20,18 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 class PatternMatchUsingIfCheckTest {
 
   @Test
   void test_java_21() {
-    CheckVerifier.newVerifier()
-      .withJavaVersion(21)
+    InternalCheckVerifier.newInstance()
       .onFile(TestUtils.mainCodeSourcesPath("checks/PatternMatchUsingIfCheckSample.java"))
       .withCheck(new PatternMatchUsingIfCheck())
+      .withJavaVersion(21)
+      .withQuickFixes()
       .verifyIssues();
   }
 

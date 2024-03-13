@@ -18,8 +18,11 @@ public class PatternMatchUsingIfCheckSample {
   }
 
 
+  // fix@qf1 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf1 [[sl=+0;el=+9;sc=5;ec=6]] {{switch (expr) {\n      case Plus plus -> {\n        return badCompute1(plus.lhs) + badCompute1(plus.rhs);\n      }\n      case Minus(var l, Expr r) -> {\n        return badCompute1(l) - badCompute1(r);\n      }\n      case Const ignored -> {\n        return ((Const) expr).value;\n      }\n      default -> {\n        throw new AssertionError();\n      }\n    }}}
   static int badCompute1(Expr expr) {
-    if (expr instanceof Plus plus) {   // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
+    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf1]]
+    if (expr instanceof Plus plus) {
       return badCompute1(plus.lhs) + badCompute1(plus.rhs);
     } else if (expr instanceof Minus(var l, Expr r)) {
       return badCompute1(l) - badCompute1(r);
@@ -30,8 +33,11 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
+  // fix@qf2 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf2 [[sl=+0;el=+11;sc=5;ec=6]] {{switch (expr) {\n      case Plus plus when plus.lhs instanceof Const(var z) && z == 0 -> {\n            return badCompute1(plus.lhs) + badCompute1(plus.rhs);\n      }\n      case Plus plus -> {\n            return badCompute1(plus.lhs) + badCompute1(plus.rhs);\n      }\n      case Minus(var l, Expr r) -> {\n            return badCompute1(l) - badCompute1(r);\n      }\n      case Const ignored -> {\n            return ((Const) expr).value;\n      }\n      default -> {\n            throw new AssertionError();\n      }\n}}}
   static int badCompute2(Expr expr) {
-    if (expr instanceof Plus plus && plus.lhs instanceof Const(var z) && z == 0){  // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
+    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf2]] {{Replace the chain of if/else with a switch expression.}}
+    if (expr instanceof Plus plus && plus.lhs instanceof Const(var z) && z == 0){
       return badCompute2(plus.rhs);
     } else if (expr instanceof Plus plus) {
       return badCompute2(plus.lhs) + badCompute2(plus.rhs);
@@ -52,7 +58,6 @@ public class PatternMatchUsingIfCheckSample {
     };
   }
 
-  // TODO should we accept this?
   static int goodCompute2(Expr expr){
     if (expr.equals(new Const(0))){
       return 0;
@@ -67,7 +72,6 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
-  // TODO should we accept this?
   static int goodCompute3(Expr expr){
     if (expr instanceof Plus plus) {
       return badCompute1(plus.lhs) + badCompute1(plus.rhs);
@@ -102,8 +106,11 @@ public class PatternMatchUsingIfCheckSample {
   class Snake extends Animal {
   }
 
+  // fix@qf3 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf3 [[sl=+0;el=+9;sc=5;ec=6]] {{switch (animal){\n      case Dog dog -> {\n        dog.bark();\n      }\n      case Cat ignored -> {\n        System.out.println("Meow");\n      }\n      case Snake ignored -> {\n        System.out.println("Ssssssssss");\n      }\n      default -> {\n        System.out.println("Unknown sound");\n      }\n    }}}
   static void badSound1(Animal animal) {
-    if (animal instanceof Dog dog) { // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
+    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf3]]
+    if (animal instanceof Dog dog) {
       dog.bark();
     } else if (animal instanceof Cat) {
       System.out.println("Meow");
