@@ -70,9 +70,9 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     boolean springInjectionAnnotated = isSpringInjectionAnnotated(metadata);
     methodTree.parameters().stream()
       .map(VariableTree::symbol)
-      .filter(paramSymbol -> paramSymbol.type().isClass() && !paramSymbol.type().symbol().isEnum() && !isStringType(paramSymbol.type()))
-      .filter(paramSymbol -> !(springInjectionAnnotated && paramSymbol.type().is("java.util.Collection")))
-      .forEach(paramSymbol -> handleParameter(paramSymbol, springInjectionAnnotated));
+      .filter(p -> p.type().isClass() && !p.type().symbol().isEnum() && !isStringType(p.type()))
+      .filter(p -> !(springInjectionAnnotated && p.type().is("java.util.Collection")))
+      .forEach(p -> handleParameter(p, springInjectionAnnotated));
   }
 
   private static boolean isOverloaded(Symbol.MethodSymbol methodSymbol) {
@@ -83,20 +83,20 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     return type.isUnknown() || type.is("java.lang.String");
   }
 
-  private void handleParameter(Symbol parameterSymbol, boolean springInjectionAnnotated) {
-    Type parameterType = parameterSymbol.type();
+  private void handleParameter(Symbol parameter, boolean springInjectionAnnotated) {
+    Type parameterType = parameter.type();
     if (parameterType.symbol().metadata().isAnnotatedWith("java.lang.FunctionalInterface")) {
       // Exclude functional interface, it's wrong to have issues on UnaryOperator<T> and ask the user to use Function<T,T> instead
       return;
     }
 
-    Type leastSpecificType = findLeastSpecificType(parameterSymbol);
+    Type leastSpecificType = findLeastSpecificType(parameter);
     if (parameterType != leastSpecificType
       && !leastSpecificType.is("java.lang.Object")) {
 
       String suggestedType = getSuggestedType(springInjectionAnnotated, leastSpecificType);
       String message = String.format("Use '%s' here; it is a more general type than '%s'.", suggestedType, parameterType.erasure().name());
-      reportIssue(parameterSymbol.declaration(), message);
+      reportIssue(parameter.declaration(), message);
     }
   }
 
@@ -132,8 +132,8 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
   private static Optional<Symbol.MethodSymbol> findIteratorMethod(Symbol parameter) {
     return parameter.type().symbol().lookupSymbols("iterator").stream()
       .filter(Symbol::isMethodSymbol)
-      .map(s -> (Symbol.MethodSymbol) s)
-      .filter(m -> m.parameterTypes().isEmpty())
+      .map(Symbol.MethodSymbol.class::cast)
+      .filter(methodSymbol -> methodSymbol.parameterTypes().isEmpty())
       .findFirst();
   }
 
@@ -175,24 +175,24 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       return result;
     }
 
-    private void computeChainsForSuperType(List<List<Type>> result, Symbol.MethodSymbol m, Type type, Type superType) {
-      for (List<Type> chain : computeChains(m, superType)) {
+    private void computeChainsForSuperType(List<List<Type>> result, Symbol.MethodSymbol methodSymbol, Type type, Type superType) {
+      for (List<Type> chain : computeChains(methodSymbol, superType)) {
         chain.add(type);
         result.add(chain);
       }
     }
 
-    private static boolean definesOrInheritsSymbol(Symbol.MethodSymbol symbol, Symbol.TypeSymbol typeSymbol) {
-      return definesSymbol(symbol, typeSymbol)
-        || typeSymbol.superTypes().stream().anyMatch(superType -> definesSymbol(symbol, superType.symbol()));
+    private static boolean definesOrInheritsSymbol(Symbol.MethodSymbol methodSymbol, Symbol.TypeSymbol typeSymbol) {
+      return definesSymbol(methodSymbol, typeSymbol)
+        || typeSymbol.superTypes().stream().anyMatch(superType -> definesSymbol(methodSymbol, superType.symbol()));
     }
 
-    private static boolean definesSymbol(Symbol.MethodSymbol m, Symbol.TypeSymbol typeSymbol) {
+    private static boolean definesSymbol(Symbol.MethodSymbol methodSymbol, Symbol.TypeSymbol typeSymbol) {
       return typeSymbol.memberSymbols()
         .stream()
         .filter(Symbol::isMethodSymbol)
-        .map(s -> (Symbol.MethodSymbol) s)
-        .anyMatch(ms -> isOverridingWithSameReturnType(m, ms));
+        .map(Symbol.MethodSymbol.class::cast)
+        .anyMatch(memberMethodSymbol -> isOverridingWithSameReturnType(methodSymbol, memberMethodSymbol));
     }
 
     private void refineChains(Symbol.MethodSymbol m) {
