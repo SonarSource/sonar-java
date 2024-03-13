@@ -1,0 +1,100 @@
+<h2>Why is this an issue?</h2>
+<p>Java 21 virtual threads allow the JVM to optimize the usage of OS threads, by mounting and unmounting them on an OS thread when needed, and making
+them extremely efficient when dealing with blocking operations such as HTTP requests or I/O.</p>
+<p>However, there are cases in which a virtual thread cannot be unmounted during blocking operations because it is pinned to the underlying OS
+thread:</p>
+<ul>
+  <li> When it executes code inside a synchronized block or method </li>
+  <li> When it executes a native method </li>
+</ul>
+<p>In these scenarios, the virtual thread will not be unmounted and the blocking operation will cause the OS thread to be blocked. A pinned virtual
+thread does not necessarily mean that the application is incorrect, but it can hinder its scalability.</p>
+<p>Therefore, virtual threads should not be used when their task includes synchronized code or native methods. Instead, the default platform threads
+should be used.</p>
+<p>This rule raises an issue when the task passed to a virtual thread includes synchronized code or native methods.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+void enqueue(){
+    Thread.startVirtualThread(() -&gt; { // Noncompliant; use a platform thread instead of a virtual one
+        synchronized {
+            setupOperations();
+            dequeLogic();
+        }
+    });
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+void enqueue(){
+    new Thread(() -&gt; {
+        synchronized {
+            setupOperations();
+            dequeLogic();
+        }
+    }).start();
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+void enqueue2(){
+    Thread.startVirtualThread(() -&gt; { // Noncompliant; use a platform thread instead of a virtual one
+        if(someCondition){
+            synchronizedMethod();
+        }else{
+            defaultLogic();
+        }
+    });
+}
+synchronized void synchronizedMethod(){}
+void defaultLogic(){}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+void enqueue2(){
+    new Thread(() -&gt; {
+        if(someCondition){
+            synchronizedMethod();
+        }else{
+            defaultLogic();
+        }
+    }).start();
+}
+synchronized void synchronizedMethod(){}
+void defaultLogic(){}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+public class NativeExample {
+    public native void printHelloWorld();
+    static {
+        System.loadLibrary("nativeexample");
+    }
+    public static void main(String[] args) {
+        Thread.startVirtualThread(() -&gt; { // Noncompliant; use a platform thread instead of a virtual one
+            new NativeExample().printHelloWorld();
+        });
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+public class NativeExample {
+    public native void printHelloWorld();
+    static {
+        System.loadLibrary("nativeexample");
+    }
+    public static void main(String[] args) {
+        new Thread(() -&gt; {
+            new NativeExample().printHelloWorld();
+        }).start();
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Java Documentation - <a href="https://openjdk.org/jeps/444#:~:text=There%20are%20two,by%20capturing%20carriers">Virtual threads, pinning
+  scenarios</a> </li>
+</ul>
+
