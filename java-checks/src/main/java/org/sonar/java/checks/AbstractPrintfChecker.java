@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -81,6 +82,7 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     .build();
 
   protected static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,[^}]*)?\\}");
+  protected static final Predicate<String> MESSAGE_FORMAT_PATTERN_PREDICATE = MESSAGE_FORMAT_PATTERN.asPredicate();
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {

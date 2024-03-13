@@ -21,15 +21,26 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
-class InnerStaticClassesCheckTest {
+class StringIndexOfRangesCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/InnerStaticClassesCheckSample.java")
-      .withCheck(new InnerStaticClassesCheck())
+      .onFile(TestUtils.mainCodeSourcesPath("checks/StringIndexOfRangesCheckSample.java"))
+      .withCheck(new StringIndexOfRangesCheck())
+      .withJavaVersion(21)
       .verifyIssues();
   }
 
+  @Test
+  void test_before_java_21(){
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/StringIndexOfRangesCheckSample.java"))
+      .withCheck(new StringIndexOfRangesCheck())
+      .withJavaVersion(20)
+      .verifyNoIssues();
+  }
+  
 }
