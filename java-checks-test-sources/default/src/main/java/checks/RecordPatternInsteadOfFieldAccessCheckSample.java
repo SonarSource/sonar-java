@@ -15,6 +15,15 @@ public class RecordPatternInsteadOfFieldAccessCheckSample {
     return 0;
   }
 
+  int compliantSinceOnly1MemberUsed(Object obj) {
+    if (obj instanceof Point p) {
+      return p.x();
+    } else if (obj instanceof String s) {
+      return s.length();
+    }
+    return 0;
+  }
+
   int nonCompliantSwitch(Object o) {
     return switch (o) {
       case Point p -> p.x() + p.y(); // Noncompliant [[secondary=+0,+0]]
@@ -83,6 +92,13 @@ public class RecordPatternInsteadOfFieldAccessCheckSample {
     return 0;
   }
 
+  int compliantSwitchOnOtherTypePattern(Object o) {
+    return switch (o) {
+      case String s -> s.length();
+      default -> 0;
+    };
+  }
+
   record Point(int x, int y) {
   }
 
@@ -92,5 +108,7 @@ public class RecordPatternInsteadOfFieldAccessCheckSample {
       return 0;
     }
   }
+
+  record Shape(int myInt){}
 
 }

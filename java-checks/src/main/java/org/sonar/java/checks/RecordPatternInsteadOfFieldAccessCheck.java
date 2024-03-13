@@ -19,20 +19,18 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
-import org.sonar.plugins.java.api.tree.CaseLabelTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypePatternTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.*;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 
 @Rule(key = "S6878")
@@ -68,14 +66,18 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
   }
 
   private static Optional<TypePatternTree> getTypePatternFromCaseGroup(CaseLabelTree caseLabel) {
-    if (caseLabel.expressions().size() == 1 && caseLabel.expressions().get(0) instanceof TypePatternTree typePattern) {
+    if (caseLabel.expressions().size() == 1
+      && caseLabel.expressions().get(0) instanceof TypePatternTree typePattern
+      && isRecordPattern(typePattern)) {
       return Optional.of(typePattern);
     }
     return Optional.empty();
   }
 
   private void checkTypePatternVariableUsage(VariableTree patternVariable) {
-    var secondaryLocationsTrees = new ArrayList<Tree>();
+    var secondaryLocationsTrees = new HashSet<Tree>();
+    var type = patternVariable.symbol().type().symbol();
+    var comps = recordComponents(type);
     for (Tree usage : patternVariable.symbol().usages()) {
       if (usage.parent() instanceof MemberSelectExpressionTree mse && isNotRecordGetter(mse)) {
         secondaryLocationsTrees.add(mse);
@@ -83,15 +85,18 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
         return;
       }
     }
-    reportIssue(patternVariable, "Use the record pattern instead of this pattern match variable.",
-      getSecondaryLocations(secondaryLocationsTrees), null);
+    // if all the records components are used we report an issue
+    if (secondaryLocationsTrees.size() == comps.size()) {
+      reportIssue(patternVariable, "Use the record pattern instead of this pattern match variable.",
+        getSecondaryLocations(secondaryLocationsTrees), null);
+    }
   }
 
   private static boolean isNotRecordGetter(MemberSelectExpressionTree mse) {
     return !ALLOWED_METHODS.contains(mse.identifier().name());
   }
 
-  private static List<JavaFileScannerContext.Location> getSecondaryLocations(List<Tree> secondaryLocationsTrees) {
+  private static List<JavaFileScannerContext.Location> getSecondaryLocations(Set<Tree> secondaryLocationsTrees) {
     return secondaryLocationsTrees.stream()
       .map(tree ->
         new JavaFileScannerContext.Location("Replace this getter with the respective record pattern component", tree))
@@ -100,6 +105,15 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
 
   private static boolean isRecordPattern(TypePatternTree typePattern) {
     return typePattern.patternVariable().type().symbolType().isSubtypeOf("java.lang.Record");
+  }
+
+  private static List<Symbol.VariableSymbol> recordComponents(Symbol.TypeSymbol recordSymbol) {
+    return recordSymbol
+      .memberSymbols()
+      .stream()
+      .filter(Symbol::isVariableSymbol)
+      .map(Symbol.VariableSymbol.class::cast)
+      .toList();
   }
 
 }
