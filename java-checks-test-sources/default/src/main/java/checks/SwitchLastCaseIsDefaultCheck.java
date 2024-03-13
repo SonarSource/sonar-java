@@ -52,6 +52,58 @@ class SwitchLastCaseIsDefaultCheck {
         break;
     }
   }
+
+  sealed interface Animal permits Cat, Dog, Phoenix {}
+  record Cat() implements Animal { }
+  record Dog() implements Animal { }
+  record Phoenix() implements Animal { }
+
+  static void sealedClass(Animal animal) {
+    switch (animal) { // Compliant
+      case Cat ignored -> { }
+      case Dog ignored -> { }
+      case Phoenix ignored -> { }
+    }
+  }
+
+  static void incompleteSealedClass(Animal animal) {
+    switch (animal) { // Compliant
+      case Cat ignored -> { }
+      default -> { }
+    }
+  }
+
+  static void typePattern(Object object) {
+    switch (object) { // Compliant
+      case String s -> { }
+      case Number n -> { }
+      case Object o -> { } // alternative to default
+    }
+  }
+
+  static void typePatternWithDefault(CharSequence cs) {
+    switch (cs) { // Compliant
+      case String s -> { }
+      case CharSequence c -> { } // type of the expression
+    }
+  }
+
+  static void typePatternWithDefault(Object object) {
+    switch (object) { // Compliant
+      case String s -> { }
+      case Number n -> { }
+      default -> { }
+    }
+  }
+
+  record MyRecord(int x, int y) { }
+
+  static void recordSwitch1(MyRecord object) {
+    switch (object) { // Compliant
+      case MyRecord(int x, int y) when x > 42 -> { }
+      case MyRecord(int x, int y) -> { }
+    }
+  }
 }
 
 enum MyEnum {

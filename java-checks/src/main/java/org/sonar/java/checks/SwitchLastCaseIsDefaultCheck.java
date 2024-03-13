@@ -46,7 +46,7 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
-    if (getDefaultLabel(switchStatementTree)) {
+    if (missesDefaultLabel(switchStatementTree) && !isSwitchOnTypePattern(switchStatementTree)) {
       if (!isSwitchOnEnum(switchStatementTree)) {
         reportIssue(switchStatementTree.switchKeyword(), "Add a default case to this switch.");
       } else if (missingCasesOfEnum(switchStatementTree)) {
@@ -55,7 +55,7 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean getDefaultLabel(SwitchStatementTree switchStatementTree) {
+  private static boolean missesDefaultLabel(SwitchStatementTree switchStatementTree) {
     return allLabels(switchStatementTree).noneMatch(SwitchLastCaseIsDefaultCheck::isDefault);
   }
 
@@ -64,6 +64,11 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
       return true;
     }
     return caseLabelTree.expressions().stream().anyMatch(expr -> expr.is(Tree.Kind.DEFAULT_PATTERN));
+  }
+
+  private static boolean isSwitchOnTypePattern(SwitchStatementTree switchStatementTree) {
+    return allExpressions(switchStatementTree)
+      .anyMatch(expression -> expression.is(Tree.Kind.TYPE_PATTERN, Tree.Kind.RECORD_PATTERN, Tree.Kind.GUARDED_PATTERN));
   }
 
   private static boolean equalsDefaultKeyword(String text) {
