@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -121,12 +122,11 @@ public class VirtualThreadNotSynchronizedCheck extends IssuableSubscriptionVisit
       if (callSiteExpression.symbolType().is(OF_VIRTUAL)) {
         return true;
       }
+
       // Cover the case that call site is not type OfVirtual, but initialized with OfVirtual
-      if (callSiteExpression instanceof IdentifierTree identifier && identifier.symbol().declaration() instanceof VariableTree variableTree) {
-        var initializer = variableTree.initializer();
-        return initializer != null && initializer.symbolType().is(OF_VIRTUAL);
-      }
-      return false;
+      return getInitializerExpression(callSiteExpression)
+        .stream()
+        .anyMatch(it -> it.symbolType().is(OF_VIRTUAL));
     }
 
     private static boolean isCallToExecutorServiceWithVirtualTasks(MethodInvocationTree tree) {
@@ -135,11 +135,14 @@ public class VirtualThreadNotSynchronizedCheck extends IssuableSubscriptionVisit
         return true;
       }
 
-      if (callSiteExpression instanceof IdentifierTree identifier && identifier.symbol().declaration() instanceof VariableTree variableTree) {
-        var initializer = variableTree.initializer();
-        return initializer != null && isCallToExecutorServiceBuilderWithVirtualTasks(initializer);
-      }
-      return false;
+      return getInitializerExpression(callSiteExpression)
+        .stream()
+        .anyMatch(RunnablesToCheckCollector::isCallToExecutorServiceBuilderWithVirtualTasks);
+    }
+
+    private static Optional<ExpressionTree> getInitializerExpression(ExpressionTree expression) {
+      return expression instanceof IdentifierTree identifier && identifier.symbol().declaration() instanceof VariableTree variableTree ?
+        Optional.ofNullable(variableTree.initializer()) : Optional.empty();
     }
 
     private static boolean isCallToExecutorServiceBuilderWithVirtualTasks(ExpressionTree expression) {
