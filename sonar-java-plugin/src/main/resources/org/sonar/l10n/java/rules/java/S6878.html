@@ -3,12 +3,7 @@
 should be used when all fields of a record are accessed within a block for improved readability. Nested record patterns are also allowed and should be
 used when a record field is another record, and all its fields are accessed.</p>
 <h2>Exceptions</h2>
-<p>This rule does not apply in the following cases:</p>
-<ul>
-  <li> When not all record fields are accessed. This prevents the creation of unused local variables in the decomposed record structure. </li>
-  <li> When a variable with the field name would cause a name conflict with another local variable or would shadow a field in the current class. This
-  means that this rule does not enforce record patterns if they would or should use renamed variables. </li>
-</ul>
+<p>This rule does not apply when not all record fields are accessed. This prevents the creation of unused local variables in the decomposed record structure.</p>
 <h2>How to fix it</h2>
 <p>Replace the instance check or simple pattern matching with a record pattern.</p>
 <h3>Code examples</h3>
