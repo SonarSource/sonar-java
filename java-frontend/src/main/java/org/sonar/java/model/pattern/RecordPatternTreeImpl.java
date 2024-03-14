@@ -19,8 +19,8 @@
  */
 package org.sonar.java.model.pattern;
 
-import java.util.Collections;
 import java.util.List;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -34,12 +34,16 @@ import org.sonarsource.analyzer.commons.collections.ListUtils;
 public class RecordPatternTreeImpl extends AbstractPatternTree implements RecordPatternTree {
 
   private final TypeTree type;
+  private final InternalSyntaxToken openParenToken;
   private final List<PatternTree> patterns;
+  private final InternalSyntaxToken closeParenToken;
 
-  public RecordPatternTreeImpl(TypeTree type, List<PatternTree> patterns) {
+  public RecordPatternTreeImpl(TypeTree type, InternalSyntaxToken openParenToken, List<PatternTree> patterns, InternalSyntaxToken closeParenToken) {
     super(Kind.RECORD_PATTERN);
     this.type = type;
+    this.openParenToken = openParenToken;
     this.patterns = patterns;
+    this.closeParenToken = closeParenToken;
   }
 
   @Override
@@ -58,15 +62,26 @@ public class RecordPatternTreeImpl extends AbstractPatternTree implements Record
   }
 
   @Override
+  public InternalSyntaxToken openParenToken(){
+    return openParenToken;
+  }
+
+  @Override
   public List<PatternTree> patterns() {
     return patterns;
   }
 
   @Override
+  public InternalSyntaxToken closeParenToken(){
+    return closeParenToken;
+  }
+
+  @Override
   protected List<Tree> children() {
     return ListUtils.concat(
-      Collections.singleton(type),
-      patterns
+      List.of(type, openParenToken),
+      patterns,
+      List.of(closeParenToken)
     );
   }
 }

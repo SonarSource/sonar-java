@@ -1559,7 +1559,9 @@ public class JParser {
           .toList();
 
         TypeTree patternType = convertType(recordPattern.getPatternType());
-        return new RecordPatternTreeImpl(patternType, nestedPatterns);
+        var openParenToken = firstTokenIn(recordPattern, TerminalTokens.TokenNameLPAREN);
+        var closeParenToken = lastTokenIn(recordPattern, TerminalTokens.TokenNameRPAREN);
+        return new RecordPatternTreeImpl(patternType, openParenToken, nestedPatterns, closeParenToken);
       case ASTNode.GUARDED_PATTERN:
         GuardedPattern g = (GuardedPattern) p;
         return new GuardedPatternTreeImpl(
