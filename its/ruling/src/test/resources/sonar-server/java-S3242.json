@@ -2,6 +2,10 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/index/ComponentIndexer.java": [
 113
 ],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsUtils.java": [
+69,
+78
+],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIndexer.java": [
 137
 ],
@@ -29,5 +33,5 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/WebServiceEngine.java": [
 150
-],
+]
 }
