@@ -374,8 +374,30 @@ class LeastSpecificTypeCheck {
   public void paramsErrorMessage(Class clazz) { // Noncompliant {{Use 'java.lang.reflect.AnnotatedElement' here; it is a more general type than 'Class'.}}
     clazz.getAnnotation(Resource.class);
   }
+
   public static void testConstructor(Constructor constructor) { // Noncompliant {{Use 'java.lang.reflect.Executable' here; it is a more general type than 'Constructor'.}}
     constructor.getName();
     Class[] parameterTypes = constructor.getParameterTypes();
+  }
+
+  public static class Phi {
+    public List<? extends Number> getOtherThanOwnerType() {
+      return null;
+    }
+  }
+
+  public static class Theta extends Phi {
+    @Override
+    public List<Integer> getOtherThanOwnerType() {
+      return null;
+    }
+  }
+
+  public List<Integer> getNonRelated(Theta theta) { // Compliant
+    return theta.getOtherThanOwnerType();
+  }
+
+  public List<? extends Number> getGenericNonRelated(Theta theta) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheck.Phi' here; it is a more general type than 'Theta'.}}
+    return theta.getOtherThanOwnerType();
   }
 }
