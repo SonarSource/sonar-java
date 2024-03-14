@@ -1,0 +1,23 @@
+{
+  "title": "Reverse iteration should utilize reversed view",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java21"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6876",
+  "sqKey": "S6876",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
