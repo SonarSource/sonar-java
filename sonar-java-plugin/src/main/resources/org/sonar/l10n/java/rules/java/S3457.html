@@ -31,26 +31,36 @@ methods:</p>
 <p>A <code>printf-</code>-style format string is a string that contains placeholders, which are replaced by values when the string is printed or
 logged. Mismatch in the format specifiers and the arguments provided can lead to incorrect strings being created.</p>
 <p>To avoid issues, a developer should ensure that the provided arguments match format specifiers.</p>
+<p>Note that <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/text/MessageFormat.html">MessageFormat</a> is used by most
+logging mechanisms, for example <code>java.util.logging.Logger</code>, thus the <em>single quote</em> must be escaped by a <em>double single
+quote</em>.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
-String.format("Too many arguments %d and %d", 1, 2, 3); // Noncompliant; the third argument '3' is unused
-String.format("First {0} and then {1}", "foo", "bar");  //Noncompliant. It appears there is confusion with the use of "java.text.MessageFormat"; parameters "foo" and "bar" will be ignored here
+void logging(org.slf4j.Logger slf4jLog, java.util.logging.Logger logger) {
+    String.format("Too many arguments %d and %d", 1, 2, 3); // Noncompliant - the third argument '3' is unused
+    String.format("First {0} and then {1}", "foo", "bar");  //Noncompliant - it appears there is confusion with the use of "java.text.MessageFormat" - parameters "foo" and "bar" will be ignored here
 
-org.slf4j.Logger slf4jLog;
-slf4jLog.debug("The number: ", 1); // Noncompliant - String contains no format specifiers.
+
+    slf4jLog.debug("The number: ", 1); // Noncompliant - String contains no format specifiers.
+
+    logger.log(level, "Can't load library \"{0}\"!", "foo"); // Noncompliant - the single quote ' must be escaped
+}
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
-String.format("Too many arguments %d and %d", 1, 2);
-String.format("First %s and then %s", "foo", "bar");
+void logging(org.slf4j.Logger slf4jLog, java.util.logging.Logger logger) {
+    String.format("Too many arguments %d and %d", 1, 2);
+    String.format("First %s and then %s", "foo", "bar");
 
-org.slf4j.Logger slf4jLog;
-slf4jLog.debug("The number: {}", 1);
+    slf4jLog.debug("The number: {}", 1);
+
+    logger.log(level, "Can''t load library \"{0}\"!", "foo");
+}
 </pre>
 <h2>Resources</h2>
 <ul>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/x/J9YxBQ">CERT, FIO47-C.</a> - Use valid format strings </li>
-  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/text/MessageFormat.html">java.text.MessageFormat</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/text/MessageFormat.html">java.text.MessageFormat</a> </li>
 </ul>
 

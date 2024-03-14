@@ -26,27 +26,27 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class CollectorsToListCheckTest {
   @Test
   void test() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CollectorsToList.java"))
-      .withCheck(new CollectorsToListCheck())
+    createCheckVerifier()
       .withJavaVersion(16)
       .verifyIssues();
   }
 
   @Test
   void test_no_issues_for_older_versions() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CollectorsToList.java"))
-      .withCheck(new CollectorsToListCheck())
+    createCheckVerifier()
       .withJavaVersion(15)
       .verifyNoIssues();
   }
 
   @Test
   void test_no_issues_for_unknown_versions() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CollectorsToList.java"))
-      .withCheck(new CollectorsToListCheck())
+    createCheckVerifier()
       .verifyNoIssues();
+  }
+
+  private static CheckVerifier createCheckVerifier() {
+    return CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CollectorsToListCheckSample.java"))
+      .withCheck(new CollectorsToListCheck());
   }
 }

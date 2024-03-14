@@ -121,9 +121,13 @@ class Person7 implements Serializable {
 
 class Person8 implements Serializable {
   @Inject Address address; // Compliant field is injected
+  @jakarta.inject.Inject Address jakartaAddress; // Compliant
+
   @EJB Address address2; // Compliant
 
   @Inject Address address3; // Compliant
+  @jakarta.inject.Inject Address jakartaAddress4; // Compliant
+
   @EJB Address address4; // Compliant
 
   @Deprecated Address address5; // Noncompliant
@@ -147,6 +151,10 @@ class Person9999 implements Serializable {
   public void setAddress3(Address address3) {
     this.address3 = address3;
   }
+  @jakarta.inject.Inject
+  public void jakartaSetAddress3(Address address3) {
+    this.address3 = address3;
+  }
 }
 
 class Person999 implements Serializable {
@@ -157,11 +165,30 @@ class Person999 implements Serializable {
   }
 }
 
+class JakartaPerson999 implements Serializable {
+  Address address; // Noncompliant
+
+  @jakarta.inject.Inject
+  public JakartaPerson999(Address address) {
+  }
+}
+
 class Person99 implements Serializable {
   Address address; // Compliant
 
   @Inject
   public Person99(Address _address) {
+    int i = 0;
+    address = _address;
+    i = 5;
+  }
+}
+
+class JakartaPerson99 implements Serializable {
+  Address address; // Compliant
+
+  @jakarta.inject.Inject
+  public JakartaPerson99(Address _address) {
     int i = 0;
     address = _address;
     i = 5;
@@ -181,6 +208,25 @@ class Person777 implements Serializable {
 
   @Inject
   public Person777(Address _address) {
+    int i = 0;
+    address = _address;
+    i = 5;
+  }
+}
+
+class JakartaPerson777 implements Serializable {
+  Address address; // Compliant
+  Address address1; // Noncompliant
+
+  public JakartaPerson777(Address _address, Address _address1) {
+    int i = 0;
+    address = _address;
+    address1 = _address1;
+    i = 5;
+  }
+
+  @jakarta.inject.Inject
+  public JakartaPerson777(Address _address) {
     int i = 0;
     address = _address;
     i = 5;

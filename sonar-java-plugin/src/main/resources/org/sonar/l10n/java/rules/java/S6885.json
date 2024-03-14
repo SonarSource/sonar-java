@@ -1,0 +1,23 @@
+{
+  "title": "Use built-in \"Math.clamp\" methods",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java21"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6885",
+  "sqKey": "S6885",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}

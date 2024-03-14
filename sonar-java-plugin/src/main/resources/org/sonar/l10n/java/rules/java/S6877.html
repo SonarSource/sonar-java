@@ -1,0 +1,62 @@
+<h2>Why is this an issue?</h2>
+<p>Java 21 introduces the new Sequenced Collections API, which applies to all collections with a defined sequence on their elements, such as
+<code>LinkedList</code>, <code>TreeSet</code>, and others (see <a href="https://openjdk.org/jeps/431">JEP 431</a>). For projects using Java 21 and
+onwards, use this API instead of workaround implementations that were necessary before Java 21. One of the features of the new Sequenced Collections
+API is <code>SequencedCollection.reversed()</code> which returns a lightweight view of the original collection, in the reverse order.</p>
+<p>This rule reports when reverse view would have been sufficient instead of a reverse copy of a sequenced collection created using a list constructor
+plus a <code>Collections.reverse(collection);</code> call.</p>
+<p>If feasible, a view should be preferred over a copy because a view is a lightweight iterator without modification of the list itself.</p>
+<h2>How to fix it</h2>
+<p>Remove <code>Collections.reverse(list);</code> and replace <code>list</code> with <code>list.reversed()</code> after.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+void foo() {
+  var list = new ArrayList&lt;String&gt;();
+  list.add("A");
+  list.add("B");
+  Collections.reverse(list); // Noncompliant
+  for (var e : list) {
+    // ...
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+void foo() {
+  var list = new ArrayList&lt;String&gt;();
+  list.add("A");
+  list.add("B");
+  for (var e : list.reversed()) {  // Compliant
+    // ...
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+void foo(List&lt;String&gt; list) {
+  var copy = new ArrayList&lt;String&gt;(list);
+  Collections.reverse(copy); // Noncompliant
+  for (var e : copy) {
+    // ...
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+void foo(List&lt;String&gt; list) {
+  for (var e : list.reversed()) {  // Compliant
+    // ...
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Java Documentation - <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/SequencedCollection.html">Interface
+  SequencedCollection</a> </li>
+  <li> OpenJDK - <a href="https://openjdk.org/jeps/431">JEP 431: Sequenced Collections</a> </li>
+  <li> Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/core/creating-sequenced-collections-sets-and-maps.html#GUID-DCFE1D88-A0F5-47DE-A816-AEDA50B97523">Creating Sequenced Collections, Sets, and Maps</a> </li>
+</ul>
+

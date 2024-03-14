@@ -1,0 +1,23 @@
+{
+  "title": "Use when instead of a single if inside a pattern match body",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java21"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6916",
+  "sqKey": "S6916",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}

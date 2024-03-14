@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2012-2024 SonarSource SA
+ * Copyright (C) 2012-2023 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,17 +17,47 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
+package checks;
 
-class ObjectFinalizeOverridenCheckTest {
-  @Test
-  void test() {
-    CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ObjectFinalizeOverridenCheck.java")
-      .withCheck(new ObjectFinalizeOverridenCheck())
-      .verifyIssues();
+class ObjectFinalizeOverriddenCheckSample {
+  class Foo {
+
+    @Override
+    protected void finalize() throws Throwable { // Noncompliant [[sc=20;ec=28]] {{Do not override the Object.finalize() method.}}
+    }
+
+    public void foo() { // Compliant
+    }
   }
+
+  class CompliantFoo {
+
+    @Override
+    protected final void finalize() throws Throwable { // Compliant
+    }
+
+    public void bar() { // Compliant
+    }
+  }
+
+  class NoncompliantFoo2 {
+    @Override
+    protected final void finalize() throws Throwable { // Noncompliant
+      doSomething();
+    }
+
+  }
+
+  class NoncompliantFoo3 {
+    @Override
+    protected void finalize() { // Noncompliant
+      doSomething();
+    }
+  }
+
+  private void doSomething() {
+    // does something
+  }
+
 }

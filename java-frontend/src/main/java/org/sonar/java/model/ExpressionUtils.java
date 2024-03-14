@@ -267,6 +267,26 @@ public final class ExpressionUtils {
     return null;
   }
 
+  public static boolean areVariablesSame(Tree tree1, Tree tree2, boolean defaultValue) {
+    Symbol symbol1 = getSymbol(tree1);
+    Symbol symbol2 = getSymbol(tree2);
+    if (symbol1 == null || symbol1.isUnknown() || symbol2 == null || symbol2.isUnknown()) {
+      return defaultValue;
+    }
+    return symbol1.name().equals(symbol2.name());
+  }
+
+  @CheckForNull
+  private static Symbol getSymbol(Tree tree) {
+    Symbol symbol = null;
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      symbol = ((IdentifierTree) tree).symbol();
+    } else if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+      symbol = ((MemberSelectExpressionTree) tree).identifier().symbol();
+    }
+    return symbol;
+  }
+
   @CheckForNull
   private static Object resolveUnaryExpression(UnaryExpressionTree unaryExpression) {
     Object value = resolveAsConstant(unaryExpression.expression());

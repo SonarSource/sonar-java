@@ -27,7 +27,7 @@ class InnerStaticClassesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/InnerStaticClassesCheck.java")
+      .onFile("src/test/files/checks/InnerStaticClassesCheckSample.java")
       .withCheck(new InnerStaticClassesCheck())
       .verifyIssues();
   }

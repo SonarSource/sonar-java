@@ -1,0 +1,48 @@
+<h2>Why is this an issue?</h2>
+<p>Java 21 introduces the new method <code>Math.clamp(value, min, max)</code> that fits a value within a specified interval. Before Java 21, this
+behavior required explicit calls to the <code>Math.min</code> and <code>Math.max</code> methods, as in <code>Math.min(max, Math.max(value,
+min))</code>.</p>
+<p>If <code>min &gt; max</code>, <code>Math.clamp</code> throws an <code>IllegalArgumentException</code>, indicating an invalid interval. This can
+occur if the <code>min</code> and <code>max</code> arguments are mistakenly reversed.</p>
+<p>Note that <code>Math.clamp</code> is not a general substitute for <code>Math.min</code> or <code>Math.max</code>, but for the combination of both.
+If <code>value</code> is the same as <code>min</code> or <code>max</code>, using <code>Math.clamp</code> is unnecessary and <code>Math.min</code> or
+<code>Math.max</code> should be used instead.</p>
+<h2>How to fix it</h2>
+<ul>
+  <li> If 2nd argument &gt; 3rd argument, use <code>Math.clamp(value, min, max)</code> instead of <code>Math.clamp(value, max, min)</code>. </li>
+  <li> If <code>value</code> is the same as <code>min</code>, fix the logic or use <code>Math.min(value, max)</code> instead. </li>
+  <li> If <code>value</code> is the same as <code>max</code>, fix the logic or use <code>Math.max(min, value)</code> instead. </li>
+  <li> If <code>min</code> is the same as <code>max</code>, fix the logic because <code>Math.clamp(value, x, x)</code> will always return
+  <code>x</code>. </li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+Math.clamp(red, 255, 0); // Noncompliant, [255,0] is not a valid range
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+Math.clamp(red, 0, 255); // Compliant
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+Math.clamp(red, red, 255); // Noncompliant, use Math.min(red, 255)
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+Math.min(red, 255); // Compliant
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+Math.clamp(red, 0, red); // Noncompliant, use Math.max(red, 0)
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+Math.max(red, 0); // Compliant
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li> Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#clamp(long,int,int)">Math.clamp</a> </li>
+</ul>
+

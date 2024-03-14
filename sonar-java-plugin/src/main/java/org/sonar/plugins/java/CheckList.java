@@ -229,6 +229,8 @@ import org.sonar.java.checks.LoopsOnSameSetCheck;
 import org.sonar.java.checks.MagicNumberCheck;
 import org.sonar.java.checks.MainMethodThrowsExceptionCheck;
 import org.sonar.java.checks.MapKeyNotComparableCheck;
+import org.sonar.java.checks.MathClampMethodsCheck;
+import org.sonar.java.checks.MathClampRangeCheck;
 import org.sonar.java.checks.MathOnFloatCheck;
 import org.sonar.java.checks.MembersDifferOnlyByCapitalizationCheck;
 import org.sonar.java.checks.MethodComplexityCheck;
@@ -270,8 +272,8 @@ import org.sonar.java.checks.OSCommandsPathCheck;
 import org.sonar.java.checks.ObjectCreatedOnlyToCallGetClassCheck;
 import org.sonar.java.checks.ObjectFinalizeCheck;
 import org.sonar.java.checks.ObjectFinalizeOverloadedCheck;
+import org.sonar.java.checks.ObjectFinalizeOverriddenCheck;
 import org.sonar.java.checks.ObjectFinalizeOverridenCallsSuperFinalizeCheck;
-import org.sonar.java.checks.ObjectFinalizeOverridenCheck;
 import org.sonar.java.checks.ObjectFinalizeOverridenNotPublicCheck;
 import org.sonar.java.checks.OctalValuesCheck;
 import org.sonar.java.checks.OmitPermittedTypesCheck;
@@ -345,6 +347,7 @@ import org.sonar.java.checks.SillyEqualsCheck;
 import org.sonar.java.checks.SillyStringOperationsCheck;
 import org.sonar.java.checks.SimpleClassNameCheck;
 import org.sonar.java.checks.SimpleStringLiteralForSingleLineStringsCheck;
+import org.sonar.java.checks.SingleIfInsteadOfPatternMatchGuardCheck;
 import org.sonar.java.checks.SpecializedFunctionalInterfacesCheck;
 import org.sonar.java.checks.StandardCharsetsConstantsCheck;
 import org.sonar.java.checks.StandardFunctionalInterfaceCheck;
@@ -361,6 +364,7 @@ import org.sonar.java.checks.StringBufferAndBuilderWithCharCheck;
 import org.sonar.java.checks.StringCallsBeyondBoundsCheck;
 import org.sonar.java.checks.StringConcatToTextBlockCheck;
 import org.sonar.java.checks.StringConcatenationInLoopCheck;
+import org.sonar.java.checks.StringIndexOfRangesCheck;
 import org.sonar.java.checks.StringLiteralDuplicatedCheck;
 import org.sonar.java.checks.StringLiteralInsideEqualsCheck;
 import org.sonar.java.checks.StringMethodsWithLocaleCheck;
@@ -940,6 +944,8 @@ public final class CheckList {
     LoopsOnSameSetCheck.class,
     MainMethodThrowsExceptionCheck.class,
     MapKeyNotComparableCheck.class,
+    MathClampMethodsCheck.class,
+    MathClampRangeCheck.class,
     MembersDifferOnlyByCapitalizationCheck.class,
     MethodComplexityCheck.class,
     MethodIdenticalImplementationsCheck.class,
@@ -978,7 +984,7 @@ public final class CheckList {
     ObjectFinalizeCheck.class,
     ObjectFinalizeOverloadedCheck.class,
     ObjectFinalizeOverridenCallsSuperFinalizeCheck.class,
-    ObjectFinalizeOverridenCheck.class,
+    ObjectFinalizeOverriddenCheck.class,
     ObjectFinalizeOverridenNotPublicCheck.class,
     OmitPermittedTypesCheck.class,
     OneClassInterfacePerFileCheck.class,
@@ -1047,6 +1053,7 @@ public final class CheckList {
     RightCurlyBraceSameLineAsNextBlockCheck.class,
     RightCurlyBraceStartLineCheck.class,
     RunFinalizersCheck.class,
+    SingleIfInsteadOfPatternMatchGuardCheck.class,
     SQLInjectionCheck.class,
     ScheduledThreadPoolExecutorZeroCheck.class,
     SecureCookieCheck.class,
@@ -1063,6 +1070,7 @@ public final class CheckList {
     ServletMethodsExceptionsThrownCheck.class,
     ShiftOnIntOrLongCheck.class,
     StatusCodesOnResponseCheck.class,
+    StringIndexOfRangesCheck.class,
     UnnecessaryBitOperationCheck.class,
     SillyEqualsCheck.class,
     SillyStringOperationsCheck.class,

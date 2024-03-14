@@ -2,13 +2,14 @@ package checks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CollectorsToList {
+public class CollectorsToListCheckSample {
   static class ListWrapper {
     List<String> strings;
   }
@@ -156,5 +157,29 @@ public class CollectorsToList {
     void addX() {
       add("X");
     }
+  }
+
+  Collection<CharSequence> upcast(Stream<String> stream) {
+    return stream.collect(Collectors.toList()); // Compliant
+  }
+
+  Collection<CharSequence> noUpcast(Stream<CharSequence> stream) {
+    return stream.collect(Collectors.toList()); // Noncompliant
+  }
+
+  Collection<CharSequence> upcastInlineStream() {
+    return Stream.of(1, 2)
+      .map(String::valueOf)
+      .collect(Collectors.toList()); // Compliant
+  }
+
+  Collection rawReceiver() {
+    return Stream.of(1, 2)
+      .map(String::valueOf)
+      .collect(Collectors.toList()); // Noncompliant
+  }
+
+  Object rawReceiverAndArgument(Stream stream) {
+    return stream.collect(Collectors.toList()); // Noncompliant
   }
 }

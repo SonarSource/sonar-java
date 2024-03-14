@@ -254,6 +254,11 @@ public class PrintfMisuseCheck {
     logger4.log(level, "message " + "...");
     logger4.log(level, "message " + param1, new Exception()); // Noncompliant {{Lambda should be used to defer string concatenation.}}
 
+    logger4.log(level, "Can't load library \"{0}\"!", "foo"); // Noncompliant {{Single quote "'" must be escaped.}}
+    logger4.log(level, "Can''t load library \"{0}\"!", "foo"); // Compliant, escaping the single quote with ''
+    logger4.log(level, "Can't load library \"\"!", new Throwable()); // Compliant, will print: Can't load library ""!
+    logger4.log(level, "Can't load library \"\"!"); // Compliant, will print: Can't load library ""!
+
     // slf4jLog ========================================================================================================
     // slf4jLog is a facade, various logging frameworks can be used under it. It implies that we will only report issues when
     // there are obvious mistakes, not when it depends on the underlying framework (even if it works correctly with the common one).

@@ -10,8 +10,16 @@ class and a nested one:</p>
   <li> an inner class can only be instantiated within the context of an instance of the outer class. </li>
   <li> a nested (<code>static</code>) class can be instantiated independently of the outer class. </li>
 </ul>
-<h3>Noncompliant code example</h3>
-<pre>
+<h2>How to fix it</h2>
+<p>There are two scenarios in which this rule will raise an issue:</p>
+<ol>
+  <li> On an <em>inner class</em>: make it <code>static</code>. </li>
+  <li> On a <em>local class</em>: extract it as a <code>static</code> <em>inner class</em>. </li>
+</ol>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>Inner classes that don’t use the outer class reference should be static.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class Fruit {
   // ...
 
@@ -26,8 +34,8 @@ public class Fruit {
   }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class Fruit {
   // ...
 
@@ -42,4 +50,62 @@ public class Fruit {
   }
 }
 </pre>
+<p>Local classes that don’t use the outer class reference should be extracted as a static inner classes.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+public class Foo {
+  public Foo() {
+    class Bar { // Noncompliant
+      void doSomething() {
+        // ...
+      }
+    }
+    new Bar().doSomething();
+  }
+
+  public void method() {
+    class Baz { // Noncompliant
+      void doSomething() {
+        // ...
+      }
+    }
+    new Baz().doSomething();
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+public class Foo {
+  public Foo() {
+    new Bar().doSomething();
+  }
+
+  public void method()  {
+    new Baz().doSomething();
+  }
+
+  private static class Bar { // Compliant
+    void doSomething() {
+      // ...
+    }
+  }
+
+  private static class Baz { // Compliant
+    void doSomething() {
+      // ...
+    }
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html">Oracle Java SE - Nested Classes</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/localclasses.html">Oracle Java SE - Local Classes</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> <a href="https://www.geeksforgeeks.org/difference-between-static-and-non-static-nested-class-in-java/">GeeksforGeeks - Difference between
+  static and non-static nested class in Java</a> </li>
+</ul>
 

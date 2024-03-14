@@ -1,0 +1,22 @@
+<h2>Why is this an issue?</h2>
+<p>In Java 21 the <code>java.lang.Math</code> class was updated with the static method <code>Math.clamp</code>, to clamp a numerical value between a
+min and a max value.</p>
+<p>Using this built-in method is now the preferred way to restrict to a given interval, as it is more readable and less error-prone.</p>
+<h2>How to fix it</h2>
+<p>Replace your clamp method implementation with the <code>Math.clamp</code> method.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+int clampedValue = value &gt; max ? max : value &lt; min ? min : value; // Noncompliant; Replace with "Math.clamp"
+</pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+int clampedValue = Math.max(min, Math.min(max, value)); // Noncompliant; Replace with "Math.clamp"
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+int clampedValue = Math.clamp(value, min, max);
+</pre>
+<pre data-diff-id="2" data-diff-type="compliant">
+int clampedValue = Math.clamp(value, min, max);
+</pre>
+
