@@ -19,18 +19,22 @@
  */
 package org.sonar.java.checks;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.*;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypePatternTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 
 @Rule(key = "S6878")
@@ -85,7 +89,7 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
         return;
       }
     }
-    // if all the records components are used we report an issue
+    // only if all the records components are used we report an issue
     if (secondaryLocationsTrees.size() == comps.size()) {
       reportIssue(patternVariable, "Use the record pattern instead of this pattern match variable.",
         getSecondaryLocations(secondaryLocationsTrees), null);
