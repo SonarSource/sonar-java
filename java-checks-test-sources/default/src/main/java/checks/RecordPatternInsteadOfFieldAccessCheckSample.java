@@ -4,6 +4,13 @@ import java.util.Objects;
 
 public class RecordPatternInsteadOfFieldAccessCheckSample {
 
+  int sameComponentAccessTwice(Object obj){
+    if (obj instanceof Point p) { // Compliant; not all record components are used
+      return p.x() + p.x();
+    }
+    return 0;
+  }
+
   int nonCompliant(Object obj) {
     if (obj instanceof Point p) { // Noncompliant [[sc=24;ec=31;secondary=+1,+2]] {{Use the record pattern instead of this pattern match variable.}}
       int x = p.x();

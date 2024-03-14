@@ -65,11 +65,11 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
   }
 
   private void checkCaseLabel(CaseLabelTree caseLabel) {
-    var typePattern = getTypePatternFromCaseGroup(caseLabel);
+    var typePattern = getRecordTypePatternFromCaseGroup(caseLabel);
     typePattern.ifPresent(typePatternTree -> checkTypePatternVariableUsage(typePatternTree.patternVariable()));
   }
 
-  private static Optional<TypePatternTree> getTypePatternFromCaseGroup(CaseLabelTree caseLabel) {
+  private static Optional<TypePatternTree> getRecordTypePatternFromCaseGroup(CaseLabelTree caseLabel) {
     if (caseLabel.expressions().size() == 1
       && caseLabel.expressions().get(0) instanceof TypePatternTree typePattern
       && isRecordPattern(typePattern)) {
@@ -79,9 +79,9 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
   }
 
   private void checkTypePatternVariableUsage(VariableTree patternVariable) {
-    var secondaryLocationsTrees = new HashSet<Tree>();
+    var secondaryLocationsTrees = new HashSet<MemberSelectExpressionTree>();
     var type = patternVariable.symbol().type().symbol();
-    var comps = recordComponents(type);
+    var comps = recordComponentNames(type);
     for (Tree usage : patternVariable.symbol().usages()) {
       if (usage.parent() instanceof MemberSelectExpressionTree mse && isNotRecordGetter(mse)) {
         secondaryLocationsTrees.add(mse);
@@ -90,7 +90,7 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
       }
     }
     // only if all the records components are used we report an issue
-    if (secondaryLocationsTrees.size() == comps.size()) {
+    if (secondaryLocationsTrees.stream().map(mse -> mse.identifier().name()).toList().containsAll(comps)) {
       reportIssue(patternVariable, "Use the record pattern instead of this pattern match variable.",
         getSecondaryLocations(secondaryLocationsTrees), null);
     }
@@ -100,7 +100,7 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
     return !ALLOWED_METHODS.contains(mse.identifier().name());
   }
 
-  private static List<JavaFileScannerContext.Location> getSecondaryLocations(Set<Tree> secondaryLocationsTrees) {
+  private static List<JavaFileScannerContext.Location> getSecondaryLocations(Set<MemberSelectExpressionTree> secondaryLocationsTrees) {
     return secondaryLocationsTrees.stream()
       .map(tree ->
         new JavaFileScannerContext.Location("Replace this getter with the respective record pattern component", tree))
@@ -111,12 +111,13 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
     return typePattern.patternVariable().type().symbolType().isSubtypeOf("java.lang.Record");
   }
 
-  private static List<Symbol.VariableSymbol> recordComponents(Symbol.TypeSymbol recordSymbol) {
+  private static List<String> recordComponentNames(Symbol.TypeSymbol recordSymbol) {
     return recordSymbol
       .memberSymbols()
       .stream()
       .filter(Symbol::isVariableSymbol)
       .map(Symbol.VariableSymbol.class::cast)
+      .map(Symbol.VariableSymbol::name)
       .toList();
   }
 
