@@ -231,10 +231,6 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
         && (m.returnType().type().erasure() == leastSpecificM.returnType().type().erasure())
         && ConfusingOverloadCheck.isPotentialOverride(m, leastSpecificM);
     }
-
-    private static boolean isGenericReturnType(Symbol.MethodSymbol m) {
-      return m.returnType().type().isTypeVar() || m.returnType().type().typeArguments().stream().anyMatch(Type::isTypeVar);
-    }
   }
 
   private static boolean isMethodInvocationOnParameter(Symbol parameter, MethodInvocationTree mit) {
