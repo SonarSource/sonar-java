@@ -1,11 +1,14 @@
 package checks;
 
+import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import javax.annotation.Resource;
@@ -311,13 +314,17 @@ class LeastSpecificTypeCheck {
   }
 
   interface A1 {
-    default void a(){}
+    default void a() {
+    }
   }
   interface A2 {
-    default void a(String a){}
+    default void a(String a) {
+    }
   }
   interface A3 {
-    default int a(String a, String b){ return 0;}
+    default int a(String a, String b) {
+      return 0;
+    }
   }
 
   public static class OverloadedA1A2 implements A1, A2 {
@@ -331,5 +338,44 @@ class LeastSpecificTypeCheck {
     a.a();
     a.a("a");
     return a;
+  }
+
+  public interface AX {
+    <T> Optional<T> getOptional();
+
+    <T extends AX> T getT();
+  }
+
+  public interface BX extends AX {
+    <K, V> Map<K, V> getMap();
+
+    List<AX> getAXs();
+  }
+
+  public interface CX extends BX {
+  }
+
+  public void testGetOptional(CX cx) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheck.AX' here; it is a more general type than 'CX'.}}
+    cx.getOptional();
+  }
+
+  public void testGetMap(CX cx) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheck.BX' here; it is a more general type than 'CX'.}}
+    cx.getMap();
+  }
+
+  public void testGetAXs(CX cx) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheck.BX' here; it is a more general type than 'CX'.}}
+    cx.getAXs();
+  }
+
+  public void testGetT(CX cx) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheck.AX' here; it is a more general type than 'CX'.}}
+    cx.getT();
+  }
+
+  public void paramsErrorMessage(Class clazz) { // Noncompliant {{Use 'java.lang.reflect.AnnotatedElement' here; it is a more general type than 'Class'.}}
+    clazz.getAnnotation(Resource.class);
+  }
+  public static void testConstructor(Constructor constructor) { // Noncompliant {{Use 'java.lang.reflect.Executable' here; it is a more general type than 'Constructor'.}}
+    constructor.getName();
+    Class[] parameterTypes = constructor.getParameterTypes();
   }
 }

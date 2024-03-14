@@ -226,10 +226,14 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       return longestChain.get(0);
     }
 
-    private static boolean isOverridingWithSameReturnType(Symbol.MethodSymbol m1, Symbol.MethodSymbol m2) {
-      return m1.name().equals(m2.name())
-        && m1.returnType() == m2.returnType()
-        && ConfusingOverloadCheck.isPotentialOverride(m1, m2);
+    private static boolean isOverridingWithSameReturnType(Symbol.MethodSymbol m, Symbol.MethodSymbol leastSpecificM) {
+      return m.name().equals(leastSpecificM.name())
+        && (m.returnType().type().erasure() == leastSpecificM.returnType().type().erasure())
+        && ConfusingOverloadCheck.isPotentialOverride(m, leastSpecificM);
+    }
+
+    private static boolean isGenericReturnType(Symbol.MethodSymbol m) {
+      return m.returnType().type().isTypeVar() || m.returnType().type().typeArguments().stream().anyMatch(Type::isTypeVar);
     }
   }
 
