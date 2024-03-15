@@ -34,6 +34,13 @@ class LeastSpecificTypeCheckTest {
       .withCheck(new LeastSpecificTypeCheck())
       .verifyIssues();
   }
+  @Test
+  void test_with_generics() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/LeastSpecificTypeCheckGenericsSample.java"))
+      .withCheck(new LeastSpecificTypeCheck())
+      .verifyIssues();
+  }
 
   @Test
   void test_non_compiling() {

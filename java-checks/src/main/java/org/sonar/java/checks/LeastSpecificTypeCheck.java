@@ -192,6 +192,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
         .stream()
         .filter(Symbol::isMethodSymbol)
         .map(Symbol.MethodSymbol.class::cast)
+        .filter(memberMethodSymbol -> memberMethodSymbol.name().equals(methodSymbol.name()))
         .anyMatch(memberMethodSymbol -> isOverridingWithSameReturnType(methodSymbol, memberMethodSymbol));
     }
 
@@ -227,9 +228,16 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     }
 
     private static boolean isOverridingWithSameReturnType(Symbol.MethodSymbol m, Symbol.MethodSymbol leastSpecificM) {
-      return m.name().equals(leastSpecificM.name())
-        && (m.returnType().type().erasure() == leastSpecificM.returnType().type().erasure())
+      return (m.returnType().type() == leastSpecificM.returnType().type() || isGenericReturnType(leastSpecificM))
         && ConfusingOverloadCheck.isPotentialOverride(m, leastSpecificM);
+    }
+
+    private static boolean isGenericReturnType(Symbol.MethodSymbol leastSpecificM) {
+      return isGenericType(leastSpecificM.returnType().type());
+    }
+
+    private static boolean isGenericType(Type type) {
+      return type.isTypeVar() || (type.isParameterized() && type.typeArguments().stream().allMatch(InheritanceGraph::isGenericType));
     }
   }
 
