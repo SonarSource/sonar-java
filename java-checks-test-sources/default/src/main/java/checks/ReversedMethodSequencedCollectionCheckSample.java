@@ -6,8 +6,8 @@ import java.util.ListIterator;
 public class ReversedMethodSequencedCollectionCheckSample {
 
   void printLastToFirst(List<String> list, ListIterator<String> listIterator) {
-    for (var it = list.listIterator(list.size()); it.hasPrevious(); ) { // Noncompliant {{Use the "reversed()" method instead of manually
-      // iterating the list in reverse.}}
+    for (var it = list.listIterator(list.size()); it.hasPrevious(); ) { // Noncompliant[[sc=5;ec=8]] {{Use the "reversed()" method
+      // instead of manually iterating the list in reverse.}}
       var element = it.previous();
     }
 
@@ -64,6 +64,14 @@ public class ReversedMethodSequencedCollectionCheckSample {
 
     for (var it = list.listIterator(5); it.hasPrevious(); ) { // Compliant - coverage
       var element = it.previous();
+    }
+
+    for (var it = list.listIterator(list.size()); it.hasPrevious(); ) { // Noncompliant
+    }
+
+    for (var it = list.listIterator(list.size()); it.hasPrevious(); ) { // Noncompliant - FP it.previous() is called more than once
+      it.previous();
+      it.previous();
     }
 
     for (var it = list.listIterator(list.size()); ; ) { // Compliant

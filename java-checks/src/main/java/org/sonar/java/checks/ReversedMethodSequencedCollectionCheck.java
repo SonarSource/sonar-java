@@ -69,37 +69,31 @@ public class ReversedMethodSequencedCollectionCheck extends IssuableSubscription
   public void visitNode(Tree tree) {
     var forStatement = (ForStatementTree) tree;
 
-    ListTree<StatementTree> initializerStatments = forStatement.initializer();
-    if (initializerStatments.size() != 1) {
+    ListTree<StatementTree> initializerStatements = forStatement.initializer();
+    if (initializerStatements.size() != 1) {
       return;
     }
-    var initializer = initializerStatments.get(0);
-    boolean initializerOk = isInitializerOk(initializer);
-
+    var initializer = initializerStatements.get(0);
     var condition = forStatement.condition();
     if (condition == null) {
       return;
     }
-    boolean conditionOk = isConditionOk(condition);
 
-    if (initializerOk && conditionOk) {
-      reportIssue(forStatement, ISSUE_MESSAGE);
+    if (isInitializerListIteratorFromLast(initializer) && isConditionHasPrevious(condition)) {
+      reportIssue(forStatement.forKeyword(), ISSUE_MESSAGE);
     }
   }
 
-  private static boolean isInitializerOk(Tree initializer) {
-    if (initializer.is(Tree.Kind.VARIABLE)) {
-      var variableInitializer = ((VariableTree) initializer).initializer();
-      if (variableInitializer != null && variableInitializer.is(Tree.Kind.METHOD_INVOCATION) && LIST_ITERATOR_MATCHER.matches((MethodInvocationTree) variableInitializer)) {
-        var arg = ((MethodInvocationTree) variableInitializer).arguments().get(0);
-        return arg.is(Tree.Kind.METHOD_INVOCATION) && LIST_SIZE_MATCHER.matches((MethodInvocationTree) arg);
-      }
-    }
-    return false;
+  private static boolean isInitializerListIteratorFromLast(Tree initializer) {
+    return initializer instanceof VariableTree variable
+      && variable.initializer() instanceof MethodInvocationTree variableInitializer
+      && LIST_ITERATOR_MATCHER.matches(variableInitializer)
+      && variableInitializer.arguments().get(0) instanceof MethodInvocationTree arg
+      && LIST_SIZE_MATCHER.matches(arg);
   }
 
-  private static boolean isConditionOk(Tree condition) {
-    return condition.is(Tree.Kind.METHOD_INVOCATION) && LIST_HAS_PREVIOUS_MATCHER.matches((MethodInvocationTree) condition);
+  private static boolean isConditionHasPrevious(Tree condition) {
+    return condition instanceof MethodInvocationTree invocation && LIST_HAS_PREVIOUS_MATCHER.matches(invocation);
   }
 
 }
