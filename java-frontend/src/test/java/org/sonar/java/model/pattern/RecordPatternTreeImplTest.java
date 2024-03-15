@@ -50,13 +50,15 @@ class RecordPatternTreeImplTest {
     var method = ((MethodTree) clazz.members().get(1));
     var switchh = (SwitchStatementTree) method.block().body().get(0);
     var caze = switchh.cases().get(0);
-    var pattern = caze.labels().get(0).expressions().get(0);
+    var pattern = (RecordPatternTreeImpl) caze.labels().get(0).expressions().get(0);
     var firstToken = pattern.firstToken();
     var lastToken = pattern.lastToken();
     var start = firstToken.range().start();
     var end = lastToken.range().start();
     assertEquals("Bar", firstToken.text());
     assertEquals(")", lastToken.text());
+    assertEquals(firstToken.range().end(), pattern.openParenToken().range().start());
+    assertEquals(lastToken, pattern.closeParenToken());
     assertEquals(new InternalPosition(7, 12), start);
     assertEquals(new InternalPosition(7, 28), end);
   }
