@@ -36,7 +36,12 @@ import org.sonar.java.annotations.Beta;
  */
 @Beta
 public interface RecordPatternTree extends PatternTree {
+
   TypeTree type();
 
+  SyntaxToken openParenToken();
+
   List<PatternTree> patterns();
+
+  SyntaxToken closeParenToken();
 }
