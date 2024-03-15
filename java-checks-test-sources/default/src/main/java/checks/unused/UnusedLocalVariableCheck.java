@@ -193,4 +193,41 @@ class UnusedLocalVariableCheck {
       System.out.println(new Bar(42).used);
     }
   }
+
+  sealed interface Shape permits Box, Circle {}
+  record Box() implements Shape { }
+  record Circle() implements Shape {}
+
+  static void switchOnSealedClass(Shape shape) {
+    switch (shape) {
+      case Box unused -> { } // compliant
+      case Circle circle -> circle.toString();
+    }
+  }
+
+  static void switchWithTypePattern(Object o) {
+    switch (o) {
+      case Number used -> used.longValue();
+      case Shape unused -> { } // compliant
+      default -> System.out.println();
+    }
+  }
+
+  record MyRecord(int x, int y) { }
+
+  static void switchRecordGuardedPattern(Object o) {
+    switch(o) {
+      case MyRecord(int x, int y) when x > 42 -> { } // Compliant
+      case MyRecord(int x, int y) when y < 42 -> { } // Compliant
+      case MyRecord m when m.x > 42 -> { }
+      case MyRecord m when o.toString().length() > 42 -> { } // Compliant
+      case MyRecord(int x, int y) -> { } // Compliant
+      case MyRecord m -> { } // Compliant
+      case Object object -> {
+        object.toString();
+        var x = 42; // Noncompliant
+        System.out.println();
+      }
+    }
+  }
 }

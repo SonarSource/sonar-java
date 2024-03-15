@@ -21,8 +21,10 @@ package org.sonar.java.checks.unused;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
@@ -32,6 +34,7 @@ import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -50,7 +53,8 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Remove this unused \"%s\" local variable.";
 
-  private static final UnresolvedIdentifiersVisitor UNRESOLVED_IDENTIFIERS_VISITOR = new UnresolvedIdentifiersVisitor();
+  private static final UnresolvedIdentifiersAndSwitchCaseVisitor UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR =
+    new UnresolvedIdentifiersAndSwitchCaseVisitor();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -60,7 +64,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      UNRESOLVED_IDENTIFIERS_VISITOR.check(tree);
+      UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.check(tree);
     }
   }
 
@@ -69,7 +73,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.VARIABLE)) {
       VariableTree variable = (VariableTree) tree;
       String name = variable.simpleName().name();
-      boolean unresolved = UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(name);
+      boolean unresolved = UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.isUnresolved(name);
       if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol())) {
         QuickFixHelper.newIssue(context)
           .forRule(this)
@@ -111,7 +115,8 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     return symbol.isLocalVariable()
       && !symbol.isParameter()
       && !isDefinedInCatchClause(variable)
-      && !isTryResource(variable);
+      && !isTryResource(variable)
+      && !UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.isSwitchPatternVariable(variable);
   }
 
   private static boolean isDefinedInCatchClause(VariableTree variable) {
@@ -171,5 +176,36 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
 
   private static Optional<SyntaxToken> getPrecedingComma(VariableTree variable) {
     return QuickFixHelper.previousVariable(variable).map(VariableTree::lastToken);
+  }
+
+  private static class UnresolvedIdentifiersAndSwitchCaseVisitor extends UnresolvedIdentifiersVisitor {
+    private final Set<VariableTree> switchPatternVariables = new HashSet<>();
+    private boolean withinCaseLabel = false;
+
+    @Override
+    public Set<String> check(Tree tree) {
+      switchPatternVariables.clear();
+      withinCaseLabel = false;
+      return super.check(tree);
+    }
+
+    public boolean isSwitchPatternVariable(VariableTree variable) {
+      return switchPatternVariables.contains(variable);
+    }
+
+    @Override
+    public void visitCaseLabel(CaseLabelTree tree) {
+      withinCaseLabel = true;
+      super.visitCaseLabel(tree);
+      withinCaseLabel = false;
+    }
+
+    @Override
+    public void visitVariable(VariableTree tree) {
+      if (withinCaseLabel) {
+        switchPatternVariables.add(tree);
+      }
+      super.visitVariable(tree);
+    }
   }
 }
