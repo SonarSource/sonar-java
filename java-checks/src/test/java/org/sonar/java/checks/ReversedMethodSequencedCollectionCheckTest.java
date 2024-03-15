@@ -23,13 +23,13 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
-class ReversedSequencedCollectionCheckTest {
+class ReversedMethodSequencedCollectionCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/ReversedSequencedCollectionCheckSample.java"))
-      .withCheck(new ReversedSequencedCollectionCheck())
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ReversedMethodSequencedCollectionCheckSample.java"))
+      .withCheck(new ReversedMethodSequencedCollectionCheck())
       .withJavaVersion(21)
       .verifyIssues();
   }
@@ -37,8 +37,8 @@ class ReversedSequencedCollectionCheckTest {
   @Test
   void test_before_21() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/ReversedSequencedCollectionCheckSample.java"))
-      .withCheck(new ReversedSequencedCollectionCheck())
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ReversedMethodSequencedCollectionCheckSample.java"))
+      .withCheck(new ReversedMethodSequencedCollectionCheck())
       .withJavaVersion(20)
       .verifyNoIssues();
   }
