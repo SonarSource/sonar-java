@@ -11,6 +11,20 @@ public class RecordPatternInsteadOfFieldAccessCheckSample {
     return 0;
   }
 
+  int notAComponentAccessTwice(Object obj){
+    if (obj instanceof Point p) { // Compliant; not all record components are used
+      return p.x() + p.notAComponent();
+    }
+    return 0;
+  }
+
+  int allComponentsPlusAMethod(Object obj){
+    if (obj instanceof Point p) { // Noncompliant
+      return p.x() + p.y() + p.notAComponent();
+    }
+    return 0;
+  }
+
   int nonCompliant(Object obj) {
     if (obj instanceof Point p) { // Noncompliant [[sc=24;ec=31;secondary=+1,+2]] {{Use the record pattern instead of this pattern match variable.}}
       int x = p.x();
@@ -107,6 +121,9 @@ public class RecordPatternInsteadOfFieldAccessCheckSample {
   }
 
   record Point(int x, int y) {
+    public int notAComponent() {
+      return 0;
+    }
   }
 
   record Line(Point start, Point end) {
