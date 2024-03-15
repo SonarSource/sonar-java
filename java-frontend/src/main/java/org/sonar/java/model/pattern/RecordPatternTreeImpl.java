@@ -23,6 +23,7 @@ import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -62,7 +63,7 @@ public class RecordPatternTreeImpl extends AbstractPatternTree implements Record
   }
 
   @Override
-  public InternalSyntaxToken openParenToken(){
+  public SyntaxToken openParenToken(){
     return openParenToken;
   }
 
@@ -72,7 +73,7 @@ public class RecordPatternTreeImpl extends AbstractPatternTree implements Record
   }
 
   @Override
-  public InternalSyntaxToken closeParenToken(){
+  public SyntaxToken closeParenToken(){
     return closeParenToken;
   }
 

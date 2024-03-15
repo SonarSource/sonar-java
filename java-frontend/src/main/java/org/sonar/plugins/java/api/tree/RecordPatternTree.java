@@ -21,7 +21,6 @@ package org.sonar.plugins.java.api.tree;
 
 import java.util.List;
 import org.sonar.java.annotations.Beta;
-import org.sonar.java.model.InternalSyntaxToken;
 
 /**
  * Record pattern tree.
@@ -40,9 +39,9 @@ public interface RecordPatternTree extends PatternTree {
 
   TypeTree type();
 
-  InternalSyntaxToken openParenToken();
+  SyntaxToken openParenToken();
 
   List<PatternTree> patterns();
 
-  InternalSyntaxToken closeParenToken();
+  SyntaxToken closeParenToken();
 }
