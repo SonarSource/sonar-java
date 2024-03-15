@@ -66,6 +66,9 @@ public class VirtualThreadNotSynchronizedCheckSample {
   }
 
   private void methodInvokingSynchronizedBlockL2() {
+    // recursive calls must not break analysis
+    methodInvokingSynchronizedBlockL4();
+    // actual call of a method with synchronized block
     methodWithSynchronizedBlock();
   }
 
