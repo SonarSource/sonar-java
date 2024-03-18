@@ -20,34 +20,34 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(key = "S1301")
-public class SwitchAtLeastThreeCasesCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
 
   private JavaFileScannerContext context;
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return List.of(Tree.Kind.SWITCH_STATEMENT);
   }
 
   @Override
-  public void visitSwitchStatement(SwitchStatementTree tree) {
+  public void visitNode(Tree tree) {
+    SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
     int count = 0;
-    for (CaseGroupTree caseGroup : tree.cases()) {
+    for (CaseGroupTree caseGroup : switchStatementTree.cases()) {
       count += caseGroup.labels().size();
     }
     if (count < 3) {
-      context.reportIssue(this, tree.switchKeyword(), "Replace this \"switch\" statement by \"if\" statements to increase readability.");
+      reportIssue(switchStatementTree.switchKeyword(), "Replace this \"switch\" statement by \"if\" statements to increase readability.");
     }
-
-    super.visitSwitchStatement(tree);
   }
 
 }
