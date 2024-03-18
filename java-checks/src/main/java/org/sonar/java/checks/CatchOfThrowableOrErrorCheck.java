@@ -52,6 +52,7 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     TryStatementTree tryStatement = (TryStatementTree) tree;
+    tryBlockVisitor.reset();
     tryStatement.block().accept(tryBlockVisitor);
     if (tryBlockVisitor.containsExplicitThrowable || tryBlockVisitor.containsUnresolvableCall) {
       return;
@@ -127,6 +128,11 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
   private static class TryBlockVisitor extends BaseTreeVisitor {
     private boolean containsExplicitThrowable;
     private boolean containsUnresolvableCall;
+
+    public void reset() {
+      containsUnresolvableCall = false;
+      containsExplicitThrowable = false;
+    }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
