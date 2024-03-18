@@ -1,9 +1,8 @@
 package checks;
 
-import java.util.Objects;
-
 public class PatternMatchUsingIfCheckSample {
 
+  private static final Const ZERO = new Const(0);
 
   sealed interface Expr permits Plus, Minus, Const {
   }
@@ -17,208 +16,100 @@ public class PatternMatchUsingIfCheckSample {
   record Const(int value) implements Expr {
   }
 
+  int goodCompute1(Expr expr) {
+    switch (expr) {
+      case Plus plus when plus.rhs.equals(ZERO) -> {
+        return goodCompute1(plus.lhs);
+      }
+      case Plus plus -> {
+        return goodCompute1(plus.lhs) + goodCompute1(plus.rhs);
+      }
+      case Minus(var l, Expr r) when r.equals(ZERO) -> {
+        return goodCompute1(l);
+      }
+      case Minus(var l, Expr r) -> {
+        return goodCompute1(l) - goodCompute1(r);
+      }
+      case Const(var i) -> {
+        return i;
+      }
+    }
+  }
 
-  // fix@qf1 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf1 [[sl=+0;el=+9;sc=5;ec=6]] {{switch (expr) {\n      case Plus plus -> {\n        return badCompute1(plus.lhs) + badCompute1(plus.rhs);\n      }\n      case Minus(var l, Expr r) -> {\n        return badCompute1(l) - badCompute1(r);\n      }\n      case Const ignored -> {\n        return ((Const) expr).value;\n      }\n      default -> {\n        throw new AssertionError();\n      }\n    }}}
-  static int badCompute1(Expr expr) {
-    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf1]]
-    if (expr instanceof Plus plus) {
-      return badCompute1(plus.lhs) + badCompute1(plus.rhs);
-    } else if (expr instanceof Minus(var l, Expr r)) {
-      return badCompute1(l) - badCompute1(r);
-    } else if (expr instanceof Const) {
-      return ((Const) expr).value;
+  int goodCompute2() {
+    if (mkExpr() instanceof Plus plus && plus.rhs.equals(ZERO)) {
+      return goodCompute1(plus.lhs);
+    } else if (mkExpr() instanceof Plus plus) {
+      return goodCompute1(plus.lhs) + goodCompute1(plus.rhs);
+    } else if (mkExpr() instanceof Minus(var l, Expr r) && r.equals(ZERO)) {
+      return goodCompute1(l);
+    } else if (mkExpr() instanceof Minus(var l, Expr r)) {
+      return goodCompute1(l) - goodCompute1(r);
+    } else if (mkExpr() instanceof Const(var i)) {
+      return i;
     } else {
       throw new AssertionError();
     }
   }
 
-  // fix@qf2 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf2 [[sl=+0;el=+11;sc=5;ec=6]] {{switch (expr) {\n      case Plus plus when plus.lhs instanceof Const(var z) && z == 0 -> {\n            return badCompute1(plus.lhs) + badCompute1(plus.rhs);\n      }\n      case Plus plus -> {\n            return badCompute1(plus.lhs) + badCompute1(plus.rhs);\n      }\n      case Minus(var l, Expr r) -> {\n            return badCompute1(l) - badCompute1(r);\n      }\n      case Const ignored -> {\n            return ((Const) expr).value;\n      }\n      default -> {\n            throw new AssertionError();\n      }\n}}}
-  static int badCompute2(Expr expr) {
-    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf2]] {{Replace the chain of if/else with a switch expression.}}
-    if (expr instanceof Plus plus && plus.lhs instanceof Const(var z) && z == 0){
-      return badCompute2(plus.rhs);
+  // $fix@qf1 {{Replace the chain of if/else with a switch expression.}}
+  int badCompute(Expr expr) {
+    // $Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf1]]
+    if (expr instanceof Plus plus && plus.rhs.equals(ZERO)) { // Noncompliant
+      return badCompute(plus.lhs);
     } else if (expr instanceof Plus plus) {
-      return badCompute2(plus.lhs) + badCompute2(plus.rhs);
+      return badCompute(plus.lhs) + badCompute(plus.rhs);
+    } else if (expr instanceof Minus(var l, Expr r) && r.equals(ZERO)) {
+      return badCompute(l);
     } else if (expr instanceof Minus(var l, Expr r)) {
-      return badCompute2(l) - badCompute2(r);
-    } else if (expr instanceof Const) {
-      return ((Const) expr).value;
+      return badCompute(l) - badCompute(r);
+    } else if (expr instanceof Const(var i)) {
+      return i;
     } else {
       throw new AssertionError();
     }
   }
 
-  static int goodCompute1(Expr expr) {
-    return switch (expr) {
-      case Plus(var l, var r) -> goodCompute1(l) + goodCompute1(r);
-      case Minus(Expr l, var r) -> goodCompute1(l) - goodCompute1(r);
-      case Const(int v) -> v;
-    };
+  private static Expr mkExpr() {
+    return new Plus(new Const(10), new Minus(new Const(12), new Const(25)));
   }
 
-  static int goodCompute2(Expr expr){
-    if (expr.equals(new Const(0))){
-      return 0;
-    } else if (expr instanceof Plus plus) {
-      return badCompute1(plus.lhs) + badCompute1(plus.rhs);
-    } else if (expr instanceof Minus(var l, Expr r)) {
-      return badCompute1(l) - badCompute1(r);
-    } else if (expr instanceof Const) {
-      return ((Const) expr).value;
+  String badFoo(int x) {
+    if (x == 0 || x == 1) {  // Noncompliant
+      return "binary";
+    } else if (x == -1) {
+      return "negative";
     } else {
-      throw new AssertionError();
+      return "I don't know!";
     }
   }
 
-  static int goodCompute3(Expr expr){
-    if (expr instanceof Plus plus) {
-      return badCompute1(plus.lhs) + badCompute1(plus.rhs);
-    } else if (expr instanceof Minus(var l, Expr r)) {
-      return badCompute1(l) - badCompute1(r);
-    } else if (expr.equals(new Const(0))){
-      return 0;
-    } else if (expr instanceof Const) {
-      return ((Const) expr).value;
+  String goodFoo(int x) {
+    switch (x) {
+      case 0, 1 -> {
+        return "binary";
+      }
+      case -1 -> {
+        return "negative";
+      }
+      default -> {
+        return "I don't know!";
+      }
+    }
+  }
+
+  enum Bar {
+    B1, B2, B3, B4, B5
+  }
+
+  String badBar(Bar b) {
+    if (b == Bar.B1) {  // Noncompliant
+      return "b1";
+    } else if (b == Bar.B2 || b == Bar.B3 || b == Bar.B4) {
+      return "b234";
     } else {
-      throw new AssertionError();
+      return "b5";
     }
-  }
-
-  static abstract class Animal {
-    private String name = "?";
-  }
-
-  static abstract class WalkingAnimal extends Animal {
-    void walk(){}
-  }
-
-  class Dog extends WalkingAnimal {
-    void bark() {
-      System.out.println("Wouf");
-    }
-  }
-
-  static class Cat extends WalkingAnimal {
-  }
-
-  class Snake extends Animal {
-  }
-
-  // fix@qf3 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf3 [[sl=+0;el=+9;sc=5;ec=6]] {{switch (animal){\n      case Dog dog -> {\n        dog.bark();\n      }\n      case Cat ignored -> {\n        System.out.println("Meow");\n      }\n      case Snake ignored -> {\n        System.out.println("Ssssssssss");\n      }\n      default -> {\n        System.out.println("Unknown sound");\n      }\n    }}}
-  static void badSound1(Animal animal) {
-    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf3]]
-    if (animal instanceof Dog dog) {
-      dog.bark();
-    } else if (animal instanceof Cat) {
-      System.out.println("Meow");
-    } else if (animal instanceof Snake) {
-      System.out.println("Ssssssssss");
-    } else {
-      System.out.println("Unknown sound");
-    }
-  }
-
-  static void badSound2(Animal animal) {
-    if (animal instanceof Dog) { // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
-      System.out.println("Wouf");
-    } else if (animal instanceof Cat) {
-      System.out.println("Meow");
-    } else if (animal instanceof Snake) {
-      System.out.println("Ssssssssss");
-    } else {
-      System.out.println("Unknown sound");
-    }
-  }
-
-  static void badSound3(Animal animal) {
-    if (animal instanceof Dog && !Objects.equals(animal.name, "?") && animal.name.length() < 10) { // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
-      System.out.println("Wouf");
-    } else if (animal instanceof Cat) {
-      System.out.println("Meow");
-    } else if (animal instanceof Snake) {
-      System.out.println("Ssssssssss");
-    } else {
-      System.out.println("Unknown sound");
-    }
-  }
-
-  static void goodSound1(Animal animal) {
-    switch (animal) {
-      case Dog dog -> dog.bark();
-      case Cat ignored -> System.out.println("Meow");
-      case Snake ignored -> System.out.println("Ssssssssss");
-      default -> System.out.println("Unknown sound");
-    }
-  }
-
-  static void goodSound2(Animal animal){
-    if (animal instanceof Dog dog){
-      dog.bark();
-    } else {
-      System.out.println("Unknown sound");
-    }
-  }
-
-  static void goodSound3(){ // Compliant because we are not sure that getAnimal always returns the same specie
-    if (getAnimal() instanceof Dog dog){
-      dog.bark();
-    } else if (getAnimal() instanceof Cat){
-      System.out.println("Meow");
-    } else if (getAnimal() instanceof Snake){
-      System.out.println("Ssssssssss");
-    } else {
-      System.out.println("Unknown sound");
-    }
-  }
-
-  static void badSoundMin(Animal animal){
-    if (animal instanceof Dog dog){ // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
-      dog.bark();
-    } else if (animal instanceof Cat){
-      System.out.println("Meow");
-    } else {
-      System.out.println("Unknown sound");
-    }
-  }
-
-  static void goodSound2Args(Animal animal1, Animal animal2) {
-    if (animal1 instanceof Dog dog){
-      dog.bark();
-    } else if (animal2 instanceof Dog dog){
-      dog.bark();
-    } else if (animal1 instanceof Cat){
-      System.out.println("Meow");
-    } else {
-      System.out.println("Unknown sound");
-    }
-  }
-
-  static void badSound2Args(Animal animal1, Animal animal2) {
-    if (animal1 instanceof Dog dog1 && animal2 instanceof Dog dog2){  // Noncompliant [[sc=5;ec=7]] {{Replace the chain of if/else with a switch expression.}}
-      dog1.bark();
-      dog2.bark();
-    } else if (animal1 instanceof Cat){
-      System.out.println("Meow");
-    } else {
-      System.out.println("Unknown sound");
-    }
-  }
-
-  static void bar(WalkingAnimal animal, int x, int y){
-    if (x < y){
-      animal.walk();
-    } else if (animal instanceof Dog dog){
-      dog.bark();
-    } else {
-      System.out.println("Hello world");
-    }
-  }
-
-  static Animal getAnimal(){
-    return new Cat();
   }
 
 }
