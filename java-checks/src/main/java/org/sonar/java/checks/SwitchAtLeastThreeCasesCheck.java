@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -30,8 +29,6 @@ import java.util.List;
 
 @Rule(key = "S1301")
 public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
-
-  private JavaFileScannerContext context;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
