@@ -80,8 +80,7 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
 
   private void checkTypePatternVariableUsage(VariableTree patternVariable) {
     var secondaryLocationsTrees = new HashSet<MemberSelectExpressionTree>();
-    var type = patternVariable.symbol().type().symbol();
-    var comps = recordComponentNames(type);
+    var recordSymbol = patternVariable.symbol().type().symbol();
     for (Tree usage : patternVariable.symbol().usages()) {
       if (usage.parent() instanceof MemberSelectExpressionTree mse && isNotRecordGetter(mse)) {
         secondaryLocationsTrees.add(mse);
@@ -90,10 +89,15 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
       }
     }
     // only if all the records components are used we report an issue
-    if (secondaryLocationsTrees.stream().map(mse -> mse.identifier().name()).toList().containsAll(comps)) {
+    if (isEveryRecordComponentUsed(secondaryLocationsTrees, recordSymbol)) {
       reportIssue(patternVariable, "Use the record pattern instead of this pattern match variable.",
         getSecondaryLocations(secondaryLocationsTrees), null);
     }
+  }
+
+  private static boolean isEveryRecordComponentUsed(Set<MemberSelectExpressionTree> secondaryLocationsTrees, Symbol.TypeSymbol recordSymbol) {
+    var recordComponentNames = recordComponentNames(recordSymbol);
+    return !recordComponentNames.isEmpty() && secondaryLocationsTrees.stream().map(mse -> mse.identifier().name()).toList().containsAll(recordComponentNames);
   }
 
   private static boolean isNotRecordGetter(MemberSelectExpressionTree mse) {
