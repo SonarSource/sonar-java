@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6204")
 public class CollectorsToListCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
-  private static final String MESSAGE = "Replace this usage of 'Stream.collect(Collectors.%s())' with 'Stream.toList()'";
+  private static final String MESSAGE = "Replace this usage of 'Stream.collect(Collectors.%s())' with 'Stream.toList()'%s.";
 
   private static final MethodMatchers COLLECT = MethodMatchers.create()
     .ofSubTypes("java.util.stream.Stream")
@@ -113,7 +113,8 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
   }
 
   private void reportIssue(MethodInvocationTree collector, boolean mutable) {
-    String message = String.format(MESSAGE, mutable ? "toList" : "toUnmodifiableList");
+    String message = mutable? String.format(MESSAGE, "toList", " and ensure that the list is unmodified")
+      : String.format(MESSAGE, "toUnmodifiableList", "");
     reportIssue(collector, message);
   }
 
