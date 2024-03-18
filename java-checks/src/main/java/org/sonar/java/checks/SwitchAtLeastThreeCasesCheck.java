@@ -43,11 +43,22 @@ public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
     int count = 0;
     for (CaseGroupTree caseGroup : switchStatementTree.cases()) {
+      // whenever there is a type, record or guarded pattern, it would decrease readability to replace the switch by if
+      // so we don't raise an issue
+      if (hasLabelWithAllowedPattern(caseGroup)) {
+        return;
+      }
       count += caseGroup.labels().size();
     }
     if (count < 3) {
       reportIssue(switchStatementTree.switchKeyword(), "Replace this \"switch\" statement by \"if\" statements to increase readability.");
     }
+  }
+
+  private static boolean hasLabelWithAllowedPattern(CaseGroupTree caseGroupTree) {
+    return caseGroupTree.labels().stream()
+      .flatMap(label -> label.expressions().stream())
+      .anyMatch(expression -> expression.is(Tree.Kind.TYPE_PATTERN, Tree.Kind.RECORD_PATTERN, Tree.Kind.GUARDED_PATTERN));
   }
 
 }
