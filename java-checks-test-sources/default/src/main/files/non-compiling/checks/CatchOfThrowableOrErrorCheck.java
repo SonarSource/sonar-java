@@ -85,6 +85,10 @@ class CatchOfThrowableOrErrorCheck {
         return unknown();
       } catch (java.lang.Throwable e) { // Compliant with incomplete semantics, we cannot asess whether unknown will throw something.
       }
+
+      // Ensure that we still raise an issue after encountering unrelated blocks containing incomplete semantics:
+      try {} catch (Throwable e) {           // Noncompliant
+      }
     }
 
     class ThrowingThrowable {
