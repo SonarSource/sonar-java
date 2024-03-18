@@ -4,6 +4,15 @@ import java.util.Objects;
 
 public class RecordPatternInsteadOfFieldAccessCheckSample {
 
+  record Box() { }
+
+  static void switchOnSealedClass(Object shape) {
+    switch (shape) {
+      case Box unused -> { } // Compliant, record has no components
+      default -> {}
+    }
+  }
+
   int sameComponentAccessTwice(Object obj){
     if (obj instanceof Point p) { // Compliant; not all record components are used
       return p.x() + p.x();
