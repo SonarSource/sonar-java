@@ -65,9 +65,9 @@ class UnusedPrivateFieldCheckTest {
   @Test
   void test_ignored_annotation() {
     UnusedPrivateFieldCheck check = new UnusedPrivateFieldCheck();
-    check.ignoreAnnotations = "javax.inject.Inject";
+    check.ignoreAnnotations = "javax.inject.Inject,,javax.annotation.Nullable";
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/unused/UnusedPrivateFieldCheckWithIgnoredAnnotation.java"))
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldCheckWithIgnoredAnnotation.java"))
       .withCheck(check)
       .verifyIssues();
   }
