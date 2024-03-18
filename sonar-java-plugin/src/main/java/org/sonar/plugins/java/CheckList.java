@@ -332,6 +332,7 @@ import org.sonar.java.checks.ReturnInFinallyCheck;
 import org.sonar.java.checks.ReturnOfBooleanExpressionsCheck;
 import org.sonar.java.checks.ReuseRandomCheck;
 import org.sonar.java.checks.ReverseSequencedCollectionCheck;
+import org.sonar.java.checks.ReversedMethodSequencedCollectionCheck;
 import org.sonar.java.checks.RightCurlyBraceDifferentLineAsNextBlockCheck;
 import org.sonar.java.checks.RightCurlyBraceSameLineAsNextBlockCheck;
 import org.sonar.java.checks.RightCurlyBraceStartLineCheck;
@@ -1052,6 +1053,7 @@ public final class CheckList {
     ReturnOfBooleanExpressionsCheck.class,
     ReuseRandomCheck.class,
     ReverseSequencedCollectionCheck.class,
+    ReversedMethodSequencedCollectionCheck.class,
     RightCurlyBraceDifferentLineAsNextBlockCheck.class,
     RightCurlyBraceSameLineAsNextBlockCheck.class,
     RightCurlyBraceStartLineCheck.class,
