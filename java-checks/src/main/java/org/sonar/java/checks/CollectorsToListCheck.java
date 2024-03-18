@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6204")
 public class CollectorsToListCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
-  private static final String MESSAGE = "Replace this usage of 'Stream.collect(Collectors.%s())' with 'Stream.toList()'%s";
+  private static final String MESSAGE = "Replace this usage of 'Stream.collect(Collectors.%s())' with 'Stream.toList()'%s.";
 
   private static final MethodMatchers COLLECT = MethodMatchers.create()
     .ofSubTypes("java.util.stream.Stream")
