@@ -2,6 +2,8 @@ package checks;
 
 public class PatternMatchUsingIfCheckSample {
 
+  // TODO tests with different indents
+
   private static final Const ZERO = new Const(0);
 
   sealed interface Expr permits Plus, Minus, Const {
@@ -52,10 +54,11 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
-  // $fix@qf1 {{Replace the chain of if/else with a switch expression.}}
+  // fix@qf1 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf1 [[sl=+0;el=+12;sc=5;ec=6]] {{switch (expr) {\n      case Plus plus when plus.rhs.equals(ZERO) -> {\n        return badCompute(plus.lhs);\n      }\n      case Plus plus -> {\n        return badCompute(plus.lhs) + badCompute(plus.rhs);\n      }\n      case Minus(var l, Expr r) when r.equals(ZERO) -> {\n        return badCompute(l);\n      }\n      case Minus(var l, Expr r) -> {\n        return badCompute(l) - badCompute(r);\n      }\n      case Const(var i) -> {\n        return i;\n      }\n      default -> {\n        throw new AssertionError();\n      }\n    }}}
   int badCompute(Expr expr) {
-    // $Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf1]]
-    if (expr instanceof Plus plus && plus.rhs.equals(ZERO)) { // Noncompliant
+    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf1]]
+    if (expr instanceof Plus plus && plus.rhs.equals(ZERO)) {
       return badCompute(plus.lhs);
     } else if (expr instanceof Plus plus) {
       return badCompute(plus.lhs) + badCompute(plus.rhs);
@@ -74,9 +77,19 @@ public class PatternMatchUsingIfCheckSample {
     return new Plus(new Const(10), new Minus(new Const(12), new Const(25)));
   }
 
-  String badFoo(int x) {
+  String badFoo1(int x) {
     if (x == 0 || x == 1) {  // Noncompliant
       return "binary";
+    } else if (x == -1) {
+      return "negative";
+    } else {
+      return "I don't know!";
+    }
+  }
+
+  String badFoo2(int x, int y) {
+    if ((x == 0 || x == 1) && y < 10) { // Noncompliant
+      return "Hello world";
     } else if (x == -1) {
       return "negative";
     } else {
