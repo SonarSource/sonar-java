@@ -24,8 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.Preconditions;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -35,10 +35,12 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 
 @Rule(key = "S6880")
@@ -61,7 +63,6 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   public void visitNode(Tree tree) {
     var topLevelIfStat = (IfStatementTree) tree;
 
-    // Do not report errors more than once for the same chain of ifs
     if (isElseIf(topLevelIfStat) || !(topLevelIfStat.elseStatement() instanceof IfStatementTree)) {
       return;
     }
@@ -73,7 +74,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
       return;
     }
 
-    var cases = extractCasesFromIf(topLevelIfStat);
+    var cases = extractCasesFromIfSequence(topLevelIfStat);
     if (cases == null || !casesHaveCommonScrutinee(cases)) {
       return;
     }
@@ -86,6 +87,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   }
 
   private static boolean casesHaveCommonScrutinee(List<Case> cases) {
+    Preconditions.checkArgument(!cases.isEmpty());
     var iter = cases.iterator();
     var scrutinee = iter.next().scrutinee();
     while (iter.hasNext()) {
@@ -96,7 +98,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     return true;
   }
 
-  private static @Nullable List<Case> extractCasesFromIf(IfStatementTree topLevelIfStat) {
+  private static @Nullable List<Case> extractCasesFromIfSequence(IfStatementTree topLevelIfStat) {
     var cases = new LinkedList<Case>();
     StatementTree stat;
     for (stat = topLevelIfStat; stat instanceof IfStatementTree ifStat; stat = ifStat.elseStatement()) {
@@ -116,18 +118,20 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     var leftmost = findLeftmostInConjunction(condition);
     var guards = new LinkedList<ExpressionTree>();
     populateGuardsList(condition, guards);
-    if (leftmost instanceof PatternInstanceOfTree patInstOf && patInstOf.pattern() != null && patInstOf.expression() instanceof IdentifierTree idTree) {
+    if (leftmost instanceof PatternInstanceOfTree patInstOf && patInstOf.pattern() != null
+      && patInstOf.expression() instanceof IdentifierTree idTree) {
       return new PatternMatchCase(idTree.name(), patInstOf.pattern(), guards, body);
     } else if ((leftmost.kind() == Tree.Kind.CONDITIONAL_OR || leftmost.kind() == Tree.Kind.EQUAL_TO) && guards.isEmpty()) {
-      return extractVarAndConstantsFromEqualityChecksDisjunction(leftmost, body);
+      return buildEqualityCase(leftmost, body);
     } else {
       return null;
     }
   }
 
-  private static @Nullable EqualityCase extractVarAndConstantsFromEqualityChecksDisjunction(ExpressionTree expr,
-                                                                                            StatementTree body) {
-    expr = ExpressionUtils.skipParentheses(expr);
+  /**
+   * Transforms expressions of the form  a == 0 || a == 1 || ...  into an EqualityCase
+   */
+  private static @Nullable EqualityCase buildEqualityCase(ExpressionTree expr, StatementTree body) {
     var constantsList = new LinkedList<ExpressionTree>();
     String scrutinee = null;
     while (expr.kind() == Tree.Kind.CONDITIONAL_OR) {
@@ -141,7 +145,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
         return null;
       }
       constantsList.addFirst(varAndCst.b);
-      expr = ExpressionUtils.skipParentheses(binary.leftOperand());
+      expr = binary.leftOperand();
     }
     var varAndCst = extractVarAndConstFromEqualityCheck(expr);
     if (varAndCst == null || (scrutinee != null && !varAndCst.a.equals(scrutinee))) {
@@ -152,30 +156,32 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   }
 
   private static @Nullable Pair<String, ExpressionTree> extractVarAndConstFromEqualityCheck(ExpressionTree expr) {
-    expr = ExpressionUtils.skipParentheses(expr);
     if (expr.kind() == Tree.Kind.EQUAL_TO) {
       var binary = (BinaryExpressionTree) expr;
-      if (binary.leftOperand() instanceof IdentifierTree idTree
-        && (binary.rightOperand().asConstant().isPresent() || binary.rightOperand().symbolType().symbol().isEnum())) {
+      if (binary.leftOperand() instanceof IdentifierTree idTree && isPossibleConstantForCase(binary.rightOperand())) {
         return new Pair<>(idTree.name(), binary.rightOperand());
       }
     }
     return null;
   }
 
+  private static boolean isPossibleConstantForCase(ExpressionTree expr) {
+    return expr instanceof LiteralTree
+      || (expr.kind() == Tree.Kind.UNARY_MINUS && ((UnaryExpressionTree) expr).expression() instanceof LiteralTree)
+      || expr.symbolType().symbol().isEnum();
+  }
+
   private static ExpressionTree findLeftmostInConjunction(ExpressionTree expr) {
-    expr = ExpressionUtils.skipParentheses(expr);
     while (expr.kind() == Tree.Kind.CONDITIONAL_AND) {
-      expr = ExpressionUtils.skipParentheses(((BinaryExpressionTree) expr).leftOperand());
+      expr = ((BinaryExpressionTree) expr).leftOperand();
     }
     return expr;
   }
 
   private static void populateGuardsList(ExpressionTree expr, Deque<ExpressionTree> guards) {
-    expr = ExpressionUtils.skipParentheses(expr);
     while (expr instanceof BinaryExpressionTree binary && binary.kind() == Tree.Kind.CONDITIONAL_AND) {
       guards.addFirst(binary.rightOperand());
-      expr = ExpressionUtils.skipParentheses(binary.leftOperand());
+      expr = binary.leftOperand();
     }
   }
 
@@ -243,7 +249,6 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
 
   private sealed interface Case permits PatternMatchCase, EqualityCase, DefaultCase {
     String scrutinee();
-
     StatementTree body();
   }
 
@@ -254,7 +259,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   }
 
   /**
-   * For simplicity the default case gets assigned the scrutinee of the previous cases
+   * For simplicity the default case should have the same scrutinee as the cases before it
    */
   private record DefaultCase(String scrutinee, StatementTree body) implements Case {
   }
