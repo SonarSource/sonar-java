@@ -55,6 +55,23 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
+  int goodCompute3(Expr expr) {
+    if (expr instanceof Plus plus && plus.lhs.equals(ZERO) && plus.rhs.equals(ZERO)) {
+      return 0;
+    } else if (expr instanceof Plus) {
+      var plus = (Plus) expr; // Compliant for this rule, but reported by S6201
+      return badCompute(plus.lhs) + badCompute(plus.rhs);
+    } else if (expr instanceof Minus(var l, Expr r) && r.equals(ZERO)) {
+      return badCompute(l);
+    } else if (expr instanceof Minus(var l, Expr r)) {
+      return badCompute(l) - badCompute(r);
+    } else if (expr instanceof Const(var i)) {
+      return i;
+    } else {
+      throw new AssertionError();
+    }
+  }
+
   // fix@qf1 {{Replace the chain of if/else with a switch expression.}}
   // edit@qf1 [[sl=+0;el=+12;sc=5;ec=6]] {{switch (expr) {\n      case Plus plus when plus.lhs.equals(ZERO) && plus.rhs.equals(ZERO) -> {\n        return 0;\n      }\n      case Plus plus -> {\n        return badCompute(plus.lhs) + badCompute(plus.rhs);\n      }\n      case Minus(var l, Expr r) when r.equals(ZERO) -> {\n        return badCompute(l);\n      }\n      case Minus(var l, Expr r) -> {\n        return badCompute(l) - badCompute(r);\n      }\n      case Const(var i) -> {\n        return i;\n      }\n      default -> {\n        throw new AssertionError();\n      }\n    }}}
   int badCompute(Expr expr) {
@@ -210,6 +227,26 @@ public class PatternMatchUsingIfCheckSample {
     if (x > 0) {
       return "Hello world";
     } else if (x == -1) {
+      return "negative";
+    } else {
+      return "I don't know!";
+    }
+  }
+
+  String goodFoo8(int x) {
+    if (x > 0 || x == -42) {
+      return "Hello world";
+    } else if (x == -1) {
+      return "negative";
+    } else {
+      return "I don't know!";
+    }
+  }
+
+  String goodFoo9(int x) {
+    if (x == 0) {
+      return "Hello world";
+    } else if (x < 0) {
       return "negative";
     } else {
       return "I don't know!";
