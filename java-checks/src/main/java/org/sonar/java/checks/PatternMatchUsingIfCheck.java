@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
@@ -195,7 +196,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     sb.append("switch (").append(cases.get(0).scrutinee()).append(") {\n");
     for (Case caze : cases) {
       sb.append(" ".repeat(baseIndent + INDENT));
-      writeCase(caze, sb);
+      writeCase(caze, sb, baseIndent);
       sb.append("\n");
     }
     sb.append(" ".repeat(baseIndent)).append("}");
@@ -203,7 +204,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     return JavaQuickFix.newQuickFix(ISSUE_MESSAGE).addTextEdit(edit).build();
   }
 
-  private void writeCase(Case caze, StringBuilder sb) {
+  private void writeCase(Case caze, StringBuilder sb, int baseIndent) {
     if (caze instanceof PatternMatchCase patternMatchCase) {
       sb.append("case ").append(QuickFixHelper.contentForTree(patternMatchCase.pattern, context));
       if (!patternMatchCase.guards().isEmpty()) {
@@ -218,7 +219,16 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
       sb.append("default");
     }
     sb.append(" -> ");
-    addIndentedExceptFirstLine(QuickFixHelper.contentForTree(caze.body(), context), sb);
+    addIndentedExceptFirstLine(makeBlockCode(caze.body(), baseIndent), sb);
+  }
+
+  private String makeBlockCode(StatementTree stat, int baseIndent){
+    var rawCode = QuickFixHelper.contentForTree(stat, context);
+    if (stat instanceof BlockTree){
+      return rawCode;
+    } else {
+      return "{\n" + " ".repeat(baseIndent + INDENT) + rawCode + "\n" + " ".repeat(baseIndent) + "}";
+    }
   }
 
   private static void addIndentedExceptFirstLine(String s, StringBuilder sb) {

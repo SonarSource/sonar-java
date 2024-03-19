@@ -123,6 +123,20 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
+  // fix@qf5 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf5 [[sl=+0;el=+5;sc=7;ec=22]] {{switch (x) {\n        case -1 -> {\n          return "negative";\n        }\n        case 0 -> {\n          return "zero";\n        }\n        default -> {\n          return "one";\n        }\n      }}}
+  String badFoo3(int x) {
+    if (x == 0 || x == 1 || x == -1)
+      if (x == -1)  // Noncompliant [[sl=+0;el=+0;sc=7;ec=9;quickfixes=qf5]]
+        return "negative";
+      else if (x == 0)
+        return "zero";
+      else
+        return "one";
+    else
+      return "Hello world";
+  }
+
   String goodFoo1(int x) {
     switch (x) {
       case 0, 1 -> {
@@ -148,13 +162,57 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
+  String goodFoo3(int x, int y) {
+    if (x == 0 || x == y) {
+      return "Hello world";
+    } else if (x == -1) {
+      return "negative";
+    } else {
+      return "I don't know!";
+    }
+  }
+
+  String goodFoo4(int x, int y) {
+    if (x == 0 || x == 1) {
+      return "Hello world";
+    } else if (x == y) {
+      return "negative";
+    } else {
+      return "I don't know!";
+    }
+  }
+
+  String goodFoo5(int x, int y) {
+    if (x == 0 || x == 1 || x == y-1)
+      if (x == -1)
+        return "negative";
+      else if (x == y)
+        return "zero";
+      else
+        return "one";
+    else if (x == 42)
+      return "Hello world";
+    else
+      return "??";
+  }
+
+  String goodFoo6(int x, int y) {
+    if (x == 0 || x == -y) {
+      return "Hello world";
+    } else if (x == -1) {
+      return "negative";
+    } else {
+      return "I don't know!";
+    }
+  }
+
   enum Bar {
     B1, B2, B3, B4, B5
   }
 
   // fix@qf4 {{Replace the chain of if/else with a switch expression.}}
   // edit@qf4 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (b) {\n      case Bar.B1 -> {\n        return "b1";\n      }\n      case Bar.B2, B3, Bar.B4 -> {\n        return "b234";\n      }\n      default -> {\n        return "b5";\n      }\n    }}}
-  String badBar(Bar b) {
+  static String badBar(Bar b) {
     // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf4]]
     if (b == Bar.B1) {
       return "b1";
