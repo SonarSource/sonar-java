@@ -183,7 +183,7 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   String goodFoo5(int x, int y) {
-    if (x == 0 || x == 1 || x == y-1)
+    if (x == 0 || x == 1 || y == 2)
       if (x == -1)
         return "negative";
       else if (x == y)
@@ -198,6 +198,16 @@ public class PatternMatchUsingIfCheckSample {
 
   String goodFoo6(int x, int y) {
     if (x == 0 || x == -y) {
+      return "Hello world";
+    } else if (x == -1) {
+      return "negative";
+    } else {
+      return "I don't know!";
+    }
+  }
+
+  String goodFoo7(int x) {
+    if (x > 0) {
       return "Hello world";
     } else if (x == -1) {
       return "negative";
