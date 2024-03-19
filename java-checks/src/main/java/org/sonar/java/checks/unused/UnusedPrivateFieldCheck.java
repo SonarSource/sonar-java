@@ -28,7 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -58,6 +61,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S1068")
 public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
 
+  private static final String DEFAULT_IGNORE_ANNOTATIONS_KEY = "ignoreAnnotations";
+  private static final String DEFAULT_IGNORE_ANNOTATIONS_DESCRIPTION = "Ignore annotations with next names (fully qualified class names separated with \",\").";
+
   private static final Tree.Kind[] ASSIGNMENT_KINDS = {
     Tree.Kind.ASSIGNMENT,
     Tree.Kind.MULTIPLY_ASSIGNMENT,
@@ -76,6 +82,12 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   private final Map<Symbol, List<AssignmentExpressionTree>> assignments = new HashMap<>();
   private final Set<String> unknownIdentifiers = new HashSet<>();
   private boolean hasNativeMethod = false;
+
+  @RuleProperty(
+    key = DEFAULT_IGNORE_ANNOTATIONS_KEY,
+    description = DEFAULT_IGNORE_ANNOTATIONS_DESCRIPTION)
+  public String ignoreAnnotations = "";
+  private Set<String> ignoredAnnotations;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -157,7 +169,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   public void checkIfUnused(VariableTree tree) {
-    if (hasNoAnnotation(tree)) {
+    if (hasOnlyIgnoredAnnotations(tree)) {
       Symbol symbol = tree.symbol();
       String name = symbol.name();
       if (symbol.isPrivate()
@@ -178,8 +190,19 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     return symbol.usages().size() == assignments.getOrDefault(symbol, Collections.emptyList()).size();
   }
 
-  private static boolean hasNoAnnotation(VariableTree tree) {
-    return tree.modifiers().annotations().isEmpty();
+  private boolean hasOnlyIgnoredAnnotations(VariableTree tree) {
+    return tree.modifiers().annotations().stream().allMatch(
+      it -> getIgnoredAnnotations().contains(it.annotationType().symbolType().fullyQualifiedName()));
+  }
+
+  private Set<String> getIgnoredAnnotations() {
+    if (ignoredAnnotations == null) {
+      ignoredAnnotations = Stream.of(ignoreAnnotations.split(","))
+        .map(String::trim)
+        .filter(it -> !it.isEmpty())
+        .collect(Collectors.toSet());
+    }
+    return ignoredAnnotations;
   }
 
   private void collectAssignment(ExpressionTree expressionTree) {

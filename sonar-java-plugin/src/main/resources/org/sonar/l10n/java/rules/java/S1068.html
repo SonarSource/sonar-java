@@ -32,7 +32,8 @@ public class MyClass implements java.io.Serializable {
 <ul>
   <li> Annotated fields and classes annotated with Lombok annotations </li>
 </ul>
-<p>The unused field in this class will not be reported by the rule as it is annotated.</p>
+<p>The unused field in this class will not be reported by the rule as it is annotated, except if annotation class <code>SomeAnnotation</code> is
+listed in the <code>ignoreAnnotations</code> parameter (see Parameters).</p>
 <pre>
 public class MyClass {
   @SomeAnnotation
