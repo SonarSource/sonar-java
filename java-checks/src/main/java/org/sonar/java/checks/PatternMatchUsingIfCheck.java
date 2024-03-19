@@ -85,9 +85,6 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
       .report();
   }
 
-  /**
-   * Precondition: cases is not empty
-   */
   private static boolean casesHaveCommonScrutinee(List<Case> cases) {
     var iter = cases.iterator();
     var scrutinee = iter.next().scrutinee();
@@ -121,15 +118,14 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     populateGuardsList(condition, guards);
     if (leftmost instanceof PatternInstanceOfTree patInstOf && patInstOf.pattern() != null && patInstOf.expression() instanceof IdentifierTree idTree) {
       return new PatternMatchCase(idTree.name(), patInstOf.pattern(), guards, body);
-    } else if (leftmost.kind() == Tree.Kind.CONDITIONAL_OR || leftmost.kind() == Tree.Kind.EQUAL_TO) {
-      return extractVarAndConstantsFromEqualityChecksDisjunction(leftmost, guards, body);
+    } else if ((leftmost.kind() == Tree.Kind.CONDITIONAL_OR || leftmost.kind() == Tree.Kind.EQUAL_TO) && guards.isEmpty()) {
+      return extractVarAndConstantsFromEqualityChecksDisjunction(leftmost, body);
     } else {
       return null;
     }
   }
 
   private static @Nullable EqualityCase extractVarAndConstantsFromEqualityChecksDisjunction(ExpressionTree expr,
-                                                                                            List<ExpressionTree> guards,
                                                                                             StatementTree body) {
     expr = ExpressionUtils.skipParentheses(expr);
     var constantsList = new LinkedList<ExpressionTree>();
@@ -152,7 +148,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
       return null;
     }
     constantsList.addFirst(varAndCst.b);
-    return new EqualityCase(scrutinee == null ? varAndCst.a : scrutinee, constantsList, guards, body);
+    return new EqualityCase(scrutinee == null ? varAndCst.a : scrutinee, constantsList, body);
   }
 
   private static @Nullable Pair<String, ExpressionTree> extractVarAndConstFromEqualityCheck(ExpressionTree expr) {
@@ -204,16 +200,16 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   private void writeCase(Case caze, StringBuilder sb) {
     if (caze instanceof PatternMatchCase patternMatchCase) {
       sb.append("case ").append(QuickFixHelper.contentForTree(patternMatchCase.pattern, context));
+      if (!patternMatchCase.guards().isEmpty()) {
+        List<ExpressionTree> guards = patternMatchCase.guards();
+        sb.append(" when ");
+        join(guards, " && ", sb);
+      }
     } else if (caze instanceof EqualityCase equalityCase) {
       sb.append("case ");
       join(equalityCase.constants, ", ", sb);
     } else {
       sb.append("default");
-    }
-    if (!caze.guards().isEmpty()) {
-      List<ExpressionTree> guards = caze.guards();
-      sb.append(" when ");
-      join(guards, " && ", sb);
     }
     sb.append(" -> ");
     addIndentedExceptFirstLine(QuickFixHelper.contentForTree(caze.body(), context), INDENT, sb);
@@ -248,25 +244,19 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   private sealed interface Case permits PatternMatchCase, EqualityCase, DefaultCase {
     String scrutinee();
 
-    List<ExpressionTree> guards();
-
     StatementTree body();
   }
 
   private record PatternMatchCase(String scrutinee, PatternTree pattern, List<ExpressionTree> guards, StatementTree body) implements Case {
   }
 
-  private record EqualityCase(String scrutinee, List<ExpressionTree> constants, List<ExpressionTree> guards,
-                              StatementTree body) implements Case {
+  private record EqualityCase(String scrutinee, List<ExpressionTree> constants, StatementTree body) implements Case {
   }
 
   /**
    * For simplicity the default case gets assigned the scrutinee of the previous cases
    */
   private record DefaultCase(String scrutinee, StatementTree body) implements Case {
-    public List<ExpressionTree> guards() {
-      return List.of();
-    }
   }
 
   private record Pair<A, B>(A a, B b) {

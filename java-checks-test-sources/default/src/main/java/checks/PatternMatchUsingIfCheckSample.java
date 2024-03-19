@@ -1,8 +1,8 @@
 package checks;
 
-public class PatternMatchUsingIfCheckSample {
+import static checks.PatternMatchUsingIfCheckSample.Bar.B3;
 
-  // TODO tests with different indents
+public class PatternMatchUsingIfCheckSample {
 
   private static final Const ZERO = new Const(0);
 
@@ -77,18 +77,26 @@ public class PatternMatchUsingIfCheckSample {
     return new Plus(new Const(10), new Minus(new Const(12), new Const(25)));
   }
 
-  String badFoo1(int x) {
-    if (x == 0 || x == 1) {  // Noncompliant
-      return "binary";
-    } else if (x == -1) {
-      return "negative";
-    } else {
+  // fix@qf3 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf3 [[sl=+0;el=+4;sc=7;ec=8]] {{switch (x) {\n        case 0, 1 -> {\n          return "binary";\n        }\n        case -1 -> {\n          return "negative";\n        }\n      }}}
+  String badFoo1(int x, boolean b) {
+    if (b){
+      // Noncompliant@+1 [[sl=+1;el=+1;sc=7;ec=9;quickfixes=qf3]]
+      if (x == 0 || x == 1) {
+        return "binary";
+      } else if (x == -1) {
+        return "negative";
+      }
       return "I don't know!";
     }
+    return "?";
   }
 
-  String badFoo2(int x, int y) {
-    if ((x == 0 || x == 1) && y < 10) { // Noncompliant
+  // fix@qf2 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf2 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (x) {\n      case 0, 1 -> {\n        return "Hello world";\n      }\n      case -1 -> {\n        return "negative";\n      }\n      default -> {\n        return "I don't know!";\n      }\n    }}}
+  String badFoo2(int x) {
+    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf2]]
+    if (x == 0 || x == 1) {
       return "Hello world";
     } else if (x == -1) {
       return "negative";
@@ -97,7 +105,7 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
-  String goodFoo(int x) {
+  String goodFoo1(int x) {
     switch (x) {
       case 0, 1 -> {
         return "binary";
@@ -111,14 +119,27 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
+  String goodFoo2(int x, int y){
+    if ((x == 0 || x == 1) && y < 10) {
+      return "Hello world";
+    } else if (x == -1) {
+      return "negative";
+    } else {
+      return "I don't know!";
+    }
+  }
+
   enum Bar {
     B1, B2, B3, B4, B5
   }
 
+  // fix@qf4 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf4 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (b) {\n      case Bar.B1 -> {\n        return "b1";\n      }\n      case Bar.B2, B3, Bar.B4 -> {\n        return "b234";\n      }\n      default -> {\n        return "b5";\n      }\n    }}}
   String badBar(Bar b) {
-    if (b == Bar.B1) {  // Noncompliant
+    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf4]]
+    if (b == Bar.B1) {
       return "b1";
-    } else if (b == Bar.B2 || b == Bar.B3 || b == Bar.B4) {
+    } else if (b == Bar.B2 || b == B3 || b == Bar.B4) {
       return "b234";
     } else {
       return "b5";
