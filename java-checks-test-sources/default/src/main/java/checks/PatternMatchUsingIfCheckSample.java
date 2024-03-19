@@ -39,6 +39,7 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   int goodCompute2() {
+    // Compliant: distinct calls to mkExpr() could return distinct values
     if (mkExpr() instanceof Plus plus && plus.rhs.equals(ZERO)) {
       return goodCompute1(plus.lhs);
     } else if (mkExpr() instanceof Plus plus) {
@@ -55,11 +56,11 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   // fix@qf1 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf1 [[sl=+0;el=+12;sc=5;ec=6]] {{switch (expr) {\n      case Plus plus when plus.rhs.equals(ZERO) -> {\n        return badCompute(plus.lhs);\n      }\n      case Plus plus -> {\n        return badCompute(plus.lhs) + badCompute(plus.rhs);\n      }\n      case Minus(var l, Expr r) when r.equals(ZERO) -> {\n        return badCompute(l);\n      }\n      case Minus(var l, Expr r) -> {\n        return badCompute(l) - badCompute(r);\n      }\n      case Const(var i) -> {\n        return i;\n      }\n      default -> {\n        throw new AssertionError();\n      }\n    }}}
+  // edit@qf1 [[sl=+0;el=+12;sc=5;ec=6]] {{switch (expr) {\n      case Plus plus when plus.lhs.equals(ZERO) && plus.rhs.equals(ZERO) -> {\n        return 0;\n      }\n      case Plus plus -> {\n        return badCompute(plus.lhs) + badCompute(plus.rhs);\n      }\n      case Minus(var l, Expr r) when r.equals(ZERO) -> {\n        return badCompute(l);\n      }\n      case Minus(var l, Expr r) -> {\n        return badCompute(l) - badCompute(r);\n      }\n      case Const(var i) -> {\n        return i;\n      }\n      default -> {\n        throw new AssertionError();\n      }\n    }}}
   int badCompute(Expr expr) {
     // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf1]]
-    if (expr instanceof Plus plus && plus.rhs.equals(ZERO)) {
-      return badCompute(plus.lhs);
+    if (expr instanceof Plus plus && plus.lhs.equals(ZERO) && plus.rhs.equals(ZERO)) {
+      return 0;
     } else if (expr instanceof Plus plus) {
       return badCompute(plus.lhs) + badCompute(plus.rhs);
     } else if (expr instanceof Minus(var l, Expr r) && r.equals(ZERO)) {
@@ -67,6 +68,23 @@ public class PatternMatchUsingIfCheckSample {
     } else if (expr instanceof Minus(var l, Expr r)) {
       return badCompute(l) - badCompute(r);
     } else if (expr instanceof Const(var i)) {
+      return i;
+    } else {
+      throw new AssertionError();
+    }
+  }
+
+  // Compliant: one of the instanceofs is performed on expr2
+  int veryBadCompute(Expr expr1, Expr expr2) {
+    if (expr1 instanceof Plus plus && plus.lhs.equals(ZERO) && plus.rhs.equals(ZERO)) {
+      return 0;
+    } else if (expr1 instanceof Plus plus) {
+      return badCompute(plus.lhs) + badCompute(plus.rhs);
+    } else if (expr2 instanceof Minus(var l, Expr r) && r.equals(ZERO)) {
+      return badCompute(l);
+    } else if (expr1 instanceof Minus(var l, Expr r)) {
+      return badCompute(l) - badCompute(r);
+    } else if (expr1 instanceof Const(var i)) {
       return i;
     } else {
       throw new AssertionError();
@@ -120,6 +138,7 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   String goodFoo2(int x, int y){
+    // Compliant: guards are only supported for patterns
     if ((x == 0 || x == 1) && y < 10) {
       return "Hello world";
     } else if (x == -1) {
