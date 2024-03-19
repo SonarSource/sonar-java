@@ -218,15 +218,15 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
       sb.append("default");
     }
     sb.append(" -> ");
-    addIndentedExceptFirstLine(QuickFixHelper.contentForTree(caze.body(), context), INDENT, sb);
+    addIndentedExceptFirstLine(QuickFixHelper.contentForTree(caze.body(), context), sb);
   }
 
-  private static void addIndentedExceptFirstLine(String s, int indent, StringBuilder sb) {
+  private static void addIndentedExceptFirstLine(String s, StringBuilder sb) {
     var lines = s.lines().iterator();
     if (!lines.hasNext()) {
       return;
     }
-    var indentStr = " ".repeat(indent);
+    var indentStr = " ".repeat(INDENT);
     sb.append(lines.next()).append("\n");
     while (lines.hasNext()) {
       sb.append(indentStr).append(lines.next());
