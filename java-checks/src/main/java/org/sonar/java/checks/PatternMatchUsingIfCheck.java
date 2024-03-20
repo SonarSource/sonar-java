@@ -188,7 +188,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     var canLiftReturn = cases.stream().allMatch(caze -> exprWhenReturnLifted(caze) != null);
     var baseIndent = topLevelIfStat.firstToken().range().start().column() - 1;
     var sb = new StringBuilder();
-    if (canLiftReturn){
+    if (canLiftReturn) {
       sb.append("return ");
     }
     sb.append("switch (").append(cases.get(0).scrutinee()).append(") {\n");
@@ -217,7 +217,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
       sb.append("default");
     }
     sb.append(" -> ");
-    if (canLiftReturn){
+    if (canLiftReturn) {
       sb.append(exprWhenReturnLifted(caze));
     } else {
       addIndentedExceptFirstLine(makeBlockCode(caze.body(), baseIndent), sb);
@@ -253,14 +253,14 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     }
   }
 
-  private @Nullable String exprWhenReturnLifted(Case caze){
+  private @Nullable String exprWhenReturnLifted(Case caze) {
     var stat = caze.body();
-    while (stat instanceof BlockTree block && block.body().size() == 1){
+    while (stat instanceof BlockTree block && block.body().size() == 1) {
       stat = block.body().get(0);
     }
-    if (stat instanceof ReturnStatementTree returnStat && returnStat.expression() != null){
+    if (stat instanceof ReturnStatementTree returnStat && returnStat.expression() != null) {
       return QuickFixHelper.contentForTree(returnStat.expression(), context) + ";";
-    } else if (stat instanceof ThrowStatementTree throwStatementTree){
+    } else if (stat instanceof ThrowStatementTree throwStatementTree) {
       return QuickFixHelper.contentForTree(throwStatementTree, context);
     }
     return null;
