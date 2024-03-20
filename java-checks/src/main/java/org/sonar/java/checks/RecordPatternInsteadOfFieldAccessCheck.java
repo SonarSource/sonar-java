@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -35,7 +36,6 @@ import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
 
 @Rule(key = "S6878")
 public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -97,7 +97,11 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
 
   private static boolean isEveryRecordComponentUsed(Set<MemberSelectExpressionTree> secondaryLocationsTrees, Symbol.TypeSymbol recordSymbol) {
     var recordComponentNames = recordComponentNames(recordSymbol);
-    return !recordComponentNames.isEmpty() && secondaryLocationsTrees.stream().map(mse -> mse.identifier().name()).toList().containsAll(recordComponentNames);
+    return !recordComponentNames.isEmpty() &&
+      secondaryLocationsTrees.stream()
+        .map(mse -> mse.identifier().name())
+        .collect(Collectors.toSet())
+        .equals(recordComponentNames);
   }
 
   private static boolean isNotRecordGetter(MemberSelectExpressionTree mse) {
@@ -115,14 +119,14 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
     return typePattern.patternVariable().type().symbolType().isSubtypeOf("java.lang.Record");
   }
 
-  private static List<String> recordComponentNames(Symbol.TypeSymbol recordSymbol) {
+  private static Set<String> recordComponentNames(Symbol.TypeSymbol recordSymbol) {
     return recordSymbol
       .memberSymbols()
       .stream()
       .filter(Symbol::isVariableSymbol)
       .map(Symbol.VariableSymbol.class::cast)
       .map(Symbol.VariableSymbol::name)
-      .toList();
+      .collect(Collectors.toSet());
   }
 
 }

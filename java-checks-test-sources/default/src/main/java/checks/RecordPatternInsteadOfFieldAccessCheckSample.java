@@ -28,7 +28,7 @@ public class RecordPatternInsteadOfFieldAccessCheckSample {
   }
 
   int allComponentsPlusAMethod(Object obj){
-    if (obj instanceof Point p) { // Noncompliant
+    if (obj instanceof Point p) { // Compliant, using record pattern would not allow access to p.notAComponent
       return p.x() + p.y() + p.notAComponent();
     }
     return 0;
