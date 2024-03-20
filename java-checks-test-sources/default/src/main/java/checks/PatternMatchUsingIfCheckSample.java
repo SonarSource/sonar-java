@@ -88,7 +88,7 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   // fix@qf1 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf1 [[sl=+0;el=+12;sc=5;ec=6]] {{switch (expr) {\n      case Plus plus when plus.lhs.equals(ZERO) && plus.rhs.equals(ZERO) -> {\n        return 0;\n      }\n      case Plus plus -> {\n        return badCompute(plus.lhs) + badCompute(plus.rhs);\n      }\n      case Minus(var l, Expr r) when r.equals(ZERO) -> {\n        return badCompute(l);\n      }\n      case Minus(var l, Expr r) -> {\n        return badCompute(l) - badCompute(r);\n      }\n      case Const(var i) -> {\n        return i;\n      }\n      default -> {\n        throw new AssertionError();\n      }\n    }}}
+  // edit@qf1 [[sl=+0;el=+12;sc=5;ec=6]] {{return switch (expr) {\n      case Plus plus when plus.lhs.equals(ZERO) && plus.rhs.equals(ZERO) -> 0;\n      case Plus plus -> badCompute(plus.lhs) + badCompute(plus.rhs);\n      case Minus(var l, Expr r) when r.equals(ZERO) -> badCompute(l);\n      case Minus(var l, Expr r) -> badCompute(l) - badCompute(r);\n      case Const(var i) -> i;\n      default -> throw new AssertionError();\n    }}}
   int badCompute(Expr expr) {
     // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf1]]
     if (expr instanceof Plus plus && plus.lhs.equals(ZERO) && plus.rhs.equals(ZERO)) {
@@ -128,7 +128,7 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   // fix@qf3 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf3 [[sl=+0;el=+6;sc=7;ec=8]] {{switch (x) {\n        case 0, 1 -> {\n          return "binary";\n        }\n        case -1 -> {\n          return "negative";\n        }\n        default -> {\n          return "I don't know!";\n        }\n      }}}
+  // edit@qf3 [[sl=+0;el=+6;sc=7;ec=8]] {{return switch (x) {\n        case 0, 1 -> "binary";\n        case -1 -> "negative";\n        default -> "I don't know!";\n      }}}
   String badFoo1(int x, boolean b) {
     if (b){
       // Noncompliant@+1 [[sl=+1;el=+1;sc=7;ec=9;quickfixes=qf3]]
@@ -144,7 +144,7 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   // fix@qf2 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf2 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (x) {\n      case 0, 1 -> {\n        return "Hello world";\n      }\n      case -1 -> {\n        return "negative";\n      }\n      default -> {\n        return "I don't know!";\n      }\n    }}}
+  // edit@qf2 [[sl=+0;el=+6;sc=5;ec=6]] {{return switch (x) {\n      case 0, 1 -> "Hello world";\n      case -1 -> "negative";\n      default -> "I don't know!";\n    }}}
   String badFoo2(int x) {
     // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf2]]
     if (x == 0 || x == 1) {
@@ -157,7 +157,7 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   // fix@qf5 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf5 [[sl=+0;el=+5;sc=7;ec=22]] {{switch (x) {\n        case -1 -> {\n          return "negative";\n        }\n        case 0 -> {\n          return "zero";\n        }\n        default -> {\n          return "one";\n        }\n      }}}
+  // edit@qf5 [[sl=+0;el=+5;sc=7;ec=22]] {{return switch (x) {\n        case -1 -> "negative";\n        case 0 -> "zero";\n        default -> "one";\n      }}}
   String badFoo3(int x) {
     if (x == 0 || x == 1 || x == -1)
       if (x == -1)  // Noncompliant [[sl=+0;el=+0;sc=7;ec=9;quickfixes=qf5]]
@@ -171,7 +171,7 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   // fix@qf6 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf6 [[sl=+0;el=+5;sc=7;ec=22]] {{switch (x) {\n        case -1 -> {\n          return "negative";\n        }\n        case 2, 0 -> {\n          return "even";\n        }\n        default -> {\n          return "one";\n        }\n      }}}
+  // edit@qf6 [[sl=+0;el=+5;sc=7;ec=22]] {{return switch (x) {\n        case -1 -> "negative";\n        case 2, 0 -> "even";\n        default -> "one";\n      }}}
   String badFoo4(int x) {
     if (0 == x || x == 1 || -1 == x || x == 2)
       if (-1 == x)  // Noncompliant [[sl=+0;el=+0;sc=7;ec=9;quickfixes=qf6]]
@@ -297,8 +297,8 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   // fix@qf4 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf4 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (b) {\n      case Bar.B1 -> {\n        return "b1";\n      }\n      case Bar.B2, B3, Bar.B4 -> {\n        return "b234";\n      }\n      default -> {\n        return "b5";\n      }\n    }}}
-  static String badBar(Bar b) {
+  // edit@qf4 [[sl=+0;el=+6;sc=5;ec=6]] {{return switch (b) {\n      case Bar.B1 -> "b1";\n      case Bar.B2, B3, Bar.B4 -> "b234";\n      default -> "b5";\n    }}}
+  static String badBar1(Bar b) {
     // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf4]]
     if (b == Bar.B1) {
       return "b1";
@@ -306,6 +306,34 @@ public class PatternMatchUsingIfCheckSample {
       return "b234";
     } else {
       return "b5";
+    }
+  }
+
+  // fix@qf9 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf9 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (b) {\n      case Bar.B1 -> {\n        return "b1";\n      }\n      case Bar.B2, B3, Bar.B4 -> {\n        return "b234";\n      }\n      default -> {\n        s = "b5";\n      }\n    }}}
+  static String badBar2(Bar b) {
+    String s;
+    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf9]]
+    if (b == Bar.B1) {
+      return "b1";
+    } else if (b == Bar.B2 || b == B3 || b == Bar.B4) {
+      return "b234";
+    } else {
+      s = "b5";
+    }
+    return s;
+  }
+
+  // fix@qf10 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf10 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (x) {\n      case 0 -> {\n        return;\n      }\n      case 1 -> {\n        return;\n      }\n      default -> {\n        return;\n      }\n    }}}
+  static void doNotLiftVoidReturns(double x){
+    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf10]]
+    if (x == 0){
+      return;
+    } else if (x == 1){
+      return;
+    } else {
+      return;
     }
   }
 

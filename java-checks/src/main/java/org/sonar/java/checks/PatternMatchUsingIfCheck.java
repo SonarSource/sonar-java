@@ -37,7 +37,9 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -183,12 +185,16 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   }
 
   private JavaQuickFix computeQuickFix(List<Case> cases, IfStatementTree topLevelIfStat) {
+    var canLiftReturn = cases.stream().allMatch(caze -> exprWhenReturnLifted(caze) != null);
     var baseIndent = topLevelIfStat.firstToken().range().start().column() - 1;
     var sb = new StringBuilder();
+    if (canLiftReturn){
+      sb.append("return ");
+    }
     sb.append("switch (").append(cases.get(0).scrutinee()).append(") {\n");
     for (Case caze : cases) {
       sb.append(" ".repeat(baseIndent + INDENT));
-      writeCase(caze, sb, baseIndent);
+      writeCase(caze, sb, baseIndent, canLiftReturn);
       sb.append("\n");
     }
     sb.append(" ".repeat(baseIndent)).append("}");
@@ -196,7 +202,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     return JavaQuickFix.newQuickFix(ISSUE_MESSAGE).addTextEdit(edit).build();
   }
 
-  private void writeCase(Case caze, StringBuilder sb, int baseIndent) {
+  private void writeCase(Case caze, StringBuilder sb, int baseIndent, boolean canLiftReturn) {
     if (caze instanceof PatternMatchCase patternMatchCase) {
       sb.append("case ").append(QuickFixHelper.contentForTree(patternMatchCase.pattern, context));
       if (!patternMatchCase.guards().isEmpty()) {
@@ -211,7 +217,11 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
       sb.append("default");
     }
     sb.append(" -> ");
-    addIndentedExceptFirstLine(makeBlockCode(caze.body(), baseIndent), sb);
+    if (canLiftReturn){
+      sb.append(exprWhenReturnLifted(caze));
+    } else {
+      addIndentedExceptFirstLine(makeBlockCode(caze.body(), baseIndent), sb);
+    }
   }
 
   private String makeBlockCode(StatementTree stat, int baseIndent) {
@@ -241,6 +251,19 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
         sb.append(sep);
       }
     }
+  }
+
+  private @Nullable String exprWhenReturnLifted(Case caze){
+    var stat = caze.body();
+    while (stat instanceof BlockTree block && block.body().size() == 1){
+      stat = block.body().get(0);
+    }
+    if (stat instanceof ReturnStatementTree returnStat && returnStat.expression() != null){
+      return QuickFixHelper.contentForTree(returnStat.expression(), context) + ";";
+    } else if (stat instanceof ThrowStatementTree throwStatementTree){
+      return QuickFixHelper.contentForTree(throwStatementTree, context);
+    }
+    return null;
   }
 
   private sealed interface Case permits PatternMatchCase, EqualityCase, DefaultCase {
