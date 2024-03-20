@@ -32,7 +32,7 @@ class TooManyMethodsCheckTest {
     TooManyMethodsCheck check = new TooManyMethodsCheck();
     check.maximumMethodThreshold = 4;
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TooManyMethodsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TooManyMethodsCheckSample.java"))
       .withCheck(check)
       .verifyIssues();
   }

@@ -31,7 +31,7 @@ class ClassWithoutHashCodeInHashStructureCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheckSample.java"))
       .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
       .verifyIssues();
 

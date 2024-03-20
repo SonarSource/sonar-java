@@ -30,7 +30,7 @@ class UnpredictableSaltCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/UnpredictableSaltCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/UnpredictableSaltCheckSample.java"))
       .withCheck(new UnpredictableSaltCheck())
       .verifyIssues();
   }

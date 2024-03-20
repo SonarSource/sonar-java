@@ -29,12 +29,12 @@ class UserEnumerationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/UserEnumerationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/UserEnumerationCheckSample.java"))
       .withCheck(new UserEnumerationCheck())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/UserEnumerationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/UserEnumerationCheckSample.java"))
       .withCheck(new UserEnumerationCheck())
       .withoutSemantic()
       .verifyNoIssues();

@@ -29,7 +29,7 @@ class StringBufferAndBuilderWithCharCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/StringBufferAndBuilderWithCharCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringBufferAndBuilderWithCharCheckSample.java"))
       .withCheck(new StringBufferAndBuilderWithCharCheck())
       .verifyIssues();
   }

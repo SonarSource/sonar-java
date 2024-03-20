@@ -30,7 +30,7 @@ class LazyArgEvaluationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/LazyArgEvaluationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/LazyArgEvaluationCheckSample.java"))
       .withCheck(new LazyArgEvaluationCheck())
       .verifyIssues();
   }

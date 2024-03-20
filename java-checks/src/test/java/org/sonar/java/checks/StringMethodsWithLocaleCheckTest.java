@@ -28,7 +28,7 @@ class StringMethodsWithLocaleCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/StringMethodsWithLocaleCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringMethodsWithLocaleCheckSample.java"))
       .withCheck(new StringMethodsWithLocaleCheck())
       .verifyIssues();
   }

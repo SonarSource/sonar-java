@@ -29,7 +29,7 @@ class ThreadRunCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/ThreadRunCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ThreadRunCheckSample.java"))
       .withCheck(new ThreadRunCheck())
       .withQuickFixes()
       .verifyIssues();

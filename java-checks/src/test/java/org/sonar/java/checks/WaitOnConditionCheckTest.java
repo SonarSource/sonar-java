@@ -29,7 +29,7 @@ class WaitOnConditionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/WaitOnConditionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/WaitOnConditionCheckSample.java"))
       .withCheck(new WaitOnConditionCheck())
       .verifyIssues();
   }

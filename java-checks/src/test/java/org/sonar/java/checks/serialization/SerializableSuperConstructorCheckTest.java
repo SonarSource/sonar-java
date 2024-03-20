@@ -30,7 +30,7 @@ class SerializableSuperConstructorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/SerializableSuperConstructorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/SerializableSuperConstructorCheckSample.java"))
       .withCheck(new SerializableSuperConstructorCheck())
       .verifyIssues();
   }

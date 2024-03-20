@@ -28,7 +28,7 @@ class SpringIncompatibleTransactionalCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/SpringIncompatibleTransactionalCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/SpringIncompatibleTransactionalCheckSample.java"))
       .withCheck(new SpringIncompatibleTransactionalCheck())
       .verifyIssues();
   }

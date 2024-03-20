@@ -30,7 +30,7 @@ class SwitchWithTooManyCasesCheckTest {
   @Test
   void defaultValue() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchWithTooManyCasesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchWithTooManyCasesCheckSample.java"))
       .withCheck(new SwitchWithTooManyCasesCheck())
       .verifyIssues();
   }

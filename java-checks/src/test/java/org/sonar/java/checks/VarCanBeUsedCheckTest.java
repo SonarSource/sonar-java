@@ -28,7 +28,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class VarCanBeUsedCheckTest {
 
-  private static final String TEST_FILE = mainCodeSourcesPath("checks/VarCanBeUsedCheck.java");
+  private static final String TEST_FILE = mainCodeSourcesPath("checks/VarCanBeUsedCheckSample.java");
 
   @Test
   void test() {

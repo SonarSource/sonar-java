@@ -31,7 +31,7 @@ class OmitPermittedTypesCheckTest {
   @Test
   void test() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(mainCodeSourcesPath("checks/OmitPermittedTypesCheck/OmitPermittedTypesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/OmitPermittedTypesCheck/OmitPermittedTypesCheckSample.java"))
       .withCheck(new OmitPermittedTypesCheck())
       .withQuickFixes()
       .verifyIssues();

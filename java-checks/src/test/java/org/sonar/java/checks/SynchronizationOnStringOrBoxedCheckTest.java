@@ -30,7 +30,7 @@ class SynchronizationOnStringOrBoxedCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SynchronizationOnStringOrBoxedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SynchronizationOnStringOrBoxedCheckSample.java"))
       .withCheck(new SynchronizationOnStringOrBoxedCheck())
       .verifyIssues();
   }

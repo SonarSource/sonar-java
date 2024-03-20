@@ -29,7 +29,7 @@ class SyncGetterAndSetterCheckTest {
   @Test
   void syncGetterAndSetterCheckTest() throws Exception {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SyncGetterAndSetterCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SyncGetterAndSetterCheckSample.java"))
       .withCheck(new SyncGetterAndSetterCheck())
       .verifyIssues();
   }

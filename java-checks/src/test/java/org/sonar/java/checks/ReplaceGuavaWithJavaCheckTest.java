@@ -27,7 +27,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ReplaceGuavaWithJavaCheckTest {
 
-  private static final String FILENAME = mainCodeSourcesPath("checks/ReplaceGuavaWithJavaCheck.java");
+  private static final String FILENAME = mainCodeSourcesPath("checks/ReplaceGuavaWithJavaCheckSample.java");
 
   @Test
   void test_with_java_7() {

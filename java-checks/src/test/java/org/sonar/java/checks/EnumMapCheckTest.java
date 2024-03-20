@@ -29,7 +29,7 @@ class EnumMapCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/EnumMapCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/EnumMapCheckSample.java"))
       .withCheck(new EnumMapCheck())
       .verifyIssues();
   }

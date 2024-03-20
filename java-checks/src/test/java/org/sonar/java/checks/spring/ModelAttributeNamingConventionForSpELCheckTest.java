@@ -29,11 +29,11 @@ class ModelAttributeNamingConventionForSpELCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/ModelAttributeNamingConventionForSpELCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/ModelAttributeNamingConventionForSpELCheckSample.java"))
       .withCheck(new ModelAttributeNamingConventionForSpELCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/ModelAttributeNamingConventionForSpELCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/ModelAttributeNamingConventionForSpELCheckSample.java"))
       .withCheck(new ModelAttributeNamingConventionForSpELCheck())
       .withoutSemantic()
       .verifyNoIssues();

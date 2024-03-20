@@ -29,7 +29,7 @@ class EscapeSequenceControlCharacterCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/EscapeSequenceControlCharacterCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/EscapeSequenceControlCharacterCheckSample.java"))
       .withCheck(new EscapeSequenceControlCharacterCheck())
       .verifyIssues();
   }

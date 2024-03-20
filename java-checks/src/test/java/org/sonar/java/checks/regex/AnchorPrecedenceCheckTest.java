@@ -29,7 +29,7 @@ class AnchorPrecedenceCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/AnchorPrecedenceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/AnchorPrecedenceCheckSample.java"))
       .withCheck(new AnchorPrecedenceCheck())
       .verifyIssues();
   }

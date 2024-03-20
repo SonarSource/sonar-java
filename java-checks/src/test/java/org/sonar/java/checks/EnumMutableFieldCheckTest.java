@@ -30,7 +30,7 @@ class EnumMutableFieldCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/EnumMutableFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/EnumMutableFieldCheckSample.java"))
       .withCheck(new EnumMutableFieldCheck())
       .verifyIssues();
   }

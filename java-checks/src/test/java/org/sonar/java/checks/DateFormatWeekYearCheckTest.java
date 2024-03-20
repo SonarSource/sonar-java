@@ -30,7 +30,7 @@ class DateFormatWeekYearCheckTest {
   @Test
   void test() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(mainCodeSourcesPath("/checks/DateFormatWeekYearCheck.java"))
+      .onFile(mainCodeSourcesPath("/checks/DateFormatWeekYearCheckSample.java"))
       .withCheck(new DateFormatWeekYearCheck())
       .withQuickFixes()
       .verifyIssues();

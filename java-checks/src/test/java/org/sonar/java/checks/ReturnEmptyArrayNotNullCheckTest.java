@@ -29,7 +29,7 @@ class ReturnEmptyArrayNotNullCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/ReturnEmptyArrayNotNullCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ReturnEmptyArrayNotNullCheckSample.java"))
       .withCheck(new ReturnEmptyArrayNotNullCheck())
       .verifyIssues();
   }

@@ -28,7 +28,7 @@ class RawByteBitwiseOperationsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RawByteBitwiseOperationsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RawByteBitwiseOperationsCheckSample.java"))
       .withCheck(new RawByteBitwiseOperationsCheck())
       .verifyIssues();
   }

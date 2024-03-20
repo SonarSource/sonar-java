@@ -29,7 +29,7 @@ class ControllerWithRestControllerReplacementCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/spring/ControllerWithRestControllerReplacementCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/ControllerWithRestControllerReplacementCheckSample.java"))
       .withCheck(new ControllerWithRestControllerReplacementCheck())
       .withQuickFixes()
       .verifyIssues();

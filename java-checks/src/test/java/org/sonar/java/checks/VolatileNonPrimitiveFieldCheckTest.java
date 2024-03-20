@@ -30,7 +30,7 @@ class VolatileNonPrimitiveFieldCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/VolatileNonPrimitiveFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/VolatileNonPrimitiveFieldCheckSample.java"))
       .withCheck(new VolatileNonPrimitiveFieldCheck())
       .verifyIssues();
   }

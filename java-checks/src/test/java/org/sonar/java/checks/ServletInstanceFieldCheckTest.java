@@ -30,11 +30,11 @@ class ServletInstanceFieldCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheckSample.java"))
       .withCheck(new ServletInstanceFieldCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheckSample.java"))
       .withCheck(new ServletInstanceFieldCheck())
       .withoutSemantic()
       .verifyNoIssues();

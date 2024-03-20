@@ -29,7 +29,7 @@ class UnnecessaryBitOperationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/UnnecessaryBitOperationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/UnnecessaryBitOperationCheckSample.java"))
       .withCheck(new UnnecessaryBitOperationCheck())
       .verifyIssues();
   }

@@ -52,7 +52,7 @@ class HardCodedCredentialsShouldNotBeUsedCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPathInModule(AWS_MODULE, "checks/security/HardCodedCredentialsShouldNotBeUsedCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPathInModule(AWS_MODULE, "checks/security/HardCodedCredentialsShouldNotBeUsedCheckSample.java"))
       .withCheck(new HardCodedCredentialsShouldNotBeUsedCheck())
       .withClassPath(AWS_CLASSPATH)
       .verifyIssues();

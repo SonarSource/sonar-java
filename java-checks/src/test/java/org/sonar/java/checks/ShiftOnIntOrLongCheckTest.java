@@ -29,7 +29,7 @@ class ShiftOnIntOrLongCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ShiftOnIntOrLongCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ShiftOnIntOrLongCheckSample.java"))
       .withCheck(new ShiftOnIntOrLongCheck())
       .verifyIssues();
   }

@@ -31,7 +31,7 @@ class StaticMethodCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/StaticMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StaticMethodCheckSample.java"))
       .withCheck(new StaticMethodCheck())
       .withQuickFixes()
       .verifyIssues();

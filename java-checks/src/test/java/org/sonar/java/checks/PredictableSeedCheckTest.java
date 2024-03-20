@@ -29,7 +29,7 @@ class PredictableSeedCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PredictableSeedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PredictableSeedCheckSample.java"))
       .withCheck(new PredictableSeedCheck())
       .verifyIssues();
   }

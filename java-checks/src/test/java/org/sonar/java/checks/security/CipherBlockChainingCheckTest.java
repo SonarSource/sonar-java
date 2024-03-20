@@ -28,7 +28,7 @@ import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPa
 
 class CipherBlockChainingCheckTest {
 
-  private static final String SOURCE_PATH = "checks/security/CipherBlockChainingCheck.java";
+  private static final String SOURCE_PATH = "checks/security/CipherBlockChainingCheckSample.java";
 
   @Test
   void test() {

@@ -30,7 +30,7 @@ class UnreachableCatchCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/UnreachableCatchCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/UnreachableCatchCheckSample.java"))
       .withCheck(new UnreachableCatchCheck())
       .verifyIssues();
   }

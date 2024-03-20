@@ -28,7 +28,7 @@ class BasicAuthCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/BasicAuthCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/BasicAuthCheckSample.java"))
       .withCheck(new BasicAuthCheck())
       .verifyIssues();
   }

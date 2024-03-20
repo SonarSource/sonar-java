@@ -29,7 +29,7 @@ class InnerClassOfSerializableCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InnerClassOfSerializableCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InnerClassOfSerializableCheckSample.java"))
       .withCheck(new InnerClassOfSerializableCheck())
       .verifyIssues();
   }

@@ -29,7 +29,7 @@ class NoPmdTagPresenceCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/NoPmdTagPresenceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NoPmdTagPresenceCheckSample.java"))
       .withCheck(new NoPmdTagPresenceCheck())
       .verifyIssues();
   }

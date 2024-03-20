@@ -26,7 +26,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SpringConfigurationWithAutowiredFieldsCheckTest {
 
-  private static final String FILE = mainCodeSourcesPath("checks/spring/SpringConfigurationWithAutowiredFieldsCheck.java");
+  private static final String FILE = mainCodeSourcesPath("checks/spring/SpringConfigurationWithAutowiredFieldsCheckSample.java");
 
   @Test
   void test() {

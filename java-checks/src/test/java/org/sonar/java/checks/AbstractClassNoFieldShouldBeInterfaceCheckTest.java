@@ -28,7 +28,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class AbstractClassNoFieldShouldBeInterfaceCheckTest {
 
-  private static final String TEST_FILE = "checks/AbstractClassNoFieldShouldBeInterfaceCheck.java";
+  private static final String TEST_FILE = "checks/AbstractClassNoFieldShouldBeInterfaceCheckSample.java";
   private static final String TEST_FILE_NO_JAVA_VERSION = "checks/AbstractClassNoFieldShouldBeInterfaceCheck_no_version.java";
   private static final String TEST_FILE_JAVA_9 = "checks/AbstractClassNoFieldShouldBeInterfaceCheck_java9.java";
 

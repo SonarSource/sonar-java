@@ -29,7 +29,7 @@ class SerializableObjectInSessionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/SerializableObjectInSessionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/SerializableObjectInSessionCheckSample.java"))
       .withCheck(new SerializableObjectInSessionCheck())
       .verifyIssues();
   }

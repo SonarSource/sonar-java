@@ -29,7 +29,7 @@ class SerialVersionUidInRecordCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/SerialVersionUidInRecordCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/SerialVersionUidInRecordCheckSample.java"))
       .withCheck(new SerialVersionUidInRecordCheck())
       .verifyIssues();
   }

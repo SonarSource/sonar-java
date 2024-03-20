@@ -29,7 +29,7 @@ class WildcardImportsShouldNotBeUsedCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/WildcardImportsShouldNotBeUsedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/WildcardImportsShouldNotBeUsedCheckSample.java"))
       .withCheck(new WildcardImportsShouldNotBeUsedCheck())
       .verifyIssues();
   }

@@ -29,7 +29,7 @@ class AutowiredOnConstructorWhenMultipleConstructorsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/AutowiredOnConstructorWhenMultipleConstructorsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/AutowiredOnConstructorWhenMultipleConstructorsCheckSample.java"))
       .withCheck(new AutowiredOnConstructorWhenMultipleConstructorsCheck())
       .verifyIssues();
   }

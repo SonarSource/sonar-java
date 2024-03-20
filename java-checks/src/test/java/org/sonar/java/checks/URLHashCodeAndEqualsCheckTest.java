@@ -28,7 +28,7 @@ class URLHashCodeAndEqualsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/URLHashCodeAndEqualsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/URLHashCodeAndEqualsCheckSample.java"))
       .withCheck(new URLHashCodeAndEqualsCheck())
       .verifyIssues();
   }

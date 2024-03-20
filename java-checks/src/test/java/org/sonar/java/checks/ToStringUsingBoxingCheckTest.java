@@ -29,7 +29,7 @@ class ToStringUsingBoxingCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/ToStringUsingBoxingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ToStringUsingBoxingCheckSample.java"))
       .withCheck(new ToStringUsingBoxingCheck())
       .withQuickFixes()
       .verifyIssues();

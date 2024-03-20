@@ -33,7 +33,7 @@ class NestedIfStatementsCheckTest {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     assertThat(check.max).isEqualTo(3);
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/NestedIfStatementsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NestedIfStatementsCheckSample.java"))
       .withCheck(check)
       .verifyIssues();
   }

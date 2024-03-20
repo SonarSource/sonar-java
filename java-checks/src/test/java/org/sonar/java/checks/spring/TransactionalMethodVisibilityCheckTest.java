@@ -30,7 +30,7 @@ class TransactionalMethodVisibilityCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/TransactionalMethodVisibilityCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/TransactionalMethodVisibilityCheckSample.java"))
       .withCheck(new TransactionalMethodVisibilityCheck())
       .verifyIssues();
   }

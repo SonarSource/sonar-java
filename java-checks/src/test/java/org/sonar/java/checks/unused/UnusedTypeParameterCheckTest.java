@@ -30,7 +30,7 @@ class UnusedTypeParameterCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/unused/UnusedTypeParameterCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedTypeParameterCheckSample.java"))
       .withCheck(new UnusedTypeParameterCheck())
       .verifyIssues();
   }

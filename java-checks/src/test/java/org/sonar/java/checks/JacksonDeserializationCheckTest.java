@@ -29,7 +29,7 @@ class JacksonDeserializationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/JacksonDeserializationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/JacksonDeserializationCheckSample.java"))
       .withCheck(new JacksonDeserializationCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class JacksonDeserializationCheckTest {
   @Test
   void test_no_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/JacksonDeserializationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/JacksonDeserializationCheckSample.java"))
       .withCheck(new JacksonDeserializationCheck())
       .withoutSemantic()
       .verifyNoIssues();

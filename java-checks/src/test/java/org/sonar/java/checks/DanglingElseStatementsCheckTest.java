@@ -29,7 +29,7 @@ class DanglingElseStatementsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/DanglingElseStatementsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/DanglingElseStatementsCheckSample.java"))
       .withCheck(new DanglingElseStatementsCheck())
       .verifyIssues();
   }

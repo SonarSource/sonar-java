@@ -30,7 +30,7 @@ class NoWayOutLoopCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NoWayOutLoopCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NoWayOutLoopCheckSample.java"))
       .withCheck(new NoWayOutLoopCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

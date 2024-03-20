@@ -28,7 +28,7 @@ class LoggedRethrownExceptionsCheckTest {
   @Test
   void test() throws Exception {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/LoggedRethrownExceptionsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/LoggedRethrownExceptionsCheckSample.java"))
       .withCheck(new LoggedRethrownExceptionsCheck())
       .verifyIssues();
   }

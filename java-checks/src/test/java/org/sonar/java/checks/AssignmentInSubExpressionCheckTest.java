@@ -29,7 +29,7 @@ class AssignmentInSubExpressionCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AssignmentInSubExpressionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AssignmentInSubExpressionCheckSample.java"))
       .withCheck(new AssignmentInSubExpressionCheck())
       .verifyIssues();
   }

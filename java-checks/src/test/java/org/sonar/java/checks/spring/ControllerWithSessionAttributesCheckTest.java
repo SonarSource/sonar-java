@@ -28,11 +28,11 @@ class ControllerWithSessionAttributesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/ControllerWithSessionAttributesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/ControllerWithSessionAttributesCheckSample.java"))
       .withCheck(new ControllerWithSessionAttributesCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/ControllerWithSessionAttributesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/ControllerWithSessionAttributesCheckSample.java"))
       .withCheck(new ControllerWithSessionAttributesCheck())
       .withoutSemantic()
       .verifyNoIssues();

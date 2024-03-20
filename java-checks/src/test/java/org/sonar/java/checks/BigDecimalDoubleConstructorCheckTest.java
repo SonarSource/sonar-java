@@ -29,7 +29,7 @@ class BigDecimalDoubleConstructorCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/BigDecimalDoubleConstructorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/BigDecimalDoubleConstructorCheckSample.java"))
       .withCheck(new BigDecimalDoubleConstructorCheck())
       .withQuickFixes()
       .verifyIssues();

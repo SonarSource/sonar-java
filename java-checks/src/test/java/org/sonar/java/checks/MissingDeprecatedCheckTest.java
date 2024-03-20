@@ -30,7 +30,7 @@ class MissingDeprecatedCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MissingDeprecatedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MissingDeprecatedCheckSample.java"))
       .withCheck(new MissingDeprecatedCheck())
       .verifyIssues();
   }

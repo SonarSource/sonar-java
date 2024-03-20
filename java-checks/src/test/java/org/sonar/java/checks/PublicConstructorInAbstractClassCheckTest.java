@@ -28,7 +28,7 @@ class PublicConstructorInAbstractClassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PublicConstructorInAbstractClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PublicConstructorInAbstractClassCheckSample.java"))
       .withCheck(new PublicConstructorInAbstractClassCheck())
       .verifyIssues();
   }
@@ -36,7 +36,7 @@ class PublicConstructorInAbstractClassCheckTest {
   @Test
   void test_non_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PublicConstructorInAbstractClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PublicConstructorInAbstractClassCheckSample.java"))
       .withCheck(new PublicConstructorInAbstractClassCheck())
       .withoutSemantic()
       .verifyIssues();

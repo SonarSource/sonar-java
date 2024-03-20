@@ -30,7 +30,7 @@ class ForLoopFalseConditionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ForLoopFalseConditionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ForLoopFalseConditionCheckSample.java"))
       .withCheck(new ForLoopFalseConditionCheck())
       .verifyIssues();
   }

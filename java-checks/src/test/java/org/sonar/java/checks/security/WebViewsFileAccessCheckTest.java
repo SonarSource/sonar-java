@@ -29,7 +29,7 @@ class WebViewsFileAccessCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/WebViewsFileAccessCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/WebViewsFileAccessCheckSample.java"))
       .withCheck(new WebViewsFileAccessCheck())
       .verifyIssues();
   }

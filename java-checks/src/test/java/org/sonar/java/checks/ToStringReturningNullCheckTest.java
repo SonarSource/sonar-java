@@ -29,7 +29,7 @@ class ToStringReturningNullCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/ToStringReturningNullCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ToStringReturningNullCheckSample.java"))
       .withCheck(new ToStringReturningNullCheck())
       .withQuickFixes()
       .verifyIssues();

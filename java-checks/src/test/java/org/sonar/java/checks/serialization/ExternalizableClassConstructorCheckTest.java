@@ -29,7 +29,7 @@ class ExternalizableClassConstructorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/ExternalizableClassConstructorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/ExternalizableClassConstructorCheckSample.java"))
       .withCheck(new ExternalizableClassConstructorCheck())
       .verifyIssues();
   }

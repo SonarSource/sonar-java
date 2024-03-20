@@ -28,7 +28,7 @@ class PrimitiveWrappersInTernaryOperatorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PrimitiveWrappersInTernaryOperatorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PrimitiveWrappersInTernaryOperatorCheckSample.java"))
       .withCheck(new PrimitiveWrappersInTernaryOperatorCheck())
       .verifyIssues();
   }

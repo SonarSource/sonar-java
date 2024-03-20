@@ -29,7 +29,7 @@ class ReflectionOnNonRuntimeAnnotationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ReflectionOnNonRuntimeAnnotationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ReflectionOnNonRuntimeAnnotationCheckSample.java"))
       .withCheck(new ReflectionOnNonRuntimeAnnotationCheck())
       .verifyIssues();
   }

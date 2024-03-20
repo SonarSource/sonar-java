@@ -29,7 +29,7 @@ class IncorrectOrderOfMembersCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/IncorrectOrderOfMembersCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/IncorrectOrderOfMembersCheckSample.java"))
       .withCheck(new IncorrectOrderOfMembersCheck())
       .verifyIssues();
   }

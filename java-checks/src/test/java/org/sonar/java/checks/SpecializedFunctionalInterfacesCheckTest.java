@@ -30,11 +30,11 @@ class SpecializedFunctionalInterfacesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SpecializedFunctionalInterfacesCheckSample.java"))
       .withCheck(new SpecializedFunctionalInterfacesCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SpecializedFunctionalInterfacesCheckSample.java"))
       .withCheck(new SpecializedFunctionalInterfacesCheck())
       .withoutSemantic()
       .verifyIssues();

@@ -29,7 +29,7 @@ class EqualsOnAtomicClassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/EqualsOnAtomicClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/EqualsOnAtomicClassCheckSample.java"))
       .withCheck(new EqualsOnAtomicClassCheck())
       .verifyIssues();
   }

@@ -29,7 +29,7 @@ class AndroidMobileDatabaseEncryptionKeysCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/AndroidMobileDatabaseEncryptionKeysCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/AndroidMobileDatabaseEncryptionKeysCheckSample.java"))
       .withCheck(new AndroidMobileDatabaseEncryptionKeysCheck())
       .verifyIssues();
   }

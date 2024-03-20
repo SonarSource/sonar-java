@@ -31,7 +31,7 @@ class RedundantThrowsDeclarationCheckTest {
   @Test
   void test() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(mainCodeSourcesPath("checks/RedundantThrowsDeclarationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RedundantThrowsDeclarationCheckSample.java"))
       .withCheck(new RedundantThrowsDeclarationCheck())
       .withQuickFixes()
       .verifyIssues();

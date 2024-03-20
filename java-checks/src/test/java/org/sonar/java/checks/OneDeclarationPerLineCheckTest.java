@@ -28,7 +28,7 @@ class OneDeclarationPerLineCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/OneDeclarationPerLineCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/OneDeclarationPerLineCheckSample.java"))
       .withCheck(new OneDeclarationPerLineCheck())
       .withQuickFixes()
       .verifyIssues();

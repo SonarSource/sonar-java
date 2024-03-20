@@ -28,7 +28,7 @@ class DeadStoreCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/DeadStoreCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/DeadStoreCheckSample.java"))
       .withCheck(new DeadStoreCheck())
       .verifyIssues();
   }

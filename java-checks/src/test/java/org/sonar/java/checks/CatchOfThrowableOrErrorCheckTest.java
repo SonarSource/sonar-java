@@ -31,7 +31,7 @@ class CatchOfThrowableOrErrorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CatchOfThrowableOrErrorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CatchOfThrowableOrErrorCheckSample.java"))
       .withCheck(new CatchOfThrowableOrErrorCheck())
       .verifyIssues();
   }

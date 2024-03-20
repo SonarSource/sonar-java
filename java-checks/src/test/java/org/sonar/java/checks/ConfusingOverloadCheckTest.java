@@ -30,7 +30,7 @@ class ConfusingOverloadCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ConfusingOverloadCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ConfusingOverloadCheckSample.java"))
       .withCheck(new ConfusingOverloadCheck())
       .verifyIssues();
   }

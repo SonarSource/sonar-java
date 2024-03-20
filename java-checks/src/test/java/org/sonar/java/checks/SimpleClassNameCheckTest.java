@@ -30,7 +30,7 @@ class SimpleClassNameCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SimpleClassNameCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SimpleClassNameCheckSample.java"))
       .withCheck(new SimpleClassNameCheck())
       .verifyIssues();
   }

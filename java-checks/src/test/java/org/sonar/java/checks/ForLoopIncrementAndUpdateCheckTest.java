@@ -30,7 +30,7 @@ class ForLoopIncrementAndUpdateCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ForLoopIncrementAndUpdateCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ForLoopIncrementAndUpdateCheckSample.java"))
       .withCheck(new ForLoopIncrementAndUpdateCheck())
       .verifyIssues();
   }

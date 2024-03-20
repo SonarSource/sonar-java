@@ -29,7 +29,7 @@ class UnderscoreOnNumberCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/UnderscoreOnNumberCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/UnderscoreOnNumberCheckSample.java"))
       .withCheck(new UnderscoreOnNumberCheck())
       .verifyIssues();
   }

@@ -30,7 +30,7 @@ class CollectionConstructorReferenceCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CollectionConstructorReferenceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CollectionConstructorReferenceCheckSample.java"))
       .withCheck(new CollectionConstructorReferenceCheck())
       .verifyIssues();
   }

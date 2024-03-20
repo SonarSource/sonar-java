@@ -29,7 +29,7 @@ class WriteObjectTheOnlySynchronizedMethodCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/WriteObjectTheOnlySynchronizedMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/WriteObjectTheOnlySynchronizedMethodCheckSample.java"))
       .withCheck(new WriteObjectTheOnlySynchronizedMethodCheck())
       .verifyIssues();
   }

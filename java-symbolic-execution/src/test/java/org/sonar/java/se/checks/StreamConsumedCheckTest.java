@@ -29,7 +29,7 @@ class StreamConsumedCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S3959_StreamConsumedCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S3959_StreamConsumedCheckSample.java"))
       .withCheck(new StreamConsumedCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

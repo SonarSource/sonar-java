@@ -29,7 +29,7 @@ class TryWithResourcesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TryWithResourcesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TryWithResourcesCheckSample.java"))
       .withCheck(new TryWithResourcesCheck())
       .withJavaVersion(7)
       .verifyIssues();

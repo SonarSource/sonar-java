@@ -29,7 +29,7 @@ class WebViewJavaScriptSupportCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/WebViewJavaScriptSupportCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/WebViewJavaScriptSupportCheckSample.java"))
       .withCheck(new WebViewJavaScriptSupportCheck())
       .verifyIssues();
   }

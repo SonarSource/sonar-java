@@ -29,7 +29,7 @@ class BooleanMethodNameCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/naming/BooleanMethodNameCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/BooleanMethodNameCheckSample.java"))
       .withCheck(new BooleanMethodNameCheck())
       .verifyIssues();
   }

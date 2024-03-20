@@ -30,7 +30,7 @@ class WildcardReturnParameterTypeCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/WildcardReturnParameterTypeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/WildcardReturnParameterTypeCheckSample.java"))
       .withCheck(new WildcardReturnParameterTypeCheck())
       .verifyIssues();
   }

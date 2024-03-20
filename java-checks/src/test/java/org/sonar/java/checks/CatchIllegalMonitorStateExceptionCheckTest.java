@@ -30,7 +30,7 @@ class CatchIllegalMonitorStateExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CatchIllegalMonitorStateExceptionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CatchIllegalMonitorStateExceptionCheckSample.java"))
       .withCheck(new CatchIllegalMonitorStateExceptionCheck())
       .verifyIssues();
   }

@@ -30,7 +30,7 @@ class PrimitivesMarkedNullableCheckTest {
   @Test
   void test() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(mainCodeSourcesPath("checks/PrimitivesMarkedNullableCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PrimitivesMarkedNullableCheckSample.java"))
       .withCheck(new PrimitivesMarkedNullableCheck())
       .withQuickFixes()
       .verifyIssues();
@@ -39,7 +39,7 @@ class PrimitivesMarkedNullableCheckTest {
   @Test
   void noSemantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PrimitivesMarkedNullableCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PrimitivesMarkedNullableCheckSample.java"))
       .withCheck(new PrimitivesMarkedNullableCheck())
       .withoutSemantic()
       .verifyNoIssues();

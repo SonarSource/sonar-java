@@ -29,7 +29,7 @@ class ImmediatelyReturnedVariableCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/ImmediatelyReturnedVariableCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ImmediatelyReturnedVariableCheckSample.java"))
       .withCheck(new ImmediatelyReturnedVariableCheck())
       .withQuickFixes()
       .verifyIssues();

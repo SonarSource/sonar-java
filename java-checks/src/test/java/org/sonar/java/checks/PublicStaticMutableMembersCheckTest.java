@@ -31,7 +31,7 @@ class PublicStaticMutableMembersCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PublicStaticMutableMembersCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PublicStaticMutableMembersCheckSample.java"))
       .withCheck(new PublicStaticMutableMembersCheck())
       .verifyIssues();
   }
@@ -47,7 +47,7 @@ class PublicStaticMutableMembersCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PublicStaticMutableMembersCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PublicStaticMutableMembersCheckSample.java"))
       .withCheck(new PublicStaticMutableMembersCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();

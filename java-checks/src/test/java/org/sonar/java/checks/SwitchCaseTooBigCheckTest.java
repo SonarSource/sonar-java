@@ -30,7 +30,7 @@ class SwitchCaseTooBigCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchCaseTooBigCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchCaseTooBigCheckSample.java"))
       .withCheck(new SwitchCaseTooBigCheck())
       .verifyIssues();
   }
@@ -50,7 +50,7 @@ class SwitchCaseTooBigCheckTest {
     SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
     check.max = 0;
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchCaseTooBigCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchCaseTooBigCheckSample.java"))
       .withCheck(new SwitchCaseTooBigCheck())
       .verifyIssues();
   }

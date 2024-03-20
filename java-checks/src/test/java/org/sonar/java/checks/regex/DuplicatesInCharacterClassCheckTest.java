@@ -29,7 +29,7 @@ class DuplicatesInCharacterClassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/DuplicatesInCharacterClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/DuplicatesInCharacterClassCheckSample.java"))
       .withCheck(new DuplicatesInCharacterClassCheck())
       .verifyIssues();
   }

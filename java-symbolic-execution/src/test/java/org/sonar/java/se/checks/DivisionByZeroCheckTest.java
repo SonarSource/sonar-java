@@ -45,7 +45,7 @@ class DivisionByZeroCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/DivisionByZeroCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/DivisionByZeroCheckSample.java"))
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -54,7 +54,7 @@ class DivisionByZeroCheckTest {
   @Test
   void primitives() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/DivisionByZeroCheckPrimitives.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/DivisionByZeroCheckPrimitivesSample.java"))
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -72,7 +72,7 @@ class DivisionByZeroCheckTest {
   @Test
   void invocation_leading_to_ArithmeticException() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/MethodInvocationLeadingToDivisionByZero.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/MethodInvocationLeadingToDivisionByZeroSample.java"))
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

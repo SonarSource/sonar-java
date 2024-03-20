@@ -29,7 +29,7 @@ class AndroidUnencryptedFilesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/AndroidUnencryptedFilesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/AndroidUnencryptedFilesCheckSample.java"))
       .withCheck(new AndroidUnencryptedFilesCheck())
       .withinAndroidContext(true)
       .verifyIssues();
@@ -38,7 +38,7 @@ class AndroidUnencryptedFilesCheckTest {
   @Test
   void test_not_android_context() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/AndroidUnencryptedFilesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/AndroidUnencryptedFilesCheckSample.java"))
       .withCheck(new AndroidUnencryptedFilesCheck())
       .withinAndroidContext(false)
       .verifyNoIssues();

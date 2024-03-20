@@ -29,7 +29,7 @@ class AndroidNonAuthenticatedUsersCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/AndroidNonAuthenticatedUsersCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/AndroidNonAuthenticatedUsersCheckSample.java"))
       .withCheck(new AndroidNonAuthenticatedUsersCheck())
       .verifyIssues();
   }

@@ -28,7 +28,7 @@ class SynchronizedOverrideCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SynchronizedOverrideCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SynchronizedOverrideCheckSample.java"))
       .withCheck(new SynchronizedOverrideCheck())
       .verifyIssues();
   }

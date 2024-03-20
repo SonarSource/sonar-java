@@ -29,7 +29,7 @@ class CollectionSizeAndArrayLengthCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CollectionSizeAndArrayLengthCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CollectionSizeAndArrayLengthCheckSample.java"))
       .withCheck(new CollectionSizeAndArrayLengthCheck())
       .verifyIssues();
   }

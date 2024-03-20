@@ -29,7 +29,7 @@ class AssertsOnParametersOfPublicMethodCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AssertsOnParametersOfPublicMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AssertsOnParametersOfPublicMethodCheckSample.java"))
       .withCheck(new AssertsOnParametersOfPublicMethodCheck())
       .verifyIssues();
   }

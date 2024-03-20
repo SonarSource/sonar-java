@@ -30,7 +30,7 @@ class EscapedUnicodeCharactersCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/EscapedUnicodeCharactersCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/EscapedUnicodeCharactersCheckSample.java"))
       .withCheck(new EscapedUnicodeCharactersCheck())
       .verifyIssues();
   }

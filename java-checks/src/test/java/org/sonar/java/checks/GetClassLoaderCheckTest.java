@@ -29,7 +29,7 @@ class GetClassLoaderCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/GetClassLoaderCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/GetClassLoaderCheckSample.java"))
       .withCheck(new GetClassLoaderCheck())
       .verifyIssues();
   }
