@@ -324,6 +324,22 @@ public class PatternMatchUsingIfCheckSample {
     return s;
   }
 
+  // fix@qf11 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf11 [[sl=+0;el=+8;sc=5;ec=6]] {{switch (b) {\n      case Bar.B1 -> {\n        var res = 0;\n        res += 1;\n        return res;\n      }\n      case Bar.B2 -> {\n        return 42;\n      }\n      default -> {\n        return 25;\n      }\n    }}}
+  static int badBar3(Bar b){
+    String s;
+    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf11]]
+    if (b == Bar.B1){
+      var res = 0;
+      res += 1;
+      return res;
+    } else if (b == Bar.B2)
+      return 42;
+    else {
+      return 25;
+    }
+  }
+
   // fix@qf10 {{Replace the chain of if/else with a switch expression.}}
   // edit@qf10 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (x) {\n      case 0 -> {\n        return;\n      }\n      case 1 -> {\n        return;\n      }\n      default -> {\n        return;\n      }\n    }}}
   static void doNotLiftVoidReturns(double x){
