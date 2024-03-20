@@ -10,6 +10,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 public class MissingPathVariableAnnotationCheckSample {
+
+  @GetMapping("/{name:[a-z-]+}-{version:\\d\\.\\d\\.\\d}{ext:\\.[a-z]+}") // Noncompliant
+  public void handleWithoutExt(@PathVariable String name, @PathVariable String version) {}
+
+  @GetMapping("/something/{id:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}}") // Compliant
+  public String getObj(@PathVariable("id") String id){
+    return "";
+  }
+
+  @GetMapping("/{name:[a-z-]+}-{version:\\d\\.\\d\\.\\d}{ext:\\.[a-z]+}") // Compliant
+  public void handle(@PathVariable String name, @PathVariable String version, @PathVariable String ext) {}
+
+
+
   @GetMapping("/{id}") // Noncompliant [[sc=3;ec=23]] {{Bind path variable "id" to a method parameter.}}
   public String get(String id) {
     return "Hello World";
