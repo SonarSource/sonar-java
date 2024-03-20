@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
