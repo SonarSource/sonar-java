@@ -72,6 +72,21 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
+  int goodCompute4(Expr expr){
+    if (expr instanceof Plus plus && plus.lhs.equals(ZERO) && plus.rhs.equals(ZERO)) {
+      return 0;
+    } else if (expr instanceof Plus plus) {
+      return goodCompute4(plus.lhs) + goodCompute4(plus.rhs);
+    } else if (expr instanceof Minus(var l, Expr r) && r.equals(ZERO)) {
+      return goodCompute4(l);
+    } else if (expr instanceof Minus(var l, Expr r)) {
+      return goodCompute4(l) - goodCompute4(r);
+    } else if (expr instanceof Const(var i)) {
+      return i;
+    }
+    throw new AssertionError();
+  }
+
   // fix@qf1 {{Replace the chain of if/else with a switch expression.}}
   // edit@qf1 [[sl=+0;el=+12;sc=5;ec=6]] {{switch (expr) {\n      case Plus plus when plus.lhs.equals(ZERO) && plus.rhs.equals(ZERO) -> {\n        return 0;\n      }\n      case Plus plus -> {\n        return badCompute(plus.lhs) + badCompute(plus.rhs);\n      }\n      case Minus(var l, Expr r) when r.equals(ZERO) -> {\n        return badCompute(l);\n      }\n      case Minus(var l, Expr r) -> {\n        return badCompute(l) - badCompute(r);\n      }\n      case Const(var i) -> {\n        return i;\n      }\n      default -> {\n        throw new AssertionError();\n      }\n    }}}
   int badCompute(Expr expr) {
@@ -92,7 +107,7 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   // Compliant: one of the instanceofs is performed on expr2
-  int veryBadCompute(Expr expr1, Expr expr2) {
+  int badButAcceptableCompute(Expr expr1, Expr expr2) {
     if (expr1 instanceof Plus plus && plus.lhs.equals(ZERO) && plus.rhs.equals(ZERO)) {
       return 0;
     } else if (expr1 instanceof Plus plus) {
@@ -113,7 +128,7 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   // fix@qf3 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf3 [[sl=+0;el=+4;sc=7;ec=8]] {{switch (x) {\n        case 0, 1 -> {\n          return "binary";\n        }\n        case -1 -> {\n          return "negative";\n        }\n      }}}
+  // edit@qf3 [[sl=+0;el=+6;sc=7;ec=8]] {{switch (x) {\n        case 0, 1 -> {\n          return "binary";\n        }\n        case -1 -> {\n          return "negative";\n        }\n        default -> {\n          return "I don't know!";\n        }\n      }}}
   String badFoo1(int x, boolean b) {
     if (b){
       // Noncompliant@+1 [[sl=+1;el=+1;sc=7;ec=9;quickfixes=qf3]]
@@ -121,8 +136,9 @@ public class PatternMatchUsingIfCheckSample {
         return "binary";
       } else if (x == -1) {
         return "negative";
+      } else {
+        return "I don't know!";
       }
-      return "I don't know!";
     }
     return "?";
   }
@@ -148,6 +164,20 @@ public class PatternMatchUsingIfCheckSample {
         return "negative";
       else if (x == 0)
         return "zero";
+      else
+        return "one";
+    else
+      return "Hello world";
+  }
+
+  // fix@qf6 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf6 [[sl=+0;el=+5;sc=7;ec=22]] {{switch (x) {\n        case -1 -> {\n          return "negative";\n        }\n        case 2, 0 -> {\n          return "even";\n        }\n        default -> {\n          return "one";\n        }\n      }}}
+  String badFoo4(int x) {
+    if (0 == x || x == 1 || -1 == x || x == 2)
+      if (-1 == x)  // Noncompliant [[sl=+0;el=+0;sc=7;ec=9;quickfixes=qf6]]
+        return "negative";
+      else if (x == 2 || 0 == x)
+        return "even";
       else
         return "one";
     else
@@ -253,6 +283,15 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
+  String goodFoo10(int x) {
+    if (x == 0 || x == 1) {
+      return "Hello world";
+    } else if (x == -1) {
+      return "negative";
+    }
+    return "I don't know!";
+  }
+
   enum Bar {
     B1, B2, B3, B4, B5
   }
@@ -267,6 +306,42 @@ public class PatternMatchUsingIfCheckSample {
       return "b234";
     } else {
       return "b5";
+    }
+  }
+
+  void coverage(int x) {
+    if (x == 1 && x*3<10) {
+      System.out.println("one");
+    } else if (x == 2) {
+      System.out.println("two");
+    }
+  }
+
+  private static final int ONE = 1;
+
+  // fix@qf7 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf7 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (x) {\n      case ONE -> {\n        System.out.println("one");\n      }\n      case 2 -> {\n        System.out.println("two");\n      }\n      default -> {\n        System.out.println("??");\n      }\n    }}}
+  void compatingWithConst(int x) {
+    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf7]]
+    if (x == ONE) {
+      System.out.println("one");
+    } else if (x == 2) {
+      System.out.println("two");
+    } else {
+      System.out.println("??");
+    }
+  }
+
+  // fix@qf8 {{Replace the chain of if/else with a switch expression.}}
+  // edit@qf8 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (x) {\n      case 3*3 -> {\n        System.out.println("one");\n      }\n      case 2 -> {\n        System.out.println("two");\n      }\n      default -> {\n        System.out.println("??");\n      }\n    }}}
+  void compatingWithSillyMath(int x) {
+    // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf8]]
+    if (x == 3*3) {
+      System.out.println("one");
+    } else if (x == 2) {
+      System.out.println("two");
+    } else {
+      System.out.println("??");
     }
   }
 
