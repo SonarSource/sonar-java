@@ -79,12 +79,8 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     }
 
     var cases = extractCasesFromIfSequence(topLevelIfStat);
-    if (cases == null
-      || !(cases.get(cases.size() - 1) instanceof DefaultCase)
-      || !casesHaveCommonScrutinee(cases)
-      || (cases.get(0) instanceof EqualityCase
-      && !hasValidScrutineeTypeForNonPatternSwitch(cases.get(0).scrutinee()))
-    ) {
+    if (cases == null || !(cases.get(cases.size() - 1) instanceof DefaultCase) || !casesHaveCommonScrutinee(cases)
+      || (cases.get(0) instanceof EqualityCase && !hasValidScrutineeTypeForNonPatternSwitch(cases.get(0).scrutinee()))) {
       return;
     }
 
