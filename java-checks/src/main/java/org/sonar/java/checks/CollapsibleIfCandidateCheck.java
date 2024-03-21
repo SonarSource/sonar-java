@@ -118,7 +118,7 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
 
   private static boolean isLowerOperatorPrecedenceThanLogicalAnd(ExpressionTree expression) {
     return (expression instanceof BinaryExpressionTree binExpression)
-      ? binExpression.operatorToken().text().equals("||")
+      ? "||".equals(binExpression.operatorToken().text())
       : expression.is(Tree.Kind.CONDITIONAL_EXPRESSION, Tree.Kind.ASSIGNMENT);
   }
 }
