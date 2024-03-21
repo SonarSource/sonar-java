@@ -23,13 +23,11 @@ import java.text.MessageFormat;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -42,15 +40,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 @Rule(key = "S2438")
-public class ThreadAsRunnableArgumentCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
-  }
+public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
 
   private static final String RUNNABLE_TYPE = "java.lang.Runnable";
   private static final String THREAD_TYPE = "java.lang.Thread";
@@ -58,30 +48,38 @@ public class ThreadAsRunnableArgumentCheck extends BaseTreeVisitor implements Ja
   private static final String THREAD_ARRAY_TYPE = THREAD_TYPE + "[]";
 
   @Override
-  public void visitVariable(VariableTree tree) {
-    super.visitVariable(tree);
+  public List<Tree.Kind> nodesToVisit() {
+    return List.of(Tree.Kind.VARIABLE, Tree.Kind.RETURN_STATEMENT, Tree.Kind.YIELD_STATEMENT, Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.NEW_ARRAY);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    switch(tree.kind()) {
+      case VARIABLE -> visitVariable((VariableTree) tree);
+      case RETURN_STATEMENT -> visitReturnStatement((ReturnStatementTree) tree);
+      case YIELD_STATEMENT -> visitYieldStatement((YieldStatementTree) tree);
+      case NEW_ARRAY -> visitNewArray((NewArrayTree) tree);
+      case ASSIGNMENT -> {
+        var assignment = (AssignmentExpressionTree) tree;
+        checkTypeCoercion(assignment.variable().symbolType(), assignment.expression());
+      }
+      case METHOD_INVOCATION -> {
+        var invacation = (MethodInvocationTree) tree;
+        visitInvocation(invacation.methodSymbol(), invacation.arguments());
+      }
+      case NEW_CLASS -> {
+        var invacation = (NewClassTree) tree;
+        visitInvocation(invacation.methodSymbol(), invacation.arguments());
+      }
+      default -> throw new IllegalArgumentException();
+    }
+  }
+
+  private void visitVariable(VariableTree tree) {
     var initializer = tree.initializer();
     if (initializer != null) {
       checkTypeCoercion(tree.symbol().type(), initializer);
     }
-  }
-
-  @Override
-  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    super.visitAssignmentExpression(tree);
-    checkTypeCoercion(tree.variable().symbolType(), tree.expression());
-  }
-
-  @Override
-  public void visitMethodInvocation(MethodInvocationTree tree) {
-    super.visitMethodInvocation(tree);
-    visitInvocation(tree.methodSymbol(), tree.arguments());
-  }
-
-  @Override
-  public void visitNewClass(NewClassTree tree) {
-    super.visitNewClass(tree);
-    visitInvocation(tree.methodSymbol(), tree.arguments());
   }
 
   private void visitInvocation(Symbol.MethodSymbol methodSymbol, Arguments rhsValues) {
@@ -104,24 +102,20 @@ public class ThreadAsRunnableArgumentCheck extends BaseTreeVisitor implements Ja
     }
   }
 
-  @Override
-  public void visitNewArray(NewArrayTree tree) {
-    super.visitNewArray(tree);
+  private void visitNewArray(NewArrayTree tree) {
     var lhsType = tree.type();
     if (lhsType != null && lhsType.symbolType().is(RUNNABLE_TYPE)) {
       tree.initializers().forEach(rhsValue -> checkTypeCoercion(lhsType.symbolType(), rhsValue));
     }
   }
 
-  @Override
-  public void visitReturnStatement(ReturnStatementTree tree) {
-    super.visitReturnStatement(tree);
+  private void visitReturnStatement(ReturnStatementTree tree) {
     var expression = tree.expression();
     if (expression == null) {
       return;
     }
 
-    Tree enclosing = ExpressionUtils.getEnclosingElementAnyType(tree, Tree.Kind.METHOD,
+    Tree enclosing = ExpressionUtils.getEnclosingTree(tree, Tree.Kind.METHOD,
       Tree.Kind.LAMBDA_EXPRESSION);
     if (enclosing != null) {
       var lhsType = enclosing instanceof LambdaExpressionTree lambda ?
@@ -130,10 +124,8 @@ public class ThreadAsRunnableArgumentCheck extends BaseTreeVisitor implements Ja
     }
   }
 
-  @Override
-  public void visitYieldStatement(YieldStatementTree tree) {
-    super.visitYieldStatement(tree);
-    Tree enclosing = ExpressionUtils.getEnclosingElementAnyType(tree, Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.SWITCH_STATEMENT);
+  private void visitYieldStatement(YieldStatementTree tree) {
+    Tree enclosing = ExpressionUtils.getEnclosingTree(tree, Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.SWITCH_STATEMENT);
     if (enclosing == null || enclosing.is(Tree.Kind.SWITCH_STATEMENT)) {
       return;
     }
