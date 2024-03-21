@@ -49,7 +49,8 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.VARIABLE, Tree.Kind.RETURN_STATEMENT, Tree.Kind.YIELD_STATEMENT, Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.NEW_ARRAY);
+    return List.of(Tree.Kind.VARIABLE, Tree.Kind.RETURN_STATEMENT, Tree.Kind.YIELD_STATEMENT, Tree.Kind.ASSIGNMENT,
+      Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.NEW_ARRAY);
   }
 
   @Override
