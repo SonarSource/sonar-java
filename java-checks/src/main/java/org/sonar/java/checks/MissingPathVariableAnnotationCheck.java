@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -45,6 +46,9 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   private static final String MODEL_ATTRIBUTE_ANNOTATION = "org.springframework.web.bind.annotation.ModelAttribute";
   private static final Pattern EXTRACT_PATH_VARIABLE = Pattern.compile("([^:}/]*)(:.*)?}.*");
   private static final Predicate<String> CONTAINS_PLACEHOLDER = Pattern.compile("\\$\\{.*}").asPredicate();
+  private static final Predicate<String> PATH_ARG_REGEX = Pattern.compile("\\{([^{}:]+:.*)}").asPredicate();
+  private static final Pattern PATH_REGEX = Pattern.compile("\\{([^{}]+)}");
+
   private static final List<String> MAPPING_ANNOTATIONS = List.of(
     "org.springframework.web.bind.annotation.GetMapping",
     "org.springframework.web.bind.annotation.PostMapping",
@@ -129,6 +133,15 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   private static Set<String> extractPathVariables(String path) {
     if (CONTAINS_PLACEHOLDER.test(path)) {
       return new HashSet<>();
+    }
+
+    if (PATH_ARG_REGEX.test(path)) {
+      return PATH_REGEX.matcher(path).results()
+        .map(MatchResult::group)
+        .map(s -> s.substring(1))
+        .filter(s -> s.contains(":"))
+        .map(s -> s.split(":")[0])
+        .collect(Collectors.toSet());
     }
 
     return Stream.of(path.split("\\{"))
