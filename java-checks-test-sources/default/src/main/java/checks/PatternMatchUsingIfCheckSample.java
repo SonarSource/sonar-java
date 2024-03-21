@@ -366,7 +366,7 @@ public class PatternMatchUsingIfCheckSample {
     }
   }
 
-  static void doNotLiftVoidReturns(double x){
+  static void doNotProposeSwitchOnDouble(double x){
     // Compliant: switch scrutinee cannot be a double
     if (x == 0){
       return;
