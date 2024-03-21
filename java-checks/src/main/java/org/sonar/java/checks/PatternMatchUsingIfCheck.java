@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
@@ -49,6 +50,10 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
 
   private static final String ISSUE_MESSAGE = "Replace the chain of if/else with a switch expression.";
   private static final int INDENT = 2;
+  private static final Set<String> SCRUTINEE_TYPES_FOR_NON_PATTERN_SWITCH = Set.of(
+    "byte", "short", "char", "int",
+    "java.lang.Byte", "java.lang.Short", "java.lang.Character", "java.lang.Integer"
+  );
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -74,7 +79,8 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     }
 
     var cases = extractCasesFromIfSequence(topLevelIfStat);
-    if (cases == null || !(cases.get(cases.size() - 1) instanceof DefaultCase) || !casesHaveCommonScrutinee(cases)) {
+    if (cases == null || !(cases.get(cases.size() - 1) instanceof DefaultCase) || !casesHaveCommonScrutinee(cases)
+      || (cases.get(0) instanceof EqualityCase && !hasValidScrutineeTypeForNonPatternSwitch(cases.get(0).scrutinee()))) {
       return;
     }
 
@@ -86,7 +92,15 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   }
 
   private static boolean casesHaveCommonScrutinee(List<Case> cases) {
-    return cases.stream().allMatch(c -> c.scrutinee().equals(cases.get(0).scrutinee()));
+    return cases.stream().allMatch(c -> c.scrutinee().name().equals(cases.get(0).scrutinee().name()));
+  }
+
+  private static boolean hasValidScrutineeTypeForNonPatternSwitch(IdentifierTree scrutinee) {
+    if (scrutinee.symbolType().symbol().isEnum()) {
+      return true;
+    }
+    var fullyQualifiedTypeName = scrutinee.symbolType().fullyQualifiedName();
+    return SCRUTINEE_TYPES_FOR_NON_PATTERN_SWITCH.contains(fullyQualifiedTypeName);
   }
 
   private static @Nullable List<Case> extractCasesFromIfSequence(IfStatementTree topLevelIfStat) {
@@ -111,7 +125,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     populateGuardsList(condition, guards);
     if (leftmost instanceof PatternInstanceOfTree patInstOf && patInstOf.pattern() != null
       && patInstOf.expression() instanceof IdentifierTree idTree) {
-      return new PatternMatchCase(idTree.name(), patInstOf.pattern(), guards, body);
+      return new PatternMatchCase(idTree, patInstOf.pattern(), guards, body);
     } else if ((leftmost.kind() == Kind.CONDITIONAL_OR || leftmost.kind() == Kind.EQUAL_TO) && guards.isEmpty()) {
       return buildEqualityCase(leftmost, body);
     } else {
@@ -124,7 +138,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
    */
   private static @Nullable EqualityCase buildEqualityCase(ExpressionTree expr, StatementTree body) {
     var constantsList = new LinkedList<ExpressionTree>();
-    String scrutinee = null;
+    IdentifierTree scrutinee = null;
     while (expr.kind() == Kind.CONDITIONAL_OR) {
       var binary = (BinaryExpressionTree) expr;
       var varAndCst = extractVarAndConstFromEqualityCheck(binary.rightOperand());
@@ -132,27 +146,27 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
         return null;
       } else if (scrutinee == null) {
         scrutinee = varAndCst.a;
-      } else if (!varAndCst.a.equals(scrutinee)) {
+      } else if (!varAndCst.a.name().equals(scrutinee.name())) {
         return null;
       }
       constantsList.addFirst(varAndCst.b);
       expr = binary.leftOperand();
     }
     var varAndCst = extractVarAndConstFromEqualityCheck(expr);
-    if (varAndCst == null || (scrutinee != null && !varAndCst.a.equals(scrutinee))) {
+    if (varAndCst == null || (scrutinee != null && !varAndCst.a.name().equals(scrutinee.name()))) {
       return null;
     }
     constantsList.addFirst(varAndCst.b);
     return new EqualityCase(scrutinee == null ? varAndCst.a : scrutinee, constantsList, body);
   }
 
-  private static @Nullable Pair<String, ExpressionTree> extractVarAndConstFromEqualityCheck(ExpressionTree expr) {
+  private static @Nullable Pair<IdentifierTree, ExpressionTree> extractVarAndConstFromEqualityCheck(ExpressionTree expr) {
     if (expr.kind() == Kind.EQUAL_TO) {
       var binary = (BinaryExpressionTree) expr;
       if (binary.leftOperand() instanceof IdentifierTree idTree && isPossibleConstantForCase(binary.rightOperand())) {
-        return new Pair<>(idTree.name(), binary.rightOperand());
+        return new Pair<>(idTree, binary.rightOperand());
       } else if (binary.rightOperand() instanceof IdentifierTree idTree && isPossibleConstantForCase(binary.leftOperand())) {
-        return new Pair<>(idTree.name(), binary.leftOperand());
+        return new Pair<>(idTree, binary.leftOperand());
       }
     }
     return null;
@@ -191,13 +205,16 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     if (canLiftReturn) {
       sb.append("return ");
     }
-    sb.append("switch (").append(cases.get(0).scrutinee()).append(") {\n");
+    sb.append("switch (").append(cases.get(0).scrutinee().name()).append(") {\n");
     for (Case caze : cases) {
       sb.append(" ".repeat(baseIndent + INDENT));
       writeCase(caze, sb, baseIndent, canLiftReturn);
       sb.append("\n");
     }
     sb.append(" ".repeat(baseIndent)).append("}");
+    if (canLiftReturn) {
+      sb.append(";");
+    }
     var edit = JavaTextEdit.replaceTree(topLevelIfStat, sb.toString());
     return JavaQuickFix.newQuickFix(ISSUE_MESSAGE).addTextEdit(edit).build();
   }
@@ -267,21 +284,22 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   }
 
   private sealed interface Case permits PatternMatchCase, EqualityCase, DefaultCase {
-    String scrutinee();
+    IdentifierTree scrutinee();
 
     StatementTree body();
   }
 
-  private record PatternMatchCase(String scrutinee, PatternTree pattern, List<ExpressionTree> guards, StatementTree body) implements Case {
+  private record PatternMatchCase(IdentifierTree scrutinee, PatternTree pattern, List<ExpressionTree> guards,
+                                  StatementTree body) implements Case {
   }
 
-  private record EqualityCase(String scrutinee, List<ExpressionTree> constants, StatementTree body) implements Case {
+  private record EqualityCase(IdentifierTree scrutinee, List<ExpressionTree> constants, StatementTree body) implements Case {
   }
 
   /**
    * For simplicity the default case should have the same scrutinee as the cases before it
    */
-  private record DefaultCase(String scrutinee, StatementTree body) implements Case {
+  private record DefaultCase(IdentifierTree scrutinee, StatementTree body) implements Case {
   }
 
   private record Pair<A, B>(A a, B b) {
