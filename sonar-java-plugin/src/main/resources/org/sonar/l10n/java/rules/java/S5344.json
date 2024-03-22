@@ -1,5 +1,5 @@
 {
-  "title": "Passwords should not be stored in plain-text or with a fast hashing algorithm",
+  "title": "Passwords should not be stored in plaintext or with a fast hashing algorithm",
   "type": "VULNERABILITY",
   "code": {
     "impacts": {

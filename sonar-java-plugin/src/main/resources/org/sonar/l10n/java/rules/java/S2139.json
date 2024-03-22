@@ -13,12 +13,12 @@
     "constantCost": "15min"
   },
   "tags": [
-    "error-handling",
-    "clumsy"
+    "logging",
+    "error-handling"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2139",
   "sqKey": "S2139",
   "scope": "Main",
-  "quickfix": "unknown"
+  "quickfix": "infeasible"
 }

@@ -6,9 +6,9 @@ manager, which is rare.</p>
 <h2>What is the potential impact</h2>
 <p>By not enforcing secure validation, the XML Digital Signature API is more susceptible to attacks such as signature spoofing and injections.</p>
 <h3>Increased Vulnerability to Signature Spoofing</h3>
-<p>By disabling secure validation, the Java application becomes more susceptible to signature spoofing attacks. Attackers can potentially manipulate
-the XML signature in a way that bypasses the validation process, allowing them to forge or tamper with the signature. This can lead to the acceptance
-of invalid or maliciously modified signatures, compromising the integrity and authenticity of the XML documents.</p>
+<p>By disabling secure validation, the application becomes more susceptible to signature spoofing attacks. Attackers can potentially manipulate the
+XML signature in a way that bypasses the validation process, allowing them to forge or tamper with the signature. This can lead to the acceptance of
+invalid or maliciously modified signatures, compromising the integrity and authenticity of the XML documents.</p>
 <h3>Risk of Injection Attacks</h3>
 <p>Disabling secure validation can expose the application to injection attacks. Attackers can inject malicious code or entities into the XML document,
 taking advantage of the weakened validation process. In some cases, it can also expose the application to denial-of-service attacks. Attackers can

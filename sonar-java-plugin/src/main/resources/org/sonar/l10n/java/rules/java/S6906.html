@@ -1,23 +1,17 @@
 <h2>Why is this an issue?</h2>
 <p>Java 21 virtual threads allow the JVM to optimize the usage of OS threads, by mounting and unmounting them on an OS thread when needed, and making
-them extremely efficient when dealing with blocking operations such as HTTP requests or I/O.</p>
-<p>However, there are cases in which a virtual thread cannot be unmounted during blocking operations because it is pinned to the underlying OS
-thread:</p>
-<ul>
-  <li> When it executes code inside a synchronized block or method </li>
-  <li> When it executes a native method </li>
-</ul>
-<p>In these scenarios, the virtual thread will not be unmounted and the blocking operation will cause the OS thread to be blocked. A pinned virtual
-thread does not necessarily mean that the application is incorrect, but it can hinder its scalability.</p>
-<p>Therefore, virtual threads should not be used when their task includes synchronized code or native methods. Instead, the default platform threads
-should be used.</p>
-<p>This rule raises an issue when the task passed to a virtual thread includes synchronized code or native methods.</p>
+them more efficient when dealing with blocking operations such as HTTP requests or I/O.</p>
+<p>However, when code is executed inside a <code>synchronized</code> block or <code>synchronized</code> method, the virtual thread stays pinned to the
+underlying OS thread and cannot be unmounted during a blocking operation. This will cause the OS thread to be blocked, which can impact the
+scalability of the application.</p>
+<p>Therefore, virtual threads should not execute code that contains <code>synchronized</code> blocks or invokes <code>synchronized</code> methods.
+Platform threads should be used in these cases.</p>
+<p>This rule raises an issue when a virtual thread contains <code>synchronized</code> blocks or invokes <code>synchronized</code> methods.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 void enqueue(){
-    Thread.startVirtualThread(() -&gt; { // Noncompliant; use a platform thread instead of a virtual one
-        synchronized {
+    Thread.startVirtualThread(() -&gt; { // Noncompliant; use a platform thread instead
             setupOperations();
             dequeLogic();
         }
@@ -62,34 +56,6 @@ void enqueue2(){
 }
 synchronized void synchronizedMethod(){}
 void defaultLogic(){}
-</pre>
-<h4>Noncompliant code example</h4>
-<pre data-diff-id="3" data-diff-type="noncompliant">
-public class NativeExample {
-    public native void printHelloWorld();
-    static {
-        System.loadLibrary("nativeexample");
-    }
-    public static void main(String[] args) {
-        Thread.startVirtualThread(() -&gt; { // Noncompliant; use a platform thread instead of a virtual one
-            new NativeExample().printHelloWorld();
-        });
-    }
-}
-</pre>
-<h4>Compliant solution</h4>
-<pre data-diff-id="3" data-diff-type="compliant">
-public class NativeExample {
-    public native void printHelloWorld();
-    static {
-        System.loadLibrary("nativeexample");
-    }
-    public static void main(String[] args) {
-        new Thread(() -&gt; {
-            new NativeExample().printHelloWorld();
-        }).start();
-    }
-}
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>

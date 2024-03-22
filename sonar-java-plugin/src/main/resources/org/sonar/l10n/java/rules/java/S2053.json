@@ -1,5 +1,5 @@
 {
-  "title": "Hashes should include an unpredictable salt",
+  "title": "Password hashing functions should use an unpredictable salt",
   "type": "VULNERABILITY",
   "code": {
     "impacts": {
