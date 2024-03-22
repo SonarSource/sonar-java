@@ -19,6 +19,19 @@ cracks one hash, they have effectively cracked all identical ones, granting them
 of password hashes with identical salt that can then be attacked as explained before.</p>
 <p>With short salts, the probability of a collision between two users' passwords and salts couple might be low depending on the salt size. The shorter
 the salt, the higher the collision probability. In any case, using longer, cryptographically secure salt should be preferred.</p>
+<h3>Exceptions</h3>
+<p>To securely store password hashes, it is a recommended to rely on key derivation functions that are computationally intensive. Examples of such
+functions are:</p>
+<ul>
+  <li> Argon2 </li>
+  <li> PBKDF2 </li>
+  <li> Scrypt </li>
+  <li> Bcrypt </li>
+</ul>
+<p>When they are used for password storage, using a secure, random salt is required.</p>
+<p>However, those functions can also be used for other purposes such as master key derivation or password-based pre-shared key generation. In those
+cases, the implemented cryptographic protocol might require using a fixed salt to derive keys in a deterministic way. In such cases, using a fixed
+salt is safe and accepted.</p>
 <h2>How to fix it in Java SE</h2>
 <h3>Code examples</h3>
 <p>The following code contains examples of hard-coded salts.</p>
@@ -46,7 +59,7 @@ public void hash() {
 </pre>
 <h3>How does this work?</h3>
 <p>This code ensures that each user’s password has a unique salt value associated with it. It generates a salt randomly and with a length that
-provides the required security level. It uses a salt length of at least 16 bytes (128 bits), as recommended by industry standards.</p>
+provides the required security level. It uses a salt length of at least 32 bytes (256 bits), as recommended by industry standards.</p>
 <p>Here, the compliant code example ensures the salt is random and has a sufficient length by calling the <code>nextBytes</code> method from the
 <code>SecureRandom</code> class with a salt buffer of 16 bytes. This class implements a cryptographically secure pseudo-random number generator.</p>
 <h2>Resources</h2>

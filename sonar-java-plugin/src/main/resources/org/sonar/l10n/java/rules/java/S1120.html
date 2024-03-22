@@ -5,6 +5,8 @@ starts at the expected column.</p>
 control systems, making code reviews easier.</p>
 <p>This rule raises an issue when the indentation does not match the configured value. Only the first line of a badly indented section is
 reported.</p>
+<p>The rule behaves consistently when the indentation settings of the IDE use <em>spaces</em> instead of <em>tabs</em>. Using <em>tabs</em> can lead
+to inconsistent indentation because the width of a <em>tab</em> can be configured differently in different environments.</p>
 <h3>What is the potential impact?</h3>
 <p>The readability is decreased. It becomes more tedious to review and modify the code.</p>
 <h2>How to fix it</h2>

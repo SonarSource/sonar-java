@@ -8,7 +8,8 @@
   },
   "tags": [
     "sustainability",
-    "android"
+    "android",
+    "leak"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6889",

@@ -88,7 +88,7 @@ public void encrypt(String key, String plainText) {
 
     try {
         Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv); // Noncompliant
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
 
     } catch(NoSuchAlgorithmException|InvalidKeyException|
             NoSuchPaddingException|InvalidAlgorithmParameterException e) {
