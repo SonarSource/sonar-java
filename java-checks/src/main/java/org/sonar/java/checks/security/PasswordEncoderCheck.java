@@ -22,6 +22,7 @@ package org.sonar.java.checks.security;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -50,29 +51,36 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
     .withAnyParameters()
     .build();
 
-  private static final MethodMatchers UNSAFE_PASSWORD_ENCODERS = MethodMatchers.create()
+  private static final MethodMatchers UNSAFE_PASSWORD_ENCODER_CONSTRUCTORS = MethodMatchers.create()
     .ofTypes(
       "org.springframework.security.authentication.encoding.ShaPasswordEncoder",
       "org.springframework.security.authentication.encoding.Md5PasswordEncoder",
       "org.springframework.security.crypto.password.LdapShaPasswordEncoder",
       "org.springframework.security.crypto.password.Md4PasswordEncoder",
       "org.springframework.security.crypto.password.MessageDigestPasswordEncoder",
-      "org.springframework.security.crypto.password.NoOpPasswordEncoder",
       "org.springframework.security.crypto.password.StandardPasswordEncoder",
-      "org.springframework.security.crypto.password.SCryptPasswordEncoder")
+      "org.springframework.security.crypto.scrypt.SCryptPasswordEncoder")
     .constructor()
     .withAnyParameters()
     .build();
 
+  private static final MethodMatchers UNSAFE_PASSWORD_ENCODER_METHODS = MethodMatchers.create()
+    .ofTypes("org.springframework.security.crypto.password.NoOpPasswordEncoder")
+    .names("getInstance")
+    .addWithoutParametersMatcher()
+    .build();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.NEW_CLASS);
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.NEW_CLASS) && UNSAFE_PASSWORD_ENCODERS.matches(((NewClassTree) tree))) {
+    if (tree instanceof NewClassTree nct && UNSAFE_PASSWORD_ENCODER_CONSTRUCTORS.matches(nct)) {
       reportIssue(((NewClassTree) tree).identifier(), "Use secure \"PasswordEncoder\" implementation.");
+    } else if (tree instanceof MethodInvocationTree mit && UNSAFE_PASSWORD_ENCODER_METHODS.matches(mit)) {
+      reportIssue(ExpressionUtils.methodName(mit), "Use secure \"PasswordEncoder\" implementation.");
     } else if (tree.is(Tree.Kind.METHOD)) {
       MethodInvocationVisitor visitor = new MethodInvocationVisitor();
       tree.accept(visitor);
