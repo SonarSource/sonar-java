@@ -54,6 +54,7 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
+  @SuppressWarnings("squid:S131")
   public void visitNode(Tree tree) {
     switch(tree.kind()) {
       case VARIABLE -> visitVariable((VariableTree) tree);
@@ -65,14 +66,13 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
         checkTypeCoercion(assignment.variable().symbolType(), assignment.expression());
       }
       case METHOD_INVOCATION -> {
-        var invacation = (MethodInvocationTree) tree;
-        visitInvocation(invacation.methodSymbol(), invacation.arguments());
+        var invocation = (MethodInvocationTree) tree;
+        visitInvocation(invocation.methodSymbol(), invocation.arguments());
       }
       case NEW_CLASS -> {
-        var invacation = (NewClassTree) tree;
-        visitInvocation(invacation.methodSymbol(), invacation.arguments());
+        var invocation = (NewClassTree) tree;
+        visitInvocation(invocation.methodSymbol(), invocation.arguments());
       }
-      default -> throw new IllegalArgumentException();
     }
   }
 
@@ -116,8 +116,7 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    Tree enclosing = ExpressionUtils.getEnclosingTree(tree, Tree.Kind.METHOD,
-      Tree.Kind.LAMBDA_EXPRESSION);
+    Tree enclosing = ExpressionUtils.getEnclosingTree(tree, Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
     if (enclosing != null) {
       var lhsType = enclosing instanceof LambdaExpressionTree lambda ?
         lambda.symbol().returnType().type() : ((MethodTree) enclosing).returnType().symbolType();
@@ -128,6 +127,8 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
   private void visitYieldStatement(YieldStatementTree tree) {
     Tree enclosing = ExpressionUtils.getEnclosingTree(tree, Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.SWITCH_STATEMENT);
     if (enclosing == null || enclosing.is(Tree.Kind.SWITCH_STATEMENT)) {
+      // Iside of a SwitchStatementTree, the `yield` is implicit and does not return a value.
+      // Unlike SwitchExpressionTree, SwitchStatementTree is not an ExpressionTree.
       return;
     }
     var lhsType = ((ExpressionTree) enclosing).symbolType();
