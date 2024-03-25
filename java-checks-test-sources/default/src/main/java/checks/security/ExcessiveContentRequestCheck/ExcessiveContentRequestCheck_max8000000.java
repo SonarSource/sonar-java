@@ -1,10 +1,38 @@
 package checks.security.ExcessiveContentRequestCheck;
 
+import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 public class ExcessiveContentRequestCheck_max8000000 {
 
+  void setSizeViaDataSizeOf(MultipartProperties multipartProperties) {
+    multipartProperties.setMaxFileSize(DataSize.ofTerabytes(1)); // Noncompliant
+    multipartProperties.setMaxRequestSize(DataSize.ofTerabytes(1)); // Noncompliant
+    multipartProperties.setMaxFileSize(DataSize.ofTerabytes(0));
+    multipartProperties.setMaxRequestSize(DataSize.ofTerabytes(0));
+
+    multipartProperties.setMaxFileSize(DataSize.ofGigabytes(1)); // Noncompliant
+    multipartProperties.setMaxRequestSize(DataSize.ofGigabytes(1)); // Noncompliant
+    multipartProperties.setMaxFileSize(DataSize.ofGigabytes(0));
+    multipartProperties.setMaxRequestSize(DataSize.ofGigabytes(0));
+
+    multipartProperties.setMaxFileSize(DataSize.ofBytes(8000001)); // Noncompliant
+    multipartProperties.setMaxRequestSize(DataSize.ofBytes(8000001)); // Noncompliant
+    multipartProperties.setMaxFileSize(DataSize.ofBytes(8000000));
+    multipartProperties.setMaxRequestSize(DataSize.ofBytes(8000000));
+
+    multipartProperties.setMaxFileSize(DataSize.ofKilobytes(7813)); // Noncompliant
+    multipartProperties.setMaxRequestSize(DataSize.ofKilobytes(7813)); // Noncompliant
+    multipartProperties.setMaxFileSize(DataSize.ofKilobytes(7812));
+    multipartProperties.setMaxRequestSize(DataSize.ofKilobytes(7812));
+
+    multipartProperties.setMaxFileSize(DataSize.ofMegabytes(8)); // Noncompliant
+    multipartProperties.setMaxRequestSize(DataSize.ofMegabytes(8)); // Noncompliant
+    multipartProperties.setMaxFileSize(DataSize.ofMegabytes(7));
+    multipartProperties.setMaxRequestSize(DataSize.ofMegabytes(7));
+  }
 
   void springCommonsMultipartResolver() {
     CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
