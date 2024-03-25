@@ -3,32 +3,32 @@ package software.amazon.awssdk.services.config;
 import java.util.function.Consumer;
 import software.amazon.awssdk.services.sesv2.model.Destination;
 
-public class AwsConsumerBuilderUsageCheck {
+public class AwsConsumerBuilderUsageCheckSample {
 
   public void test() {
-    AwsConsumerBuilderUsageCheck.builder()
+    AwsConsumerBuilderUsageCheckSample.builder()
       .validDestination(Destination.builder() // Noncompliant [[sc=8;ec=24]] {{Consider using the Consumer Builder method instead of creating this nested builder.}}
         .toAddresses("to-email@domain.com")
         .bccAddresses("bcc-email@domain.com")
         .build())
       .build();
 
-    AwsConsumerBuilderUsageCheck.builder()
+    AwsConsumerBuilderUsageCheckSample.builder()
       .validDestination("Not a Destination object") // Compliant, wrong argument type
       .build();
 
-    AwsConsumerBuilderUsageCheck.builder()
+    AwsConsumerBuilderUsageCheckSample.builder()
       .validDestination(new UnknownType()) // Compliant, unknown argument type
       .build();
 
-    AwsConsumerBuilderUsageCheck.builder()
+    AwsConsumerBuilderUsageCheckSample.builder()
       .testUnknownReturnType(Destination.builder() // Compliant, unknown return type
         .toAddresses("to-email@domain.com")
         .bccAddresses("bcc-email@domain.com")
         .build())
       .build();
 
-    AwsConsumerBuilderUsageCheck.builder()
+    AwsConsumerBuilderUsageCheckSample.builder()
       .testInvalidConsumerType(Destination.builder() // Compliant, unknown return type
         .toAddresses("to-email@domain.com")
         .bccAddresses("bcc-email@domain.com")

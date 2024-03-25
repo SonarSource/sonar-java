@@ -1,4 +1,4 @@
-class HardCodedCredentialsShouldNotBeUsedCheck {
+class HardCodedCredentialsShouldNotBeUsedCheckSample {
 
   void test_unknow_identifier() {
 

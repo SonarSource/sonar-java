@@ -30,7 +30,7 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 
 import static java.lang.System.getProperty;
 
-public class HardCodedCredentialsShouldNotBeUsedCheck {
+public class HardCodedCredentialsShouldNotBeUsedCheckSample {
   static final String FINAL_SECRET_STRING = "hunter2";
   static final byte[] FINAL_SECRET_BYTE_ARRAY = FINAL_SECRET_STRING.getBytes(StandardCharsets.UTF_8);
   private static String secretStringField = "hunter2";
