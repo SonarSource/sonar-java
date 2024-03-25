@@ -32,7 +32,7 @@ class AwsConsumerBuilderUsageCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsConsumerBuilderUsageCheck.java"))
+      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsConsumerBuilderUsageCheckSample.java"))
       .withCheck(new AwsConsumerBuilderUsageCheck())
       .withClassPath(AWS_CLASSPATH)
       .verifyIssues();
@@ -41,7 +41,7 @@ class AwsConsumerBuilderUsageCheckTest {
   @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPathInModule(AWS_MODULE, "checks/aws/AwsConsumerBuilderUsageCheck.java"))
+      .onFile(nonCompilingTestSourcesPathInModule(AWS_MODULE, "checks/aws/AwsConsumerBuilderUsageCheckSample.java"))
       .withCheck(new AwsConsumerBuilderUsageCheck())
       .withClassPath(AWS_CLASSPATH)
       .verifyIssues();

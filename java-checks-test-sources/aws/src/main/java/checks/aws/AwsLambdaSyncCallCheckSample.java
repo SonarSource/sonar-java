@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 import static checks.aws.AwsLambdaSyncCallCheckHelper.REQUEST_IN_DIFFERENT_FILE;
 
-public class AwsLambdaSyncCallCheck {
+public class AwsLambdaSyncCallCheckSample {
 
   public static final String MY_FUNCTION = "myFunction";
 

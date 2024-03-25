@@ -31,7 +31,7 @@ class AwsLambdaSyncCallCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsLambdaSyncCallCheck.java"))
+      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsLambdaSyncCallCheckSample.java"))
       .withCheck(new AwsLambdaSyncCallCheck())
       .withClassPath(AWS_CLASSPATH)
       .verifyIssues();

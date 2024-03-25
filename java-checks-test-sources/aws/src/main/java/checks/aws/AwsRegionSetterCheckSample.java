@@ -4,7 +4,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
-public class AwsRegionSetterCheck {
+public class AwsRegionSetterCheckSample {
 
   public static final String CONST = "const";
   private static final String EU_WEST_1 = "EU_WEST_1";

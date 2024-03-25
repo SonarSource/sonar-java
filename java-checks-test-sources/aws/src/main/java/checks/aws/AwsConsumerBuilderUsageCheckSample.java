@@ -8,7 +8,7 @@ import software.amazon.awssdk.services.sesv2.model.EmailContent;
 import software.amazon.awssdk.services.sesv2.model.Message;
 import software.amazon.awssdk.services.sesv2.model.SendEmailRequest;
 
-public class AwsConsumerBuilderUsageCheck {
+public class AwsConsumerBuilderUsageCheckSample {
 
   Destination destinationField = Destination.builder()
     .toAddresses("to-email@domain.com")

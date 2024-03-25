@@ -8,7 +8,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
-public class AwsCredentialsShouldBeSetExplicitlyCheck {
+public class AwsCredentialsShouldBeSetExplicitlyCheckSample {
   public static final AwsClientBuilder BUILDER = S3Client.builder(); // Compliant FN - Could be configured closer to build call
 
   void nonCompliant() {
@@ -40,13 +40,13 @@ public class AwsCredentialsShouldBeSetExplicitlyCheck {
     AwsClientBuilder locallyCraftedBuilder = getABuilder(); // Compliant FN
     S3Client otherClient = (S3Client) locallyCraftedBuilder.build();
 
-    AwsClientBuilder remotelyCraftedBuilder = AwsRegionShouldBeSetExplicitlyCheck.getABuilder(); // Compliant FN
+    AwsClientBuilder remotelyCraftedBuilder = AwsRegionShouldBeSetExplicitlyCheckSample.getABuilder(); // Compliant FN
     S3Client yetAnotherClient = (S3Client) remotelyCraftedBuilder.build();
 
-    AwsClientBuilder remotelyPreCraftedBuilder = AwsRegionShouldBeSetExplicitlyCheck.BUILDER; // Compliant FN
+    AwsClientBuilder remotelyPreCraftedBuilder = AwsRegionShouldBeSetExplicitlyCheckSample.BUILDER; // Compliant FN
     S3Client stillAnotherClient = (S3Client) remotelyPreCraftedBuilder.build();
 
-    S3Client sourceDirectlyFromBuilder = (S3Client) AwsRegionShouldBeSetExplicitlyCheck.BUILDER.build(); // Compliant FN
+    S3Client sourceDirectlyFromBuilder = (S3Client) AwsRegionShouldBeSetExplicitlyCheckSample.BUILDER.build(); // Compliant FN
 
     S3Client clientOutOfNowhere = (S3Client) BUILDER.build(); // Compliant FN
 

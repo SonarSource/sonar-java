@@ -31,7 +31,7 @@ class AwsReusableResourcesInitializedOnceCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsReusableResourcesInitializedOnceCheck.java"))
+      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsReusableResourcesInitializedOnceCheckSample.java"))
       .withCheck(new AwsReusableResourcesInitializedOnceCheck())
       .withClassPath(AWS_CLASSPATH)
       .verifyIssues();

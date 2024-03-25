@@ -14,7 +14,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.machinelearning.MachineLearningClient;
 import software.amazon.awssdk.services.s3.S3Client;
 
-public class AwsReusableResourcesInitializedOnceCheck {
+public class AwsReusableResourcesInitializedOnceCheckSample {
 
   class RequestHandlerImpl implements RequestHandler<Object, Void> {
 
