@@ -54,7 +54,6 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  @SuppressWarnings("squid:S131")
   public void visitNode(Tree tree) {
     switch(tree.kind()) {
       case VARIABLE -> visitVariable((VariableTree) tree);
