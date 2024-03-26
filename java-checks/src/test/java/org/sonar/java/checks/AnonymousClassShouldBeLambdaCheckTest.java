@@ -30,7 +30,7 @@ class AnonymousClassShouldBeLambdaCheckTest {
   @Test
   void java8() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AnonymousClassShouldBeLambdaCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AnonymousClassShouldBeLambdaCheckSample.java"))
       .withCheck(new AnonymousClassShouldBeLambdaCheck())
       .withJavaVersion(8)
       .verifyIssues();
@@ -56,7 +56,7 @@ class AnonymousClassShouldBeLambdaCheckTest {
   @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/AnonymousClassShouldBeLambdaCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/AnonymousClassShouldBeLambdaCheckSample.java"))
       .withCheck(new AnonymousClassShouldBeLambdaCheck())
       .verifyIssues();
   }

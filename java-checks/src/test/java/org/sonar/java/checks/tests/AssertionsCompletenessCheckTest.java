@@ -30,11 +30,11 @@ class AssertionsCompletenessCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertionsCompletenessCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsCompletenessCheckSample.java"))
       .withCheck(new AssertionsCompletenessCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertionsCompletenessCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsCompletenessCheckSample.java"))
       .withCheck(new AssertionsCompletenessCheck())
       .withoutSemantic()
       .verifyNoIssues();
@@ -43,7 +43,7 @@ class AssertionsCompletenessCheckTest {
   @Test
   void test_non_compiling_because_of_removed_api() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/tests/AssertionsCompletenessCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/tests/AssertionsCompletenessCheckSample.java"))
       .withCheck(new AssertionsCompletenessCheck())
       .verifyIssues();
   }

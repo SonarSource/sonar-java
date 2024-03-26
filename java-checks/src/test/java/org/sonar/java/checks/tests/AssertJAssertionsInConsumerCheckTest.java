@@ -30,7 +30,7 @@ class AssertJAssertionsInConsumerCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertJAssertionsInConsumerCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertJAssertionsInConsumerCheckSample.java"))
       .withCheck(new AssertJAssertionsInConsumerCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class AssertJAssertionsInConsumerCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/tests/AssertJAssertionsInConsumerCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/tests/AssertJAssertionsInConsumerCheckSample.java"))
       .withCheck(new AssertJAssertionsInConsumerCheck())
       .verifyIssues();
   }

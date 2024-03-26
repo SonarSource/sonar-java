@@ -29,7 +29,7 @@ class AndroidBiometricAuthWithoutCryptoCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/AndroidBiometricAuthWithoutCryptoCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/AndroidBiometricAuthWithoutCryptoCheckSample.java"))
       .withCheck(new AndroidBiometricAuthWithoutCryptoCheck())
       .verifyIssues();
   }

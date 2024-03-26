@@ -29,7 +29,7 @@ class ArrayCopyLoopCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ArrayCopyLoopCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ArrayCopyLoopCheckSample.java"))
       .withCheck(new ArrayCopyLoopCheck())
       .verifyIssues();
   }

@@ -29,7 +29,7 @@ class ArrayDesignatorAfterTypeCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/ArrayDesignatorAfterTypeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ArrayDesignatorAfterTypeCheckSample.java"))
       .withCheck(new ArrayDesignatorAfterTypeCheck())
       .withQuickFixes()
       .verifyIssues();
