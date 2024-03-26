@@ -29,7 +29,7 @@ class DynamicClassLoadCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/DynamicClassLoadCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/DynamicClassLoadCheckSample.java"))
       .withCheck(new DynamicClassLoadCheck())
       .verifyIssues();
   }

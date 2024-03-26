@@ -30,7 +30,7 @@ class DoubleCheckedLockingCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/DoubleCheckedLockingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/DoubleCheckedLockingCheckSample.java"))
       .withCheck(new DoubleCheckedLockingCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class DoubleCheckedLockingCheckTest {
   @Test
   void not_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/DoubleCheckedLockingCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/DoubleCheckedLockingCheckSample.java"))
       .withCheck(new DoubleCheckedLockingCheck())
       .verifyIssues();
   }

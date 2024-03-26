@@ -2,7 +2,7 @@ package checks.security;
 
 import com.samskivert.mustache.Mustache;
 
-public class DisableAutoEscapingCheck {
+public class DisableAutoEscapingCheckSample {
   private String template = "{{foo}}";
   private Object context = new Object() {
     String foo = "<bar>";

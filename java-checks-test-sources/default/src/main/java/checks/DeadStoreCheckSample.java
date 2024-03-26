@@ -6,7 +6,7 @@ import java.lang.Exception;
 import java.io.*;
 import java.util.function.IntFunction;
 
-class DeadStoreCheck {
+class DeadStoreCheckSample {
 
   int var;
 
@@ -231,7 +231,7 @@ class DeadStoreCheck {
   }
 }
 
-class DeadStoreCheckStuff {
+class DeadStoreCheckSampleStuff {
   void foo(boolean b1, boolean b2) {
     boolean x = false;  // Compliant
     x = b1 && b2;       // Noncompliant
@@ -245,7 +245,7 @@ class DeadStoreCheckStuff {
 
 }
 
-class DeadStoreCheckNoIssueOnInitializers {
+class DeadStoreCheckSampleNoIssueOnInitializers {
 
   // no issue if variable initializer is 'true' or 'false'
   boolean testBoolean(boolean arg0) {
@@ -312,7 +312,7 @@ class DeadStoreCheckNoIssueOnInitializers {
     return 0;
   }
 }
-class DeadStoreCheckB {
+class DeadStoreCheckSampleB {
   void foo() {
     int attemptNumber = 0;
     while (true) {
@@ -329,7 +329,7 @@ class DeadStoreCheckB {
   static class MyException extends Exception {  }
 }
 
-abstract class DeadStoreCheckC {
+abstract class DeadStoreCheckSampleC {
 
   public void testCodeWithForLoop2() {
     RuntimeException e = null;

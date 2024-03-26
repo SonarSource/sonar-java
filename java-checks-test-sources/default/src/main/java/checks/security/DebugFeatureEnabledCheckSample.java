@@ -7,8 +7,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
 // Tests for printStackTrace.
-// Tests for @EnableWebSecurity are in files/non-compiling/checks/security/DebugFeatureEnabledCheck.java
-public class DebugFeatureEnabledCheck {
+// Tests for @EnableWebSecurity are in files/non-compiling/checks/security/DebugFeatureEnabledCheckSample.java
+public class DebugFeatureEnabledCheckSample {
   private void f(Throwable e, MyException e1) {
     e.printStackTrace(); // Noncompliant
     e.printStackTrace(System.out); // Compliant - forcing the stream
@@ -34,7 +34,7 @@ public class DebugFeatureEnabledCheck {
 
   void fun(CustomException e) {
     e.printStackTrace(); //Compliant : e is not extending Throwable
-    DebugFeatureEnabledCheck.CustomException.printStackTrace(); //compliant : CustomException is not extending Throwable
+    DebugFeatureEnabledCheckSample.CustomException.printStackTrace(); //compliant : CustomException is not extending Throwable
   }
 
   void fun(InvocationTargetException ite) {

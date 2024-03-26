@@ -1,6 +1,6 @@
 package checks;
 
-class DanglingElseStatementsCheck {
+class DanglingElseStatementsCheckSample {
   void f() {
     boolean a = true, b = false;
     int d = 0, e = 0;

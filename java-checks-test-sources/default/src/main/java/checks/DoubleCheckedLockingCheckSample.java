@@ -1,5 +1,5 @@
 package checks;
-class DoubleCheckedLockingCheck {
+class DoubleCheckedLockingCheckSample {
   private Helper helper = null;
 
   public Helper classicCase() {
@@ -93,7 +93,7 @@ class DoubleCheckedLockingCheck {
 }
 
 // after java 5 volatile keyword will guarantee correct read/write ordering with memory barriers
-class DoubleCheckedLockingCheckVolatile {
+class DoubleCheckedLockingCheckSampleVolatile {
   private volatile Helper helper = null;
 
   public Helper classicCase() {
@@ -108,7 +108,7 @@ class DoubleCheckedLockingCheckVolatile {
   static class Helper { }
 }
 
-class DoubleCheckedLockingCheckNestedIfs {
+class DoubleCheckedLockingCheckSampleNestedIfs {
   private Helper helper = null;
   private boolean sunIsUp, sunIsDown;
 
@@ -136,7 +136,7 @@ class DoubleCheckedLockingCheckNestedIfs {
   void doSomethingElse() { }
 }
 
-class DoubleCheckedLockingCheckCompliant {
+class DoubleCheckedLockingCheckSampleCompliant {
 
   private Helper helper = null;
   private int primitiveField = 0;
@@ -226,6 +226,6 @@ class DoubleCheckedLockingCheckCompliant {
   static class Helper { }
 }
 
-class DoubleCheckedLockingCheckStringResource {
+class DoubleCheckedLockingCheckSampleStringResource {
   final String field = "";
 }

@@ -6,7 +6,7 @@ import java.util.Date;
 
 import static org.apache.commons.lang.time.DateUtils.truncate;
 
-class DateUtilsTruncateCheck {
+class DateUtilsTruncateCheckSample {
   public void foo(Date date, Calendar calendar, Object object, int field) {
     DateUtils.truncate(date, field);      // Noncompliant [[sc=15;ec=23]] {{Use "ZonedDateTime.truncatedTo" instead.}}
     DateUtils.truncate(calendar, field);  // Noncompliant
@@ -17,7 +17,7 @@ class DateUtilsTruncateCheck {
   }
 }
 
-class DateUtilsTruncateCheckB {
+class DateUtilsTruncateCheckSampleB {
   public void truncate(Date date, int field) {
   }
   

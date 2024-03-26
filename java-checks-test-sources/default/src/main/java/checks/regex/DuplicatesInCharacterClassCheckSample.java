@@ -1,6 +1,6 @@
 package checks.regex;
 
-public class DuplicatesInCharacterClassCheck {
+public class DuplicatesInCharacterClassCheckSample {
 
   void nonCompliant() {
     String str = "123";

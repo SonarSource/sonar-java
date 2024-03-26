@@ -11,7 +11,7 @@ import static freemarker.template.Configuration.DISABLE_AUTO_ESCAPING_POLICY;
 import static freemarker.template.Configuration.ENABLE_IF_DEFAULT_AUTO_ESCAPING_POLICY;
 import static freemarker.template.Configuration.ENABLE_IF_SUPPORTED_AUTO_ESCAPING_POLICY;
 
-public class DisableAutoEscapingCheck {
+public class DisableAutoEscapingCheckSample {
   private String template = "{{foo}}";
   private Object context = new Object() {
     String foo = "<bar>";

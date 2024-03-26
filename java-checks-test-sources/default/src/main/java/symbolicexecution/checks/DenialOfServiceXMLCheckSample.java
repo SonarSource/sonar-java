@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
-public class DenialOfServiceXMLCheck {
+public class DenialOfServiceXMLCheckSample {
 
   DocumentBuilderFactory factoryAsField;
 
