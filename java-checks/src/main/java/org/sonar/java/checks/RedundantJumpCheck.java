@@ -20,7 +20,9 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
@@ -79,7 +81,8 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
 
   private static Block nonEmptySuccessor(Block initialBlock) {
     Block result = initialBlock;
-    while (result.elements().isEmpty() && result.successors().size() == 1) {
+    Set<Integer> visited = new HashSet<>();
+    while (result.elements().isEmpty() && result.successors().size() == 1 && visited.add(result.id())) {
       result = result.successors().iterator().next();
     }
     return result;
