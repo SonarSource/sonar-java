@@ -2,7 +2,7 @@ package checks;
 
 import scala.reflect.ManifestFactory.IntManifest;
 
-class ForLoopIncrementAndUpdateCheck {
+class ForLoopIncrementAndUpdateCheckSample {
 
   Object foo() {
     int i = 0, j = 0, k = 0, l = 0;

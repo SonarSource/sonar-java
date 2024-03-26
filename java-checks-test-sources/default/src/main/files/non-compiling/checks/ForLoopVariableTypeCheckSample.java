@@ -2,7 +2,7 @@ package checks;
 
 //Type is missing: import java.lang.reflect.Constructor;
 
-class ForLoopVariableTypeCheck {
+class ForLoopVariableTypeCheckSample {
 
   private static <T> void f(Class<T> c) {
     for (Constructor<?> ctor : c.getConstructors()) {

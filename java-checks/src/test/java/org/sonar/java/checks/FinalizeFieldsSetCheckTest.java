@@ -30,7 +30,7 @@ class FinalizeFieldsSetCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/FinalizeFieldsSetCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/FinalizeFieldsSetCheckSample.java"))
       .withCheck(new FinalizeFieldsSetCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class FinalizeFieldsSetCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/FinalizeFieldsSetCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/FinalizeFieldsSetCheckSample.java"))
       .withCheck(new FinalizeFieldsSetCheck())
       .verifyIssues();
   }
