@@ -29,7 +29,7 @@ class AssertionInTryCatchCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertionInTryCatchCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionInTryCatchCheckSample.java"))
       .withCheck(new AssertionInTryCatchCheck())
       .verifyIssues();
   }

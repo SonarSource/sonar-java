@@ -29,11 +29,11 @@ class AssertionInThreadRunCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertionInThreadRunCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionInThreadRunCheckSample.java"))
       .withCheck(new AssertionInThreadRunCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertionInThreadRunCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionInThreadRunCheckSample.java"))
       .withCheck(new AssertionInThreadRunCheck())
       .withoutSemantic()
       .verifyNoIssues();

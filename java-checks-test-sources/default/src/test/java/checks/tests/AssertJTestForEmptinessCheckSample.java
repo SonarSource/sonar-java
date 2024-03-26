@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.assertj.core.api.Assertions.atIndex;
 
-public class AssertJTestForEmptinessCheck {
+public class AssertJTestForEmptinessCheckSample {
 
   List<String> logs = getLogs();
 

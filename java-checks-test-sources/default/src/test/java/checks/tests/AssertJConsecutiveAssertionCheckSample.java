@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AssertJConsecutiveAssertionCheck {
+public class AssertJConsecutiveAssertionCheckSample {
   String myString = "42";
   String myOtherString = "24";
   List<String> myList = new ArrayList<>();

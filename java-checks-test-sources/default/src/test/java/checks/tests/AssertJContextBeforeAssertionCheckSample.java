@@ -11,7 +11,7 @@ import org.assertj.core.description.TextDescription;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatObject;
 
-public class AssertJContextBeforeAssertionCheck {
+public class AssertJContextBeforeAssertionCheckSample {
 
   void foo() {
     assertThat("").isEqualTo("").as("Description1").isEqualTo(""); // Compliant
