@@ -51,6 +51,10 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
       .ofSubTypes("android.webkit.WebView", "android.webkit.WebViewFactoryProvider$Statics")
       .names("setWebContentsDebuggingEnabled").addParametersMatcher("boolean").build();
 
+  private static final MethodMatchers DEBUG_MATCHER = MethodMatchers.create()
+    .ofSubTypes("org.springframework.security.config.annotation.web.builders.WebSecurity")
+    .names("debug").addParametersMatcher("boolean").build();
+
   private final Deque<Symbol.TypeSymbol> enclosingClass = new LinkedList<>();
 
   @Override
@@ -82,7 +86,7 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkMethodInvocation(MethodInvocationTree mit) {
-    if (isPrintStackTraceIllegalUsage(mit) || isSetWebContentsDebuggingEnabled(mit)) {
+    if (isPrintStackTraceIllegalUsage(mit) || isSetWebContentsDebuggingEnabled(mit) || isDebugWithTrueArgument(mit)) {
       reportIssue(ExpressionUtils.methodName(mit), MESSAGE);
     }
   }
@@ -94,6 +98,14 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
   private static boolean isSetWebContentsDebuggingEnabled(MethodInvocationTree mit) {
     return SET_WEB_CONTENTS_DEBUGGING_ENABLED.matches(mit) &&
       Boolean.TRUE.equals(ExpressionUtils.resolveAsConstant(mit.arguments().get(0)));
+  }
+
+  private static boolean isDebugWithTrueArgument(MethodInvocationTree mit){
+    if (!DEBUG_MATCHER.matches(mit.methodSymbol())){
+      return false;
+    }
+    var cstArg = mit.arguments().get(0).asConstant();
+    return cstArg.isPresent() && cstArg.get().equals(true);
   }
 
   private void checkAnnotation(AnnotationTree annotation) {
