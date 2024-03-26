@@ -20,6 +20,7 @@
     <module>default</module>
     <module>java-17</module>
     <module>test-classpath-reader</module>
+    <module>spring-3.2.4</module>
   </modules>
 
   <build>
