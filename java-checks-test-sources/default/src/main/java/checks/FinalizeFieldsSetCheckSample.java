@@ -1,6 +1,6 @@
 package checks;
 
-class FinalizeFieldsSetCheck {
+class FinalizeFieldsSetCheckSample {
   class A {
     private String myString;
     private Integer myInteger;

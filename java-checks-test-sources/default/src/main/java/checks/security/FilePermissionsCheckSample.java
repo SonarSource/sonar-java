@@ -8,7 +8,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.HashSet;
 import java.util.Set;
 
-class FilePermissionsCheck {
+class FilePermissionsCheckSample {
 
   // using PosixFilePermission to set file permissions 757
   public void setPermissions(Path filePath) throws Exception {

@@ -1,6 +1,6 @@
 package checks;
 
-public class ForLoopFalseConditionCheck {
+public class ForLoopFalseConditionCheckSample {
   void myMethod(int x, int y, int z) {
 
     for(int i = 0; i < ZERO; i++) {}  // Noncompliant

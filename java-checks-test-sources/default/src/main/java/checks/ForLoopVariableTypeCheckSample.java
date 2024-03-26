@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
-class ForLoopVariableTypeCheck {
+class ForLoopVariableTypeCheckSample {
   static class A {
   }
 
