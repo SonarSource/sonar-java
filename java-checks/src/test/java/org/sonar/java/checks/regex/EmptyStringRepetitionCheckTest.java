@@ -29,7 +29,7 @@ class EmptyStringRepetitionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/EmptyStringRepetitionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/EmptyStringRepetitionCheckSample.java"))
       .withCheck(new EmptyStringRepetitionCheck())
       .verifyIssues();
   }

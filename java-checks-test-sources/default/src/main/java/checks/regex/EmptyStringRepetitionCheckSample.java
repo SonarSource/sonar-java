@@ -2,7 +2,7 @@ package checks.regex;
 
 import org.hibernate.validator.constraints.URL;
 
-class EmptyStringRepetitionCheck {
+class EmptyStringRepetitionCheckSample {
 
   private static final String REPLACEMENT = "empty";
 

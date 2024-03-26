@@ -8,7 +8,7 @@ import java.util.Properties;
 import static checks.security.EmptyDatabasePasswordCheckVariables.EMPTY_PASSWORD;
 import static checks.security.EmptyDatabasePasswordCheckVariables.NON_EMPTY_PASSWORD;
 
-class EmptyDatabasePasswordCheck {
+class EmptyDatabasePasswordCheckSample {
   void foo(Properties connectionProps, String unknown) throws SQLException {
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", ""); // Noncompliant [[sc=5;ec=86]] {{Add password protection to this database.}}
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", "Foo");

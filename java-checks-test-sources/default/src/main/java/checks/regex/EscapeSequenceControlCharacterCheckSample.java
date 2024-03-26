@@ -3,7 +3,7 @@ package checks.regex;
 import java.util.regex.Pattern;
 import javax.validation.constraints.Email;
 
-public class EscapeSequenceControlCharacterCheck {
+public class EscapeSequenceControlCharacterCheckSample {
 
   void nonCompliant() {
     Pattern.compile("\\ca"); // Noncompliant [[sc=22;ec=26]] {{Remove or replace this problematic use of \c.}}

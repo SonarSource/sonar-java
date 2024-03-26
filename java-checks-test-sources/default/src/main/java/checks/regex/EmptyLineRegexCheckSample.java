@@ -2,15 +2,14 @@ package checks.regex;
 
 import java.util.regex.Pattern;
 
-public class EmptyLineRegexCheck {
+public class EmptyLineRegexCheckSample {
 
   private static final int MY_FLAG = 0x10;
 
-  private static final String MY_FIELD_STRING = """
-    """;
+  private static final String MY_FIELD_STRING = "";
 
   void non_compliant_pattern_assigned(String str) {
-    Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant [[sc=34;ec=38;secondary=15,14]] {{Remove MULTILINE mode or change the regex.}}
+    Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant [[sc=34;ec=38;secondary=13,14]] {{Remove MULTILINE mode or change the regex.}}
     p1.matcher(str).find();
     p1.matcher((str)).find();
 
@@ -41,7 +40,7 @@ public class EmptyLineRegexCheck {
   void nonCompliantOnString(String str) {
     Pattern.compile("^$", Pattern.MULTILINE).matcher("").find(); // Noncompliant
 
-    Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant [[secondary=46]]
+    Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant [[secondary=45]]
     boolean b1 = p1.matcher("notEmpty").find();
     boolean b2 = p1.matcher("").find();
   }
@@ -129,7 +128,7 @@ public class EmptyLineRegexCheck {
   }
 
   boolean not_tested_for_emptiness(String str1, String str2) {
-    Pattern p4 = Pattern.compile("(?m)^$"); // Noncompliant [[secondary=137]]
+    Pattern p4 = Pattern.compile("(?m)^$"); // Noncompliant [[secondary=136]]
     if (str1.isEmpty()) {
       return false;
     }
@@ -189,8 +188,7 @@ public class EmptyLineRegexCheck {
   }
 
   String getString() {
-    return """
-  """;
+    return "";
   }
 
   @javax.validation.constraints.Pattern(regexp = "^$") // ignored

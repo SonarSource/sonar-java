@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
-class EnumMapCheck {
+class EnumMapCheckSample {
 
   public enum COLOR {
     RED, GREEN, BLUE, ORANGE;
@@ -16,7 +16,7 @@ class EnumMapCheck {
     Map<COLOR, String> moodMap = new HashMap<COLOR, String>(); // Noncompliant [[sc=34;ec=62]]
     new HashMap<COLOR, String>(); // Noncompliant
     Map<COLOR, String> moodMap2 = new HashMap<>(); // Noncompliant
-    Map<EnumMapCheck.COLOR, String> moodMap3 = new HashMap(); // Noncompliant
+    Map<EnumMapCheckSample.COLOR, String> moodMap3 = new HashMap(); // Noncompliant
     Map moodMap4 = (new HashMap<COLOR, String>()); // Noncompliant
 
     Map<COLOR, String> map;

@@ -6,7 +6,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 /**
  * 8 MB = 8388608 bytes
  */
-public class ExcessiveContentRequestCheck {
+public class ExcessiveContentRequestCheckSample {
 
   private static final int MAX_SIZE_COMPLIANT = 8_388_608;
   private static final int MAX_SIZE_NON_COMPLIANT = 8_388_609;

@@ -29,7 +29,7 @@ class EmptyMethodsCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/EmptyMethodsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/EmptyMethodsCheckSample.java"))
       .withCheck(new EmptyMethodsCheck())
       .withQuickFixes()
       .verifyIssues();

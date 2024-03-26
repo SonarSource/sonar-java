@@ -1,6 +1,6 @@
 package checks;
 
-class EqualsNotOverriddenInSubclassCheck {
+class EqualsNotOverriddenInSubclassCheckSample {
 
   static final String CONST = "constant";
   static String staticMember = "static member";

@@ -29,7 +29,7 @@ class ErrorClassExtendedCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ErrorClassExtendedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ErrorClassExtendedCheckSample.java"))
       .withCheck(new ErrorClassExtendedCheck())
       .verifyIssues();
   }
