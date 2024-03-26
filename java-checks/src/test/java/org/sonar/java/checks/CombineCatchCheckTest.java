@@ -48,7 +48,7 @@ class CombineCatchCheckTest {
   @Test
   void java_version_set() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/CombineCatchCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CombineCatchCheckSample.java"))
       .withCheck(new CombineCatchCheck())
       .withJavaVersion(7)
       .verifyIssues();

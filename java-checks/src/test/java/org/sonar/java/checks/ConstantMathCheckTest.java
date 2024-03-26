@@ -29,7 +29,7 @@ class ConstantMathCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ConstantMathCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ConstantMathCheckSample.java"))
       .withCheck(new ConstantMathCheck())
       .verifyIssues();
   }

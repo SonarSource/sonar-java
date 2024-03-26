@@ -29,7 +29,7 @@ class ClassImportCouplingCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/design/ClassImportCouplingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/design/ClassImportCouplingCheckSample.java"))
       .withCheck(new ClassImportCouplingCheck())
       .verifyIssues();
   }

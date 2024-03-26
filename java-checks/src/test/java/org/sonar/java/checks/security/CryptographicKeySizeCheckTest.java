@@ -29,7 +29,7 @@ class CryptographicKeySizeCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/CryptographicKeySizeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/CryptographicKeySizeCheckSample.java"))
       .withCheck(new CryptographicKeySizeCheck())
       .verifyIssues();
   }

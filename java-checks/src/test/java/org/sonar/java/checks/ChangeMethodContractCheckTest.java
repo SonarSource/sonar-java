@@ -30,7 +30,7 @@ class ChangeMethodContractCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/S2638_ChangeMethodContractCheck/noPackageInfo/ChangeMethodContractCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/S2638_ChangeMethodContractCheck/noPackageInfo/ChangeMethodContractCheckSample.java"))
       .withCheck(new ChangeMethodContractCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class ChangeMethodContractCheckTest {
   @Test
   void test_package_level_annotations() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/S2638_ChangeMethodContractCheck/nonNullApi/ChangeMethodContractCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/S2638_ChangeMethodContractCheck/nonNullApi/ChangeMethodContractCheckSample.java"))
       .withCheck(new ChangeMethodContractCheck())
       .verifyIssues();
   }
@@ -46,7 +46,7 @@ class ChangeMethodContractCheckTest {
   @Test
   void test_package_level_annotations_nullable_api() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/S2638_ChangeMethodContractCheck/nullableApi/ChangeMethodContractCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/S2638_ChangeMethodContractCheck/nullableApi/ChangeMethodContractCheckSample.java"))
       .withCheck(new ChangeMethodContractCheck())
       .verifyIssues();
   }
@@ -54,7 +54,7 @@ class ChangeMethodContractCheckTest {
   @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/ChangeMethodContractCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/ChangeMethodContractCheckSample.java"))
       .withCheck(new ChangeMethodContractCheck())
       .verifyNoIssues();
   }

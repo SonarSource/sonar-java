@@ -29,7 +29,7 @@ class ConfusingVarargCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ConfusingVarargCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ConfusingVarargCheckSample.java"))
       .withCheck(new ConfusingVarargCheck())
       .verifyIssues();
   }

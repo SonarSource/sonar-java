@@ -31,12 +31,12 @@ class CompareStringsBoxedTypesWithEqualsCheckTest {
   @Test
   void detected() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheckSample.java"))
       .withCheck(new CompareStringsBoxedTypesWithEqualsCheck())
       .withQuickFixes()
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheckSample.java"))
       .withCheck(new CompareStringsBoxedTypesWithEqualsCheck())
       .verifyIssues();
   }
@@ -44,13 +44,13 @@ class CompareStringsBoxedTypesWithEqualsCheckTest {
   @Test
   void no_issue_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheckSample.java"))
       .withCheck(new CompareStringsBoxedTypesWithEqualsCheck())
       .withoutSemantic()
       .verifyNoIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheckSample.java"))
       .withCheck(new CompareStringsBoxedTypesWithEqualsCheck())
       .withoutSemantic()
       .verifyNoIssues();

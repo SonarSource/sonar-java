@@ -29,7 +29,7 @@ class CounterModeIVShouldNotBeReusedCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CounterModeIVShouldNotBeReusedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CounterModeIVShouldNotBeReusedCheckSample.java"))
       .withCheck(new CounterModeIVShouldNotBeReusedCheck())
       .verifyIssues();
   }

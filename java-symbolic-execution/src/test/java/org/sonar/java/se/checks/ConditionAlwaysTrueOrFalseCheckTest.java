@@ -34,7 +34,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheckSample.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -197,5 +197,5 @@ class ConditionAlwaysTrueOrFalseCheckTest {
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
-  }  
+  }
 }

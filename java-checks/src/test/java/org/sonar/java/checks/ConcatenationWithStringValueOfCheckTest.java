@@ -30,7 +30,7 @@ class ConcatenationWithStringValueOfCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/ConcatenationWithStringValueOfCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ConcatenationWithStringValueOfCheckSample.java"))
       .withCheck(new ConcatenationWithStringValueOfCheck())
       .withQuickFixes()
       .verifyIssues();

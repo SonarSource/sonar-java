@@ -30,7 +30,7 @@ class CatchUsesExceptionWithContextCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CatchUsesExceptionWithContextCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CatchUsesExceptionWithContextCheckSample.java"))
       .withCheck(new CatchUsesExceptionWithContextCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class CatchUsesExceptionWithContextCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/CatchUsesExceptionWithContextCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/CatchUsesExceptionWithContextCheckSample.java"))
       .withCheck(new CatchUsesExceptionWithContextCheck())
       .verifyIssues();
   }
@@ -46,7 +46,7 @@ class CatchUsesExceptionWithContextCheckTest {
   @Test
   void no_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CatchUsesExceptionWithContextCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CatchUsesExceptionWithContextCheckSample.java"))
       .withCheck(new CatchUsesExceptionWithContextCheck())
       .withoutSemantic()
       .verifyNoIssues();

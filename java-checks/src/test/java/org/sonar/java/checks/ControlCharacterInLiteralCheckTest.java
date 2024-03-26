@@ -29,7 +29,7 @@ class ControlCharacterInLiteralCheckTest {
   @Test
   void test_non_text_blocks() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ControlCharacterInLiteralCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ControlCharacterInLiteralCheckSample.java"))
       .withCheck(new ControlCharacterInLiteralCheck())
       .withJavaVersion(14)
       .verifyIssues();

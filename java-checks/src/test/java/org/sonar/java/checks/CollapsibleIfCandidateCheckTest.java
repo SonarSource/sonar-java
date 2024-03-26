@@ -31,7 +31,7 @@ class CollapsibleIfCandidateCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/CollapsibleIfCandidateCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/CollapsibleIfCandidateCheckSample.java"))
       .withCheck(new CollapsibleIfCandidateCheck())
       .verifyIssues();
   }
@@ -39,7 +39,7 @@ class CollapsibleIfCandidateCheckTest {
   @Test
   void test_quick_fixes() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/CollapsibleIfCandidateCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CollapsibleIfCandidateCheckSample.java"))
       .withCheck(new CollapsibleIfCandidateCheck())
       .withQuickFixes()
       .verifyIssues();
