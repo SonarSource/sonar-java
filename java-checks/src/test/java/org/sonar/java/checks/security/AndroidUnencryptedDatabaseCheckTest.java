@@ -29,7 +29,7 @@ class AndroidUnencryptedDatabaseCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/AndroidUnencryptedDatabaseCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/AndroidUnencryptedDatabaseCheckSample.java"))
       .withCheck(new AndroidUnencryptedDatabaseCheck())
       .verifyIssues();
   }
