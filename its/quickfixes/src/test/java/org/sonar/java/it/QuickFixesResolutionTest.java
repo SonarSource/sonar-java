@@ -19,14 +19,12 @@
  */
 package org.sonar.java.it;
 
-import com.sonar.orchestrator.Orchestrator;
-import com.sonar.orchestrator.build.MavenBuild;
-import com.sonar.orchestrator.locator.FileLocation;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -34,42 +32,61 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuickFixesResolutionTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(QuickFixesResolutionTest.class);
 
-  private static final String PROJECT_LOCATION = "../../java-checks-test-sources/";
+  private static final Path PROJECT_LOCATION = Paths.get("../../java-checks-test-sources/");
+
+  @ClassRule
+  public static TemporaryFolder tmpProjectClone = new TemporaryFolder();
+
   private static final Set<String> PATHS_TO_INSPECT = Set.of(
     "default/src/main/java",
     "aws/src/main/java",
     "java-17/src/main/java"
   );
 
-  @ClassRule
-  public static Orchestrator orchestrator = Orchestrator.builderEnv()
-    .useDefaultAdminCredentialsForBuilds(true)
-    .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
-    .build();
+  private static final String MVN = System.getProperty("os.name").toLowerCase().startsWith("windows") ? "mvn.cmd" : "mvn";
 
   @Test
   public void testCompilationAfterQuickfixes() throws Exception {
-//    PATHS_TO_INSPECT.forEach(path -> {
-//      List<File> javaFiles = collectJavaFiles(PROJECT_LOCATION + path);
-//      javaFiles.forEach(file -> {
-//        LOG.info("Compiling " + file);
-//        // compile file
-//      });
-//    });
+    cloneJavaCheckTestSources();
+    for (String path : PATHS_TO_INSPECT) {
+      List<File> javaFiles = collectJavaFiles(PROJECT_LOCATION + path);
+      for (File javaFile : javaFiles) {
+        LOG.info("Compiling " + javaFile);
+      }
+    }
 
-    MavenBuild mavenBuild = MavenBuild.create()
-      .setPom(FileLocation.of(PROJECT_LOCATION + "pom.xml").getFile().getCanonicalFile())
-      .addGoal("compile");
+    Process process = new ProcessBuilder(MVN, "compile")
+      .directory(tmpProjectClone.getRoot().toPath().toFile())
+      .inheritIO()
+      .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+      .start();
+    int exitCode = process.waitFor();
 
-    orchestrator.executeBuild(mavenBuild);
+    // Compilation should be successful
+    assertThat(exitCode).isEqualTo(0);
+  }
 
+  private static void cloneJavaCheckTestSources() throws Exception{
+    try (Stream<Path> paths = Files.walk(PROJECT_LOCATION)) {
+      paths.forEach(source -> {
+        try {
+          Path target = tmpProjectClone.getRoot().toPath().resolve(PROJECT_LOCATION.relativize(source));
+          Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+          throw new RuntimeException(e.getMessage(), e);
+        }
+      });
+    }
   }
 
   private static List<File> collectJavaFiles(String directory) {
