@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 
-class BigDecimalDoubleConstructorCheck {
+class BigDecimalDoubleConstructorCheckSample {
   MathContext mc;
   BigDecimal bd1 = new BigDecimal("1");
   BigDecimal bd1_1 = new BigDecimal("2", mc);

@@ -1,6 +1,6 @@
 package checks;
 
-class BooleanLiteralCheck {
+class BooleanLiteralCheckSample {
 
   public void f(boolean var, boolean foo) {
     boolean[] tests = {

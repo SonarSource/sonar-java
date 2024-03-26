@@ -2,7 +2,7 @@ package checks.tests;
 
 import static org.hamcrest.core.IsNot.not;
 
-class BooleanOrNullLiteralInAssertionsCheck {
+class BooleanOrNullLiteralInAssertionsCheckSample {
   void booleans() {
     org.junit.Assert.assertTrue( // Noncompliant [[sc=22;ec=32;secondary=8]] {{Remove or correct this assertion.}}
       true
