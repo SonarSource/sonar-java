@@ -11,7 +11,7 @@ import org.junit.jupiter.api.function.Executable;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AssertionInTryCatchCheck {
+public class AssertionInTryCatchCheckSample {
 
   @Test
   public void test_non_compliant1() {

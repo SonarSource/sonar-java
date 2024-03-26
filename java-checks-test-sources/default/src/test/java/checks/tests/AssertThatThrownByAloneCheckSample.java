@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class AssertThatThrownByAloneCheck {
+public class AssertThatThrownByAloneCheckSample {
 
   @Test
   void noncompliant() {

@@ -2,7 +2,7 @@ package checks.tests;
 
 import org.assertj.core.configuration.Configuration;
 
-public class AssertJApplyConfigurationCheck {
+public class AssertJApplyConfigurationCheckSample {
   void notApplied() {
     Configuration configuration = new Configuration(); // Noncompliant [[sc=19;ec=32]] {{Apply this configuration with apply() or applyAndDisplay().}}
     configuration.setComparingPrivateFields(true);

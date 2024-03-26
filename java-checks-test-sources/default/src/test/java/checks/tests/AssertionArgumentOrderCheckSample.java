@@ -5,19 +5,19 @@ import static org.junit.Assert.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.withinPercentage;
 
-class AssertionArgumentOrderCheck {
+class AssertionArgumentOrderCheckSample {
   static final String CONSTANT = "";
   void junit() {
-    assertEquals(0, new AssertionArgumentOrderCheck().actual());
-    assertEquals(new AssertionArgumentOrderCheck().actual(), 0); // Noncompliant [[sc=62;ec=63;secondary=12]]
-    assertEquals("message", new AssertionArgumentOrderCheck().actual(), 0); // Noncompliant
-    assertEquals("message", 0, new AssertionArgumentOrderCheck().actual());
+    assertEquals(0, new AssertionArgumentOrderCheckSample().actual());
+    assertEquals(new AssertionArgumentOrderCheckSample().actual(), 0); // Noncompliant [[sc=68;ec=69;secondary=12]]
+    assertEquals("message", new AssertionArgumentOrderCheckSample().actual(), 0); // Noncompliant
+    assertEquals("message", 0, new AssertionArgumentOrderCheckSample().actual());
     assertEquals("message", "constantString", actualObject());
     assertEquals("message", actualObject(), "constantString"); // Noncompliant
-    assertSame(0, new AssertionArgumentOrderCheck().actual());
-    assertSame(new AssertionArgumentOrderCheck().actual(), 0); // Noncompliant
-    assertNotSame(new AssertionArgumentOrderCheck().actual(), 0); // Noncompliant
-    assertNotSame("message", new AssertionArgumentOrderCheck().actual(), 0); // Noncompliant
+    assertSame(0, new AssertionArgumentOrderCheckSample().actual());
+    assertSame(new AssertionArgumentOrderCheckSample().actual(), 0); // Noncompliant
+    assertNotSame(new AssertionArgumentOrderCheckSample().actual(), 0); // Noncompliant
+    assertNotSame("message", new AssertionArgumentOrderCheckSample().actual(), 0); // Noncompliant
 
     //assert equals with double/float and delta
     assertEquals("message", 0d, actualDouble(), 1d);
@@ -34,8 +34,8 @@ class AssertionArgumentOrderCheck {
 
 
     assertEquals("message", actualObject(), CONSTANT); // Noncompliant
-    assertEquals("message", actualObject(), AssertionArgumentOrderCheck.CONSTANT); // Noncompliant
-    assertEquals("message", AssertionArgumentOrderCheck.CONSTANT, actualObject());
+    assertEquals("message", actualObject(), AssertionArgumentOrderCheckSample.CONSTANT); // Noncompliant
+    assertEquals("message", AssertionArgumentOrderCheckSample.CONSTANT, actualObject());
 
     assertEquals(1, 2); // Noncompliant {{Change this assertion to not compare two literals.}}
     assertEquals(actualObject(), Boolean.FALSE); // Noncompliant
@@ -49,8 +49,8 @@ class AssertionArgumentOrderCheck {
 
   void assertJ() {
     // Simple cases, we can find the expected value
-    assertThat(0).isEqualTo(new AssertionArgumentOrderCheck().actual()); // Noncompliant [[sc=16;ec=17;secondary=52]] {{Swap these 2 arguments so they are in the correct order: actual value, expected value.}}
-    assertThat(new AssertionArgumentOrderCheck().actual()).isEqualTo(0);
+    assertThat(0).isEqualTo(new AssertionArgumentOrderCheckSample().actual()); // Noncompliant [[sc=16;ec=17;secondary=52]] {{Swap these 2 arguments so they are in the correct order: actual value, expected value.}}
+    assertThat(new AssertionArgumentOrderCheckSample().actual()).isEqualTo(0);
     assertThat("a").isEqualTo("b"); // Noncompliant {{Change this assertion to not compare two literals.}}
     assertThat(actualObject()).isEqualTo("constantString");
     assertThat("constantString").isEqualTo(actualObject()); // Noncompliant

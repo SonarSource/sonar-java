@@ -4,7 +4,7 @@ import org.easymock.EasyMockSupport;
 
 import static org.easymock.EasyMock.expectLastCall;
 
-class AssertionInThreadRunCheck extends Thread {
+class AssertionInThreadRunCheckSample extends Thread {
   @Override
   public void run() {
     org.junit.Assert.assertTrue(true); // Noncompliant [[sc=22;ec=32]] {{Remove this assertion.}}
@@ -20,7 +20,7 @@ class AssertionInThreadRunCheck extends Thread {
   public void run(int i){}
 }
 
-abstract class AssertionInThreadRunCheck_B {
+abstract class AssertionInThreadRunCheckSample_B {
   public void run() {
     org.junit.Assert.assertTrue(true);
     org.junit.jupiter.api.Assertions.assertTrue(true);
@@ -28,7 +28,7 @@ abstract class AssertionInThreadRunCheck_B {
   abstract void foo();
 }
 
-class AssertionInThreadRunCheck_C extends junit.framework.TestCase {
+class AssertionInThreadRunCheckSample_C extends junit.framework.TestCase {
   class A extends Thread {
     @Override
     public void run() {
@@ -37,7 +37,7 @@ class AssertionInThreadRunCheck_C extends junit.framework.TestCase {
   }
 }
 
-class AssertionInThreadRunCheck_D extends Thread {
+class AssertionInThreadRunCheckSample_D extends Thread {
 
   @Override
   public void run() { // Compliant
@@ -48,7 +48,7 @@ class AssertionInThreadRunCheck_D extends Thread {
 }
 
 
-class AssertionInThreadRunCheck_ThreadStopperTest extends EasyMockSupport {
+class AssertionInThreadRunCheckSample_ThreadStopperTest extends EasyMockSupport {
 
   public void failsToScan() {
 

@@ -29,7 +29,7 @@ class AssertThatThrownByAloneCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertThatThrownByAloneCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertThatThrownByAloneCheckSample.java"))
       .withCheck(new AssertThatThrownByAloneCheck())
       .verifyIssues();
   }

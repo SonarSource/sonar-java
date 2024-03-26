@@ -12,7 +12,7 @@ import org.junit.jupiter.api.function.Executable;
 
 import static checks.tests.MyAbstractIsEqualTo.isEqualTo;
 
-class AssertionsWithoutMessageCheck {
+class AssertionsWithoutMessageCheckSample {
   void foo() {
     org.assertj.core.api.Assertions.assertThat("").usingComparator(null).as("a").isEqualTo(222); // Compliant
     org.junit.Assert.assertTrue(true); // Noncompliant [[sc=22;ec=32]] {{Add a message to this assertion.}}
@@ -149,24 +149,24 @@ class AssertionsWithoutMessageCheck {
     org.junit.jupiter.api.Assertions.assertEquals(1.0, 2.0, () -> "messageSupplier");
     org.junit.jupiter.api.Assertions.assertEquals(1.0, 2.0, 1.0, () -> "messageSupplier");
 
-    org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> new AssertionsWithoutMessageCheck()); // Noncompliant
-    org.junit.jupiter.api.Assertions.assertDoesNotThrow(AssertionsWithoutMessageCheck::new);  // Noncompliant
-    org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> new AssertionsWithoutMessageCheck(), "message");
-    org.junit.jupiter.api.Assertions.assertDoesNotThrow(AssertionsWithoutMessageCheck::new, "message");
-    org.junit.jupiter.api.Assertions.assertDoesNotThrow(AssertionsWithoutMessageCheck::new, () -> "message");
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> new AssertionsWithoutMessageCheckSample()); // Noncompliant
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(AssertionsWithoutMessageCheckSample::new);  // Noncompliant
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> new AssertionsWithoutMessageCheckSample(), "message");
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(AssertionsWithoutMessageCheckSample::new, "message");
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(AssertionsWithoutMessageCheckSample::new, () -> "message");
 
     java.util.List<String> list = new java.util.ArrayList<String>();
     org.junit.jupiter.api.Assertions.assertIterableEquals(list, list); // Noncompliant
     org.junit.jupiter.api.Assertions.assertIterableEquals(list, list, "message");
     org.junit.jupiter.api.Assertions.assertIterableEquals(list, list, () -> "message");
 
-    org.junit.jupiter.api.Assertions.assertTimeout(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheck::new); // Noncompliant
-    org.junit.jupiter.api.Assertions.assertTimeout(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheck::new, "message");
-    org.junit.jupiter.api.Assertions.assertTimeout(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheck::new, () -> "message");
+    org.junit.jupiter.api.Assertions.assertTimeout(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheckSample::new); // Noncompliant
+    org.junit.jupiter.api.Assertions.assertTimeout(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheckSample::new, "message");
+    org.junit.jupiter.api.Assertions.assertTimeout(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheckSample::new, () -> "message");
 
-    org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheck::new); // Noncompliant
-    org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheck::new, "message");
-    org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheck::new, () -> "message");
+    org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheckSample::new); // Noncompliant
+    org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheckSample::new, "message");
+    org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(java.time.Duration.ofSeconds(3), AssertionsWithoutMessageCheckSample::new, () -> "message");
   }
 
   class MyCustomGenericAssert extends GenericAssert<String, String> {
