@@ -2,7 +2,7 @@ package checks;
 
 import javax.annotation.Nonnull;
 
-public class EqualsParametersMarkedNonNullCheck {
+public class EqualsParametersMarkedNonNullCheckSample {
 
   static class A {
     public boolean equals(@Nonnull Object obj) { // Noncompliant [[sc=27;ec=35;quickfixes=qf1]] {{"equals" method parameters should not be marked "@Nonnull".}}

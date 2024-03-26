@@ -2,7 +2,7 @@ package checks;
 
 import java.util.function.Supplier;
 
-class ExpressionComplexityCheck {
+class ExpressionComplexityCheckSample {
   int a = false ? (true ? (false ? 1 : 0) : 0) : 1;
   int b = false ? (true ? (false ? (true ? 1 : 0) : 0) : 0) : 1;      // Noncompliant [[sc=11;ec=64;effortToFix=1]] {{Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).}}
 
@@ -17,7 +17,7 @@ class ExpressionComplexityCheck {
   }
 
   void g() {
-    new ExpressionComplexityCheck() {
+    new ExpressionComplexityCheckSample() {
       boolean a = true && true;
       boolean b = true && true;
       boolean c = true && true;
@@ -28,7 +28,7 @@ class ExpressionComplexityCheck {
 
   void h() {
     boolean foo = true && true && true &&                             // Noncompliant [[sc=19;ec=11;effortToFix=1]]
-      new ExpressionComplexityCheck() {
+      new ExpressionComplexityCheckSample() {
         boolean a = true && true && true && false && false; // Noncompliant [[effortToFix=1]]
         boolean a2 = true && true && true;
       }.someThing() &&
@@ -66,7 +66,7 @@ class ExpressionComplexityCheck {
       boolean c = true || false || true;
       c = true || false || true;
       boolean a = true && true && true && false && false; // Noncompliant
-      new ExpressionComplexityCheck() {
+      new ExpressionComplexityCheckSample() {
         boolean a = true && true && true && false && false; // Noncompliant
         boolean a2 = true && true && true;
       }.someThing();

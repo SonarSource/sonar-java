@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-class EnumSetCheck {
+class EnumSetCheckSample {
 
   public enum COLOR {
     RED, GREEN, BLUE, ORANGE;

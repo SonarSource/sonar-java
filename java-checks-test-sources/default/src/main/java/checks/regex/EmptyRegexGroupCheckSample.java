@@ -2,7 +2,7 @@ package checks.regex;
 
 import java.util.regex.Pattern;
 
-public class EmptyRegexGroupCheck {
+public class EmptyRegexGroupCheckSample {
 
   void nonCompliant() {
     Pattern.compile("foo()bar");        // Noncompliant [[sc=25;ec=27]] {{Remove this empty group.}}

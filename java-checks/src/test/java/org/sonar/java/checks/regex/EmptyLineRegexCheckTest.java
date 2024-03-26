@@ -30,7 +30,7 @@ class EmptyLineRegexCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/EmptyLineRegexCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/EmptyLineRegexCheckSample.java"))
       .withCheck(new EmptyLineRegexCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class EmptyLineRegexCheckTest {
   @Test
   void testTextBlocks() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/regex/EmptyLineRegexCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/regex/EmptyLineRegexCheckSample.java"))
       .withCheck(new EmptyLineRegexCheck())
       .verifyIssues();
   }

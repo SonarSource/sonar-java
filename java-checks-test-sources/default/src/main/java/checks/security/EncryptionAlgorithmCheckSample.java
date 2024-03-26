@@ -4,7 +4,7 @@ import javax.crypto.Cipher;
 
 import static java.io.File.separator;
 
-abstract class EncryptionAlgorithmCheck {
+abstract class EncryptionAlgorithmCheckSample {
 
   static final String RSA = "RSA";
   static final String NO_PADDING = "/NONE/NoPadding";

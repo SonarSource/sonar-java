@@ -1,6 +1,6 @@
 package checks;
 
-class EqualsNotOverriddenInSubclassCheck {
+class EqualsNotOverriddenInSubclassCheckSample {
 
   class A {
     public boolean equals(Object obj) {

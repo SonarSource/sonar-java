@@ -1,6 +1,6 @@
 package checks;
 
-class EscapedUnicodeCharactersCheck {
+class EscapedUnicodeCharactersCheckSample {
   void method() {
     String prefix = "n\uuuu00E9e"; // Noncompliant [[sc=21;ec=34]] {{Remove this Unicode escape sequence and use the character instead.}}
     String prefix2= "n\\\uuuu00E9e"; // Noncompliant [[sc=21;ec=36]] {{Remove this Unicode escape sequence and use the character instead.}}

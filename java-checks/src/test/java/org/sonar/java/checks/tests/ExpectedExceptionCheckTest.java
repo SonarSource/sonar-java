@@ -29,7 +29,7 @@ class ExpectedExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/ExpectedExceptionCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/ExpectedExceptionCheckSample.java"))
       .withCheck(new ExpectedExceptionCheck())
       .verifyIssues();
   }

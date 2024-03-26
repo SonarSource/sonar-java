@@ -11,12 +11,12 @@ import java.util.Collection;; // Noncompliant [[sc=29;ec=30;quickfixes=qf1]] {{R
 // fix@qf2 {{Remove this empty statement}}
 // edit@qf2 [[sl=-4;sc=30;el=+0;ec=2]] {{}}
 
-abstract class EmptyStatementUsageCheck {
+abstract class EmptyStatementUsageCheckSample {
   int a; // Compliant
   int b;; // Noncompliant {{Remove this empty statement.}}
   ; // Noncompliant {{Remove this empty statement.}}
   
-  public EmptyStatementUsageCheck() {
+  public EmptyStatementUsageCheckSample() {
     ; // Noncompliant {{Remove this empty statement.}}
   }
 
@@ -73,7 +73,7 @@ abstract class EmptyStatementUsageCheck {
   }
 }
 
-class EmptyStatementUsageCheckBar {
+class EmptyStatementUsageCheckSampleBar {
   public enum MyEnum { APPLICATION, HANDLER }; // Noncompliant {{Remove this empty statement.}}
   
   Closeable c = new Closeable() {
