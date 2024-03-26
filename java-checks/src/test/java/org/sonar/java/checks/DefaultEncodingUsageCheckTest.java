@@ -31,7 +31,7 @@ class DefaultEncodingUsageCheckTest {
   @ValueSource(ints = {8, 11, 17})
   void test_before_java_version_18(int javaVersion) {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/DefaultEncodingUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/DefaultEncodingUsageCheckSample.java"))
       .withCheck(new DefaultEncodingUsageCheck())
       .withJavaVersion(javaVersion)
       .verifyIssues();
@@ -41,7 +41,7 @@ class DefaultEncodingUsageCheckTest {
   @ValueSource(ints = {-1, 18, 19})
   void test_since_java_version_18_or_not_set(int javaVersion) {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/DefaultEncodingUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/DefaultEncodingUsageCheckSample.java"))
       .withCheck(new DefaultEncodingUsageCheck())
       .withJavaVersion(javaVersion)
       .verifyNoIssues();

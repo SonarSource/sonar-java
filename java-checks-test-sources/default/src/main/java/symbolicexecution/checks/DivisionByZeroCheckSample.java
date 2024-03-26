@@ -6,7 +6,7 @@ import java.math.MathContext;
 import java.util.Random;
 
 @SuppressWarnings("java:S139")
-class DivisionByZeroCheck {
+class DivisionByZeroCheckSample {
 
   void flow_through_binary_expression_keep_track_of_the_inceptive_symbol(boolean condition, int unknownInt) {
     int divisorAncestor6 = condition ? 0 : 1; // flow@inceptive_symbol [[order=1]] {{Implies 'divisorAncestor6' is zero.}}
@@ -640,7 +640,7 @@ class DivisionByZeroCheck {
   }
 }
 
-class DivisionByZeroCheckAssignment {
+class DivisionByZeroCheckSampleAssignment {
   int myField;
 
   public int calculate(int i) {
@@ -654,7 +654,7 @@ class DivisionByZeroCheckAssignment {
   }
 }
 
-class DivisionByZeroCheckConstraintCopy {
+class DivisionByZeroCheckSampleConstraintCopy {
   void f(int x) {
     boolean b1 = x < 0 || (x == 0.0 && (1 / x > 0)); // Noncompliant
   }
@@ -664,7 +664,7 @@ class DivisionByZeroCheckConstraintCopy {
   }
 }
 
-class DivisionByZeroCheckTwoCompoundAssignments {
+class DivisionByZeroCheckSampleTwoCompoundAssignments {
 
   double sSum;
   double mSum;
@@ -680,7 +680,7 @@ class DivisionByZeroCheckTwoCompoundAssignments {
   }
 }
 
-class DivisionByZeroCheckNonZeroAfterDiv {
+class DivisionByZeroCheckSampleNonZeroAfterDiv {
 
   void test(int i, int j) {
     int x = i / j;
@@ -700,7 +700,7 @@ class DivisionByZeroCheckNonZeroAfterDiv {
 
 }
 
-class DivisionByZeroCheckRelationalOperators {
+class DivisionByZeroCheckSampleRelationalOperators {
   void h() {
     int x = 1;
     int a = 0;
@@ -746,7 +746,7 @@ class DivisionByZeroCheckRelationalOperators {
   }
 }
 
-class DivisionByZeroCheckBigIntegerAndDecimal {
+class DivisionByZeroCheckSampleBigIntegerAndDecimal {
   void simpleBigInt(BigInteger r) {
     BigInteger z1 = BigInteger.valueOf(0); // flow@simpleBigInt {{'valueOf()' can return zero.}} flow@simpleBigInt {{Implies 'z1' can be zero.}}
     BigInteger z2 = z1; // flow@simpleBigInt {{Implies 'z2' has the same value as 'z1'.}}

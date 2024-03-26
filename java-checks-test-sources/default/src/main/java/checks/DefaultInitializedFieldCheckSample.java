@@ -1,6 +1,6 @@
 package checks;
 
-class DefaultInitializedFieldCheck {
+class DefaultInitializedFieldCheckSample {
   byte b = 0; // Noncompliant {{Remove this initialization to "0", the compiler will do that for you.}}
   byte b2;
   short s = 0; // Noncompliant {{Remove this initialization to "0", the compiler will do that for you.}}

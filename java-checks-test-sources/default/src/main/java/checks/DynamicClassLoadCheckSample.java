@@ -1,6 +1,6 @@
 package checks;
 
-class DynamicClassLoadCheck {
+class DynamicClassLoadCheckSample {
 
   public void method() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
     String className = System.getProperty("messageClassName");

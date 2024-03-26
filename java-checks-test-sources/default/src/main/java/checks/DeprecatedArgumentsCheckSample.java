@@ -1,6 +1,6 @@
 package checks;
 
-class DeprecatedArgumentsCheck {
+class DeprecatedArgumentsCheckSample {
 
   @Deprecated // Noncompliant [[sc=3;ec=14]] {{Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation.}}
   public int lim;

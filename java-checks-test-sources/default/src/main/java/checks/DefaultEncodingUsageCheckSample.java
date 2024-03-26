@@ -20,7 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.checkerframework.common.reflection.qual.UnknownClass;
 
-public class DefaultEncodingUsageCheck {
+public class DefaultEncodingUsageCheckSample {
   void myMethod(byte[] bytes, java.io.File file, OutputStream outputStream, java.io.FileDescriptor fileDescriptor) throws IOException {
     new String(bytes); // Noncompliant {{Remove this use of constructor "String(byte[])".}}
     new String(bytes, 0, 1); // Noncompliant {{Remove this use of constructor "String(byte[],int,int)".}}

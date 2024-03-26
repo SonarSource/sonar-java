@@ -1,6 +1,6 @@
 package checks;
 
-class DoubleCheckedLockingCheck {
+class DoubleCheckedLockingCheckSample {
 
   private UnknownType unknownType;
 

@@ -1,6 +1,6 @@
 package checks;
 
-abstract class DeadStoreCheck {
+abstract class DeadStoreCheckSample {
 
   void lambdas_not_resolved(UnknnownFunction lambda) {
     int a = 42; // Compliant

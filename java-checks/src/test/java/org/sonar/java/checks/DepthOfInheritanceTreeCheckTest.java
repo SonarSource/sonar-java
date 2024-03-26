@@ -40,7 +40,7 @@ class DepthOfInheritanceTreeCheckTest {
     DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(2);
 
-    String filename = mainCodeSourcesPath("checks/DepthOfInheritanceTreeCheck.java");
+    String filename = mainCodeSourcesPath("checks/DepthOfInheritanceTreeCheckSample.java");
 
     CheckVerifier.newVerifier()
       .onFile(filename)

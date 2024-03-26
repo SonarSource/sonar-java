@@ -1,6 +1,6 @@
 package checks;
 
-class DuplicateConditionIfElseIfCheck {
+class DuplicateConditionIfElseIfCheckSample {
   void example(boolean condition1, boolean condition2, boolean condition3, int i1, int i2) {
     if (condition1) {
     } else if (condition1) { // Noncompliant [[sc=16;ec=26;secondary=-1]] {{This branch can not be reached because the condition duplicates a previous condition in the same sequence of "if/else if" statements}}

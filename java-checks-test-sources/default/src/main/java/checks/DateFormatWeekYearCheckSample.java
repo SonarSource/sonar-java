@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.Locale;
 
 
-class DateFormatWeekYearCheck {
+class DateFormatWeekYearCheckSample {
   private static final String COMPLIANT_DATE_FORMAT = "yyyy/MM/dd";
   private static final String COMPLIANT_PATTERN = "Y-ww";
   private static final String NON_COMPLIANT_PATTERN = "YYYY/MM/dd";
