@@ -63,9 +63,10 @@ public class DebugFeatureEnabledCheck {
     }
   }
 
-  void foo(WebSecurity web){
+  void foo(WebSecurity web, boolean cond){
     web.debug(true);   // Noncompliant [sc=9;ec=14] {{Make sure this debug feature is deactivated before delivering the code in production.}}
     web.debug(false);
+    web.debug(cond);
   }
 
   public WebSecurityCustomizer debugCustomizer() {
