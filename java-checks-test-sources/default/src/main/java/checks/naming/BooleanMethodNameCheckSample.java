@@ -1,6 +1,6 @@
 package checks.naming;
 
-class BooleanMethodNameCheck {
+class BooleanMethodNameCheckSample {
   boolean foo() { return true; } // Compliant
   boolean getFoo() { return true; } // Noncompliant {{Rename this method to start with "is" or "has".}}
   boolean isFoo() { return true; } // Compliant
@@ -11,12 +11,12 @@ class BooleanMethodNameCheck {
   int bar() { return 0; }
 }
 
-class BooleanMethodNameCheckB extends BooleanMethodNameCheck implements BooleanMethodNameCheckI {
+class BooleanMethodNameCheckSampleB extends BooleanMethodNameCheckSample implements BooleanMethodNameCheckSampleI {
   @Override
   boolean foo() { return false; } // Compliant - overrides are not taken into account
   public boolean getOk() { return false; } // Compliant - overrides are not taken into account (even without the annotation)
 }
 
-interface BooleanMethodNameCheckI {
+interface BooleanMethodNameCheckSampleI {
   boolean getOk(); // Noncompliant
 }

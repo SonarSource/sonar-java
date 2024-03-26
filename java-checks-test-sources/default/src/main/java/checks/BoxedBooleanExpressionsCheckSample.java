@@ -5,7 +5,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.validation.constraints.NotNull;
 
-class BoxedBooleanExpressionsCheck {
+class BoxedBooleanExpressionsCheckSample {
 
   String foo(Object value) {
     if (value == null) return "";

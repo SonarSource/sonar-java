@@ -2,12 +2,12 @@ package checks.tests;
 
 import org.junit.Test;
 
-class BadTestClassNameCheck { // Noncompliant {{Rename class "BadTestClassNameCheck" to match the regular expression: '^((Test|IT)[a-zA-Z0-9_]+|[A-Z][a-zA-Z0-9_]*(Test|Tests|TestCase|IT|ITCase))$'}}
+class BadTestClassNameCheckSample { // Noncompliant {{Rename class "BadTestClassNameCheckSample" to match the regular expression: '^((Test|IT)[a-zA-Z0-9_]+|[A-Z][a-zA-Z0-9_]*(Test|Tests|TestCase|IT|ITCase))$'}}
   @Test
   void foo() {}
 }
 
-abstract class AbstractBadTestClassNameCheck { // compliant
+abstract class AbstractBadTestClassNameCheckSample { // compliant
   @Test
   void foo() {}
 }
@@ -17,12 +17,12 @@ class BadTestClassName_Check { // Noncompliant
   void foo() {}
 }
 
-class BadTestClassNameCheckTest { // Compliant
+class BadTestClassNameCheckSampleTest { // Compliant
   @org.testng.annotations.Test
   void foo() {}
 }
 
-class BadTestClassNameCheckSomeTests { // Compliant
+class BadTestClassNameCheckSampleSomeTests { // Compliant
   @Test
   void foo() {}
 }
@@ -32,32 +32,32 @@ class Bad_Test_Class_Name_Check_Some_Tests { // Compliant
   void foo() {}
 }
 
-class BadTestClassNameCheck2 { // Compliant
+class BadTestClassNameCheckSample2 { // Compliant
   void foo() {}
 
-  BadTestClassNameCheck a = new BadTestClassNameCheck() {};
+  BadTestClassNameCheckSample a = new BadTestClassNameCheckSample() {};
 }
-class TestBadTestClassNameCheck {
+class TestBadTestClassNameCheckSample {
   @Test
   void foo() {
   }
 }
-class BadTestClassNameCheckTestCase {
+class BadTestClassNameCheckSampleTestCase {
   @Test
   void foo() {
   }
 }
-class ITBadTestClassNameCheck {
+class ITBadTestClassNameCheckSample {
   @Test
   void foo() {
   }
 }
-class BadTestClassNameCheckIT {
+class BadTestClassNameCheckSampleIT {
   @Test
   void foo() {
   }
 }
-class BadTestClassNameCheckITCase {
+class BadTestClassNameCheckSampleITCase {
   @Test
   void foo() {
   }

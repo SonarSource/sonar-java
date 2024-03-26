@@ -1,6 +1,6 @@
 package checks;
 
-class BrainMethodCheck {
+class BrainMethodCheckSample {
 
   void foo() { // Noncompliant [[sc=8;ec=11]] {{A "Brain Method" was detected. Refactor it to reduce at least one of the following metrics: LOC from 66 to 64, Complexity from 17 to 14, Nesting Level from 3 to 2, Number of Variables from 12 to 6.}}
     String a = "a";

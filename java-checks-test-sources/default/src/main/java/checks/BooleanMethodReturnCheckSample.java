@@ -4,7 +4,7 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-class BooleanMethodReturnCheckA {
+class BooleanMethodReturnCheckSampleA {
   public Boolean myMethod() {
     return null; // Noncompliant {{Null is returned but a "Boolean" is expected.}}
   }
@@ -13,7 +13,7 @@ class BooleanMethodReturnCheckA {
     return Boolean.TRUE; // Compliant
   }
 
-  BooleanMethodReturnCheckA() {
+  BooleanMethodReturnCheckSampleA() {
     // constructor (with null return type) are not covered by the rule
     return;
   }
@@ -29,7 +29,7 @@ class BooleanMethodReturnCheckA {
   }
 }
 
-class BooleanMethodReturnCheckB {
+class BooleanMethodReturnCheckSampleB {
   private class Boolean {
   }
 
@@ -38,11 +38,11 @@ class BooleanMethodReturnCheckB {
   }
 
   public java.lang.Boolean myOtherMethod() {
-    class BooleanMethodReturnCheckC {
+    class BooleanMethodReturnCheckSampleC {
       private java.lang.Boolean myInnerMethod() {
         return null; // Noncompliant {{Null is returned but a "Boolean" is expected.}}
       }
-      private BooleanMethodReturnCheckC foo() {
+      private BooleanMethodReturnCheckSampleC foo() {
         return null; // Compliant
       }
     }
@@ -55,9 +55,9 @@ class BooleanMethodReturnCheckB {
   }
 }
 
-class BooleanMethodReturnCheckD {
+class BooleanMethodReturnCheckSampleD {
   public Boolean foo() {
-    class BooleanMethodReturnCheckE {
+    class BooleanMethodReturnCheckSampleE {
       void bar() {
         return;
       }
