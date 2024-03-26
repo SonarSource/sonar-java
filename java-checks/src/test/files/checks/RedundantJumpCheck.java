@@ -1,5 +1,17 @@
 abstract class A {
 
+  public void reproducer() {
+    for (;;) {
+      continue; // Noncompliant
+    }
+    for (;;) {
+      if(condition){
+        continue;
+      }
+      foo();
+    }
+  }
+
   public void loops() {
 
     while (condition1) {
