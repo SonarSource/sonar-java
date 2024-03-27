@@ -3,7 +3,7 @@ package symbolicexecution.checks;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-abstract class LocksNotUnlockedCheck {
+abstract class LocksNotUnlockedCheckSample {
 
   public void while_statement() {
     Lock lock = new ReentrantLock();

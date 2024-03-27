@@ -5,7 +5,7 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class LeastSpecificTypeCheck {
+class LeastSpecificTypeCheckSample {
   @SomethingUnknown
   public void resourceAnnotatedMethod1(List<Object> list) { // Compliant - Unknown annotation, could be Spring, we do not report anything
     for (Object o : list) {
@@ -57,16 +57,16 @@ class LeastSpecificTypeCheck {
 
   static class T extends T2 implements IMB, IMA {}
 
-  public static void bla(T t) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheck.I1' here; it is a more general type than 'T'.}}
+  public static void bla(T t) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheckSample.I1' here; it is a more general type than 'T'.}}
     t.m();
   }
 
-  public static void foo(T t) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheck.T1' here; it is a more general type than 'T'.}}
+  public static void foo(T t) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheckSample.T1' here; it is a more general type than 'T'.}}
     t.m();
     t.mt1();
   }
 
-  public static void ma(T t) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheck.IMA' here; it is a more general type than 'T'.}}
+  public static void ma(T t) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheckSample.IMA' here; it is a more general type than 'T'.}}
     // defined in both T2 and IMA, interface is preferred
     t.ma();
   }
@@ -76,7 +76,7 @@ class LeastSpecificTypeCheck {
     t.ma_1(null);
   }
 
-  public static void ma_2(T t) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheck.IMB' here; it is a more general type than 'T'.}}
+  public static void ma_2(T t) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheckSample.IMB' here; it is a more general type than 'T'.}}
     // defined in both T2 and IMA, but call is ambiguous
     t.ma_2(null);
   }
@@ -93,7 +93,7 @@ class LeastSpecificTypeCheck {
 
   }
 
-  public static void generics(GImplSub s) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheck.GImpl' here; it is a more general type than 'GImplSub'.}}
+  public static void generics(GImplSub s) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheckSample.GImpl' here; it is a more general type than 'GImplSub'.}}
     s.get();
   }
 
@@ -101,7 +101,7 @@ class LeastSpecificTypeCheck {
 
   }
 
-  public static void generics2(Generic<Object> g) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheck.IG' here; it is a more general type than 'Generic'.}}
+  public static void generics2(Generic<Object> g) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheckSample.IG' here; it is a more general type than 'Generic'.}}
     g.get();
   }
 

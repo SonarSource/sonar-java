@@ -5,7 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-abstract class LocksNotUnlockedCheck {
+abstract class LocksNotUnlockedCheckSample {
 
   Lock l1 = new ReentrantLock();
   Lock l2 = new ReentrantLock();

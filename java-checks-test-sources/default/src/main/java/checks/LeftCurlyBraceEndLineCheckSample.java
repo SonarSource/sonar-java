@@ -7,7 +7,7 @@ import java.lang.annotation.Documented;
 import java.util.List;
 import org.sonar.api.Properties;
 
-class LeftCurlyBraceEndLineCheck {
+class LeftCurlyBraceEndLineCheckSample {
   
   private static final int MY_CONST;
   static
@@ -32,7 +32,7 @@ class LeftCurlyBraceEndLineCheck {
     }
   }
   
-  public LeftCurlyBraceEndLineCheck() {                       // Compliant
+  public LeftCurlyBraceEndLineCheckSample() {                       // Compliant
   }
   
   public void bar() throws Exception
@@ -137,10 +137,10 @@ class LeftCurlyBraceEndLineCheck {
   }
 }
 
-class LeftCurlyBraceEndLineCheckBar extends LeftCurlyBraceEndLineCheck {                 // Compliant
+class LeftCurlyBraceEndLineCheckSampleBar extends LeftCurlyBraceEndLineCheckSample {                 // Compliant
 }
 
-class LeftCurlyBraceEndLineCheckReBar extends checks.LeftCurlyBraceEndLineCheck {         // Compliant
+class LeftCurlyBraceEndLineCheckSampleReBar extends checks.LeftCurlyBraceEndLineCheckSample {         // Compliant
 }
 
 abstract class Dul implements Closeable

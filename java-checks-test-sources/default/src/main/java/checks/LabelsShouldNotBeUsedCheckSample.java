@@ -1,6 +1,6 @@
 package checks;
 
-class LabelsShouldNotBeUsedCheck {
+class LabelsShouldNotBeUsedCheckSample {
   void foo() {
     int matrix[][] = {
         {1, 2, 3},

@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class LeastSpecificTypeCheck {
+class LeastSpecificTypeCheckSample {
 
   public void test1(ArrayList<Object> list) { // Noncompliant {{Use 'java.util.Collection' here; it is a more general type than 'ArrayList'.}}
     System.out.println(list.size());
@@ -146,7 +146,7 @@ class LeastSpecificTypeCheck {
   public class C extends S {
   }
 
-  public void test4(C arg) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheck.S' here; it is a more general type than 'C'.}}
+  public void test4(C arg) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheckSample.S' here; it is a more general type than 'C'.}}
     arg.a();
     arg.b();
   }
@@ -244,7 +244,7 @@ class LeastSpecificTypeCheck {
 
   }
 
-  public static void coverage(PrivateClass c) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheck.IBase' here; it is a more general type than 'PrivateClass'.}}
+  public static void coverage(PrivateClass c) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheckSample.IBase' here; it is a more general type than 'PrivateClass'.}}
     c.b2();
   }
 

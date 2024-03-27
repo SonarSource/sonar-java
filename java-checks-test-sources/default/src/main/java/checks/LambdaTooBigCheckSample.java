@@ -2,7 +2,7 @@ package checks;
 
 import java.util.concurrent.Callable;
 
-class LambdaTooBigCheckA {
+class LambdaTooBigCheckSampleA {
 
   Callable<Integer> c1 = () -> { // Noncompliant [[sc=26;ec=31;secondary=17]] {{Reduce this lambda expression number of lines from 11 to at most 10.}}
     System.out.println();

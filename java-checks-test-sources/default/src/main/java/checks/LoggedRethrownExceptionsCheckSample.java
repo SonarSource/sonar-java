@@ -5,8 +5,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.slf4j.LoggerFactory;
 
-class LoggedRethrownExceptionsCheck {
-  static final org.slf4j.Logger slf4jLogger = LoggerFactory.getLogger(LoggedRethrownExceptionsCheck.class);
+class LoggedRethrownExceptionsCheckSample {
+  static final org.slf4j.Logger slf4jLogger = LoggerFactory.getLogger(LoggedRethrownExceptionsCheckSample.class);
   Object contextInfo;
   boolean flag;
   int foo;

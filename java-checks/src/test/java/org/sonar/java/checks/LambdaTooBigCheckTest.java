@@ -29,7 +29,7 @@ class LambdaTooBigCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/LambdaTooBigCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/LambdaTooBigCheckSample.java"))
       .withCheck(new LambdaTooBigCheck())
       .verifyIssues();
   }
