@@ -17,7 +17,7 @@ import javax.naming.Context;
  * - 4.3 Setting password
  * - 5. Constructors
  */
-class HardCodedPasswordCheck {
+class HardCodedPasswordCheckSample {
 
   String fieldNameWithPasswordInIt = retrievePassword();
 

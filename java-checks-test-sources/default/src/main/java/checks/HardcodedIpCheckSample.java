@@ -1,6 +1,6 @@
 package checks;
 
-class HardcodedIpCheck {
+class HardcodedIpCheckSample {
   String ip = "10.0.0.0"; // Noncompliant [[sc=15;ec=25]] {{Make sure using this hardcoded IP address is safe here.}}
   String ipAndPort = "10.0.0.0:0"; // Noncompliant [[sc=22;ec=34]] {{Make sure using this hardcoded IP address is safe here.}}
   String url = "http://192.168.0.1/admin.html"; // Noncompliant {{Make sure using this hardcoded IP address is safe here.}}
