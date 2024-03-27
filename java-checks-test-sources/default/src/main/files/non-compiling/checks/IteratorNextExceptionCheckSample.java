@@ -3,7 +3,7 @@ package checks;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-class IteratorNextExceptionCheckA implements Iterator<String> {
+class IteratorNextExceptionCheckSampleA implements Iterator<String> {
 
   public String next() {
     unknownMethod();
@@ -20,7 +20,7 @@ class IteratorNextExceptionCheckA implements Iterator<String> {
   }
 }
 
-class IteratorNextExceptionCheckB implements Iterator<String> {
+class IteratorNextExceptionCheckSampleB implements Iterator<String> {
 
   public String next() { // Noncompliant
     if (!hasNext()){
@@ -34,7 +34,7 @@ class IteratorNextExceptionCheckB implements Iterator<String> {
   }
 }
 
-class IteratorNextExceptionCheckC implements Unknown {
+class IteratorNextExceptionCheckSampleC implements Unknown {
 
   public String next() { // Compliant, Unknown parent of enclosing class
     if (!hasNext()){
@@ -48,7 +48,7 @@ class IteratorNextExceptionCheckC implements Unknown {
   }
 }
 
-class IteratorNextExceptionCheckD implements Iterator<String> {
+class IteratorNextExceptionCheckSampleD implements Iterator<String> {
 
   public String next() { // Compliant, unknown method call in the body could throw the exception
     unknownMethod();
@@ -61,7 +61,7 @@ class IteratorNextExceptionCheckD implements Iterator<String> {
   }
 }
 
-class IteratorNextExceptionCheckD2 implements Iterator<String> {
+class IteratorNextExceptionCheckSampleD2 implements Iterator<String> {
 
   Iterator<Unknown> delegate;
 
@@ -76,7 +76,7 @@ class IteratorNextExceptionCheckD2 implements Iterator<String> {
   }
 }
 
-class IteratorNextExceptionCheckE implements Iterator<String> {
+class IteratorNextExceptionCheckSampleE implements Iterator<String> {
 
   public String next() { // Compliant
     throw new SomethingUnknown();
@@ -88,7 +88,7 @@ class IteratorNextExceptionCheckE implements Iterator<String> {
   }
 }
 
-class IteratorNextExceptionCheckF implements Iterator<String> {
+class IteratorNextExceptionCheckSampleF implements Iterator<String> {
 
   public String next() { // Compliant
     foo();

@@ -4,7 +4,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.List;
 
-class IndentationAfterConditionalCheck {
+class IndentationAfterConditionalCheckSample {
   public int foo() throws IOException {
     int i = 0;
     if (i <= 1) // Noncompliant [[sc=5;ec=16;secondary=11]] {{Use indentation to denote the code conditionally executed by this "if".}}

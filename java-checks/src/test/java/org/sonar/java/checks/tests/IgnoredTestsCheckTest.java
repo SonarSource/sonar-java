@@ -30,7 +30,7 @@ class IgnoredTestsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/IgnoredTestsCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/IgnoredTestsCheckSample.java"))
       .withCheck(new IgnoredTestsCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class IgnoredTestsCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/IgnoredTestsCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/IgnoredTestsCheckSample.java"))
       .withCheck(new IgnoredTestsCheck())
       .withClassPath(Collections.emptyList())
       .verifyNoIssues();

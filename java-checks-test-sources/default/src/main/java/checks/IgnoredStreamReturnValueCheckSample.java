@@ -3,7 +3,7 @@ package checks;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-class IgnoredStreamReturnValueCheck {
+class IgnoredStreamReturnValueCheckSample {
 
   class A {
     public void foo() throws Exception {

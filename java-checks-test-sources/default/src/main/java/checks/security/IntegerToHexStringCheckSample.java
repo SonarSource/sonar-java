@@ -2,7 +2,7 @@ package checks.security;
 
 import java.util.StringJoiner;
 
-class IntegerToHexStringCheck {
+class IntegerToHexStringCheckSample {
   public void foo(StringBuilder sb, byte b, int c) {
     sb.append(Integer.toHexString( b & 0xFF )); // Noncompliant {{Use String.format( "%02X", ...) instead.}}
     System.out.println(Integer.toHexString( b & 0xFF ));

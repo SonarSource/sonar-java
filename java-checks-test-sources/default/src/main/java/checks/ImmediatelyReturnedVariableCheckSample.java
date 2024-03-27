@@ -1,6 +1,6 @@
 package checks;
 
-class ImmediatelyReturnedVariableCheck {
+class ImmediatelyReturnedVariableCheckSample {
 
   public long computeDurationInMilliseconds(long hours, long minutes, long seconds) {
     long duration = (((hours * 60) + minutes) * 60 + seconds ) * 1000 ; // Noncompliant {{Immediately return this expression instead of assigning it to the temporary variable "duration".}}

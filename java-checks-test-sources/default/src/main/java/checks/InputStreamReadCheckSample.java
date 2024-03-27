@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
-class InputStreamReadCheck extends InputStream {
+class InputStreamReadCheckSample extends InputStream {
 
   public int pos;
   public byte currentByte;
@@ -33,7 +33,7 @@ class InputStreamReadCheck extends InputStream {
   }
 }
 
-class InputStreamReadCheckB extends InputStreamReadCheck {
+class InputStreamReadCheckSampleB extends InputStreamReadCheckSample {
   @Override
   public int read() throws IOException {
     return currentByte & 0xFF; // Compliant - return an int
@@ -45,7 +45,7 @@ class InputStreamReadCheckB extends InputStreamReadCheck {
   }
 }
 
-abstract class InputStreamReadCheckC extends InputStream {
+abstract class InputStreamReadCheckSampleC extends InputStream {
   @Override
   public abstract int read();
 }

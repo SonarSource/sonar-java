@@ -1,6 +1,6 @@
 package checks;
 
-class IncorrectOrderOfMembersCheck {
+class IncorrectOrderOfMembersCheckSample {
   class FieldAfterConstructor {
     FieldAfterConstructor() {
     }

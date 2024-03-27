@@ -2,7 +2,7 @@ package checks;
 
 import java.io.Serializable;
 
-class InnerClassOfNonSerializableCheck implements Serializable {
+class InnerClassOfSerializableCheckSample {
   
   class A1 implements Serializable {}
 
@@ -11,13 +11,11 @@ class InnerClassOfNonSerializableCheck implements Serializable {
   }
 }
 
-class InnerClassOfNonSerializableCheckB {
+class InnerClassOfSerializableCheckSampleB implements Serializable {
   
-  Serializable Anon = new Serializable() {}; // Noncompliant [[sc=27;ec=39]] {{Make this inner class static}}
-
   class B1 {}
   class B2 implements Cloneable {}
-  class B3 implements Serializable {} // Noncompliant [[sc=9;ec=11]]{{Make this inner class static}}
+  class B3 implements Serializable {} // Noncompliant [[sc=9;ec=11]] {{Make this inner class static}}
   class B4 extends B3 {}
   static class B5 implements Serializable {}
   

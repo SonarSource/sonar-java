@@ -4,7 +4,7 @@ import org.junit.Ignore;
 import org.junit.Assume;
 import org.junit.jupiter.api.Disabled;
 
-abstract class IgnoredTestsCheck {
+abstract class IgnoredTestsCheckSample {
   @org.junit.Ignore
   void foo() {} // Noncompliant [[sc=8;ec=11]] {{Either add an explanation about why this test is skipped or remove the "@Ignore" annotation.}}
 
@@ -51,7 +51,7 @@ abstract class IgnoredTestsCheck {
     Assume.assumeFalse(Boolean.TRUE); // Noncompliant
   }
 
-  public IgnoredTestsCheck() {
+  public IgnoredTestsCheckSample() {
     Assume.assumeTrue(false); // Noncompliant
   }
 

@@ -29,7 +29,7 @@ class ImplementsEnumerationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ImplementsEnumerationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ImplementsEnumerationCheckSample.java"))
       .withCheck(new ImplementsEnumerationCheck())
       .verifyIssues();
   }

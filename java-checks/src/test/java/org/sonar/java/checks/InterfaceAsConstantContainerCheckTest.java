@@ -29,7 +29,7 @@ class InterfaceAsConstantContainerCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InterfaceAsConstantContainerCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InterfaceAsConstantContainerCheckSample.java"))
       .withCheck(new InterfaceAsConstantContainerCheck())
       .verifyIssues();
   }

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-class InsecureCreateTempFileCheck {
+class InsecureCreateTempFileCheckSample {
 
   private static class A {}
 
@@ -65,7 +65,7 @@ class InsecureCreateTempFileCheck {
     file.mkdir();
     int a = 5;
     a = 6;
-    InsecureCreateTempFileCheck.b = File.createTempFile("", ".");
+    InsecureCreateTempFileCheckSample.b = File.createTempFile("", ".");
     b().mkdir();
   }
 }

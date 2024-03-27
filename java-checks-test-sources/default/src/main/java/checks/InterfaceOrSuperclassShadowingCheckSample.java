@@ -1,6 +1,6 @@
 package checks;
 
-public class InterfaceOrSuperclassShadowingCheck {
+public class InterfaceOrSuperclassShadowingCheckSample {
   interface Closeable extends java.io.Closeable {} // Compliant - inner class
 }
 

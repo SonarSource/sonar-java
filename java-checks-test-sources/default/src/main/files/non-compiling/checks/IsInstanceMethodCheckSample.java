@@ -1,6 +1,6 @@
 package java.lang;
 
-public class IsInstanceMethodCheck {
+public class IsInstanceMethodCheckSample {
  
   int compliant(Number n) {
     if (n instanceof String) {  // Compile-time error

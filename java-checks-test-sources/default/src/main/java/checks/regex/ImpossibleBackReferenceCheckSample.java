@@ -1,6 +1,6 @@
 package checks.regex;
 
-public class ImpossibleBackReferenceCheck {
+public class ImpossibleBackReferenceCheckSample {
 
   void noncompliant(String str) {
     str.matches("\\1" + // Noncompliant [[sc=18;ec=21;secondary=7]] {{Fix this backreference, so that it refers to a group that can be matched before it.}}

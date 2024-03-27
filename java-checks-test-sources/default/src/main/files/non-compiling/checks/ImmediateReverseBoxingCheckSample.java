@@ -1,6 +1,6 @@
 package checks;
 
-abstract class ImmediateReverseBoxingCheck {
+abstract class ImmediateReverseBoxingCheckSample {
   void intBoxingAndUnboxing(int int1, Integer integer1, String string, Double double1) {
     int int2 = new Integer(1); // Noncompliant
     Integer.valueOf(double1); // Compliant
