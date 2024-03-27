@@ -28,7 +28,7 @@ class IndentationAfterConditionalCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/IndentationAfterConditionalCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/IndentationAfterConditionalCheckSample.java"))
       .withCheck(new IndentationAfterConditionalCheck())
       .verifyIssues();
   }

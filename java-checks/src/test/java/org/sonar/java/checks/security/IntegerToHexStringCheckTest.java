@@ -26,7 +26,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class IntegerToHexStringCheckTest {
 
-  public static final String TEST_FILE = mainCodeSourcesPath("checks/security/IntegerToHexStringCheck.java");
+  public static final String TEST_FILE = mainCodeSourcesPath("checks/security/IntegerToHexStringCheckSample.java");
 
   @Test
   void test() {

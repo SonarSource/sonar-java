@@ -29,7 +29,7 @@ class HardCodedSecretCheckTest {
   @Test
   void default_words() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/HardCodedSecretCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/HardCodedSecretCheckSample.java"))
       .withCheck(new HardCodedSecretCheck())
       .verifyIssues();
   }

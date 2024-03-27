@@ -29,7 +29,7 @@ class CallSuperMethodFromInnerClassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CallSuperMethodFromInnerClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CallSuperMethodFromInnerClassCheckSample.java"))
       .withCheck(new CallSuperMethodFromInnerClassCheck())
       .verifyIssues();
   }

@@ -33,7 +33,7 @@ class LDAPAuthenticatedConnectionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/LDAPAuthenticatedConnectionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/LDAPAuthenticatedConnectionCheckSample.java"))
       .withCheck(new LDAPAuthenticatedConnectionCheck())
       // FIXME should not requires an empty classpath
       .withClassPath(Collections.emptyList())

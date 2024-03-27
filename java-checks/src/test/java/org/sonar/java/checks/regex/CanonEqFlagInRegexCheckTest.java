@@ -29,7 +29,7 @@ class CanonEqFlagInRegexCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/CanonEqFlagInRegexCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/CanonEqFlagInRegexCheckSample.java"))
       .withCheck(new CanonEqFlagInRegexCheck())
       .verifyIssues();
   }

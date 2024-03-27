@@ -29,7 +29,7 @@ class FieldNameMatchingTypeNameCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/naming/FieldNameMatchingTypeNameCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/FieldNameMatchingTypeNameCheckSample.java"))
       .withCheck(new FieldNameMatchingTypeNameCheck())
       .verifyIssues();
   }

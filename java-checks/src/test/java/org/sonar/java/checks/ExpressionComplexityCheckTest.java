@@ -29,7 +29,7 @@ class ExpressionComplexityCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ExpressionComplexityCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ExpressionComplexityCheckSample.java"))
       .withCheck(new ExpressionComplexityCheck())
       .verifyIssues();
   }

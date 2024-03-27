@@ -27,7 +27,7 @@ import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class JUnit5SilentlyIgnoreClassAndMethodCheckTest {
 
-  private static final String SOURCE_PATH = "checks/tests/JUnit5SilentlyIgnoreClassAndMethodCheck.java";
+  private static final String SOURCE_PATH = "checks/tests/JUnit5SilentlyIgnoreClassAndMethodCheckSample.java";
 
   @Test
   void test() {

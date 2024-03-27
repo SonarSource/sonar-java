@@ -30,7 +30,7 @@ class HiddenFieldCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/HiddenFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/HiddenFieldCheckSample.java"))
       .withCheck(new HiddenFieldCheck())
       .verifyIssues();
   }

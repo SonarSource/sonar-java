@@ -29,7 +29,7 @@ class AssertJConsecutiveAssertionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertJConsecutiveAssertionCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertJConsecutiveAssertionCheckSample.java"))
       .withCheck(new AssertJConsecutiveAssertionCheck())
       .verifyIssues();
   }

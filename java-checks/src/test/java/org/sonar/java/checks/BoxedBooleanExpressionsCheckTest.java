@@ -30,12 +30,12 @@ class BoxedBooleanExpressionsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/BoxedBooleanExpressionsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/BoxedBooleanExpressionsCheckSample.java"))
       .withCheck(new BoxedBooleanExpressionsCheck())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/BoxedBooleanExpressionsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/BoxedBooleanExpressionsCheckSample.java"))
       .withCheck(new BoxedBooleanExpressionsCheck())
       .withoutSemantic()
       .verifyNoIssues();

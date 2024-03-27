@@ -30,7 +30,7 @@ class ConstantsShouldBeStaticFinalCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ConstantsShouldBeStaticFinalCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ConstantsShouldBeStaticFinalCheckSample.java"))
       .withCheck(new ConstantsShouldBeStaticFinalCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class ConstantsShouldBeStaticFinalCheckTest {
   @Test
   void test_not_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/ConstantsShouldBeStaticFinalCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/ConstantsShouldBeStaticFinalCheckSample.java"))
       .withCheck(new ConstantsShouldBeStaticFinalCheck())
       .verifyIssues();
   }

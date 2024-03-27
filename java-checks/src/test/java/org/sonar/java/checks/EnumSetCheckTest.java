@@ -29,7 +29,7 @@ class EnumSetCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/EnumSetCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/EnumSetCheckSample.java"))
       .withCheck(new EnumSetCheck())
       .verifyIssues();
   }

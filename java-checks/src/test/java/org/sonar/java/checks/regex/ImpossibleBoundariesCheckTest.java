@@ -29,7 +29,7 @@ class ImpossibleBoundariesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/ImpossibleBoundariesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/ImpossibleBoundariesCheckSample.java"))
       .withCheck(new ImpossibleBoundariesCheck())
       .verifyIssues();
   }

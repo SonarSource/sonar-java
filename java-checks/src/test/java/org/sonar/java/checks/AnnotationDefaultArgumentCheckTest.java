@@ -30,7 +30,7 @@ class AnnotationDefaultArgumentCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AnnotationDefaultArgumentCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AnnotationDefaultArgumentCheckSample.java"))
       .withCheck(new AnnotationDefaultArgumentCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class AnnotationDefaultArgumentCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/AnnotationDefaultArgumentCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/AnnotationDefaultArgumentCheckSample.java"))
       .withCheck(new AnnotationDefaultArgumentCheck())
       .verifyIssues();
   }

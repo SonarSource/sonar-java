@@ -28,7 +28,7 @@ class BooleanOrNullLiteralInAssertionsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/BooleanOrNullLiteralInAssertionsCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/BooleanOrNullLiteralInAssertionsCheckSample.java"))
       .withCheck(new BooleanOrNullLiteralInAssertionsCheck())
       .verifyIssues();
   }

@@ -29,7 +29,7 @@ class InvalidDateValuesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InvalidDateValuesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InvalidDateValuesCheckSample.java"))
       .withCheck(new InvalidDateValuesCheck())
       .verifyIssues();
   }

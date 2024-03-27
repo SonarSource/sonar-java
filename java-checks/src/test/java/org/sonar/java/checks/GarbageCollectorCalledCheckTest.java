@@ -30,7 +30,7 @@ class GarbageCollectorCalledCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/GarbageCollectorCalledCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/GarbageCollectorCalledCheckSample.java"))
       .withCheck(new GarbageCollectorCalledCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class GarbageCollectorCalledCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/GarbageCollectorCalledCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/GarbageCollectorCalledCheckSample.java"))
       .withCheck(new GarbageCollectorCalledCheck())
       .verifyIssues();
   }

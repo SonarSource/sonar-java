@@ -29,7 +29,7 @@ class EmptyRegexGroupCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/EmptyRegexGroupCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/EmptyRegexGroupCheckSample.java"))
       .withCheck(new EmptyRegexGroupCheck())
       .verifyIssues();
   }

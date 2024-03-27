@@ -30,12 +30,12 @@ class InterruptedExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InterruptedExceptionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InterruptedExceptionCheckSample.java"))
       .withCheck(new InterruptedExceptionCheck())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InterruptedExceptionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InterruptedExceptionCheckSample.java"))
       .withCheck(new InterruptedExceptionCheck())
       .withoutSemantic()
       .verifyIssues();
@@ -44,12 +44,12 @@ class InterruptedExceptionCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/InterruptedExceptionCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/InterruptedExceptionCheckSample.java"))
       .withCheck(new InterruptedExceptionCheck())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/InterruptedExceptionCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/InterruptedExceptionCheckSample.java"))
       .withCheck(new InterruptedExceptionCheck())
       .withoutSemantic()
       .verifyIssues();

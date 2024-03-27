@@ -29,7 +29,7 @@ class BooleanLiteralCheckTest {
   @Test
   void detected() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/BooleanLiteralCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/BooleanLiteralCheckSample.java"))
       .withCheck(new BooleanLiteralCheck())
       .withQuickFixes()
       .verifyIssues();

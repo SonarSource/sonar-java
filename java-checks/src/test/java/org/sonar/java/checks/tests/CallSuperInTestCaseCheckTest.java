@@ -29,11 +29,11 @@ class CallSuperInTestCaseCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/CallSuperInTestCaseCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/CallSuperInTestCaseCheckSample.java"))
       .withCheck(new CallSuperInTestCaseCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/CallSuperInTestCaseCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/CallSuperInTestCaseCheckSample.java"))
       .withCheck(new CallSuperInTestCaseCheck())
       .withoutSemantic()
       .verifyNoIssues();

@@ -29,7 +29,7 @@ class ClassComparedByNameCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ClassComparedByNameCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ClassComparedByNameCheckSample.java"))
       .withCheck(new ClassComparedByNameCheck())
       .verifyIssues();
   }

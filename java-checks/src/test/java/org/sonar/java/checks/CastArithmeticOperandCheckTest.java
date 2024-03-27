@@ -27,7 +27,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class CastArithmeticOperandCheckTest {
 
-  private static final String TEST_FILE_PATH = "checks/CastArithmeticOperandCheck.java";
+  private static final String TEST_FILE_PATH = "checks/CastArithmeticOperandCheckSample.java";
 
   @Test
   void test() {

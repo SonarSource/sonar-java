@@ -29,7 +29,7 @@ class CollectionImplementationReferencedCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/CollectionImplementationReferencedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CollectionImplementationReferencedCheckSample.java"))
       .withCheck(new CollectionImplementationReferencedCheck())
       .withQuickFixes()
       .verifyIssues();

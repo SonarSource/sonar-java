@@ -29,7 +29,7 @@ class AssertOnBooleanVariableCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AssertOnBooleanVariableCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AssertOnBooleanVariableCheckSample.java"))
       .withCheck(new AssertOnBooleanVariableCheck())
       .verifyIssues();
   }

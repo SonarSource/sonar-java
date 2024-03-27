@@ -30,7 +30,7 @@ class CallOuterPrivateMethodCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CallOuterPrivateMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CallOuterPrivateMethodCheckSample.java"))
       .withCheck(new CallOuterPrivateMethodCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class CallOuterPrivateMethodCheckTest {
   @Test
   void testNonCompiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/CallOuterPrivateMethodCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/CallOuterPrivateMethodCheckSample.java"))
       .withCheck(new CallOuterPrivateMethodCheck())
       .verifyIssues();
   }

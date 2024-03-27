@@ -30,7 +30,7 @@ class AssertionArgumentOrderCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertionArgumentOrderCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionArgumentOrderCheckSample.java"))
       .withCheck(new AssertionArgumentOrderCheck())
       .verifyIssues();
   }

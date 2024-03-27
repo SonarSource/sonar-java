@@ -28,7 +28,7 @@ class LeftCurlyBraceStartLineCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/LeftCurlyBraceStartLineCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/LeftCurlyBraceStartLineCheckSample.java"))
       .withCheck(new LeftCurlyBraceStartLineCheck())
       .verifyIssues();
   }
@@ -44,7 +44,7 @@ class LeftCurlyBraceStartLineCheckTest {
   @Test
   void detected_switch_expressions() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/LeftCurlyBraceStartLineCheck.java"))
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/LeftCurlyBraceStartLineCheckSample.java"))
       .withCheck(new LeftCurlyBraceStartLineCheck())
       .withJavaVersion(14)
       .verifyIssues();

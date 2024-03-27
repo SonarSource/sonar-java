@@ -30,7 +30,7 @@ class ClassNamedLikeExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/naming/ClassNamedLikeExceptionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/ClassNamedLikeExceptionCheckSample.java"))
       .withCheck(new ClassNamedLikeExceptionCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class ClassNamedLikeExceptionCheckTest {
   @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/naming/ClassNamedLikeExceptionCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/naming/ClassNamedLikeExceptionCheckSample.java"))
       .withCheck(new ClassNamedLikeExceptionCheck())
       .verifyNoIssues();
   }

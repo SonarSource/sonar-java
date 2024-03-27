@@ -28,7 +28,7 @@ class AccessibilityChangeOnRecordsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AccessibilityChangeOnRecordsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AccessibilityChangeOnRecordsCheckSample.java"))
       .withChecks(new AccessibilityChangeOnRecordsCheck())
       .verifyIssues();
   }
@@ -36,7 +36,7 @@ class AccessibilityChangeOnRecordsCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AccessibilityChangeOnRecordsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AccessibilityChangeOnRecordsCheckSample.java"))
       .withChecks(new AccessibilityChangeOnRecordsCheck())
       .withoutSemantic()
       .verifyIssues();

@@ -324,7 +324,7 @@ class ExcessiveContentRequestCheckTest {
   @Test
   void test_default_max() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheckSample.java"))
       .withCheck(new ExcessiveContentRequestCheck())
       .verifyIssues();
   }

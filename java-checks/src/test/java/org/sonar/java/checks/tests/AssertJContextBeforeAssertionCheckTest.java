@@ -29,7 +29,7 @@ class AssertJContextBeforeAssertionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertJContextBeforeAssertionCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertJContextBeforeAssertionCheckSample.java"))
       .withCheck(new AssertJContextBeforeAssertionCheck())
       .verifyIssues();
   }

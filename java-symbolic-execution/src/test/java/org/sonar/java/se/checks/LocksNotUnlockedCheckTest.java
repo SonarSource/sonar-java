@@ -32,7 +32,7 @@ class LocksNotUnlockedCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheckSample.java"))
       .withCheck(new LocksNotUnlockedCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -50,7 +50,7 @@ class LocksNotUnlockedCheckTest {
   @Test
   void unknown_variable_still_report_issues() {
     SECheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheckSample.java"))
       .withCheck(new LocksNotUnlockedCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

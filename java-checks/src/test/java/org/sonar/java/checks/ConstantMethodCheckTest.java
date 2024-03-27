@@ -28,7 +28,7 @@ class ConstantMethodCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ConstantMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ConstantMethodCheckSample.java"))
       .withCheck(new ConstantMethodCheck())
       .verifyIssues();
   }

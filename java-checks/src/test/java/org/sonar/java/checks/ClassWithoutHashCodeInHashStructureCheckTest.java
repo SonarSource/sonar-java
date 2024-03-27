@@ -31,12 +31,12 @@ class ClassWithoutHashCodeInHashStructureCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheckSample.java"))
       .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheckSample.java"))
       .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
       .verifyNoIssues();
   }

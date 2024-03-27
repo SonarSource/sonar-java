@@ -30,7 +30,7 @@ class CollectionConstructorReferenceCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CollectionConstructorReferenceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CollectionConstructorReferenceCheckSample.java"))
       .withCheck(new CollectionConstructorReferenceCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class CollectionConstructorReferenceCheckTest {
   @Test
   void test_unknown_symbol() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/CollectionConstructorReferenceCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/CollectionConstructorReferenceCheckSample.java"))
       .withCheck(new CollectionConstructorReferenceCheck())
       .verifyNoIssues();
   }

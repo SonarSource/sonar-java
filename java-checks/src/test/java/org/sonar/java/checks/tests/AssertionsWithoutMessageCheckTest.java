@@ -29,7 +29,7 @@ class AssertionsWithoutMessageCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertionsWithoutMessageCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsWithoutMessageCheckSample.java"))
       .withCheck(new AssertionsWithoutMessageCheck())
       .verifyIssues();
   }

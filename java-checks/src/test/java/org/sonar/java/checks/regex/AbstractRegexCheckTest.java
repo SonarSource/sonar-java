@@ -228,7 +228,7 @@ class AbstractRegexCheckTest {
       }
     }
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/AbstractRegexCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/AbstractRegexCheckSample.java"))
       .withCheck(new IssueOnAllRegexCheck())
       .verifyIssues();
   }

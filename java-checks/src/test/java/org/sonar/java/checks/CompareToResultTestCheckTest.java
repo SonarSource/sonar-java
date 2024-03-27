@@ -29,7 +29,7 @@ class CompareToResultTestCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/CompareToResultTestCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/CompareToResultTestCheckSample.java"))
       .withCheck(new CompareToResultTestCheck())
       .withQuickFixes()
       .verifyIssues();
@@ -38,7 +38,7 @@ class CompareToResultTestCheckTest {
   @Test
   void test_non_compilable() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/CompareToResultTestCheck.java"))
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/CompareToResultTestCheckSample.java"))
       .withCheck(new CompareToResultTestCheck())
       .verifyNoIssues();
   }

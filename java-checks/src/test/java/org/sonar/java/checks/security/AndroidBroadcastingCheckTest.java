@@ -29,7 +29,7 @@ class AndroidBroadcastingCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/AndroidBroadcastingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/AndroidBroadcastingCheckSample.java"))
       .withCheck(new AndroidBroadcastingCheck())
       .verifyIssues();
   }

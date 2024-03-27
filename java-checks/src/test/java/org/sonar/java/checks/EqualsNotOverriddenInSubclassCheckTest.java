@@ -30,12 +30,12 @@ class EqualsNotOverriddenInSubclassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/EqualsNotOverriddenInSubclassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/EqualsNotOverriddenInSubclassCheckSample.java"))
       .withCheck(new EqualsNotOverriddenInSubclassCheck())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/EqualsNotOverriddenInSubclassCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/EqualsNotOverriddenInSubclassCheckSample.java"))
       .withCheck(new EqualsNotOverriddenInSubclassCheck())
       .verifyIssues();
   }

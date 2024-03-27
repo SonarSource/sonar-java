@@ -31,7 +31,7 @@ class ForLoopVariableTypeCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ForLoopVariableTypeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ForLoopVariableTypeCheckSample.java"))
       .withCheck(new ForLoopVariableTypeCheck())
       .verifyIssues();
   }
@@ -39,7 +39,7 @@ class ForLoopVariableTypeCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ForLoopVariableTypeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ForLoopVariableTypeCheckSample.java"))
       .withCheck(new ForLoopVariableTypeCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();
@@ -48,7 +48,7 @@ class ForLoopVariableTypeCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/ForLoopVariableTypeCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/ForLoopVariableTypeCheckSample.java"))
       .withCheck(new ForLoopVariableTypeCheck())
       .verifyNoIssues();
   }

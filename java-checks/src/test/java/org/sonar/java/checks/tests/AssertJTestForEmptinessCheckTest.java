@@ -29,7 +29,7 @@ class AssertJTestForEmptinessCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertJTestForEmptinessCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertJTestForEmptinessCheckSample.java"))
       .withCheck(new AssertJTestForEmptinessCheck())
       .verifyIssues();
   }

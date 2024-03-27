@@ -27,7 +27,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class CookieHttpOnlyCheckTest {
 
-  private static final String SOURCE_PATH = "checks/security/CookieHttpOnlyCheck.java";
+  private static final String SOURCE_PATH = "checks/security/CookieHttpOnlyCheckSample.java";
   private static final String TEST_SOURCE_PATH = mainCodeSourcesPath(SOURCE_PATH);
   private static final String NON_COMPILING_TEST_SOURCE_PATH = nonCompilingTestSourcesPath(SOURCE_PATH);
 

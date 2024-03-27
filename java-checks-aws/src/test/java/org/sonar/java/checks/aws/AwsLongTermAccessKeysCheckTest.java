@@ -30,7 +30,7 @@ class AwsLongTermAccessKeysCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsLongTermAccessKeysCheck.java"))
+      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsLongTermAccessKeysCheckSample.java"))
       .withCheck(new AwsLongTermAccessKeysCheck())
       .withClassPath(AWS_CLASSPATH)
       .verifyIssues();

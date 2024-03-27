@@ -29,7 +29,7 @@ class FixmeTagPresenceCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/FixmeTagPresenceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/FixmeTagPresenceCheckSample.java"))
       .withCheck(new FixmeTagPresenceCheck())
       .verifyIssues();
   }

@@ -45,7 +45,7 @@ class DivisionByZeroCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/DivisionByZeroCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/DivisionByZeroCheckSample.java"))
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -63,7 +63,7 @@ class DivisionByZeroCheckTest {
   @Test
   void test_noncompiling() {
     SECheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/DivisionByZeroCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/DivisionByZeroCheckSample.java"))
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
@@ -102,5 +102,5 @@ class DivisionByZeroCheckTest {
     ps = ListUtils.getOnlyElement(rel.setConstraint(ps, BooleanConstraint.TRUE));
     return ps.getConstraint(b, DivisionByZeroCheck.ZeroConstraint.class);
   }
-  
+
 }

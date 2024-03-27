@@ -29,7 +29,7 @@ class AssertJApplyConfigurationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertJApplyConfigurationCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertJApplyConfigurationCheckSample.java"))
       .withCheck(new AssertJApplyConfigurationCheck())
       .verifyIssues();
   }

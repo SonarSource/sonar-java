@@ -29,7 +29,7 @@ class HardcodedIpCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/HardcodedIpCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/HardcodedIpCheckSample.java"))
       .withCheck(new HardcodedIpCheck())
       .verifyIssues();
   }
