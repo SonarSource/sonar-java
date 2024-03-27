@@ -76,10 +76,13 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   private static final String MESSAGE_EXCEED_SIZE = "The content length limit of %d bytes is greater than the defined limit of %d; make sure it is safe here.";
   private static final String MESSAGE_SIZE_NOT_SET = "Make sure not setting any maximum content length limit is safe here.";
 
+  private static final String DATA_SIZE = "org.springframework.util.unit.DataSize";
   private static final Pattern DATA_SIZE_PATTERN = Pattern.compile("^([+\\-]?\\d+)([a-zA-Z]{0,2})$");
 
   private static final String MULTIPART_RESOLVER = "org.springframework.web.multipart.commons.CommonsMultipartResolver";
   private static final String MULTIPART_CONFIG = "org.springframework.boot.web.servlet.MultipartConfigFactory";
+  private static final String MULTIPART_PROPERTIES = "org.springframework.boot.autoconfigure.web.servlet.MultipartProperties";
+
   private static final MethodMatchers METHODS_SETTING_MAX_SIZE = MethodMatchers.or(
     MethodMatchers.create()
       .ofSubTypes(MULTIPART_RESOLVER)
@@ -91,6 +94,11 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
       .names("setMaxFileSize", "setMaxRequestSize")
       .addParametersMatcher("long")
       .addParametersMatcher("java.lang.String")
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes(MULTIPART_PROPERTIES)
+      .names("setMaxFileSize", "setMaxRequestSize")
+      .addParametersMatcher(DATA_SIZE)
       .build()
   );
 
@@ -100,7 +108,6 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     .withAnyParameters()
     .build();
 
-  private static final String DATA_SIZE = "org.springframework.util.unit.DataSize";
 
   private static final MethodMatchers DATA_SIZE_OF_SOMETHING = MethodMatchers.create()
     .ofSubTypes(DATA_SIZE)
