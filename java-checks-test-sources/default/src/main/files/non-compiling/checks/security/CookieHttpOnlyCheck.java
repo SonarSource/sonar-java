@@ -3,8 +3,6 @@ package checks.security;
 import java.net.HttpCookie;
 import javax.servlet.http.Cookie;
 import play.mvc.Http;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.http.ResponseCookie;
 
 class CookieHttpOnlyCheck {
 
