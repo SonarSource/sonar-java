@@ -24,6 +24,6 @@ public class Constants {
   private Constants() {
   }
 
-  public static final String SPRING_3_2_4 = "../java-checks-test-sources/spring-3.2.4";
-  public static final String SPRING_3_2_4_CLASSPATH = SPRING_3_2_4 + "/target/test-classpath.txt";
+  public static final String SPRING_3_2 = "../java-checks-test-sources/spring-3.2";
+  public static final String SPRING_3_2_CLASSPATH = SPRING_3_2 + "/target/test-classpath.txt";
 }

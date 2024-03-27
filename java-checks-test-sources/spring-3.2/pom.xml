@@ -10,9 +10,9 @@
     <version>7.33.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>spring-3.2.4</artifactId>
+  <artifactId>spring-3.2</artifactId>
 
-  <name>SonarQube Java :: Checks Test Sources :: Spring 3.2.4</name>
+  <name>SonarQube Java :: Checks Test Sources :: Spring Boot 3.2</name>
 
   <properties>
     <sonar.skip>true</sonar.skip>

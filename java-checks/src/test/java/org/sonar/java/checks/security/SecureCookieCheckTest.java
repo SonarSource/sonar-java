@@ -27,6 +27,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModule;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class SecureCookieCheckTest {
@@ -34,7 +35,7 @@ class SecureCookieCheckTest {
   private static final String SOURCE_PATH = "checks/security/SecureCookieCheck.java";
   private static final String TEST_SOURCE_PATH = mainCodeSourcesPath(SOURCE_PATH);
   private static final String NON_COMPILING_TEST_SOURCE_PATH = nonCompilingTestSourcesPath(SOURCE_PATH);
-  public static final List<File> SPRING_3_2_4_CLASSPATH = TestClasspathUtils.loadFromFile(Constants.SPRING_3_2_4_CLASSPATH);
+  public static final List<File> SPRING_3_2_CLASSPATH = TestClasspathUtils.loadFromFile(Constants.SPRING_3_2_CLASSPATH);
 
   @Test
   void test() {
@@ -61,11 +62,11 @@ class SecureCookieCheckTest {
   }
 
   @Test
-  void test_with_sprint_3_2_4() {
+  void test_with_spring_3_2() {
     CheckVerifier.newVerifier()
-      .onFile(Constants.SPRING_3_2_4 + "/src/main/java/checks/SecureCookieCheckSample.java")
+      .onFile(mainCodeSourcesPathInModule(Constants.SPRING_3_2, "checks/SecureCookieCheckSample.java"))
       .withCheck(new SecureCookieCheck())
-      .withClassPath(SPRING_3_2_4_CLASSPATH)
+      .withClassPath(SPRING_3_2_CLASSPATH)
       .verifyIssues();
   }
 
