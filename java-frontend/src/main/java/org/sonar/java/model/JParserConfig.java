@@ -196,21 +196,19 @@ public abstract class JParserConfig {
       } catch (OperationCanceledException e) {
         throw e;
       } catch (RuntimeException e) {
+        LOG.warn("Unexpected {}: {}", e.getClass().getName(), e.getMessage());
+      } finally {
         List<InputFile> notYetAnalyzedFiles = sourceFilePaths.stream()
           .filter(file -> !analyzedSourceFilePaths.contains(file))
           .map(file -> inputs.get(new File(file)))
           .toList();
-
         if (!notYetAnalyzedFiles.isEmpty()) {
-          action.accept(notYetAnalyzedFiles.get(0), new Result(e));
-          fallbackToFileByFileMode(notYetAnalyzedFiles, isCanceled, action);
-        } else if (!sourceFilePaths.isEmpty()) {
-          InputFile lastInputFile = inputs.get(new File(sourceFilePaths.get(sourceFilePaths.size() - 1)));
-          action.accept(lastInputFile, new Result(e));
-        } else {
-          LOG.warn("Unexpected {}: {}", e.getClass().getName(), e.getMessage());
+          try {
+            fallbackToFileByFileMode(notYetAnalyzedFiles, isCanceled, action);
+          } catch (RuntimeException e) {
+            LOG.warn("Unexpected {}: {}", e.getClass().getName(), e.getMessage());
+          }
         }
-      } finally {
         batchPerformance.stop();
         // ExecutionTimeReport will not include the parsing time by file when using batch mode.
         executionTimeReport.reportAsBatch();
