@@ -27,7 +27,7 @@ import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class JUnit5DefaultPackageClassAndMethodCheckTest {
 
-  private static final String testSourcePath = testCodeSourcesPath("checks/tests/JUnit5DefaultPackageClassAndMethodCheck.java");
+  private static final String testSourcePath = testCodeSourcesPath("checks/tests/JUnit5DefaultPackageClassAndMethodCheckSample.java");
 
   @Test
   void test() {

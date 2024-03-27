@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.MINIMAL_CLASS;
 
-class JacksonDeserializationCheck {
+class JacksonDeserializationCheckSample {
 
   public void enableDefaultTyping() {
     ObjectMapper mapper = new ObjectMapper();

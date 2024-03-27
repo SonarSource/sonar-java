@@ -30,7 +30,7 @@ class JUnit45MethodAnnotationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/JUnit45MethodAnnotationCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/JUnit45MethodAnnotationCheckSample.java"))
       .withCheck(new JUnit45MethodAnnotationCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class JUnit45MethodAnnotationCheckTest {
   @Test
   void test_unknown_symbols() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/tests/JUnit45MethodAnnotationCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/tests/JUnit45MethodAnnotationCheckSample.java"))
       .withCheck(new JUnit45MethodAnnotationCheck())
       .verifyNoIssues();
   }

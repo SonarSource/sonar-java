@@ -2,7 +2,7 @@ package checks;
 
 import org.junit.jupiter.api.Test;
 
-class JUnit5SilentlyIgnoreClassAndMethodCheck {
+class JUnit5SilentlyIgnoreClassAndMethodCheckSample {
 
   @Test
   int testReturningInt() { return 0; } // Noncompliant

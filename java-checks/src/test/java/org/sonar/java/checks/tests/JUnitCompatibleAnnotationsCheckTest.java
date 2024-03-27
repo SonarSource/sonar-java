@@ -28,7 +28,7 @@ class JUnitCompatibleAnnotationsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/JUnitCompatibleAnnotationsCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/JUnitCompatibleAnnotationsCheckSample.java"))
       .withCheck(new JUnitCompatibleAnnotationsCheck())
       .verifyIssues();
   }
