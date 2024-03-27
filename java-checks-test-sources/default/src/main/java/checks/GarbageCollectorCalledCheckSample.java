@@ -1,6 +1,6 @@
 package checks;
 
-class GarbageCollectorCalledCheck {
+class GarbageCollectorCalledCheckSample {
 
   Object o;
   Foo foo;

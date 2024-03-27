@@ -2,7 +2,7 @@ package checks.regex;
 
 import java.util.regex.Pattern;
 
-public class GraphemeClustersInClassesCheck {
+public class GraphemeClustersInClassesCheckSample {
 
   void noncompliant(String str) {
     Pattern.compile("[aaaèaaa]"); // Noncompliant [[sc=22;ec=32;secondary=8]] {{Extract 1 Grapheme Cluster(s) from this character class.}}
