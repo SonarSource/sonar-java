@@ -2,7 +2,7 @@ package checks;
 
 import java.util.Iterator;
 
-class IterableIteratorCheck implements Iterator<S4348_Foo>, Iterable<S4348_Foo> {
+class IterableIteratorCheckSample implements Iterator<S4348_Foo>, Iterable<S4348_Foo> {
     private S4348_Foo[] seq;
     private int idx = 0;
     public boolean hasNext() {

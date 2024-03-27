@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.PrimitiveIterator;
 
-class IteratorNextExceptionCheckA implements Iterator<String> {
+class IteratorNextExceptionCheckSampleA implements Iterator<String> {
 
   public String next() { // Noncompliant [[sc=17;ec=21]] {{Add a "NoSuchElementException" for iteration beyond the end of the collection.}}
     if (!hasNext()){
@@ -21,7 +21,7 @@ class IteratorNextExceptionCheckA implements Iterator<String> {
   }
 }
 
-class IteratorNextExceptionCheckB implements Iterator<String> {
+class IteratorNextExceptionCheckSampleB implements Iterator<String> {
 
   public String next() { // Noncompliant
     if (!hasNext()){
@@ -35,7 +35,7 @@ class IteratorNextExceptionCheckB implements Iterator<String> {
   }
 }
 
-class IteratorNextExceptionCheckC implements Iterator<String> {
+class IteratorNextExceptionCheckSampleC implements Iterator<String> {
 
   public String next() {
     if (!hasNext()){
@@ -59,7 +59,7 @@ class IteratorNextExceptionCheckC implements Iterator<String> {
 
 }
 
-class IteratorNextExceptionCheckD implements Iterator<String> {
+class IteratorNextExceptionCheckSampleD implements Iterator<String> {
 
   public String next() { // Noncompliant
     if (!hasNext()){
@@ -76,7 +76,7 @@ class IteratorNextExceptionCheckD implements Iterator<String> {
 
 }
 
-class IteratorNextExceptionCheckE { // Not an iterator
+class IteratorNextExceptionCheckSampleE { // Not an iterator
 
   public String next() {
     if (!hasNext()){
@@ -91,11 +91,11 @@ class IteratorNextExceptionCheckE { // Not an iterator
 
 }
 
-abstract class IteratorNextExceptionCheckF implements Iterator<String>{
+abstract class IteratorNextExceptionCheckSampleF implements Iterator<String>{
   public abstract String next();
 }
 
-class IteratorNextExceptionCheckG implements Iterator<String> {
+class IteratorNextExceptionCheckSampleG implements Iterator<String> {
 
   private Iterator<String> iter;
 
@@ -110,7 +110,7 @@ class IteratorNextExceptionCheckG implements Iterator<String> {
 
 }
 
-class IteratorNextExceptionCheckI implements Iterator<String> {
+class IteratorNextExceptionCheckSampleI implements Iterator<String> {
 
   public String next() { // Noncompliant
     return throwsIndexOutOfBoundsException();
@@ -127,7 +127,7 @@ class IteratorNextExceptionCheckI implements Iterator<String> {
 
 }
 
-class IteratorNextExceptionCheckJ implements Iterator<String> {
+class IteratorNextExceptionCheckSampleJ implements Iterator<String> {
   public String next() {
     if (!hasNext()){
       throw new NoSuchElementException();
@@ -139,8 +139,8 @@ class IteratorNextExceptionCheckJ implements Iterator<String> {
     return false;
   }
 }
-class IteratorNextExceptionCheckK implements Iterator<String> {
-  IteratorNextExceptionCheckJ a;
+class IteratorNextExceptionCheckSampleK implements Iterator<String> {
+  IteratorNextExceptionCheckSampleJ a;
   public String next() {
     return a.next(); // Compliant
   }
@@ -150,7 +150,7 @@ class IteratorNextExceptionCheckK implements Iterator<String> {
   }
 }
 
-abstract class IteratorNextExceptionCheckL implements Iterator<String> {
+abstract class IteratorNextExceptionCheckSampleL implements Iterator<String> {
   @Override
   public String next() { // Compliant
     return getOptional().orElseThrow(NoSuchElementException::new);
@@ -161,7 +161,7 @@ abstract class IteratorNextExceptionCheckL implements Iterator<String> {
   }
 }
 
-class IteratorNextExceptionCheckM implements Iterator<String> {
+class IteratorNextExceptionCheckSampleM implements Iterator<String> {
   ListIterator<String> a;
   public String next() {
     return a.previous(); // Compliant
@@ -172,7 +172,7 @@ class IteratorNextExceptionCheckM implements Iterator<String> {
   }
 }
 
-class IteratorNextExceptionCheckM2 implements PrimitiveIterator.OfInt {
+class IteratorNextExceptionCheckSampleM2 implements PrimitiveIterator.OfInt {
   Iterator<Character> iterator;
   @Override
   public int nextInt() {
@@ -189,7 +189,7 @@ class IteratorNextExceptionCheckM2 implements PrimitiveIterator.OfInt {
  * FALSE POSITIVE below. We currently are not able to tell which methods outside of this file (like `removeFirst`)
  * can throw `NoSuchElementException`. The case below is actually compliant.
  */
-class IteratorNextExceptionCheckM3 implements Iterator<String> {
+class IteratorNextExceptionCheckSampleM3 implements Iterator<String> {
   LinkedList<String> list;
   @Override
   public String next() { // Noncompliant
@@ -202,7 +202,7 @@ class IteratorNextExceptionCheckM3 implements Iterator<String> {
   }
 }
 
-class IteratorNextExceptionCheckN implements Iterator<Double> {
+class IteratorNextExceptionCheckSampleN implements Iterator<Double> {
   PrimitiveIterator.OfDouble a;
   public Double next() {
     return a.nextDouble(); // Compliant
@@ -213,7 +213,7 @@ class IteratorNextExceptionCheckN implements Iterator<Double> {
   }
 }
 
-class IteratorNextExceptionCheckO implements Iterator<String> {
+class IteratorNextExceptionCheckSampleO implements Iterator<String> {
   private int count = 10;
 
   public String next() { // Compliant
@@ -239,12 +239,12 @@ class IteratorNextExceptionCheckO implements Iterator<String> {
 
 }
 
-class IteratorNextExceptionCheckP implements Iterator<T> {
+class IteratorNextExceptionCheckSampleP implements Iterator<T> {
   private T elem;
 
   public T next() { // Compliant
     if (!hasNext()) {
-      IteratorNextExceptionCheckO.justThrow();
+      IteratorNextExceptionCheckSampleO.justThrow();
     }
     return elem;
   }
@@ -256,7 +256,7 @@ class IteratorNextExceptionCheckP implements Iterator<T> {
 
 }
 
-class IteratorNextExceptionCheckQ implements Iterator<T> {
+class IteratorNextExceptionCheckSampleQ implements Iterator<T> {
   private T elem;
 
   public T next() { // Compliant
@@ -274,7 +274,7 @@ class IteratorNextExceptionCheckQ implements Iterator<T> {
 
 }
 
-class IteratorNextExceptionCheckR implements Iterator<T> {
+class IteratorNextExceptionCheckSampleR implements Iterator<T> {
   public T next() { // Noncompliant
     return recurseA();
   }
@@ -294,7 +294,7 @@ class IteratorNextExceptionCheckR implements Iterator<T> {
 
 }
 
-class IteratorNextExceptionCheckS implements Iterator<T> {
+class IteratorNextExceptionCheckSampleS implements Iterator<T> {
   private T elem;
 
   public T next() { // Compliant
@@ -328,7 +328,7 @@ class IteratorNextExceptionCheckS implements Iterator<T> {
  * FALSE NEGATIVE below. We currently do not handle try-catch statements. In the example below, the expected exception
  * is caught when it should not be. The example is actually non-compliant
  */
-class IteratorNextExceptionCheckT implements Iterator<T> {
+class IteratorNextExceptionCheckSampleT implements Iterator<T> {
   private T elem;
 
   public T next() { // Compliant, FN

@@ -9,7 +9,7 @@ interface Log {
   void log(Level level, String s, Exception e);
 }
 
-public class InterruptedExceptionCheck {
+public class InterruptedExceptionCheckSample {
   static final Log LOGGER = null;
 
   public void run1 () {

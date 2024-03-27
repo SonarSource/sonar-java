@@ -30,7 +30,7 @@ class InterfaceOrSuperclassShadowingCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InterfaceOrSuperclassShadowingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InterfaceOrSuperclassShadowingCheckSample.java"))
       .withCheck(new InterfaceOrSuperclassShadowingCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class InterfaceOrSuperclassShadowingCheckTest {
   @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/InterfaceOrSuperclassShadowingCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/InterfaceOrSuperclassShadowingCheckSample.java"))
       .withCheck(new InterfaceOrSuperclassShadowingCheck())
       .verifyIssues();
   }

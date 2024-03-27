@@ -29,7 +29,7 @@ class IterableIteratorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/IterableIteratorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/IterableIteratorCheckSample.java"))
       .withCheck(new IterableIteratorCheck())
       .verifyIssues();
   }

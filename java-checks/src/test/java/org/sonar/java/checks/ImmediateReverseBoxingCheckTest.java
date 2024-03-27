@@ -31,7 +31,7 @@ class ImmediateReverseBoxingCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/ImmediateReverseBoxingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ImmediateReverseBoxingCheckSample.java"))
       .withCheck(new ImmediateReverseBoxingCheck())
       .withQuickFixes()
       .verifyIssues();
@@ -40,7 +40,7 @@ class ImmediateReverseBoxingCheckTest {
   @Test
   void test_non_compilable() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/ImmediateReverseBoxingCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/ImmediateReverseBoxingCheckSample.java"))
       .withCheck(new ImmediateReverseBoxingCheck())
       .verifyIssues();
   }

@@ -3,7 +3,7 @@ package checks.regex;
 import javax.validation.constraints.Email;
 import java.util.regex.Pattern;
 
-public class ImpossibleBoundariesCheck {
+public class ImpossibleBoundariesCheckSample {
 
   @Email(regexp = "$USER") // Noncompliant [[sc=20;ec=21]] {{Remove or replace this boundary that will never match because it appears before mandatory input.}}
   String email;

@@ -29,7 +29,7 @@ class InstanceofUsedOnExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InstanceofUsedOnExceptionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InstanceofUsedOnExceptionCheckSample.java"))
       .withCheck(new InstanceofUsedOnExceptionCheck())
       .verifyIssues();
   }

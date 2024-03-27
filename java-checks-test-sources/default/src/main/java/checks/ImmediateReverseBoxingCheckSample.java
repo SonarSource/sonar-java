@@ -1,6 +1,6 @@
 package checks;
 
-abstract class ImmediateReverseBoxingCheck {
+abstract class ImmediateReverseBoxingCheckSample {
 
   public void processInt(String s, int a) {}
   public void processInteger(String s, Integer... a) {}

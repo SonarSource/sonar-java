@@ -1,6 +1,6 @@
 package checks;
 
-class IdenticalCasesInSwitchCheck {
+class IdenticalCasesInSwitchCheckSample {
   void foo(){
     switch (1) {
       case 1:

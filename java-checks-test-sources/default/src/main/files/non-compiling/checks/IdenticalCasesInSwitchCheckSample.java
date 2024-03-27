@@ -1,6 +1,6 @@
 package checks;
 
-class IdenticalCasesInSwitchCheck {
+class IdenticalCasesInSwitchCheckSample {
   void foo(WeekendDay weekendDay){
     int i = switch (weekendDay) {
       case SATURDAY:

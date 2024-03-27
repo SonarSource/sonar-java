@@ -2,7 +2,7 @@ package checks;
 
 import java.io.File;
 
-class InappropriateRegexpCheck {
+class InappropriateRegexpCheckSample {
 
   private static final String MY_REGEX = ".";
 

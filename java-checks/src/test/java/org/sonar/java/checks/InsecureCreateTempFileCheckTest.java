@@ -37,7 +37,7 @@ class InsecureCreateTempFileCheckTest {
   @Test
   void java_7() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InsecureCreateTempFileCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InsecureCreateTempFileCheckSample.java"))
       .withCheck(new InsecureCreateTempFileCheck())
       .withJavaVersion(7)
       .verifyIssues();

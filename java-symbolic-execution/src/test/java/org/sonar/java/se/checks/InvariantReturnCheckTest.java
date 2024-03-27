@@ -30,7 +30,7 @@ class InvariantReturnCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/InvariantReturnCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/InvariantReturnCheckSample.java"))
       .withCheck(new InvariantReturnCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

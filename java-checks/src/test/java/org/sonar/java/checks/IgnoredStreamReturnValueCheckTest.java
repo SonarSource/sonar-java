@@ -28,7 +28,7 @@ class IgnoredStreamReturnValueCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/IgnoredStreamReturnValueCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/IgnoredStreamReturnValueCheckSample.java"))
       .withCheck(new IgnoredStreamReturnValueCheck())
       .verifyIssues();
   }

@@ -2,7 +2,7 @@ package checks;
 
 import java.io.IOException;
 
-class InstanceofUsedOnExceptionCheck {
+class InstanceofUsedOnExceptionCheckSample {
   private void withEalseIf() {
     try {
     } catch (Exception e) {

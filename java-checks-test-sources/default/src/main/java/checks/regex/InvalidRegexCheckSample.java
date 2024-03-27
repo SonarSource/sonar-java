@@ -2,7 +2,7 @@ package checks.regex;
 
 import java.util.regex.Pattern;
 
-public class InvalidRegexCheck {
+public class InvalidRegexCheckSample {
 
   void noncompliant(String str) {
     Pattern.compile("("); // Noncompliant [[sc=23;ec=24;secondary=8]] {{Fix the syntax error inside this regex.}}
