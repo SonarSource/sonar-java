@@ -1,6 +1,6 @@
 package checks;
 
-class JdbcDriverExplicitLoadingCheck {
+class JdbcDriverExplicitLoadingCheckSample {
   private static final String DRIVER = "com.mysql.jdbc.Driver";
 
   void doStuff() throws ClassNotFoundException {

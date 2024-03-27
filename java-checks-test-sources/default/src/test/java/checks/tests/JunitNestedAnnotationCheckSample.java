@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class JunitNestedAnnotationCheck { // Compliant, this class has some tests but it's not an inner class
+public class JunitNestedAnnotationCheckSample { // Compliant, this class has some tests but it's not an inner class
 
   @Test
   void a_test_in_a_non_inner_class() {

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
-class JUnit5SilentlyIgnoreClassAndMethodCheck {
+class JUnit5SilentlyIgnoreClassAndMethodCheckSample {
 
   @Test
   private void testPrivate() {} // Noncompliant [[sc=3;ec=10]] {{Remove this 'private' modifier.}}

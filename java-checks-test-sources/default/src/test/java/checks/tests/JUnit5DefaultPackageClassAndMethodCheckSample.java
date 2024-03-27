@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class JUnit5DefaultPackageClassAndMethodCheck {
+class JUnit5DefaultPackageClassAndMethodCheckSample {
 
   @Test
   public void testPublic() {} // Noncompliant [[sc=3;ec=9;quickfixes=qf1]] {{Remove this 'public' modifier.}}
