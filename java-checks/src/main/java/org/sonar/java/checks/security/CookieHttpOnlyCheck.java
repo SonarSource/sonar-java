@@ -79,9 +79,12 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     private static final String SHIRO_COOKIE = "org.apache.shiro.web.servlet.SimpleCookie";
     private static final String PLAY_COOKIE = "play.mvc.Http$Cookie";
     private static final String PLAY_COOKIE_BUILDER = "play.mvc.Http$CookieBuilder";
+    private static final String SPRING_BOOT_COOKIE = "org.springframework.boot.web.server.Cookie";
+    private static final String SPRING_HTTP_COOKIE_BUILDER = "org.springframework.http.ResponseCookie$ResponseCookieBuilder";
+    private static final String SPRING_SECURITY_COOKIE_TOKEN_REPO = "org.springframework.security.web.csrf.CookieCsrfTokenRepository";
   }
 
-  private static final Set<String> SETTER_NAMES = Set.of("setHttpOnly", "withHttpOnly");
+  private static final Set<String> SETTER_NAMES = Set.of("setHttpOnly", "withHttpOnly", "httpOnly");
 
   private static final Set<String> CLASSES = Set.of(
     ClassName.SERVLET_COOKIE,
@@ -91,7 +94,9 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     ClassName.JAKARTA_RS_COOKIE,
     ClassName.SHIRO_COOKIE,
     ClassName.PLAY_COOKIE,
-    ClassName.PLAY_COOKIE_BUILDER);
+    ClassName.PLAY_COOKIE_BUILDER,
+    ClassName.SPRING_BOOT_COOKIE,
+    ClassName.SPRING_HTTP_COOKIE_BUILDER);
 
   private static final MethodMatchers PLAY_COOKIE_BUILDER = MethodMatchers.create()
     .ofTypes(ClassName.PLAY_COOKIE).names("builder").withAnyParameters().build();
@@ -136,6 +141,13 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN, "play.mvc.Http$Cookie$SameSite")
     .build();
 
+  private static final MethodMatchers UNALLOWED_TOKEN_PROVIDERS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(ClassName.SPRING_SECURITY_COOKIE_TOKEN_REPO)
+      .names("withHttpOnlyFalse")
+      .addWithoutParametersMatcher()
+      .build());
+
   @Override
   public void setContext(JavaFileScannerContext context) {
     ignoredVariables.clear();
@@ -175,7 +187,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
       checkAssignment((AssignmentExpressionTree) tree);
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree invocationTree = (MethodInvocationTree) tree;
-      checkSetterInvocation(invocationTree);
+      checkInvocation(invocationTree);
       invocationTree.arguments().forEach(this::categorizeBasedOnConstructor);
     } else {
       categorizeBasedOnConstructor(((ReturnStatementTree) tree).expression());
@@ -306,8 +318,10 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     return name != null && IGNORED_COOKIE_NAMES.stream().anyMatch(cookieName -> name.toLowerCase(Locale.ENGLISH).contains(cookieName));
   }
 
-  private void checkSetterInvocation(MethodInvocationTree mit) {
-    if (isExpectedSetter(mit)) {
+  private void checkInvocation(MethodInvocationTree mit) {
+    if(UNALLOWED_TOKEN_PROVIDERS.matches(mit)) {
+      settersToReport.add(mit);
+    } else if (isExpectedSetter(mit)) {
       if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         ExpressionTree expression = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
         boolean isCalledOnIdentifier = expression.is(Tree.Kind.IDENTIFIER);
