@@ -1,6 +1,6 @@
 package checks;
 
-class LongBitsToDoubleOnIntCheck {
+class LongBitsToDoubleOnIntCheckSample {
   void foo() {
     byte b = 1;
     short s = 1;

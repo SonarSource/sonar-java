@@ -30,7 +30,7 @@ class LeastSpecificTypeCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/LeastSpecificTypeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/LeastSpecificTypeCheckSample.java"))
       .withCheck(new LeastSpecificTypeCheck())
       .verifyIssues();
   }
@@ -45,7 +45,7 @@ class LeastSpecificTypeCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/LeastSpecificTypeCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/LeastSpecificTypeCheckSample.java"))
       .withCheck(new LeastSpecificTypeCheck())
       .verifyIssues();
   }

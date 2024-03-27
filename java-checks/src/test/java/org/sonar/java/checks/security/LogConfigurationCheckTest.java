@@ -29,7 +29,7 @@ class LogConfigurationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/LogConfigurationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/LogConfigurationCheckSample.java"))
       .withCheck(new LogConfigurationCheck())
       .verifyIssues();
   }

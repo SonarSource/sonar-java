@@ -2,7 +2,7 @@ package checks;
 
 import org.sonar.api.Properties;
 
-class LeftCurlyBraceStartLineCheck {    // Noncompliant [[sc=36;ec=37]] {{Move this left curly brace to the beginning of next line of code.}}
+class LeftCurlyBraceStartLineCheckSample {    // Noncompliant [[sc=42;ec=43]] {{Move this left curly brace to the beginning of next line of code.}}
 
   class Gul
   {              // Compliant

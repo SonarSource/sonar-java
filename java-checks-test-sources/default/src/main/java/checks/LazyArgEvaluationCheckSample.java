@@ -13,9 +13,9 @@ import org.slf4j.ext.XLoggerFactory;
 import static com.google.common.base.Preconditions.checkState;
 
 @SuppressWarnings("java:S139")
-class LazyArgEvaluationCheck {
+class LazyArgEvaluationCheckSample {
 
-  public static final Logger slf4j = LoggerFactory.getLogger(LazyArgEvaluationCheck.class);
+  public static final Logger slf4j = LoggerFactory.getLogger(LazyArgEvaluationCheckSample.class);
   public static final java.util.logging.Logger logger = java.util.logging.Logger.getGlobal();
   public static final org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
 
@@ -48,7 +48,7 @@ class LazyArgEvaluationCheck {
 
     checkState(System.currentTimeMillis() > 0, "message: %s", formatMessage());  // Noncompliant {{Invoke method(s) only conditionally. }}
 
-    checkState(System.currentTimeMillis() > 0, "message: %s", LazyArgEvaluationCheck.formatMessage());  // Noncompliant {{Invoke method(s) only conditionally. }}
+    checkState(System.currentTimeMillis() > 0, "message: %s", LazyArgEvaluationCheckSample.formatMessage());  // Noncompliant {{Invoke method(s) only conditionally. }}
   }
 
   public static void cachingOnDisk(File path) {
