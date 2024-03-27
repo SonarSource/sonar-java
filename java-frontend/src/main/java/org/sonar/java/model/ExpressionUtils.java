@@ -176,19 +176,7 @@ public final class ExpressionUtils {
    */
   @CheckForNull
   public static MethodTree getEnclosingMethod(ExpressionTree expr) {
-    return getEnclosingElement(expr, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
-  }
-
-  /**
-   * @deprecated
-   * This method assumes that the enclosing element will be a {@link MethodTree} while allowing any values for `kinds`.
-   * It will throw a `ClassCastException` for any other `kinds` than `Kind.METHOD` or `Kind.CONSTRUCTOR`.
-   * Use {@link #getEnclosingTree(Tree, Tree.Kind...)} tree instead and do the required downcast on the callee side.
-   */
-  @Deprecated(since = "7.32", forRemoval = true)
-  @CheckForNull
-  public static MethodTree getEnclosingElement(ExpressionTree expr, Tree.Kind... kinds) {
-    return (MethodTree) getEnclosingTree(expr, kinds);
+    return (MethodTree) getEnclosingTree(expr, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @CheckForNull
