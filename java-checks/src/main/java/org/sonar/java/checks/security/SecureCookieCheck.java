@@ -65,9 +65,11 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     "org.apache.shiro.web.servlet.SimpleCookie",
     SPRING_SAVED_COOKIE,
     PLAY_COOKIE,
-    "play.mvc.Http$CookieBuilder");
+    "play.mvc.Http$CookieBuilder",
+    "org.springframework.boot.web.server.Cookie",
+    "org.springframework.http.ResponseCookie$ResponseCookieBuilder");
 
-  private static final List<String> SETTER_NAMES = Arrays.asList("setSecure", "withSecure");
+  private static final List<String> SETTER_NAMES = Arrays.asList("setSecure", "withSecure", "secure");
 
   /**
    * Some constructors have the 'secure' parameter and do not need a 'setSecure' call afterwards.

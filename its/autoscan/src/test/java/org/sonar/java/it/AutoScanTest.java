@@ -122,7 +122,7 @@ public class AutoScanTest {
       .setProjectName(PROJECT_NAME)
       .setProjectVersion("0.1.0-SNAPSHOT")
       .setSourceEncoding("UTF-8")
-      .setSourceDirs("aws/src/main/java/,default/src/main/java/,java-17/src/main/java/")
+      .setSourceDirs("aws/src/main/java/,default/src/main/java/,java-17/src/main/java/,spring-3.2/src/main/java/")
       .setTestDirs("default/src/test/java/")
       .setProperty("sonar.java.source", "21")
       // common properties
