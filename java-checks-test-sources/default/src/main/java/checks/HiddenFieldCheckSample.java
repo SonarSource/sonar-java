@@ -1,6 +1,6 @@
 package checks;
 
-public class HiddenFieldCheck extends MyBaseClass {
+public class HiddenFieldCheckSample extends MyBaseClass {
 
   private int foo;
   public int bar;
@@ -11,7 +11,7 @@ public class HiddenFieldCheck extends MyBaseClass {
     System.out.println(foo + ok);
   }
 
-  public HiddenFieldCheck(int foo) { // Compliant
+  public HiddenFieldCheckSample(int foo) { // Compliant
     this.foo = foo;
   }
 

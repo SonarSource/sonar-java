@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import javax.naming.Context;
 
-class HardCodedPasswordCheck {
+class HardCodedPasswordCheckSample {
 
   private void a(char[] pwd, String var) throws SQLException {
     MyUnknownClass.myUnknownMethod("password", "xxxxx"); // Noncompliant

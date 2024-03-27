@@ -4,7 +4,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-class HardcodedURICheck {
+class HardcodedURICheckSample {
 
   public static @interface MyAnnotation {
     String stuff() default "none";

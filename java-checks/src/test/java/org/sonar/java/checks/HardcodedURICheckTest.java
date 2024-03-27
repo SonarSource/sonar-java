@@ -28,7 +28,7 @@ class HardcodedURICheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/HardcodedURICheck.java"))
+      .onFile(mainCodeSourcesPath("checks/HardcodedURICheckSample.java"))
       .withCheck(new HardcodedURICheck())
       .verifyIssues();
   }

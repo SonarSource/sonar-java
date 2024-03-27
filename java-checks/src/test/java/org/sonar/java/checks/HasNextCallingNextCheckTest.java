@@ -29,7 +29,7 @@ class HasNextCallingNextCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/HasNextCallingNextCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/HasNextCallingNextCheckSample.java"))
       .withCheck(new HasNextCallingNextCheck())
       .verifyIssues();
   }

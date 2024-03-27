@@ -11,7 +11,7 @@ import java.sql.SQLException;
  * - 4.1 Equals
  * - 4.2 Setting secrets
  */
-class HardCodedSecretCheck {
+class HardCodedSecretCheckSample {
 
   String fieldNameWithSecretInIt = retrieveSecret();
 
