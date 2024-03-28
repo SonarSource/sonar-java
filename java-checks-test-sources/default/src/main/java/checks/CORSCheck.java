@@ -198,5 +198,4 @@ class CORSCheck {
         .allowedOrigins("safe.com"); // Compliant
     }
   }
-
 }
