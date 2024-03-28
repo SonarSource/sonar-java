@@ -30,7 +30,7 @@ class NonNullSetToNullCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NonNullSetToNullCheck/noDefault/NonNullSetToNullCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NonNullSetToNullCheck/noDefault/NonNullSetToNullCheckSample.java"))
       .withCheck(new NonNullSetToNullCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class NonNullSetToNullCheckTest {
   @Test
   void test_non_null_api() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NonNullSetToNullCheck/packageNonNull/NonNullSetToNullCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NonNullSetToNullCheck/packageNonNull/NonNullSetToNullCheckSample.java"))
       .withCheck(new NonNullSetToNullCheck())
       .verifyIssues();
   }
@@ -46,7 +46,7 @@ class NonNullSetToNullCheckTest {
   @Test
   void test_non_compiling() {
     SECheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/NonNullSetToNullCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/NonNullSetToNullCheckSample.java"))
       .withCheck(new NonNullSetToNullCheck())
       .verifyIssues();
   }
