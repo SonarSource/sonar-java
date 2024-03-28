@@ -12,7 +12,7 @@ import java.nio.file.StandardOpenOption;
 
 import static java.nio.file.StandardOpenOption.APPEND;
 
-class ObjectOutputStreamCheck {
+class ObjectOutputStreamCheckSample {
   void noncompliant_1(String fileName) throws IOException {
     FileOutputStream fos = new FileOutputStream(fileName , true);  // fos opened in append mode
     ObjectOutputStream out = new ObjectOutputStream(fos);  // Noncompliant {{Do not use a FileOutputStream in append mode.}}

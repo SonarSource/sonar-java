@@ -11,7 +11,7 @@ import org.mockito.stubbing.Answer;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class OneExpectedRuntimeExceptionCheck {
+public class OneExpectedRuntimeExceptionCheckSample {
 
   private final Class<IllegalStateException> myException = IllegalStateException.class;
   private final Executable exec = () -> foo(foo(1));

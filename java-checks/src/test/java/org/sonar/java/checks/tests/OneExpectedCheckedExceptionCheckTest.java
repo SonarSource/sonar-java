@@ -29,7 +29,7 @@ class OneExpectedCheckedExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/OneExpectedCheckedExceptionCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/OneExpectedCheckedExceptionCheckSample.java"))
       .withCheck(new OneExpectedCheckedExceptionCheck())
       .verifyIssues();
   }

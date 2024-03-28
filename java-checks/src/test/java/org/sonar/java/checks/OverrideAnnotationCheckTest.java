@@ -31,7 +31,7 @@ class OverrideAnnotationCheckTest {
   @Test
   void test_java() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheckSample.java"))
       .withCheck(new OverrideAnnotationCheck())
       .verifyIssues();
   }
@@ -53,7 +53,7 @@ class OverrideAnnotationCheckTest {
       .withJavaVersion(8)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheckSample.java"))
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(8)
       .verifyIssues();
@@ -62,7 +62,7 @@ class OverrideAnnotationCheckTest {
   @Test
   void test_java_6() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheckSample.java"))
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(6)
       .verifyIssues();

@@ -1,6 +1,6 @@
 package checks;
 
-class ObjectFinalizeCheck {
+class ObjectFinalizeCheckSample {
 
   public static class Foo {
     int[] finalize;

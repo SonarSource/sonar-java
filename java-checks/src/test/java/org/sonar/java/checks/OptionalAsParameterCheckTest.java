@@ -28,7 +28,7 @@ class OptionalAsParameterCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/OptionalAsParameterCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/OptionalAsParameterCheckSample.java"))
       .withCheck(new OptionalAsParameterCheck())
       .verifyIssues();
   }

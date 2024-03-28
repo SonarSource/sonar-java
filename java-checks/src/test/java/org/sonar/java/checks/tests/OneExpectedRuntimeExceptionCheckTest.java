@@ -29,7 +29,7 @@ class OneExpectedRuntimeExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/OneExpectedRuntimeExceptionCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/OneExpectedRuntimeExceptionCheckSample.java"))
       .withCheck(new OneExpectedRuntimeExceptionCheck())
       .verifyIssues();
   }

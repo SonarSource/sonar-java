@@ -28,7 +28,7 @@ class ObjectFinalizeOverridenNotPublicCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeOverridenNotPublicCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeOverridenNotPublicCheckSample.java"))
       .withCheck(new ObjectFinalizeOverridenNotPublicCheck())
       .verifyIssues();
   }

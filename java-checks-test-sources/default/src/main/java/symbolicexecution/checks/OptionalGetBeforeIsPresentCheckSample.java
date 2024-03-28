@@ -4,15 +4,15 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
-abstract class OptionalGetBeforeIsPresentCheck {
+abstract class OptionalGetBeforeIsPresentCheckSample {
   Optional<String> getOptional() { return Optional.of(""); }
   Optional<String> optional;
 
-  OptionalGetBeforeIsPresentCheck() {
+  OptionalGetBeforeIsPresentCheckSample() {
     this(Optional.empty());
   }
 
-  OptionalGetBeforeIsPresentCheck(Optional<String> s) {
+  OptionalGetBeforeIsPresentCheckSample(Optional<String> s) {
     s.get();  // Noncompliant {{Call "s.isPresent()" before accessing the value.}}
     if (s.isPresent()) {
       s.get(); // Compliant

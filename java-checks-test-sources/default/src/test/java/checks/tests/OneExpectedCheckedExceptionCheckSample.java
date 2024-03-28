@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class OneExpectedCheckedExceptionCheck {
+public class OneExpectedCheckedExceptionCheckSample {
 
   private final Class<IOException> myException = IOException.class;
   private final Executable exec = () -> throwIOException2(throwIOException(1));

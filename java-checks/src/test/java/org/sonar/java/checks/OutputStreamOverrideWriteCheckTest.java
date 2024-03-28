@@ -29,7 +29,7 @@ class OutputStreamOverrideWriteCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/OutputStreamOverrideWriteCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/OutputStreamOverrideWriteCheckSample.java"))
       .withCheck(new OutputStreamOverrideWriteCheck())
       .verifyIssues();
   }

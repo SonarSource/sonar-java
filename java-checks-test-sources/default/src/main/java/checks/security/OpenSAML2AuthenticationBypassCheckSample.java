@@ -3,7 +3,7 @@ package checks.security;
 import org.opensaml.xml.parse.BasicParserPool;
 import org.opensaml.xml.parse.StaticBasicParserPool;
 
-class OpenSAML2AuthenticationBypassCheck {
+class OpenSAML2AuthenticationBypassCheckSample {
 
   public void foo() {
     new StaticBasicParserPool().setIgnoreComments(false); // Noncompliant {{Change "setIgnoreComments" to "true" or remove the call to "setIgnoreComments" to prevent the authentication bypass.}}

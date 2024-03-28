@@ -28,7 +28,7 @@ class ObjectFinalizeOverridenCallsSuperFinalizeCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeOverridenCallsSuperFinalizeCheckSample.java"))
       .withCheck(new ObjectFinalizeOverridenCallsSuperFinalizeCheck())
       .verifyIssues();
   }
