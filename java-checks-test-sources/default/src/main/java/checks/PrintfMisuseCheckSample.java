@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 import org.apache.logging.log4j.LogManager;
 
-public class PrintfMisuseCheck {
+public class PrintfMisuseCheckSample {
 
   // used inside the tested file
   public static final String COMPILE_TIME_CONSTANT = "message";
@@ -322,7 +322,7 @@ public class PrintfMisuseCheck {
 
     try {
     } catch (Exception e) {
-      org.slf4j.LoggerFactory.getLogger(PrintfMisuseCheck.class).error("there is an error", e);
+      org.slf4j.LoggerFactory.getLogger(PrintfMisuseCheckSample.class).error("there is an error", e);
     }
 
     slf4jLog.info("message {} - {}", 1, 2);

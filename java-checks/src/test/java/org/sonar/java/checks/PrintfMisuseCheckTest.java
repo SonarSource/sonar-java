@@ -30,7 +30,7 @@ class PrintfMisuseCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PrintfMisuseCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PrintfMisuseCheckSample.java"))
       .withCheck(new PrintfMisuseCheck())
       .verifyIssues();
   }

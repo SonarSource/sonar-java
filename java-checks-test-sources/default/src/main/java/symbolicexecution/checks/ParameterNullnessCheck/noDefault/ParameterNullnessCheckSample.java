@@ -1,12 +1,12 @@
-package symbolicexecution.checks.ParameterNullnessCheck.packageNonNull;
+package symbolicexecution.checks.ParameterNullnessCheck.noDefault;
 
 import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.ParametersAreNullableByDefault;
 
-/**
- * Package is annotated with @javax.annotation.ParametersAreNonnullByDefault, every parameters in this file are nonnull by default.
- */
-abstract class ParameterNullnessCheck {
+@ParametersAreNonnullByDefault
+abstract class ParameterNullnessCheckSample {
 
   Object field;
 
@@ -23,18 +23,22 @@ abstract class ParameterNullnessCheck {
     }
     foo(field);
     qix();
+
+    checkerFrameworkNullableAnnotations(null, null, null, null, null); // Compliant - reported by S2637
   }
 
   void testVarargs(Object o) {
     gul(null, o, null, o); // Compliant - ignore variadic argument
-    gul2(null, o, null, o); // Noncompliant
+    gul2(null, o, null, o); // Noncompliant [[sc=5;ec=9]] - first parameter is not variadic
   }
 
   void testConstructors(Object o) {
     C c1 = new C(null); // Noncompliant
-    C c2 = new C(o, // Noncompliant [[sc=16;ec=17]] {{Annotate the parameter with @javax.annotation.Nullable in constructor declaration, or make sure that null can not be passed as argument.}}
-      null);
+    C c2 = new C(o, // Noncompliant [[sc=16;ec=17;flows=A]] {{Annotate the parameter with @javax.annotation.Nullable in constructor declaration, or make sure that null can not be passed as argument.}}
+      null); // flow@A [[order=1]] {{Argument can be null.}}
     B b = new B();
+
+    checkerFrameworkNullableAnnotations(null, null, null, null, null); // Compliant - reported by S2637
   }
 
   void qix(@Nullable Object o) {
@@ -78,11 +82,31 @@ abstract class ParameterNullnessCheck {
   abstract void gul2(String s, Object ... objects);
 
   static class B {
+    // Nested class of class annotated are also impacted.
     static void foo(Object o) { }
   }
 
+  @ParametersAreNonnullByDefault
   static class C {
     C(String s) { }
-    C(Object o1, Object o2) { }
+    C(Object o1, Object o2) { } // flow@A [[order=2]] {{Constructor declaration.}}
+  }
+
+  @ParametersAreNullableByDefault
+  class ParametersAreNullByDefault {
+    void callNonNullWithNullable(@Nullable Object o) {
+      ParametersAreNonNullByDefault.nonNullArg(o); // Noncompliant
+    }
+
+    void callNonNullWithNullable2(Object o) {
+      ParametersAreNonNullByDefault.nonNullArg(o); // Noncompliant
+    }
+
+  }
+
+  @ParametersAreNonnullByDefault
+  static class ParametersAreNonNullByDefault {
+    static void nonNullArg(Object o){
+    }
   }
 }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-class PersistentEntityUsedAsRequestParameterCheck {
+class PersistentEntityUsedAsRequestParameterCheckSample {
   @Entity
   public class Foo {
     private Long id;

@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PublicStaticMutableMembersCheck {
+public class PublicStaticMutableMembersCheckSample {
   public static String [] strings1 = {"first","second"};  // Noncompliant [[sc=27;ec=35]] {{Make this member "protected".}}
   public static String [] strings2 = {"first","second"};  // Noncompliant
 
@@ -113,7 +113,7 @@ public class PublicStaticMutableMembersCheck {
   public static List otherEmptyList = Arrays.asList();
   public void changeEmptyList() {
     emptyList = new ArrayList(); // Noncompliant {{Make member "emptyList" "protected".}}
-    PublicStaticMutableMembersCheck.otherEmptyList = new ArrayList(); // Noncompliant {{Make member "otherEmptyList" "protected".}}
+    PublicStaticMutableMembersCheckSample.otherEmptyList = new ArrayList(); // Noncompliant {{Make member "otherEmptyList" "protected".}}
   }
 
   enum E {
@@ -180,7 +180,7 @@ public class PublicStaticMutableMembersCheck {
   public static final List<String> AS_LIST = Lists.asList("ABC", new String[] {"", ""});
 }
 
-interface PublicStaticMutableMembersCheck_I {
+interface PublicStaticMutableMembersCheckSample_I {
   public static String[] MY_ARRAY = null; // Noncompliant {{Move "MY_ARRAY" to a class and lower its visibility}}
   public static Collection<String> MY_COLLECTION = null; // Noncompliant {{Move "MY_COLLECTION" to a class and lower its visibility}}
   public static Collection MY_2ND_COLLECTION = null; // Noncompliant {{Move "MY_2ND_COLLECTION" to a class and lower its visibility}}
@@ -188,8 +188,8 @@ interface PublicStaticMutableMembersCheck_I {
   public static List MY_2ND_LIST = null; // Noncompliant {{Move "MY_2ND_LIST" to a class and lower its visibility}}
   public static Date MY_DATE = null; // Noncompliant {{Move "MY_DATE" to a class and lower its visibility}}
   public static int MY_INT = 0; // Compliant
-  public static PublicStaticMutableMembersCheckB<String> MY_PARAMETRIC_TYPE = null; // Compliant
-  public static PublicStaticMutableMembersCheckC MY_FIELD = null; // Compliant
+  public static PublicStaticMutableMembersCheckSampleB<String> MY_PARAMETRIC_TYPE = null; // Compliant
+  public static PublicStaticMutableMembersCheckSampleC MY_FIELD = null; // Compliant
 
   public Collection<String> myCollection = null; // Noncompliant
   public Collection my2ndCollection = null; // Noncompliant
@@ -197,8 +197,8 @@ interface PublicStaticMutableMembersCheck_I {
   public List my2ndList = null; // Noncompliant
   public Date myDate = null; // Noncompliant
   public int myInt = 0; // Compliant
-  public PublicStaticMutableMembersCheckB<String> myParametricType = null; // Compliant
-  public PublicStaticMutableMembersCheckC myField = null; // Compliant
+  public PublicStaticMutableMembersCheckSampleB<String> myParametricType = null; // Compliant
+  public PublicStaticMutableMembersCheckSampleC myField = null; // Compliant
 
   public void doSomething(); // not a field
 
@@ -215,10 +215,10 @@ interface PublicStaticMutableMembersCheck_I {
   public static final List EMPTY_LIST = Arrays.asList();
 }
 
-class PublicStaticMutableMembersCheckB<T> {
+class PublicStaticMutableMembersCheckSampleB<T> {
 }
 
-class PublicStaticMutableMembersCheckC {
+class PublicStaticMutableMembersCheckSampleC {
 }
 
 class Java9 {

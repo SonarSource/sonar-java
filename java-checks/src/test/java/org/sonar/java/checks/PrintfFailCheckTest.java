@@ -29,7 +29,7 @@ class PrintfFailCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PrintfFailCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PrintfFailCheckSample.java"))
       .withCheck(new PrintfFailCheck())
       .verifyIssues();
   }
