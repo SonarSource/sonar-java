@@ -20,22 +20,17 @@
 package org.sonar.java.checks.spring;
 
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 
 @Rule(key = "S5876")
 public class SpringSessionFixationCheck extends AbstractMethodDetection {
 
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
-  }
+  private static final String ISSUE_MSG = "Create a new session during user authentication to prevent session fixation attacks.";
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -48,7 +43,12 @@ public class SpringSessionFixationCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodInvocation) {
-    reportIssue(ExpressionUtils.methodName(methodInvocation), "Create a new session during user authentication to prevent session fixation attacks.");
+    reportIssue(ExpressionUtils.methodName(methodInvocation), ISSUE_MSG);
+  }
+
+  @Override
+  protected void onMethodReferenceFound(MethodReferenceTree methodReferenceTree) {
+    reportIssue(methodReferenceTree.method(), ISSUE_MSG);
   }
 
 }
