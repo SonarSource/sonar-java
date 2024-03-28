@@ -32,12 +32,12 @@ class IgnoredReturnValueCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/S2201_IgnoredReturnValueCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/S2201_IgnoredReturnValueCheckSample.java"))
       .withCheck(CHECK)
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/S2201_IgnoredReturnValueCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/S2201_IgnoredReturnValueCheckSample.java"))
       .withCheck(CHECK)
       .verifyIssues();
 

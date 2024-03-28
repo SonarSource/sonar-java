@@ -30,7 +30,7 @@ class SingleCharacterAlternationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/SingleCharacterAlternationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/SingleCharacterAlternationCheckSample.java"))
       .withCheck(new SingleCharacterAlternationCheck())
       .verifyIssues();
   }

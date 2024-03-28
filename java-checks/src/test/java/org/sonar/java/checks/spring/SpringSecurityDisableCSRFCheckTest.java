@@ -29,7 +29,7 @@ class SpringSecurityDisableCSRFCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/SpringSecurityDisableCSRFCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/SpringSecurityDisableCSRFCheckSample.java"))
       .withCheck(new SpringSecurityDisableCSRFCheck())
       .verifyIssues();
   }

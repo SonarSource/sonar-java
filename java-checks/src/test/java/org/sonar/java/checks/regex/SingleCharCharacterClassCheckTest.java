@@ -29,7 +29,7 @@ class SingleCharCharacterClassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/SingleCharCharacterClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/SingleCharCharacterClassCheckSample.java"))
       .withCheck(new SingleCharCharacterClassCheck())
       .verifyIssues();
   }

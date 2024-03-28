@@ -29,7 +29,7 @@ class StaticMembersAccessCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/StaticMembersAccessCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StaticMembersAccessCheckSample.java"))
       .withCheck(new StaticMembersAccessCheck())
       .withQuickFixes()
       .verifyIssues();

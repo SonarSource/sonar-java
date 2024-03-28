@@ -30,12 +30,12 @@ class StandardCharsetsConstantsCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheckSample.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withQuickFixes()
       .verifyIssues();
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheckSample.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(7)
       .withQuickFixes()
@@ -51,7 +51,7 @@ class StandardCharsetsConstantsCheckTest {
       .withJavaVersion(10)
       .verifyIssues();
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheckSample.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(6)
       .withQuickFixes()

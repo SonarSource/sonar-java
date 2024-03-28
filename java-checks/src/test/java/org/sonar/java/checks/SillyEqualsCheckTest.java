@@ -30,14 +30,14 @@ class SillyEqualsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SillyEqualsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SillyEqualsCheckSample.java"))
       .withCheck(new SillyEqualsCheck())
       .verifyIssues();
   }
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/SillyEqualsCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/SillyEqualsCheckSample.java"))
       .withCheck(new SillyEqualsCheck())
       .verifyIssues();
   }

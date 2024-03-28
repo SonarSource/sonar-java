@@ -29,7 +29,7 @@ class SerialVersionUidInRecordCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/SerialVersionUidInRecordCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/SerialVersionUidInRecordCheckSample.java"))
       .withCheck(new SerialVersionUidInRecordCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class SerialVersionUidInRecordCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerialVersionUidInRecordCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerialVersionUidInRecordCheckSample.java"))
       .withCheck(new SerialVersionUidInRecordCheck())
       .verifyNoIssues();
   }

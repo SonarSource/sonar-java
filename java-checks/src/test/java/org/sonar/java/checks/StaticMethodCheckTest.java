@@ -31,7 +31,7 @@ class StaticMethodCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/StaticMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StaticMethodCheckSample.java"))
       .withCheck(new StaticMethodCheck())
       .withQuickFixes()
       .verifyIssues();
@@ -40,7 +40,7 @@ class StaticMethodCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/StaticMethodCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/StaticMethodCheckSample.java"))
       .withCheck(new StaticMethodCheck())
       .verifyNoIssues();
   }

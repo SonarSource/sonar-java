@@ -30,7 +30,7 @@ class StringToPrimitiveConversionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/StringToPrimitiveConversionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringToPrimitiveConversionCheckSample.java"))
       .withCheck(new StringToPrimitiveConversionCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class StringToPrimitiveConversionCheckTest {
   @Test
   void not_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/StringToPrimitiveConversionCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/StringToPrimitiveConversionCheckSample.java"))
       .withCheck(new StringToPrimitiveConversionCheck())
       .verifyNoIssues();
   }

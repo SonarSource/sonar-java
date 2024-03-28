@@ -28,7 +28,7 @@ class StaticFieldUpdateInConstructorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/StaticFieldUpdateInConstructorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StaticFieldUpdateInConstructorCheckSample.java"))
       .withCheck(new StaticFieldUpdateInConstructorCheck())
       .verifyIssues();
   }

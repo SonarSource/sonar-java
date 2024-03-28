@@ -31,7 +31,7 @@ class StaticFieldUpateCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/StaticFieldUpateCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/StaticFieldUpateCheckSample.java"))
       .withCheck(new StaticFieldUpateCheck())
       .verifyIssues();
   }
@@ -39,7 +39,7 @@ class StaticFieldUpateCheckTest {
   @Test
   void detected_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/StaticFieldUpateCheck.java"))
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/StaticFieldUpateCheckSample.java"))
       .withCheck(new StaticFieldUpateCheck())
       .verifyIssues();
   }

@@ -29,7 +29,7 @@ class SpringAssertionsSimplificationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/SpringAssertionsSimplificationCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/SpringAssertionsSimplificationCheckSample.java"))
       .withCheck(new SpringAssertionsSimplificationCheck())
       .verifyIssues();
   }

@@ -31,11 +31,11 @@ class SynchronizedClassUsageCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageCheckSample.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageByAPICheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageByAPICheckSample.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .verifyIssues();
   }
@@ -43,12 +43,12 @@ class SynchronizedClassUsageCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageCheckSample.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageByAPICheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SynchronizedClassUsageByAPICheckSample.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();

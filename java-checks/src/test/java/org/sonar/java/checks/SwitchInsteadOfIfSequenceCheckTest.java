@@ -30,7 +30,7 @@ class SwitchInsteadOfIfSequenceCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchInsteadOfIfSequenceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchInsteadOfIfSequenceCheckSample.java"))
       .withCheck(new SwitchInsteadOfIfSequenceCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class SwitchInsteadOfIfSequenceCheckTest {
   @Test
   void prior_java_7() throws Exception {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchInsteadOfIfSequenceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchInsteadOfIfSequenceCheckSample.java"))
       .withCheck(new SwitchInsteadOfIfSequenceCheck())
       .withJavaVersion(6)
       .verifyNoIssues();
@@ -47,7 +47,7 @@ class SwitchInsteadOfIfSequenceCheckTest {
   @Test
   void after_java_15() throws Exception {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/SwitchInsteadOfIfSequenceCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/SwitchInsteadOfIfSequenceCheckSample.java"))
       .withCheck(new SwitchInsteadOfIfSequenceCheck())
       .verifyIssues();
   }

@@ -28,7 +28,7 @@ class SystemOutOrErrUsageCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheckSample.java"))
       .withCheck(new SystemOutOrErrUsageCheck())
       .verifyIssues();
   }

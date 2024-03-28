@@ -30,7 +30,7 @@ class SimpleStringLiteralForSingleLineStringsCheckTest {
   void test() {
     
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SimpleStringLiteralForSingleLineStringsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SimpleStringLiteralForSingleLineStringsCheckSample.java"))
       .withCheck(new SimpleStringLiteralForSingleLineStringsCheck())
       .verifyIssues();
   }

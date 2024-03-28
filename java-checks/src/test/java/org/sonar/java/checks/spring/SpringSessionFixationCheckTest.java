@@ -29,7 +29,7 @@ class SpringSessionFixationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/SpringSessionFixationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/SpringSessionFixationCheckSample.java"))
       .withCheck(new SpringSessionFixationCheck())
       .verifyIssues();
   }

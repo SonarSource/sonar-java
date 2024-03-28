@@ -29,7 +29,7 @@ class SwitchRedundantKeywordCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchRedundantKeywordCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchRedundantKeywordCheckSample.java"))
       .withCheck(new SwitchRedundantKeywordCheck())
       .withJavaVersion(14)
       .verifyIssues();

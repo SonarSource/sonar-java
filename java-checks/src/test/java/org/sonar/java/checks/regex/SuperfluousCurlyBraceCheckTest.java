@@ -29,7 +29,7 @@ class SuperfluousCurlyBraceCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/SuperfluousCurlyBraceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/SuperfluousCurlyBraceCheckSample.java"))
       .withCheck(new SuperfluousCurlyBraceCheck())
       .verifyIssues();
   }
