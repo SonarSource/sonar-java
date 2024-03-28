@@ -29,7 +29,7 @@ class NotifyCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/NotifyCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NotifyCheckSample.java"))
       .withCheck(new NotifyCheck())
       .withQuickFixes()
       .verifyIssues();

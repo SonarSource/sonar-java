@@ -29,7 +29,7 @@ class NoCheckstyleTagPresenceCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/NoCheckstyleTagPresenceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NoCheckstyleTagPresenceCheckSample.java"))
       .withCheck(new NoCheckstyleTagPresenceCheck())
       .verifyIssues();
   }

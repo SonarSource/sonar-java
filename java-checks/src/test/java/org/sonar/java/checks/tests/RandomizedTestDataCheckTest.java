@@ -37,7 +37,7 @@ class RandomizedTestDataCheckTest {
   @Test
   void testNoIssues() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/NonRandomizedTestDataCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/NonRandomizedTestDataCheckSample.java"))
       .withCheck(new RandomizedTestDataCheck())
       .verifyNoIssues();
   }

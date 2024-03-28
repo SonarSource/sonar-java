@@ -3,12 +3,12 @@ package symbolicexecution.checks.NonNullSetToNullCheck.packageNonNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class NonNullSetToNullCheck {
+public class NonNullSetToNullCheckSample {
   Boolean notInitialized;
   Integer initialized;
 
   // 1.1: field not assigned in constructor
-  public NonNullSetToNullCheck() { // Noncompliant {{"notInitialized" is marked "@NonNullByDefault at package level" but is not initialized in this constructor.}}
+  public NonNullSetToNullCheckSample() { // Noncompliant {{"notInitialized" is marked "@NonNullByDefault at package level" but is not initialized in this constructor.}}
     initialized = 200;
   }
 

@@ -3,7 +3,7 @@ package checks.tests;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-public class NonRandomizedTestDataCheck {
+public class NonRandomizedTestDataCheckSample {
 
   @Test
   public void randomizedTest() {

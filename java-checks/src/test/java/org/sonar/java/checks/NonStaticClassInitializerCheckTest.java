@@ -29,7 +29,7 @@ class NonStaticClassInitializerCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/NonStaticClassInitializerCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NonStaticClassInitializerCheckSample.java"))
       .withCheck(new NonStaticClassInitializerCheck())
       .verifyIssues();
   }

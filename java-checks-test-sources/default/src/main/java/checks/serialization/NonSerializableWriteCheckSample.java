@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-class NonSerializableWriteCheck {
+class NonSerializableWriteCheckSample {
   void myMethod(ObjectOutputStream out, Object x, byte[] array) throws IOException {
     out.writeObject(new Object());
     out.writeObject("x");

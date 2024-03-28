@@ -29,7 +29,7 @@ class NPEThrowCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/NPEThrowCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NPEThrowCheckSample.java"))
       .withCheck(new NPEThrowCheck())
       .verifyIssues();
   }

@@ -1,6 +1,6 @@
 package checks;
 
-class NestedTernaryOperatorsCheck {
+class NestedTernaryOperatorsCheckSample {
   void foo(boolean b) {
     String res;
     res = b ? "yo" : "lo";
@@ -9,12 +9,12 @@ class NestedTernaryOperatorsCheck {
     res = b ? "yo" : b ? "lo" : "yolo"; // Noncompliant [[sc=22;ec=39]]
     res = b ? "yo" : "lo" + (b ? "ba" : "lo"); // Noncompliant [[sc=30;ec=45]]
 
-    NestedTernaryOperatorsCheck a = b ? new NestedTernaryOperatorsCheck() {
+    NestedTernaryOperatorsCheckSample a = b ? new NestedTernaryOperatorsCheckSample() {
       @Override
       void foo(boolean arg0) {
         String res = b ? "yo" : "lo"; // Compliant - not really nested
         res = b ? "yo" : b ? "lo" : "yolo"; // Noncompliant
       }
-    } : new NestedTernaryOperatorsCheck();
+    } : new NestedTernaryOperatorsCheckSample();
   }
 }

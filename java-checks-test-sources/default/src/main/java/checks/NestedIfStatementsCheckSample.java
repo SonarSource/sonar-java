@@ -1,6 +1,6 @@
 package checks;
 
-class NestedIfStatementsCheck {
+class NestedIfStatementsCheckSample {
   private void f(int foo, boolean cond) {
     if (false) { // Compliant - 1
     }

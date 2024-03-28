@@ -28,7 +28,7 @@ class NullCheckWithInstanceofCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/NullCheckWithInstanceofCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NullCheckWithInstanceofCheckSample.java"))
       .withCheck(new NullCheckWithInstanceofCheck())
       .verifyIssues();
   }

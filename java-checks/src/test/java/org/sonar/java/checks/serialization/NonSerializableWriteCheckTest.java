@@ -29,7 +29,7 @@ class NonSerializableWriteCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/NonSerializableWriteCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/NonSerializableWriteCheckSample.java"))
       .withCheck(new NonSerializableWriteCheck())
       .verifyIssues();
   }

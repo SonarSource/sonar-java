@@ -1,6 +1,6 @@
 package checks;
 
-class NestedBlocksCheck {
+class NestedBlocksCheckSample {
   private void f(String s, boolean b) {
     if (false) {
       { // Noncompliant [[sc=7;ec=8]] {{Extract this nested code block into a method.}}
