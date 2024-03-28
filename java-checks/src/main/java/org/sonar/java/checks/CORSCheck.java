@@ -55,11 +55,26 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers ADD_ALLOWED_ORIGIN_MATCHER = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes("org.springframework.web.cors.CorsConfiguration")
-      .names("addAllowedOrigin")
+      .names("addAllowedOrigin", "setAllowedOrigins", "setAllowedOriginPatterns")
       .withAnyParameters()
       .build(),
     MethodMatchers.create().ofTypes("org.springframework.web.servlet.config.annotation.CorsRegistration")
-      .names("allowedOrigins")
+      .names("allowedOrigins", "allowedOriginPatterns")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create().ofTypes("org.springframework.web.servlet.config.annotation.CorsRegistry")
+      .names("addMapping")
+      .withAnyParameters()
+      .build());
+
+  private static final MethodMatchers LIST_INITIALIZER_MATCHER = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("java.util.Arrays")
+      .names("asList")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create().ofTypes("java.util.List")
+      .names("of")
       .withAnyParameters()
       .build());
 
@@ -127,11 +142,17 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isStar(ExpressionTree expressionTree) {
-    if (expressionTree.is(Tree.Kind.NEW_ARRAY)) {
-      return ((NewArrayTree) expressionTree).initializers().stream().anyMatch(CORSCheck::isStar);
-    } else {
-      return "*".equals(ExpressionsHelper.getConstantValueAsString(expressionTree).value());
+    if (expressionTree instanceof NewArrayTree tree) {
+      return containsStar(tree.initializers());
     }
+    if (expressionTree instanceof MethodInvocationTree tree) {
+      return LIST_INITIALIZER_MATCHER.matches(tree) && containsStar(tree.arguments());
+    }
+    return "*".equals(ExpressionsHelper.getConstantValueAsString(expressionTree).value());
+  }
+
+  private static boolean containsStar(List<ExpressionTree> list) {
+    return list.stream().anyMatch(CORSCheck::isStar);
   }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
@@ -147,7 +168,7 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
         }
       } else if (APPLY_PERMIT_DEFAULT_VALUES.matches(mit)) {
         applyPermit.add(mit);
-      } else if (ADD_ALLOWED_ORIGIN_MATCHER.matches(mit) && isStar(mit.arguments().get(0))) {
+      } else if (ADD_ALLOWED_ORIGIN_MATCHER.matches(mit) && containsStar(mit.arguments())) {
         addAllowedOrigin.add(mit);
       }
       super.visitMethodInvocation(mit);
