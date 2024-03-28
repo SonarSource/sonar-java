@@ -306,7 +306,7 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
-      <version>5.0.5.RELEASE</version>
+      <version>5.4.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

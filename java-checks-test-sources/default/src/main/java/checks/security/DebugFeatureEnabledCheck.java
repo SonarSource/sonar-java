@@ -3,6 +3,8 @@ package checks.security;
 import android.webkit.WebView;
 import android.webkit.WebViewFactoryProvider;
 import java.lang.reflect.InvocationTargetException;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
 // Tests for printStackTrace.
 // Tests for @EnableWebSecurity are in files/non-compiling/checks/security/DebugFeatureEnabledCheck.java
@@ -60,4 +62,19 @@ public class DebugFeatureEnabledCheck {
       ex.printStackTrace();
     }
   }
+
+  void foo(WebSecurity web, boolean cond){
+    web.debug(true);   // Noncompliant [sc=9;ec=14] {{Make sure this debug feature is deactivated before delivering the code in production.}}
+    web.debug(false);
+    web.debug(cond);
+  }
+
+  public WebSecurityCustomizer debugCustomizer() {
+    return (web) -> web.debug(true); // Noncompliant [sc=25;ec=30] {{Make sure this debug feature is deactivated before delivering the code in production.}}
+  }
+
+  public WebSecurityCustomizer nonDebugCustomizer() {
+    return (web) -> web.debug(false);
+  }
+
 }
