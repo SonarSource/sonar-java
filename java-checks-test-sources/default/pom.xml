@@ -300,13 +300,13 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
-      <version>5.2.10.RELEASE</version>
+      <version>5.8.11</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
-      <version>5.4.0</version>
+      <version>5.8.11</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

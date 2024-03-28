@@ -24,6 +24,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4502")
@@ -31,24 +32,17 @@ public class SpringSecurityDisableCSRFCheck extends AbstractMethodDetection {
 
   private static final String CSRF_CONFIGURER_CLASS = "org.springframework.security.config.annotation.web.configurers.CsrfConfigurer";
   private static final String MESSAGE = "Make sure disabling Spring Security's CSRF protection is safe here.";
-  private static final MethodMatchers DISABLE_MATCHER = MethodMatchers.create()
-    .ofSubTypes("org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer")
-    .names("disable")
-    .addWithoutParametersMatcher()
-    .build();
-  private static final MethodMatchers IGNORE_ANT_MATCHER = MethodMatchers.create()
-    .ofSubTypes("org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer")
-    .names("ignoringAntMatchers")
-    .addParametersMatcher("java.lang.String[]")
-    .build();
+
+  private static final MethodMatchers DISALLOWED_METHODS = MethodMatchers.create()
+      .ofSubTypes("org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer")
+      .names("disable", "ignoringAntMatchers", "requireCsrfProtectionMatcher", "ignoringRequestMatchers")
+      .withAnyParameters()
+      .build();
 
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.or(
-      DISABLE_MATCHER,
-      IGNORE_ANT_MATCHER
-    );
+    return DISALLOWED_METHODS;
   }
 
   @Override
@@ -61,4 +55,11 @@ public class SpringSecurityDisableCSRFCheck extends AbstractMethodDetection {
     }
   }
 
+  @Override
+  protected void onMethodReferenceFound(MethodReferenceTree methodReferenceTree) {
+    var typeArgs = methodReferenceTree.symbolType().typeArguments();
+    if (typeArgs.size() == 1 && typeArgs.get(0).is(CSRF_CONFIGURER_CLASS)) {
+      reportIssue(methodReferenceTree.method(), MESSAGE);
+    }
+  }
 }
