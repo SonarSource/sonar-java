@@ -78,7 +78,7 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree instanceof NewClassTree nct && UNSAFE_PASSWORD_ENCODER_CONSTRUCTORS.matches(nct)) {
-      reportIssue(((NewClassTree) tree).identifier(), "Use secure \"PasswordEncoder\" implementation.");
+      reportIssue(nct.identifier(), "Use secure \"PasswordEncoder\" implementation.");
     } else if (tree instanceof MethodInvocationTree mit && UNSAFE_PASSWORD_ENCODER_METHODS.matches(mit)) {
       reportIssue(ExpressionUtils.methodName(mit), "Use secure \"PasswordEncoder\" implementation.");
     } else if (tree.is(Tree.Kind.METHOD)) {
