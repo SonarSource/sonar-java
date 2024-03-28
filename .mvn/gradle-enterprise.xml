@@ -1,17 +1,14 @@
 <gradleEnterprise>
   <projectId>SonarJava</projectId>
   <buildCache>
+    <local>
+      <enabled>#{env['CIRRUS_CI'] == null}</enabled>
+    </local>
     <remote>
-      <enabled>#{env['CIRRUS_CRON'] != "nightly"}</enabled>
-      <storeEnabled>true</storeEnabled>
+      <enabled>false</enabled>
     </remote>
-    <requireClean>false</requireClean>
   </buildCache>
   <buildScan>
     <publish>ON_DEMAND</publish>
-    <backgroundBuildScanUpload>#{env['CIRRUS_CI'] == null}</backgroundBuildScanUpload>
-    <capture>
-      <goalInputFiles>true</goalInputFiles>
-    </capture>
   </buildScan>
 </gradleEnterprise>
