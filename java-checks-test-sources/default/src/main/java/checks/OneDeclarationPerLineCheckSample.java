@@ -2,7 +2,7 @@ package checks;
 
 import java.util.Collections;
 
-class OneDeclarationPerLineCheck {
+class OneDeclarationPerLineCheckSample {
 
   interface MyInterface {
     int a = 1, b = 1; // Noncompliant [[sc=16;ec=17]] {{Declare "b" on a separate line.}}
@@ -42,7 +42,7 @@ class OneDeclarationPerLineCheck {
 
   private String s1; // Compliant, only one on the line
 
-  OneDeclarationPerLineCheck(){
+  OneDeclarationPerLineCheckSample(){
     int const1,const2; // Noncompliant {{Declare "const2" on a separate line.}}
   }
 

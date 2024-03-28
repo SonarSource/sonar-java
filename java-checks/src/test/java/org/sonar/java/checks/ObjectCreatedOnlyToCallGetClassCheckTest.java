@@ -29,7 +29,7 @@ class ObjectCreatedOnlyToCallGetClassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ObjectCreatedOnlyToCallGetClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ObjectCreatedOnlyToCallGetClassCheckSample.java"))
       .withCheck(new ObjectCreatedOnlyToCallGetClassCheck())
       .verifyIssues();
   }
