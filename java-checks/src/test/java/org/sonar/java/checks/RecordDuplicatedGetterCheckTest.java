@@ -29,7 +29,7 @@ class RecordDuplicatedGetterCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RecordDuplicatedGetterCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RecordDuplicatedGetterCheckSample.java"))
       .withCheck(new RecordDuplicatedGetterCheck())
       .verifyIssues();
   }

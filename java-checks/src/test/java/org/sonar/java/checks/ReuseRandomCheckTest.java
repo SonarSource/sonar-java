@@ -28,7 +28,7 @@ class ReuseRandomCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ReuseRandomCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ReuseRandomCheckSample.java"))
       .withCheck(new ReuseRandomCheck())
       .verifyIssues();
   }

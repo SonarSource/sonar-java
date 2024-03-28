@@ -29,7 +29,7 @@ class RedundantModifierCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RedundantModifierCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RedundantModifierCheckSample.java"))
       .withCheck(new RedundantModifierCheck())
       .verifyIssues();
   }

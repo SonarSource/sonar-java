@@ -29,7 +29,7 @@ class RedosCheckTest {
   @Test
   void test_java_version_unset() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/RedosCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RedosCheckSample.java"))
       .withCheck(new RedosCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class RedosCheckTest {
   void test_java_version_9() {
     CheckVerifier.newVerifier()
       .withJavaVersion(9)
-      .onFile(mainCodeSourcesPath("checks/regex/RedosCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RedosCheckSample.java"))
       .withCheck(new RedosCheck())
       .verifyIssues();
   }

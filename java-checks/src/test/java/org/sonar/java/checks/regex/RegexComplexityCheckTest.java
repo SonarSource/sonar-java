@@ -29,7 +29,7 @@ class RegexComplexityCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/RegexComplexityCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexComplexityCheckSample.java"))
       .withCheck(new RegexComplexityCheck())
       .verifyIssues();
   }

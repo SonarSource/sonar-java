@@ -29,7 +29,7 @@ class RedundantRegexAlternativesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/RedundantRegexAlternativesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RedundantRegexAlternativesCheckSample.java"))
       .withCheck(new RedundantRegexAlternativesCheck())
       .verifyIssues();
   }

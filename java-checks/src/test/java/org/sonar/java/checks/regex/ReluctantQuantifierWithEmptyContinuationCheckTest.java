@@ -29,7 +29,7 @@ class ReluctantQuantifierWithEmptyContinuationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/ReluctantQuantifierWithEmptyContinuationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/ReluctantQuantifierWithEmptyContinuationCheckSample.java"))
       .withCheck(new ReluctantQuantifierWithEmptyContinuationCheck())
       .verifyIssues();
   }

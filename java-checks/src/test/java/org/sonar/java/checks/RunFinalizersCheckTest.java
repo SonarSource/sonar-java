@@ -36,11 +36,11 @@ class RunFinalizersCheckTest {
       .asInt();
     if (javaVersion < 11) {
       CheckVerifier.newVerifier()
-        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheck.java"))
+        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheckSample.java"))
         .withCheck(new RunFinalizersCheck())
         .verifyIssues();
       CheckVerifier.newVerifier()
-        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheck.java"))
+        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheckSample.java"))
         .withCheck(new RunFinalizersCheck())
         .withJavaVersion(javaVersion)
         .verifyIssues();

@@ -29,7 +29,7 @@ class ReceivingIntentsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/ReceivingIntentsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/ReceivingIntentsCheckSample.java"))
       .withCheck(new ReceivingIntentsCheck())
       .verifyIssues();
   }

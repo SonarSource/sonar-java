@@ -28,7 +28,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ReplaceLambdaByMethodRefCheckTest {
 
-  private static final String FILENAME = "checks/ReplaceLambdaByMethodRefCheck.java";
+  private static final String FILENAME = "checks/ReplaceLambdaByMethodRefCheckSample.java";
   public static final String NO_VERSION_FILENAME = "checks/ReplaceLambdaByMethodRefCheck_no_version.java";
 
   @Test

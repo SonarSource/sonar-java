@@ -27,7 +27,7 @@ class RedundantRecordMethodsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/RedundantRecordMethodsCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/RedundantRecordMethodsCheckSample.java"))
       .withCheck(new RedundantRecordMethodsCheck())
       .verifyIssues();
   }

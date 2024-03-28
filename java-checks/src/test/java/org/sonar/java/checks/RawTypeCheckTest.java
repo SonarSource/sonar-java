@@ -31,7 +31,7 @@ class RawTypeCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RawTypeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RawTypeCheckSample.java"))
       .withCheck(new RawTypeCheck())
       .verifyIssues();
   }
@@ -39,13 +39,13 @@ class RawTypeCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RawTypeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RawTypeCheckSample.java"))
       .withCheck(new RawTypeCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/RawTypeCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/RawTypeCheckSample.java"))
       .withCheck(new RawTypeCheck())
       .verifyIssues();
   }
