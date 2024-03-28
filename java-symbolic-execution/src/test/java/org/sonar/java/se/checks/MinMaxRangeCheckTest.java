@@ -30,7 +30,7 @@ class MinMaxRangeCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/MinMaxRangeCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/MinMaxRangeCheckSample.java"))
       .withCheck(new MinMaxRangeCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

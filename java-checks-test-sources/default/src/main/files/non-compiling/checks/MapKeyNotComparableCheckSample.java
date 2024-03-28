@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
-public class MapKeyNotComparableCheck {
+public class MapKeyNotComparableCheckSample {
   static class NonComparable {
     @Override
     public String toString() {

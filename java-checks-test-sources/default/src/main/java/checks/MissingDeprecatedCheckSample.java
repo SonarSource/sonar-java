@@ -3,7 +3,7 @@ package checks;
 import java.lang.reflect.Method;
 import org.junit.Ignore;
 
-class MissingDeprecatedCheck {
+class MissingDeprecatedCheckSample {
 
   @Deprecated
   public int foo; // Noncompliant [[sc=14;ec=17]] {{Add the missing @deprecated Javadoc tag.}}
@@ -84,7 +84,7 @@ class MissingDeprecatedCheck {
 
 }
 
-interface MissingDeprecatedCheck_Bar {
+interface MissingDeprecatedCheckSample_Bar {
 
   @Deprecated
   int foo(); // Noncompliant
@@ -94,7 +94,7 @@ interface MissingDeprecatedCheck_Bar {
 /**
 * @deprecated
 */
-class MissingDeprecatedCheck_Qix  { // Noncompliant
+class MissingDeprecatedCheckSample_Qix  { // Noncompliant
 
   /**
    * @deprecated

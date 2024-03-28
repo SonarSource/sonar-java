@@ -1,6 +1,6 @@
 package checks;
 
-class MethodOnlyCallsSuperCheck {
+class MethodOnlyCallsSuperCheckSample {
   abstract class A extends Unknown {
     // When the parent method is Unknown, we should not report anything
     private int f4() { // Compliant

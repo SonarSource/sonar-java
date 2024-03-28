@@ -30,7 +30,7 @@ class MapKeyNotComparableCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MapKeyNotComparableCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MapKeyNotComparableCheckSample.java"))
       .withCheck(new MapKeyNotComparableCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class MapKeyNotComparableCheckTest {
   @Test
   void test_incomplete_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/MapKeyNotComparableCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/MapKeyNotComparableCheckSample.java"))
       .withCheck(new MapKeyNotComparableCheck())
       .verifyIssues();
   }

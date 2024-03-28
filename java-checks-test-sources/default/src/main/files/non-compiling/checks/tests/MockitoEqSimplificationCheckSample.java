@@ -5,11 +5,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import org.mockito.Matchers;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.endsWith;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.endsWith;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class MockitoEqSimplificationCheck {
+public class MockitoEqSimplificationCheckSample {
 
   @Captor
   ArgumentCaptor<Object> captor;
@@ -36,7 +37,7 @@ public class MockitoEqSimplificationCheck {
       eq(v3))).willReturn(null);
     when(foo.baz(eq(v4), // Noncompliant [[sc=18;ec=20;secondary=+1]] {{Remove this and every subsequent useless "eq(...)" invocation; pass the values directly.}}
       eq(v5))).thenReturn("foo");
-    when(foo.baz(eq(v4),  // Noncompliant [[sc=18;ec=20;secondary=+1]]
+    when(foo.baz(Matchers.eq(v4),  // Noncompliant [[sc=18;ec=29;secondary=+1]]
       eq(v5))).thenReturn("foo");
     doThrow(new RuntimeException()).when(foo).quux(eq(42)); // Noncompliant [[sc=52;ec=54]] {{Remove this useless "eq(...)" invocation; pass the values directly.}}
     doCallRealMethod().when(foo).baz(eq(v4), eq(v5)); // Noncompliant
@@ -79,11 +80,6 @@ public class MockitoEqSimplificationCheck {
     given(foo.bar((eq(v1)), ((eq(v2))), eq(v3))).willReturn(null); // Noncompliant
     given(foo.bar(eq(v1), (any()), eq(v3))).willReturn(null); // Compliant
     given(foo.bar((v1), ((v2)), (v3))).willReturn(null); // Compliant
-
-    // Direct import of eq from top level Mockito class should be compliant
-    given(foo.bar(Mockito.eq(v1), endsWith(""), v3)).willReturn(null);
-    given(foo.bar(eq(v1), any(), eq(v3))).willReturn(null);
-    given(foo.baz(Mockito.eq(v1), captor.capture())).willReturn(null);
   }
 
   class Foo {

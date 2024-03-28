@@ -29,7 +29,7 @@ class ModulusEqualityCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ModulusEqualityCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ModulusEqualityCheckSample.java"))
       .withCheck(new ModulusEqualityCheck())
       .verifyIssues();
   }

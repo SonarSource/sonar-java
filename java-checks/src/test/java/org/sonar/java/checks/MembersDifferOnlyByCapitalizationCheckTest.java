@@ -29,7 +29,7 @@ class MembersDifferOnlyByCapitalizationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MembersDifferOnlyByCapitalizationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MembersDifferOnlyByCapitalizationCheckSample.java"))
       .withCheck(new MembersDifferOnlyByCapitalizationCheck())
       .verifyIssues();
   }
