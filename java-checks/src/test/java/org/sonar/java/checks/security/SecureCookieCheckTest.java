@@ -32,7 +32,7 @@ import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPa
 
 class SecureCookieCheckTest {
 
-  private static final String SOURCE_PATH = "checks/security/SecureCookieCheck.java";
+  private static final String SOURCE_PATH = "checks/security/SecureCookieCheckSample.java";
   private static final String TEST_SOURCE_PATH = mainCodeSourcesPath(SOURCE_PATH);
   private static final String NON_COMPILING_TEST_SOURCE_PATH = nonCompilingTestSourcesPath(SOURCE_PATH);
   public static final List<File> SPRING_3_2_CLASSPATH = TestClasspathUtils.loadFromFile(Constants.SPRING_3_2_CLASSPATH);

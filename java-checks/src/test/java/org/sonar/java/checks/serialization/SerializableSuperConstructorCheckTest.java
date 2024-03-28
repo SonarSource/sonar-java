@@ -30,7 +30,7 @@ class SerializableSuperConstructorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/SerializableSuperConstructorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/SerializableSuperConstructorCheckSample.java"))
       .withCheck(new SerializableSuperConstructorCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class SerializableSuperConstructorCheckTest {
   @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableSuperConstructorCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableSuperConstructorCheckSample.java"))
       .withCheck(new SerializableSuperConstructorCheck())
       .verifyIssues();
   }

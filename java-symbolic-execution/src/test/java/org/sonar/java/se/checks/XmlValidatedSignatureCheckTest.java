@@ -33,7 +33,7 @@ class XmlValidatedSignatureCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S6377_XmlValidatedSignatureCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("symbolicexecution/checks/S6377_XmlValidatedSignatureCheckSample.java"))
       .withChecks(new XmlValidatedSignatureCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

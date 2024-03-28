@@ -29,7 +29,7 @@ class StringOffsetMethodsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/StringOffsetMethodsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringOffsetMethodsCheckSample.java"))
       .withCheck(new StringOffsetMethodsCheck())
       .verifyIssues();
   }

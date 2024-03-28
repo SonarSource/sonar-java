@@ -30,7 +30,7 @@ class SerializableFieldInSerializableClassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheckSample.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class SerializableFieldInSerializableClassCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheckSample.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .verifyIssues();
   }
@@ -46,7 +46,7 @@ class SerializableFieldInSerializableClassCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheckSample.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .withoutSemantic()
       .verifyIssues();
@@ -55,7 +55,7 @@ class SerializableFieldInSerializableClassCheckTest {
   @Test
   void test_non_compiling_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheckSample.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .withoutSemantic()
       .verifyIssues();

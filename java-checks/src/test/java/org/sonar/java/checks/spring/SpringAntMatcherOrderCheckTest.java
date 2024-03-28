@@ -33,11 +33,11 @@ class SpringAntMatcherOrderCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/SpringAntMatcherOrderCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/SpringAntMatcherOrderCheckSample.java"))
       .withCheck(new SpringAntMatcherOrderCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/SpringAntMatcherOrderCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/SpringAntMatcherOrderCheckSample.java"))
       .withCheck(new SpringAntMatcherOrderCheck())
       .withoutSemantic()
       .verifyNoIssues();

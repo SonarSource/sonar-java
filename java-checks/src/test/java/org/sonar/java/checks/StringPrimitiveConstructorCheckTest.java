@@ -29,7 +29,7 @@ class StringPrimitiveConstructorCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/StringPrimitiveConstructorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/StringPrimitiveConstructorCheckSample.java"))
       .withCheck(new StringPrimitiveConstructorCheck())
       .withQuickFixes()
       .verifyIssues();
