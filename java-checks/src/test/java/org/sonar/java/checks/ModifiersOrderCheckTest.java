@@ -30,7 +30,7 @@ class ModifiersOrderCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ModifiersOrderCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ModifiersOrderCheckSample.java"))
       .withCheck(new ModifiersOrderCheck())
       .verifyIssues();
   }

@@ -1,6 +1,6 @@
 package checks;
 
-class MethodOnlyCallsSuperCheck{
+class MethodOnlyCallsSuperCheckSample{
   class ParentA {
     public void f2() { }
     public int f255() { return 0; }
@@ -205,8 +205,8 @@ class MethodOnlyCallsSuperCheck{
   }
 }
 
-class MethodOnlyCallsSuperCheckD {
-  MethodOnlyCallsSuperCheckD(Object o) {}
+class MethodOnlyCallsSuperCheckSampleD {
+  MethodOnlyCallsSuperCheckSampleD(Object o) {}
 
   int foo1() { return 0; }
   int foo2() { return 0; }
@@ -216,8 +216,8 @@ class MethodOnlyCallsSuperCheckD {
   static int staticMethod() { return 0; }
 }
 
-class MethodOnlyCallsSuperCheckE extends MethodOnlyCallsSuperCheckD {
-  MethodOnlyCallsSuperCheckE(Object o) {
+class MethodOnlyCallsSuperCheckSampleE extends MethodOnlyCallsSuperCheckSampleD {
+  MethodOnlyCallsSuperCheckSampleE(Object o) {
     super(o);
   }
 
@@ -233,12 +233,12 @@ class MethodOnlyCallsSuperCheckE extends MethodOnlyCallsSuperCheckD {
 
   @Override
   int foo3() { // Compliant
-    return new MethodOnlyCallsSuperCheckE(new Object()).foo3();
+    return new MethodOnlyCallsSuperCheckSampleE(new Object()).foo3();
   }
 
   @Override
   int foo4() { // Compliant
-    return MethodOnlyCallsSuperCheckD.staticMethod();
+    return MethodOnlyCallsSuperCheckSampleD.staticMethod();
   }
 
   @Override

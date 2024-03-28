@@ -2,9 +2,9 @@ package checks.tests;
 
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
-import static checks.tests.MockingAllMethodsCheck_Helper.staticMockedObject;
+import static checks.tests.MockingAllMethodsCheckSample_Helper.staticMockedObject;
 
-public class MockingAllMethodsCheck {
+public class MockingAllMethodsCheckSample {
 
   @Test
   void test_mocking_MyClass() {

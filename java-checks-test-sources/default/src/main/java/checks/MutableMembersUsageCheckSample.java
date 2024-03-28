@@ -9,9 +9,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import static checks.MutableMembersUsageCheck.CustomImmutableList.staticallyImportedMethod;
+import static checks.MutableMembersUsageCheckSample.CustomImmutableList.staticallyImportedMethod;
 
-class MutableMembersUsageCheck {
+class MutableMembersUsageCheckSample {
 
   private String[] strings;
   public String[] properties;
@@ -120,7 +120,7 @@ class MutableMembersUsageCheck {
     return AS_LIST;
   }
 
-  public MutableMembersUsageCheck () {
+  public MutableMembersUsageCheckSample () {
     strings = new String[]{"first", "second"};
     properties = new String[]{"a"};
   }
@@ -246,10 +246,10 @@ class MutableMembersUsageCheck {
   }
 }
 
-class MutableMembersUsageCheck2 {
+class MutableMembersUsageCheckSample2 {
   private String [] strings;
 
-  public MutableMembersUsageCheck2 () {
+  public MutableMembersUsageCheckSample2 () {
     strings = new String[]{"first", "second"};
   }
 
@@ -330,7 +330,7 @@ class ReturnRef {
   }
 }
 
-class MutableMembersUsageCheckFields {
+class MutableMembersUsageCheckSampleFields {
   private static final List<String> UNMODIFIABLE = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
   private static final List<String> UNMODIFIABLE2;
   private static final Object UNMODIFIABLE_OBJECT;
@@ -433,7 +433,7 @@ class MutableMembersUsageCheckFields {
   }
 }
 
-class MutableMembersUsageCheckEmptyArrayExample {
+class MutableMembersUsageCheckSampleEmptyArrayExample {
 
   private static final int[] EMPTY = new int[0];
   private static final int[][][] EMPTY_SEVERAL_DIMS = new int[0][0][0];
@@ -466,7 +466,7 @@ class MutableMembersUsageCheckEmptyArrayExample {
   }
 }
 
-class MutableMembersUsageCheckCollectionSingleton {
+class MutableMembersUsageCheckSampleCollectionSingleton {
   private final static Set<String> singletonSet = Collections.singleton("Test");
 
   public Set<String> getSet() {
@@ -474,16 +474,16 @@ class MutableMembersUsageCheckCollectionSingleton {
   }
 }
 
-class MutableMembersUsageCheckImmutableInsideConstructors {
+class MutableMembersUsageCheckSampleImmutableInsideConstructors {
   private final List<String> list;
   private final Collection<String> collection;
 
-  MutableMembersUsageCheckImmutableInsideConstructors(List<String> list) {
+  MutableMembersUsageCheckSampleImmutableInsideConstructors(List<String> list) {
     this.list = Collections.unmodifiableList(list);
     this.collection = getImmutableCollection();
   }
 
-  MutableMembersUsageCheckImmutableInsideConstructors(String element) {
+  MutableMembersUsageCheckSampleImmutableInsideConstructors(String element) {
     this(Arrays.asList(element));
   }
 

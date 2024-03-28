@@ -7,7 +7,7 @@ import javax.annotation.CheckForNull;
 import java.util.Map;
 import java.util.Objects;
 
-abstract class MapComputeIfAbsentOrPresentCheck {
+abstract class MapComputeIfAbsentOrPresentCheckSample {
 
   void foo(Map<String,Object> map, String key) {
     // Noncompliant@+1 [[flows=computeIfAbsent]] {{Replace this "Map.get()" and condition with a call to "Map.computeIfAbsent()".}}

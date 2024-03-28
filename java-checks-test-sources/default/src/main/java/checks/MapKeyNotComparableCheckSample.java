@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 
-public class MapKeyNotComparableCheck {
+public class MapKeyNotComparableCheckSample {
   static class MyComparable implements Comparable {
     @Override
     public int compareTo(@NotNull Object o) {
@@ -47,7 +47,7 @@ public class MapKeyNotComparableCheck {
     Map<NonComparable, Object> nonComparable = new HashMap<>(); // Noncompliant {{The key type should implement Comparable.}}
     Map<MyComparable, Object> comparable = new HashMap<>(); // compliant
     Map<ParametrizedNonComparable<String>, Object> parametrizedNonComparable = new HashMap<>(); // Noncompliant {{The key type should implement Comparable.}}
-    Map<MapKeyNotComparableCheck.NonComparable, Object> memberSelect = new HashMap<>(); // Noncompliant {{The key type should implement Comparable.}}
+    Map<MapKeyNotComparableCheckSample.NonComparable, Object> memberSelect = new HashMap<>(); // Noncompliant {{The key type should implement Comparable.}}
     Map<?, Object> wildCard = new HashMap<>();
     ThreeTypeParams<Object, MyComparable, Object> threeTypeParams = null; // compliant
     HashMap<NonComparable, Object> nonInterface = new HashMap<>(); // Noncompliant [[sc=13;ec=26]] {{The key type should implement Comparable.}}

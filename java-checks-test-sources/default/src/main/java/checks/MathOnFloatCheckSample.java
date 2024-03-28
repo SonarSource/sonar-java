@@ -1,6 +1,6 @@
 package checks;
 
-class MathOnFloatCheck {
+class MathOnFloatCheckSample {
   
   void myMethod() {
     float a = 16777216.0f;

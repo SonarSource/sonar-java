@@ -29,7 +29,7 @@ class MultipleWhitespaceCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/MultipleWhitespaceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/MultipleWhitespaceCheckSample.java"))
       .withCheck(new MultipleWhitespaceCheck())
       .verifyIssues();
   }

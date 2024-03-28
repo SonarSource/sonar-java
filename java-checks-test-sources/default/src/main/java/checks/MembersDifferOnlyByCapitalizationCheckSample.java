@@ -1,6 +1,6 @@
 package checks;
 
-class MembersDifferOnlyByCapitalizationCheck {
+class MembersDifferOnlyByCapitalizationCheckSample {
 
 abstract class A implements MyInterface {
   private static final long var1 = -9215047833775013803L; // Compliant
@@ -18,7 +18,7 @@ abstract class A implements MyInterface {
   public void foo(int i) {} // Compliant
   public void foo(boolean i) {} // Compliant
 
-  public void myOtherMethoD() {} // Noncompliant [[secondary=41]] {{Rename method "myOtherMethoD" to prevent any misunderstanding/clash with method "myOtherMethod" defined in interface "checks.MembersDifferOnlyByCapitalizationCheck$MyInterface".}}
+  public void myOtherMethoD() {} // Noncompliant [[secondary=41]] {{Rename method "myOtherMethoD" to prevent any misunderstanding/clash with method "myOtherMethod" defined in interface "checks.MembersDifferOnlyByCapitalizationCheckSample$MyInterface".}}
 
   private static void gUl() {} // Noncompliant [[secondary=24]] {{Rename method "gUl" to prevent any misunderstanding/clash with method "gul".}}
   public void gul() {} // Compliant
@@ -48,7 +48,7 @@ abstract class B extends A {
   public void var2() {}; // Noncompliant [[secondary=7]]
   public void vAr2() {}; // Noncompliant [[secondary=48]]
 
-  public void myMethoD() {} // Noncompliant [[secondary=12]] {{Rename method "myMethoD" to prevent any misunderstanding/clash with method "myMethod" defined in superclass "checks.MembersDifferOnlyByCapitalizationCheck$A".}}
+  public void myMethoD() {} // Noncompliant [[secondary=12]] {{Rename method "myMethoD" to prevent any misunderstanding/clash with method "myMethod" defined in superclass "checks.MembersDifferOnlyByCapitalizationCheckSample$A".}}
 
   public Object qix;  // Compliant
 

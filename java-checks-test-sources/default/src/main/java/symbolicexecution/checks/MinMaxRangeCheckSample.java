@@ -2,7 +2,7 @@ package symbolicexecution.checks;
 
 // This classes is placed in compiled code ('org.sonar.java.resolve.targets.se' package) in order to get
 // access to bytecode and resolve constants
-class MinMaxRangeCheck {
+class MinMaxRangeCheckSample {
 
   private static final int UPPER_INT = 20;
   private static final int LOWER_INT = 0;
@@ -69,8 +69,8 @@ class MinMaxRangeCheck {
   }
 
   public int doRangeCheckNOK10(int num) {
-    int result = Math.min(MinMaxRangeCheck.LOWER_INT, num);
-    return Math.max(MinMaxRangeCheck.UPPER_INT, result); // Noncompliant {{Change these chained max/min methods invocations, as final results will always be the upper bound.}}
+    int result = Math.min(MinMaxRangeCheckSample.LOWER_INT, num);
+    return Math.max(MinMaxRangeCheckSample.UPPER_INT, result); // Noncompliant {{Change these chained max/min methods invocations, as final results will always be the upper bound.}}
   }
 
   public int doRangeCheckOK1(int num) { // Let's say num = 12

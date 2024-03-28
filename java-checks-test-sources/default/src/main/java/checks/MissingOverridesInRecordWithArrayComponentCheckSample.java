@@ -2,7 +2,7 @@ package checks;
 
 import java.util.Arrays;
 
-public class MissingOverridesInRecordWithArrayComponentCheck {
+public class MissingOverridesInRecordWithArrayComponentCheckSample {
   record IrrelevantRecord(int value) { // Compliant
 
   }

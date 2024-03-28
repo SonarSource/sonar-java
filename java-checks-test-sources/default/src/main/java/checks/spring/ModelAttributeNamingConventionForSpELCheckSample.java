@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.ui.Model;
 
-class ModelAttributeNamingConventionForSpELCheck {
+class ModelAttributeNamingConventionForSpELCheckSample {
 
   private static final String MY_LEGAL_CONSTANT = "legalName";
   private static final String MY_ILLEGAL_CONSTANT = "a-b";

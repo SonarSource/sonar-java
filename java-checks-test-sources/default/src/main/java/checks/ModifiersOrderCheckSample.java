@@ -3,7 +3,7 @@ package checks;
 import java.util.List;
 import java.util.Map;
 
-class ModifiersOrderCheck {
+class ModifiersOrderCheckSample {
   public static void main(String[] args) {
   }
 
