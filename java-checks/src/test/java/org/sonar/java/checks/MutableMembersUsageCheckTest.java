@@ -30,7 +30,7 @@ class MutableMembersUsageCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MutableMembersUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MutableMembersUsageCheckSample.java"))
       .withCheck(new MutableMembersUsageCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class MutableMembersUsageCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/MutableMembersUsageCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/MutableMembersUsageCheckSample.java"))
       .withCheck(new MutableMembersUsageCheck())
       .verifyNoIssues();
   }

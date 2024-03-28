@@ -30,12 +30,12 @@ class MethodOnlyCallsSuperCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MethodOnlyCallsSuperCheckSample.java"))
       .withCheck(new MethodOnlyCallsSuperCheck())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/MethodOnlyCallsSuperCheckSample.java"))
       .withCheck(new MethodOnlyCallsSuperCheck())
       .verifyNoIssues();
   }
@@ -43,13 +43,13 @@ class MethodOnlyCallsSuperCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MethodOnlyCallsSuperCheckSample.java"))
       .withCheck(new MethodOnlyCallsSuperCheck())
       .withoutSemantic()
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/MethodOnlyCallsSuperCheckSample.java"))
       .withCheck(new MethodOnlyCallsSuperCheck())
       .withoutSemantic()
       .verifyNoIssues();

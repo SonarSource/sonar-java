@@ -30,7 +30,7 @@ class MethodWithExcessiveReturnsCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MethodWithExcessiveReturnsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/MethodWithExcessiveReturnsCheckSample.java"))
       .withCheck(new MethodWithExcessiveReturnsCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class MethodWithExcessiveReturnsCheckTest {
   @Test
   void detectedNonCompiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/MethodWithExcessiveReturnsCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/MethodWithExcessiveReturnsCheckSample.java"))
       .withCheck(new MethodWithExcessiveReturnsCheck())
       .verifyIssues();
   }

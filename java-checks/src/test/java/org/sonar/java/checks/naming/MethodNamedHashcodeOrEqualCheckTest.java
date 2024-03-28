@@ -30,7 +30,7 @@ class MethodNamedHashcodeOrEqualCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/naming/MethodNamedHashcodeOrEqualCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/naming/MethodNamedHashcodeOrEqualCheckSample.java"))
       .withCheck(new MethodNamedHashcodeOrEqualCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class MethodNamedHashcodeOrEqualCheckTest {
   @Test
   void test_incomplete_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/naming/MethodNamedHashcodeOrEqualCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/naming/MethodNamedHashcodeOrEqualCheckSample.java"))
       .withCheck(new MethodNamedHashcodeOrEqualCheck())
       .verifyNoIssues();
   }

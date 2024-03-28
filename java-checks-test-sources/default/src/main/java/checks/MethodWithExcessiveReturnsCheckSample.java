@@ -2,7 +2,7 @@ package checks;
 
 import java.util.Objects;
 
-class MethodWithExcessiveReturnsCheck {
+class MethodWithExcessiveReturnsCheckSample {
   boolean foo1() { // Compliant
    if (false) return true;
    return false;
@@ -19,7 +19,7 @@ class MethodWithExcessiveReturnsCheck {
     if (false) return;
     if (false) return;
 
-    new MethodWithExcessiveReturnsCheck() {
+    new MethodWithExcessiveReturnsCheckSample() {
       public void f() { // Noncompliant [[sc=19;ec=20;secondary=24,25,26,27,28]] {{This method has 5 returns, which is more than the 3 allowed.}}
         if (false) return;
         if (false) return;
@@ -53,11 +53,11 @@ class MethodWithExcessiveReturnsCheck {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    MethodWithExcessiveReturnsCheck other = (MethodWithExcessiveReturnsCheck) obj;
+    MethodWithExcessiveReturnsCheckSample other = (MethodWithExcessiveReturnsCheckSample) obj;
     return intMember == other.intMember && Objects.equals(stringMember, other.stringMember);
   }
 
-  public boolean equals(MethodWithExcessiveReturnsCheck obj) { // Noncompliant because this is not a proper equals method
+  public boolean equals(MethodWithExcessiveReturnsCheckSample obj) { // Noncompliant because this is not a proper equals method
     if (this == obj) {
       return true;
     }

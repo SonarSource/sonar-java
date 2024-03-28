@@ -2,7 +2,7 @@ package checks.regex;
 
 import java.util.regex.Pattern;
 
-public class MultipleWhitespaceCheck {
+public class MultipleWhitespaceCheckSample {
 
   void noncompliant() {
     Pattern.compile("Hello,   world!");       // Noncompliant [[sc=29;ec=31]] {{Replace spaces with quantifier `{3}`.}}

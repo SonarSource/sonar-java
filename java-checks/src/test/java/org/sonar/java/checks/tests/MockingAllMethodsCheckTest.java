@@ -29,7 +29,7 @@ class MockingAllMethodsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/MockingAllMethodsCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/MockingAllMethodsCheckSample.java"))
       .withCheck(new MockingAllMethodsCheck())
       .verifyIssues();
   }

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 
-class ModulusEqualityCheck {
+class ModulusEqualityCheckSample {
 
   boolean b;
 
