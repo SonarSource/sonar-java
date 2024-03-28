@@ -2,9 +2,9 @@ package checks;
 
 import java.util.function.Supplier;
 
-class ThreadAsRunnableArgumentCheck {
+class ThreadAsRunnableArgumentCheckSample {
 
-  ThreadAsRunnableArgumentCheck (int i) {
+  ThreadAsRunnableArgumentCheckSample (int i) {
   }
 
   public void foo() {
@@ -24,7 +24,7 @@ class ThreadAsRunnableArgumentCheck {
     };
     new Thread(r).start(); // Compliant
 
-    new ThreadAsRunnableArgumentCheck (0);
+    new ThreadAsRunnableArgumentCheckSample (0);
 
     MyClass m = new MyClass(myThread); // Noncompliant
     m.foo(myThread); // Noncompliant

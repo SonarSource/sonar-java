@@ -1,6 +1,6 @@
 package checks;
 
-class ToStringUsingBoxingCheck {
+class ToStringUsingBoxingCheckSample {
   private void f() {
     new Byte((byte) 12).toString(); // Noncompliant [[sc=5;ec=35]] {{Call the static method Byte.toString(...) instead of instantiating a temporary object.}}
     new Short((short) 0).toString(); // Noncompliant {{Call the static method Short.toString(...) instead of instantiating a temporary object.}}

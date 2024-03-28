@@ -1,6 +1,6 @@
 package checks;
 
-class ThreadOverridesRunCheck {
+class ThreadOverridesRunCheckSample {
   void foo(Runnable r) {
     Thread t1 = new Thread(r) { // Compliant
       void doSomething() { /* do nothing */ }

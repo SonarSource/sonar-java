@@ -2,7 +2,7 @@ package checks.tests;
 
 import org.testng.annotations.Test;
 
-public class TestStabilityCheck {
+public class TestStabilityCheckSample {
 
   @Test(successPercentage = 80, invocationCount = 10)  // Noncompliant[[sc=9;ec=31]]{{Make this test stable and remove this "successPercentage" argument.}}
   public void flakyTest() {

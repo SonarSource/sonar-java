@@ -2,7 +2,7 @@ package checks;
 
 import java.io.Serializable;
 
-class TransientFieldInNonSerializableCheck {
+class TransientFieldInNonSerializableCheckSample {
 
   class C extends Unknown {
     transient String x;

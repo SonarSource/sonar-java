@@ -3,7 +3,7 @@ package checks;
 import java.util.Random;
 import java.util.function.Consumer;
 
-class ThreadSleepCheck {
+class ThreadSleepCheckSample {
   class A {
     Object monitor;
 

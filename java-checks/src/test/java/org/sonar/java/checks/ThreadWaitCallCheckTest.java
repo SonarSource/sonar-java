@@ -29,7 +29,7 @@ class ThreadWaitCallCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ThreadWaitCallCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ThreadWaitCallCheckSample.java"))
       .withCheck(new ThreadWaitCallCheck())
       .verifyIssues();
   }

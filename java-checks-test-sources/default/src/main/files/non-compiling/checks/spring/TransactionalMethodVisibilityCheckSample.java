@@ -2,7 +2,7 @@ package checks;
 
 import org.springframework.transaction.annotation.Transactional;
 
-class TransactionalMethodVisibilityCheck {
+class TransactionalMethodVisibilityCheckSample {
   // Cannot compile because a Transactional method should be overridable
   @org.springframework.transaction.annotation.Transactional
   private void privateTransactionalMethod() {} // Noncompliant [[sc=16;ec=42]] {{Make this method "public" or remove the "@Transactional" annotation.}}

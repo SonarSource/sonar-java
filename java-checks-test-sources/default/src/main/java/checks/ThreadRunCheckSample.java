@@ -2,7 +2,7 @@ package checks;
 
 import java.io.Serializable;
 
-class ThreadRunCheck {
+class ThreadRunCheckSample {
 
   {
     Thread t = new Thread(new B());

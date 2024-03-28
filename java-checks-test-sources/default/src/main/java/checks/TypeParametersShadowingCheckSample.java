@@ -3,7 +3,7 @@ package checks;
 import java.util.List;
 import java.util.function.Function;
 
-public class TypeParametersShadowingCheck<T0> {
+public class TypeParametersShadowingCheckSample<T0> {
   class TypeParameterHidesAnotherType<T> {
     public class Inner<T> { // Noncompliant [[sc=24;ec=25;secondary=-1]] {{Rename "T" which hides a type parameter from the outer scope.}}
       //...

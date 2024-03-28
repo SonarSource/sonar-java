@@ -29,7 +29,7 @@ class TwoLocksWaitCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TwoLocksWaitCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TwoLocksWaitCheckSample.java"))
       .withCheck(new TwoLocksWaitCheck())
       .verifyIssues();
   }

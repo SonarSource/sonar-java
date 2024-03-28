@@ -1,6 +1,6 @@
 package checks;
 
-class ToStringReturningNullCheck {
+class ToStringReturningNullCheckSample {
   public String toString() {
     return "";
   }
@@ -12,19 +12,19 @@ class ToStringReturningNullCheck {
   }
 }
 
-class ToStringReturningNullCheckB {
+class ToStringReturningNullCheckSampleB {
   public String toString() {
     return null; // Noncompliant {{Return empty string instead.}}
   }  
 }
 
-class ToStringReturningNullCheckC {
+class ToStringReturningNullCheckSampleC {
   public String toString() {
     return (null); // Noncompliant [[sc=13;ec=17]]
   }
 }
 
-class ToStringReturningNullCheckD {
+class ToStringReturningNullCheckSampleD {
   protected Object clone() {
     return null; // Noncompliant [[sc=12;ec=16;quickfixes=!]] {{Return a non null object.}}
   }

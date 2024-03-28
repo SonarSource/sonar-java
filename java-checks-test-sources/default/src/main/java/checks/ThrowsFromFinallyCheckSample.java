@@ -1,6 +1,6 @@
 package checks;
 
-class ThrowsFromFinallyCheck {
+class ThrowsFromFinallyCheckSample {
 
   {
     if (foo()) {
@@ -8,7 +8,7 @@ class ThrowsFromFinallyCheck {
     }
   }
 
-  public ThrowsFromFinallyCheck() {
+  public ThrowsFromFinallyCheckSample() {
     throw new IllegalAccessError();
   }
 
@@ -40,7 +40,7 @@ class ThrowsFromFinallyCheck {
         throw new IllegalAccessError(); // Noncompliant
       }
 
-      new ThrowsFromFinallyCheck() {
+      new ThrowsFromFinallyCheckSample() {
         public void f() {
           throw new IllegalAccessError();
         }

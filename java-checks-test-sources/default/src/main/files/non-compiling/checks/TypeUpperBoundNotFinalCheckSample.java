@@ -1,7 +1,7 @@
 package checks;
 
 
-public class TypeUpperBoundNotFinalCheck {
+public class TypeUpperBoundNotFinalCheckSample {
   public static class FinalBound<T extends FinalClass> { } // Noncompliant
 
   public static class UnknownBound<T extends Unknown> { } // Compliant

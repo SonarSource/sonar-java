@@ -1,6 +1,6 @@
 package checks;
 
-class ThreadOverridesRunCheck {
+class ThreadOverridesRunCheckSample {
 
 class A extends Thread{ // Noncompliant [[sc=7;ec=8]] {{Don't extend "Thread", since the "run" method is not overridden.}}
   int run;

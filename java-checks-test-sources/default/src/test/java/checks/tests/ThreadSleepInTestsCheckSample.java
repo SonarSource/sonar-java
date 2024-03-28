@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.sleep;
 
-public class ThreadSleepInTestsCheck {
+public class ThreadSleepInTestsCheckSample {
 
   @Test
   public void test() throws InterruptedException {

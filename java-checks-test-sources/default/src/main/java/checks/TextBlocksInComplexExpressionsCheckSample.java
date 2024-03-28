@@ -3,7 +3,7 @@ package checks;
 import java.util.List;
 import java.util.function.Supplier;
 
-class TextBlocksInComplexExpressionsCheck {
+class TextBlocksInComplexExpressionsCheckSample {
 
   // Compliant
   Supplier<String> supplier = () -> """

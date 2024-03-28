@@ -4,7 +4,7 @@ import java.util.concurrent.Future;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 
-abstract class TransactionalMethodVisibilityCheck {
+abstract class TransactionalMethodVisibilityCheckSample {
   
   public interface C {
     @Transactional

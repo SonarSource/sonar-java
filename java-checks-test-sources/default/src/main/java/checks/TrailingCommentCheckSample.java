@@ -1,6 +1,6 @@
 package checks;
 
-class TrailingCommentCheck {
+class TrailingCommentCheckSample {
   int i = 0,
     j = 0, // Noncompliant {{Move this trailing comment on the previous empty line.}}
     k = 0;
