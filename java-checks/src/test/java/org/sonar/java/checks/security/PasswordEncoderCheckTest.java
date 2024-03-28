@@ -32,11 +32,14 @@ class PasswordEncoderCheckTest {
       .onFile(mainCodeSourcesPath("checks/security/PasswordEncoder.java"))
       .withCheck(new PasswordEncoderCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_no_semantics() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/security/PasswordEncoder.java"))
       .withCheck(new PasswordEncoderCheck())
       .withoutSemantic()
       .verifyNoIssues();
   }
-
 }
