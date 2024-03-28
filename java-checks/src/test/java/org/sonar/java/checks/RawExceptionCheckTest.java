@@ -30,7 +30,7 @@ class RawExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RawExceptionCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RawExceptionCheckSample.java"))
       .withCheck(new RawExceptionCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class RawExceptionCheckTest {
   @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/RawExceptionCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/RawExceptionCheckSample.java"))
       .withCheck(new RawExceptionCheck())
       .verifyIssues();
   }

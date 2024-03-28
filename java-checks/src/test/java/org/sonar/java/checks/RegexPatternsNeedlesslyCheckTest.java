@@ -28,7 +28,7 @@ class RegexPatternsNeedlesslyCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RegexPatternsNeedlesslyCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RegexPatternsNeedlesslyCheckSample.java"))
       .withCheck(new RegexPatternsNeedlesslyCheck())
       .verifyIssues();
   }

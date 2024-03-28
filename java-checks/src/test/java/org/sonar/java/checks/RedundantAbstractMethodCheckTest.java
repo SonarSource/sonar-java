@@ -29,7 +29,7 @@ class RedundantAbstractMethodCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RedundantAbstractMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RedundantAbstractMethodCheckSample.java"))
       .withCheck(new RedundantAbstractMethodCheck())
       .verifyIssues();
   }
@@ -37,13 +37,13 @@ class RedundantAbstractMethodCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RedundantAbstractMethodCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RedundantAbstractMethodCheckSample.java"))
       .withCheck(new RedundantAbstractMethodCheck())
       .withoutSemantic()
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/RedundantAbstractMethodCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/RedundantAbstractMethodCheckSample.java"))
       .withCheck(new RedundantAbstractMethodCheck())
       .withoutSemantic()
       .verifyIssues();

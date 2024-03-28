@@ -29,7 +29,7 @@ class RegexLookaheadCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/RegexLookaheadCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexLookaheadCheckSample.java"))
       .withCheck(new RegexLookaheadCheck())
       .verifyIssues();
   }

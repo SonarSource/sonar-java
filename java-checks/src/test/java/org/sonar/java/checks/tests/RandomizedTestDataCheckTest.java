@@ -29,7 +29,7 @@ class RandomizedTestDataCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/RandomizedTestDataCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/RandomizedTestDataCheckSample.java"))
       .withCheck(new RandomizedTestDataCheck())
       .verifyIssues();
   }
