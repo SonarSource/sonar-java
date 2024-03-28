@@ -1,21 +1,14 @@
 <gradleEnterprise>
   <projectId>SonarJava</projectId>
-  <server>
-    <url>https://ae5480415855641419524dee8eb44d76-f3fa1c0f09cfc0bc.elb.eu-west-1.amazonaws.com</url>
-    <allowUntrusted>true</allowUntrusted>
-    <accessKey>${env.GRADLE_ENTERPRISE_KEY}</accessKey>
-  </server>
   <buildCache>
+    <local>
+      <enabled>#{env['CIRRUS_CI'] == null}</enabled>
+    </local>
     <remote>
-      <enabled>#{env['CIRRUS_CRON'] != "nightly"}</enabled>
-      <storeEnabled>true</storeEnabled>
+      <enabled>false</enabled>
     </remote>
-    <requireClean>false</requireClean>
   </buildCache>
   <buildScan>
-    <backgroundBuildScanUpload>#{env['CIRRUS_CI'] == null}</backgroundBuildScanUpload>
-    <capture>
-      <goalInputFiles>true</goalInputFiles>
-    </capture>
+    <publish>ON_DEMAND</publish>
   </buildScan>
 </gradleEnterprise>
