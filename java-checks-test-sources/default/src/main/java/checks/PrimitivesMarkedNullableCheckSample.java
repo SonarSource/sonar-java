@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 @interface MyCheckForNull {
 }
 
-abstract class PrimitivesMarkedNullableCheck {
+abstract class PrimitivesMarkedNullableCheckSample {
 
   @CheckForNull
   abstract int getInt0(); // Noncompliant [[sc=12;ec=15;secondary=-1]] {{"@CheckForNull" annotation should not be used on primitive types}}
@@ -62,7 +62,7 @@ abstract class PrimitivesMarkedNullableCheck {
 
   @CheckForNull
   Object containsAnonymousClass() {
-    return new PrimitivesMarkedNullableCheckParent() {
+    return new PrimitivesMarkedNullableCheckSampleParent() {
       int getInt0() {
         return 0;
       }
@@ -71,7 +71,7 @@ abstract class PrimitivesMarkedNullableCheck {
 
 }
 
-abstract class PrimitivesMarkedNullableCheckChild extends PrimitivesMarkedNullableCheckParent {
+abstract class PrimitivesMarkedNullableCheckSampleChild extends PrimitivesMarkedNullableCheckSampleParent {
 
   abstract int getInt0(); // Compliant, not directly marked as CheckForNull, an issue will be on the parent if needed.
 

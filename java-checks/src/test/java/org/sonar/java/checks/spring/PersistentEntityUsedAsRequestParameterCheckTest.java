@@ -29,11 +29,11 @@ class PersistentEntityUsedAsRequestParameterCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/PersistentEntityUsedAsRequestParameterCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/PersistentEntityUsedAsRequestParameterCheckSample.java"))
       .withCheck(new PersistentEntityUsedAsRequestParameterCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/PersistentEntityUsedAsRequestParameterCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/PersistentEntityUsedAsRequestParameterCheckSample.java"))
       .withCheck(new PersistentEntityUsedAsRequestParameterCheck())
       .withoutSemantic()
       .verifyNoIssues();

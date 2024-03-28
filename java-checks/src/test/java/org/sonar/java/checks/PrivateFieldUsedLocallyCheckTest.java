@@ -31,7 +31,7 @@ class PrivateFieldUsedLocallyCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/PrivateFieldUsedLocallyCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/PrivateFieldUsedLocallyCheckSample.java"))
       .withCheck(new PrivateFieldUsedLocallyCheck())
       .verifyIssues();
   }
@@ -39,7 +39,7 @@ class PrivateFieldUsedLocallyCheckTest {
   @Test
   void test_quick_fixes() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/PrivateFieldUsedLocallyCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PrivateFieldUsedLocallyCheckSample.java"))
       .withCheck(new PrivateFieldUsedLocallyCheck())
       .withQuickFixes()
       .verifyIssues();

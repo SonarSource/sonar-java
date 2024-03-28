@@ -30,7 +30,7 @@ class PreparedStatementAndResultSetCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PreparedStatementAndResultSetCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PreparedStatementAndResultSetCheckSample.java"))
       .withCheck(new PreparedStatementAndResultSetCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class PreparedStatementAndResultSetCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/PreparedStatementAndResultSetCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/PreparedStatementAndResultSetCheckSample.java"))
       .withCheck(new PreparedStatementAndResultSetCheck())
       .verifyNoIssues();
   }

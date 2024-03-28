@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class PublicStaticMutableMembersCheck {
+public class PublicStaticMutableMembersCheckSample {
   public static final List UNKNOWN_LIST = unknownMethod("a"); // Compliant
   public static final List noInitializer;
   // we don't know the type of foo

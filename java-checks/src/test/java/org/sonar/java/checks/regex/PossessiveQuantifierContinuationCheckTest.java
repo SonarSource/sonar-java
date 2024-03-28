@@ -29,7 +29,7 @@ class PossessiveQuantifierContinuationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/PossessiveQuantifierContinuationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/PossessiveQuantifierContinuationCheckSample.java"))
       .withCheck(new PossessiveQuantifierContinuationCheck())
       .verifyIssues();
   }

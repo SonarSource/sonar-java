@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class ParameterizedTestCheck {
+public class ParameterizedTestCheckSample {
   String setup = "a";
   @Test
   void testSum11() {  // Noncompliant [[sc=8;ec=17;secondary=21,21,21,25,33]] {{Replace these 3 tests with a single Parameterized one.}}
@@ -350,7 +350,7 @@ public class ParameterizedTestCheck {
 
 }
 
-abstract class ParameterizedTestCheckOneCandidate {
+abstract class ParameterizedTestCheckSampleOneCandidate {
   @Test
   void testSum11() {  // Compliant, only two methods are candidates, others are not.
     assertEquals(Integer.sum(1, 1), 2);
@@ -385,7 +385,7 @@ abstract class ParameterizedTestCheckOneCandidate {
   abstract void abstractTest();
 }
 
-class ParameterizedTestCheckNotSameLiteralTypes {
+class ParameterizedTestCheckSampleNotSameLiteralTypes {
   @Test
   void test1() { // Compliant "compute(1)" and "compute(2.0f)" is not related to the same method
     setup();

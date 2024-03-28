@@ -2,7 +2,7 @@ package checks;
 
 import javax.annotation.CheckForNull;
 
-abstract class PrimitivesMarkedNullableCheckParent {
+abstract class PrimitivesMarkedNullableCheckSampleParent {
 
   @CheckForNull
   abstract int getInt0(); // Noncompliant

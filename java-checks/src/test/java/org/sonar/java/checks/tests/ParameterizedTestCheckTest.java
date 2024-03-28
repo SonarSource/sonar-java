@@ -29,7 +29,7 @@ class ParameterizedTestCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/ParameterizedTestCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/ParameterizedTestCheckSample.java"))
       .withCheck(new ParameterizedTestCheck())
       .verifyIssues();
   }

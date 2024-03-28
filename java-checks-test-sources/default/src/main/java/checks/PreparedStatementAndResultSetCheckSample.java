@@ -10,7 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-abstract class PreparedStatementAndResultSetCheck {
+abstract class PreparedStatementAndResultSetCheckSample {
 
   private static final int INDEX_42 = 42;
   private static final int INDEX_1 = 1;

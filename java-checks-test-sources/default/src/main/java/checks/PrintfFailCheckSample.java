@@ -10,7 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.stream.IntStream;
 
-public class PrintfFailCheck {
+public class PrintfFailCheckSample {
   void foo(Calendar c) throws java.io.IOException {
     Object myObject = new Object();
     Object[] objs = new Object[]{14};

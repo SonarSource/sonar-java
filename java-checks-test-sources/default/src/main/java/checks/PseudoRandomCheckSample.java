@@ -10,7 +10,7 @@ import org.apache.commons.lang.RandomStringUtils;
 
 import static org.apache.commons.lang.RandomStringUtils.random;
 
-class PseudoRandomCheck {
+class PseudoRandomCheckSample {
   void fun() {
     int i = nextInt();
 

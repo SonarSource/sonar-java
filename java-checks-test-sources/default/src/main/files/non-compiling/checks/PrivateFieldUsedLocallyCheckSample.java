@@ -304,7 +304,7 @@ enum A {
   }
 }
 
-record PrivateFieldUsedLocallyCheckRecord() {
+record PrivateFieldUsedLocallyCheckSampleRecord() {
   static String s = OtherClass.f + "";
   static class OtherClass {
     private static int f = 12;

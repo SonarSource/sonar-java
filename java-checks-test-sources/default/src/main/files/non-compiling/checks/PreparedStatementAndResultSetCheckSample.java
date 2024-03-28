@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-abstract class PreparedStatementAndResultSetCheck extends UnknownClassFromSamePackage {
+abstract class PreparedStatementAndResultSetCheckSample extends UnknownClassFromSamePackage {
   abstract PreparedStatement getPreparedStatement(String s);
   void unknownQuery() throws SQLException {
     PreparedStatement ps = getPreparedStatement(UNKNOWN_QUERY_FROM_UNKNOWN_PARENT); // Compliant

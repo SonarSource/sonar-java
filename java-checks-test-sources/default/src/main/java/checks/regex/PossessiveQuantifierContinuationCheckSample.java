@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.compile;
 
-public class PossessiveQuantifierContinuationCheck {
+public class PossessiveQuantifierContinuationCheckSample {
 
   public void f(Pattern pattern) {
     f(compile("a+abc"));

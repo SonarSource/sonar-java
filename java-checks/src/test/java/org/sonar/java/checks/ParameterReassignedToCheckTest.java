@@ -29,7 +29,7 @@ class ParameterReassignedToCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/ParameterReassignedToCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/ParameterReassignedToCheckSample.java"))
       .withCheck(new ParameterReassignedToCheck())
       .verifyIssues();
   }

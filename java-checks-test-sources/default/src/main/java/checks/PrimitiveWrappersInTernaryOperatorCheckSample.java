@@ -1,6 +1,6 @@
 package checks;
 
-class PrimitiveWrappersInTernaryOperatorCheck {
+class PrimitiveWrappersInTernaryOperatorCheckSample {
   void foo() {
     long l = 123456789123456789L;
     Integer i1 = 123456789;

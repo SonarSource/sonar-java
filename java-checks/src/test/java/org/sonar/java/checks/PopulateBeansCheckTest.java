@@ -29,7 +29,7 @@ class PopulateBeansCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PopulateBeansCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PopulateBeansCheckSample.java"))
       .withCheck(new PopulateBeansCheck())
       .verifyIssues();
   }
