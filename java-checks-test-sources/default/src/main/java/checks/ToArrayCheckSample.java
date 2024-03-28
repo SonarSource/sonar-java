@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-class ToArrayCheck<T> {
+class ToArrayCheckSample<T> {
   <E extends T> Object[] foo(List<String> listOfString, List<String> listOfNumber, Set rawSet, Collection<E> col) {
     String[] a1 = (String[]) listOfString.toArray(); // Noncompliant [[sc=30;ec=52;quickfixes=qf1]] {{Pass "new String[0]" as argument to "toArray".}}
     // fix@qf1 {{Pass "new String[0]" as argument}}

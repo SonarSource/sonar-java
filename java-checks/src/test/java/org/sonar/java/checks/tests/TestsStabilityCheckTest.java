@@ -29,7 +29,7 @@ class TestsStabilityCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/TestStabilityCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/TestStabilityCheckSample.java"))
       .withCheck(new TestsStabilityCheck())
       .verifyIssues();
   }

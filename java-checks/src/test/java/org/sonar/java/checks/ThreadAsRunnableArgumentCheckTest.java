@@ -29,7 +29,7 @@ class ThreadAsRunnableArgumentCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ThreadAsRunnableArgumentCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ThreadAsRunnableArgumentCheckSample.java"))
       .withCheck(new ThreadAsRunnableArgumentCheck())
       .verifyIssues();
   }

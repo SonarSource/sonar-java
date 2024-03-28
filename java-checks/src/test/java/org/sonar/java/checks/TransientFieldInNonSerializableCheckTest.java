@@ -30,7 +30,7 @@ class TransientFieldInNonSerializableCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TransientFieldInNonSerializableCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TransientFieldInNonSerializableCheckSample.java"))
       .withCheck(new TransientFieldInNonSerializableCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class TransientFieldInNonSerializableCheckTest {
   @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/TransientFieldInNonSerializableCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/TransientFieldInNonSerializableCheckSample.java"))
       .withCheck(new TransientFieldInNonSerializableCheck())
       .verifyNoIssues();
   }

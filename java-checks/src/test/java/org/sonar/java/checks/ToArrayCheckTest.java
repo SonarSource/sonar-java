@@ -29,7 +29,7 @@ class ToArrayCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/ToArrayCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ToArrayCheckSample.java"))
       .withCheck(new ToArrayCheck())
       .withQuickFixes()
       .verifyIssues();

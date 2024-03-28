@@ -1,6 +1,6 @@
 package checks.tests;
 
-public class TestAnnotationWithExpectedExceptionCheck {
+public class TestAnnotationWithExpectedExceptionCheckSample {
   @org.junit.Test(expected = ArrayIndexOutOfBoundsException.class) // Compliant, no assertions used
   public void testException() {
     throwingMethod();

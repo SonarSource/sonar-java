@@ -29,7 +29,7 @@ class ThreadSleepCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ThreadSleepCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ThreadSleepCheckSample.java"))
       .withCheck(new ThreadSleepCheck())
       .verifyIssues();
   }

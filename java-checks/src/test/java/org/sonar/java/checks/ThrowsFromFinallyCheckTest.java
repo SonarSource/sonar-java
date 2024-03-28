@@ -29,7 +29,7 @@ class ThrowsFromFinallyCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ThrowsFromFinallyCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ThrowsFromFinallyCheckSample.java"))
       .withCheck(new ThrowsFromFinallyCheck())
       .verifyIssues();
   }

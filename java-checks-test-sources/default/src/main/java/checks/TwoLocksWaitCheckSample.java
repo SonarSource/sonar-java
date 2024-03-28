@@ -1,10 +1,10 @@
 package checks;
 
-class TwoLocksWaitCheck {
+class TwoLocksWaitCheckSample {
   Object mon1;
   Object mon2;
 
-  public TwoLocksWaitCheck() throws Exception {
+  public TwoLocksWaitCheckSample() throws Exception {
     synchronized (this.mon1) {
       System.out.println("Hello");
       synchronized (this.mon2) {

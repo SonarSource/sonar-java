@@ -29,7 +29,7 @@ class TestAnnotationWithExpectedExceptionCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/TestAnnotationWithExpectedExceptionCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/TestAnnotationWithExpectedExceptionCheckSample.java"))
       .withCheck(new TestAnnotationWithExpectedExceptionCheck())
       .verifyIssues();
   }

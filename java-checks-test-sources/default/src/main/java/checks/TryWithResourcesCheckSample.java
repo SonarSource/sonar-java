@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-class TryWithResourcesCheck {
+class TryWithResourcesCheckSample {
   String foo(String fileName) {
     FileReader fr = null;
     BufferedReader br = null;

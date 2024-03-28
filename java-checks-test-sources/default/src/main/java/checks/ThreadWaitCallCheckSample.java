@@ -3,7 +3,7 @@ package checks;
 import java.lang.Override;
 import java.lang.Thread;
 
-class ThreadWaitCallCheck {
+class ThreadWaitCallCheckSample {
 
   void foo() throws InterruptedException {
     new A().wait();

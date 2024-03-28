@@ -12,8 +12,8 @@ import io.micronaut.http.annotation.Trace;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
-public class TooManyParametersCheck {
-  TooManyParametersCheck(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // Noncompliant {{Constructor has 8 parameters, which is greater than 7 authorized.}}
+public class TooManyParametersCheckSample {
+  TooManyParametersCheckSample(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // Noncompliant {{Constructor has 8 parameters, which is greater than 7 authorized.}}
   }
 
   void method(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // Noncompliant [[sc=8;ec=14]] {{Method has 8 parameters, which is greater than 7 authorized.}}
@@ -27,7 +27,7 @@ public class TooManyParametersCheck {
   void customAnnotatedMethod(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) {} // Noncompliant
 }
 
-class TooManyParametersExtended extends TooManyParametersCheck {
+class TooManyParametersExtended extends TooManyParametersCheckSample {
   TooManyParametersExtended(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) {
     super(p1, p2, p3, p4, p5, p6, p7, p8);
   }
