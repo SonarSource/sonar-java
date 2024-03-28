@@ -1,6 +1,6 @@
 package checks;
 
-class NPEThrowCheck {
+class NPEThrowCheckSample {
   void foo() throws NullPointerException { // Noncompliant [[sc=21;ec=41]] {{Throw some other exception here, such as "IllegalArgumentException".}}
   }
   void bar() {

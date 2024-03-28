@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.DefaultLocation;
  * Note: S4449 is targeting point 3 aswell, but only when it is not directly annotated. The current rule will therefore only report an issue if
  * the parameter is directly annotated nonnull.
  */
-class NonNullSetToNullCheck {
+class NonNullSetToNullCheckSample {
 
   @Nonnull
   private String primary;
@@ -38,7 +38,7 @@ class NonNullSetToNullCheck {
   private static Integer STATIC_FIELD_NO_ANNOTATION;
 
   // ============ 1.1 Fields not initialized in constructor ============
-  public NonNullSetToNullCheck(String color) {
+  public NonNullSetToNullCheckSample(String color) {
     if (color != null) {
       secondary = null;
     }
@@ -47,14 +47,14 @@ class NonNullSetToNullCheck {
     otherNonnullField = "";
   }
 
-  public NonNullSetToNullCheck(@Nonnull String color, String other) {
+  public NonNullSetToNullCheckSample(@Nonnull String color, String other) {
     primary = color;
     secondary = other;
     testObject = new Object();
     otherNonnullField = "";
   }
 
-  public NonNullSetToNullCheck() { // Noncompliant [[sc=10;ec=31]] {{"primary" is marked "@Nonnull" but is not initialized in this constructor.}}
+  public NonNullSetToNullCheckSample() { // Noncompliant [[sc=10;ec=37]] {{"primary" is marked "@Nonnull" but is not initialized in this constructor.}}
     return; // Just for coverage
   }
 
@@ -166,22 +166,22 @@ class NonNullSetToNullCheck {
 
   // ============ 3. Testing nullable value passed as argument ============
   public static void initialize1() {
-    NonNullSetToNullCheck instance =
-      new NonNullSetToNullCheck(null, "Blue");  // Noncompliant [[sc=7;ec=46]] {{Parameter 1 to this constructor is marked "@Nonnull" but null could be passed.}}
+    NonNullSetToNullCheckSample instance =
+      new NonNullSetToNullCheckSample(null, "Blue");  // Noncompliant [[sc=7;ec=52]] {{Parameter 1 to this constructor is marked "@Nonnull" but null could be passed.}}
   }
 
   public static void initialize2() {
-    NonNullSetToNullCheck instance = new NonNullSetToNullCheck("Black", null);
+    NonNullSetToNullCheckSample instance = new NonNullSetToNullCheckSample("Black", null);
     instance.setColors(null, "Green");  // Noncompliant {{Parameter 1 to this call is marked "@Nonnull" but null could be passed.}}
   }
 
   public static void initialize3() {
-    NonNullSetToNullCheck instance = new NonNullSetToNullCheck("Red", null);
+    NonNullSetToNullCheckSample instance = new NonNullSetToNullCheckSample("Red", null);
     instance.setSecondary(null);  // Noncompliant {{Parameter 1 to this call is marked "@Nonnull" but null could be passed.}}
   }
 
   public static void initiliaze4() {
-    NonNullSetToNullCheck instance = new NonNullSetToNullCheck("Red", null);
+    NonNullSetToNullCheckSample instance = new NonNullSetToNullCheckSample("Red", null);
     instance.setColors("Cyan", "Blue");
     getColorMix();
     doSomething();
@@ -190,8 +190,8 @@ class NonNullSetToNullCheck {
   }
 
   public static void initialize5() {
-    NonNullSetToNullCheck instance =
-      new NonNullSetToNullCheck(checkForNull(), "Blue");  // Noncompliant
+    NonNullSetToNullCheckSample instance =
+      new NonNullSetToNullCheckSample(checkForNull(), "Blue");  // Noncompliant
   }
 
   // ============ 4. Local variable assigned nullable value ============
@@ -257,7 +257,7 @@ class Coverage {
 }
 
 // ============ Other test cases ============
-class NonNullSetToNullCheckFieldWithInitializer {
+class NonNullSetToNullCheckSampleFieldWithInitializer {
   @Nonnull
   private static final Integer STATIC_FIELD = null; // Compliant as static fields are not reported
   private static final Integer STATIC_FIELD_NO_ANNOTATION = null;
@@ -266,7 +266,7 @@ class NonNullSetToNullCheckFieldWithInitializer {
   @Nonnull
   private Integer val2 = calculate();
 
-  public NonNullSetToNullCheckFieldWithInitializer() {
+  public NonNullSetToNullCheckSampleFieldWithInitializer() {
   } // Compliant, the field has an initializer
 
   @Nonnull
@@ -275,23 +275,23 @@ class NonNullSetToNullCheckFieldWithInitializer {
   }
 }
 
-class NonNullSetToNullCheckCallingOtherConstructor {
+class NonNullSetToNullCheckSampleCallingOtherConstructor {
   @Nonnull
   private Integer value;
 
-  NonNullSetToNullCheckCallingOtherConstructor(String s) { // Compliant - calls other constructor
+  NonNullSetToNullCheckSampleCallingOtherConstructor(String s) { // Compliant - calls other constructor
     this(Integer.valueOf(s));
   }
 
-  NonNullSetToNullCheckCallingOtherConstructor(Object o) { // Noncompliant - calls super constructor but do not initialize value
+  NonNullSetToNullCheckSampleCallingOtherConstructor(Object o) { // Noncompliant - calls super constructor but do not initialize value
     super();
   }
 
-  NonNullSetToNullCheckCallingOtherConstructor(String s, Object o) { // Noncompliant - calls other method
+  NonNullSetToNullCheckSampleCallingOtherConstructor(String s, Object o) { // Noncompliant - calls other method
     this.foo(o);
   }
 
-  NonNullSetToNullCheckCallingOtherConstructor(Integer i) {
+  NonNullSetToNullCheckSampleCallingOtherConstructor(Integer i) {
     this.value = i;
   }
 
@@ -299,27 +299,27 @@ class NonNullSetToNullCheckCallingOtherConstructor {
   }
 }
 
-class NonNullSetToNullCheckExitWithException {
+class NonNullSetToNullCheckSampleExitWithException {
 
   @Nonnull
   private Object self;
 
-  public NonNullSetToNullCheckExitWithException() {
+  public NonNullSetToNullCheckSampleExitWithException() {
     self = getSelf(); // Compliant
   }
 
-  public NonNullSetToNullCheckExitWithException(int i) throws NonNullSetToNullCheckMyException {
+  public NonNullSetToNullCheckSampleExitWithException(int i) throws NonNullSetToNullCheckSampleMyException {
     self = getOtherSelf(); // Compliant
   }
 
-  public NonNullSetToNullCheckExitWithException(@Nonnull String i) {
+  public NonNullSetToNullCheckSampleExitWithException(@Nonnull String i) {
     if (i == null) {
       throw new RuntimeException(); // method exit on exception, OK
     }
     self = i;
   }
 
-  public NonNullSetToNullCheckExitWithException(String x, String y) { // Compliant
+  public NonNullSetToNullCheckSampleExitWithException(String x, String y) { // Compliant
     try {
       Integer.valueOf(x);
     } catch (NumberFormatException e) {
@@ -334,12 +334,12 @@ class NonNullSetToNullCheckExitWithException {
   }
 
   @Nonnull
-  public Object getOtherSelf() throws NonNullSetToNullCheckMyException {
+  public Object getOtherSelf() throws NonNullSetToNullCheckSampleMyException {
     return self;
   }
 }
 
-class NonNullSetToNullCheckMyException extends Exception {
+class NonNullSetToNullCheckSampleMyException extends Exception {
 }
 
 abstract class ExcludedMethods {

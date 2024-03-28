@@ -28,7 +28,7 @@ class NestedTernaryOperatorsCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/NestedTernaryOperatorsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NestedTernaryOperatorsCheckSample.java"))
       .withCheck(new NestedTernaryOperatorsCheck())
       .verifyIssues();
   }

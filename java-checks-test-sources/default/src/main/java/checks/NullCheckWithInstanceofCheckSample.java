@@ -3,7 +3,7 @@ package checks;
 import java.util.Map;
 import java.util.Map.Entry;
 
-class NullCheckWithInstanceofCheck {
+class NullCheckWithInstanceofCheckSample {
   private Integer a = 0;
   Object c = new A();
 
@@ -28,33 +28,33 @@ class NullCheckWithInstanceofCheck {
     }
 
     // coverage
-    NullCheckWithInstanceofCheck alpha = new NullCheckWithInstanceofCheck();
-    if (alpha.a != null && !(alpha instanceof NullCheckWithInstanceofCheck)) { // Compliant
+    NullCheckWithInstanceofCheckSample alpha = new NullCheckWithInstanceofCheckSample();
+    if (alpha.a != null && !(alpha instanceof NullCheckWithInstanceofCheckSample)) { // Compliant
     }
-    if (alpha.a == null && (alpha instanceof NullCheckWithInstanceofCheck)) { // Compliant
+    if (alpha.a == null && (alpha instanceof NullCheckWithInstanceofCheckSample)) { // Compliant
     }
-    if (alpha.a == 1 && (alpha instanceof NullCheckWithInstanceofCheck)) { // Compliant
+    if (alpha.a == 1 && (alpha instanceof NullCheckWithInstanceofCheckSample)) { // Compliant
     }
   }
 
-  void foo2(NullCheckWithInstanceofCheck a) {
-    if (a.c == null || a.c instanceof NullCheckWithInstanceofCheck) { // Compliant
+  void foo2(NullCheckWithInstanceofCheckSample a) {
+    if (a.c == null || a.c instanceof NullCheckWithInstanceofCheckSample) { // Compliant
     } else if (a.c != null) { // Compliant
-    } else if (a != null && a.c instanceof NullCheckWithInstanceofCheck) { // Compliant
-    } else if (null != a && a instanceof NullCheckWithInstanceofCheck) { // Noncompliant
-    } else if (null == a || !(a instanceof NullCheckWithInstanceofCheck)) { // Noncompliant [[sc=16;ec=25]] {{Remove this unnecessary null check; "instanceof" returns false for nulls.}}
-    } else if (a.c != null && a.c instanceof NullCheckWithInstanceofCheck) { // Noncompliant
+    } else if (a != null && a.c instanceof NullCheckWithInstanceofCheckSample) { // Compliant
+    } else if (null != a && a instanceof NullCheckWithInstanceofCheckSample) { // Noncompliant
+    } else if (null == a || !(a instanceof NullCheckWithInstanceofCheckSample)) { // Noncompliant [[sc=16;ec=25]] {{Remove this unnecessary null check; "instanceof" returns false for nulls.}}
+    } else if (a.c != null && a.c instanceof NullCheckWithInstanceofCheckSample) { // Noncompliant
     }
-    while (a != null && a instanceof NullCheckWithInstanceofCheck) { // Noncompliant
+    while (a != null && a instanceof NullCheckWithInstanceofCheckSample) { // Noncompliant
       // ...
     }
   }
 
-  void foo3(NullCheckWithInstanceofCheck a) {
+  void foo3(NullCheckWithInstanceofCheckSample a) {
     new Thread() {
       @Override
       public void run() {
-        if (a != null && a instanceof NullCheckWithInstanceofCheck) { // Noncompliant
+        if (a != null && a instanceof NullCheckWithInstanceofCheckSample) { // Noncompliant
           System.out.println("blah");
         }
       }

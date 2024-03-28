@@ -28,7 +28,7 @@ class NestedSwitchCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/NestedSwitchStatementCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/NestedSwitchStatementCheckSample.java"))
       .withCheck(new NestedSwitchCheck())
       .verifyIssues();
   }
@@ -36,7 +36,7 @@ class NestedSwitchCheckTest {
   @Test
   void test_switch_expressions() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/NestedSwitchExpressionCheck.java"))
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/NestedSwitchExpressionCheckSample.java"))
       .withCheck(new NestedSwitchCheck())
       .withJavaVersion(14)
       .verifyIssues();

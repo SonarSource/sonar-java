@@ -2,7 +2,7 @@ package checks;
 
 import java.util.List;
 
-class NestedSwitchStatementCheck {
+class NestedSwitchStatementCheckSample {
   void foo() {
     int myVar = 0;
     switch (myVar) {  // Compliant
@@ -56,7 +56,7 @@ class NestedSwitchStatementCheck {
   }
 }
 
-class NestedSwitchStatementCheckB {
+class NestedSwitchStatementCheckSampleB {
   List<Integer> list;
   void foo2() {
     int i = 0;
@@ -105,7 +105,7 @@ class NestedSwitchStatementCheckB {
     switch (i) {
       case 0:
       case 42:
-        class NestedSwitchStatementCheckC { // nested class
+        class NestedSwitchStatementCheckSampleC { // nested class
           void bar(int j) {
             switch (j) { // Compliant
               case 42:
@@ -118,7 +118,7 @@ class NestedSwitchStatementCheckB {
             }
           }
         }
-        new NestedSwitchStatementCheckC().bar(i);
+        new NestedSwitchStatementCheckSampleC().bar(i);
         break;
       default:
         break;

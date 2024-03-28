@@ -1,6 +1,6 @@
 package checks;
 
-class NonStaticClassInitializerCheck {
+class NonStaticClassInitializerCheckSample {
   static {
   }
 
@@ -8,7 +8,7 @@ class NonStaticClassInitializerCheck {
     System.out.println();
   }
 
-  public NonStaticClassInitializerCheck() {
+  public NonStaticClassInitializerCheckSample() {
     System.out.println();
 
     new Runnable() {

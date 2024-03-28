@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class NoWayOutLoopCheck {
+public class NoWayOutLoopCheckSample {
 
   private boolean loopExit;
   private Object a;
@@ -254,7 +254,7 @@ public class NoWayOutLoopCheck {
   }
 }
 
-class NoWayOutLoopCheckUnsupportedYet {
+class NoWayOutLoopCheckSampleUnsupportedYet {
 
   void unreachableCount() {
     for (int i = 0; i < 10; i--) { // Noncompliant {{Correct this loop's end condition.}}
@@ -267,33 +267,33 @@ class NoWayOutLoopCheckUnsupportedYet {
 
 }
 
-class NoWayOutLoopCheckCoverage {
+class NoWayOutLoopCheckSampleCoverage {
 
   int n;
 
   static void otherPlusAssignment() {
-    NoWayOutLoopCheckCoverage cov = new NoWayOutLoopCheckCoverage();
+    NoWayOutLoopCheckSampleCoverage cov = new NoWayOutLoopCheckSampleCoverage();
     cov.n = 0;
     for (int i = 1; i < 10; i += 1, cov.n += 1) {
     }
   }
 
   static void otherMinusAssignment() {
-    NoWayOutLoopCheckCoverage cov = new NoWayOutLoopCheckCoverage();
+    NoWayOutLoopCheckSampleCoverage cov = new NoWayOutLoopCheckSampleCoverage();
     cov.n = 0;
     for (int i = 1; i < 10; i += 1, cov.n -= 1) {
     }
   }
 
   static void otherIncrement() {
-    NoWayOutLoopCheckCoverage cov = new NoWayOutLoopCheckCoverage();
+    NoWayOutLoopCheckSampleCoverage cov = new NoWayOutLoopCheckSampleCoverage();
     cov.n = 0;
     for (int i = 1; i < 10; ++i, cov.n++) {
     }
   }
 
   static void otherDecrement() {
-    NoWayOutLoopCheckCoverage cov = new NoWayOutLoopCheckCoverage();
+    NoWayOutLoopCheckSampleCoverage cov = new NoWayOutLoopCheckSampleCoverage();
     cov.n = 0;
     for (int i = 1; i < 10; ++i, cov.n--) {
       cov.n = -cov.n;
@@ -328,7 +328,7 @@ class NoWayOutLoopCheckCoverage {
 class NoWayOutLoopThread extends Thread {
   @Override
   public void run() {
-    NoWayOutLoopCheck loop = new NoWayOutLoopCheck();
+    NoWayOutLoopCheckSample loop = new NoWayOutLoopCheckSample();
     for (;;) {
       loop.doSomething();
     }

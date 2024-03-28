@@ -3,7 +3,7 @@ package checks;
 import java.io.Closeable;
 import java.io.IOException;
 
-class NestedTryCatchCheck {
+class NestedTryCatchCheckSample {
   public void f() throws Exception {
     try {
     } finally {

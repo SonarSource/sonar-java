@@ -1,6 +1,6 @@
 package checks;
 
-class NestedSwitchExpressionCheck {
+class NestedSwitchExpressionCheckSample {
   void foo() {
     int myVar = 0;
     int i = switch (myVar) {  // Compliant
