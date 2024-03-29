@@ -30,7 +30,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModu
 
 class WeakSSLContextCheckTest {
 
-  public static final List<File> SPRING_3_2_CLASSPATH = TestClasspathUtils.loadFromFile(Constants.SPRING_3_2_CLASSPATH);
+  private static final List<File> SPRING_3_2_CLASSPATH = TestClasspathUtils.loadFromFile(Constants.SPRING_3_2_CLASSPATH);
 
   @Test
   void test() {
