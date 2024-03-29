@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -129,6 +130,14 @@ public class LiteralUtils {
     }
     String actualValue = trimQuotes(((LiteralTree) tree).value());
     return expectedValue.equals(actualValue);
+  }
+
+  public static boolean containsValue(Tree tree, Collection<String> collection) {
+    if (!tree.is(Kind.STRING_LITERAL)) {
+      return false;
+    }
+    String actualValue = trimQuotes(((LiteralTree) tree).value());
+    return collection.contains(actualValue);
   }
 
   public static boolean isTrue(Tree tree) {
