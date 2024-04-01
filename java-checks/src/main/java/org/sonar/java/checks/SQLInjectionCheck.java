@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,9 +70,9 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       .names("createNativeQuery", "createQuery")
       .withAnyParameters()
       .build(),
-    MethodMatchers.create().ofSubTypes(SPRING_JDBC_OPERATIONS)
+    MethodMatchers.create().ofSubTypes(SPRING_JDBC_OPERATIONS, "org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate")
       .names("batchUpdate", "execute", "query", "queryForList", "queryForMap", "queryForObject",
-        "queryForRowSet", "queryForInt", "queryForLong", "update")
+        "queryForRowSet", "queryForInt", "queryForLong", "update", "queryForStream")
       .withAnyParameters()
       .build(),
     MethodMatchers.create()
@@ -89,8 +89,32 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       .ofSubTypes("javax.jdo.Query")
       .names("setFilter", "setGrouping")
       .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl")
+      .names("setAuthoritiesByUsernameQuery", "setGroupAuthoritiesByUsernameQuery", "setUsersByUsernameQuery")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("org.springframework.security.provisioning.JdbcUserDetailsManager")
+      .names("setChangePasswordSql", "setCreateAuthoritySql", "setCreateUserSql", "setDeleteGroupAuthoritiesSql",
+        "setDeleteGroupAuthoritySql", "setDeleteGroupMemberSql", "setDeleteGroupMembersSql", "setDeleteGroupSql",
+        "setDeleteUserAuthoritiesSql", "setDeleteUserSql", "setFindAllGroupsSql", "setFindGroupIdSql", "setFindUsersInGroupSql",
+        "setGroupAuthoritiesSql", "setInsertGroupAuthoritySql", "setInsertGroupMemberSql", "setInsertGroupSql", "setRenameGroupSql",
+        "setUpdateUserSql", "setUserExistsSql")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("org.springframework.jdbc.core.simple.JdbcClient")
+      .names("sql")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("org.springframework.data.r2dbc.repository.query.StringBasedR2dbcQuery")
+      .names(CONSTRUCTOR)
+      .withAnyParameters()
       .build());
-  
+
   private static final String MAIN_MESSAGE = "Make sure using a dynamically formatted SQL query is safe here.";
 
   @Override
@@ -128,7 +152,8 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     List<AssignmentExpressionTree> reassignments,
     String identifierName) {
     List<JavaFileScannerContext.Location> secondaryLocations = reassignments.stream()
-      .map(assignment -> new JavaFileScannerContext.Location(String.format("SQL Query is assigned to '%s'", getVariableName(assignment)), assignment.expression()))
+      .map(assignment -> new JavaFileScannerContext.Location(String.format("SQL Query is assigned to '%s'", getVariableName(assignment)),
+        assignment.expression()))
       .collect(Collectors.toCollection(ArrayList::new));
 
     if (initializerOrExpression != null) {
@@ -138,7 +163,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     }
     return secondaryLocations;
   }
-  
+
   private static String getVariableName(AssignmentExpressionTree assignment) {
     ExpressionTree variable = assignment.variable();
     return ((IdentifierTree) variable).name();
