@@ -30,7 +30,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModu
 
 class CORSCheckTest {
 
-  public static final List<File> SPRING_3_2_CLASSPATH = TestClasspathUtils.loadFromFile(Constants.SPRING_3_2_CLASSPATH);
+  private static final List<File> SPRING_3_2_CLASSPATH = TestClasspathUtils.loadFromFile(Constants.SPRING_3_2_CLASSPATH);
 
   @Test
   void test() {
@@ -41,7 +41,7 @@ class CORSCheckTest {
   }
 
   @Test
-  void test_with_sprint_3_2() {
+  void test_with_spring_3_2() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPathInModule(Constants.SPRING_3_2, "checks/CORSCheckSample.java"))
       .withCheck(new CORSCheck())
