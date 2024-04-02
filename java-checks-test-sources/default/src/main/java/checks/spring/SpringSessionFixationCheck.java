@@ -28,7 +28,7 @@ public class SpringSessionFixationCheck {
       // Noncompliant@+1 [[sc=126;ec=130]] {{Create a new session during user authentication to prevent session fixation attacks.}}
       http.sessionManagement(sessionConfigurer -> sessionConfigurer.sessionFixation(fixationConfigurer -> fixationConfigurer.none()));
       // Noncompliant@+1 [[sc=140;ec=144]] {{Create a new session during user authentication to prevent session fixation attacks.}}
-      http.sessionManagement(sessionConfigurer -> sessionConfigurer.sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::none)); // Sensitive FN
+      http.sessionManagement(sessionConfigurer -> sessionConfigurer.sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::none));
       return http.build();
     }
 
