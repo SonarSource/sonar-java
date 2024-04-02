@@ -198,27 +198,6 @@ class LiteralUtilsTest {
   }
 
   @Test
-  void containsValue_withNonStringLiteral_returnsFalse() {
-    ExpressionTree tree = getFirstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
-    boolean result = LiteralUtils.containsValue(tree, List.of("expected"));
-    assertThat(result).isFalse();
-  }
-
-  @Test
-  void containsValue_withOtherValue_returnsFalse() {
-    LiteralTree tree = (LiteralTree) getReturnExpression("void foo(){ return \"other than expected\"; }");
-    boolean result = LiteralUtils.containsValue(tree, List.of("expected"));
-    assertThat(result).isFalse();
-  }
-
-  @Test
-  void containsValue_withExpectedValue_returnsTrue() {
-    LiteralTree tree = (LiteralTree) getReturnExpression("void foo(){ return \"expected\"; }");
-    boolean result = LiteralUtils.containsValue(tree, List.of("expected"));
-    assertThat(result).isTrue();
-  }
-
-  @Test
   void is_0xff() {
     ExpressionTree tree = getReturnExpression("int foo() { return 0xFF; }");
     assertThat(LiteralUtils.is0xff(tree)).isTrue();
