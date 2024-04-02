@@ -11,10 +11,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class WeakSSLContextCheckSample {
 
+  public static final String TLSV_1_0 = "TLSv1.0";
+
   @Autowired
   public WeakSSLContextCheckSample(SslProperties props, DefaultSslBundleRegistry registry, Set<String> propsSet) {
-    props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of("TLSv1.1")); // Noncompliant
+    props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of("TLSv1.1", "test", "TLSv1.0")); // Noncompliant [[sc=53;ec=72;secondary=18,18]] {{Change this code to use a stronger protocol.}}
     props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of("TLSv1.0")); // Noncompliant
+
+    props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of(TLSV_1_0)); // Noncompliant [[sc=53;ec=72;secondary=21]] {{Change this code to use a stronger protocol.}}
+    props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of(null)); // coverage
 
     props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of("TLSv1")); // Compliant
     props.getBundle().getJks().get("").getOptions().setEnabledProtocols(getSet()); // Compliant - FN

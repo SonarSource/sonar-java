@@ -26,14 +26,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -42,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
 
   private static final String ISSUE_MESSAGE = "Change this code to use a stronger protocol.";
+  private static final String SECONDARY_LOCATION_MESSAGE = "Other weak protocol.";
 
   private static final Set<String> STRONG_PROTOCOLS = new HashSet<>(Arrays.asList("TLSv1.2", "DTLSv1.2", "TLSv1.3", "DTLSv1.3"));
   private static final Set<String> STRONG_AFTER_JAVA_8 = new HashSet<>(Arrays.asList("TLS", "DTLS"));
@@ -64,12 +64,6 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
     .ofTypes("org.springframework.boot.autoconfigure.ssl.SslBundleProperties$Options")
     .names("setEnabledProtocols")
     .addParametersMatcher("java.util.Set")
-    .build();
-
-  private static final MethodMatchers SET_OF = MethodMatchers.create()
-    .ofTypes("java.util.Set")
-    .names("of")
-    .withAnyParameters()
     .build();
 
   private boolean javaVersionNotSetOr8OrHigher;
@@ -101,20 +95,26 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
       if (!unsecureVersions.isEmpty()) {
         List<JavaFileScannerContext.Location> secondaries = unsecureVersions.stream()
           .skip(1)
-          .map(secondary -> new JavaFileScannerContext.Location("Other weak protocol.", secondary))
+          .map(secondary -> new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, secondary))
           .toList();
         reportIssue(unsecureVersions.get(0), ISSUE_MESSAGE, secondaries, null);
       }
     } else if (OPTIONS_ENABLED_PROTOCOLS.matches(mit)) {
       ExpressionTree argument = arguments.get(0);
-      if (argument instanceof MethodInvocationTree methodInvocation && SET_OF.matches(methodInvocation)) {
-        boolean anyMatch = methodInvocation.arguments().stream()
-          .filter(arg -> arg.is(Tree.Kind.STRING_LITERAL))
-          .map(LiteralTree.class::cast)
-          .anyMatch(arg -> LiteralUtils.containsValue(arg, WEAK_FOR_SET_ENABLED_PROTOCOLS));
-        if (anyMatch) {
-          reportIssue(methodInvocation.arguments(), ISSUE_MESSAGE);
-        }
+      List<JavaFileScannerContext.Location> secondaryLocations = Collections.emptyList();
+
+      if (argument instanceof MethodInvocationTree methodInvocation) {
+        secondaryLocations = methodInvocation.arguments().stream()
+          .filter(arg -> {
+            var argValue = ExpressionUtils.resolveAsConstant(arg);
+            return argValue != null && WEAK_FOR_SET_ENABLED_PROTOCOLS.contains(argValue);
+          })
+          .map(arg -> new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, arg))
+          .toList();
+      }
+
+      if (!secondaryLocations.isEmpty()) {
+        reportIssue(((MemberSelectExpressionTree) mit.methodSelect()).identifier(), ISSUE_MESSAGE, secondaryLocations, null);
       }
     }
   }
