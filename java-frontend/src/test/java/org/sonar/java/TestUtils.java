@@ -88,15 +88,35 @@ public class TestUtils {
   }
 
   public static InputFile inputFile(String moduleKey, File file, InputFile.Type type) {
+    // Try to use the current directory as the module directory if the file is a descendant.
+    // Else use the parent directory of the file as fallback.
+    // Because TestInputFileBuilder requires the file to be a descendant of the module directory.
+    File moduleDir = file.getParentFile();
+    if (file.exists()) {
+      try {
+        File currentDir = new File(".").getCanonicalFile();
+        File canonicalFile = file.getCanonicalFile();
+        if (canonicalFile.getPath().startsWith(currentDir.getPath() + File.separator)) {
+          moduleDir = currentDir;
+          file = canonicalFile;
+        }
+      } catch (IOException e) {
+        throw new IllegalStateException("Unable create input file '" + file.getAbsolutePath() + "'", e);
+      }
+    }
+    return inputFile(moduleKey, moduleDir, file, type);
+  }
+
+  public static InputFile inputFile(String moduleKey, File moduleBaseDir, File file, InputFile.Type type) {
     try {
-      return new TestInputFileBuilder(moduleKey, file.getPath())
+      return new TestInputFileBuilder(moduleKey, moduleBaseDir, file)
         .setContents(new String(Files.readAllBytes(file.toPath()), UTF_8))
         .setCharset(UTF_8)
         .setLanguage("java")
         .setType(type)
         .build();
     } catch (Exception e) {
-      throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsolutePath()));
+      throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsoluteFile()));
     }
   }
 }

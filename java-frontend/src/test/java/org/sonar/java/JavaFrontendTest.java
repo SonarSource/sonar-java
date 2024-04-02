@@ -895,9 +895,7 @@ class JavaFrontendTest {
         sensorContext.setCancelled(true);
       }
       if (exceptionDuringScan != null) {
-        RuntimeException ex = exceptionDuringScan;
-        exceptionDuringScan = null;
-        throw ex;
+        throw exceptionDuringScan;
       }
     }
 
