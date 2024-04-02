@@ -41,6 +41,7 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Make sure allowing user enumeration is safe here.";
   private static final String ABSTRACT_USER_DETAILS_AUTHENTICATION_PROVIDER = "org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider";
+  private static final String SPRING_SEC_LDAP_AUTHENTICATION_PROVIDER = "org.springframework.security.ldap.authentication.LdapAuthenticationProvider";
   private static final String USER_DETAILS_SERVICE = "org.springframework.security.core.userdetails.UserDetailsService";
   private static final String USERNAME_NOT_FOUND_EXCEPTION = "org.springframework.security.core.userdetails.UsernameNotFoundException";
   private static final String HIDE_USER_NOT_FOUND_EXCEPTIONS = "setHideUserNotFoundExceptions";
@@ -52,7 +53,7 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
   private final Deque<MethodTree> stack = new ArrayDeque<>();
 
   private static final MethodMatchers SET_HIDE_USER_MATCHER = MethodMatchers.create()
-    .ofSubTypes(ABSTRACT_USER_DETAILS_AUTHENTICATION_PROVIDER)
+    .ofSubTypes(ABSTRACT_USER_DETAILS_AUTHENTICATION_PROVIDER, SPRING_SEC_LDAP_AUTHENTICATION_PROVIDER)
     .names(HIDE_USER_NOT_FOUND_EXCEPTIONS)
     .addParametersMatcher(BOOLEAN)
     .build();
