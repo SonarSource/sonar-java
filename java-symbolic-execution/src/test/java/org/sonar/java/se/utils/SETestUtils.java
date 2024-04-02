@@ -29,6 +29,7 @@ import java.util.Optional;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.java.checks.verifier.FilesUtils;
+import org.sonar.java.checks.verifier.internal.InternalInputFile;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
@@ -57,7 +58,7 @@ public class SETestUtils {
   }
 
   public static Pair<SymbolicExecutionVisitor, Sema> createSymbolicExecutionVisitorAndSemantic(String fileName, SECheck... checks) {
-    InputFile inputFile = inputFile(fileName);
+    InputFile inputFile = new InternalInputFile(new File(fileName));
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(inputFile.file(), CLASS_PATH);
     Sema semanticModel = cut.sema;
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks));

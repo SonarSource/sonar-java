@@ -67,16 +67,16 @@ class SonarSymbolTableVisitorTest {
   @Test
   void sonar_symbol_table() throws Exception {
     File source = new File("src/test/files/highlighter/SonarSymTable.java");
-    File target = temp.newFile().getAbsoluteFile();
+/*    File target = temp.newFile().getAbsoluteFile();
 
     String content = Files.asCharSource(source, StandardCharsets.UTF_8)
       .read()
       .replaceAll("\\r\\n", "\n")
       .replaceAll("\\r", "\n")
       .replaceAll("\\n", EOL);
-    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);
+    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);*/
 
-    InputFile inputFile = TestUtils.inputFile(target);
+    InputFile inputFile = TestUtils.inputFile(source);
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(Collections.emptyList(), sonarComponents.getJavaClasspath(), sonarComponents));
     String componentKey = inputFile.key();
     verifyUsages(componentKey, 1, 17, reference(5,2), reference(9,10));

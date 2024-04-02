@@ -31,6 +31,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.InternalInputFile;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -175,7 +176,7 @@ class MethodMatcherFactoryTest {
           printer.println(line);
         }
       }
-      return TestUtils.inputFile(file);
+      return new InternalInputFile(file);
     } catch (IOException e) {
       Assertions.fail("Unable to create inline test file: " + e.getMessage());
       return null;

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.verifier.internal;
+package org.sonar.java;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +34,7 @@ import org.sonar.java.model.InputFileUtils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public final class InternalInputFile extends InternalMockedSonarAPI implements InputFile {
+public final class InternalInputFile implements InputFile {
 
   private final File file;
   private final String moduleKey;
@@ -190,7 +190,7 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
 
   @Override
   public TextRange selectLine(int arg0) {
-    throw notSupportedException("selectLine(int)");
+    throw new UnsupportedOperationException("selectLine(int)");
   }
 
   @Override

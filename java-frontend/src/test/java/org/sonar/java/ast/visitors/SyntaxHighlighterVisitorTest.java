@@ -37,6 +37,7 @@ import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.java.InternalInputFile;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
@@ -78,7 +79,7 @@ class SyntaxHighlighterVisitorTest {
     SensorContextTester spy = spy(context);
     File file = temp.newFile().getAbsoluteFile();
     Files.asCharSink(file, StandardCharsets.UTF_8).write("ParseError");
-    scan(TestUtils.inputFile(file));
+    scan(new InternalInputFile(file));
     verify(spy, never()).newHighlighting();
   }
 
@@ -273,14 +274,14 @@ class SyntaxHighlighterVisitorTest {
 
   private InputFile generateTestFile(String sourceFile) throws IOException {
     File source = new File(sourceFile);
-    File target = new File(temp.newFolder(), source.getName()).getAbsoluteFile();
+    /*File target = new File(temp.newFolder(), source.getName()).getAbsoluteFile();
     String content = Files.asCharSource(source, StandardCharsets.UTF_8)
       .read()
       .replaceAll("\\r\\n", "\n")
       .replaceAll("\\r", "\n")
       .replaceAll("\\n", eol);
-    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);
-    return TestUtils.inputFile(target);
+    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);*/
+    return TestUtils.inputFile(source);
   }
 
   private void verifyHighlighting(InputFile inputFile) throws IOException {
