@@ -48,7 +48,9 @@ public abstract class MeasurerTester {
 
     DefaultFileSystem fs = context.fileSystem();
 
-    FileUtils.listFiles(sourceDir(), new String[] {"java"}, true).stream().map(TestUtils::inputFile).forEach(fs::add);
+    FileUtils.listFiles(sourceDir(), new String[] {"java"}, true).stream()
+      .map(file -> TestUtils.inputFile("", sourceDir(), file, InputFile.Type.MAIN))
+      .forEach(fs::add);
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, measurer, mock(JavaResourceLocator.class), null, new JavaCheck[0]);

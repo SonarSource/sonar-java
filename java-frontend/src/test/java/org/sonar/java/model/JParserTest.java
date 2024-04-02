@@ -42,6 +42,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -68,11 +69,13 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
@@ -347,10 +350,29 @@ class JParserTest {
     trace.addAll(logTester.logs());
     logTester.clear();
     assertThat(trace).containsExactly(
-      "[action] handle NullPointerException: Boom!",
+      "Unexpected NullPointerException: Boom!",
       "Fallback to file by file analysis for 2 files",
       "[action] analyse class HelloWorld in Classes.java",
       "[action] analyse class MyClass in Methods.java");
+  }
+
+  @Test
+  void successful_batch_mode_with_missing_analyzed_files_should_continue_file_by_file() {
+    List<InputFile> inputFiles = Arrays.asList(
+      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
+      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
+    BiConsumer<InputFile, JParserConfig.Result> doNothingAction = (inputFile, result) -> {};
+    JParserConfig config = spy(JParserConfig.Mode.BATCH
+      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false));
+    // Return a lazy ASTParser that do nothing to ensure that we have not analyzed files
+    when(config.astParser()).thenReturn(mock(ASTParser.class));
+
+    config.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), doNothingAction);
+
+    assertThat(logTester.logs()).containsExactly(
+      "Unexpected AnalysisException: 2/2 files were not analyzed by the batch mode",
+      "Fallback to file by file analysis for 2 files");
+    logTester.clear();
   }
 
   @Test
@@ -365,24 +387,27 @@ class JParserTest {
       logTester.clear();
       try {
         JavaTree.CompilationUnitTreeImpl tree = result.get();
-        trace.add("[action] analyse class " + ((ClassTree)tree.types().get(0)).simpleName().name() + " in " + inputFile.filename());
+        trace.add("[action] analyze class " + ((ClassTree)tree.types().get(0)).simpleName().name() + " in " + inputFile.filename());
         // cancel analysis after first file
         isCanceled.set(true);
       } catch (Exception e) {
         trace.add("[action] handle " + e.getClass().getSimpleName() + ": " + e.getMessage());
       }
     };
-    BatchWithException batchWithException = new BatchWithException();
-    // exception before the first file
-    batchWithException.exceptions.push(new NullPointerException("Boom!"));
-    batchWithException.parse(inputFiles, isCanceled::get, new AnalysisProgress(inputFiles.size()), action);
+
+    JParserConfig config = BATCH
+      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false);
+    AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
+    assertThatThrownBy(() -> config.parse(inputFiles, isCanceled::get, analysisProgress, action))
+      .isInstanceOf(OperationCanceledException.class);
+
     trace.addAll(logTester.logs());
     logTester.clear();
     assertThat(trace).containsExactly(
-      "[action] handle NullPointerException: Boom!",
-      "Fallback to file by file analysis for 2 files",
-      "[action] analyse class HelloWorld in Classes.java");
-    // Missing Methods.java because of cancellation
+      "Starting batch processing.",
+      "[action] analyze class HelloWorld in Classes.java",
+      "Batch processing: Cancelled!");
+    // Missing: [action] analyse class MyClass in Methods.java
   }
 
   @Test
@@ -397,7 +422,7 @@ class JParserTest {
     trace.addAll(logTester.logs());
     logTester.clear();
     assertThat(trace).containsExactly(
-      "Unexpected java.lang.NullPointerException: Boom!");
+      "Unexpected NullPointerException: Boom!");
   }
 
   static class BatchWithException extends JParserConfig.Batch {

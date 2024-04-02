@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +41,7 @@ import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.ExecutionTimeReport;
 import org.sonar.java.ProgressMonitor;
@@ -157,7 +159,7 @@ public abstract class JParserConfig {
       AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
 
       List<String> sourceFilePaths = new ArrayList<>();
-      Set<String> analyzedSourceFilePaths = new HashSet<>();
+      Set<InputFile> notYetAnalyzedFiles = new LinkedHashSet<>();
       List<String> encodings = new ArrayList<>();
       Map<File, InputFile> inputs = new HashMap<>();
       for (InputFile inputFile : inputFiles) {
@@ -165,6 +167,7 @@ public abstract class JParserConfig {
         inputs.put(new File(sourceFilePath), inputFile);
         sourceFilePaths.add(sourceFilePath);
         encodings.add(inputFile.charset().name());
+        notYetAnalyzedFiles.add(inputFile);
       }
 
       ExecutionTimeReport executionTimeReport = new ExecutionTimeReport();
@@ -175,8 +178,6 @@ public abstract class JParserConfig {
           @Override
           public void acceptAST(String sourceFilePath, CompilationUnit ast) {
             PerformanceMeasure.Duration convertDuration = PerformanceMeasure.start("Convert");
-            analyzedSourceFilePaths.add(sourceFilePath);
-
             InputFile inputFile = inputs.get(new File(sourceFilePath));
             executionTimeReport.start(inputFile);
             Result result;
@@ -189,26 +190,21 @@ public abstract class JParserConfig {
             PerformanceMeasure.Duration analyzeDuration = PerformanceMeasure.start("Analyze");
             action.accept(inputFile, result);
 
+            notYetAnalyzedFiles.remove(inputFile);
             executionTimeReport.end();
             analyzeDuration.stop();
           }
         }, monitor);
+        if (!notYetAnalyzedFiles.isEmpty()) {
+          String message = String.format("%d/%d files were not analyzed by the batch mode", notYetAnalyzedFiles.size(), sourceFilePaths.size());
+          throw new AnalysisException(message);
+        }
       } catch (OperationCanceledException e) {
         throw e;
       } catch (RuntimeException e) {
-        List<InputFile> notYetAnalyzedFiles = sourceFilePaths.stream()
-          .filter(file -> !analyzedSourceFilePaths.contains(file))
-          .map(file -> inputs.get(new File(file)))
-          .toList();
-
+        LOG.warn("Unexpected {}: {}", e.getClass().getSimpleName(), e.getMessage());
         if (!notYetAnalyzedFiles.isEmpty()) {
-          action.accept(notYetAnalyzedFiles.get(0), new Result(e));
-          fallbackToFileByFileMode(notYetAnalyzedFiles, isCanceled, action);
-        } else if (!sourceFilePaths.isEmpty()) {
-          InputFile lastInputFile = inputs.get(new File(sourceFilePaths.get(sourceFilePaths.size() - 1)));
-          action.accept(lastInputFile, new Result(e));
-        } else {
-          LOG.warn("Unexpected {}: {}", e.getClass().getName(), e.getMessage());
+          fallbackToFileByFileMode(notYetAnalyzedFiles.stream().toList(), isCanceled, action);
         }
       } finally {
         batchPerformance.stop();
