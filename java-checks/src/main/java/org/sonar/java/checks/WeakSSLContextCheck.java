@@ -101,20 +101,17 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
       }
     } else if (OPTIONS_ENABLED_PROTOCOLS.matches(mit)) {
       ExpressionTree argument = arguments.get(0);
-      List<JavaFileScannerContext.Location> secondaryLocations = Collections.emptyList();
-
       if (argument instanceof MethodInvocationTree methodInvocation) {
-        secondaryLocations = methodInvocation.arguments().stream()
+        List<JavaFileScannerContext.Location> secondaryLocations = methodInvocation.arguments().stream()
           .filter(arg -> {
             var argValue = ExpressionUtils.resolveAsConstant(arg);
             return argValue != null && WEAK_FOR_SET_ENABLED_PROTOCOLS.contains(argValue);
           })
           .map(arg -> new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, arg))
           .toList();
-      }
-
-      if (!secondaryLocations.isEmpty()) {
-        reportIssue(((MemberSelectExpressionTree) mit.methodSelect()).identifier(), ISSUE_MESSAGE, secondaryLocations, null);
+        if (!secondaryLocations.isEmpty()) {
+          reportIssue(((MemberSelectExpressionTree) mit.methodSelect()).identifier(), ISSUE_MESSAGE, secondaryLocations, null);
+        }
       }
     }
   }
