@@ -272,15 +272,7 @@ class SyntaxHighlighterVisitorTest {
   }
 
   private InputFile generateTestFile(String sourceFile) throws IOException {
-    File source = new File(sourceFile);
-    File target = new File(temp.newFolder(), source.getName()).getAbsoluteFile();
-    String content = Files.asCharSource(source, StandardCharsets.UTF_8)
-      .read()
-      .replaceAll("\\r\\n", "\n")
-      .replaceAll("\\r", "\n")
-      .replaceAll("\\n", eol);
-    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);
-    return TestUtils.inputFile(target);
+    return TestUtils.inputFile(new File(sourceFile));
   }
 
   private void verifyHighlighting(InputFile inputFile) throws IOException {

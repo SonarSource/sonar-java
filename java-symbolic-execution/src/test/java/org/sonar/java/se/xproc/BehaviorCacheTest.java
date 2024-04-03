@@ -35,6 +35,7 @@ import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.checks.verifier.internal.InternalInputFile;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.JavaVersionImpl;
@@ -187,7 +188,7 @@ class BehaviorCacheTest {
       TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/EclipseAssert.java"))
       .stream()
       .map(File::new)
-      .map(SETestUtils::inputFile)
+      .map(it -> InternalInputFile.inputFile("", it))
       .toList();
 
     for (InputFile inputFile : inputFiles) {
