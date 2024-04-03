@@ -275,35 +275,7 @@ class SyntaxHighlighterVisitorTest {
   }
 
   private InputFile generateTestFile(String sourceFile) throws IOException {
-    File source = new File(sourceFile);
-    File target = new File(temp.newFolder(), source.getName()).getAbsoluteFile();
-    String content = Files.asCharSource(source, StandardCharsets.UTF_8)
-      .read()
-      .replaceAll("\\r\\n", "\n")
-      .replaceAll("\\r", "\n")
-      .replaceAll("\\n", eol);
-    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);
-    return inputFile(target);
-
-    //Does not work because ClassCastException; DefaultInputFile expected
-    //  return InternalInputFile.inputFile("", target);
-    //Does not work because file not found:
-    //  return TestUtils.inputFile(target);
-
-    // Possible alternative: use source instead of target, skip EOL patches!
-  }
-
-  public static InputFile inputFile(File file) {
-    try {
-      return new TestInputFileBuilder("", file.getParentFile(), file)
-        .setContents(new String(java.nio.file.Files.readAllBytes(file.toPath()), UTF_8))
-        .setCharset(UTF_8)
-        .setLanguage("java")
-        .setType(InputFile.Type.MAIN)
-        .build();
-    } catch (Exception e) {
-      throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsolutePath()));
-    }
+    return TestUtils.inputFile(new File(sourceFile));
   }
 
   private void verifyHighlighting(InputFile inputFile) throws IOException {
