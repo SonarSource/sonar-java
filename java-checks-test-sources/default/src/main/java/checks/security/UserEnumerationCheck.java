@@ -16,10 +16,6 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 
 public class UserEnumerationCheck {
 
-  void ldap(LdapAuthenticationProvider ldapAuthenticationProvider) {
-    ldapAuthenticationProvider.setHideUserNotFoundExceptions(false); // Noncompliant
-  }
-
   public static final boolean MY_CONSTANT = false;
 
   public String authenticate(String username, String password) {
@@ -96,6 +92,13 @@ public class UserEnumerationCheck {
     boolean variableFalse = false;
     daoauth.setHideUserNotFoundExceptions(variableFalse); // Compliant, not a constant
     throw new UsernameNotFoundException("userName not found"); // Noncompliant
+  }
+
+  void ldap(LdapAuthenticationProvider ldapAuthenticationProvider) {
+    ldapAuthenticationProvider.setHideUserNotFoundExceptions(false); // Noncompliant
+    ldapAuthenticationProvider.setHideUserNotFoundExceptions(MY_CONSTANT); // Noncompliant
+    boolean variableFalse = false;
+    ldapAuthenticationProvider.setHideUserNotFoundExceptions(variableFalse); // Compliant, not a constant
   }
 
   public void compliantConfig() {
