@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -39,9 +40,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4423")
 public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
 
+  private static final String ISSUE_MESSAGE = "Change this code to use a stronger protocol.";
+  private static final String SECONDARY_LOCATION_MESSAGE = "Other weak protocol.";
+
   private static final Set<String> STRONG_PROTOCOLS = new HashSet<>(Arrays.asList("TLSv1.2", "DTLSv1.2", "TLSv1.3", "DTLSv1.3"));
   private static final Set<String> STRONG_AFTER_JAVA_8 = new HashSet<>(Arrays.asList("TLS", "DTLS"));
   private static final Set<String> WEAK_FOR_OK_HTTP = new HashSet<>(Arrays.asList("TLSv1", "TLSv1.1", "TLS_1_0", "TLS_1_1"));
+  private static final Set<String> WEAK_FOR_SET_ENABLED_PROTOCOLS = new HashSet<>(Set.of("TLSv1.0", "TLSv1.1"));
 
   private static final MethodMatchers SSLCONTEXT_GETINSTANCE_MATCHER = MethodMatchers.create()
     .ofTypes("javax.net.ssl.SSLContext")
@@ -53,6 +58,12 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
     .ofTypes("okhttp3.ConnectionSpec$Builder")
     .names("tlsVersions")
     .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers OPTIONS_ENABLED_PROTOCOLS = MethodMatchers.create()
+    .ofTypes("org.springframework.boot.autoconfigure.ssl.SslBundleProperties$Options")
+    .names("setEnabledProtocols")
+    .addParametersMatcher("java.util.Set")
     .build();
 
   private boolean javaVersionNotSetOr8OrHigher;
@@ -76,7 +87,7 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
       ExpressionTree firstArgument = arguments.get(0);
       firstArgument.asConstant(String.class).ifPresent(protocol -> {
         if (!isStrongProtocol(protocol)) {
-          reportIssue(firstArgument, "Change this code to use a stronger protocol.");
+          reportIssue(firstArgument, ISSUE_MESSAGE);
         }
       });
     } else if (OK_HTTP_TLS_VERSION.matches(mit)) {
@@ -84,9 +95,23 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
       if (!unsecureVersions.isEmpty()) {
         List<JavaFileScannerContext.Location> secondaries = unsecureVersions.stream()
           .skip(1)
-          .map(secondary -> new JavaFileScannerContext.Location("Other weak protocol.", secondary))
+          .map(secondary -> new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, secondary))
           .toList();
-        reportIssue(unsecureVersions.get(0), "Change this code to use a stronger protocol.", secondaries, null);
+        reportIssue(unsecureVersions.get(0), ISSUE_MESSAGE, secondaries, null);
+      }
+    } else if (OPTIONS_ENABLED_PROTOCOLS.matches(mit)) {
+      ExpressionTree argument = arguments.get(0);
+      if (argument instanceof MethodInvocationTree methodInvocation) {
+        List<JavaFileScannerContext.Location> secondaryLocations = methodInvocation.arguments().stream()
+          .filter(arg -> {
+            var argValue = ExpressionUtils.resolveAsConstant(arg);
+            return argValue != null && WEAK_FOR_SET_ENABLED_PROTOCOLS.contains(argValue);
+          })
+          .map(arg -> new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, arg))
+          .toList();
+        if (!secondaryLocations.isEmpty()) {
+          reportIssue(((MemberSelectExpressionTree) mit.methodSelect()).identifier(), ISSUE_MESSAGE, secondaryLocations, null);
+        }
       }
     }
   }
