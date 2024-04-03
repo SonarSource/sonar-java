@@ -32,13 +32,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.FileLinesContextFactory;
-import org.sonar.java.InternalInputFile;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
@@ -47,7 +45,6 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.plugins.java.api.JavaVersion;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -81,7 +78,7 @@ class SyntaxHighlighterVisitorTest {
     SensorContextTester spy = spy(context);
     File file = temp.newFile().getAbsoluteFile();
     Files.asCharSink(file, StandardCharsets.UTF_8).write("ParseError");
-    scan(InternalInputFile.inputFile("", file));
+    scan(TestUtils.inputFile(file));
     verify(spy, never()).newHighlighting();
   }
 
