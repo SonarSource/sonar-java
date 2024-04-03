@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
 public class UserEnumerationCheck {
 
@@ -91,6 +92,13 @@ public class UserEnumerationCheck {
     boolean variableFalse = false;
     daoauth.setHideUserNotFoundExceptions(variableFalse); // Compliant, not a constant
     throw new UsernameNotFoundException("userName not found"); // Noncompliant
+  }
+
+  void ldap(LdapAuthenticationProvider ldapAuthenticationProvider) {
+    ldapAuthenticationProvider.setHideUserNotFoundExceptions(false); // Noncompliant
+    ldapAuthenticationProvider.setHideUserNotFoundExceptions(MY_CONSTANT); // Noncompliant
+    boolean variableFalse = false;
+    ldapAuthenticationProvider.setHideUserNotFoundExceptions(variableFalse); // Compliant, not a constant
   }
 
   public void compliantConfig() {
