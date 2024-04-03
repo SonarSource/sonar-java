@@ -15,16 +15,28 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
 public class SQLInjectionCheckSample {
 
-  public void s2077(String input, JdbcTemplate jdbcTemplate, JdbcOperations jdbcOperations,
-    NamedParameterJdbcTemplate namedParameterJdbcTemplate, JdbcClient jdbcClient, RowMapper<String> rowMapper,
-    PreparedStatementCallback<String> preparedStatementCallback) {
+  void testJdbcClient(String input, JdbcClient jdbcClient) {
+    jdbcClient.sql("SELECT " + input).query(); // Noncompliant
+  }
 
-    jdbcTemplate.execute("SELECT " + input); // Noncompliant
-    jdbcTemplate.queryForStream("SELECT " + input, rowMapper); // Noncompliant
+  void testJdbcDao(String input, JdbcDaoImpl jdbcDao) {
+    jdbcDao.setAuthoritiesByUsernameQuery("SELECT " + input); // Noncompliant
+    jdbcDao.setGroupAuthoritiesByUsernameQuery("SELECT " + input); // Noncompliant
+    jdbcDao.setUsersByUsernameQuery("SELECT " + input); // Noncompliant
+  }
 
+  void testJdbcOperations(String input, JdbcOperations jdbcOperations, RowMapper<String> rowMapper) {
     jdbcOperations.execute("SELECT " + input); // Noncompliant
     jdbcOperations.queryForStream("SELECT " + input, rowMapper); // Noncompliant
+  }
 
+  void testJdbcTemplate(String input, JdbcTemplate jdbcTemplate, RowMapper<String> rowMapper) {
+    jdbcTemplate.execute("SELECT " + input); // Noncompliant
+    jdbcTemplate.queryForStream("SELECT " + input, rowMapper); // Noncompliant
+  }
+
+  void testNamedParameterJdbcTemplate(String input, NamedParameterJdbcTemplate namedParameterJdbcTemplate, RowMapper<String> rowMapper,
+    PreparedStatementCallback<String> preparedStatementCallback) {
     namedParameterJdbcTemplate.batchUpdate("SELECT " + input, new SqlParameterSource[1]); // Noncompliant
     namedParameterJdbcTemplate.execute("SELECT " + input, preparedStatementCallback); // Noncompliant
     namedParameterJdbcTemplate.query("SELECT " + input, new BeanPropertySqlParameterSource(new Object()), new RowMapperResultSetExtractor(rowMapper)); // Noncompliant
@@ -34,13 +46,9 @@ public class SQLInjectionCheckSample {
     namedParameterJdbcTemplate.queryForRowSet("SELECT " + input, EmptySqlParameterSource.INSTANCE); // Noncompliant
     namedParameterJdbcTemplate.queryForStream("SELECT " + input, EmptySqlParameterSource.INSTANCE, rowMapper); // Noncompliant
     namedParameterJdbcTemplate.update("SELECT " + input, EmptySqlParameterSource.INSTANCE); // Noncompliant
+  }
 
-
-    JdbcDaoImpl jdbcDao = new JdbcDaoImpl();
-    jdbcDao.setAuthoritiesByUsernameQuery("SELECT " + input); // Noncompliant
-    jdbcDao.setGroupAuthoritiesByUsernameQuery("SELECT " + input); // Noncompliant
-    jdbcDao.setUsersByUsernameQuery("SELECT " + input); // Noncompliant
-
+  void testJdbcUserDetailsManager(String input) {
     JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager();
     jdbcUserDetailsManager.setChangePasswordSql("SELECT " + input); // Noncompliant
     jdbcUserDetailsManager.setCreateAuthoritySql("SELECT " + input); // Noncompliant
@@ -62,8 +70,6 @@ public class SQLInjectionCheckSample {
     jdbcUserDetailsManager.setRenameGroupSql("SELECT " + input); // Noncompliant
     jdbcUserDetailsManager.setUpdateUserSql("SELECT " + input); // Noncompliant
     jdbcUserDetailsManager.setUserExistsSql("SELECT " + input); // Noncompliant
-
-    jdbcClient.sql("SELECT " + input).query(); // Noncompliant
   }
 
 }
