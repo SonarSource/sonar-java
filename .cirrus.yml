@@ -146,7 +146,7 @@ plugin_qa_task:
   <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
   matrix:
     - env:
-        SQ_VERSION: LATEST_RELEASE[10.4]
+        SQ_VERSION: LATEST_RELEASE
       orchestrator_LATEST_RELEASE_cache:
         <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
     - env:
@@ -208,7 +208,7 @@ ruling_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
-    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[10.4] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
   on_failure:
     actual_artifacts:
@@ -237,7 +237,7 @@ ruling_win_task:
     - init_git_submodules its/sources
     - git submodule update --init --recursive
     - cd its/ruling
-    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[10.4] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 autoscan_task:
@@ -262,7 +262,7 @@ autoscan_task:
     - source set_maven_build_version $BUILD_NUMBER
     - JAVA_HOME="${JAVA_21_HOME}" mvn clean compile --projects java-checks-test-sources --also-make-dependents
     - cd its/autoscan
-    - mvn clean package --batch-mode --errors --show-version --activate-profiles it-autoscan -Dsonar.runtimeVersion=LATEST_RELEASE[10.4] -Dmaven.test.redirectTestOutputToFile=false -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn clean package --batch-mode --errors --show-version --activate-profiles it-autoscan -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
   on_failure:
     actual_artifacts:

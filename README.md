@@ -78,7 +78,7 @@ try removing the Maven nature of the 'jdt' module.
 To run integration tests, you will need to create a properties file like the one shown below, and set the URL pointing to its location in an environment variable named `ORCHESTRATOR_CONFIG_URL`.
 
     # version of SonarQube Server
-    sonar.runtimeVersion=7.9
+    sonar.runtimeVersion=LATEST_RELEASE
 
     orchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties
 
