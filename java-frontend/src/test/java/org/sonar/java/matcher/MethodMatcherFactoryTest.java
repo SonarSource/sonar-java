@@ -176,7 +176,7 @@ class MethodMatcherFactoryTest {
           printer.println(line);
         }
       }
-      return new InternalInputFile(file);
+      return InternalInputFile.inputFile("", file);
     } catch (IOException e) {
       Assertions.fail("Unable to create inline test file: " + e.getMessage());
       return null;

@@ -44,10 +44,6 @@ public final class InternalInputFile implements InputFile {
   private final InputFile.Type type;
   private final Status status;
 
-  public InternalInputFile(File file) {
-    this("", file, Status.SAME);
-  }
-
   private InternalInputFile(String filename, InputFile.Type type) {
     this.file = new File(filename);
     this.moduleKey = "";

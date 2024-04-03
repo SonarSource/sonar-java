@@ -33,6 +33,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.fs.internal.DefaultTextPointer;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -44,6 +45,7 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.VisitorsBridge;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -64,19 +66,40 @@ class SonarSymbolTableVisitorTest {
     sonarComponents.setSensorContext(context);
   }
 
+  public static InputFile inputFile(File file) {
+    try {
+      return new TestInputFileBuilder("", file.getParentFile(), file)
+        .setContents(new String(java.nio.file.Files.readAllBytes(file.toPath()), UTF_8))
+        .setCharset(UTF_8)
+        .setLanguage("java")
+        .setType(InputFile.Type.MAIN)
+        .build();
+    } catch (Exception e) {
+      throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsolutePath()));
+    }
+  }
+
   @Test
   void sonar_symbol_table() throws Exception {
     File source = new File("src/test/files/highlighter/SonarSymTable.java");
-/*    File target = temp.newFile().getAbsoluteFile();
+    File target = temp.newFile().getAbsoluteFile();
 
     String content = Files.asCharSource(source, StandardCharsets.UTF_8)
       .read()
       .replaceAll("\\r\\n", "\n")
       .replaceAll("\\r", "\n")
       .replaceAll("\\n", EOL);
-    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);*/
+    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);
 
-    InputFile inputFile = TestUtils.inputFile(source);
+    InputFile inputFile = inputFile(target);
+
+    //Does not work because ClassCastException; DefaultInputFile expected
+    //  InputFile inputFile = InternalInputFile.inputFile("", target);
+    //Does not work because file not found:
+    //  InputFile inputFile = TestUtils.inputFile(target);
+
+    // Possible alternative: use source instead of target, skip EOL patches!
+
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(Collections.emptyList(), sonarComponents.getJavaClasspath(), sonarComponents));
     String componentKey = inputFile.key();
     verifyUsages(componentKey, 1, 17, reference(5,2), reference(9,10));

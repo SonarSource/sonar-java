@@ -58,7 +58,7 @@ public class SETestUtils {
   }
 
   public static Pair<SymbolicExecutionVisitor, Sema> createSymbolicExecutionVisitorAndSemantic(String fileName, SECheck... checks) {
-    InputFile inputFile = new InternalInputFile(new File(fileName));
+    InputFile inputFile = InternalInputFile.inputFile("", new File(fileName));
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(inputFile.file(), CLASS_PATH);
     Sema semanticModel = cut.sema;
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks));

@@ -32,6 +32,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
@@ -46,6 +47,7 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.plugins.java.api.JavaVersion;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -79,7 +81,7 @@ class SyntaxHighlighterVisitorTest {
     SensorContextTester spy = spy(context);
     File file = temp.newFile().getAbsoluteFile();
     Files.asCharSink(file, StandardCharsets.UTF_8).write("ParseError");
-    scan(new InternalInputFile(file));
+    scan(InternalInputFile.inputFile("", file));
     verify(spy, never()).newHighlighting();
   }
 
@@ -274,14 +276,34 @@ class SyntaxHighlighterVisitorTest {
 
   private InputFile generateTestFile(String sourceFile) throws IOException {
     File source = new File(sourceFile);
-    /*File target = new File(temp.newFolder(), source.getName()).getAbsoluteFile();
+    File target = new File(temp.newFolder(), source.getName()).getAbsoluteFile();
     String content = Files.asCharSource(source, StandardCharsets.UTF_8)
       .read()
       .replaceAll("\\r\\n", "\n")
       .replaceAll("\\r", "\n")
       .replaceAll("\\n", eol);
-    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);*/
-    return TestUtils.inputFile(source);
+    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);
+    return inputFile(target);
+
+    //Does not work because ClassCastException; DefaultInputFile expected
+    //  return InternalInputFile.inputFile("", target);
+    //Does not work because file not found:
+    //  return TestUtils.inputFile(target);
+
+    // Possible alternative: use source instead of target, skip EOL patches!
+  }
+
+  public static InputFile inputFile(File file) {
+    try {
+      return new TestInputFileBuilder("", file.getParentFile(), file)
+        .setContents(new String(java.nio.file.Files.readAllBytes(file.toPath()), UTF_8))
+        .setCharset(UTF_8)
+        .setLanguage("java")
+        .setType(InputFile.Type.MAIN)
+        .build();
+    } catch (Exception e) {
+      throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsolutePath()));
+    }
   }
 
   private void verifyHighlighting(InputFile inputFile) throws IOException {
