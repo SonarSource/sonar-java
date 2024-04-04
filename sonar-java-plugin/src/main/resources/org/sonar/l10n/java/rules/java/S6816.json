@@ -13,7 +13,7 @@
   "ruleSpecification": "RSPEC-6816",
   "sqKey": "S6816",
   "scope": "All",
-  "quickfix": "unknown",
+  "quickfix": "covered",
   "code": {
     "impacts": {
       "RELIABILITY": "HIGH"

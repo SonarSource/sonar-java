@@ -13,7 +13,7 @@
   "ruleSpecification": "RSPEC-6880",
   "sqKey": "S6880",
   "scope": "All",
-  "quickfix": "unknown",
+  "quickfix": "covered",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "MEDIUM"

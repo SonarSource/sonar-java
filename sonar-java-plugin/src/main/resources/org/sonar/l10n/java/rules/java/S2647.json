@@ -7,14 +7,12 @@
     },
     "attribute": "TRUSTWORTHY"
   },
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2h"
   },
-  "tags": [
-    "cwe"
-  ],
+  "tags": [],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2647",
   "sqKey": "S2647",
