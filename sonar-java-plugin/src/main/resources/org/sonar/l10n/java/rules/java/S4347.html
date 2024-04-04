@@ -1,19 +1,19 @@
-<p>When using <code>SecureRandom</code>, it is important not to use predictable seeds. This class is used to generate cryptographically strong random
-numbers. Using a predictable seed will make its output predictable as well, which counteracts the use case of <code>SecureRandom</code>.</p>
+<p>Cryptographic operations often rely on unpredictable random numbers to enhance security. These random numbers are created by cryptographically
+secure pseudo-random number generators (CSPRNG). It is important not to use a predictable seed with these random number generators otherwise the
+random numbers will also become predictable.</p>
 <h2>Why is this an issue?</h2>
-<p><code>java.security.SecureRandom</code> is often used to generate random values for cryptographic algorithms. When a random number generator is
-used for cryptographic purposes, the generated numbers must be as random and unpredictable as possible. When <code>SecureRandom</code> is improperly
-seeded with a constant or a predictable value, its output will also be predictable.</p>
+<p>Random number generators are often used to generate random values for cryptographic algorithms. When a random number generator is used for
+cryptographic purposes, the generated numbers must be as random and unpredictable as possible. When the random number generator is improperly seeded
+with a constant or a predictable value, its output will also be predictable.</p>
 <p>This can have severe security implications for cryptographic operations that rely on the randomness of the generated numbers. By using a
 predictable seed, an attacker can potentially guess or deduce the generated numbers, compromising the security of whatever cryptographic algorithm
-relies on <code>SecureRandom</code>.</p>
+relies on the random number generator.</p>
 <h3>What is the potential impact?</h3>
 <p>It is crucial to understand that the strength of cryptographic algorithms heavily relies on the quality of the random numbers used. By improperly
-seeding the <code>SecureRandom</code> class, we introduce a significant weakness that can be exploited by attackers.</p>
+seeding a CSPRNG, we introduce a significant weakness that can be exploited by attackers.</p>
 <h4>Insecure cryptographic keys</h4>
-<p>One of the primary use cases for the <code>SecureRandom</code> class is generating cryptographic keys. If an attacker can predict the seed used to
-initialize the SecureRandom instance, they may be able to derive the same keys. Depending on the use case, this can lead to multiple severe outcomes,
-such as:</p>
+<p>One of the primary use cases for CSPRNGs is generating cryptographic keys. If an attacker can predict the seed used to initialize the random number
+generator, they may be able to derive the same keys. Depending on the use case, this can lead to multiple severe outcomes, such as:</p>
 <ul>
   <li> Being able to decrypt sensitive documents, leading to privacy breaches or identity theft. </li>
   <li> Gaining access to a private key used for signing, allowing an attacker to forge digital signatures and impersonate legitimate entities. </li>

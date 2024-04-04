@@ -1,5 +1,5 @@
 {
-  "title": "\"SecureRandom\" seeds should not be predictable",
+  "title": "Secure random number generators should not output predictable values",
   "type": "VULNERABILITY",
   "code": {
     "impacts": {

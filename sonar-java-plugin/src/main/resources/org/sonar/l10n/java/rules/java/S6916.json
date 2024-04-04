@@ -13,7 +13,7 @@
   "ruleSpecification": "RSPEC-6916",
   "sqKey": "S6916",
   "scope": "All",
-  "quickfix": "targeted",
+  "quickfix": "covered",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "MEDIUM"

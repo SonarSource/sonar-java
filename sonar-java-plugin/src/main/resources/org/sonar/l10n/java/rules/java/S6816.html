@@ -3,7 +3,7 @@
 <h2>Why is this an issue?</h2>
 <p>The <code>@Value</code> annotation does not guarantee that the property is defined. Particularly if a field or parameter is annotated as nullable,
 it indicates that the developer assumes that the property may be undefined.</p>
-<p>An undefined property may lead to a runtime exceptions when the Spring framework tries to inject the autowired dependency during bean creation.</p>
+<p>An undefined property may lead to runtime exceptions when the Spring framework tries to inject the autowired dependency during bean creation.</p>
 <p>This rule raises an issue when a nullable field or parameter is annotated with <code>@Value</code> and no default value is provided.</p>
 <h2>How to fix it</h2>
 <p>Add a default value to the <code>@Value</code> annotation. A default value can be supplied by using the colon (<code>:</code>) operator. As the

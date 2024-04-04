@@ -1,5 +1,5 @@
 {
-  "title": "Virtual threads should not run tasks that include synchronized or native code",
+  "title": "Virtual threads should not run tasks that include synchronized code",
   "type": "BUG",
   "status": "ready",
   "remediation": {
