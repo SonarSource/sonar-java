@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-abstract class InvariantReturnCheck {
+abstract class InvariantReturnCheckSample {
   private boolean bool;
 
   private int foo(boolean a) { // Noncompliant [[flows=issue1]] {{Refactor this method to not always return the same value.}}
@@ -63,7 +63,7 @@ abstract class InvariantReturnCheck {
     return 0;
   }
 
-  private InvariantReturnCheck() {
+  private InvariantReturnCheckSample() {
   }
 
   String constructComponentName() {

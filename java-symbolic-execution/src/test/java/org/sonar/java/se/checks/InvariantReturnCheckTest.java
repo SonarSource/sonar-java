@@ -24,15 +24,26 @@ import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class InvariantReturnCheckTest {
 
   @Test
-  void test() {
+  void testOnCompilingProgram() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/InvariantReturnCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/InvariantReturnCheckSample.java"))
       .withCheck(new InvariantReturnCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
+
+  @Test
+  void testWithUnresolvedSymbols() {
+    SECheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/InvariantReturnCheckSample.java"))
+      .withCheck(new InvariantReturnCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
+  }
+
 }

@@ -293,6 +293,10 @@ public class ExplodedGraphWalker {
     node = null;
     programState = null;
     constraintManager = null;
+
+    if (methodBehavior != null){
+      methodBehavior.completed();
+    }
   }
 
   private void enqueueStartingStates(MethodTree tree, CFG cfg) {
