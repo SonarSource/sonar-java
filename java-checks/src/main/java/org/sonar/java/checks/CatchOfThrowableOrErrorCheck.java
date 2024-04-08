@@ -42,7 +42,6 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
-  private final TryBlockVisitor tryBlockVisitor = new TryBlockVisitor();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -52,7 +51,7 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     TryStatementTree tryStatement = (TryStatementTree) tree;
-    tryBlockVisitor.reset();
+    TryBlockVisitor tryBlockVisitor = new TryBlockVisitor();
     tryStatement.block().accept(tryBlockVisitor);
     if (tryBlockVisitor.containsExplicitThrowable || tryBlockVisitor.containsUnresolvableCall) {
       return;
@@ -126,13 +125,8 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
   }
 
   private static class TryBlockVisitor extends BaseTreeVisitor {
-    private boolean containsExplicitThrowable;
-    private boolean containsUnresolvableCall;
-
-    public void reset() {
-      containsUnresolvableCall = false;
-      containsExplicitThrowable = false;
-    }
+    private boolean containsExplicitThrowable = false;
+    private boolean containsUnresolvableCall = false;
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
