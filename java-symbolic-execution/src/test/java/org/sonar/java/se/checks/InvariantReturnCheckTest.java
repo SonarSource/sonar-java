@@ -43,7 +43,7 @@ class InvariantReturnCheckTest {
       .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/InvariantReturnCheckSample.java"))
       .withCheck(new InvariantReturnCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
 }

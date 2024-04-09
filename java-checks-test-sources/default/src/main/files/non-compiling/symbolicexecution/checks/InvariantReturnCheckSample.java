@@ -7,67 +7,42 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+
 public class InvariantReturnCheckSample {
 
-  class Example {
+  class CompliantExample1 {
+
     private static void confuse() {
-      org.sonar.check.Priority.valueOf("INFO");
-      org.slf4j.LoggerFactory.getLogger("Foo").info("a message");
-      com.amazonaws.services.ecs.model.ScaleUnit.valueOf("unit");
-      com.google.gson.stream.JsonToken.valueOf("token");
+      methodThatDoesNotExist();   // unresolved symbol
     }
 
     String foo() {
       if (ThreadLocalRandom.current().nextInt() > 1) {
         return null;
       }
-
-      confuse();
-
+      confuse();  // Compliant
       return "something";
     }
   }
 
-  @Log4j2
-  class TestS3516 {
-    boolean filter(SelectionKey selectionKey, String hostAddress) {
-      if (hostAddress == null) {
-        return true;
+  class CompliantExample2 {
+
+    boolean filter(SelectableChannel channel) {
+      if (channel == null){
+        return false;
       }
-      return getSth(selectionKey).map(address -> true).orElse(false);
+      return channel == null ? false :
+        getSth(channel) // Compliant
+        .isPresent();
     }
 
-    private Optional<String> getSth(SelectionKey selectionKey) {
-      SelectableChannel channel = selectionKey.channel();
-      if (channel instanceof SocketChannel) {
-        log.info("Test");
-        return Optional.of("test");
-      }
-      return Optional.empty();
-    }
-
-  }
-
-  @Log4j2
-  class TestS3516_2 {
-    boolean filter(SelectionKey selectionKey, String hostAddress) {
-      if (hostAddress == null) {
-        return true;
-      }
-      return getInetSocketAddress(selectionKey)
-        .map(address -> address.getAddress().getHostAddress().equals(hostAddress)).orElse(false);
-    }
-
-    private Optional<InetSocketAddress> getInetSocketAddress(SelectionKey selectionKey) {
-      SelectableChannel channel = selectionKey.channel();
+    private Optional<InetSocketAddress> getSth(SelectableChannel channel) {
       if (channel instanceof SocketChannel socketChannel) {
         try {
           return Optional.of(((InetSocketAddress) socketChannel.getRemoteAddress()));
         } catch (IOException e) {
-          log.error("", e);
+          log.error("", e);   // unresolved symbol
         }
       }
       return Optional.empty();
@@ -75,18 +50,43 @@ public class InvariantReturnCheckSample {
 
   }
 
-  public boolean someMethod() {
-    // No issue should be raised because someMethod may be overriden
-    try {
-      someExceptionalMethod();
-    } catch (IllegalArgumentException e) {
-      return false;
+  class CompliantExample3 {
+
+    boolean filter(SelectableChannel channel) {
+      if (channel == null){
+        return false;
+      }
+      return getSth(channel) // Compliant
+        .isPresent();
     }
-    return true;
+
+    private Optional<String> getSth(SelectableChannel channel) {
+      if (channel instanceof SocketChannel) {
+        log.info("Test");   // unresolved symbol
+        return Optional.of("test");
+      }
+      return Optional.empty();
+    }
+
   }
 
-  int someExceptionalMethod() {
-    throw new IllegalArgumentException();
+  class NoncompliantExample {
+
+    boolean filter(SelectableChannel channel) { // Noncompliant [[sc=13;ec=19]] {{Refactor this method to not always return the same value.}}
+      if (channel == null){
+        return false;
+      }
+      return true ? false : getSth(null);
+    }
+
+    private Optional<String> getSth(SelectableChannel channel) {
+      if (channel instanceof SocketChannel) {
+        log.info("Test");   // unresolved symbol
+        return Optional.of("test");
+      }
+      return Optional.empty();
+    }
+
   }
 
 }
