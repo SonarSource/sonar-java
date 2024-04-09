@@ -195,12 +195,10 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean hasOwnerClassAllowedAnnotations(VariableTree variableTree) {
-    if (variableTree.parent() instanceof ClassTree ownerClass) {
-      return ownerClass.modifiers().annotations().stream().anyMatch(
-        annotation -> OWNER_CLASS_ALLOWED_ANNOTATIONS.contains(annotation.annotationType().symbolType().fullyQualifiedName())
-      );
-    }
-    return false;
+    var ownerClass = (ClassTree) variableTree.parent();
+    return ownerClass.modifiers().annotations().stream().anyMatch(
+      annotation -> OWNER_CLASS_ALLOWED_ANNOTATIONS.contains(annotation.annotationType().symbolType().fullyQualifiedName())
+    );
   }
 
   private boolean onlyUsedInVariableAssignment(Symbol symbol) {
