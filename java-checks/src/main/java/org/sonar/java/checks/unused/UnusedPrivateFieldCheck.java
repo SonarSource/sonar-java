@@ -64,6 +64,13 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   private static final String DEFAULT_IGNORE_ANNOTATIONS_KEY = "ignoreAnnotations";
   private static final String DEFAULT_IGNORE_ANNOTATIONS_DESCRIPTION = "Ignore annotations with next names (fully qualified class names separated with \",\").";
 
+  private static final List<String> OWNER_CLASS_ALLOWED_ANNOTATIONS = List.of(
+    "lombok.Data",
+    "lombok.Getter",
+    "lombok.Setter",
+    "lombok.AllArgsConstructor"
+  );
+
   private static final Tree.Kind[] ASSIGNMENT_KINDS = {
     Tree.Kind.ASSIGNMENT,
     Tree.Kind.MULTIPLY_ASSIGNMENT,
@@ -175,7 +182,8 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
       if (symbol.isPrivate()
         && onlyUsedInVariableAssignment(symbol)
         && !"serialVersionUID".equals(name)
-        && !unknownIdentifiers.contains(name)) {
+        && !unknownIdentifiers.contains(name)
+        && !hasOwnerClassAllowedAnnotations(tree)) {
         QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(tree.simpleName())
@@ -184,6 +192,15 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
           .report();
       }
     }
+  }
+
+  private static boolean hasOwnerClassAllowedAnnotations(VariableTree variableTree) {
+    if (variableTree.parent() instanceof ClassTree ownerClass) {
+      return ownerClass.modifiers().annotations().stream().anyMatch(
+        annotation -> OWNER_CLASS_ALLOWED_ANNOTATIONS.contains(annotation.annotationType().symbolType().fullyQualifiedName())
+      );
+    }
+    return false;
   }
 
   private boolean onlyUsedInVariableAssignment(Symbol symbol) {
@@ -284,7 +301,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
       name = identifier.name() + index;
     } else {
       identifier = ((MemberSelectExpressionTree) variable).identifier();
-      name = identifier.name() +  index;
+      name = identifier.name() + index;
     }
     name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
     TypeTree typeInDeclaration = ((VariableTree) identifier.symbol().declaration()).type();
