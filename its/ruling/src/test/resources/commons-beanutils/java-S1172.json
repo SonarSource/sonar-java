@@ -5,4 +5,33 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java": [
 454
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/A.java": [
+31
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/AbstractParent.java": [
+34,
+41,
+51
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BetaBean.java": [
+34
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java": [
+177
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestBean.java": [
+77
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java": [
+434
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
+202,
+206,
+210,
+222
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
+540
+]
 }
