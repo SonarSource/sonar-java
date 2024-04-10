@@ -19,6 +19,7 @@
  */
 package org.sonar.java.jsp;
 
+import jakarta.servlet.jsp.JspFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -39,7 +40,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
-import javax.servlet.jsp.JspFactory;
 import org.apache.jasper.JasperException;
 import org.apache.jasper.JspCompilationContext;
 import org.apache.jasper.compiler.Compiler;

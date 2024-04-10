@@ -31,7 +31,7 @@
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-jasper</artifactId>
-      <version>9.0.84</version>
+      <version>10.1.20</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.jdt</groupId>
@@ -39,7 +39,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
 
     <!-- unit tests -->
     <dependency>
@@ -88,6 +87,7 @@
             </goals>
             <configuration>
               <artifactItems>
+                <!-- JSP JSTL 1.2 -->
                 <artifactItem>
                   <groupId>org.springframework</groupId>
                   <artifactId>spring-webmvc</artifactId>
@@ -102,6 +102,28 @@
                   <groupId>javax.servlet</groupId>
                   <artifactId>jstl</artifactId>
                   <version>1.2</version>
+                </artifactItem>
+
+                <!-- JSP JSTL 3 -->
+                <artifactItem>
+                  <groupId>org.glassfish.web</groupId>
+                  <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+                  <version>3.0.1</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>jakarta.servlet.jsp.jstl</groupId>
+                  <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+                  <version>3.0.0</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>jakarta.servlet</groupId>
+                  <artifactId>jakarta.servlet-api</artifactId>
+                  <version>6.0.0</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>jakarta.el</groupId>
+                  <artifactId>jakarta.el-api</artifactId>
+                  <version>5.0.0</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>

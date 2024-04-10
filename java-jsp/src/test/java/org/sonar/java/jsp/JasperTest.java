@@ -76,9 +76,18 @@ class JasperTest {
   @RegisterExtension
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
   private Path jspFile;
+
   private final File springJar = Paths.get("target/test-jars/spring-webmvc-5.2.3.RELEASE.jar").toFile();
-  private final File jstlJar = Paths.get("target/test-jars/jstl-1.2.jar").toFile();
-  private final File jee6Jar = Paths.get("target/test-jars/javaee-web-api-6.0.jar").toFile();
+
+  private final static List<File> JSTL1_2_CLASSPATH = asList(
+    Paths.get("target/test-jars/javaee-web-api-6.0.jar").toFile(),
+    Paths.get("target/test-jars/jstl-1.2.jar").toFile());
+
+  private final static List<File> JSTL3_CLASSPATH = asList(
+    Paths.get("target/test-jars/jakarta.servlet.jsp.jstl-3.0.1.jar").toFile(),
+    Paths.get("target/test-jars/jakarta.servlet.jsp.jstl-api-3.0.0.jar").toFile(),
+    Paths.get("target/test-jars/jakarta.servlet-api-6.0.0.jar").toFile(),
+    Paths.get("target/test-jars/jakarta.el-api-5.0.0.jar").toFile());
 
   @BeforeEach
   void setUp() throws Exception {
@@ -183,7 +192,7 @@ class JasperTest {
       "<c:if test=\"true\">what-if</c:if>\n" +
       "</body>\n" +
       "</html>");
-    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, asList(jee6Jar, jstlJar));
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, JSTL1_2_CLASSPATH);
 
     assertThat(generatedFiles).isEmpty();
     assertThat(logTester.logs(Level.DEBUG)).matches(logs -> logs.stream().anyMatch(line ->
@@ -303,6 +312,18 @@ class JasperTest {
       .matches(logs -> logs.stream().anyMatch(line ->
       line.startsWith("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp. Error:\norg.apache.jasper.JasperException:")));
 
+  }
+
+  @Test
+  void test_jakarta_jstl_3() throws Exception {
+    SensorContextTester ctx = jspContext(
+      "<%@ taglib prefix=\"c\" uri=\"jakarta.tags.core\"%>\n" +
+        "<c:url var=\"api\" value=\"/api/contacts/\" />");
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, JSTL3_CLASSPATH);
+
+    assertThat(generatedFiles).hasSize(1);
+    assertThat(logTester.logs(Level.DEBUG)).matches(logs -> logs.stream().noneMatch(line ->
+      line.contains("java.lang.NoClassDefFoundError: jakarta/servlet/jsp/tagext/TagLibraryValidator")));
   }
 
   private SensorContextTester jspContext(String jspSource) throws IOException {

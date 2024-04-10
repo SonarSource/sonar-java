@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
-import javax.servlet.jsp.tagext.TagLibraryInfo;
+import jakarta.servlet.jsp.tagext.TagLibraryInfo;
 import org.apache.jasper.Options;
 import org.apache.jasper.TrimSpacesOption;
 import org.apache.jasper.compiler.JspConfig;
@@ -126,7 +126,6 @@ class JasperOptions implements Options {
     return TrimSpacesOption.FALSE;
   }
 
-  @Override
   public String getIeClassId() {
     return DEFAULT_IE_CLASS_ID;
   }
