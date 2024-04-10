@@ -197,7 +197,7 @@ public class AutoScanTest {
     SoftAssertions softly = new SoftAssertions();
     softly.assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs.values());
     softly.assertThat(newTotal).isEqualTo(knownTotal);
-    softly.assertThat(rulesCausingFPs).hasSize(7);
+    softly.assertThat(rulesCausingFPs).hasSize(8);
     softly.assertThat(rulesNotReporting).hasSize(10);
 
     /**

@@ -71,4 +71,13 @@ class UnusedPrivateFieldCheckTest {
       .withCheck(check)
       .verifyIssues();
   }
+
+  @Test
+  void test_lombok_annotations() {
+    InternalCheckVerifier.newInstance()
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldLombok.java"))
+      .withCheck(new UnusedPrivateFieldCheck())
+      .verifyIssues();
+  }
+
 }
