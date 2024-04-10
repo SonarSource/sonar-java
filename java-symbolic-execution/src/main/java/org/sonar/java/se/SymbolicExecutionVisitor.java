@@ -72,8 +72,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
       if (methodCanNotBeOverriden(methodSymbol)) {
         MethodBehavior methodBehavior = behaviorCache.methodBehaviorForSymbol(methodSymbol);
         if (!methodBehavior.isVisited()) {
-          methodBehavior = walker.visitMethod(methodTree, methodBehavior);
-          methodBehavior.completed();
+          walker.visitMethod(methodTree, methodBehavior);
         }
       } else {
         walker.visitMethod(methodTree);
