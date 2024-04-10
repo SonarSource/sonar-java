@@ -1378,10 +1378,34 @@ public final class CheckList {
     TestsStabilityCheck.class,
     ThreadSleepInTestsCheck.class,
     TooManyAssertionsCheck.class,
-    UnusedTestRuleCheck.class);
+    UnusedTestRuleCheck.class,
+    StringLiteralDuplicatedCheck.class,
+    RedundantThrowsDeclarationCheck.class,
+    CallToDeprecatedMethodCheck.class,
+    StringConcatToTextBlockCheck.class,
+    SwitchCasesShouldBeCommaSeparatedCheck.class,
+    HiddenFieldCheck.class,
+    FixmeTagPresenceCheck.class,
+    CommentedOutCodeLineCheck.class,
+    CallToDeprecatedCodeMarkedForRemovalCheck.class,
+    UselessImportCheck.class,
+    TodoTagPresenceCheck.class,
+    UnusedPrivateMethodCheck.class,
+    RestrictedIdentifiersUsageCheck.class,
+    PrintfMisuseCheck.class,
+    UnusedLocalVariableCheck.class,
+    DeadStoreCheck.class,
+    UnusedMethodParameterCheck.class,
+    ReplaceGuavaWithJavaCheck.class,
+    MethodIdenticalImplementationsCheck.class,
+    CollapsibleIfCandidateCheck.class);
 
   private static final List<Class<?>> ALL_CHECKS = Stream.of(JAVA_MAIN_CHECKS, JAVA_TEST_CHECKS)
-    .flatMap(List::stream).collect(Collectors.toList());
+    .flatMap(List::stream)
+    .collect(Collectors.toSet())
+    .stream()
+    .sorted((class1, class2) -> class1.getSimpleName().compareTo(class2.getSimpleName()))
+    .collect(Collectors.toList());
 
   private static final Set<Class<? extends JavaCheck>> JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN = Set.of(
     // Symbolic executions rules are not in this list because they are dynamically excluded
