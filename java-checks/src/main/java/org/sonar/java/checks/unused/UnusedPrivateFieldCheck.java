@@ -64,7 +64,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   private static final String DEFAULT_IGNORE_ANNOTATIONS_KEY = "ignoreAnnotations";
   private static final String DEFAULT_IGNORE_ANNOTATIONS_DESCRIPTION = "Ignore annotations with next names (fully qualified class names separated with \",\").";
 
-  private static final List<String> OWNER_CLASS_ALLOWED_ANNOTATIONS = List.of(
+  private static final Set<String> OWNER_CLASS_ALLOWED_ANNOTATIONS = Set.of(
     "lombok.Data",
     "lombok.Getter",
     "lombok.Setter",
