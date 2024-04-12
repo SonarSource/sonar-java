@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.LiteralUtils;
@@ -32,6 +33,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -90,11 +92,56 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   public void visitLiteral(LiteralTree tree) {
     if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
       String literal = tree.value();
-      if (literal.length() >= MINIMAL_LITERAL_LENGTH) {
+      if (literal.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree)) {
         String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
         occurrences.computeIfAbsent(stringValue, key -> new ArrayList<>()).add(tree);
       }
     }
+  }
+
+  private static boolean isStringLiteralFragment(ExpressionTree tree) {
+    return isStringLiteral(tree) && (
+      isStringLiteral(getNextOperand(tree, Tree.Kind.PLUS)) ||
+        isStringLiteral(getPreviousOperand(tree, Tree.Kind.PLUS))
+    );
+  }
+
+  private static boolean isStringLiteral(@Nullable Tree tree) {
+    return tree != null && tree.is(Tree.Kind.STRING_LITERAL);
+  }
+
+  @Nullable
+  private static ExpressionTree getNextOperand(ExpressionTree tree, Tree.Kind kind) {
+    var binary = asBinaryExpression(tree.parent(), kind);
+    if (binary == null) {
+      return null;
+    }
+    if (tree == binary.leftOperand()) {
+      return binary.rightOperand();
+    } else {
+      binary = asBinaryExpression(binary.parent(), kind);
+      return binary != null? binary.rightOperand(): null;
+    }
+  }
+
+  @Nullable
+  private static ExpressionTree getPreviousOperand(ExpressionTree tree, Tree.Kind kind) {
+    var binary = asBinaryExpression(tree.parent(), kind);
+    if (binary == null) {
+      return null;
+    }
+    if (tree == binary.leftOperand()) {
+      return null;
+    } else {
+      var left = binary.leftOperand();
+      binary = asBinaryExpression(left, kind);
+      return binary != null? binary.rightOperand(): binary;
+    }
+  }
+
+  @Nullable
+  private static BinaryExpressionTree asBinaryExpression(Tree tree, Tree.Kind kind) {
+    return tree.is(kind)? (BinaryExpressionTree) tree: null;
   }
 
   @Override
