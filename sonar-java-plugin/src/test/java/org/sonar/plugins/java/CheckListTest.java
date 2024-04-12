@@ -203,12 +203,35 @@ class CheckListTest {
       try (FileReader jsonReader = new FileReader(metadataFile)) {
         DummyMetatada metadata = gson.fromJson(jsonReader, DummyMetatada.class);
 
+        List<String> rulesAppliedToTests = List.of(
+          "S1066",
+          "S1117",
+          "S1128",
+          "S1130",
+          "S1134",
+          "S1135",
+          "S1144",
+          "S1172",
+          "S125",
+          "S1481",
+          "S1611",
+          "S1854",
+          "S1874",
+          "S3457",
+          "S4144",
+          "S4738",
+          "S5738",
+          "S6126",
+          "S6204",
+          "S6208",
+          "S6213");
+
         if (!"deprecated".equals(metadata.status)) {
           // deprecated rules usually have no tags
-          if (testChecks.contains(cls) || "S3414".equals(key)) {
-//            assertThat(metadata.tags)
-//              .as("Rule " + key + " is targeting tests sources and should contain the 'tests' tag.")
-//              .contains("tests");
+          if ((testChecks.contains(cls) || "S3414".equals(key)) && !rulesAppliedToTests.contains(key)) {
+             assertThat(metadata.tags)
+             .as("Rule " + key + " is targeting tests sources and should contain the 'tests' tag.")
+             .contains("tests");
           } else {
             assertThat(metadata.tags)
               .as("Rule " + key + " is targeting main sources and should not contain the 'tests' tag.")

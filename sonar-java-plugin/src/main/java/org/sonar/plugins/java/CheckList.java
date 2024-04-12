@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -1335,15 +1336,6 @@ public final class CheckList {
 
   private static final List<Class<? extends JavaCheck>> JAVA_TEST_CHECKS = Arrays.asList(
     // Rule classes are listed alphabetically
-    AssertionArgumentOrderCheck.class,
-    AssertionCompareToSelfCheck.class,
-    AssertionFailInCatchBlockCheck.class,
-    AssertionInThreadRunCheck.class,
-    AssertionInTryCatchCheck.class,
-    AssertionsCompletenessCheck.class,
-    AssertionsInTestsCheck.class,
-    AssertionTypesCheck.class,
-    AssertionsWithoutMessageCheck.class,
     AssertJApplyConfigurationCheck.class,
     AssertJAssertionsInConsumerCheck.class,
     AssertJChainSimplificationCheck.class,
@@ -1352,18 +1344,37 @@ public final class CheckList {
     AssertJTestForEmptinessCheck.class,
     AssertThatThrownByAloneCheck.class,
     AssertTrueInsteadOfDedicatedAssertCheck.class,
+    AssertionArgumentOrderCheck.class,
+    AssertionCompareToSelfCheck.class,
+    AssertionFailInCatchBlockCheck.class,
+    AssertionInThreadRunCheck.class,
+    AssertionInTryCatchCheck.class,
+    AssertionTypesCheck.class,
+    AssertionsCompletenessCheck.class,
+    AssertionsInTestsCheck.class,
+    AssertionsWithoutMessageCheck.class,
     BadTestClassNameCheck.class,
     BadTestMethodNameCheck.class,
     BooleanOrNullLiteralInAssertionsCheck.class,
     CallSuperInTestCaseCheck.class,
+    CallToDeprecatedCodeMarkedForRemovalCheck.class,
+    CallToDeprecatedMethodCheck.class,
+    CollapsibleIfCandidateCheck.class,
+    CollectorsToListCheck.class,
+    CommentedOutCodeLineCheck.class,
+    DeadStoreCheck.class,
     ExpectedExceptionCheck.class,
+    FixmeTagPresenceCheck.class,
+    HiddenFieldCheck.class,
     IgnoredTestsCheck.class,
-    JUnitCompatibleAnnotationsCheck.class,
-    JUnit4AnnotationsCheck.class,
     JUnit45MethodAnnotationCheck.class,
+    JUnit4AnnotationsCheck.class,
     JUnit5DefaultPackageClassAndMethodCheck.class,
     JUnit5SilentlyIgnoreClassAndMethodCheck.class,
+    JUnitCompatibleAnnotationsCheck.class,
     JunitNestedAnnotationCheck.class,
+    LambdaOptionalParenthesisCheck.class,
+    MethodIdenticalImplementationsCheck.class,
     MockingAllMethodsCheck.class,
     MockitoAnnotatedObjectsShouldBeInitializedCheck.class,
     MockitoArgumentMatchersUsedOnAllParametersCheck.class,
@@ -1371,40 +1382,30 @@ public final class CheckList {
     NoTestInTestClassCheck.class,
     OneExpectedCheckedExceptionCheck.class,
     OneExpectedRuntimeExceptionCheck.class,
-    RandomizedTestDataCheck.class,
-    SpringAssertionsSimplificationCheck.class,
     ParameterizedTestCheck.class,
+    PrintfMisuseCheck.class,
+    RandomizedTestDataCheck.class,
+    RedundantThrowsDeclarationCheck.class,
+    ReplaceGuavaWithJavaCheck.class,
+    RestrictedIdentifiersUsageCheck.class,
+    SpringAssertionsSimplificationCheck.class,
+    StringConcatToTextBlockCheck.class,
+    SwitchCasesShouldBeCommaSeparatedCheck.class,
     TestAnnotationWithExpectedExceptionCheck.class,
     TestsStabilityCheck.class,
     ThreadSleepInTestsCheck.class,
-    TooManyAssertionsCheck.class,
-    UnusedTestRuleCheck.class,
-    StringLiteralDuplicatedCheck.class,
-    RedundantThrowsDeclarationCheck.class,
-    CallToDeprecatedMethodCheck.class,
-    StringConcatToTextBlockCheck.class,
-    SwitchCasesShouldBeCommaSeparatedCheck.class,
-    HiddenFieldCheck.class,
-    FixmeTagPresenceCheck.class,
-    CommentedOutCodeLineCheck.class,
-    CallToDeprecatedCodeMarkedForRemovalCheck.class,
-    UselessImportCheck.class,
     TodoTagPresenceCheck.class,
-    UnusedPrivateMethodCheck.class,
-    RestrictedIdentifiersUsageCheck.class,
-    PrintfMisuseCheck.class,
+    TooManyAssertionsCheck.class,
     UnusedLocalVariableCheck.class,
-    DeadStoreCheck.class,
     UnusedMethodParameterCheck.class,
-    ReplaceGuavaWithJavaCheck.class,
-    MethodIdenticalImplementationsCheck.class,
-    CollapsibleIfCandidateCheck.class);
+    UnusedPrivateMethodCheck.class,
+    UnusedTestRuleCheck.class,
+    UselessImportCheck.class);
 
   private static final List<Class<?>> ALL_CHECKS = Stream.of(JAVA_MAIN_CHECKS, JAVA_TEST_CHECKS)
     .flatMap(List::stream)
-    .collect(Collectors.toSet())
-    .stream()
-    .sorted((class1, class2) -> class1.getSimpleName().compareTo(class2.getSimpleName()))
+    .distinct()
+    .sorted(Comparator.comparing(Class::getSimpleName))
     .collect(Collectors.toList());
 
   private static final Set<Class<? extends JavaCheck>> JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN = Set.of(
