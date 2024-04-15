@@ -1,5 +1,7 @@
 package checks;
 
+import javax.annotation.Nullable;
+
 public class StringLiteralDuplicatedCheck {
 
   public void f() {
@@ -47,7 +49,7 @@ class ConstantAlreadyDefined {
   }
 
   private void setFieldValue(String projectName, Object longName) {
-    
+
   }
 
   public ConstantAlreadyDefined setProject(String projectKey, String projectName) {
@@ -75,4 +77,37 @@ class CompleteCoverage {
   int notString = 42;
 
   private static final String NOT_USED = "this constant is not used anywhere";
+}
+
+class IgnoreLiteralFragments {
+
+  private final String sqlStatement1 =
+    " SELECT " + // Compliant, because part of fragmented literal
+    "   c.id, " + // Compliant, because part of fragmented literal
+    "   c.name, " +
+    " FROM customers c " + // Compliant, because part of fragmented literal
+    " WHERE max_number IS NULL";
+
+  private final String sqlStatement2 =
+    " SELECT " +
+      "   c.id, " +
+      "   c.age, " +
+      " FROM customers c ";
+
+  private final String sqlStatement3 =
+    " SELECT " +
+      "   c.id, " +
+      "   c.name, " +
+      "   c.birthDate, " +
+      " FROM customers c " +
+      " WHERE max_number IS NULL";
+}
+
+class Coverage {
+
+  @Nullable
+  Object coverAnnotations = null;
+
+  private final String prevLeftNull = "SELECT" + 3;
+  private final String prevRightNull = 3 + "SELECT";
 }
