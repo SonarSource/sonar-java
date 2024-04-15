@@ -100,10 +100,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   }
 
   private static boolean isStringLiteralFragment(ExpressionTree tree) {
-    return isStringLiteral(tree) && (
-      isStringLiteral(getNextOperand(tree, Tree.Kind.PLUS)) ||
-        isStringLiteral(getPreviousOperand(tree, Tree.Kind.PLUS))
-    );
+    return isStringLiteral(tree) && (isStringLiteral(getNextOperand(tree)) || isStringLiteral(getPreviousOperand(tree)));
   }
 
   private static boolean isStringLiteral(@Nullable Tree tree) {
@@ -111,22 +108,22 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   }
 
   @Nullable
-  private static ExpressionTree getNextOperand(ExpressionTree tree, Tree.Kind kind) {
-    var binary = asBinaryExpression(tree.parent(), kind);
+  private static ExpressionTree getNextOperand(ExpressionTree tree) {
+    var binary = asPlusExpression(tree.parent());
     if (binary == null) {
       return null;
     }
     if (tree == binary.leftOperand()) {
       return binary.rightOperand();
     } else {
-      binary = asBinaryExpression(binary.parent(), kind);
-      return binary != null? binary.rightOperand(): null;
+      binary = asPlusExpression(binary.parent());
+      return binary != null ? binary.rightOperand() : null;
     }
   }
 
   @Nullable
-  private static ExpressionTree getPreviousOperand(ExpressionTree tree, Tree.Kind kind) {
-    var binary = asBinaryExpression(tree.parent(), kind);
+  private static ExpressionTree getPreviousOperand(ExpressionTree tree) {
+    var binary = asPlusExpression(tree.parent());
     if (binary == null) {
       return null;
     }
@@ -134,14 +131,14 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
       return null;
     } else {
       var left = binary.leftOperand();
-      binary = asBinaryExpression(left, kind);
-      return binary != null? binary.rightOperand(): binary;
+      binary = asPlusExpression(left);
+      return binary != null ? binary.rightOperand() : binary;
     }
   }
 
   @Nullable
-  private static BinaryExpressionTree asBinaryExpression(Tree tree, Tree.Kind kind) {
-    return tree.is(kind)? (BinaryExpressionTree) tree: null;
+  private static BinaryExpressionTree asPlusExpression(Tree tree) {
+    return tree.is(Tree.Kind.PLUS) ? (BinaryExpressionTree) tree : null;
   }
 
   @Override
@@ -158,7 +155,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
 
   @Override
   public void visitMethod(MethodTree tree) {
-    if(ModifiersUtils.hasModifier(tree.modifiers(), Modifier.DEFAULT)) {
+    if (ModifiersUtils.hasModifier(tree.modifiers(), Modifier.DEFAULT)) {
       //Ignore default methods to avoid catch-22 with S1214
       return;
     }
