@@ -1,5 +1,7 @@
 package checks;
 
+import javax.annotation.Nullable;
+
 public class StringLiteralDuplicatedCheck {
 
   public void f() {
@@ -99,4 +101,13 @@ class IgnoreLiteralFragments {
       "   c.birthDate, " +
       " FROM customers c " +
       " WHERE max_number IS NULL";
+}
+
+class Coverage {
+
+  @Nullable
+  Object coverAnnotations = null;
+
+  private final String prevLeftNull = "SELECT" + 3;
+  private final String prevRightNull = 3 + "SELECT";
 }

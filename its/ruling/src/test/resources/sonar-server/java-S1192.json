@@ -8,9 +8,6 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ComponentFinder.java": [
 147
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/SearchProjectsAction.java": [
-144
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookPayloadFactoryImpl.java": [
 79
 ],
@@ -26,22 +23,6 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/notification/NewIssuesNotification.java": [
 121
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/ws/ComponentTreeAction.java": [
-150
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/index/PermissionIndexerDao.java": [
-111,
-111,
-112,
-113,
-114,
-117,
-119,
-120,
-121,
-122,
-123
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/ProjectWsRef.java": [
 42
 ],
@@ -55,8 +36,7 @@
 72
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ws/UpdatesAction.java": [
-71,
-73
+71
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileBackuperImpl.java": [
 146
