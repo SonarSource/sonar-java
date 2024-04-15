@@ -10,7 +10,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 class UtilityClassWithPublicConstructorCheckSample {
 
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
   class LombokClass1 { // Compliant, a private constructor will be generated
     public static void foo() {
     }

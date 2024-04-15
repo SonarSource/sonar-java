@@ -111,10 +111,12 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
 
   private static boolean isAccessLevelNotPublic(ExpressionTree tree) {
     String valueName;
-    if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-      valueName = ((MemberSelectExpressionTree) tree).identifier().name();
+    if (tree instanceof MemberSelectExpressionTree mset) {
+      valueName = mset.identifier().name();
+    } else if (tree instanceof IdentifierTree identifier) {
+      valueName = identifier.name();
     } else {
-      valueName = ((IdentifierTree) tree).name();
+      return false;
     }
     return !"PUBLIC".equals(valueName);
   }
