@@ -238,22 +238,14 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isValidPropertyPlaceholder(String placeholder, int startColumn) throws SyntaxError {
-    var startIndex = 0;
-    var endIndex = placeholder.indexOf(':');
-
-    while (endIndex != -1) {
-      var segment = placeholder.substring(startIndex, endIndex);
-      if (!isValidPropertyPlaceholderSegment(segment, startColumn + startIndex)) {
-        return false;
-      }
-      startIndex = endIndex + 1;
-      endIndex = placeholder.indexOf(':', startIndex);
+    var segments = placeholder.split(":",2);
+    if (!isValidPropertyPlaceholderFirstSegment(segments[0], startColumn)) {
+      return false;
     }
-    var segment = placeholder.substring(startIndex);
-    return isValidPropertyPlaceholderSegment(segment, startColumn + startIndex);
+    return segments.length < 2 || (isValidPropertyPlaceholderDefaultSegment(segments[1], startColumn + segments[0].length() + 1));
   }
 
-  private static boolean isValidPropertyPlaceholderSegment(String segment, int startColumn) throws SyntaxError {
+  private static boolean isValidPropertyPlaceholderFirstSegment(String segment, int startColumn) throws SyntaxError {
     var stripped = segment.stripLeading();
     startColumn += segment.length() - stripped.length();
     stripped = stripped.stripTrailing();
@@ -264,6 +256,29 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     } else {
       return PROPERTY_PLACEHOLDER_PATTERN.matcher(stripped).matches();
     }
+  }
+
+  private static boolean isValidPropertyPlaceholderDefaultSegment(String segment, int startColumn) throws SyntaxError {
+    var stripped = segment.stripLeading();
+    startColumn += segment.length() - stripped.length();
+    stripped = stripped.stripTrailing();
+
+    var contentsParser = getContentsParser(stripped);
+    if (contentsParser != null) {
+      var endIndex = parseDelimitersAndContents(stripped, 1, startColumn + 2, contentsParser);
+      return endIndex == segment.stripTrailing().length();
+    }
+    return segment.indexOf(':') < 0;
+  }
+
+  private static ObjIntConsumer<String> getContentsParser(String contents) {
+    if (contents.startsWith("${")) {
+      return SpelExpressionCheck::parseValidPropertyPlaceholder;
+    }
+    if (contents.startsWith("#{")) {
+      return SpelExpressionCheck::parseValidSpelExpression;
+    }
+    return null;
   }
 
   private static void parseValidSpelExpression(String expressionString, int startColumn) throws SyntaxError {

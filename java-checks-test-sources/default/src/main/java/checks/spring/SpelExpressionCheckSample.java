@@ -60,55 +60,64 @@ public class SpelExpressionCheckSample {
   private String region4;
 
   @Value("${user.region:defaultRegion}") // Compliant
-  private String multi1;
+  private String default1;
 
   @Value("${user.region::defaultRegion}") // Noncompliant {{Correct this malformed property placeholder.}}
-  private String multi2;
+  private String default2;
 
   @Value("${:user.region:defaultRegion}") // Noncompliant {{Correct this malformed property placeholder.}}
-  private String multi3;
+  private String default3;
 
-  @Value("${user.region:defaultRegion:}") // Noncompliant {{Correct this malformed property placeholder.}}
-  private String multi4;
+  @Value("${user.region:defaultRegion:}") // Noncompliant
+  private String default4;
 
   @Value("${  user.region  : defaultRegion  }") // Compliant
-  private String multi5;
+  private String default5;
 
   @Value("${user.region:#{null}}") // Compliant
-  private String multi6;
+  private String default6;
 
   @Value("${user.region:#{  null  }}") // Compliant
-  private String multi7;
+  private String default7;
 
   @Value("${user.region:#{  null + 3 }}") // Compliant
-  private String multi8;
+  private String default8;
 
   @Value("${user.region:#{  null + * 3 }}") // Noncompliant [[sc=25;ec=41]] {{Correct this malformed SpEL expression.}}
-  private String multi9;
+  private String default9;
 
   @Value("${user.region:#{'D'+'E'}}") // Compliant
-  private String multi10;
+  private String default10;
 
-  @Value("${user.region:#{null}:#{null}:foo.bar}") // Compliant
-  private String multi11;
+  @Value("${user.region:#{null}:#{null}:foo.bar}") // Noncompliant
+  private String default11;
 
-  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // Noncompliant [[sc=33;ec=40]] {{Correct this malformed SpEL expression.}}
-  private String multi12;
+  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // Noncompliant [[sc=11;ec=49]] {{Correct this malformed property placeholder.}}
+  private String default12;
 
-  @Value("${user.region:#{null}:#{4*4}:foo.bar}") // Compliant
-  private String multi13;
-
-  @Value("${user.region:#{null}:#{4*4}:foo..bar}") // Noncompliant
-  private String multi14;
-
-  @Value("${user.region:#{4**4}:#{4**4}:foo.bar}") // Noncompliant
-  private String multi15;
-
-  @Value("${:defaultRegion}") // Noncompliant
-  private String multi16;
+  @Value("${user.region:#{4**4}:#{null}:foo.bar}") // Noncompliant [[sc=25;ec=32]] {{Correct this malformed SpEL expression.}}
+  private String default13;
 
   @Value("${user.2region:default-region}") // Compliant
-  private String multi17;
+  private String default14;
+
+  @Value("${:defaultRegion}") // Noncompliant
+  private String default15;
+
+  @Value("${user.region:}") // Compliant
+  private String emptyDefaultValue;
+
+  @Value("${foo.bar:0 0 * 8 b c}") // Compliant
+  private String defaultValueStringContents;
+
+  @Value("${server.error.path:${error.path}}") // Compliant
+  private String nestedPropertyValue1;
+
+  @Value("${server.error.path:${error.path}    }") // Compliant
+  private String checkTrimEMptyEnd;
+
+  @Value("${server.error.path:${error.path:defaultErrorValue}}") // Compliant
+  private String nestedPropertyValue2;
 
   @Value("#{'${listOfValues}' split(',')}") // Noncompliant [[sc=11;ec=42]] {{Correct this malformed SpEL expression.}}
   private List<String> valuesListNc;
