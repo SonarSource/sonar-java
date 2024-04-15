@@ -21,18 +21,28 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ClassPatternsUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
-
 @Rule(key = "S1118")
 public class UtilityClassWithPublicConstructorCheck extends IssuableSubscriptionVisitor {
+
+  private static final Set<String> LOMBOK_CONSTRUCTOR_GENERATORS = Set.of(
+    "lombok.NoArgsConstructor",
+    "lombok.AllArgsConstructor",
+    "lombok.RequiredArgsConstructor");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -52,16 +62,16 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
         reportIssue(explicitConstructor.simpleName(), "Hide this public constructor.");
       }
     }
-    if (hasImplicitPublicConstructor) {
+    if (hasImplicitPublicConstructor && !hasCompliantGeneratedConstructors(classTree)) {
       reportIssue(classTree.simpleName(), "Add a private constructor to hide the implicit public one.");
     }
   }
 
   private static List<MethodTree> getExplicitConstructors(ClassTree classTree) {
     return classTree.members().stream()
-        .filter(UtilityClassWithPublicConstructorCheck::isConstructor)
-        .map(MethodTree.class::cast)
-        .toList();
+      .filter(UtilityClassWithPublicConstructorCheck::isConstructor)
+      .map(MethodTree.class::cast)
+      .toList();
   }
 
   private static boolean isConstructor(Tree tree) {
@@ -74,6 +84,39 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
 
   private static boolean hasPublicModifier(MethodTree methodTree) {
     return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PUBLIC);
+  }
+
+  private static boolean hasCompliantGeneratedConstructors(ClassTree classTree) {
+    if (classTree.modifiers().annotations().stream().noneMatch(UtilityClassWithPublicConstructorCheck::isLombokConstructorGenerator)) {
+      return false;
+    }
+    return classTree.modifiers().annotations().stream()
+      .filter(UtilityClassWithPublicConstructorCheck::isLombokConstructorGenerator)
+      .noneMatch(UtilityClassWithPublicConstructorCheck::hasPublicAccess);
+  }
+
+  private static boolean isLombokConstructorGenerator(AnnotationTree annotation) {
+    return LOMBOK_CONSTRUCTOR_GENERATORS.contains(annotation.annotationType().symbolType().fullyQualifiedName());
+  }
+
+  private static boolean hasPublicAccess(AnnotationTree annotation) {
+    for (var arg : annotation.arguments()) {
+      var assignment = (AssignmentExpressionTree) arg;
+      if (isAccessLevelNotPublic(assignment.expression())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static boolean isAccessLevelNotPublic(ExpressionTree tree) {
+    String valueName;
+    if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+      valueName = ((MemberSelectExpressionTree) tree).identifier().name();
+    } else {
+      valueName = ((IdentifierTree) tree).name();
+    }
+    return !"PUBLIC".equals(valueName);
   }
 
 }
