@@ -96,7 +96,7 @@ public class JavaSensor implements Sensor {
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.onlyOnLanguage(Java.KEY).name("JavaSensor");
+    descriptor.onlyOnLanguages(Java.KEY, Jasper.JSP_LANGUAGE_KEY).name("JavaSensor");
   }
 
   @Override
