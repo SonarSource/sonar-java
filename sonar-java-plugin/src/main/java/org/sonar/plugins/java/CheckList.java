@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -1380,8 +1381,12 @@ public final class CheckList {
     TooManyAssertionsCheck.class,
     UnusedTestRuleCheck.class);
 
-  private static final List<Class<?>> ALL_CHECKS = Stream.of(JAVA_MAIN_CHECKS, JAVA_TEST_CHECKS)
-    .flatMap(List::stream).collect(Collectors.toList());
+  private static final List<Class<? extends JavaCheck>> JAVA_MAIN_AND_TEST_CHECKS = Arrays.asList();
+
+  private static final List<Class<?>> ALL_CHECKS = Stream.of(JAVA_MAIN_CHECKS, JAVA_MAIN_AND_TEST_CHECKS, JAVA_TEST_CHECKS)
+    .flatMap(List::stream)
+    .sorted(Comparator.comparing(Class::getSimpleName))
+    .collect(Collectors.toList());
 
   private static final Set<Class<? extends JavaCheck>> JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN = Set.of(
     // Symbolic executions rules are not in this list because they are dynamically excluded
@@ -1439,15 +1444,22 @@ public final class CheckList {
   }
 
   public static List<Class<? extends JavaCheck>> getJavaChecks() {
-    return JAVA_MAIN_CHECKS;
+    return sortedJoin(JAVA_MAIN_CHECKS, JAVA_MAIN_AND_TEST_CHECKS);
   }
 
   public static List<Class<? extends JavaCheck>> getJavaTestChecks() {
-    return JAVA_TEST_CHECKS;
+    return sortedJoin(JAVA_MAIN_AND_TEST_CHECKS, JAVA_TEST_CHECKS);
   }
 
   public static Set<Class<? extends JavaCheck>> getJavaChecksNotWorkingForAutoScan() {
     return JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN;
   }
 
+  @SafeVarargs
+  private static List<Class<? extends JavaCheck>> sortedJoin(List<Class<? extends JavaCheck>>... lists) {
+    return Arrays.stream(lists)
+      .flatMap(List::stream)
+      .sorted(Comparator.comparing(Class::getSimpleName))
+      .toList();
+  }
 }

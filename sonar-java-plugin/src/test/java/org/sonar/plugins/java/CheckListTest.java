@@ -194,6 +194,7 @@ class CheckListTest {
   @Test
   void rules_targeting_tests_should_have_tests_tag() throws Exception {
     Set<Class<? extends JavaCheck>> testChecks = new HashSet<>(CheckList.getJavaTestChecks());
+    Set<Class<? extends JavaCheck>> mainChecks = new HashSet<>(CheckList.getJavaChecks());
 
     for (Class<?> cls : CheckList.getChecks()) {
       String key = AnnotationUtils.getAnnotation(cls, Rule.class).key();
@@ -205,7 +206,7 @@ class CheckListTest {
 
         if (!"deprecated".equals(metadata.status)) {
           // deprecated rules usually have no tags
-          if (testChecks.contains(cls) || "S3414".equals(key)) {
+          if ((testChecks.contains(cls) && !mainChecks.contains(cls)) || "S3414".equals(key)) {
             assertThat(metadata.tags)
               .as("Rule " + key + " is targeting tests sources and should contain the 'tests' tag.")
               .contains("tests");
