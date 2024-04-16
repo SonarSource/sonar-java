@@ -117,6 +117,16 @@ abstract class OptionalGetBeforeIsPresentCheck_jdk11 {
     op.get(); // Compliant
   }
 
+  void test_junit5_14(Optional<String> op){
+    Assertions.assertTrue(op.isPresent());
+    op.get();  // Compliant
+  }
+
+  void test_junit5_15(Optional<String> op){
+    Assertions.assertFalse(op.isPresent(), "Hello");
+    op.get();  // Noncompliant
+  }
+
   void test_junit4_1(Optional<String> op){
     Assert.assertTrue("Hello", op.isPresent());
     op.get();  // Compliant
@@ -149,6 +159,16 @@ abstract class OptionalGetBeforeIsPresentCheck_jdk11 {
 
   void test_junit4_7(Optional<String> op){
     Assert.fail("Hello");
+    op.get(); // Compliant
+  }
+
+  void test_junit4_8(Optional<String> op){
+    Assert.assertTrue(op.isPresent());
+    op.get();  // Compliant
+  }
+
+  void test_junit4_9(Optional<String> op){
+    Assert.assertFalse("", op.isEmpty());
     op.get(); // Compliant
   }
 
