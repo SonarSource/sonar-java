@@ -1706,7 +1706,7 @@
   {
     "ruleKey": "S3655",
     "hasTruePositives": true,
-    "falseNegatives": 7,
+    "falseNegatives": 8,
     "falsePositives": 0
   },
   {
