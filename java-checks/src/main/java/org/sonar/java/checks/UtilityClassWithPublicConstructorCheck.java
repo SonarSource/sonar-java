@@ -87,12 +87,7 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   }
 
   private static boolean hasCompliantGeneratedConstructors(ClassTree classTree) {
-    if (classTree.modifiers().annotations().stream().noneMatch(UtilityClassWithPublicConstructorCheck::isLombokConstructorGenerator)) {
-      return false;
-    }
-    return classTree.modifiers().annotations().stream()
-      .filter(UtilityClassWithPublicConstructorCheck::isLombokConstructorGenerator)
-      .noneMatch(UtilityClassWithPublicConstructorCheck::hasPublicAccess);
+    return classTree.modifiers().annotations().stream().anyMatch(it -> isLombokConstructorGenerator(it) && !hasPublicAccess(it));
   }
 
   private static boolean isLombokConstructorGenerator(AnnotationTree annotation) {
@@ -100,13 +95,9 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   }
 
   private static boolean hasPublicAccess(AnnotationTree annotation) {
-    for (var arg : annotation.arguments()) {
-      var assignment = (AssignmentExpressionTree) arg;
-      if (isAccessLevelNotPublic(assignment.expression())) {
-        return false;
-      }
-    }
-    return true;
+    return annotation.arguments().stream().noneMatch(it ->
+      isAccessLevelNotPublic(((AssignmentExpressionTree) it).expression())
+    );
   }
 
   private static boolean isAccessLevelNotPublic(ExpressionTree tree) {

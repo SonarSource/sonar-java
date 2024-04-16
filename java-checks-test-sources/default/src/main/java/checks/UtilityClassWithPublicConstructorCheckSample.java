@@ -1,6 +1,7 @@
 package checks;
 
 import java.io.Serializable;
+import javax.annotation.CheckForNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,12 @@ import lombok.RequiredArgsConstructor;
 import static lombok.AccessLevel.PRIVATE;
 
 class UtilityClassWithPublicConstructorCheckSample {
+
+  @CheckForNull
+  class Coverage { // Noncompliant
+    public static void foo() {
+    }
+  }
 
   @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
   class LombokClass1 { // Compliant, a private constructor will be generated
@@ -22,7 +29,7 @@ class UtilityClassWithPublicConstructorCheckSample {
     }
   }
 
-  @NoArgsConstructor
+  @NoArgsConstructor(force = true)
   class LombokClass6 { // Noncompliant
     public static void foo() {
     }
