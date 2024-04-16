@@ -1,0 +1,196 @@
+[
+  {
+    "signature": "org.junit.jupiter.api.Assertions#assertTrue(Z)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["TRUE"]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      },
+      {
+        "parametersConstraints": [
+          ["FALSE"]
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.jupiter.api.Assertions#assertTrue(ZLjava/lang/String;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["TRUE"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      },
+      {
+        "parametersConstraints": [
+          ["FALSE"],
+          []
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.jupiter.api.Assertions#assertTrue(ZLjava/util/function/Supplier;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["TRUE"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      },
+      {
+        "parametersConstraints": [
+          ["FALSE"],
+          []
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.jupiter.api.Assertions#assertFalse(Z)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["FALSE"]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      },
+      {
+        "parametersConstraints": [
+          ["TRUE"]
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.jupiter.api.Assertions#assertFalse(ZLjava/lang/String;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["FALSE"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      },
+      {
+        "parametersConstraints": [
+          ["TRUE"],
+          []
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.jupiter.api.Assertions#assertFalse(ZLjava/util/function/Supplier;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["FALSE"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      },
+      {
+        "parametersConstraints": [
+          ["TRUE"],
+          []
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.jupiter.api.Assertions#fail()Ljava/lang/Object;",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.jupiter.api.Assertions#fail(Ljava/lang/String;)Ljava/lang/Object;",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.jupiter.api.Assertions#fail(Ljava/lang/String;Ljava/lang/Throwable;)Ljava/lang/Object;",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.jupiter.api.Assertions#fail(Ljava/lang/Throwable;)Ljava/lang/Object;",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.jupiter.api.Assertions#fail(Ljava/util/function/Supplier;)Ljava/lang/Object;",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  }
+]
