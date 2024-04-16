@@ -1,0 +1,112 @@
+[
+  {
+    "signature": "org.junit.Assert#assertTrue(Z)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["TRUE"]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      },
+      {
+        "parametersConstraints": [
+          ["FALSE"]
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.Assert#assertTrue(Ljava/lang/String;Z)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          ["TRUE"]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      },
+      {
+        "parametersConstraints": [
+          [],
+          ["FALSE"]
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.Assert#assertFalse(Z)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["FALSE"]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      },
+      {
+        "parametersConstraints": [
+          ["TRUE"]
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.Assert#assertFalse(Ljava/lang/String;Z)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          ["FALSE"]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      },
+      {
+        "parametersConstraints": [
+          [],
+          ["TRUE"]
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.Assert#fail()V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  },
+  {
+    "signature": "org.junit.Assert#fail(Ljava/lang/String;)V",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "exception": ["java.lang.AssertionError"]
+      }
+    ]
+  }
+]

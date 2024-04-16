@@ -130,7 +130,9 @@ public class BehaviorCache {
       "org.apache.commons.lang3.json",
       "org.apache.logging.log4j.core.util.json",
       "org.eclipse.core.runtime.json",
-      "org.springframework.util.json"
+      "org.springframework.util.json",
+      "org.junit.jupiter.api.json",
+      "org.junit.json"
     };
 
     private static final Type LIST_OF_METHOD_BEHAVIORS_TYPE = new TypeToken<List<MethodBehavior>>() {}.getType();
