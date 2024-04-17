@@ -2,4 +2,18 @@
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
 80
 ],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java": [
+377,
+532,
+545,
+558,
+571,
+593,
+609,
+635
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java": [
+375,
+429
+]
 }

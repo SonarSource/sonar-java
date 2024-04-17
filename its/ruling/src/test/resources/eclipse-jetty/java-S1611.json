@@ -2,14 +2,60 @@
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
 80
 ],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java": [
+377,
+532,
+545,
+558,
+571,
+593,
+609,
+635
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java": [
+375,
+429
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyConnectionTest.java": [
+281
+],
 "org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLogger.java": [
 132,
 151
+],
+"org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerTest.java": [
+610
+],
+"org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/Slf4jEffort.java": [
+59,
+75,
+171,
+239,
+247
 ],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java": [
 71,
 74,
 79
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilTest.java": [
+685
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/resource/JarResourceTest.java": [
+163,
+169,
+175
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/SslContextFactoryTest.java": [
+98,
+122,
+127
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SchedulerTest.java": [
+65
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/thread/strategy/ExecutionStrategyTest.java": [
+77
 ],
 "org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
 369,
