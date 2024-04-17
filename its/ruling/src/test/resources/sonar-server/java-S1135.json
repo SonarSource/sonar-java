@@ -73,4 +73,33 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ThreadLocalSettings.java": [
 70
 ],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/notification/MyNewIssuesEmailTemplateTest.java": [
+97,
+125
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/notification/NewIssuesEmailTemplateTest.java": [
+114,
+125
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualitygate/ws/QualityGatesWsTest.java": [
+52
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImplTest.java": [
+165,
+166
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileFactoryImplTest.java": [
+320,
+330
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/RegisterQualityProfilesMediumTest.java": [
+55,
+111
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java": [
+66
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/RegisterRulesTest.java": [
+225
+]
 }

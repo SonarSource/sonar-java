@@ -47,4 +47,13 @@
 401,
 443
 ],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CoverageRuleTest.java": [
+107
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/IssueServiceMediumTest.java": [
+144
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java": [
+251
+]
 }

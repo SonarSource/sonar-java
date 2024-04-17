@@ -33,6 +33,9 @@
 1110,
 1268
 ],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/SslConnectionTest.java": [
+135
+],
 "org.eclipse.jetty:jetty-project:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java": [
 230
 ],

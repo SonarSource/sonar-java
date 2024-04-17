@@ -7,6 +7,14 @@
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
 894
 ],
+"org.eclipse.jetty:jetty-project:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/MBeanContainerTest.java": [
+78
+],
+"org.eclipse.jetty:jetty-project:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/ObjectMBeanUtilTest.java": [
+75,
+94,
+190
+],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java": [
 58,
 59,
@@ -30,9 +38,19 @@
 334,
 350
 ],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslContextFactoryReloadTest.java": [
+123,
+184
+],
 "org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/Timestamp.java": [
 78,
 109
+],
+"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONTest.java": [
+243,
+266,
+350,
+413
 ],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java": [
 165

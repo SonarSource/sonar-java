@@ -5,8 +5,32 @@
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java": [
 1192
 ],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURIParseTest.java": [
+247
+],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/PathMappingsTest.java": [
+77,
+129,
+161,
+204
+],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
 758
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/IOTest.java": [
+171,
+182,
+186,
+188,
+194,
+231
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointTest.java": [
+335,
+364,
+374,
+681,
+811
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextEvent.java": [
 57
@@ -24,6 +48,140 @@
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java": [
 648
 ],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncRequestReadTest.java": [
+136,
+182,
+192,
+210,
+351,
+355
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ClassLoaderDumpTest.java": [
+184
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorTimeoutTest.java": [
+435,
+481
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/DetectorConnectionTest.java": [
+212,
+483,
+550
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java": [
+395
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java": [
+1096
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java": [
+1007,
+1012,
+1137,
+1557,
+1568,
+1777
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpWriterTest.java": [
+245
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartParserTest.java": [
+348
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java": [
+392
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyConnectionTest.java": [
+136,
+259,
+300
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyCustomizerTest.java": [
+142
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyProtocolTest.java": [
+164,
+176,
+179,
+247
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java": [
+600,
+628
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ResponseTest.java": [
+965,
+1042
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorTimeoutTest.java": [
+189,
+214
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ShutdownMonitorTest.java": [
+50,
+93,
+127,
+158,
+190,
+219
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/StressTest.java": [
+266
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/BufferedResponseHandlerTest.java": [
+75
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerCollectionTest.java": [
+233,
+236
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerTest.java": [
+381,
+508
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/NcsaRequestLogTest.java": [
+147,
+155
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerTest.java": [
+320
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLCloseTest.java": [
+106,
+113
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLEngineTest.java": [
+213,
+218,
+229,
+237,
+265,
+370,
+378
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLReadEOFAfterResponseTest.java": [
+137
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java": [
+132,
+137,
+154,
+184,
+189,
+201,
+259,
+284,
+346
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslUploadTest.java": [
+105,
+144,
+146
+],
+"org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerTest.java": [
+299,
+468
+],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java": [
 532
 ],
@@ -35,6 +193,45 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/SerializedExecutor.java": [
 84
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java": [
+260
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java": [
+43,
+61
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/PathWatcherDemo.java": [
+68
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/PathWatcherTest.java": [
+218,
+399,
+641
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/RolloverFileOutputStreamTest.java": [
+54
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/SearchPatternTest.java": [
+83
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilTest.java": [
+140,
+144
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/Utf8AppendableTest.java": [
+166,
+186
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/component/LifeCycleListenerTest.java": [
+107
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/SslContextFactoryTest.java": [
+94,
+116
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/SampleStatisticTest.java": [
+41
 ],
 "org.eclipse.jetty:jetty-project:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java": [
 441
