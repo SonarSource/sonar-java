@@ -234,3 +234,74 @@ class UnusedPrivateMethodCheckMyClass<A extends Serializable> {
     }
   }
 }
+
+@interface ProxyMethod {
+  public String value();
+}
+
+@interface MethodProvided {
+  public String value();
+}
+
+@interface Getter {
+  public String getterMethod();
+}
+
+@interface Setter {
+  public String method();
+}
+abstract class MethodReferencedInAnnotation1 {
+
+  private void foo() {} // Compliant
+
+  @ProxyMethod("foo")
+  abstract void bar();
+}
+
+@MethodProvided(value = "foo")
+abstract class MethodReferencedInAnnotation2 {
+
+  private void foo() {} // Compliant
+
+  @ProxyMethod("foo")
+  abstract void bar();
+
+  private void baz() {} // Noncompliant
+}
+
+class MethodReferencedInAnnotation3 {
+
+  @Getter(getterMethod = "foo")
+  int bar;
+
+  private int foo() { // Compliant
+    return 42;
+  }
+}
+
+class MethodReferencedInAnnotation4 {
+
+  @Setter(method = "foo")
+  int bar;
+
+  private void foo(int value) {} // Compliant
+
+  private void bar(int value) {} // Noncompliant
+}
+
+class MethodReferencedInAnnotation5 {
+
+  @Getter(getterMethod = "foo2")
+  @Setter(method = "foo4")
+  int bar;
+
+  private void foo1(int value) {} // Noncompliant
+
+  private int foo2() { // Compliant
+    return 42;
+  }
+
+  private void foo3(int value) {} // Noncompliant
+  private void foo4(int value) {} // Compliant
+  private void foo5(int value) {} // Noncompliant
+}

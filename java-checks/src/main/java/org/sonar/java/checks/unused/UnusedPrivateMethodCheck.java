@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.QuickFixHelper;
@@ -37,7 +39,10 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
@@ -57,7 +62,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   private final List<MethodTree> unusedPrivateMethods = new ArrayList<>();
   private final Set<String> unresolvedMethodNames = new HashSet<>();
-  
+
   private static final Set<String> PARAM_ANNOTATION_EXCEPTIONS = Set.of(
     "javax.enterprise.event.Observes",
     "jakarta.enterprise.event.Observes"
@@ -74,13 +79,21 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    reportUnusedPrivateMethods();
+    var methods = unusedPrivateMethods.stream();
+    if (!unusedPrivateMethods.isEmpty()) {
+      var checker = new CheckAnnotationsForMethodNames(
+        unusedPrivateMethods.stream().map(it -> it.simpleName().name()).collect(Collectors.toSet())
+      );
+      context.getTree().accept(checker);
+      methods = methods.filter(it -> checker.methodNames.contains(it.simpleName().name()));
+    }
+    reportUnusedPrivateMethods(methods);
     unusedPrivateMethods.clear();
     unresolvedMethodNames.clear();
   }
 
-  private void reportUnusedPrivateMethods() {
-    unusedPrivateMethods.stream()
+  private void reportUnusedPrivateMethods(Stream<MethodTree> methods) {
+    methods
       .filter(methodTree -> !unresolvedMethodNames.contains(methodTree.simpleName().name()))
       .forEach(methodTree -> {
         IdentifierTree simpleName = methodTree.simpleName();
@@ -112,7 +125,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       case METHOD_REFERENCE:
         checkIfUnknown((MethodReferenceTree) tree);
         break;
-      default: 
+      default:
         // not registered - can not happen
     }
   }
@@ -175,12 +188,12 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
   private static boolean hasNoAnnotation(MethodTree methodTree) {
     return methodTree.modifiers().annotations().isEmpty() && methodTree.parameters().stream().noneMatch(UnusedPrivateMethodCheck::hasAllowedAnnotation);
   }
-  
+
   private static boolean hasAllowedAnnotation(VariableTree variableTree) {
     List<AnnotationTree> annotations = variableTree.modifiers().annotations();
     return !annotations.isEmpty() && annotations.stream().anyMatch(UnusedPrivateMethodCheck::isAllowedAnnotation);
   }
-  
+
   private static boolean isAllowedAnnotation(AnnotationTree annotation) {
     Type annotationSymbolType = annotation.symbolType();
     if (PARAM_ANNOTATION_EXCEPTIONS.stream().anyMatch(annotationSymbolType::is)) {
@@ -205,5 +218,42 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isNotMethodFromSerializable(MethodTree methodTree, Symbol symbol) {
     return methodTree.is(Tree.Kind.METHOD) && !SerializableContract.SERIALIZABLE_CONTRACT_METHODS.contains(symbol.name());
+  }
+
+  private class CheckAnnotationsForMethodNames extends BaseTreeVisitor {
+
+    public CheckAnnotationsForMethodNames (Set<String> methodNames) {
+      this.methodNames = methodNames;
+    }
+
+    private Set<String> methodNames;
+
+    private static boolean isNameIndicatingMethod(String name) {
+      return name.toLowerCase().contains("method");
+    }
+
+    private void removeMethodName(LiteralTree literal) {
+      methodNames.remove(removeQuotes(literal.value()));
+    }
+
+    private static String removeQuotes(String withQuotes) {
+      return withQuotes.substring(1, withQuotes.length()-1);
+    }
+
+    @Override
+    public void visitAnnotation(AnnotationTree annotationTree) {
+      var isMethodAnnotation = isNameIndicatingMethod(annotationTree.annotationType().symbolType().name());
+      for (var arg: annotationTree.arguments()) {
+        if (arg.is(Tree.Kind.STRING_LITERAL)) {
+          if (isMethodAnnotation) {
+            removeMethodName((LiteralTree) arg);
+          }
+        } else if (arg instanceof AssignmentExpressionTree asgn && (asgn.expression().is(Tree.Kind.STRING_LITERAL)
+          && (isMethodAnnotation || (asgn.variable() instanceof IdentifierTree i && isNameIndicatingMethod(i.name())))
+        )) {
+            removeMethodName((LiteralTree) asgn.expression());
+        }
+      }
+    }
   }
 }
