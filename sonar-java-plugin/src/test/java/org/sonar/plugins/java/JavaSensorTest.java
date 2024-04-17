@@ -45,6 +45,7 @@ import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
 import org.sonar.api.batch.rule.internal.NewActiveRule;
+import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.config.internal.MapSettings;
@@ -112,8 +113,8 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    // Expected issues : the number of methods violating BadMethodName rule. Currently, 17 tests.
-    testIssueCreation(InputFile.Type.MAIN, 17);
+    // Expected issues : the number of methods violating BadMethodName rule. Currently, 18 tests.
+    testIssueCreation(InputFile.Type.MAIN, 18);
   }
 
   @Test
@@ -132,8 +133,8 @@ class JavaSensorTest {
     JavaSensor jss = new JavaSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
 
     jss.execute(context);
-    // argument 120 refers to the comment on line #120 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(120));
+    // argument 121 refers to the comment on line #121 in this file, each time this file changes, this argument should be updated
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(121));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
@@ -432,6 +433,16 @@ class JavaSensorTest {
       // not in SonarWay (FileHeaderCheck)
       "java:S1451"
     );
+  }
+
+  @Test
+  void test_describe_sensor() throws IOException {
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    SonarComponents sonarComponents = createSonarComponentsMock(createContext(InputFile.Type.MAIN));
+    var sensor = new JavaSensor(sonarComponents, null, null, null, null, null);
+    sensor.describe(descriptor);
+    assertThat(descriptor.name()).isEqualTo("JavaSensor");
+    assertThat(descriptor.languages()).containsExactly("java", "jsp");
   }
 
   private SensorContextTester analyzeTwoFilesWithIssues(MapSettings settings) throws IOException {

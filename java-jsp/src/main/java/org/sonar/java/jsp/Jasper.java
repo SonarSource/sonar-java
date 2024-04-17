@@ -63,6 +63,8 @@ import org.sonar.java.model.SmapFile;
 @ScannerSide
 public class Jasper {
 
+  public static final String JSP_LANGUAGE_KEY = "jsp";
+
   private static final String SONAR_EXCLUSIONS_PROPERTY = "sonar.exclusions";
 
   private static final Logger LOG = LoggerFactory.getLogger(Jasper.class);
@@ -188,7 +190,7 @@ public class Jasper {
   }
 
   private static List<InputFile> jspFiles(FileSystem fs) {
-    Iterable<InputFile> inputFiles = fs.inputFiles(fs.predicates().hasLanguage("jsp"));
+    Iterable<InputFile> inputFiles = fs.inputFiles(fs.predicates().hasLanguage(JSP_LANGUAGE_KEY));
     return StreamSupport.stream(inputFiles.spliterator(), false)
       .toList();
   }
