@@ -5,8 +5,32 @@
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java": [
 1192
 ],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURIParseTest.java": [
+247
+],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/PathMappingsTest.java": [
+77,
+129,
+161,
+204
+],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
 758
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/IOTest.java": [
+171,
+182,
+186,
+188,
+194,
+231
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointTest.java": [
+335,
+364,
+374,
+681,
+811
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextEvent.java": [
 57
@@ -24,4 +48,47 @@
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java": [
 648
 ],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncRequestReadTest.java": [
+136,
+182,
+192,
+210,
+351,
+355
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ClassLoaderDumpTest.java": [
+184
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorTimeoutTest.java": [
+435,
+481
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/DetectorConnectionTest.java": [
+212,
+483,
+550
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java": [
+395
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java": [
+1096
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java": [
+1007,
+1012,
+1137,
+1557,
+1568,
+1777
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpWriterTest.java": [
+245
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartParserTest.java": [
+348
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java": [
+392
+]
 }

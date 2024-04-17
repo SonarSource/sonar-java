@@ -18,4 +18,111 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/BaseLocaleConverter.java": [
 227
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanComparatorTestCase.java": [
+187
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanMapTestCase.java": [
+56,
+173
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
+919,
+1046,
+1069,
+1104
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java": [
+144
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
+529,
+967,
+1032,
+1055,
+1090
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaBeanTestCase.java": [
+194
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaMapTestCase.java": [
+97
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+4295,
+4319,
+4452
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java": [
+131
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/WrapDynaBeanTestCase.java": [
+230,
+243
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java": [
+118,
+122,
+135,
+137,
+148
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira357TestCase.java": [
+94
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ArrayConverterTestCase.java": [
+306
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassConverterTestCase.java": [
+134
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
+150
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java": [
+137,
+160,
+387,
+461,
+470,
+510
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/BaseLocaleConverterTestCase.java": [
+109,
+129
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/BigDecimalLocaleConverterTestCase.java": [
+107
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/BigIntegerLocaleConverterTestCase.java": [
+108
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/ByteLocaleConverterTestCase.java": [
+111
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverterTestCase.java": [
+242
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/DoubleLocaleConverterTestCase.java": [
+105
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverterTestCase.java": [
+111
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/IntegerLocaleConverterTestCase.java": [
+104
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/LongLocaleConverterTestCase.java": [
+104
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/ShortLocaleConverterTestCase.java": [
+104
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
+139,
+336,
+513,
+515,
+526,
+545
+]
 }

@@ -5,4 +5,67 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java": [
 258
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
+1477,
+1503,
+1542,
+1582
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
+806
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
+933,
+961,
+990,
+1019,
+1047,
+1075,
+1103,
+1131
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaResultSetTestCase.java": [
+249
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaRowSetTestCase.java": [
+241
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java": [
+329
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+212,
+1033,
+1056,
+1084,
+1166,
+1182,
+1201,
+1829,
+2606,
+2625,
+2649,
+3081,
+3098,
+3118,
+4174,
+4194,
+4211,
+4234,
+4370,
+4405
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ByteConverterTestCase.java": [
+138
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/FloatConverterTestCase.java": [
+152
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/IntegerConverterTestCase.java": [
+140,
+175
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ShortConverterTestCase.java": [
+139
+]
 }

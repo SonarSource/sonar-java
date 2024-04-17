@@ -808,7 +808,6 @@ public final class CheckList {
     CollectorsToListCheck.class,
     CombineCatchCheck.class,
     CommentRegularExpressionCheck.class,
-    CommentedOutCodeLineCheck.class,
     CompareToNotOverloadedCheck.class,
     CompareToResultTestCheck.class,
     CompareToReturnValueCheck.class,
@@ -884,7 +883,6 @@ public final class CheckList {
     FilesExistsJDK8Check.class,
     FinalClassCheck.class,
     FinalizeFieldsSetCheck.class,
-    FixmeTagPresenceCheck.class,
     FloatEqualityCheck.class,
     ForLoopFalseConditionCheck.class,
     ForLoopIncrementAndUpdateCheck.class,
@@ -901,7 +899,6 @@ public final class CheckList {
     HardCodedSecretCheck.class,
     HardcodedURICheck.class,
     HasNextCallingNextCheck.class,
-    HiddenFieldCheck.class,
     IdenticalCasesInSwitchCheck.class,
     IdenticalOperandOnBinaryExpressionCheck.class,
     IfElseIfStatementEndsWithElseCheck.class,
@@ -1039,7 +1036,6 @@ public final class CheckList {
     RedundantRecordMethodsCheck.class,
     RedundantRegexAlternativesCheck.class,
     RedundantStreamCollectCheck.class,
-    RedundantThrowsDeclarationCheck.class,
     RedundantTypeCastCheck.class,
     ReflectionOnNonRuntimeAnnotationCheck.class,
     RegexComplexityCheck.class,
@@ -1168,7 +1164,6 @@ public final class CheckList {
     ToArrayCheck.class,
     ToStringReturningNullCheck.class,
     ToStringUsingBoxingCheck.class,
-    TodoTagPresenceCheck.class,
     TooLongLineCheck.class,
     TooManyLinesOfCodeInFileCheck.class,
     TooManyMethodsCheck.class,
@@ -1205,7 +1200,6 @@ public final class CheckList {
     UseMotionSensorWithoutGyroscopeCheck.class,
     UseSwitchExpressionCheck.class,
     UselessExtendsCheck.class,
-    UselessImportCheck.class,
     UselessIncrementCheck.class,
     UselessParenthesesCheck.class,
     UserEnumerationCheck.class,
@@ -1246,7 +1240,6 @@ public final class CheckList {
     AnonymousClassesTooBigCheck.class,
     CatchUsesExceptionWithContextCheck.class,
     ForLoopCounterChangedCheck.class,
-    CollapsibleIfCandidateCheck.class,
     MutableMembersUsageCheck.class,
     LambdaTooBigCheck.class,
     CollectionImplementationReferencedCheck.class,
@@ -1381,7 +1374,14 @@ public final class CheckList {
     TooManyAssertionsCheck.class,
     UnusedTestRuleCheck.class);
 
-  private static final List<Class<? extends JavaCheck>> JAVA_MAIN_AND_TEST_CHECKS = Arrays.asList();
+  private static final List<Class<? extends JavaCheck>> JAVA_MAIN_AND_TEST_CHECKS = Arrays.asList(
+    CollapsibleIfCandidateCheck.class,
+    CommentedOutCodeLineCheck.class,
+    FixmeTagPresenceCheck.class,
+    HiddenFieldCheck.class,
+    RedundantThrowsDeclarationCheck.class,
+    TodoTagPresenceCheck.class,
+    UselessImportCheck.class);
 
   private static final List<Class<?>> ALL_CHECKS = Stream.of(JAVA_MAIN_CHECKS, JAVA_MAIN_AND_TEST_CHECKS, JAVA_TEST_CHECKS)
     .flatMap(List::stream)

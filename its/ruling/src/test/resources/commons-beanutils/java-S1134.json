@@ -28,4 +28,19 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
 191
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
+227
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira357TestCase.java": [
+91
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java": [
+37,
+136,
+159,
+386,
+460,
+469,
+509
+]
 }

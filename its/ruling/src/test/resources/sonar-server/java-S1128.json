@@ -5,4 +5,46 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/QualityGates.java": [
 47
 ],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/UserIdentityAuthenticatorTest.java": [
+29
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/measure/index/ProjectsEsModuleTest.java": [
+24
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/web/SecurityServletFilterTest.java": [
+29
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualitygate/ws/CreateConditionActionTest.java": [
+45
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualitygate/ws/UpdateConditionActionTest.java": [
+45
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/DatabaseSettingsEnablerTest.java": [
+26,
+27,
+28
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/NopSettingLoaderTest.java": [
+24
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/ProjectSettingsFactoryTest.java": [
+25
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/ws/CheckSecretKeyActionTest.java": [
+30
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/ws/EncryptActionTest.java": [
+31
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/ws/GenerateSecretKeyActionTest.java": [
+30,
+36
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/usertoken/ws/SearchActionTest.java": [
+37
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/ws/WsTester.java": [
+23
+]
 }

@@ -16,12 +16,28 @@
 1433,
 1774
 ],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java": [
+368
+],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerHTTPTest.java": [
+65
+],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpParserTest.java": [
+371,
+745
+],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURIParseTest.java": [
+66
+],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/NegotiatingClientConnection.java": [
 79
 ],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
 1067,
 1068
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/SelectorManagerTest.java": [
+63
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
 584
@@ -104,4 +120,43 @@
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
 1010
 ],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncCompletionTest.java": [
+703
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectionOpenCloseTest.java": [
+55,
+106,
+169
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorTimeoutTest.java": [
+285,
+346,
+402,
+445
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpManyWaysToAsyncCommitTest.java": [
+49,
+50,
+816
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpManyWaysToCommitTest.java": [
+43,
+44
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java": [
+441,
+589,
+621,
+652,
+1745
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/InclusiveByteRangeTest.java": [
+271
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartCaptureTest.java": [
+117
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartParserTest.java": [
+474
+]
 }
