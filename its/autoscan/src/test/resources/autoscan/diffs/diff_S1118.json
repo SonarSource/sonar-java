@@ -2,5 +2,5 @@
   "ruleKey": "S1118",
   "hasTruePositives": true,
   "falseNegatives": 0,
-  "falsePositives": 0
+  "falsePositives": 3
 }
