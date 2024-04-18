@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -220,16 +221,16 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
     return methodTree.is(Tree.Kind.METHOD) && !SerializableContract.SERIALIZABLE_CONTRACT_METHODS.contains(symbol.name());
   }
 
-  private class CheckAnnotationsForMethodNames extends BaseTreeVisitor {
+  private static class CheckAnnotationsForMethodNames extends BaseTreeVisitor {
 
-    public CheckAnnotationsForMethodNames (Set<String> methodNames) {
+    public CheckAnnotationsForMethodNames(Set<String> methodNames) {
       this.methodNames = methodNames;
     }
 
     private Set<String> methodNames;
 
     private static boolean isNameIndicatingMethod(String name) {
-      return name.toLowerCase().contains("method");
+      return name.toLowerCase(Locale.getDefault()).contains("method");
     }
 
     private void removeMethodName(LiteralTree literal) {
@@ -237,21 +238,21 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
     }
 
     private static String removeQuotes(String withQuotes) {
-      return withQuotes.substring(1, withQuotes.length()-1);
+      return withQuotes.substring(1, withQuotes.length() - 1);
     }
 
     @Override
     public void visitAnnotation(AnnotationTree annotationTree) {
       var isMethodAnnotation = isNameIndicatingMethod(annotationTree.annotationType().symbolType().name());
-      for (var arg: annotationTree.arguments()) {
+      for (var arg : annotationTree.arguments()) {
         if (arg.is(Tree.Kind.STRING_LITERAL)) {
           if (isMethodAnnotation) {
             removeMethodName((LiteralTree) arg);
           }
-        } else if (arg instanceof AssignmentExpressionTree asgn && (asgn.expression().is(Tree.Kind.STRING_LITERAL)
-          && (isMethodAnnotation || (asgn.variable() instanceof IdentifierTree i && isNameIndicatingMethod(i.name())))
+        } else if (arg instanceof AssignmentExpressionTree asgn && asgn.expression().is(Tree.Kind.STRING_LITERAL) && (
+          isMethodAnnotation || isNameIndicatingMethod(((IdentifierTree) asgn.variable()).name())
         )) {
-            removeMethodName((LiteralTree) asgn.expression());
+          removeMethodName((LiteralTree) asgn.expression());
         }
       }
     }
