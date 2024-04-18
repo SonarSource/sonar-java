@@ -1,0 +1,63 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/CookiesTest.java": [
+116
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/UserIdentityAuthenticatorTest.java": [
+268
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/ce/ws/TaskFormatterTest.java": [
+220
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ComponentServiceUpdateKeyTest.java": [
+211
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ComponentUpdaterTest.java": [
+184
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ws/ProjectMeasuresQueryFactoryTest.java": [
+198
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/FileAttributesTest.java": [
+43
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ReportPostOrderDepthTraversalTypeAwareCrawlerTest.java": [
+159
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ReportPreOrderDepthTraversalTypeAwareCrawlerTest.java": [
+160
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ReportVisitorsCrawlerWithPostOrderTypeAwareVisitorTest.java": [
+180
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ReportVisitorsCrawlerWithPreOrderTypeAwareVisitorTest.java": [
+178
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/AverageFormulaTest.java": [
+127
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluatorTest.java": [
+154
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyIndexRequestBuilderTest.java": [
+75
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java": [
+206
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/UpdateActionTest.java": [
+120
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/project/ws/UpdateVisibilityActionTest.java": [
+121
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/CopyActionTest.java": [
+224
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/test/ws/ListActionTest.java": [
+262
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/ws/WebServiceEngineTest.java": [
+81,
+90
+]
+}

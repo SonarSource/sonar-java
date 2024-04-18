@@ -8,4 +8,97 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
 353
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java": [
+106,
+107,
+153,
+154,
+234,
+236
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
+146
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
+537,
+548,
+559,
+570,
+581,
+592,
+603,
+614,
+625,
+636
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java": [
+296,
+454,
+455,
+479,
+480,
+504,
+505,
+529,
+530
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+892,
+903,
+914,
+925,
+936,
+947,
+958,
+969,
+980,
+991,
+1002,
+1013,
+1811
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java": [
+127
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java": [
+117
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
+109,
+114,
+115,
+129,
+159,
+160,
+178,
+218,
+232,
+234,
+253
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
+84,
+85,
+86,
+133,
+134,
+135,
+230,
+231,
+232,
+281,
+282,
+283,
+329,
+330,
+331,
+332,
+382,
+383,
+384,
+430,
+431,
+432,
+495
+]
 }

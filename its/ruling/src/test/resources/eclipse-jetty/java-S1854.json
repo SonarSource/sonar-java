@@ -2,6 +2,92 @@
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSVParser.java": [
 193
 ],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java": [
+74,
+103
+],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/WebSocketUriMappingTest.java": [
+91
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/SslConnectionTest.java": [
+92,
+94,
+97,
+105,
+147,
+272
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java": [
+861
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/LowResourcesMonitorTest.java": [
+183
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java": [
+184,
+188,
+191,
+230,
+235,
+239,
+268,
+271,
+314,
+319,
+348,
+349,
+420,
+431,
+438,
+449,
+456,
+461,
+479,
+484,
+486,
+503,
+521,
+543,
+559,
+571,
+578,
+649,
+654,
+656,
+660,
+672,
+679,
+684,
+685
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java": [
+757,
+788,
+801,
+812,
+825,
+839,
+852,
+865,
+878,
+893,
+908
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ResponseTest.java": [
+526
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerCollectionTest.java": [
+235
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerGetResourceTest.java": [
+307
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java": [
+123,
+136,
+175,
+188
+],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java": [
 149,
 191
@@ -12,5 +98,15 @@
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/Password.java": [
 159,
 162
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java": [
+259
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java": [
+52
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/PoolTest.java": [
+366,
+519
 ]
 }

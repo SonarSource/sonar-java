@@ -2,4 +2,11 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
 353
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
+109,
+129,
+178,
+218,
+253
+]
 }
