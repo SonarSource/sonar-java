@@ -114,5 +114,10 @@ class AssertionsInTestsCheckTest {
       .onFile(testCodeSourcesPath("checks/tests/AssertionsInTestsCheck/SpringBootSanityTestSample.java"))
       .withCheck(check)
       .verifyIssues();
+
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsInTestsCheck/SpringBootSanityJ4Test.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 }
