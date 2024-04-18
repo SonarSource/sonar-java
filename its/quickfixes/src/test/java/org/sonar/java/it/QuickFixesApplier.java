@@ -21,11 +21,15 @@ package org.sonar.java.it;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -51,7 +55,7 @@ public class QuickFixesApplier {
     DEFAULT_CLASSPATH = TestClasspathUtils.loadFromFile(path.toString());
   }
 
-  public void verifyAll(List<InputFile> files) {
+  public void verifyAll(List<InputFile> files) throws IOException {
     List<JavaFileScanner> visitors = new ArrayList<>(ChecksListWithQuickFix.checks);
     SonarComponents sonarComponents = sonarComponents();
     VisitorsBridgeForQuickFixTests visitorsBridge = new VisitorsBridgeForQuickFixTests(visitors, DEFAULT_CLASSPATH, sonarComponents, new JavaVersionImpl(21));
@@ -65,27 +69,50 @@ public class QuickFixesApplier {
     var filesToQFLocations = visitorsBridge.getQuickFixesLocations();
     var quickFixes = visitorsBridge.getQuickFixes();
 
-    for(var fileToQfs : filesToQFLocations.entrySet()) {
+    for (var fileToQfs : filesToQFLocations.entrySet()) {
       var path = fileToQfs.getKey();
       var locations = fileToQfs.getValue();
+      if (locations.isEmpty()) {
+        continue;
+      }
       locations.sort(Comparator.comparingInt(l -> l.startLine));
+      String content = fileContent(path);
+      Map<Integer, Integer> lineOffsets = computeLineOffsets(content);
       for (var location : locations) {
         var qfs = quickFixes.get(location); // quick fixes for this location on file `path`
-        applyQuickFixes(path, qfs);
+        content = applyQuickFixes(content, lineOffsets, qfs);
       }
+      Files.write(path, content.getBytes());
     }
   }
 
-  private void applyQuickFixes(Path file, List<JavaQuickFix> quickFixes) {
-    for(var quickFix : quickFixes) {
-      quickFix.getTextEdits().forEach(edit -> {
+  private Map<Integer, Integer> computeLineOffsets(String content) {
+    Map<Integer, Integer> lineOffsets = new HashMap<>();
+    lineOffsets.put(1, 0); // first line starts at index 0 (0-based index
+    int line = 2;
+    for (int i = 0; i < content.length(); i++) {
+      if (content.charAt(i) == '\n') {
+        lineOffsets.put(line, i);
+        line++;
+      }
+    }
+    return lineOffsets;
+  }
+
+  private String applyQuickFixes(String fileContent, Map<Integer, Integer> lineOffsets, List<JavaQuickFix> quickFixes) {
+    String result = fileContent;
+    for (var quickFix : quickFixes) {
+      for (var edit : quickFix.getTextEdits()) {
         int sl = edit.getTextSpan().startLine;
         int sc = edit.getTextSpan().startCharacter;
         int el = edit.getTextSpan().endLine;
         int ec = edit.getTextSpan().endCharacter;
-
-      });
+        int startOfReplacement = lineOffsets.get(sl) + sc;
+        int endOfReplacement = lineOffsets.get(el) + ec;
+        result = result.substring(0, startOfReplacement) + "" + edit.getReplacement() + "" +result.substring(endOfReplacement);
+      }
     }
+    return result;
   }
 
   private SonarComponents sonarComponents() {
@@ -110,6 +137,14 @@ public class QuickFixesApplier {
     };
     sonarComponents.setSensorContext(sensorContext);
     return sonarComponents;
+  }
+
+  private static String fileContent(Path path) {
+    try {
+      return new String(Files.readAllBytes(path));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }

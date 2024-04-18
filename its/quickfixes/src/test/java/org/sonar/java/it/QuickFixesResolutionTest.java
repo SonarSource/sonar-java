@@ -95,12 +95,12 @@ public class QuickFixesResolutionTest {
     List<InputFile> files = collectJavaFiles(tmpProjectClone.getRoot().getAbsolutePath());
     applier.verifyAll(files);
 
-//    Process process = new ProcessBuilder(MVN, "compile")
-//      .directory(tmpProjectClone.getRoot().toPath().toFile())
-//      .inheritIO()
-//      .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-//      .start();
-//    int exitCode = process.waitFor();
+    Process process = new ProcessBuilder(MVN, "compile")
+      .directory(tmpProjectClone.getRoot().toPath().toFile())
+      .inheritIO()
+      .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+      .start();
+    int exitCode = process.waitFor();
 //
 //    // Compilation should be successful
 //    assertThat(exitCode).isEqualTo(0);
