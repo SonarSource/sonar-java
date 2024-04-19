@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -77,9 +78,17 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
       return;
     }
 
-    if (isUnitTest(methodTree) && !expectAssertion(methodTree) && !isLocalMethodWithAssertion(methodTree.symbol())) {
+    if (isUnitTest(methodTree) && !isSpringBootSanityTest(methodTree) && !expectAssertion(methodTree) && !isLocalMethodWithAssertion(methodTree.symbol())) {
       context.reportIssue(this, methodTree.simpleName(), "Add at least one assertion to this test case.");
     }
+  }
+
+  private static boolean isSpringBootSanityTest(MethodTree methodTree){
+    if("contextLoads".equals(methodTree.simpleName().name())){
+      ClassTree classTree = (ClassTree) methodTree.parent();
+      return classTree.symbol().metadata().isAnnotatedWith("org.springframework.boot.test.context.SpringBootTest");
+    }
+    return false;
   }
 
   private boolean isLocalMethodWithAssertion(Symbol symbol) {

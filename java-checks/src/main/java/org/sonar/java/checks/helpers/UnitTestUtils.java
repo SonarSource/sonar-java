@@ -161,25 +161,16 @@ public final class UnitTestUtils {
   }
 
   public static boolean isUnitTest(MethodTree methodTree) {
-    boolean isSpringSanityTest = isSpringBootSanityTest(methodTree);
-    if (isOrOverridesJunit4TestMethod(methodTree) && !isSpringSanityTest) {
+    if (isOrOverridesJunit4TestMethod(methodTree)) {
       return true;
     }
 
-    if (hasJUnit5TestAnnotation(methodTree) && !isSpringSanityTest) {
+    if (hasJUnit5TestAnnotation(methodTree)) {
       // contrary to JUnit 4, JUnit 5 Test annotations are not inherited when method is overridden, so no need to check overridden symbols
       return true;
     }
     Symbol.TypeSymbol enclosingClass = Objects.requireNonNull(methodTree.symbol().enclosingClass(), "Must not be null for method symbols");
     return enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test");
-  }
-
-  private static boolean isSpringBootSanityTest(MethodTree methodTree){
-    if("contextLoads".equals(methodTree.simpleName().name())){
-      ClassTree classTree = (ClassTree) methodTree.parent();
-      return classTree.symbol().metadata().isAnnotatedWith("org.springframework.boot.test.context.SpringBootTest");
-    }
-    return false;
   }
 
   private static boolean isOrOverridesJunit4TestMethod(MethodTree methodTree) {
