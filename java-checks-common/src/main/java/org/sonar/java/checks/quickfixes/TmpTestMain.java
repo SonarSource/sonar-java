@@ -19,7 +19,7 @@ public final class TmpTestMain {
                   expr("t1").times(expr("r")).times(expr("u1").minus(expr("u2"))).plus(expr("t2").times(expr("t3").minus(expr("t4"))))
                 )
               )),
-            Case(defaultPat(), Block(
+            Default(Block(
 
             ))
           )

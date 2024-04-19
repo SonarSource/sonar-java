@@ -64,8 +64,12 @@ public final class Prettyprinter implements Visitor {
 
   @Override
   public void visitCase(Ast.Case caze) {
-    pps.add("case ");
-    caze.pattern().accept(this);
+    caze.pattern().ifPresentOrElse(pattern -> {
+      pps.add("case ");
+      pattern.accept(this);
+    }, () -> {
+      pps.add("default");
+    });
     pps.add(" -> ");
     caze.body().accept(this);
   }
@@ -73,11 +77,6 @@ public final class Prettyprinter implements Visitor {
   @Override
   public void visitValuePattern(Ast.ValuePattern valuePattern) {
     pps.add(valuePattern.value());
-  }
-
-  @Override
-  public void visitDefaultPattern(Ast.DefaultPattern defaultPattern) {
-    pps.add("default");
   }
 
   @Override

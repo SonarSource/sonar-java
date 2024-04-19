@@ -64,7 +64,7 @@ public sealed interface Ast {
     }
   }
 
-  record Case(Pattern pattern, Ast body) implements Ast {
+  record Case(Optional<Pattern> pattern, Ast body) implements Ast {
     @Override
     public void accept(Visitor visitor) {
       visitor.visitCase(this);
@@ -78,13 +78,6 @@ public sealed interface Ast {
     @Override
     public void accept(Visitor visitor) {
       visitor.visitValuePattern(this);
-    }
-  }
-
-  record DefaultPattern() implements Pattern {
-    @Override
-    public void accept(Visitor visitor) {
-      visitor.visitDefaultPattern(this);
     }
   }
 
@@ -208,8 +201,6 @@ public sealed interface Ast {
     void visitCase(Case caze);
 
     void visitValuePattern(ValuePattern valuePattern);
-
-    void visitDefaultPattern(DefaultPattern defaultPattern);
 
     void visitGuardablePattern(GuardedPattern guardedPattern);
 

@@ -23,15 +23,15 @@ public final class Syntax {
   }
 
   public static Case Case(Pattern pattern, Ast body){
-    return new Case(pattern, body);
+    return new Case(Optional.of(pattern), body);
+  }
+
+  public static Case Default(Ast body){
+    return new Case(Optional.empty(), body);
   }
 
   public static ValuePattern Pat(String value){
     return new ValuePattern(value);
-  }
-
-  public static DefaultPattern defaultPat(){
-    return new DefaultPattern();
   }
 
   public static VariablePattern Pat(String typeOrVar, String varName){
