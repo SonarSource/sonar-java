@@ -67,6 +67,10 @@ public final class PrettyprintStringBuilder {
     return sb.toString();
   }
 
+  public boolean endsWith(char c){
+    return !sb.isEmpty() && sb.charAt(sb.length()-1) == c;
+  }
+
   private boolean lastLineIsEmpty() {
     var eol = fileConfig.endOfLine();
     var lastIdx = sb.lastIndexOf(eol);

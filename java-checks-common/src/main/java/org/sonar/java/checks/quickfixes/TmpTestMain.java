@@ -1,39 +1,32 @@
 package org.sonar.java.checks.quickfixes;
 
-import org.sonar.java.checks.quickfixes.Ast.Case;
-import org.sonar.java.checks.quickfixes.Ast.HardCodedExpr;
-import org.sonar.java.checks.quickfixes.Ast.HardCodedStat;
-import org.sonar.java.checks.quickfixes.Ast.RecordPattern;
-import org.sonar.java.checks.quickfixes.Ast.Switch;
-import org.sonar.java.checks.quickfixes.Ast.VariablePattern;
-
-import static org.sonar.java.checks.quickfixes.Ast.Block;
-import static org.sonar.java.checks.quickfixes.Ast.IfStat;
+import static org.sonar.java.checks.quickfixes.Syntax.*;
 
 public final class TmpTestMain {
 
   public static void main(String[] args) {
-    var ast = new IfStat(new HardCodedExpr("myVar == 0"),
-      new Block(
-        new HardCodedStat("x = y + z"),
-        new HardCodedStat("foo(x, y);")
-      ),
-      new IfStat(new HardCodedExpr("myVar < 0"),
-        new Block(
-          new IfStat(new HardCodedExpr("y % 2 == 0"),
-            new Block(new HardCodedStat("bar(u, -1)")))
-        ),
-        new Block(
-          new Switch(new HardCodedExpr("tree"),
-            new Case(new RecordPattern("Fork", new VariablePattern("var", "left"), new VariablePattern("var", "right")),
-              new Block(
-                new HardCodedStat("total = sum(left) + sum(right)")
+
+    var ast = If(expr("myVar").eq(cst(0)),
+      Block(
+        expr("x").assig(expr("y").minus(expr("z")))
+      ), If(expr("boolVar"),
+        Block(
+          Switch(expr("tree"),
+            Case(Pat("Fork", Pat("Tree", "left"), Pat("Tree", "right"))
+                .Where(expr("y").eq(cst(-1))),
+              Block(
+                expr("sum").assig(
+                  expr("t1").times(expr("r")).times(expr("u1").minus(expr("u2"))).plus(expr("t2").times(expr("t3").minus(expr("t4"))))
+                )
               )),
-            new Case(new VariablePattern("int", "value"),
-              new Block(
-                new HardCodedStat("total = value")
-              ))
+            Case(defaultPat(), Block(
+
+            ))
           )
+        ),
+        Block(
+          expr("x").assig(cst(0)),
+          expr("a").assig(cst("Hello"))
         )
       )
     );

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import org.sonar.java.checks.quickfixes.Ast.HardCodedExpr;
 import org.sonar.java.checks.quickfixes.Ast.HardCodedStat;
+import org.sonar.java.checks.quickfixes.Ast.Statement;
 
 import static org.sonar.java.checks.quickfixes.Ast.Block;
 import static org.sonar.java.checks.quickfixes.Ast.IfStat;
@@ -38,21 +39,17 @@ public final class Prettyprinter implements Visitor {
   @Override
   public void visitBlock(Block block) {
     pps.add("{").incIndent().newLine();
-    printAllWithSep(block.statements(), PrettyprintStringBuilder::newLine);
+    printStatsSeq(block.statements());
     pps.decIndent().newLine().add("}");
   }
 
   @Override
   public void visitHardCodedStat(HardCodedStat stat) {
-    String statCode = stat.code().trim();
-    pps.add(statCode);
-    if (!statCode.endsWith(";")) {
-      pps.add(";");
-    }
+    pps.add(stat.code().trim());
   }
 
   @Override
-  public void visitExpression(HardCodedExpr expr) {
+  public void visitHardCodedExpr(HardCodedExpr expr) {
     pps.add(expr.code().trim());
   }
 
@@ -69,11 +66,6 @@ public final class Prettyprinter implements Visitor {
   public void visitCase(Ast.Case caze) {
     pps.add("case ");
     caze.pattern().accept(this);
-    pps.addSpace();
-    caze.guardExpr().ifPresent(guardExpr -> {
-      pps.add(" when ");
-      guardExpr.accept(this);
-    });
     pps.add(" -> ");
     caze.body().accept(this);
   }
@@ -84,6 +76,18 @@ public final class Prettyprinter implements Visitor {
   }
 
   @Override
+  public void visitDefaultPattern(Ast.DefaultPattern defaultPattern) {
+    pps.add("default");
+  }
+
+  @Override
+  public void visitGuardablePattern(Ast.GuardedPattern guardedPattern) {
+    guardedPattern.pattern().accept(this);
+    pps.add(" when ");
+    guardedPattern.guardExpr().accept(this);
+  }
+
+  @Override
   public void visitVariablePattern(Ast.VariablePattern variablePattern) {
     pps.add(variablePattern.typeOrVar()).addSpace().add(variablePattern.varName());
   }
@@ -91,7 +95,7 @@ public final class Prettyprinter implements Visitor {
   @Override
   public void visitRecordPattern(Ast.RecordPattern recordPattern) {
     pps.add(recordPattern.recordName());
-    if (!recordPattern.typeVars().isEmpty()){
+    if (!recordPattern.typeVars().isEmpty()) {
       pps.add("<").add(String.join(", ", recordPattern.typeVars())).add(">");
     }
     pps.add("(");
@@ -99,13 +103,57 @@ public final class Prettyprinter implements Visitor {
     pps.add(")");
   }
 
-  private void printAllWithSep(List<? extends Ast> asts, Consumer<PrettyprintStringBuilder> sep){
+  @Override
+  public void visitBinop(Ast.BinaryOperator binop) {
+    maybeParenthesize(binop.lhs(), binop.precedence().hasPrecedenceOver(binop.lhs().precedence()));
+    pps.addSpace().add(binop.operator().code()).addSpace();
+    maybeParenthesize(binop.rhs(), !binop.rhs().precedence().hasPrecedenceOver(binop.precedence()));
+  }
+
+  @Override
+  public void visitAssignment(Ast.Assignment assignment) {
+    assignment.lValue().accept(this);
+    pps.addSpace().add(assignment.assigOp().code()).addSpace();
+    assignment.newValue().accept(this);
+  }
+
+  @Override
+  public void visitConst(Ast.Const cst) {
+    var rawString = cst.value().toString();
+    pps.add(cst.value() instanceof String ? ("\"" + rawString + "\"") : rawString);
+  }
+
+  private <T extends Ast> void printAllWithSep(List<T> asts, Consumer<PrettyprintStringBuilder> sep) {
     var iter = asts.iterator();
-    while (iter.hasNext()){
+    while (iter.hasNext()) {
       iter.next().accept(this);
-      if (iter.hasNext()){
+      if (iter.hasNext()) {
         sep.accept(pps);
       }
+    }
+  }
+
+  private void printStatsSeq(List<Statement> stats){
+    var iter = stats.iterator();
+    while (iter.hasNext()){
+      var stat = iter.next();
+      stat.accept(this);
+      if (stat.requiresSemicolon() && !pps.endsWith(';')){
+        pps.add(";");
+      }
+      if (iter.hasNext()){
+        pps.newLine();
+      }
+    }
+  }
+
+  private void maybeParenthesize(Ast.Expression expr, boolean parenthesize) {
+    if (parenthesize) {
+      pps.add("(");
+    }
+    expr.accept(this);
+    if (parenthesize) {
+      pps.add(")");
     }
   }
 
