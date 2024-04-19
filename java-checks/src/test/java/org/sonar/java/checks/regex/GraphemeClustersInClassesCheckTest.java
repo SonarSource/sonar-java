@@ -29,7 +29,7 @@ class GraphemeClustersInClassesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/GraphemeClustersInClassesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/GraphemeClustersInClassesCheckSample.java"))
       .withCheck(new GraphemeClustersInClassesCheck())
       .verifyIssues();
   }

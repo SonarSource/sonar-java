@@ -29,7 +29,7 @@ class NestedTryCatchCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/NestedTryCatchCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NestedTryCatchCheckSample.java"))
       .withCheck(new NestedTryCatchCheck())
       .verifyIssues();
   }

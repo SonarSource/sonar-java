@@ -29,7 +29,7 @@ class RecordSerializationIgnoredMembersCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/RecordSerializationIgnoredMembersCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/RecordSerializationIgnoredMembersCheckSample.java"))
       .withCheck(new RecordSerializationIgnoredMembersCheck())
       .verifyIssues();
   }

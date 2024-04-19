@@ -26,7 +26,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class DateUtilsTruncateCheckTest {
 
-  private static final String FILENAME = mainCodeSourcesPath("checks/DateUtilsTruncateCheck.java");
+  private static final String FILENAME = mainCodeSourcesPath("checks/DateUtilsTruncateCheckSample.java");
 
   @Test
   void java8() {

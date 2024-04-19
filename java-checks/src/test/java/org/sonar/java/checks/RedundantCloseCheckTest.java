@@ -30,7 +30,7 @@ class RedundantCloseCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RedundantCloseCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RedundantCloseCheckSample.java"))
       .withCheck(new RedundantCloseCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class RedundantCloseCheckTest {
   @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/RedundantCloseCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/RedundantCloseCheckSample.java"))
       .withCheck(new RedundantCloseCheck())
       .verifyNoIssues();
   }

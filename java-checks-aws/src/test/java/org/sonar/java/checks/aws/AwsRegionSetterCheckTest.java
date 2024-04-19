@@ -31,7 +31,7 @@ class AwsRegionSetterCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsRegionSetterCheck.java"))
+      .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsRegionSetterCheckSample.java"))
       .withCheck(new AwsRegionSetterCheck())
       .withClassPath(AWS_CLASSPATH)
       .verifyIssues();

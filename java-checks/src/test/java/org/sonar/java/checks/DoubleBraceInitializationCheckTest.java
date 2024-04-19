@@ -29,7 +29,7 @@ class DoubleBraceInitializationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/DoubleBraceInitializationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/DoubleBraceInitializationCheckSample.java"))
       .withCheck(new DoubleBraceInitializationCheck())
       .verifyIssues();
   }

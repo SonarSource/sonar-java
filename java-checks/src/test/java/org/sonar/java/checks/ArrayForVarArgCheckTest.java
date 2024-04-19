@@ -30,7 +30,7 @@ class ArrayForVarArgCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ArrayForVarArgCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ArrayForVarArgCheckSample.java"))
       .withCheck(new ArrayForVarArgCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class ArrayForVarArgCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/ArrayForVarArgCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/ArrayForVarArgCheckSample.java"))
       .withCheck(new ArrayForVarArgCheck())
       .verifyIssues();
   }

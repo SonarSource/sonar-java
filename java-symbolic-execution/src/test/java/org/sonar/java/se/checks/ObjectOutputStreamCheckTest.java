@@ -29,7 +29,7 @@ class ObjectOutputStreamCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("/symbolicexecution/checks/ObjectOutputStreamCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("/symbolicexecution/checks/ObjectOutputStreamCheckSample.java"))
       .withCheck(new ObjectOutputStreamCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

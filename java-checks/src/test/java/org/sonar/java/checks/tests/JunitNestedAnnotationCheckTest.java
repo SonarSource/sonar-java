@@ -29,7 +29,7 @@ class JunitNestedAnnotationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/JunitNestedAnnotationCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/JunitNestedAnnotationCheckSample.java"))
       .withCheck(new JunitNestedAnnotationCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class JunitNestedAnnotationCheckTest {
   @Test
   void noSemantic() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/JunitNestedAnnotationCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/JunitNestedAnnotationCheckSample.java"))
       .withCheck(new JunitNestedAnnotationCheck())
       .withoutSemantic()
       .verifyNoIssues();

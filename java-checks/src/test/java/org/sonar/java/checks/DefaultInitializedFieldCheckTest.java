@@ -29,7 +29,7 @@ class DefaultInitializedFieldCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/DefaultInitializedFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/DefaultInitializedFieldCheckSample.java"))
       .withCheck(new DefaultInitializedFieldCheck())
       .verifyIssues();
   }

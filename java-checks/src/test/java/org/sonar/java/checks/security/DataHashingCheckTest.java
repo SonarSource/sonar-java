@@ -29,7 +29,7 @@ class DataHashingCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/DataHashingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/DataHashingCheckSample.java"))
       .withCheck(new DataHashingCheck())
       .verifyIssues();
   }

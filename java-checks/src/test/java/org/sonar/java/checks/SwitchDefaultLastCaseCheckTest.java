@@ -29,7 +29,7 @@ class SwitchDefaultLastCaseCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SwitchDefaultLastCaseCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SwitchDefaultLastCaseCheckSample.java"))
       .withCheck(new SwitchDefaultLastCaseCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class SwitchDefaultLastCaseCheckTest {
   @Test
   void test_switch_expressions() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/SwitchDefaultLastCaseCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/SwitchDefaultLastCaseCheckSample.java"))
       .withCheck(new SwitchDefaultLastCaseCheck())
       .withJavaVersion(14)
       .verifyIssues();

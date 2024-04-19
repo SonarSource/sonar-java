@@ -30,7 +30,7 @@ class SimpleClassNameCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SimpleClassNameCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SimpleClassNameCheckSample.java"))
       .withCheck(new SimpleClassNameCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class SimpleClassNameCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/SimpleClassNameCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/SimpleClassNameCheckSample.java"))
       .withCheck(new SimpleClassNameCheck())
       .verifyIssues();
   }

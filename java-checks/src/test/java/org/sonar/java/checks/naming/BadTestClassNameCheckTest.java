@@ -25,7 +25,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class BadTestClassNameCheckTest {
-  private static final String TEST_FILE = testCodeSourcesPath("checks/tests/BadTestClassNameCheck.java");
+  private static final String TEST_FILE = testCodeSourcesPath("checks/tests/BadTestClassNameCheckSample.java");
 
   @Test
   void test() {

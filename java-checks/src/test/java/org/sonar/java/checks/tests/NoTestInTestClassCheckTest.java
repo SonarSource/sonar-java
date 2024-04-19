@@ -31,7 +31,7 @@ class NoTestInTestClassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/NoTestInTestClassCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/NoTestInTestClassCheckSample.java"))
       .withCheck(new NoTestInTestClassCheck())
       .verifyIssues();
   }

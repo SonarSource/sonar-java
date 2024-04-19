@@ -30,7 +30,7 @@ class IdenticalCasesInSwitchCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/IdenticalCasesInSwitchCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/IdenticalCasesInSwitchCheckSample.java"))
       .withCheck(new IdenticalCasesInSwitchCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class IdenticalCasesInSwitchCheckTest {
   @Test
   void test_switch_expression() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/IdenticalCasesInSwitchCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/IdenticalCasesInSwitchCheckSample.java"))
       .withCheck(new IdenticalCasesInSwitchCheck())
       .withJavaVersion(14)
       .verifyIssues();

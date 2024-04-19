@@ -29,7 +29,7 @@ class AuthorizationsStrongDecisionsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/AuthorizationsStrongDecisionsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/AuthorizationsStrongDecisionsCheckSample.java"))
       .withCheck(new AuthorizationsStrongDecisionsCheck())
       .verifyIssues();
   }

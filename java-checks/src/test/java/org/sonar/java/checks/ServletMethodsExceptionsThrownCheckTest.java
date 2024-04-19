@@ -29,7 +29,7 @@ class ServletMethodsExceptionsThrownCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ServletMethodsExceptionsThrownCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ServletMethodsExceptionsThrownCheckSample.java"))
       .withCheck(new ServletMethodsExceptionsThrownCheck())
       .verifyIssues();
   }

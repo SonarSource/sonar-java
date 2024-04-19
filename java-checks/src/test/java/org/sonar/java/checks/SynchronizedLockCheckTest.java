@@ -29,7 +29,7 @@ class SynchronizedLockCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SynchronizedLockCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SynchronizedLockCheckSample.java"))
       .withCheck(new SynchronizedLockCheck())
       .verifyIssues();
   }

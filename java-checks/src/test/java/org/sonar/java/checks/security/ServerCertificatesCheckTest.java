@@ -27,7 +27,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ServerCertificatesCheckTest {
 
-  private static final String TEST_FILE = "checks/security/ServerCertificatesCheck.java";
+  private static final String TEST_FILE = "checks/security/ServerCertificatesCheckSample.java";
 
   @Test
   void test() {

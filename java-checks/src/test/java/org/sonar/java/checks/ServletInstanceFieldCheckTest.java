@@ -30,11 +30,11 @@ class ServletInstanceFieldCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheckSample.java"))
       .withCheck(new ServletInstanceFieldCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ServletInstanceFieldCheckSample.java"))
       .withCheck(new ServletInstanceFieldCheck())
       .withoutSemantic()
       .verifyNoIssues();
@@ -56,11 +56,11 @@ class ServletInstanceFieldCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/ServletInstanceFieldCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/ServletInstanceFieldCheckSample.java"))
       .withCheck(new ServletInstanceFieldCheck())
       .verifyNoIssues();
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/ServletInstanceFieldCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/ServletInstanceFieldCheckSample.java"))
       .withCheck(new ServletInstanceFieldCheck())
       .withoutSemantic()
       .verifyNoIssues();

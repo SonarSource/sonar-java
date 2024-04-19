@@ -29,7 +29,7 @@ class ResultSetIsLastCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ResultSetIsLastCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ResultSetIsLastCheckSample.java"))
       .withCheck(new ResultSetIsLastCheck())
       .verifyIssues();
   }

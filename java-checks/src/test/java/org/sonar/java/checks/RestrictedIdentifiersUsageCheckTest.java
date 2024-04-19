@@ -30,7 +30,7 @@ class RestrictedIdentifiersUsageCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RestrictedIdentifiersUsageCheckSample.java"))
       .withCheck(new RestrictedIdentifiersUsageCheck())
       .withJavaVersion(14)
       .verifyIssues();
@@ -39,7 +39,7 @@ class RestrictedIdentifiersUsageCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/RestrictedIdentifiersUsageCheckSample.java"))
       .withCheck(new RestrictedIdentifiersUsageCheck())
       .withJavaVersion(8)
       .verifyIssues();
@@ -48,7 +48,7 @@ class RestrictedIdentifiersUsageCheckTest {
   @Test
   void test_no_version() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RestrictedIdentifiersUsageCheckSample.java"))
       .withCheck(new RestrictedIdentifiersUsageCheck())
       .verifyIssues();
   }

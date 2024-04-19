@@ -28,7 +28,7 @@ class ObjectFinalizeCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeCheckSample.java"))
       .withCheck(new ObjectFinalizeCheck())
       .verifyIssues();
   }

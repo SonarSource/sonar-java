@@ -29,7 +29,7 @@ class ArraysAsListOfPrimitiveToStreamCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ArraysAsListOfPrimitiveToStreamCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ArraysAsListOfPrimitiveToStreamCheckSample.java"))
       .withCheck(new ArraysAsListOfPrimitiveToStreamCheck())
       .verifyIssues();
   }

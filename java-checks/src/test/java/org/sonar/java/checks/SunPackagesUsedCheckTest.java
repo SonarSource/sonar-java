@@ -28,7 +28,7 @@ class SunPackagesUsedCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/SunPackagesUsedCheck.java"))
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/SunPackagesUsedCheckSample.java"))
       .withCheck(new SunPackagesUsedCheck())
       .verifyIssues();
   }

@@ -29,7 +29,7 @@ class RightCurlyBraceSameLineAsNextBlockCheckTest {
   @Test
   void detected() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/RightCurlyBraceSameLineAsNextBlockCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RightCurlyBraceSameLineAsNextBlockCheckSample.java"))
       .withCheck(new RightCurlyBraceSameLineAsNextBlockCheck())
       .withQuickFixes()
       .verifyIssues();

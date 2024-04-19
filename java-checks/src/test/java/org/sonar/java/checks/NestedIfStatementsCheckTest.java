@@ -33,7 +33,7 @@ class NestedIfStatementsCheckTest {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     assertThat(check.max).isEqualTo(3);
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/NestedIfStatementsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/NestedIfStatementsCheckSample.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -52,7 +52,7 @@ class NestedIfStatementsCheckTest {
   void detected_switch_expressions() {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/NestedIfStatementsCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/NestedIfStatementsCheckSample.java"))
       .withJavaVersion(14)
       .withCheck(check)
       .verifyIssues();

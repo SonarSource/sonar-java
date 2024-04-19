@@ -29,7 +29,7 @@ class InappropriateRegexpCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InappropriateRegexpCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/InappropriateRegexpCheckSample.java"))
       .withCheck(new InappropriateRegexpCheck())
       .verifyIssues();
   }

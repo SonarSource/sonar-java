@@ -30,11 +30,11 @@ class DebugFeatureEnabledCheckTest {
   @Test
   void testEnableWebSecurity() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/security/DebugFeatureEnabledCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/security/DebugFeatureEnabledCheckSample.java"))
       .withCheck(new DebugFeatureEnabledCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/security/DebugFeatureEnabledCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/security/DebugFeatureEnabledCheckSample.java"))
       .withCheck(new DebugFeatureEnabledCheck())
       .withoutSemantic()
       .verifyNoIssues();
@@ -43,7 +43,7 @@ class DebugFeatureEnabledCheckTest {
   @Test
   void testPrintStackTrace() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/DebugFeatureEnabledCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/DebugFeatureEnabledCheckSample.java"))
       .withCheck(new DebugFeatureEnabledCheck())
       .verifyIssues();
   }

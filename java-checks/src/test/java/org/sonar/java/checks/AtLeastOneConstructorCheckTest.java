@@ -30,7 +30,7 @@ class AtLeastOneConstructorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AtLeastOneConstructorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AtLeastOneConstructorCheckSample.java"))
       .withCheck(new AtLeastOneConstructorCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class AtLeastOneConstructorCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/AtLeastOneConstructorCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/AtLeastOneConstructorCheckSample.java"))
       .withCheck(new AtLeastOneConstructorCheck())
       .verifyNoIssues();
   }

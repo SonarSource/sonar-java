@@ -29,7 +29,7 @@ class InvalidRegexCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/InvalidRegexCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/InvalidRegexCheckSample.java"))
       .withCheck(new InvalidRegexCheck())
       .verifyIssues();
   }

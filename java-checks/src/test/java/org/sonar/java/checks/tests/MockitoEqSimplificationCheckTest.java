@@ -30,12 +30,12 @@ class MockitoEqSimplificationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/MockitoEqSimplificationCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/MockitoEqSimplificationCheckSample.java"))
       .withCheck(new MockitoEqSimplificationCheck())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/tests/MockitoEqSimplificationCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/tests/MockitoEqSimplificationCheckSample.java"))
       .withCheck(new MockitoEqSimplificationCheck())
       .verifyIssues();
   }

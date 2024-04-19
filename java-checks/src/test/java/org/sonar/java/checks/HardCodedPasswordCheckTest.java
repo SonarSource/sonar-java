@@ -30,7 +30,7 @@ class HardCodedPasswordCheckTest {
   @Test
   void default_words() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/HardCodedPasswordCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/HardCodedPasswordCheckSample.java"))
       .withCheck(new HardCodedPasswordCheck())
       .verifyIssues();
   }
@@ -48,7 +48,7 @@ class HardCodedPasswordCheckTest {
   @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/HardCodedPasswordCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/HardCodedPasswordCheckSample.java"))
       .withCheck(new HardCodedPasswordCheck())
       .verifyIssues();
   }

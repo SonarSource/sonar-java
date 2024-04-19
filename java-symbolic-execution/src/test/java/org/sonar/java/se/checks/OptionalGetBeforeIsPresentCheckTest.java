@@ -30,7 +30,7 @@ class OptionalGetBeforeIsPresentCheckTest {
   @Test
   void test_with_jdk_8() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/OptionalGetBeforeIsPresentCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/OptionalGetBeforeIsPresentCheckSample.java"))
       .withCheck(new OptionalGetBeforeIsPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .withJavaVersion(8)

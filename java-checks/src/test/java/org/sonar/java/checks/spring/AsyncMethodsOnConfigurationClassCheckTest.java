@@ -29,7 +29,7 @@ class AsyncMethodsOnConfigurationClassCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/spring/AsyncMethodsOnConfigurationClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/AsyncMethodsOnConfigurationClassCheckSample.java"))
       .withCheck(new AsyncMethodsOnConfigurationClassCheck())
       .withQuickFixes()
       .verifyIssues();

@@ -30,7 +30,7 @@ class EqualsParametersMarkedNonNullCheckTest {
   @Test
   void detected() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile(mainCodeSourcesPath("checks/EqualsParametersMarkedNonNullCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/EqualsParametersMarkedNonNullCheckSample.java"))
       .withCheck(new EqualsParametersMarkedNonNullCheck())
       .withQuickFixes()
       .verifyIssues();

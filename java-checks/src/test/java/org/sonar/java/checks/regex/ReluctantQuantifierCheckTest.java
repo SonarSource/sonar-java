@@ -29,7 +29,7 @@ class ReluctantQuantifierCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/ReluctantQuantifierCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/ReluctantQuantifierCheckSample.java"))
       .withCheck(new ReluctantQuantifierCheck())
       .verifyIssues();
   }

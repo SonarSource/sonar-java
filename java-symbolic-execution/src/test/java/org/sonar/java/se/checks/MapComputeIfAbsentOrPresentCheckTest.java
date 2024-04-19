@@ -31,7 +31,7 @@ class MapComputeIfAbsentOrPresentCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheck.java"))
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheckSample.java"))
       .withCheck(new MapComputeIfAbsentOrPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -40,7 +40,7 @@ class MapComputeIfAbsentOrPresentCheckTest {
   @Test
   void test_non_compiling() {
     SECheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheckSample.java"))
       .withCheck(new MapComputeIfAbsentOrPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

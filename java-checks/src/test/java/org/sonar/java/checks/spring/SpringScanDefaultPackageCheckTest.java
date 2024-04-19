@@ -30,12 +30,12 @@ class SpringScanDefaultPackageCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("SpringScanDefaultPackageCheck.java"))
+      .onFile(mainCodeSourcesPath("SpringScanDefaultPackageCheckSample.java"))
       .withCheck(new SpringScanDefaultPackageCheck())
       .verifyIssues();
 
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("SpringScanDefaultPackageCheck.java"))
+      .onFile(mainCodeSourcesPath("SpringScanDefaultPackageCheckSample.java"))
       .withCheck(new SpringScanDefaultPackageCheck())
       .withoutSemantic()
       .verifyNoIssues();

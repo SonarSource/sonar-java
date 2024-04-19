@@ -30,7 +30,7 @@ class LongBitsToDoubleOnIntCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/LongBitsToDoubleOnIntCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/LongBitsToDoubleOnIntCheckSample.java"))
       .withCheck(new LongBitsToDoubleOnIntCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class LongBitsToDoubleOnIntCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/LongBitsToDoubleOnIntCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/LongBitsToDoubleOnIntCheckSample.java"))
       .withCheck(new LongBitsToDoubleOnIntCheck())
       .verifyNoIssues();
   }

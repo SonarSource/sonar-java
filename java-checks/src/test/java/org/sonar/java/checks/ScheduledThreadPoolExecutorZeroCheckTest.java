@@ -28,7 +28,7 @@ class ScheduledThreadPoolExecutorZeroCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ScheduledThreadPoolExecutorZeroCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/ScheduledThreadPoolExecutorZeroCheckSample.java"))
       .withCheck(new ScheduledThreadPoolExecutorZeroCheck())
       .verifyIssues();
   }

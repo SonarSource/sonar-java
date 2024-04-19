@@ -29,7 +29,7 @@ class RandomFloatToIntCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RandomFloatToIntCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/RandomFloatToIntCheckSample.java"))
       .withCheck(new RandomFloatToIntCheck())
       .verifyIssues();
   }

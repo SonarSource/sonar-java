@@ -29,7 +29,7 @@ class TypeParametersShadowingCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TypeParametersShadowingCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TypeParametersShadowingCheckSample.java"))
       .withCheck(new TypeParametersShadowingCheck())
       .verifyIssues();
   }

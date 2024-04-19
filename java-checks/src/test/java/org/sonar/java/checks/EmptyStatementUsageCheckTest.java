@@ -29,7 +29,7 @@ class EmptyStatementUsageCheckTest {
   @Test
   void test() {
     InternalCheckVerifier.newInstance()
-      .onFile(mainCodeSourcesPath("checks/EmptyStatementUsageCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/EmptyStatementUsageCheckSample.java"))
       .withCheck(new EmptyStatementUsageCheck())
       .withQuickFixes()
       .verifyIssues();

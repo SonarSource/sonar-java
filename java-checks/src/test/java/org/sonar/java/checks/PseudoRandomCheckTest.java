@@ -28,7 +28,7 @@ class PseudoRandomCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PseudoRandomCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/PseudoRandomCheckSample.java"))
       .withCheck(new PseudoRandomCheck())
       .verifyIssues();
   }

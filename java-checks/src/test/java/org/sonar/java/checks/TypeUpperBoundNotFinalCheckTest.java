@@ -30,7 +30,7 @@ class TypeUpperBoundNotFinalCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TypeUpperBoundNotFinalCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TypeUpperBoundNotFinalCheckSample.java"))
       .withCheck(new TypeUpperBoundNotFinalCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class TypeUpperBoundNotFinalCheckTest {
   @Test
   void test_incomplete_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/TypeUpperBoundNotFinalCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/TypeUpperBoundNotFinalCheckSample.java"))
       .withCheck(new TypeUpperBoundNotFinalCheck())
       .verifyIssues();
   }

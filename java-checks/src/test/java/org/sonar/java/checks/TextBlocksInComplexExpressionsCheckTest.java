@@ -29,7 +29,7 @@ class TextBlocksInComplexExpressionsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TextBlocksInComplexExpressionsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TextBlocksInComplexExpressionsCheckSample.java"))
       .withCheck(new TextBlocksInComplexExpressionsCheck())
       .verifyIssues();
   }
