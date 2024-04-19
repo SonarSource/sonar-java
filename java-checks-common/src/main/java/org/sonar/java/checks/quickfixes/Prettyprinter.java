@@ -24,6 +24,15 @@ public final class Prettyprinter implements Visitor {
   }
 
   @Override
+  public void visitVarDecl(Ast.VarDecl varDecl) {
+    pps.add(varDecl.typeOrVar()).addSpace().add(varDecl.varName());
+    varDecl.initializerExpr().ifPresent(initExpr -> {
+      pps.add(" = ");
+      initExpr.accept(this);
+    });
+  }
+
+  @Override
   public void visitIfStat(IfStat ifStat) {
     pps.add("if (");
     ifStat.condition().accept(this);

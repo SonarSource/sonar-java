@@ -20,7 +20,8 @@ public final class TmpTestMain {
                 )
               )),
             Default(Block(
-
+              Decl("int", "tmp", cst(2).times(expr("i"))),
+              expr("sum").assig(expr("tmp").times(expr("tmp")))
             ))
           )
         ),

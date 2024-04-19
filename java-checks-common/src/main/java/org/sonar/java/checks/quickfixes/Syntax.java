@@ -10,6 +10,14 @@ public final class Syntax {
   private Syntax(){
   }
 
+  public static VarDecl Decl(String typeOrVar, String varName){
+    return new VarDecl(typeOrVar, varName, Optional.empty());
+  }
+
+  public static VarDecl Decl(String typeOrVar, String varName, Expression initializerExpr){
+    return new VarDecl(typeOrVar, varName, Optional.of(initializerExpr));
+  }
+
   public static IfStat If(Expression condition, Block thenBr){
     return new IfStat(condition, thenBr, Optional.empty());
   }

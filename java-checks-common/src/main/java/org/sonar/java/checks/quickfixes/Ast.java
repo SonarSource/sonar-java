@@ -40,6 +40,18 @@ public sealed interface Ast {
     // TODO other assignment operators
   }
 
+  record VarDecl(String typeOrVar, String varName, Optional<Expression> initializerExpr) implements Statement {
+    @Override
+    public boolean requiresSemicolon() {
+      return true;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visitVarDecl(this);
+    }
+  }
+
   record IfStat(Expression condition, Block thenBr, Optional<ElseBranchStat> elseBr) implements ElseBranchStat {
     @Override
     public void accept(Visitor visitor) {
@@ -187,6 +199,8 @@ public sealed interface Ast {
   }
 
   interface Visitor {
+
+    void visitVarDecl(VarDecl varDecl);
 
     void visitIfStat(IfStat ifStat);
 
