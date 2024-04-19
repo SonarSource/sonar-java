@@ -20,7 +20,6 @@
 package org.sonar.java.checks.unused;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -35,13 +34,13 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -61,41 +60,32 @@ import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 @Rule(key = "S1144")
 public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
-  private final List<MethodTree> unusedPrivateMethods = new ArrayList<>();
-  private final Set<String> unresolvedMethodNames = new HashSet<>();
-
-  private static final Set<String> PARAM_ANNOTATION_EXCEPTIONS = Set.of(
-    "javax.enterprise.event.Observes",
-    "jakarta.enterprise.event.Observes"
-  );
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
-      // declarations
-      Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR,
-      // usages
-      Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD_REFERENCE, Tree.Kind.NEW_CLASS);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.ENUM);
   }
 
   @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    var methods = unusedPrivateMethods.stream();
-    if (!unusedPrivateMethods.isEmpty()) {
-      var checker = new CheckAnnotationsForMethodNames(
-        unusedPrivateMethods.stream().map(it -> it.simpleName().name()).collect(Collectors.toSet())
-      );
-      context.getTree().accept(checker);
-      methods = methods.filter(it -> checker.methodNames.contains(it.simpleName().name()));
+  public void visitNode(Tree tree) {
+    reportUnusedPrivateMethods(findUnusedPrivateMethods((ClassTree) tree));
+  }
+
+  Stream<MethodTree> findUnusedPrivateMethods(ClassTree tree) {
+    var collector = new UnusedMethodCollector();
+    tree.members().forEach(it -> it.accept(collector));
+    var unusedPrivateMethods = collector.unusedPrivateMethods;
+    if (unusedPrivateMethods.isEmpty()) {
+      return Stream.empty();
     }
-    reportUnusedPrivateMethods(methods);
-    unusedPrivateMethods.clear();
-    unresolvedMethodNames.clear();
+
+    var methodNames = unusedPrivateMethods.stream().map(it -> it.simpleName().name()).collect(Collectors.toSet());
+    var filter = new MethodsUsedInAnnotationsFilter(methodNames);
+    tree.accept(filter);
+    return unusedPrivateMethods.stream().filter(it -> filter.filteredNames.contains(it.simpleName().name()));
   }
 
   private void reportUnusedPrivateMethods(Stream<MethodTree> methods) {
     methods
-      .filter(methodTree -> !unresolvedMethodNames.contains(methodTree.simpleName().name()))
       .forEach(methodTree -> {
         IdentifierTree simpleName = methodTree.simpleName();
         String methodType = methodTree.is(Tree.Kind.CONSTRUCTOR) ? "constructor" : "method";
@@ -110,131 +100,130 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       });
   }
 
-  @Override
-  public void visitNode(Tree tree) {
-    switch (tree.kind()) {
-      case METHOD:
-      case CONSTRUCTOR:
-        checkIfUnused((MethodTree) tree);
-        break;
-      case NEW_CLASS:
-        checkIfUnknown((NewClassTree) tree);
-        break;
-      case METHOD_INVOCATION:
-        checkIfUnknown((MethodInvocationTree) tree);
-        break;
-      case METHOD_REFERENCE:
-        checkIfUnknown((MethodReferenceTree) tree);
-        break;
-      default:
-        // not registered - can not happen
+  private static class UnusedMethodCollector extends BaseTreeVisitor {
+
+    public final List<MethodTree> unusedPrivateMethods = new ArrayList<>();
+    public final Set<String> unresolvedMethodNames = new HashSet<>();
+
+    private static final Set<String> PARAM_ANNOTATION_EXCEPTIONS = Set.of(
+      "javax.enterprise.event.Observes",
+      "jakarta.enterprise.event.Observes"
+    );
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // cut visitation of inner classes
     }
-  }
 
-  private void checkIfUnknown(MethodInvocationTree mit) {
-    String name = ExpressionUtils.methodName(mit).name();
-    addIfArgumentsAreUnknown(mit.arguments(), name);
-    addIfUnknownOrAmbiguous(mit.methodSymbol(), name);
-  }
-
-  private void checkIfUnknown(NewClassTree nct) {
-    String name = constructorName(nct.identifier());
-    addIfArgumentsAreUnknown(nct.arguments(), name);
-    addIfUnknownOrAmbiguous(nct.methodSymbol(), name);
-  }
-
-  private void checkIfUnknown(MethodReferenceTree mref) {
-    IdentifierTree methodIdentifier = mref.method();
-    addIfUnknownOrAmbiguous(methodIdentifier.symbol(), methodIdentifier.name());
-  }
-
-  private void addIfArgumentsAreUnknown(Arguments arguments, String name) {
-    // In case of broken semantic, if the argument is unknown, the method call will not have the correct reference.
-    if (arguments.stream().anyMatch(arg -> arg.symbolType().isUnknown())) {
-      unresolvedMethodNames.add(name);
-    }
-  }
-
-  private void addIfUnknownOrAmbiguous(Symbol symbol, String name) {
-    // In case of broken semantic (overload with unknown args), ECJ wrongly link the symbol to the good overload.
-    if (symbol.isUnknown() || (symbol.isMethodSymbol() && ((Symbol.MethodSymbol) symbol).parameterTypes().stream().anyMatch(Type::isUnknown))) {
-      unresolvedMethodNames.add(name);
-    }
-  }
-
-  private static String constructorName(TypeTree typeTree) {
-    switch (typeTree.kind()) {
-      case PARAMETERIZED_TYPE:
-        return constructorName(((ParameterizedTypeTree) typeTree).type());
-      case MEMBER_SELECT:
-        return ((MemberSelectExpressionTree) typeTree).identifier().name();
-      case IDENTIFIER:
-        return ((IdentifierTree) typeTree).name();
-      default:
-        throw new IllegalStateException("Unexpected TypeTree used as constructor.");
-    }
-  }
-
-  private void checkIfUnused(MethodTree methodTree) {
-    Symbol symbol = methodTree.symbol();
-    if (isUnusedPrivate(symbol) && hasNoAnnotation(methodTree) && (isConstructorWithParameters(methodTree) || isNotMethodFromSerializable(methodTree, symbol))) {
-      unusedPrivateMethods.add(methodTree);
-    }
-  }
-
-  private static boolean isUnusedPrivate(Symbol symbol) {
-    return symbol.isPrivate() && symbol.usages().isEmpty();
-  }
-
-  private static boolean hasNoAnnotation(MethodTree methodTree) {
-    return methodTree.modifiers().annotations().isEmpty() && methodTree.parameters().stream().noneMatch(UnusedPrivateMethodCheck::hasAllowedAnnotation);
-  }
-
-  private static boolean hasAllowedAnnotation(VariableTree variableTree) {
-    List<AnnotationTree> annotations = variableTree.modifiers().annotations();
-    return !annotations.isEmpty() && annotations.stream().anyMatch(UnusedPrivateMethodCheck::isAllowedAnnotation);
-  }
-
-  private static boolean isAllowedAnnotation(AnnotationTree annotation) {
-    Type annotationSymbolType = annotation.symbolType();
-    if (PARAM_ANNOTATION_EXCEPTIONS.stream().anyMatch(annotationSymbolType::is)) {
-      return true;
-    }
-    if (annotationSymbolType.isUnknown()) {
-      TypeTree annotationType = annotation.annotationType();
-      if (annotationType.is(Tree.Kind.IDENTIFIER)) {
-        return "Observes".equals(((IdentifierTree) annotationType).name());
-      }
-      if (annotationType.is(Tree.Kind.MEMBER_SELECT)) {
-        String concatenatedAnnotation = ExpressionsHelper.concatenate((MemberSelectExpressionTree) annotationType);
-        return PARAM_ANNOTATION_EXCEPTIONS.stream().anyMatch(concatenatedAnnotation::equals);
+    @Override
+    public void visitMethod(MethodTree methodTree) {
+      super.visitMethod(methodTree);
+      Symbol symbol = methodTree.symbol();
+      if (isUnusedPrivate(symbol) && hasNoAnnotation(methodTree) && (isConstructorWithParameters(methodTree) || isNotMethodFromSerializable(methodTree, symbol))) {
+        unusedPrivateMethods.add(methodTree);
       }
     }
-    return false;
-  }
 
-  private static boolean isConstructorWithParameters(MethodTree methodTree) {
-    return methodTree.is(Tree.Kind.CONSTRUCTOR) && !methodTree.parameters().isEmpty();
-  }
-
-  private static boolean isNotMethodFromSerializable(MethodTree methodTree, Symbol symbol) {
-    return methodTree.is(Tree.Kind.METHOD) && !SerializableContract.SERIALIZABLE_CONTRACT_METHODS.contains(symbol.name());
-  }
-
-  private static class CheckAnnotationsForMethodNames extends BaseTreeVisitor {
-
-    public CheckAnnotationsForMethodNames(Set<String> methodNames) {
-      this.methodNames = methodNames;
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree mit) {
+      super.visitMethodInvocation(mit);
+      String name = ExpressionUtils.methodName(mit).name();
+      addIfArgumentsAreUnknown(mit.arguments(), name);
+      addIfUnknownOrAmbiguous(mit.methodSymbol(), name);
     }
 
-    private Set<String> methodNames;
+    @Override
+    public void visitMethodReference(MethodReferenceTree mref) {
+      super.visitMethodReference(mref);
+      IdentifierTree methodIdentifier = mref.method();
+      addIfUnknownOrAmbiguous(methodIdentifier.symbol(), methodIdentifier.name());
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree nct) {
+      super.visitNewClass(nct);
+      String name = constructorName(nct.identifier());
+      addIfArgumentsAreUnknown(nct.arguments(), name);
+      addIfUnknownOrAmbiguous(nct.methodSymbol(), name);
+    }
+
+    private void addIfArgumentsAreUnknown(Arguments arguments, String name) {
+      // In case of broken semantic, if the argument is unknown, the method call will not have the correct reference.
+      if (arguments.stream().anyMatch(arg -> arg.symbolType().isUnknown())) {
+        unresolvedMethodNames.add(name);
+      }
+    }
+
+    private void addIfUnknownOrAmbiguous(Symbol symbol, String name) {
+      // In case of broken semantic (overload with unknown args), ECJ wrongly link the symbol to the good overload.
+      if (symbol.isUnknown() || (symbol.isMethodSymbol() && ((Symbol.MethodSymbol) symbol).parameterTypes().stream().anyMatch(Type::isUnknown))) {
+        unresolvedMethodNames.add(name);
+      }
+    }
+
+    private static String constructorName(TypeTree typeTree) {
+      return switch (typeTree.kind()) {
+        case PARAMETERIZED_TYPE -> constructorName(((ParameterizedTypeTree) typeTree).type());
+        case MEMBER_SELECT -> ((MemberSelectExpressionTree) typeTree).identifier().name();
+        case IDENTIFIER -> ((IdentifierTree) typeTree).name();
+        default -> throw new IllegalStateException("Unexpected TypeTree used as constructor.");
+      };
+    }
+
+    private static boolean isUnusedPrivate(Symbol symbol) {
+      return symbol.isPrivate() && symbol.usages().isEmpty();
+    }
+
+    private static boolean hasNoAnnotation(MethodTree methodTree) {
+      return methodTree.modifiers().annotations().isEmpty() && methodTree.parameters().stream().noneMatch(UnusedMethodCollector::hasAllowedAnnotation);
+    }
+
+    private static boolean hasAllowedAnnotation(VariableTree variableTree) {
+      List<AnnotationTree> annotations = variableTree.modifiers().annotations();
+      return !annotations.isEmpty() && annotations.stream().anyMatch(UnusedMethodCollector::isAllowedAnnotation);
+    }
+
+    private static boolean isAllowedAnnotation(AnnotationTree annotation) {
+      Type annotationSymbolType = annotation.symbolType();
+      if (PARAM_ANNOTATION_EXCEPTIONS.stream().anyMatch(annotationSymbolType::is)) {
+        return true;
+      }
+      if (annotationSymbolType.isUnknown()) {
+        TypeTree annotationType = annotation.annotationType();
+        if (annotationType.is(Tree.Kind.IDENTIFIER)) {
+          return "Observes".equals(((IdentifierTree) annotationType).name());
+        }
+        if (annotationType.is(Tree.Kind.MEMBER_SELECT)) {
+          String concatenatedAnnotation = ExpressionsHelper.concatenate((MemberSelectExpressionTree) annotationType);
+          return PARAM_ANNOTATION_EXCEPTIONS.stream().anyMatch(concatenatedAnnotation::equals);
+        }
+      }
+      return false;
+    }
+
+    private static boolean isConstructorWithParameters(MethodTree methodTree) {
+      return methodTree.is(Tree.Kind.CONSTRUCTOR) && !methodTree.parameters().isEmpty();
+    }
+
+    private static boolean isNotMethodFromSerializable(MethodTree methodTree, Symbol symbol) {
+      return methodTree.is(Tree.Kind.METHOD) && !SerializableContract.SERIALIZABLE_CONTRACT_METHODS.contains(symbol.name());
+    }
+  }
+
+  private static class MethodsUsedInAnnotationsFilter extends BaseTreeVisitor {
+
+    public MethodsUsedInAnnotationsFilter(Set<String> methodNames) {
+      this.filteredNames = methodNames;
+    }
+
+    private Set<String> filteredNames;
 
     private static boolean isNameIndicatingMethod(String name) {
       return name.toLowerCase(Locale.getDefault()).contains("method");
     }
 
     private void removeMethodName(LiteralTree literal) {
-      methodNames.remove(removeQuotes(literal.value()));
+      filteredNames.remove(removeQuotes(literal.value()));
     }
 
     private static String removeQuotes(String withQuotes) {

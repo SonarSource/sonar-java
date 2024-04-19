@@ -331,4 +331,15 @@ class CheckAnnotations {
   static class Coverage2 {
     private void foo7() {} // Noncompliant
   }
+
+  @MethodProvided(value = "foo8")
+  static class TN {
+    private void foo8() {} // Compliant, method is referenced in annotation
+
+    private void foo8(int param) {} // Compliant, method is referenced in annotation
+  }
+
+  static class FN {
+    private void foo8() {} // Noncompliant
+  }
 }
