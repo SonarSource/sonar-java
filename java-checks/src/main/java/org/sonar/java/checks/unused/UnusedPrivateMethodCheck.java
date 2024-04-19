@@ -79,6 +79,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
     }
 
     var methodNames = unusedPrivateMethods.stream().map(it -> it.simpleName().name()).collect(Collectors.toSet());
+    methodNames.removeAll(collector.unresolvedMethodNames);
     var filter = new MethodsUsedInAnnotationsFilter(methodNames);
     tree.accept(filter);
     return unusedPrivateMethods.stream().filter(it -> filter.filteredNames.contains(it.simpleName().name()));
