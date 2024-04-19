@@ -107,4 +107,17 @@ class AssertionsInTestsCheckTest {
     assertThat(logTester.logs(Level.WARN))
       .doesNotContain("Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ''");
   }
+
+  @Test
+  void testSpringBootSanity(){
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsInTestsCheck/SpringBootSanityTestSample.java"))
+      .withCheck(check)
+      .verifyIssues();
+
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsInTestsCheck/SpringBootSanityJ4Test.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
 }
