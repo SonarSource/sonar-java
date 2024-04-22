@@ -16,7 +16,7 @@ import static java.util.Collections.emptySet;
 @interface Observes {}
 
 class UnusedPrivateMethodCheck {
-  
+
   private void init(@Observes Object object, String test) {} // Noncompliant
   private void init(@javax.enterprise.event.Observes Object object) {} //Compliant, javax.enterprise.event.Observes is an exception to the rule
   private void jakartaInit(@jakarta.enterprise.event.Observes Object object) {} //Compliant, jakarta.enterprise.event.Observes is an exception to the rule
@@ -232,5 +232,114 @@ class UnusedPrivateMethodCheckMyClass<A extends Serializable> {
     public UnusedPrivateMethodCheckMyClass<B> build() {
       return new UnusedPrivateMethodCheckMyClass<>(this); // constructor is correctly resolved when using diamond
     }
+  }
+}
+
+class CheckAnnotations {
+  @interface ProxyMethod {
+    public String value();
+  }
+
+  @interface MethodProvided {
+    public String value();
+  }
+
+  @interface Getter {
+    public String getterMethod();
+  }
+
+  @interface Setter {
+    public String method();
+  }
+
+  @interface ArgumentIsNotAString {
+    public int method();
+  }
+
+  abstract static class MethodReferencedInAnnotation1 {
+
+    private void foo1() {} // Compliant
+
+    @ProxyMethod("foo1")
+    abstract void bar1();
+  }
+
+  @MethodProvided(value = "foo2")
+  abstract static class MethodReferencedInAnnotation2 {
+
+    private void foo2() {} // Compliant
+
+    @ProxyMethod("foo2")
+    abstract void bar2();
+
+    private void baz2() {} // Noncompliant
+  }
+
+  static class MethodReferencedInAnnotation3 {
+
+    @Getter(getterMethod = "foo3")
+    int bar3;
+
+    private int foo3() { // Compliant
+      return 42;
+    }
+  }
+
+  static class MethodReferencedInAnnotation4 {
+
+    @Setter(method = "foo4")
+    int bar4;
+
+    private void foo4(int value) {} // Compliant
+
+    private void bar4(int value) {} // Noncompliant
+  }
+
+  static class MethodReferencedInAnnotation5 {
+
+    @Getter(getterMethod = "foo52")
+    @Setter(method = "foo54")
+    int bar5;
+
+    private void foo51(int value) {} // Noncompliant
+
+    private int foo52() { // Compliant
+      return 42;
+    }
+
+    private void foo53(int value) {} // Noncompliant
+
+    private void foo54(int value) {} // Compliant
+
+    private void foo55(int value) {} // Noncompliant
+  }
+
+  abstract static class Coverage1 {
+
+    private void foo6() {} // Noncompliant, text blocks are ignored
+
+    @ProxyMethod("""
+      foo6""")
+    abstract void notStringLitNorAssignExpr();
+
+    @Getter(getterMethod = """
+      foo6""")
+    int assignExprWithNoStringLit;
+  }
+
+  @ArgumentIsNotAString(method = 42)
+  static class Coverage2 {
+    private void foo7() {} // Noncompliant
+  }
+
+  @MethodProvided(value = "foo8")
+  static class TN {
+    private void foo8() {} // Compliant, method is referenced in annotation
+
+    private void foo8(int param) {} // Compliant, method is referenced in annotation
+  }
+
+  static class FN {
+    private void foo8() {} // Noncompliant
   }
 }
