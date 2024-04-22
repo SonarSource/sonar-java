@@ -22,6 +22,7 @@ package org.sonar.java.checks.quickfixes;
 
 import java.util.List;
 import java.util.function.Consumer;
+import org.sonar.java.checks.quickfixes.Ast.HardCodedBlock;
 import org.sonar.java.checks.quickfixes.Ast.Expression;
 import org.sonar.java.checks.quickfixes.Ast.HardCodedExpr;
 import org.sonar.java.checks.quickfixes.Ast.HardCodedStat;
@@ -154,6 +155,24 @@ public final class Prettyprinter implements Visitor {
     pps.add(cst.value() instanceof String ? ("\"" + rawString + "\"") : rawString);
   }
 
+  @Override
+  public void visitHardCodedBlock(HardCodedBlock hardCodedBlock) {
+    var code = hardCodedBlock.code();
+    var lines = code.lines().toList();
+    var lastLine = lines.get(lines.size() - 1);
+    var baseIndentLevel = countLeadingIndents(lastLine);
+    pps.add(code.indent(-baseIndentLevel * pps.fileConfig().indent().length()));
+  }
+
+  private int countLeadingIndents(String str) {
+    var indent = pps.fileConfig().indent();
+    var cnt = 0;
+    while (str.startsWith(indent, cnt * indent.length())) {
+      cnt += 1;
+    }
+    return cnt;
+  }
+
   private <T extends Ast> void printAllWithSep(List<T> asts, Consumer<PrettyprintStringBuilder> sep) {
     var iter = asts.iterator();
     while (iter.hasNext()) {
@@ -164,19 +183,19 @@ public final class Prettyprinter implements Visitor {
     }
   }
 
-  private boolean isSameAssociativeOperator(Expression subExpr, Operator topLevelOp){
+  private static boolean isSameAssociativeOperator(Expression subExpr, Operator topLevelOp) {
     return subExpr instanceof Ast.BinaryOperator subBinop && subBinop.operator() == topLevelOp && topLevelOp.isAssociative();
   }
 
-  private void printStatsSeq(List<Statement> stats){
+  private void printStatsSeq(List<Statement> stats) {
     var iter = stats.iterator();
-    while (iter.hasNext()){
+    while (iter.hasNext()) {
       var stat = iter.next();
       stat.accept(this);
-      if (stat.requiresSemicolon() && !pps.endsWith(';')){
+      if (stat.requiresSemicolon() && !pps.endsWith(';')) {
         pps.add(";");
       }
-      if (iter.hasNext()){
+      if (iter.hasNext()) {
         pps.newLine();
       }
     }

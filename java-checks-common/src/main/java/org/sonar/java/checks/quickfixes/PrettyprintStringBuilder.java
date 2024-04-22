@@ -30,8 +30,8 @@ public final class PrettyprintStringBuilder {
     this.fileConfig = fileConfig;
   }
 
-  public String endOfLine() {
-    return fileConfig.endOfLine();
+  public FileConfig fileConfig(){
+    return fileConfig;
   }
 
   public PrettyprintStringBuilder incIndent() {

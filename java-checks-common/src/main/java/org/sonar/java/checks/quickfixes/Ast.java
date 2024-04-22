@@ -222,6 +222,18 @@ public sealed interface Ast {
     }
   }
 
+  record HardCodedBlock(String code) implements ElseBranchStat {
+    @Override
+    public boolean requiresSemicolon() {
+      return false;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visitHardCodedBlock(this);
+    }
+  }
+
   interface Visitor {
 
     void visitVarDecl(VarDecl varDecl);
@@ -251,6 +263,8 @@ public sealed interface Ast {
     void visitAssignment(Assignment assignment);
 
     void visitConst(Const cst);
+
+    void visitHardCodedBlock(HardCodedBlock hardCodedBlock);
 
   }
 

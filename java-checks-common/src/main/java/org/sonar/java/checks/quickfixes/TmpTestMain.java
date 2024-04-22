@@ -45,9 +45,14 @@ public final class TmpTestMain {
             ))
           )
         ),
-        Block(
-          expr("x").assig(cst(0)),
-          expr("a").assig(cst("Hello"))
+        hardCodedBlock(
+          """
+              {
+                var t = foo(x, y);
+                bar(t, -1, x-y);
+                System.out.println(t);
+              }
+          """
         )
       )
     );

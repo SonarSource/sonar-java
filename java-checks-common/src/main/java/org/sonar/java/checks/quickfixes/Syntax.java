@@ -90,4 +90,8 @@ public final class Syntax {
     return new HardCodedExpr(code);
   }
 
+  public static HardCodedBlock hardCodedBlock(String code){
+    return new HardCodedBlock(code);
+  }
+
 }
