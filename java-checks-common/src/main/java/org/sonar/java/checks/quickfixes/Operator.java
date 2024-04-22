@@ -5,6 +5,7 @@ public sealed interface Operator {
 
   String code();
   Precedence precedence();
+  boolean isAssociative();
 
   enum PostfixOperator implements Operator {
     POST_INC("++"), POST_DEC("--");
@@ -24,6 +25,12 @@ public sealed interface Operator {
     public Precedence precedence() {
       return Precedence.POSTFIX;
     }
+
+    @Override
+    public boolean isAssociative() {
+      return false;
+    }
+
   }
 
   enum UnaryOperator implements Operator {
@@ -45,36 +52,46 @@ public sealed interface Operator {
     public Precedence precedence() {
       return Precedence.UNARY;
     }
+
+    @Override
+    public boolean isAssociative() {
+      return false;
+    }
+
   }
 
   enum BinaryOperator implements Operator {
-    MUL("*", Precedence.MULTIPLICATIVE), DIV("/", Precedence.MULTIPLICATIVE), MOD("%", Precedence.MULTIPLICATIVE),
+    MUL("*", Precedence.MULTIPLICATIVE, true), DIV("/", Precedence.MULTIPLICATIVE, false),
+    MOD("%", Precedence.MULTIPLICATIVE, false),
 
-    ADD("+", Precedence.ADDITIVE), SUB("-", Precedence.ADDITIVE),
+    ADD("+", Precedence.ADDITIVE, true), SUB("-", Precedence.ADDITIVE, false),
 
-    SHIFTL("<<", Precedence.SHIFT), SHIFTR_ARITH(">>", Precedence.SHIFT), SHIFTR_LOGICAL(">>>", Precedence.SHIFT),
+    SHIFTL("<<", Precedence.SHIFT, false), SHIFTR_ARITH(">>", Precedence.SHIFT, false),
+    SHIFTR_LOGICAL(">>>", Precedence.SHIFT, false),
 
-    LT("<", Precedence.RELATIONAL), GT(">", Precedence.RELATIONAL), LEQ("<=", Precedence.RELATIONAL),
-    GEQ(">=", Precedence.RELATIONAL),
+    LT("<", Precedence.RELATIONAL, false), GT(">", Precedence.RELATIONAL, false),
+    LEQ("<=", Precedence.RELATIONAL, false), GEQ(">=", Precedence.RELATIONAL, false),
 
-    EQUALITY("==", Precedence.EQUALITY), INEQUALITY("!=", Precedence.EQUALITY),
+    EQUALITY("==", Precedence.EQUALITY, false), INEQUALITY("!=", Precedence.EQUALITY, false),
 
-    BITW_AND("&", Precedence.BITWISE_AND),
+    BITW_AND("&", Precedence.BITWISE_AND, true),
 
-    BITW_XOR("^", Precedence.BITWISE_XOR),
+    BITW_XOR("^", Precedence.BITWISE_XOR, true),
 
-    BITW_OR("|", Precedence.BITWISE_OR),
+    BITW_OR("|", Precedence.BITWISE_OR, true),
 
-    AND("&&", Precedence.AND),
+    AND("&&", Precedence.AND, true),
 
-    OR("||", Precedence.OR);
+    OR("||", Precedence.OR, true);
 
     private final String code;
     private final Precedence precedence;
+    private final boolean isAssociative;
 
-    BinaryOperator(String code, Precedence precedence) {
+    BinaryOperator(String code, Precedence precedence, boolean isAssociative) {
       this.code = code;
       this.precedence = precedence;
+      this.isAssociative = isAssociative;
     }
 
     @Override
@@ -86,9 +103,15 @@ public sealed interface Operator {
     public Precedence precedence() {
       return precedence;
     }
+
+    @Override
+    public boolean isAssociative() {
+      return isAssociative;
+    }
+
   }
 
-  // ternary has its own implementation (precedence: 101)
+  // ternary has its own implementation
 
   enum AssignmentOperator implements Operator {
     ASSIG("="), ADD_ASSIG("+="), SUB_ASSIG("-="),
@@ -111,6 +134,12 @@ public sealed interface Operator {
     public Precedence precedence() {
       return Precedence.ASSIGNMENT;
     }
+
+    @Override
+    public boolean isAssociative() {
+      return false;
+    }
+
   }
 
 }

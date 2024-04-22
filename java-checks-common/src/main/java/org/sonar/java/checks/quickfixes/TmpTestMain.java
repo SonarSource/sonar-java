@@ -16,7 +16,7 @@ public final class TmpTestMain {
                 .Where(expr("y").eq(cst(-1))),
               Block(
                 expr("sum").assig(
-                  expr("t1").times(expr("r")).times(expr("u1").minus(expr("u2"))).plus(expr("t2").times(expr("t3").minus(expr("t4"))))
+                  expr("t1").times(expr("r").times(expr("s"))).times(expr("u1").minus(expr("u2"))).plus(expr("t2").times(expr("t3").minus(expr("t4"))))
                 )
               )),
             Default(Block(

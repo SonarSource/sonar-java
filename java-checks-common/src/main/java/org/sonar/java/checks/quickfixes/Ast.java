@@ -31,6 +31,10 @@ public sealed interface Ast {
       return new BinaryOperator(this, Operator.BinaryOperator.EQUALITY, rhs);
     }
     // TODO other binary operators
+
+    default boolean hasPrecedenceOver(Expression expr){
+      return this.precedence().isStrongerThan(expr.precedence());
+    }
   }
 
   sealed interface LValue extends Expression {

@@ -2,6 +2,7 @@ package org.sonar.java.checks.quickfixes;
 
 import java.util.List;
 import java.util.function.Consumer;
+import org.sonar.java.checks.quickfixes.Ast.Expression;
 import org.sonar.java.checks.quickfixes.Ast.HardCodedExpr;
 import org.sonar.java.checks.quickfixes.Ast.HardCodedStat;
 import org.sonar.java.checks.quickfixes.Ast.Statement;
@@ -113,9 +114,11 @@ public final class Prettyprinter implements Visitor {
 
   @Override
   public void visitBinop(Ast.BinaryOperator binop) {
-    maybeParenthesize(binop.lhs(), binop.precedence().hasPrecedenceOver(binop.lhs().precedence()));
+    var parenthesizeLhs = binop.hasPrecedenceOver(binop.lhs());
+    maybeParenthesize(binop.lhs(), parenthesizeLhs);
     pps.addSpace().add(binop.operator().code()).addSpace();
-    maybeParenthesize(binop.rhs(), !binop.rhs().precedence().hasPrecedenceOver(binop.precedence()));
+    var parenthesizeRhs = !binop.rhs().hasPrecedenceOver(binop) && !isSameAssociativeOperator(binop.rhs(), binop.operator());
+    maybeParenthesize(binop.rhs(), parenthesizeRhs);
   }
 
   @Override
@@ -141,6 +144,10 @@ public final class Prettyprinter implements Visitor {
     }
   }
 
+  private boolean isSameAssociativeOperator(Expression subExpr, Operator topLevelOp){
+    return subExpr instanceof Ast.BinaryOperator subBinop && subBinop.operator() == topLevelOp && topLevelOp.isAssociative();
+  }
+
   private void printStatsSeq(List<Statement> stats){
     var iter = stats.iterator();
     while (iter.hasNext()){
@@ -155,7 +162,7 @@ public final class Prettyprinter implements Visitor {
     }
   }
 
-  private void maybeParenthesize(Ast.Expression expr, boolean parenthesize) {
+  private void maybeParenthesize(Expression expr, boolean parenthesize) {
     if (parenthesize) {
       pps.add("(");
     }
