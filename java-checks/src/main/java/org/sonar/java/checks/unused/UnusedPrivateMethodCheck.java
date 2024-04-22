@@ -70,7 +70,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
     reportUnusedPrivateMethods(findUnusedPrivateMethods((ClassTree) tree));
   }
 
-  Stream<MethodTree> findUnusedPrivateMethods(ClassTree tree) {
+  private static Stream<MethodTree> findUnusedPrivateMethods(ClassTree tree) {
     var collector = new UnusedMethodCollector();
     tree.members().forEach(it -> it.accept(collector));
     var unusedPrivateMethods = collector.unusedPrivateMethods;
@@ -217,7 +217,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       this.filteredNames = methodNames;
     }
 
-    private Set<String> filteredNames;
+    private final Set<String> filteredNames;
 
     private static boolean isNameIndicatingMethod(String name) {
       return name.toLowerCase(Locale.getDefault()).contains("method");
