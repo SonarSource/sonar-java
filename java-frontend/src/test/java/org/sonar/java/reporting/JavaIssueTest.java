@@ -34,6 +34,7 @@ import org.sonar.api.batch.sensor.internal.SensorStorage;
 import org.sonar.api.batch.sensor.issue.IssueLocation;
 import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
 import org.sonar.api.rule.RuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -112,10 +113,10 @@ class JavaIssueTest {
     List<List<AnalyzerMessage>> flows = new ArrayList<>();
     flows.add(
       Arrays.asList(
-        new AnalyzerMessage(null, inputFile, new AnalyzerMessage.TextSpan(2, 2, 2, 4), "flow message 1", 0)));
+        new AnalyzerMessage(null, inputFile, new TextSpan(2, 2, 2, 4), "flow message 1", 0)));
     flows.add(
       Arrays.asList(
-        new AnalyzerMessage(null, inputFile, new AnalyzerMessage.TextSpan(3), "flow message 2", 0)));
+        new AnalyzerMessage(null, inputFile, new TextSpan(3), "flow message 2", 0)));
     javaIssue2.addFlow(inputFile, flows);
     javaIssue2.save();
     Mockito.verify(storage, Mockito.times(1)).store(newIssueWithFlow);

@@ -51,6 +51,7 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotation;
 
@@ -140,7 +141,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       if (unused.contains(parameter.simpleName())) {
         boolean isFirst = i == 0;
         boolean isLast = i == parameters.size() - 1;
-        AnalyzerMessage.TextSpan textSpanToRemove;
+        TextSpan textSpanToRemove;
         if (isFirst && isLast) {
           // no need to remove any comma
           textSpanToRemove = AnalyzerMessage.textSpanBetween(methodTree.openParenToken(), false, methodTree.closeParenToken(), false);

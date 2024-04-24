@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 /**
  * Class used to represent analyzer issue messages
@@ -87,77 +88,19 @@ public class AnalyzerMessage {
     return cost > 0 ? (double) cost : null;
   }
 
-  public static final class TextSpan {
-    public final int startLine;
-    public final int startCharacter;
-    public final int endLine;
-    public final int endCharacter;
-
-    public TextSpan(int line) {
-      this(line, -1, line, -1);
-    }
-
-    public TextSpan(int startLine, int startCharacter, int endLine, int endCharacter) {
-      this.startLine = startLine;
-      this.startCharacter = startCharacter;
-      this.endLine = endLine;
-      this.endCharacter = endCharacter;
-    }
-
-    @Override
-    public String toString() {
-      return "(" + startLine + ":" + startCharacter + ")-(" + endLine + ":" + endCharacter + ")";
-    }
-
-    public boolean onLine() {
-      return startCharacter == -1;
-    }
-
-    public boolean isEmpty() {
-      return startLine == endLine && startCharacter == endCharacter;
-    }
-
-    @Override
-    public int hashCode() {
-      int prime = 27;
-      int result = 1;
-      result = prime * result + startLine;
-      result = prime * result + startCharacter;
-      result = prime * result + endLine;
-      result = prime * result + endCharacter;
-      return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!(obj instanceof TextSpan)) {
-        return false;
-      }
-      TextSpan other = (TextSpan) obj;
-      return startLine == other.startLine
-        && startCharacter == other.startCharacter
-        && endLine == other.endLine
-        && endCharacter == other.endCharacter;
-    }
-
-  }
-
-  public static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {
+  public static TextSpan textSpanFor(Tree syntaxNode) {
     Tree nonEmptyTree = getNonEmptyTree(syntaxNode);
     return textSpanBetween(nonEmptyTree.firstToken(), nonEmptyTree.lastToken());
   }
 
-  public static AnalyzerMessage.TextSpan textSpanBetween(Tree startTree, Tree endTree) {
+  public static TextSpan textSpanBetween(Tree startTree, Tree endTree) {
     return textSpanBetween(startTree, true, endTree, true);
   }
 
-  public static AnalyzerMessage.TextSpan textSpanBetween(Tree startTree, boolean includeStart, Tree endTree, boolean includeEnd) {
-    AnalyzerMessage.TextSpan start = AnalyzerMessage.textSpanFor(startTree);
-    AnalyzerMessage.TextSpan end = AnalyzerMessage.textSpanFor(endTree);
-    return new AnalyzerMessage.TextSpan(
+  public static TextSpan textSpanBetween(Tree startTree, boolean includeStart, Tree endTree, boolean includeEnd) {
+    TextSpan start = AnalyzerMessage.textSpanFor(startTree);
+    TextSpan end = AnalyzerMessage.textSpanFor(endTree);
+    return new TextSpan(
       includeStart ? start.startLine : start.endLine,
       includeStart ? start.startCharacter : start.endCharacter,
       includeEnd ? end.endLine : end.startLine,
@@ -165,10 +108,10 @@ public class AnalyzerMessage {
     );
   }
 
-  private static AnalyzerMessage.TextSpan textSpanBetween(SyntaxToken firstSyntaxToken, SyntaxToken lastSyntaxToken) {
+  private static TextSpan textSpanBetween(SyntaxToken firstSyntaxToken, SyntaxToken lastSyntaxToken) {
     Position first = Position.startOf(firstSyntaxToken);
     Position last = Position.endOf(lastSyntaxToken);
-    AnalyzerMessage.TextSpan location = new AnalyzerMessage.TextSpan(
+    TextSpan location = new TextSpan(
       first.line(),
       first.columnOffset(),
       last.line(),

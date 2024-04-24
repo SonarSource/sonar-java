@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 @Rule(key = "S1481")
 public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
@@ -136,7 +137,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     ).orElseGet(Collections::emptyList);
   }
 
-  private static Optional<AnalyzerMessage.TextSpan> getQuickFixTextSpan(VariableTree variable) {
+  private static Optional<TextSpan> getQuickFixTextSpan(VariableTree variable) {
     if (!variable.symbol().usages().isEmpty()) {
       return Optional.empty();
     }
@@ -151,7 +152,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       // If the variable is last in the declaration, we need to retrieve the preceding comma
       Optional<SyntaxToken> precedingComma = getPrecedingComma(variable);
       if (precedingComma.isPresent()) {
-        AnalyzerMessage.TextSpan value = AnalyzerMessage.textSpanBetween(precedingComma.get(), true, lastToken, false);
+        TextSpan value = AnalyzerMessage.textSpanBetween(precedingComma.get(), true, lastToken, false);
         return Optional.of(value);
       }
       return Optional.of(AnalyzerMessage.textSpanBetween(variable.firstToken(), lastToken));

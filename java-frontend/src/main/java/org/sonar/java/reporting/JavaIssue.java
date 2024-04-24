@@ -28,6 +28,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.rule.RuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 public final class JavaIssue {
   private final NewIssue newIssue;
@@ -89,7 +90,7 @@ public final class JavaIssue {
     return this;
   }
 
-  private static TextRange range(InputFile file, AnalyzerMessage.TextSpan textSpan) {
+  private static TextRange range(InputFile file, TextSpan textSpan) {
     if (textSpan.onLine()) {
       return file.selectLine(textSpan.startLine);
     }

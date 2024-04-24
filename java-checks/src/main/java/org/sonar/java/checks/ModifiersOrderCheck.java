@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 @DeprecatedRuleKey(ruleKey = "ModifiersOrderCheck", repositoryKey = "squid")
 @Rule(key = "S1124")
@@ -144,8 +145,8 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
     return builder.build();
   }
 
-  private static List<AnalyzerMessage.TextSpan> removalOfAllModifiers(ModifiersTree modifiersTree) {
-    List<AnalyzerMessage.TextSpan> removals = new ArrayList<>();
+  private static List<TextSpan> removalOfAllModifiers(ModifiersTree modifiersTree) {
+    List<TextSpan> removals = new ArrayList<>();
     int numberModifiers = modifiersTree.size();
     for (int i = 0; i < numberModifiers; i++) {
       ModifierTree current = modifiersTree.get(i);

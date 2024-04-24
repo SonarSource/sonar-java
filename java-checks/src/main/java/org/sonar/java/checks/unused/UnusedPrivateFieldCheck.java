@@ -57,6 +57,7 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 @Rule(key = "S1068")
 public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
@@ -241,7 +242,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private JavaQuickFix computeQuickFix(VariableTree tree, List<AssignmentExpressionTree> assignments) {
-    AnalyzerMessage.TextSpan textSpan = computeTextSpan(tree);
+    TextSpan textSpan = computeTextSpan(tree);
     List<JavaTextEdit> edits = new ArrayList<>(assignments.size() + 1);
     edits.addAll(computeExpressionCaptures(assignments));
     edits.add(JavaTextEdit.removeTextSpan(textSpan));
@@ -251,7 +252,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
       .build();
   }
 
-  private static AnalyzerMessage.TextSpan computeTextSpan(VariableTree tree) {
+  private static TextSpan computeTextSpan(VariableTree tree) {
     // If the variable is followed by another in a mutli-variable declaration, we remove include the space up to the following variable's name
     Optional<VariableTree> followingVariable = QuickFixHelper.nextVariable(tree);
     if (followingVariable.isPresent()) {

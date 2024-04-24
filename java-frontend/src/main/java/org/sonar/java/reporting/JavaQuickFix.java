@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 public class JavaQuickFix {
   private final String description;
@@ -93,8 +94,8 @@ public class JavaQuickFix {
 
       @Override
       public int compare(JavaTextEdit a, JavaTextEdit b) {
-        AnalyzerMessage.TextSpan first = a.getTextSpan();
-        AnalyzerMessage.TextSpan second = b.getTextSpan();
+        TextSpan first = a.getTextSpan();
+        TextSpan second = b.getTextSpan();
 
         int result = first.startLine - second.startLine;
         if (result != 0) {

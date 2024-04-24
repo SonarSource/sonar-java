@@ -19,10 +19,10 @@
  */
 package org.sonar.java.reporting;
 
-import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 public class JavaTextEdit {
   private final TextSpan textSpan;

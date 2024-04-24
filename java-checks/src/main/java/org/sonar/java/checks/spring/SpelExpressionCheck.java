@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
@@ -141,7 +142,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
       // For string literals, report exact issue location within the string.
       var tokenStart = Position.startOf(expression);
-      var textSpan = new AnalyzerMessage.TextSpan(
+      var textSpan = new TextSpan(
         tokenStart.line(),
         tokenStart.columnOffset() + error.startColumn,
         tokenStart.line(),

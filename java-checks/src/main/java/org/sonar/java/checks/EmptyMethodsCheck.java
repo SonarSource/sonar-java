@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 @Rule(key = "S1186")
 public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
@@ -134,7 +135,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
 
     String comment = String.format(commentFormat, method.is(Kind.CONSTRUCTOR) ? "constructor" : "method");
 
-    AnalyzerMessage.TextSpan textSpan = AnalyzerMessage.textSpanBetween(
+    TextSpan textSpan = AnalyzerMessage.textSpanBetween(
       method.block().openBraceToken(), false,
       method.block().closeBraceToken(), false
     );

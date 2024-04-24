@@ -59,6 +59,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 @DeprecatedRuleKey(ruleKey = "RedundantThrowsDeclarationCheck", repositoryKey = "squid")
 @Rule(key = "S1130")
@@ -122,7 +123,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     int clauseToRemoveIndex = throwsClauses.indexOf(clauseToRemove);
     boolean isFirst = clauseToRemoveIndex == 0;
     boolean isLast = clauseToRemoveIndex == throwsClauses.size() - 1;
-    AnalyzerMessage.TextSpan textSpanToRemove;
+    TextSpan textSpanToRemove;
     if (isFirst && isLast) {
       // also remove the "throws" token
       Tree treeBeforeThrows = methodTree.closeParenToken() != null ? methodTree.closeParenToken() : methodTree.simpleName();

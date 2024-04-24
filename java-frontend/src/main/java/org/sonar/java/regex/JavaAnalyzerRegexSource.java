@@ -30,9 +30,9 @@ import javax.annotation.Nullable;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 import org.sonarsource.analyzer.commons.regex.ast.IndexRange;
 import org.sonarsource.analyzer.commons.regex.java.JavaRegexSource;
 

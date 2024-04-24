@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
-import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -56,7 +56,7 @@ class AnalyzerMessageTest {
     assertThat(analyzerMessage.getMessage()).isEqualTo(message);
     assertThat(analyzerMessage.getCost()).isEqualTo(cost);
 
-    AnalyzerMessage.TextSpan location = analyzerMessage.primaryLocation();
+    TextSpan location = analyzerMessage.primaryLocation();
     assertThat(location).hasToString("(5:-1)-(5:-1)");
     assertThat(location.startLine).isEqualTo(line);
     assertThat(location.startCharacter).isEqualTo(-1);
@@ -83,20 +83,20 @@ class AnalyzerMessageTest {
   @Test
   void emptyTextSpan() {
     // same line, same offset
-    assertThat(new AnalyzerMessage.TextSpan(42, 2, 42, 2).isEmpty()).isTrue();
+    assertThat(new TextSpan(42, 2, 42, 2).isEmpty()).isTrue();
     // different offset
-    assertThat(new AnalyzerMessage.TextSpan(42, 2, 42, 5).isEmpty()).isFalse();
+    assertThat(new TextSpan(42, 2, 42, 5).isEmpty()).isFalse();
     // different lines, different offset
-    assertThat(new AnalyzerMessage.TextSpan(42, 2, 43, 5).isEmpty()).isFalse();
+    assertThat(new TextSpan(42, 2, 43, 5).isEmpty()).isFalse();
     // different lines, same offset
-    assertThat(new AnalyzerMessage.TextSpan(42, 2, 43, 2).isEmpty()).isFalse();
+    assertThat(new TextSpan(42, 2, 43, 2).isEmpty()).isFalse();
   }
 
   @Test
   void textSpanOnLine() {
-    assertThat(new AnalyzerMessage.TextSpan(42).onLine()).isTrue();
-    assertThat(new AnalyzerMessage.TextSpan(0, -1, 0, 5).onLine()).isTrue();
-    assertThat(new AnalyzerMessage.TextSpan(0, 2, 0, 2).onLine()).isFalse();
+    assertThat(new TextSpan(42).onLine()).isTrue();
+    assertThat(new TextSpan(0, -1, 0, 5).onLine()).isTrue();
+    assertThat(new TextSpan(0, 2, 0, 2).onLine()).isFalse();
   }
 
   @Test

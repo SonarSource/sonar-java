@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -119,7 +120,7 @@ class JavaTextEditTest {
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 13);
   }
 
-  private static void assertTextSpan(AnalyzerMessage.TextSpan textSpan, int startLine, int startColumn, int endLine, int endColumn) {
+  private static void assertTextSpan(TextSpan textSpan, int startLine, int startColumn, int endLine, int endColumn) {
       assertThat(textSpan.startLine).as("Start line").isEqualTo(startLine);
       assertThat(textSpan.startCharacter).as("Start character").isEqualTo(startColumn);
       assertThat(textSpan.endLine).as("End line").isEqualTo(endLine);

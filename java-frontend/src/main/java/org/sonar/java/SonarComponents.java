@@ -73,6 +73,7 @@ import org.sonar.java.reporting.JavaIssue;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 
@@ -333,7 +334,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   void reportIssue(AnalyzerMessage analyzerMessage, RuleKey key, InputComponent fileOrProject, @Nullable Double cost) {
     Objects.requireNonNull(context);
     JavaIssue issue = JavaIssue.create(context, key, cost);
-    AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
+    TextSpan textSpan = analyzerMessage.primaryLocation();
     if (textSpan == null) {
       // either an issue at file or project level
       issue.setPrimaryLocationOnComponent(fileOrProject, analyzerMessage.getMessage());

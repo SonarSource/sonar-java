@@ -39,6 +39,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
 
@@ -57,7 +58,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
   private final boolean isSetQuickFixAvailableCompatible;
 
   private JavaCheck rule;
-  private AnalyzerMessage.TextSpan textSpan;
+  private TextSpan textSpan;
   private String message;
   @Nullable
   private List<JavaFileScannerContext.Location> secondaries;
@@ -106,7 +107,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     return onRange(AnalyzerMessage.textSpanBetween(from, to));
   }
 
-  private InternalJavaIssueBuilder onRange(AnalyzerMessage.TextSpan range) {
+  private InternalJavaIssueBuilder onRange(TextSpan range) {
     requiresValueToBeSet(this.rule, RULE_NAME);
     requiresSetOnlyOnce(this.textSpan, TEXT_SPAN_NAME);
 
@@ -279,7 +280,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     return rangeFromTextSpan(file, AnalyzerMessage.textSpanFor(location.syntaxNode));
   }
 
-  private static TextRange rangeFromTextSpan(InputFile file, AnalyzerMessage.TextSpan textSpan) {
+  private static TextRange rangeFromTextSpan(InputFile file, TextSpan textSpan) {
     return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
   }
 
@@ -295,7 +296,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     return message;
   }
 
-  public AnalyzerMessage.TextSpan textSpan() {
+  public TextSpan textSpan() {
     return textSpan;
   }
 

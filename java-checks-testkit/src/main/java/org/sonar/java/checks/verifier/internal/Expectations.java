@@ -65,6 +65,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static java.util.stream.Collectors.joining;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.EFFORT_TO_FIX;
@@ -209,7 +210,7 @@ class Expectations {
       return replacement;
     }
 
-    AnalyzerMessage.TextSpan getTextSpan(int issueLine) {
+    TextSpan getTextSpan(int issueLine) {
       int startLine = getAbsoluteLine(attributes.get(START_LINE), issueLine);
       int startColumn = getColumnOffset(START_COLUMN.get(attributes), "start", commentLine);
       int endColumn = getColumnOffset(END_COLUMN.get(attributes), "end", commentLine);
@@ -220,7 +221,7 @@ class Expectations {
       } else {
         endLine = getAbsoluteLine(endLineAttribute, issueLine);
       }
-      return new AnalyzerMessage.TextSpan(startLine, startColumn, endLine, endColumn);
+      return new TextSpan(startLine, startColumn, endLine, endColumn);
     }
 
     private static int getAbsoluteLine(@Nullable Object o, int issueLine) {
@@ -248,7 +249,7 @@ class Expectations {
   private String expectedFileIssue = null;
 
   private boolean collectQuickFixes = false;
-  private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
+  private final Map<TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
 
   private Set<String> seenFlowIds = new HashSet<>();
 
@@ -259,7 +260,7 @@ class Expectations {
     this.collectQuickFixes = true;
   }
 
-  public Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes() {
+  public Map<TextSpan, List<JavaQuickFix>> quickFixes() {
     return Collections.unmodifiableMap(quickFixes);
   }
 
@@ -373,14 +374,14 @@ class Expectations {
     private final Map<Integer, List<Issue>> issues;
     private final Map<String, SortedSet<FlowComment>> flows;
 
-    private final Map<AnalyzerMessage.TextSpan, List<String>> quickFixesForTextSpan = new LinkedHashMap<>();
-    private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes;
+    private final Map<TextSpan, List<String>> quickFixesForTextSpan = new LinkedHashMap<>();
+    private final Map<TextSpan, List<JavaQuickFix>> quickFixes;
     private final Map<String, String> quickfixesMessages = new LinkedHashMap<>();
     private final Map<String, List<QuickFixEditComment>> quickfixesEdits = new LinkedHashMap<>();
 
     private boolean collectQuickFixes = false;
 
-    private Parser(Map<Integer, List<Issue>> issues, Map<String, SortedSet<FlowComment>> flows, Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes) {
+    private Parser(Map<Integer, List<Issue>> issues, Map<String, SortedSet<FlowComment>> flows, Map<TextSpan, List<JavaQuickFix>> quickFixes) {
       this.issues = issues;
       this.flows = flows;
       this.quickFixes = quickFixes;
@@ -446,8 +447,8 @@ class Expectations {
     void consolidateQuickFixes() {
       Set<String> allQuickFixIds = new HashSet<>();
 
-      for (Map.Entry<AnalyzerMessage.TextSpan, List<String>> entry : quickFixesForTextSpan.entrySet()) {
-        AnalyzerMessage.TextSpan issueTextSpan = entry.getKey();
+      for (Map.Entry<TextSpan, List<String>> entry : quickFixesForTextSpan.entrySet()) {
+        TextSpan issueTextSpan = entry.getKey();
         List<JavaQuickFix> quickFixesForIssue = new ArrayList<>();
 
         for (String quickFixId : entry.getValue()) {
@@ -482,8 +483,8 @@ class Expectations {
         });
     }
 
-    private static JavaTextEdit getEdit(QuickFixEditComment edit, AnalyzerMessage.TextSpan issueTextSpan, String quickFixId) {
-      AnalyzerMessage.TextSpan textSpan = edit.getTextSpan(issueTextSpan.startLine);
+    private static JavaTextEdit getEdit(QuickFixEditComment edit, TextSpan issueTextSpan, String quickFixId) {
+      TextSpan textSpan = edit.getTextSpan(issueTextSpan.startLine);
       String replacement = edit.replacement();
       if (textSpan.isEmpty() && replacement.isEmpty()) {
         throw new AssertionError(String.format("Unnecessary edit for quick fix id %s. TextEdits should not have empty range and text.", quickFixId));
@@ -544,7 +545,7 @@ class Expectations {
         Integer startColumn = validateColumnPresence(START_COLUMN.get(attr), "start", startLine);
         Integer endColumn = validateColumnPresence(END_COLUMN.get(attr), "end", startLine);
 
-        AnalyzerMessage.TextSpan textSpan = new AnalyzerMessage.TextSpan(
+        TextSpan textSpan = new TextSpan(
           startLine,
           // Column are 1 based in the Noncompliant comments but 0 based when reporting on tree
           startColumn - 1,

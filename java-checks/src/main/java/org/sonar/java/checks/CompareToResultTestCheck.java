@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
@@ -96,7 +97,7 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
   }
 
   private static JavaQuickFix getQuickFix(BinaryExpressionTree binaryExpression, long operandValue, boolean compareToIsLeft) {
-    AnalyzerMessage.TextSpan textSpan;
+    TextSpan textSpan;
     String newComparison;
 
     SyntaxToken operatorToken = binaryExpression.operatorToken();

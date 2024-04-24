@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 @Rule(key = "S4973")
 public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVisitor {
@@ -73,7 +74,7 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
     ExpressionTree leftOperand = tree.leftOperand();
     ExpressionTree rightOperand = tree.rightOperand();
     if (leftOperand.is(Tree.Kind.STRING_LITERAL)) {
-      AnalyzerMessage.TextSpan interOperandSpace = AnalyzerMessage.textSpanBetween(
+      TextSpan interOperandSpace = AnalyzerMessage.textSpanBetween(
         leftOperand, false,
         rightOperand, false
       );
@@ -87,7 +88,7 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
     } else if (rightOperand.is(Tree.Kind.STRING_LITERAL)) {
       String callEqualsOnLiteral = ((LiteralTree) rightOperand).value() + DOT_EQUALS_AND_OPENING_PARENTHESIS;
       String callToEquals = tree.is(Tree.Kind.NOT_EQUAL_TO) ? ("!" + callEqualsOnLiteral) : callEqualsOnLiteral;
-      AnalyzerMessage.TextSpan leftOfOperatorToEndOfComparison = AnalyzerMessage.textSpanBetween(
+      TextSpan leftOfOperatorToEndOfComparison = AnalyzerMessage.textSpanBetween(
         leftOperand, false,
         rightOperand, true
       );
@@ -103,7 +104,7 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
 
   private JavaQuickFix computeDefaultQuickFix(BinaryExpressionTree tree) {
     String callToEquals = tree.is(Tree.Kind.NOT_EQUAL_TO) ? "!Objects.equals(" : "Objects.equals(";
-    AnalyzerMessage.TextSpan interOperandSpace = AnalyzerMessage.textSpanBetween(
+    TextSpan interOperandSpace = AnalyzerMessage.textSpanBetween(
       tree.leftOperand(), false,
       tree.rightOperand(), false
     );

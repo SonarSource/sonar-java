@@ -46,6 +46,7 @@ import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
 import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
@@ -124,7 +125,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
     reportIssue(regexCheck, AnalyzerMessage.textSpanFor(javaSyntaxElement), message, cost, secondaries);
   }
 
-  private void reportIssue(RegexCheck regexCheck, AnalyzerMessage.TextSpan mainLocation, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
+  private void reportIssue(RegexCheck regexCheck, TextSpan mainLocation, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
     List<List<RegexCheck.RegexIssueLocation>> secondariesAsFlows = new ArrayList<>();
 
     secondaries.stream()
@@ -191,7 +192,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   protected static AnalyzerMessage createAnalyzerMessage(InputFile inputFile, JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message,
     Iterable<List<Location>> flows, @Nullable Integer cost) {
 
-    AnalyzerMessage.TextSpan location = endTree != null ? AnalyzerMessage.textSpanBetween(startTree, endTree) : AnalyzerMessage.textSpanFor(startTree);
+    TextSpan location = endTree != null ? AnalyzerMessage.textSpanBetween(startTree, endTree) : AnalyzerMessage.textSpanFor(startTree);
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, inputFile, location, message, cost != null ? cost : 0);
     completeAnalyzerMessageWithFlows(analyzerMessage, flows, loc -> AnalyzerMessage.textSpanFor(loc.syntaxNode), loc -> loc.msg);
     return analyzerMessage;
@@ -200,7 +201,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   private static <L> void completeAnalyzerMessageWithFlows(
     AnalyzerMessage analyzerMessage,
     Iterable<List<L>> flows,
-    Function<L, AnalyzerMessage.TextSpan> flowItemLocationProdivder,
+    Function<L, TextSpan> flowItemLocationProdivder,
     Function<L, String> flowItemMessageProvider) {
 
     JavaCheck check = analyzerMessage.getCheck();

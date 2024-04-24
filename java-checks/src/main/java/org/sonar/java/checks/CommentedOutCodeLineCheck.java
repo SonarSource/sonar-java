@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 import org.sonarsource.analyzer.commons.recognizers.CodeRecognizer;
 
 @DeprecatedRuleKey(ruleKey = "CommentedOutCodeLine", repositoryKey = "squid")
@@ -100,7 +101,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
     int prefixSize = line.length() - lineWithoutCommentPrefix.length();
     String lineWithoutCommentPrefixAndSuffix = removeCommentSuffix(lineWithoutCommentPrefix);
 
-    AnalyzerMessage.TextSpan textSpan = new AnalyzerMessage.TextSpan(
+    TextSpan textSpan = new TextSpan(
       startLine,
       startColumn + prefixSize,
       startLine,

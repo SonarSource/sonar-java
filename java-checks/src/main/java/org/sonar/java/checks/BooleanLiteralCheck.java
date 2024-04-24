@@ -27,7 +27,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -42,6 +41,7 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
@@ -267,7 +267,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
       if (right != null) {
         edits.add(editForConditionalWhenBothLiterals(tree, left, right, conditionalOr));
       } else {
-        AnalyzerMessage.TextSpan textSpanToRemove;
+        TextSpan textSpanToRemove;
         if (conditionalOr == left) {
           // true || var --> true or false && var --> false
           textSpanToRemove = textSpanBetween(leftOperand, false, rightOperand, true);
@@ -306,7 +306,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Optional<JavaTextEdit> editForConditionalWhenRightIsLiteral(Boolean right, ExpressionTree leftOperand, ExpressionTree rightOperand, boolean conditionalOr) {
-    AnalyzerMessage.TextSpan textSpanToRemove;
+    TextSpan textSpanToRemove;
     if (right.equals(conditionalOr)) {
       // var || true --> true or var && false --> false
       if (mayHaveSideEffect(leftOperand)) {

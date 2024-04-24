@@ -22,7 +22,7 @@ package org.sonar.java.regex;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 import org.sonarsource.analyzer.commons.regex.ast.CharacterTree;
 import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 import org.sonarsource.analyzer.commons.regex.ast.RegexTree;

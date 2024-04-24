@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
-import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 import org.sonarsource.analyzer.commons.regex.ast.IndexRange;
 import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
@@ -39,7 +39,7 @@ public interface RegexCheck extends JavaCheck {
   class RegexIssueLocation {
 
     private static final String CONTINUATION_MESSAGE = "Continuing here";
-    private final List<AnalyzerMessage.TextSpan> locations;
+    private final List<TextSpan> locations;
     private final String message;
 
     public RegexIssueLocation(RegexSyntaxElement tree, String message) {
@@ -56,12 +56,12 @@ public interface RegexCheck extends JavaCheck {
       return new RegexIssueLocation(location.syntaxElements(), location.message());
     }
 
-    private RegexIssueLocation(AnalyzerMessage.TextSpan location, String message) {
+    private RegexIssueLocation(TextSpan location, String message) {
       this.locations = Collections.singletonList(location);
       this.message = message;
     }
 
-    public List<AnalyzerMessage.TextSpan> locations() {
+    public List<TextSpan> locations() {
       return locations;
     }
 
@@ -79,9 +79,9 @@ public interface RegexCheck extends JavaCheck {
         .toList();
     }
 
-    private static List<AnalyzerMessage.TextSpan> textSpansFromRegexSyntaxElements(List<RegexSyntaxElement> trees) {
+    private static List<TextSpan> textSpansFromRegexSyntaxElements(List<RegexSyntaxElement> trees) {
       JavaAnalyzerRegexSource source = (JavaAnalyzerRegexSource) trees.get(0).getSource();
-      List<AnalyzerMessage.TextSpan> locations = new ArrayList<>();
+      List<TextSpan> locations = new ArrayList<>();
       IndexRange current = null;
       for (RegexSyntaxElement tree : trees) {
         if (current == null) {

@@ -32,14 +32,15 @@ import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
 
   private final Set<AnalyzerMessage> issues;
-  private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes;
+  private final Map<TextSpan, List<JavaQuickFix>> quickFixes;
   private boolean reported;
 
-  public JavaIssueBuilderForTests(InputFile inputFile, Set<AnalyzerMessage> issues, Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes) {
+  public JavaIssueBuilderForTests(InputFile inputFile, Set<AnalyzerMessage> issues, Map<TextSpan, List<JavaQuickFix>> quickFixes) {
     super(inputFile, null);
     this.issues = issues;
     this.reported = false;
@@ -51,7 +52,7 @@ public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
     Preconditions.checkState(!reported, "Can only be reported once.");
     JavaCheck rule = rule();
     InputFile inputFile = inputFile();
-    AnalyzerMessage.TextSpan textSpan = textSpan();
+    TextSpan textSpan = textSpan();
     AnalyzerMessage issue = new AnalyzerMessage(rule, inputFile, textSpan, message(), cost().orElse(0));
 
     secondaries()

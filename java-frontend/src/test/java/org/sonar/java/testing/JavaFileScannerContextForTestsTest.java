@@ -44,6 +44,7 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -244,14 +245,14 @@ class JavaFileScannerContextForTestsTest {
       .withQuickFix(() -> quickFix)
       .report();
 
-    Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes = context.getQuickFixes();
+    Map<TextSpan, List<JavaQuickFix>> quickFixes = context.getQuickFixes();
     assertThat(quickFixes).hasSize(1);
 
     assertThat(quickFixes.values().iterator().next()).containsExactly(quickFix);
     assertThat(quickFixes.keySet().iterator().next()).hasToString("(2:0)-(2:10)");
   }
 
-  private static void assertPosition(AnalyzerMessage.TextSpan location, int startLine, int startColumn, int endLine, int endColumn) {
+  private static void assertPosition(TextSpan location, int startLine, int startColumn, int endLine, int endColumn) {
     assertThat(location).isNotNull();
     assertThat(location.startLine).isEqualTo(startLine);
     assertThat(location.startCharacter).isEqualTo(startColumn);

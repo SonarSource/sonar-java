@@ -62,7 +62,6 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.java.test.classpath.TestClasspathUtils;
@@ -71,6 +70,7 @@ import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.EFFORT_TO_FIX;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
@@ -518,7 +518,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   private static void validateLocation(AnalyzerMessage analyzerMessage, Map<Expectations.IssueAttribute, Object> attrs) {
-    AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
+    TextSpan textSpan = analyzerMessage.primaryLocation();
     Objects.requireNonNull(textSpan);
     assertAttributeMatch(analyzerMessage, normalizeColumn(textSpan.startCharacter), attrs, START_COLUMN);
     assertAttributeMatch(analyzerMessage, textSpan.endLine, attrs, END_LINE);
@@ -684,8 +684,8 @@ public class InternalCheckVerifier implements CheckVerifier {
 
   private static class QuickFixesVerifier implements Consumer<Set<AnalyzerMessage>> {
 
-    private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> expectedQuickFixes;
-    private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> actualQuickFixes;
+    private final Map<TextSpan, List<JavaQuickFix>> expectedQuickFixes;
+    private final Map<TextSpan, List<JavaQuickFix>> actualQuickFixes;
 
     public QuickFixesVerifier(Map<TextSpan, List<JavaQuickFix>> expectedQuickFixes, Map<TextSpan, List<JavaQuickFix>> actualQuickFixes) {
       this.expectedQuickFixes = expectedQuickFixes;
@@ -695,7 +695,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     @Override
     public void accept(Set<AnalyzerMessage> issues) {
       for (AnalyzerMessage issue : issues) {
-        AnalyzerMessage.TextSpan primaryLocation = issue.primaryLocation();
+        TextSpan primaryLocation = issue.primaryLocation();
         List<JavaQuickFix> expected = expectedQuickFixes.get(primaryLocation);
         if (expected == null) {
           // We don't have to always test quick fixes, we do nothing if there is no expected quick fix.
@@ -714,7 +714,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
 
     private static void validateIfSameSize(List<JavaQuickFix> expected, @Nullable List<JavaQuickFix> actual, AnalyzerMessage issue) {
-      AnalyzerMessage.TextSpan primaryLocation = issue.primaryLocation();
+      TextSpan primaryLocation = issue.primaryLocation();
       if (actual == null || actual.isEmpty()) {
         // At this point, we know that expected is not empty
         throw new AssertionError(String.format("[Quick Fix] Missing quick fix for issue on line %d", primaryLocation.startLine));
@@ -767,7 +767,7 @@ public class InternalCheckVerifier implements CheckVerifier {
             expectedReplacement,
             actualReplacement));
         }
-        AnalyzerMessage.TextSpan actualNormalizedTextSpan = actualTextEdit.getTextSpan();
+        TextSpan actualNormalizedTextSpan = actualTextEdit.getTextSpan();
         if (!actualNormalizedTextSpan.equals(expectedTextEdit.getTextSpan())) {
           throw new AssertionError(String.format("[Quick Fix] Wrong change location of edit %d for issue on line %d.%nExpected: {{%s}}%nbut was:     {{%s}}",
             (i + 1),

@@ -38,6 +38,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -478,7 +479,7 @@ class CheckVerifierTest {
     private AnalyzerMessage issueWithFlow;
 
     private FakeVisitor withDefaultIssues() {
-      AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, FAKE_INPUT_FILE, new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 3);
+      AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, FAKE_INPUT_FILE, new TextSpan(10, 9, 10, 10), "message4", 3);
       withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, FAKE_INPUT_FILE, 3, "no message", 0)));
       withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, FAKE_INPUT_FILE, 4, "no message", 0)));
       return this.withIssue(1, "message")
@@ -489,7 +490,7 @@ class CheckVerifierTest {
         .withPreciseIssue(withMultipleLocation)
         .withPreciseIssue(new AnalyzerMessage(this, FAKE_INPUT_FILE, 11, "no message", 4))
         .withPreciseIssue(new AnalyzerMessage(this, FAKE_INPUT_FILE, 12, "message12", 0))
-        .withPreciseIssue(new AnalyzerMessage(this, FAKE_INPUT_FILE, new AnalyzerMessage.TextSpan(14, 5, 15, 11), "message12", 0))
+        .withPreciseIssue(new AnalyzerMessage(this, FAKE_INPUT_FILE, new TextSpan(14, 5, 15, 11), "message12", 0))
         .withIssue(17, "message17");
     }
 
@@ -515,14 +516,14 @@ class CheckVerifierTest {
     }
 
     private FakeVisitor issueWithFlow(int line) {
-      return issueWithFlow("default-message", new AnalyzerMessage.TextSpan(line));
+      return issueWithFlow("default-message", new TextSpan(line));
     }
 
     private FakeVisitor issueWithFlow(int line, @Nullable String message, int startColumn, int endLine, int endColumn) {
-      return issueWithFlow(message, new AnalyzerMessage.TextSpan(line, startColumn, endLine, endColumn));
+      return issueWithFlow(message, new TextSpan(line, startColumn, endLine, endColumn));
     }
 
-    private FakeVisitor issueWithFlow(@Nullable String message, AnalyzerMessage.TextSpan location) {
+    private FakeVisitor issueWithFlow(@Nullable String message, TextSpan location) {
       checkState(issueWithFlow == null, "Finish previous issueWithFlow by calling #add");
       issueWithFlow = new AnalyzerMessage(this, OTHER_FAKE_INPUT_FILE, location, message, 0);
       return this;
@@ -541,14 +542,14 @@ class CheckVerifierTest {
     }
 
     private FakeVisitor flowItem(int line, @Nullable String msg) {
-      return flowItem(msg, new AnalyzerMessage.TextSpan(line));
+      return flowItem(msg, new TextSpan(line));
     }
 
     private FakeVisitor flowItem(int line, @Nullable String msg, int startColumn, int endColumn) {
-      return flowItem(msg, new AnalyzerMessage.TextSpan(line, startColumn, line, endColumn));
+      return flowItem(msg, new TextSpan(line, startColumn, line, endColumn));
     }
 
-    private FakeVisitor flowItem(@Nullable String msg, AnalyzerMessage.TextSpan textSpan) {
+    private FakeVisitor flowItem(@Nullable String msg, TextSpan textSpan) {
       List<List<AnalyzerMessage>> flows = issueWithFlow.flows;
       checkState(!flows.isEmpty(), "Call #flow first to create a flow");
       AnalyzerMessage flowItem = new AnalyzerMessage(this, OTHER_FAKE_INPUT_FILE, textSpan, msg, 0);
@@ -603,7 +604,7 @@ class CheckVerifierTest {
     }
 
     private static Tree mockTree(final AnalyzerMessage analyzerMessage) {
-      AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
+      TextSpan textSpan = analyzerMessage.primaryLocation();
       if (textSpan.onLine()) {
         return new InternalSyntaxToken(textSpan.startLine, 0, "mock", new ArrayList<>(), false);
       }

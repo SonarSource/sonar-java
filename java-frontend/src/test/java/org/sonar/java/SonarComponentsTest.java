@@ -85,6 +85,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 import org.sonarsource.sonarlint.core.plugin.commons.sonarapi.SonarLintRuntimeImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -503,14 +504,14 @@ class SonarComponentsTest {
       checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
-    AnalyzerMessage.TextSpan emptyTextSpan = new AnalyzerMessage.TextSpan(3, 10, 3, 10);
+    TextSpan emptyTextSpan = new TextSpan(3, 10, 3, 10);
     AnalyzerMessage analyzerMessageEmptyLocation = new AnalyzerMessage(expectedCheck, inputFile, emptyTextSpan, "message", 0);
 
     assertThatThrownBy(() -> sonarComponents.reportIssue(analyzerMessageEmptyLocation, ruleKey, inputFile, 0.0))
       .isInstanceOf(IllegalStateException.class).hasMessageContaining("Issue location should not be empty");
     assertThat(context.allIssues()).isEmpty();
 
-    AnalyzerMessage.TextSpan nonEmptyTextSpan = new AnalyzerMessage.TextSpan(3, 10, 3, 15);
+    TextSpan nonEmptyTextSpan = new TextSpan(3, 10, 3, 15);
     AnalyzerMessage analyzerMessageValidLocation = new AnalyzerMessage(expectedCheck, inputFile, nonEmptyTextSpan, "message", 0);
     sonarComponents.reportIssue(analyzerMessageValidLocation, ruleKey, inputFile, 0.0);
     assertThat(context.allIssues()).isNotEmpty();

@@ -21,8 +21,7 @@ package org.sonar.java.regex;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
+import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.RegexParser;
 import org.sonarsource.analyzer.commons.regex.RegexSource;
@@ -117,7 +116,7 @@ class JavaAnalyzerRegexSourceTest {
     assertTextSpan(5, 4, 5, items.get(3));
     assertTextSpan(5, 5, 6, items.get(4));
 
-    List<AnalyzerMessage.TextSpan> spans = ((JavaAnalyzerRegexSource) regex.getSource()).textSpansFor(regex.getRange());
+    List<TextSpan> spans = ((JavaAnalyzerRegexSource) regex.getSource()).textSpansFor(regex.getRange());
     assertTextSpan(4, 4, 6, spans.get(0));
     assertTextSpan(5, 4, 6, spans.get(1));
   }
@@ -132,12 +131,12 @@ class JavaAnalyzerRegexSourceTest {
   }
 
   private static void assertTextSpan(int line, int startColumn, int endColumn, RegexTree tree) {
-    List<AnalyzerMessage.TextSpan> spans = ((JavaAnalyzerRegexSource) tree.getSource()).textSpansFor(tree.getRange());
+    List<TextSpan> spans = ((JavaAnalyzerRegexSource) tree.getSource()).textSpansFor(tree.getRange());
     assertEquals(1, spans.size());
     assertTextSpan(line, startColumn, endColumn, spans.get(0));
   }
 
-  private static void assertTextSpan(int line, int startColumn, int endColumn, AnalyzerMessage.TextSpan span) {
+  private static void assertTextSpan(int line, int startColumn, int endColumn, TextSpan span) {
     assertEquals(line, span.startLine, () -> String.format("Expected line to be '%d' but got '%d'", line, span.startLine));
     assertEquals(line, span.endLine, () -> String.format("Expected line to be '%d' but got '%d'", line, span.endLine));
     assertEquals(startColumn, span.startCharacter, () -> String.format("Expected start character to be '%d' but got '%d'", startColumn, span.startCharacter));
