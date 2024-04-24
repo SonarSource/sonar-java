@@ -1,40 +1,90 @@
-<p>Generic types should not be used raw (without type parameters). To fix this issue, add the type parameters.</p>
+<p>Generic types should not be used raw (without type arguments). To fix this issue, add the type parameters.</p>
 <h2>Why is this an issue?</h2>
 <p>A generic type is a generic class or interface that is parameterized over types. For example, <code>java.util.List</code> has one type parameter:
 the type of its elements.</p>
-<p>When generic types are used raw (without type parameters), the compiler is not able to do generic type checking. For this reason, it is sometimes
-necessary to cast objects and defer type-checking to runtime.</p>
+<p>Using generic types raw (without binding arguments to the type parameters) prevents compile-time type checking for expressions that use these type
+parameters. Explicit type casts are necessary for them, which do perform a runtime type check that may fail with a
+<code>ClassCastException</code>.</p>
 <h3>What is the potential impact?</h3>
-<p>When a cast fails, a <code>ClassCastException</code> is thrown and the program most likely crashes. Therefore, this issue might impact the
-availability and reliability of your application.</p>
+<p>The compiler cannot assert that the program is inherently type safe. When a cast fails, a <code>ClassCastException</code> is thrown during runtime
+and the program most likely crashes. Therefore, this issue might impact the availability and reliability of your application.</p>
+<h3>Exceptions</h3>
+<p>The rule does not raise an issue for the simple <code>instanceof</code> operator, which checks against runtime types where type parameter
+information has been erased. Since it does not return a rawly typed instance but a boolean value, it does not prevent compile-time type checking.</p>
+<p>This, however, is not the case for the <code>cast</code> operator as well as the extended <code>instanceof</code> operator which are both not an
+exception from this rule. Since they operate on the erased runtime type as well, they must use wildcard type arguments when checked against a
+parameterized type (see the examples).</p>
 <h2>How to fix it</h2>
-<p>You should add type parameters. In the case of collections, the type parameter(s) should correspond to the type of elements that the list is
-intended to store.</p>
+<p>For any usage of parameterized types, bind the type parameters with type arguments. For example, when a function returns a list of strings, the
+return type is <code>List&lt;String&gt;</code>, where the type parameter <code>E</code> in interface <code>List&lt;E&gt;</code> is bound with the
+argument <code>String</code>.</p>
+<p>If the concrete binding is unknown, you still should not use the type raw. Use a wildcard type argument instead, with optional lower or upper
+bound, such as in <code>List&lt;?&gt;</code> for a list whose element type is unknown, or <code>List&lt;? extends Number&gt;</code> for a list whose
+element type is <code>Number</code> or a subtype of it.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
+// List is supposed to store integers only
 List integers = new ArrayList&lt;&gt;();
 
-// It is possible to add a string to a list that is supposed to be integers only
+// Yet, we can add strings, because we did not give
+// this information to the compiler
 integers.add("Hello World!");
 
-Integer a = (Integer) integers.get(0);  // ClassCastException!
+// Type is checked during runtime and will throw a ClassCastException
+Integer a = (Integer) integers.get(0);
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
+// List is supposed to store integers, and we let the compiler know
 List&lt;Integer&gt; integers = new ArrayList&lt;&gt;();
 
-// The program does not compile anymore with this mistake:
-// integers.add("Hello World!");
+// Now we can add only integers.
+// Adding a string results in a compile time error.
 integers.add(42);
 
-Integer a = integers.get(0);  // No need to cast anymore.
+// No cast required anymore, and no possible ClassCastException
+Integer a = integers.get(0);
 </pre>
-<h3>How does this work?</h3>
-<p>In the noncompliant example, <code>List</code> is used as a raw type. Even though the list stores integers, the compiler will type its elements as
-<code>Object</code>, To use an element of the list as an integer, it needs to be cast first. But elements are not garanteed to be integers. In this
-case, a <code>String</code> is erroneously appended to the list, causing the cast to <code>Integer</code> to fail.</p>
-<p>When the type parameter is specified, this bug is detected by the compiler during type-checking. The cast is also unncessary in this case.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+String getStringFromForcedList(Object object) {
+  // Cast expression and instanceof can check runtime type only.
+  // The solution is _not_ to skip the type argument in that case.
+  return object instanceof List stringList ? (String) stringList.getFirst(): "";
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+String getStringFromForcedList(Object object) {
+  // The solution is to use a wildcard type argument in that case.
+  return object instanceof List&lt;?&gt; stringList ? (String) stringList.getFirst(): "";
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+String getStringFromForcedList(Object object) {
+  return object instanceof List stringList ? (String) stringList.getFirst(): "";
+}
+
+String returnString() {
+  Object object = List.of("Hello");
+  return getStringFromForcedList(object);
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+Object getObjectFromForcedList(Object object) {
+  // You may also choose not to make assumptions about type arguments you cannot infer.
+  return object instanceof List&lt;?&gt; list ? list.getFirst(): "";
+}
+
+String returnString(Object object) {
+  // Instead, delegate the decision to use-site, which may have more information.
+  Object object = List.of("Hello");
+  return (String) getObjectFromForcedList(object);
+}
+</pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
