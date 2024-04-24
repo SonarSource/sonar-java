@@ -52,7 +52,7 @@ import org.h2.security.SHA256;
 String inputString = System.getenv("SECRET");
 byte[] key         = inputString.getBytes();
 
-SHA256.getHMAC(key, message);  // Noncompliant
+SHA256.getHMAC(key, message);
 </pre>
 <h3>How does this work?</h3>
 <p>While the noncompliant code example contains a hard-coded password, the compliant solution retrieves the secret’s value from its environment. This
