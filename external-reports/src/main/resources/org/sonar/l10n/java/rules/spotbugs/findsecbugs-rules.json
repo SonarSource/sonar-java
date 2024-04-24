@@ -372,6 +372,12 @@
     "url": "https://find-sec-bugs.github.io/bugs.htm#PLAY_UNVALIDATED_REDIRECT"
   },
   {
+    "key": "POTENTIAL_XML_INJECTION",
+    "name": "An unsafe string is potentially injected into an XML string",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#POTENTIAL_XML_INJECTION"
+  },
+  {
     "key": "PREDICTABLE_RANDOM",
     "name": "Predictable pseudorandom number generator",
     "type": "VULNERABILITY",
@@ -820,6 +826,18 @@
     "name": "XML parsing vulnerable to XXE (SAXParser)",
     "type": "VULNERABILITY",
     "url": "https://find-sec-bugs.github.io/bugs.htm#XXE_SAXPARSER"
+  },
+  {
+    "key": "XXE_SCHEMA_FACTORY",
+    "name": "XML schema processing vulnerable to XXE",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XXE_SCHEMA_FACTORY"
+  },
+  {
+    "key": "XXE_VALIDATOR",
+    "name": "XML validation vulnerable to XXE",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XXE_VALIDATOR"
   },
   {
     "key": "XXE_XMLREADER",

@@ -1624,6 +1624,13 @@
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#mc-overridable-method-call-in-constructor"
   },
   {
+    "key": "MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT",
+    "name": "Malicious code - An overridable method is called from the readObject method.",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#mc-overridable-method-call-in-read-object"
+  },
+  {
     "key": "ME_ENUM_FIELD_SETTER",
     "name": "Bad practice - Public enum method unconditionally sets its field",
     "type": "CODE_SMELL",
@@ -2875,6 +2882,48 @@
     "type": "BUG",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#sic-threadlocal-deadly-embrace"
+  },
+  {
+    "key": "SING_SINGLETON_GETTER_NOT_SYNCHRONIZED",
+    "name": "Correctness - Instance-getter method of class using singleton design pattern is not synchronized.",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#sing-singleton-getter-not-synchronized"
+  },
+  {
+    "key": "SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR",
+    "name": "Correctness - Class using singleton design pattern has non-private constructor.",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#sing-singleton-has-nonprivate-constructor"
+  },
+  {
+    "key": "SING_SINGLETON_IMPLEMENTS_CLONEABLE",
+    "name": "Correctness - Class using singleton design pattern directly implements Cloneable interface.",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#sing-singleton-implements-cloneable"
+  },
+  {
+    "key": "SING_SINGLETON_IMPLEMENTS_CLONE_METHOD",
+    "name": "Correctness - Class using singleton design pattern implements clone() method without being an unconditional CloneNotSupportedException-thrower.",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#sing-singleton-implements-clone-method"
+  },
+  {
+    "key": "SING_SINGLETON_IMPLEMENTS_SERIALIZABLE",
+    "name": "Correctness - Class using singleton design pattern directly or indirectly implements Serializable interface.",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#sing-singleton-implements-serializable"
+  },
+  {
+    "key": "SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE",
+    "name": "Correctness - Class using singleton design pattern indirectly implements Cloneable interface.",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#sing-singleton-indirectly-implements-cloneable"
   },
   {
     "key": "SIO_SUPERFLUOUS_INSTANCEOF",
