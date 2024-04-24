@@ -26,6 +26,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.internal.JavaCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
 /**
@@ -79,6 +80,10 @@ public interface CheckVerifier {
    * @return the newly instantiated verifier
    */
   static CheckVerifier newVerifier() {
+    return JavaCheckVerifier.newInstance();
+  }
+
+  static CheckVerifier newInternalVerifier() {
     return InternalCheckVerifier.newInstance();
   }
 
