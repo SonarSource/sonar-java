@@ -19,12 +19,18 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import org.sonar.plugins.java.api.lighttree.LightTypeNode;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.List;
 
-public interface TypeTree extends Tree {
+public interface TypeTree extends Tree, LightTypeNode {
   Type symbolType();
 
   List<AnnotationTree> annotations();
+
+  @Override
+  default String typeName() {
+    return symbolType().name();
+  }
 }

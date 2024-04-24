@@ -18,7 +18,9 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.sonar.java.checks.quickfixes;
+package org.sonar.plugins.java.api.lighttree;
+
+import org.sonar.plugins.java.api.tree.Tree;
 
 public sealed interface Operator {
   // Reference: https://docs.oracle.com/javase/tutorial/java/nutsandbolts/operators.html
@@ -127,6 +129,31 @@ public sealed interface Operator {
     @Override
     public boolean isAssociative() {
       return isAssociative;
+    }
+
+    public static BinaryOperator fromKind(Tree.Kind kind){
+      return switch (kind){
+        case MULTIPLY -> MUL;
+        case DIVIDE -> DIV;
+        case REMAINDER -> MOD;
+        case PLUS -> ADD;
+        case MINUS -> SUB;
+        case LEFT_SHIFT -> SHIFTL;
+        case RIGHT_SHIFT -> SHIFTR_ARITH;
+        case UNSIGNED_RIGHT_SHIFT -> SHIFTR_LOGICAL;
+        case LESS_THAN -> LT;
+        case GREATER_THAN -> GT;
+        case LESS_THAN_OR_EQUAL_TO -> LEQ;
+        case GREATER_THAN_OR_EQUAL_TO -> GEQ;
+        case EQUAL_TO -> EQUALITY;
+        case NOT_EQUAL_TO -> INEQUALITY;
+        case AND -> BITW_AND;
+        case XOR -> BITW_XOR;
+        case OR -> BITW_OR;
+        case CONDITIONAL_AND -> AND;
+        case CONDITIONAL_OR -> OR;
+        default -> throw new AssertionError("unexpected: " + kind);
+      };
     }
 
   }

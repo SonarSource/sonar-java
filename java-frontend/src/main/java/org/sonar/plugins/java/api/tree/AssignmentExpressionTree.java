@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.lighttree.LightAssignExpr;
 
 /**
  * Assignment expression.
@@ -44,7 +45,7 @@ import org.sonar.java.annotations.Beta;
  * @since Java 1.3
  */
 @Beta
-public interface AssignmentExpressionTree extends ExpressionTree {
+public interface AssignmentExpressionTree extends ExpressionTree, LightAssignExpr {
 
   ExpressionTree variable();
 

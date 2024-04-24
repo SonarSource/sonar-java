@@ -75,6 +75,12 @@ public final class PrettyprintStringBuilder {
     return this;
   }
 
+  public PrettyprintStringBuilder semicolonAndNewLine(){
+    sb.append(";");
+    newLine();
+    return this;
+  }
+
   public PrettyprintStringBuilder newLineIfNotEmpty() {
     if (!lastLineIsEmpty()) {
       newLine();

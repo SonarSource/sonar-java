@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.lighttree.Operator;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;

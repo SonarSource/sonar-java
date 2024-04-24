@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.lighttree.LightVarDecl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
@@ -36,7 +37,7 @@ import javax.annotation.Nullable;
  * @since Java 1.3
  */
 @Beta
-public interface VariableTree extends StatementTree {
+public interface VariableTree extends StatementTree, LightVarDecl {
 
   ModifiersTree modifiers();
 

@@ -20,6 +20,10 @@
 package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.lighttree.LightId;
+import org.sonar.plugins.java.api.lighttree.LightTree;
+import org.sonar.plugins.java.api.lighttree.LightTreeVisitor;
+import org.sonar.plugins.java.api.lighttree.LightTypeNode;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 /**
@@ -34,12 +38,17 @@ import org.sonar.plugins.java.api.semantic.Symbol;
  * @since Java 1.3
  */
 @Beta
-public interface IdentifierTree extends ExpressionTree, TypeTree {
+public interface IdentifierTree extends ExpressionTree, TypeTree, LightId {
 
   SyntaxToken identifierToken();
 
   String name();
 
   Symbol symbol();
+
+  @Override
+  default void accept(LightTreeVisitor visitor){
+    visitor.visitLightId(this);
+  }
 
 }

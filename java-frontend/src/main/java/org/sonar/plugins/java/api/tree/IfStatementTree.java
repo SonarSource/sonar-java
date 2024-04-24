@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.tree;
 import org.sonar.java.annotations.Beta;
 
 import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.lighttree.LightIfStat;
 
 /**
  * 'if' statement.
@@ -36,7 +37,7 @@ import javax.annotation.Nullable;
  * @since Java 1.3
  */
 @Beta
-public interface IfStatementTree extends StatementTree {
+public interface IfStatementTree extends StatementTree, LightIfStat {
 
   SyntaxToken ifKeyword();
 

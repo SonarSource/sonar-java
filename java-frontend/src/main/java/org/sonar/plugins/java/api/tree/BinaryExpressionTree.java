@@ -20,6 +20,8 @@
 package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.lighttree.LightBinOp;
+import org.sonar.plugins.java.api.lighttree.Operator;
 
 /**
  * Binary expression.
@@ -51,12 +53,17 @@ import org.sonar.java.annotations.Beta;
  * @since Java 1.3
  */
 @Beta
-public interface BinaryExpressionTree extends ExpressionTree {
+public interface BinaryExpressionTree extends ExpressionTree, LightBinOp {
 
   ExpressionTree leftOperand();
 
   SyntaxToken operatorToken();
 
   ExpressionTree rightOperand();
+
+  @Override
+  default Operator operator() {
+    return Operator.BinaryOperator.fromKind(kind());
+  }
 
 }

@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.tree;
 import org.sonar.java.annotations.Beta;
 
 import java.util.List;
+import org.sonar.plugins.java.api.lighttree.LightBlock;
 
 /**
  * Block.
@@ -39,7 +40,7 @@ import java.util.List;
  * @since Java 1.3
  */
 @Beta
-public interface BlockTree extends StatementTree {
+public interface BlockTree extends StatementTree, LightBlock {
 
   SyntaxToken openBraceToken();
 

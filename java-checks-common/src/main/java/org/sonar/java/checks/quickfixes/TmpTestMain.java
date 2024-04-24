@@ -20,43 +20,20 @@
 
 package org.sonar.java.checks.quickfixes;
 
-import static org.sonar.java.checks.quickfixes.Syntax.*;
+import org.sonar.plugins.java.api.lighttree.Operator;
 
 public final class TmpTestMain {
 
   public static void main(String[] args) {
-
-    var ast = If(expr("myVar").eq(cst(0)),
-      Block(
-        expr("x").assig(expr("y").minus(expr("z")))
-      ), If(expr("boolVar"),
-        Block(
-          Switch(expr("tree"),
-            Case(Pat("Fork", Pat("Tree", "left"), Pat("Tree", "right"))
-                .Where(expr("y").eq(cst(-1))),
-              Block(
-                expr("sum").assig(
-                  expr("t1").times(expr("r").times(expr("s"))).times(expr("u1").minus(expr("u2"))).plus(expr("t2").times(expr("t3").minus(expr("t4"))))
-                )
-              )),
-            Default(Block(
-              Decl("int", "tmp", cst(2).times(expr("i"))),
-              expr("sum").assig(expr("tmp").times(expr("tmp")))
-            ))
-          )
-        ),
-        hardCodedBlock(
-          """
-              {
-                var t = foo(x, y);
-                bar(t, -1, x-y);
-                System.out.println(t);
-              }
-          """
-        )
+    var ast = new P.IfStat(new P.BinOp(new P.Id("x"), Operator.BinaryOperator.EQUALITY, new P.Const("Hello")),
+      new P.Block(
+        new P.AssignmentExpr(new P.Id("y"), new P.Const(0))
+      ),
+      new P.Block(
+        new P.VarDecl(new P.TypeNode("int"), new P.Id("p"), new P.Const(42))
       )
     );
-    var str = Prettyprinter.prettyprint(ast, new FileConfig("  ", "\n"));
+    var str = PrettyPrinter.prettyPrint(ast, new FileConfig("  ", "\n"));
     System.out.println(str);
   }
 

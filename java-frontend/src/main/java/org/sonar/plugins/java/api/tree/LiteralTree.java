@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.lighttree.LightLiteral;
 
 /**
  * Literal expression.
@@ -43,7 +44,7 @@ import org.sonar.java.annotations.Beta;
  * @since Java 1.3
  */
 @Beta
-public interface LiteralTree extends ExpressionTree {
+public interface LiteralTree extends ExpressionTree, LightLiteral {
 
   String value();
 

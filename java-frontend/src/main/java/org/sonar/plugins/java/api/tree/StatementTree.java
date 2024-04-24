@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.lighttree.LightStat;
 
 /**
  * Common interface for all types of statements.
@@ -27,5 +28,5 @@ import org.sonar.java.annotations.Beta;
  * JLS 14
  */
 @Beta
-public interface StatementTree extends Tree {
+public interface StatementTree extends Tree, LightStat {
 }

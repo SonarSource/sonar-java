@@ -21,6 +21,7 @@ package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
 import java.util.Optional;
+import org.sonar.plugins.java.api.lighttree.LightExpr;
 import org.sonar.plugins.java.api.semantic.Type;
 
 /**
@@ -29,7 +30,7 @@ import org.sonar.plugins.java.api.semantic.Type;
  * JLS 15
  */
 @Beta
-public interface ExpressionTree extends Tree {
+public interface ExpressionTree extends Tree, LightExpr {
   Type symbolType();
 
   Optional<Object> asConstant();
