@@ -24,8 +24,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
@@ -106,8 +106,8 @@ public class MathClampRangeCheck extends AbstractMethodDetection implements Java
       .withMessage("Change the \"clamp(value,min,max)\"'s arguments so \"%s\" is not always less than \"%s\".", nameA, nameB)
       .withSecondaries(new JavaFileScannerContext.Location(nameB + " argument", exprB))
       .withQuickFix(() -> JavaQuickFix.newQuickFix("Swap \"" + nameA + "\" and \"" + nameB + "\" arguments")
-        .addTextEdit(JavaTextEdit.replaceTree(exprA, QuickFixHelper.contentForTree(exprB, context)))
-        .addTextEdit(JavaTextEdit.replaceTree(exprB, QuickFixHelper.contentForTree(exprA, context)))
+        .addTextEdit(AnalyzerMessage.replaceTree(exprA, QuickFixHelper.contentForTree(exprB, context)))
+        .addTextEdit(AnalyzerMessage.replaceTree(exprB, QuickFixHelper.contentForTree(exprA, context)))
         .build())
       .report();
     return true;

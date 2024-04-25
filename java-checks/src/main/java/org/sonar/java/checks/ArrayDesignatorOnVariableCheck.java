@@ -25,8 +25,8 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -61,10 +61,10 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
 
   static JavaQuickFix createQuickFix(MisplacedArray misplaced, String type) {
     return JavaQuickFix.newQuickFix("Move " + misplaced.replacement + " to the " + type)
-      .addTextEdit(JavaTextEdit.removeBetweenTree(
+      .addTextEdit(AnalyzerMessage.removeBetweenTree(
         misplaced.firstArray.openBracketToken(),
         misplaced.lastArray.closeBracketToken()))
-      .addTextEdit(JavaTextEdit.insertAfterTree(
+      .addTextEdit(AnalyzerMessage.insertAfterTree(
         misplaced.firstArray.type(),
         misplaced.replacement))
       .build();

@@ -24,14 +24,14 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LineUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1161")
@@ -98,7 +98,7 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
     }
     return JavaQuickFix
       .newQuickFix("Add \"@Override\" annotation")
-      .addTextEdit(JavaTextEdit.insertBeforeTree(targetTree, insertedText))
+      .addTextEdit(AnalyzerMessage.insertBeforeTree(targetTree, insertedText))
       .build();
   }
 

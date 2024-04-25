@@ -33,8 +33,8 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LineUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -82,7 +82,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
           .onTree(tree.arrowToken())
           .withMessage("Replace this lambda with method reference '%s'.%s", replacement, context.getJavaVersion().java8CompatibilityMessage())
           .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with \"%s\"", replacement)
-            .addTextEdit(JavaTextEdit.replaceTree(tree, replacement))
+            .addTextEdit(AnalyzerMessage.replaceTree(tree, replacement))
             .build())
           .report()
       );

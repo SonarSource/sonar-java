@@ -32,7 +32,6 @@ import org.mockito.Mockito;
 import org.sonar.java.Preconditions;
 import org.sonar.java.checks.helpers.QuickFixHelper.ImportSupplier;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -42,6 +41,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -394,16 +394,16 @@ class QuickFixHelperTest {
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
 
-      Optional<JavaTextEdit> returnedValueSet = supplier.newImportEdit("java.util.Set");
+      Optional<TextEdit> returnedValueSet = supplier.newImportEdit("java.util.Set");
       assertThat(returnedValueSet).isPresent();
-      JavaTextEdit javaUtilSetEdit = returnedValueSet.get();
+      TextEdit javaUtilSetEdit = returnedValueSet.get();
       assertThat(javaUtilSetEdit.getReplacement()).isEqualTo("\nimport java.util.Set;");
       assertThat(javaUtilSetEdit.getTextSpan().startLine).isEqualTo(2);
       assertThat(javaUtilSetEdit.getTextSpan().startCharacter).isEqualTo(22);
 
-      Optional<JavaTextEdit> returnedValueAnimal = supplier.newImportEdit("org.bar.Animal");
+      Optional<TextEdit> returnedValueAnimal = supplier.newImportEdit("org.bar.Animal");
       assertThat(returnedValueAnimal).isPresent();
-      JavaTextEdit orgBarAnimal = returnedValueAnimal.get();
+      TextEdit orgBarAnimal = returnedValueAnimal.get();
       assertThat(orgBarAnimal.getReplacement()).isEqualTo("\nimport org.bar.Animal;");
       assertThat(orgBarAnimal.getTextSpan().startLine).isEqualTo(2);
       assertThat(orgBarAnimal.getTextSpan().startCharacter).isEqualTo(22);
@@ -419,9 +419,9 @@ class QuickFixHelperTest {
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
 
-      Optional<JavaTextEdit> returnedValue = supplier.newImportEdit("a.b.C");
+      Optional<TextEdit> returnedValue = supplier.newImportEdit("a.b.C");
       assertThat(returnedValue).isPresent();
-      JavaTextEdit abcEdit = returnedValue.get();
+      TextEdit abcEdit = returnedValue.get();
       assertThat(abcEdit.getReplacement()).isEqualTo("import a.b.C;\n");
       assertThat(abcEdit.getTextSpan().startLine).isEqualTo(2);
       assertThat(abcEdit.getTextSpan().startCharacter).isZero();
@@ -437,9 +437,9 @@ class QuickFixHelperTest {
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
 
-      Optional<JavaTextEdit> returnedValue = supplier.newImportEdit("z.z.Z");
+      Optional<TextEdit> returnedValue = supplier.newImportEdit("z.z.Z");
       assertThat(returnedValue).isPresent();
-      JavaTextEdit zzzEdit = returnedValue.get();
+      TextEdit zzzEdit = returnedValue.get();
       assertThat(zzzEdit.getReplacement()).isEqualTo("\nimport z.z.Z;");
       assertThat(zzzEdit.getTextSpan().startLine).isEqualTo(3);
       assertThat(zzzEdit.getTextSpan().startCharacter).isEqualTo(17);
@@ -453,9 +453,9 @@ class QuickFixHelperTest {
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
 
-      Optional<JavaTextEdit> returnedValue = supplier.newImportEdit("org.bar.B");
+      Optional<TextEdit> returnedValue = supplier.newImportEdit("org.bar.B");
       assertThat(returnedValue).isPresent();
-      JavaTextEdit orgBarBEdit = returnedValue.get();
+      TextEdit orgBarBEdit = returnedValue.get();
       assertThat(orgBarBEdit.getReplacement()).isEqualTo("\n\nimport org.bar.B;");
       assertThat(orgBarBEdit.getTextSpan().startLine).isEqualTo(1);
       assertThat(orgBarBEdit.getTextSpan().startCharacter).isEqualTo(16);
@@ -468,9 +468,9 @@ class QuickFixHelperTest {
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
 
-      Optional<JavaTextEdit> returnedValue = supplier.newImportEdit("org.bar.B");
+      Optional<TextEdit> returnedValue = supplier.newImportEdit("org.bar.B");
       assertThat(returnedValue).isPresent();
-      JavaTextEdit orgBarBEdit = returnedValue.get();
+      TextEdit orgBarBEdit = returnedValue.get();
       assertThat(orgBarBEdit.getReplacement()).isEqualTo("import org.bar.B;\n\n");
       assertThat(orgBarBEdit.getTextSpan().startLine).isEqualTo(1);
       assertThat(orgBarBEdit.getTextSpan().startCharacter).isZero();

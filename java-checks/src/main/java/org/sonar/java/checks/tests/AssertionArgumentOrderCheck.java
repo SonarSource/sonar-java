@@ -24,9 +24,9 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -137,8 +137,8 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
     String newX = QuickFixHelper.contentForTree(y, context);
     String newY = QuickFixHelper.contentForTree(x, context);
     return JavaQuickFix.newQuickFix("Swap arguments")
-      .addTextEdit(JavaTextEdit.replaceTree(x, newX))
-      .addTextEdit(JavaTextEdit.replaceTree(y, newY))
+      .addTextEdit(AnalyzerMessage.replaceTree(x, newX))
+      .addTextEdit(AnalyzerMessage.replaceTree(y, newY))
       .build();
   }
 

@@ -63,13 +63,13 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.EFFORT_TO_FIX;
@@ -742,8 +742,8 @@ public class InternalCheckVerifier implements CheckVerifier {
           expectedDescription,
           actualDescription));
       }
-      List<JavaTextEdit> actualTextEdits = actual.getTextEdits();
-      List<JavaTextEdit> expectedTextEdits = expected.getTextEdits();
+      List<TextEdit> actualTextEdits = actual.getTextEdits();
+      List<TextEdit> expectedTextEdits = expected.getTextEdits();
       if (actualTextEdits.size() != expectedTextEdits.size()) {
         throw new AssertionError(String.format("[Quick Fix] Wrong number of edits for issue on line %d.%nExpected: {{%d}}%nbut was:     {{%d}}",
           actualIssue.getLine(),
@@ -751,8 +751,8 @@ public class InternalCheckVerifier implements CheckVerifier {
           actualTextEdits.size()));
       }
       for (int i = 0; i < actualTextEdits.size(); i++) {
-        JavaTextEdit actualTextEdit = actualTextEdits.get(i);
-        JavaTextEdit expectedTextEdit = expectedTextEdits.get(i);
+        TextEdit actualTextEdit = actualTextEdits.get(i);
+        TextEdit expectedTextEdit = expectedTextEdits.get(i);
 
         String expectedReplacement = expectedTextEdit.getReplacement();
         String actualReplacement = actualTextEdit.getReplacement();

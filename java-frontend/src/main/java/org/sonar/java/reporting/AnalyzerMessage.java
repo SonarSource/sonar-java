@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 /**
@@ -127,9 +128,51 @@ public class AnalyzerMessage {
       start.line(), start.column());
   }
 
+  public static TextEdit removeTree(Tree tree) {
+    return TextEdit.removeTextSpan(textSpanFor(tree));
+  }
+
+  public static TextEdit removeBetweenTree(Tree startTree, Tree endTree) {
+    return replaceBetweenTree(startTree, endTree, "");
+  }
+
+  public static TextEdit replaceTree(Tree tree, String replacement) {
+    return TextEdit.replaceTextSpan(textSpanFor(tree), replacement);
+  }
+
+  /**
+   * From startTree first token to endTree last token.
+   */
+  public static TextEdit replaceBetweenTree(Tree startTree, Tree endTree, String replacement) {
+    return TextEdit.replaceTextSpan(textSpanBetween(startTree, endTree), replacement);
+  }
+
+  public static TextEdit replaceBetweenTree(Tree startTree, boolean includeStart, Tree endTree, boolean includeEnd, String replacement) {
+    return TextEdit.replaceTextSpan(textSpanBetween(startTree, includeStart, endTree, includeEnd), replacement);
+  }
+
+  public static TextEdit insertAfterTree(Tree tree, String addition) {
+    SyntaxToken lastToken = tree.lastToken();
+    if (lastToken == null) {
+      throw new IllegalStateException("Trying to insert a quick fix after a Tree without token.");
+    }
+    Position lastPosition = Position.endOf(lastToken);
+    return TextEdit.insertAtPosition(lastPosition.line(), lastPosition.columnOffset(), addition);
+  }
+
+  public static TextEdit insertBeforeTree(Tree tree, String addition) {
+    SyntaxToken firstToken = tree.firstToken();
+    if (firstToken == null) {
+      throw new IllegalStateException("Trying to insert a quick fix before a Tree without token.");
+    }
+    Position firstPosition = Position.startOf(firstToken);
+    return TextEdit.insertAtPosition(firstPosition.line(), firstPosition.columnOffset(), addition);
+  }
+
   /**
    * It's possible that tree has no source code to match, thus no tokens. For example {@code InferedTypeTree}.
    * In this case we will report on a parent tree.
+   *
    * @return tree itself if it's not empty or its first non-empty ancestor
    */
   private static Tree getNonEmptyTree(Tree tree) {

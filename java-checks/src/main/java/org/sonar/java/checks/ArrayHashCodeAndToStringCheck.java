@@ -19,21 +19,21 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S2116")
 public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
@@ -70,18 +70,18 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
   }
 
   private JavaQuickFix getQuickFix(MethodInvocationTree tree, String methodName, String methodCallee) {
-    List<JavaTextEdit> edits = new ArrayList<>();
+    List<TextEdit> edits = new ArrayList<>();
     getImportSupplier()
       .newImportEdit(ARRAYS)
       .ifPresent(edits::add);
 
     if ("toString".equals(methodName)) {
-      edits.add(JavaTextEdit.replaceTree(tree, "Arrays.toString(" + methodCallee + ")"));
+      edits.add(AnalyzerMessage.replaceTree(tree, "Arrays.toString(" + methodCallee + ")"));
       return JavaQuickFix.newQuickFix("Use \"Arrays.toString(array)\" instead")
         .addTextEdits(edits)
         .build();
     } else {
-      edits.add(JavaTextEdit.replaceTree(tree, "Arrays.hashCode(" + methodCallee + ")"));
+      edits.add(AnalyzerMessage.replaceTree(tree, "Arrays.hashCode(" + methodCallee + ")"));
       return JavaQuickFix.newQuickFix("Use \"Arrays.hashCode(array)\" instead")
         .addTextEdits(edits)
         .build();

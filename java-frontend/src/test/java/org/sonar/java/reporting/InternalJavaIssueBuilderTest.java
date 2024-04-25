@@ -512,7 +512,7 @@ class InternalJavaIssueBuilderTest {
         .onRange(member.firstToken(), member.lastToken())
         .withMessage("msg")
         .withQuickFix(() -> JavaQuickFix.newQuickFix("description")
-          .addTextEdit(JavaTextEdit.replaceTree(tree.members().get(0), "replacement"))
+          .addTextEdit(AnalyzerMessage.replaceTree(tree.members().get(0), "replacement"))
           .build())
         .report();
     }

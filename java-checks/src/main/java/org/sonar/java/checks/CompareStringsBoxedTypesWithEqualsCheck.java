@@ -25,13 +25,13 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 @Rule(key = "S4973")
@@ -79,10 +79,10 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
         rightOperand, false
       );
       JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
-        .addTextEdit(JavaTextEdit.insertAfterTree(rightOperand, ")"))
-        .addTextEdit(JavaTextEdit.replaceTextSpan(interOperandSpace, DOT_EQUALS_AND_OPENING_PARENTHESIS));
+        .addTextEdit(AnalyzerMessage.insertAfterTree(rightOperand, ")"))
+        .addTextEdit(TextEdit.replaceTextSpan(interOperandSpace, DOT_EQUALS_AND_OPENING_PARENTHESIS));
       if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
-        quickFix.addTextEdit(JavaTextEdit.insertBeforeTree(leftOperand, "!"));
+        quickFix.addTextEdit(AnalyzerMessage.insertBeforeTree(leftOperand, "!"));
       }
       return Optional.of(quickFix.build());
     } else if (rightOperand.is(Tree.Kind.STRING_LITERAL)) {
@@ -94,8 +94,8 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
       );
       return Optional.of(
         JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
-          .addTextEdit(JavaTextEdit.replaceTextSpan(leftOfOperatorToEndOfComparison, ")"))
-          .addTextEdit(JavaTextEdit.insertBeforeTree(leftOperand, callToEquals))
+          .addTextEdit(TextEdit.replaceTextSpan(leftOfOperatorToEndOfComparison, ")"))
+          .addTextEdit(AnalyzerMessage.insertBeforeTree(leftOperand, callToEquals))
           .build()
       );
     }
@@ -109,9 +109,9 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
       tree.rightOperand(), false
     );
     JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
-      .addTextEdit(JavaTextEdit.insertAfterTree(tree.rightOperand(), ")"))
-      .addTextEdit(JavaTextEdit.replaceTextSpan(interOperandSpace, ", "))
-      .addTextEdit(JavaTextEdit.insertBeforeTree(tree.leftOperand(), callToEquals));
+      .addTextEdit(AnalyzerMessage.insertAfterTree(tree.rightOperand(), ")"))
+      .addTextEdit(TextEdit.replaceTextSpan(interOperandSpace, ", "))
+      .addTextEdit(AnalyzerMessage.insertBeforeTree(tree.leftOperand(), callToEquals));
 
     if (importSupplier == null) {
       importSupplier = QuickFixHelper.newImportSupplier(context);

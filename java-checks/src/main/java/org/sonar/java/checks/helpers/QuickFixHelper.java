@@ -33,8 +33,8 @@ import org.sonar.java.annotations.Beta;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -47,6 +47,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 
 /**
@@ -256,7 +257,7 @@ public class QuickFixHelper {
     private final Set<String> importedTypes;
     private final Set<String> starImportPackages;
 
-    private final Map<String, Optional<JavaTextEdit>> cachedResults = new HashMap<>();
+    private final Map<String, Optional<TextEdit>> cachedResults = new HashMap<>();
 
     private ImportSupplier(CompilationUnitTree cut) {
       this.packageDeclaration = cut.packageDeclaration();
@@ -294,14 +295,14 @@ public class QuickFixHelper {
      * @return An empty Optional if there is no need of an extra import.
      *         Otherwise, the edit inserting a new import at the best possible place corresponding to the required type.
      */
-    public Optional<JavaTextEdit> newImportEdit(String requiredType) {
+    public Optional<TextEdit> newImportEdit(String requiredType) {
       return cachedResults.computeIfAbsent(requiredType, this::locateNewImportEdit);
     }
 
     // We use "\n" systematically, the IDE will decide which one to use,
     // therefore suppressing java:S3457 (Printf-style format strings should be used correctly)
     @SuppressWarnings("java:S3457")
-    private Optional<JavaTextEdit> locateNewImportEdit(String requiredType) {
+    private Optional<TextEdit> locateNewImportEdit(String requiredType) {
       if (!requiresImportOf(requiredType)) {
         return Optional.empty();
       }
@@ -309,12 +310,12 @@ public class QuickFixHelper {
       if (sortedNonStaticImports.isEmpty()) {
         if (packageDeclaration != null) {
           // could be a normal compilation unit or a package-info file: 2 lines after the package declaration
-          return Optional.of(JavaTextEdit.insertAfterTree(packageDeclaration, String.format("\n\nimport %s;", requiredType)));
+          return Optional.of(AnalyzerMessage.insertAfterTree(packageDeclaration, String.format("\n\nimport %s;", requiredType)));
         }
         // default package
         if (firstType != null) {
           // two lines before the first type
-          return Optional.of(JavaTextEdit.insertBeforeTree(firstType, String.format("import %s;\n\n", requiredType)));
+          return Optional.of(AnalyzerMessage.insertBeforeTree(firstType, String.format("import %s;\n\n", requiredType)));
         }
         // no package declaration and no type? Should be impossible or an empty file
         return Optional.empty();
@@ -331,10 +332,10 @@ public class QuickFixHelper {
 
       if (lastCheckedImport != null) {
         // in between the similar ones, in a logical order, alphabetically
-        return Optional.of(JavaTextEdit.insertAfterTree(lastCheckedImport, String.format("\nimport %s;", requiredType)));
+        return Optional.of(AnalyzerMessage.insertAfterTree(lastCheckedImport, String.format("\nimport %s;", requiredType)));
       }
       // before the first one in alphabetical order
-      return Optional.of(JavaTextEdit.insertBeforeTree(sortedNonStaticImports.get(0).tree(), String.format("import %s;\n", requiredType)));
+      return Optional.of(AnalyzerMessage.insertBeforeTree(sortedNonStaticImports.get(0).tree(), String.format("import %s;\n", requiredType)));
     }
 
     @VisibleForTesting

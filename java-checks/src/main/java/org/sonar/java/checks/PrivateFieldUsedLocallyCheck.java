@@ -29,8 +29,8 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.checks.helpers.QuickFixHelper.contentForRange;
 import static org.sonar.java.se.ProgramState.isField;
@@ -114,8 +115,8 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     return List.of(
       JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
         .addTextEdits(editUsagesWithThis(symbol))
-        .addTextEdit(JavaTextEdit.insertAfterTree(openingBrace, newDeclaration))
-        .addTextEdit(JavaTextEdit.removeTree(declaration))
+        .addTextEdit(AnalyzerMessage.insertAfterTree(openingBrace, newDeclaration))
+        .addTextEdit(AnalyzerMessage.removeTree(declaration))
         .build()
     );
   }
@@ -143,13 +144,13 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
   /**
    * Returns edits to transform all usages in the form of this.myVariable to myVariable.
    */
-  private static List<JavaTextEdit> editUsagesWithThis(Symbol symbol) {
+  private static List<TextEdit> editUsagesWithThis(Symbol symbol) {
     return symbol.usages().stream()
       .map(Tree::parent)
       .filter(parent -> parent.is(Kind.MEMBER_SELECT))
       .map(MemberSelectExpressionTree.class::cast)
       .filter(memberSelect -> ExpressionUtils.isThis(memberSelect.expression()))
-      .map(memberSelect -> JavaTextEdit.removeBetweenTree(memberSelect.expression(), memberSelect.operatorToken()))
+      .map(memberSelect -> AnalyzerMessage.removeBetweenTree(memberSelect.expression(), memberSelect.operatorToken()))
       .toList();
   }
 

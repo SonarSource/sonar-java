@@ -26,7 +26,6 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
@@ -93,7 +93,7 @@ public class StringToStringCheck extends AbstractMethodDetection {
         .onTree(reportTree)
         .withMessage(message)
         .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove \"toString()\"")
-          .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(baseExpression, false, toStringInvocation, true)))
+          .addTextEdit(TextEdit.removeTextSpan(textSpanBetween(baseExpression, false, toStringInvocation, true)))
           .build())
         .report();
     }

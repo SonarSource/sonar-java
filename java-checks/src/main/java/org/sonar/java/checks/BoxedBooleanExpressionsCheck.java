@@ -30,8 +30,8 @@ import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -52,6 +52,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
@@ -268,13 +269,13 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
       // We do not suggest a quick fix when we have an optional
       return Collections.emptyList();
     }
-    List<JavaTextEdit> edits = new ArrayList<>(2);
+    List<TextEdit> edits = new ArrayList<>(2);
     if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
-      edits.add(JavaTextEdit.replaceTree(((UnaryExpressionTree) tree).operatorToken(), "Boolean.FALSE.equals("));
+      edits.add(AnalyzerMessage.replaceTree(((UnaryExpressionTree) tree).operatorToken(), "Boolean.FALSE.equals("));
     } else {
-      edits.add(JavaTextEdit.insertBeforeTree(boxedBoolean, "Boolean.TRUE.equals("));
+      edits.add(AnalyzerMessage.insertBeforeTree(boxedBoolean, "Boolean.TRUE.equals("));
     }
-    edits.add(JavaTextEdit.insertAfterTree(boxedBoolean, ")"));
+    edits.add(AnalyzerMessage.insertAfterTree(boxedBoolean, ")"));
 
     return Collections.singletonList(JavaQuickFix.newQuickFix(MESSAGE_QUICKFIX)
       .addTextEdits(edits)

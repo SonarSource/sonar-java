@@ -24,9 +24,9 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -83,7 +83,7 @@ public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
   private static JavaQuickFix computeQuickFix(ExpressionTree rawReturnExpression) {
     return JavaQuickFix
       .newQuickFix("Replace null with an empty string")
-      .addTextEdit(JavaTextEdit.replaceTree(rawReturnExpression, "\"\""))
+      .addTextEdit(AnalyzerMessage.replaceTree(rawReturnExpression, "\"\""))
       .build();
   }
 

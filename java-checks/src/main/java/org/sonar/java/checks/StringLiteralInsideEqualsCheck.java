@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -78,8 +78,8 @@ public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor 
     String equalsParameterValue = QuickFixHelper.contentForTree(equalsArgument, context);
     String quickFixMessage = String.format("Move %s on the left side of .equals", cutTooLongString(equalsParameterValue));
     return JavaQuickFix.newQuickFix(quickFixMessage)
-      .addTextEdit(JavaTextEdit.replaceTree(equalsArgument, QuickFixHelper.contentForTree(leftSideMember, context)))
-      .addTextEdit(JavaTextEdit.replaceTree(leftSideMember, equalsParameterValue))
+      .addTextEdit(AnalyzerMessage.replaceTree(equalsArgument, QuickFixHelper.contentForTree(leftSideMember, context)))
+      .addTextEdit(AnalyzerMessage.replaceTree(leftSideMember, equalsParameterValue))
       .build();
   }
 

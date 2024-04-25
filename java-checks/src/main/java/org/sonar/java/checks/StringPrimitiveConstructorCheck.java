@@ -26,8 +26,8 @@ import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S2129")
 public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor {
@@ -122,20 +123,20 @@ public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor
 
   private JavaQuickFix computeQuickFix(NewClassTree newClassTree) {
     String message;
-    JavaTextEdit textEdit;
+    TextEdit textEdit;
     String className = newClassTree.symbolType().name();
     if (EMPTY_STRING_MATCHER.matches(newClassTree)) {
       message = formatQuickFixMessage(className, "an empty string \"\"");
-      textEdit = JavaTextEdit.replaceTree(newClassTree, "\"\"");
+      textEdit = AnalyzerMessage.replaceTree(newClassTree, "\"\"");
     } else if (BIG_INT_MATCHER.matches(newClassTree)) {
       String arg = getFirstArgumentAsString(newClassTree).replace("\"", "") + "L";
       String replacement = String.format("BigInteger.valueOf(%s)", arg);
       message = formatQuickFixMessage(className, "\"BigInteger.valueOf()\" static method");
-      textEdit = JavaTextEdit.replaceTree(newClassTree, replacement);
+      textEdit = AnalyzerMessage.replaceTree(newClassTree, replacement);
     } else {
       message = formatQuickFixMessage(className, String.format(REPLACEMENT_MESSAGE, classToLiteral.get(className)));
       String replacement = getFirstArgumentAsString(newClassTree);
-      textEdit = JavaTextEdit.replaceTree(newClassTree, replacement);
+      textEdit = AnalyzerMessage.replaceTree(newClassTree, replacement);
     }
     return JavaQuickFix.newQuickFix(message).addTextEdit(textEdit).build();
   }

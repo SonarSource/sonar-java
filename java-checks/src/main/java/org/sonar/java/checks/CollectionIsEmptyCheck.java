@@ -29,7 +29,6 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -41,6 +40,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
@@ -143,10 +143,10 @@ public class CollectionIsEmptyCheck extends IssuableSubscriptionVisitor {
     TextSpan textSpan = textSpanBetween(tree.firstToken(), true, callToSizeInvocation, false);
     String replacement = emptyComparisonType == EmptyComparisonType.EMPTY ? "" : "!";
     if (!(textSpan.isEmpty() && replacement.isEmpty())) {
-      builder.addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, replacement));
+      builder.addTextEdit(TextEdit.replaceTextSpan(textSpan, replacement));
     }
 
-    builder.addTextEdit(JavaTextEdit.replaceTextSpan(textSpanBetween(sizeCallIdentifier, true, tree.lastToken(), true), "isEmpty()"));
+    builder.addTextEdit(TextEdit.replaceTextSpan(textSpanBetween(sizeCallIdentifier, true, tree.lastToken(), true), "isEmpty()"));
     return builder.build();
   }
 

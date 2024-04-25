@@ -27,10 +27,8 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -43,6 +41,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S2153")
 public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
@@ -187,9 +187,9 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       .report();
   }
 
-  private static List<JavaTextEdit> removeTreeExcept(Tree tree, Tree except) {
-    return Arrays.asList(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(tree, true, except, false)),
-      JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(except, false, tree, true)));
+  private static List<TextEdit> removeTreeExcept(Tree tree, Tree except) {
+    return Arrays.asList(TextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(tree, true, except, false)),
+      TextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(except, false, tree, true)));
   }
 
   private void checkForUnboxing(ExpressionTree expressionTree) {
@@ -225,7 +225,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       .onTree(expressionTree)
       .withMessage(message)
       .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the unboxing")
-        .addTextEdit(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(unboxedExpression, false, expressionTree, true)))
+        .addTextEdit(TextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(unboxedExpression, false, expressionTree, true)))
         .build())
       .report();
   }

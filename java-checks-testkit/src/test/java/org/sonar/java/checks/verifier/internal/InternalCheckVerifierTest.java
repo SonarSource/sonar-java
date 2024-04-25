@@ -43,7 +43,6 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -55,6 +54,7 @@ import org.sonar.plugins.java.api.caching.JavaWriteCache;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -711,7 +711,7 @@ class InternalCheckVerifierTest {
     @Test
     void test_one_quick_fix() {
       Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
-        .addTextEdit(JavaTextEdit.replaceTextSpan(
+        .addTextEdit(TextEdit.replaceTextSpan(
           new TextSpan(1, 6, 1, 7), "Replacement"))
         .build();
       InternalCheckVerifier.newInstance()
@@ -724,7 +724,7 @@ class InternalCheckVerifierTest {
     @Test
     void test_one_quick_fix_wrong_description() {
       Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("wrong")
-        .addTextEdit(JavaTextEdit.replaceTextSpan(
+        .addTextEdit(TextEdit.replaceTextSpan(
           new TextSpan(1, 6, 1, 7), "Replacement"))
         .build();
 
@@ -743,7 +743,7 @@ class InternalCheckVerifierTest {
 
     @Test
     void test_one_quick_fix_wrong_number_of_edits() {
-      JavaTextEdit edit = JavaTextEdit.replaceTextSpan(
+      TextEdit edit = TextEdit.replaceTextSpan(
         new TextSpan(1, 6, 1, 7), "Replacement");
       Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
         .addTextEdit(edit, edit)
@@ -764,7 +764,7 @@ class InternalCheckVerifierTest {
 
     @Test
     void test_one_quick_fix_wrong_text_replacement() {
-      JavaTextEdit edit = JavaTextEdit.replaceTextSpan(
+      TextEdit edit = TextEdit.replaceTextSpan(
         new TextSpan(1, 6, 1, 7), "Wrong");
       Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
         .addTextEdit(edit)
@@ -785,7 +785,7 @@ class InternalCheckVerifierTest {
 
     @Test
     void test_one_quick_fix_wrong_edit_position() {
-      JavaTextEdit edit = JavaTextEdit.replaceTextSpan(
+      TextEdit edit = TextEdit.replaceTextSpan(
         new TextSpan(4, 2, 6, 5), "Replacement");
       Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
         .addTextEdit(edit)
@@ -819,7 +819,7 @@ class InternalCheckVerifierTest {
 
     @Test
     void test_no_quick_fix_expected() {
-      JavaTextEdit edit = JavaTextEdit.replaceTextSpan(
+      TextEdit edit = TextEdit.replaceTextSpan(
         new TextSpan(1, 6, 1, 7), "Replacement");
       Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
         .addTextEdit(edit)
@@ -849,7 +849,7 @@ class InternalCheckVerifierTest {
     void test_one_quick_fix_not_tested_is_accepted() {
       // One file with one Noncompliant comment but no QF specified in the comment is fine, we don't have to always test quick fixes
       Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
-        .addTextEdit(JavaTextEdit.replaceTextSpan(
+        .addTextEdit(TextEdit.replaceTextSpan(
           new TextSpan(1, 6, 1, 7), "Replacement"))
         .build();
 
@@ -864,11 +864,11 @@ class InternalCheckVerifierTest {
     void test_two_quick_fix_for_one_issue() {
       Supplier<List<JavaQuickFix>> quickFixes = () -> Arrays.asList(
         JavaQuickFix.newQuickFix("Description")
-          .addTextEdit(JavaTextEdit.replaceTextSpan(
+          .addTextEdit(TextEdit.replaceTextSpan(
             new TextSpan(1, 6, 1, 7), "Replacement"))
           .build(),
         JavaQuickFix.newQuickFix("Description2")
-          .addTextEdit(JavaTextEdit.replaceTextSpan(
+          .addTextEdit(TextEdit.replaceTextSpan(
             new TextSpan(1, 1, 1, 2), "Replacement2"))
           .build()
       );
@@ -883,7 +883,7 @@ class InternalCheckVerifierTest {
     @Test
     void test_two_quick_fix_for_one_issue_1_actual_missing() {
       Supplier<JavaQuickFix> quickFix1 = () -> JavaQuickFix.newQuickFix("Description")
-        .addTextEdit(JavaTextEdit.replaceTextSpan(
+        .addTextEdit(TextEdit.replaceTextSpan(
           new TextSpan(1, 6, 1, 7), "Replacement"))
         .build();
 
@@ -902,11 +902,11 @@ class InternalCheckVerifierTest {
     void test_one_quick_fix_two_reported() {
       Supplier<List<JavaQuickFix>> quickFixes = () -> Arrays.asList(
         JavaQuickFix.newQuickFix("Description")
-          .addTextEdit(JavaTextEdit.replaceTextSpan(
+          .addTextEdit(TextEdit.replaceTextSpan(
             new TextSpan(1, 6, 1, 7), "Replacement"))
           .build(),
         JavaQuickFix.newQuickFix("Description2")
-          .addTextEdit(JavaTextEdit.replaceTextSpan(
+          .addTextEdit(TextEdit.replaceTextSpan(
             new TextSpan(1, 1, 1, 2), "Replacement2"))
           .build());
 
@@ -936,10 +936,10 @@ class InternalCheckVerifierTest {
     @Test
     void test_quick_fix_supports_new_lines() {
       Supplier<JavaQuickFix> quickFixMultipleLine = () -> JavaQuickFix.newQuickFix("Description")
-        .addTextEdit(JavaTextEdit.replaceTextSpan(new TextSpan(1, 6, 1, 7), "line1\n  line2;"))
+        .addTextEdit(TextEdit.replaceTextSpan(new TextSpan(1, 6, 1, 7), "line1\n  line2;"))
         .build();
       Supplier<JavaQuickFix> quickFixSimple = () -> JavaQuickFix.newQuickFix("Description")
-        .addTextEdit(JavaTextEdit.replaceTextSpan(new TextSpan(1, 6, 1, 7), "Replacement"))
+        .addTextEdit(TextEdit.replaceTextSpan(new TextSpan(1, 6, 1, 7), "Replacement"))
         .build();
 
       Throwable e1 = catchThrowable(() -> InternalCheckVerifier.newInstance()

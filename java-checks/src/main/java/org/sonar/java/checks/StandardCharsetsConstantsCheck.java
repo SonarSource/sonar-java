@@ -29,24 +29,25 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
-import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S4719")
 public class StandardCharsetsConstantsCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
@@ -315,8 +316,8 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   }
 
   private JavaQuickFix quickfixOnCharsetCall(ExpressionTree callExpression, String constantName) {
-    List<JavaTextEdit> edits = new ArrayList<>();
-    edits.add(JavaTextEdit.replaceTree(callExpression, "StandardCharsets." + constantName));
+    List<TextEdit> edits = new ArrayList<>();
+    edits.add(AnalyzerMessage.replaceTree(callExpression, "StandardCharsets." + constantName));
 
     getImportSupplier()
       .newImportEdit(JAVA_NIO_STANDARD_CHARSETS)
@@ -332,8 +333,8 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     if (parent.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree parentMemberSelect = (MemberSelectExpressionTree) parent;
 
-      List<JavaTextEdit> edits = new ArrayList<>();
-      edits.add(JavaTextEdit.replaceTree(parentMemberSelect.expression(), "StandardCharsets"));
+      List<TextEdit> edits = new ArrayList<>();
+      edits.add(AnalyzerMessage.replaceTree(parentMemberSelect.expression(), "StandardCharsets"));
 
       getImportSupplier()
         .newImportEdit(JAVA_NIO_STANDARD_CHARSETS)
@@ -349,8 +350,8 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   }
 
   private void reportDefaultQuickfix(ExpressionTree charsetNameArgument, String constantName) {
-    List<JavaTextEdit> edits = new ArrayList<>();
-    edits.add(JavaTextEdit.replaceTree(charsetNameArgument, "StandardCharsets." + constantName));
+    List<TextEdit> edits = new ArrayList<>();
+    edits.add(AnalyzerMessage.replaceTree(charsetNameArgument, "StandardCharsets." + constantName));
 
     getImportSupplier()
       .newImportEdit(JAVA_NIO_STANDARD_CHARSETS)

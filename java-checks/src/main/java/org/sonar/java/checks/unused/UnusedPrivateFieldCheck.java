@@ -37,7 +37,6 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Position;
@@ -57,6 +56,7 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 @Rule(key = "S1068")
@@ -243,9 +243,9 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
 
   private JavaQuickFix computeQuickFix(VariableTree tree, List<AssignmentExpressionTree> assignments) {
     TextSpan textSpan = computeTextSpan(tree);
-    List<JavaTextEdit> edits = new ArrayList<>(assignments.size() + 1);
+    List<TextEdit> edits = new ArrayList<>(assignments.size() + 1);
     edits.addAll(computeExpressionCaptures(assignments));
-    edits.add(JavaTextEdit.removeTextSpan(textSpan));
+    edits.add(TextEdit.removeTextSpan(textSpan));
     return JavaQuickFix.newQuickFix("Remove this unused private field")
       .addTextEdits(edits)
       .reverseSortEdits()
@@ -272,21 +272,21 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
         SyntaxToken lastToken = tree.lastToken();
         Position start = Position.startOf(lastTrivia);
         Position end = Position.endOf(lastToken);
-        return JavaTextEdit.textSpan(start.line(), start.columnOffset(), end.line(), end.columnOffset());
+        return TextEdit.textSpan(start.line(), start.columnOffset(), end.line(), end.columnOffset());
       }
     }
     // By default, we delete the variable's tree
     return AnalyzerMessage.textSpanFor(tree);
   }
 
-  private List<JavaTextEdit> computeExpressionCaptures(List<AssignmentExpressionTree> assignments) {
-    List<JavaTextEdit> edits = new ArrayList<>();
+  private List<TextEdit> computeExpressionCaptures(List<AssignmentExpressionTree> assignments) {
+    List<TextEdit> edits = new ArrayList<>();
     for (int i = 1; i <= assignments.size(); i++) {
       AssignmentExpressionTree assignment = assignments.get(i - 1);
       ExpressionTree variable = assignment.variable();
       String replacement = computeReplacement(variable, i);
       edits.add(
-        JavaTextEdit.replaceBetweenTree(variable, true, assignment.expression(), false, replacement)
+        AnalyzerMessage.replaceBetweenTree(variable, true, assignment.expression(), false, replacement)
       );
     }
     return edits;

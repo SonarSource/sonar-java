@@ -23,8 +23,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -45,7 +45,7 @@ public class NotifyCheck extends AbstractMethodDetection {
       .onTree(methodName)
       .withMessage("\"notify\" may not wake up the appropriate thread.")
       .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with \"notifyAll()\"")
-        .addTextEdit(JavaTextEdit.replaceTree(methodName, "notifyAll"))
+        .addTextEdit(AnalyzerMessage.replaceTree(methodName, "notifyAll"))
         .build())
       .report();
   }

@@ -31,7 +31,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -42,6 +41,7 @@ import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 @DeprecatedRuleKey(ruleKey = "ModifiersOrderCheck", repositoryKey = "squid")
@@ -128,14 +128,14 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
     if (annotations.isEmpty()) {
       // EASY: there is no annotations...
       // 1) remove all modifiers
-      builder.addTextEdit(JavaTextEdit.removeTree(modifiersTree));
+      builder.addTextEdit(AnalyzerMessage.removeTree(modifiersTree));
       // 2) add it at the beginning of modifiers
       builder.addTextEdit(reorderedModifiers(modifiersTree, false));
     } else {
       // HARD: there is annotations, and they might be anywhere, and spread on multiple lines
       // 1) Remove all modifiers individually
       removalOfAllModifiers(modifiersTree).stream()
-        .map(JavaTextEdit::removeTextSpan)
+        .map(TextEdit::removeTextSpan)
         .forEach(builder::addTextEdit);
 
       // 2) reintroduce them right before the next token
@@ -164,7 +164,7 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
     return removals;
   }
 
-  private static JavaTextEdit reorderedModifiers(ModifiersTree modifiersTree, boolean useParent) {
+  private static TextEdit reorderedModifiers(ModifiersTree modifiersTree, boolean useParent) {
     String replacement = modifiersTree.modifiers()
       .stream()
       .sorted((m1, m2) -> m1.modifier().compareTo(m2.modifier()))
@@ -172,8 +172,8 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
       .map(SyntaxToken::text)
       .collect(Collectors.joining(" "));
     if (!useParent) {
-      return JavaTextEdit.insertBeforeTree(modifiersTree.get(0), replacement);
+      return AnalyzerMessage.insertBeforeTree(modifiersTree.get(0), replacement);
     }
-    return JavaTextEdit.insertBeforeTree(QuickFixHelper.nextToken(modifiersTree), replacement + " ");
+    return AnalyzerMessage.insertBeforeTree(QuickFixHelper.nextToken(modifiersTree), replacement + " ");
   }
 }

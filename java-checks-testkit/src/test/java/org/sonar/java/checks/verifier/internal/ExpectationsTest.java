@@ -29,8 +29,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -363,9 +363,9 @@ class ExpectationsTest {
 
     private void assertJavaQuickFix(JavaQuickFix quickFix, String editTextSpan) {
       assertThat(quickFix.getDescription()).isEqualTo("message");
-      List<JavaTextEdit> textEdits = quickFix.getTextEdits();
+      List<TextEdit> textEdits = quickFix.getTextEdits();
       assertThat(textEdits).hasSize(1);
-      JavaTextEdit javaTextEdit = textEdits.get(0);
+      TextEdit javaTextEdit = textEdits.get(0);
 
       assertThat(javaTextEdit.getReplacement()).isEqualTo("Do something");
       TextSpan textSpan = javaTextEdit.getTextSpan();

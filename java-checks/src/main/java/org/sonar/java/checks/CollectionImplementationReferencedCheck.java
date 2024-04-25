@@ -29,8 +29,8 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -45,6 +45,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S1319")
 public class CollectionImplementationReferencedCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -306,8 +307,8 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
 
   private JavaQuickFix quickFix(TypeTree typeTree, String usedCollection, String targetedCollection) {
     String targetedCollectionSimpleName = toSimpleName(targetedCollection);
-    List<JavaTextEdit> edits = new ArrayList<>();
-    edits.add(JavaTextEdit.replaceTree(typeTree, targetedCollectionSimpleName));
+    List<TextEdit> edits = new ArrayList<>();
+    edits.add(AnalyzerMessage.replaceTree(typeTree, targetedCollectionSimpleName));
 
     getImportSupplier()
       .newImportEdit(targetedCollection)

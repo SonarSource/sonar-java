@@ -25,17 +25,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.JavaTree.UnionTypeTreeImpl;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -88,10 +88,10 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
     List<TypeTree> mergedTypes = mergeCatchTypes(upperCatchTypes, lowerCatchTypes);
 
     var builder = JavaQuickFix.newQuickFix(qfMessage);
-    builder.addTextEdit(JavaTextEdit.removeTree(catchTree));
+    builder.addTextEdit(AnalyzerMessage.removeTree(catchTree));
     String replacement = computeReplacementString(mergedTypes, catchTreeToBeCompared);
     builder.addTextEdit(
-      JavaTextEdit.replaceBetweenTree(
+      AnalyzerMessage.replaceBetweenTree(
         catchTreeToBeCompared.openParenToken(), false,
         catchTreeToBeCompared.closeParenToken(), false,
         replacement)

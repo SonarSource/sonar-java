@@ -19,6 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -26,8 +30,8 @@ import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -38,11 +42,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
@@ -102,13 +102,13 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
 
       if (memberNames.contains(name)) {
         return JavaQuickFix.newQuickFix("Disambiguate this self-assignment")
-          .addTextEdit(JavaTextEdit.insertBeforeTree(tree.variable(), "this."))
+          .addTextEdit(AnalyzerMessage.insertBeforeTree(tree.variable(), "this."))
           .build();
       }
     }
 
     return JavaQuickFix.newQuickFix("Remove this useless self-assignment")
-      .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(tree, true,
+      .addTextEdit(TextEdit.removeTextSpan(textSpanBetween(tree, true,
         QuickFixHelper.nextToken(tree), true)))
       .build();
   }

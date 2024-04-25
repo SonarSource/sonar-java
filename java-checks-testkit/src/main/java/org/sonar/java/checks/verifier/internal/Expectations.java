@@ -59,12 +59,12 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static java.util.stream.Collectors.joining;
@@ -483,13 +483,13 @@ class Expectations {
         });
     }
 
-    private static JavaTextEdit getEdit(QuickFixEditComment edit, TextSpan issueTextSpan, String quickFixId) {
+    private static TextEdit getEdit(QuickFixEditComment edit, TextSpan issueTextSpan, String quickFixId) {
       TextSpan textSpan = edit.getTextSpan(issueTextSpan.startLine);
       String replacement = edit.replacement();
       if (textSpan.isEmpty() && replacement.isEmpty()) {
         throw new AssertionError(String.format("Unnecessary edit for quick fix id %s. TextEdits should not have empty range and text.", quickFixId));
       }
-      return JavaTextEdit.replaceTextSpan(textSpan, replacement);
+      return TextEdit.replaceTextSpan(textSpan, replacement);
     }
 
     private static TreeSet<FlowComment> newFlowSet() {

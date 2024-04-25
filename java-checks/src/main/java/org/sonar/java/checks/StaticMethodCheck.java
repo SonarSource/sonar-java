@@ -25,8 +25,8 @@ import java.util.Objects;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -109,7 +109,7 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
     }
 
     return JavaQuickFix.newQuickFix("Make static")
-      .addTextEdit(JavaTextEdit.insertBeforeTree(insertPosition, "static "))
+      .addTextEdit(AnalyzerMessage.insertBeforeTree(insertPosition, "static "))
       .build();
   }
 

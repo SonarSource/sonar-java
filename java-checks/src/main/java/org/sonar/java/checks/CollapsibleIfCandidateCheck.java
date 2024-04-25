@@ -24,8 +24,8 @@ import java.util.Collections;
 import java.util.Deque;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -99,20 +99,20 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
   private static JavaQuickFix computeQuickFix(IfStatementTree innerIf, IfStatementTree outerIf) {
     var quickFixBuilder = JavaQuickFix.newQuickFix("Merge this if statement with the enclosing one");
     quickFixBuilder.addTextEdit(
-      JavaTextEdit.replaceBetweenTree(outerIf.condition(), false, innerIf.condition(), false, " && "));
+      AnalyzerMessage.replaceBetweenTree(outerIf.condition(), false, innerIf.condition(), false, " && "));
     addParenthesisIfRequired(quickFixBuilder, outerIf.condition());
     addParenthesisIfRequired(quickFixBuilder, innerIf.condition());
 
     if (outerIf.thenStatement() instanceof BlockTree outerBlock) {
-      quickFixBuilder.addTextEdit(JavaTextEdit.removeTree(outerBlock.closeBraceToken()));
+      quickFixBuilder.addTextEdit(AnalyzerMessage.removeTree(outerBlock.closeBraceToken()));
     }
     return quickFixBuilder.build();
   }
 
   private static void addParenthesisIfRequired(JavaQuickFix.Builder quickFixBuilder, ExpressionTree expression) {
     if (isLowerOperatorPrecedenceThanLogicalAnd(expression)) {
-      quickFixBuilder.addTextEdit(JavaTextEdit.insertBeforeTree(expression, "("));
-      quickFixBuilder.addTextEdit(JavaTextEdit.insertAfterTree(expression, ")"));
+      quickFixBuilder.addTextEdit(AnalyzerMessage.insertBeforeTree(expression, "("));
+      quickFixBuilder.addTextEdit(AnalyzerMessage.insertAfterTree(expression, ")"));
     }
   }
 

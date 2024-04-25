@@ -28,8 +28,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -111,7 +111,7 @@ public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscri
     // Insert local replacement
     quickFixes.add(
       JavaQuickFix.newQuickFix(quickFixMessage)
-        .addTextEdit(JavaTextEdit.replaceTree(expression, replacementValue))
+        .addTextEdit(AnalyzerMessage.replaceTree(expression, replacementValue))
         .build()
     );
     return quickFixes;
@@ -130,7 +130,7 @@ public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscri
       if (assignedExpression != null) {
         return Optional.of(
           JavaQuickFix.newQuickFix("Set null as default value")
-            .addTextEdit(JavaTextEdit.replaceTree(assignedExpression, replacementValue))
+            .addTextEdit(AnalyzerMessage.replaceTree(assignedExpression, replacementValue))
             .build());
       }
     }

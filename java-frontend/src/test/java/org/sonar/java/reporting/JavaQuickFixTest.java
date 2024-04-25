@@ -43,7 +43,7 @@ class JavaQuickFixTest {
 
   @Test
   void test_build_quick_fix_with_edits() {
-    JavaTextEdit edit = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1,2,3,4));
+    TextEdit edit = TextEdit.removeTextSpan(TextEdit.textSpan(1,2,3,4));
     JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description")
       .addTextEdits(Collections.singletonList(edit))
       .build();
@@ -53,8 +53,8 @@ class JavaQuickFixTest {
 
   @Test
   void test_can_set_edits_multiples_times() {
-    JavaTextEdit edit1 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1,2,3,4));
-    JavaTextEdit edit2 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(2,3,4,5));
+    TextEdit edit1 = TextEdit.removeTextSpan(TextEdit.textSpan(1,2,3,4));
+    TextEdit edit2 = TextEdit.removeTextSpan(TextEdit.textSpan(2,3,4,5));
     JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description")
       .addTextEdits(Collections.singletonList(edit1))
       .addTextEdit(edit2)
@@ -65,8 +65,8 @@ class JavaQuickFixTest {
 
   @Test
   void reverseSortEdits_sorts_as_expected() {
-    JavaTextEdit edit1 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1,2,3,4));
-    JavaTextEdit edit2 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(2,3,4,5));
+    TextEdit edit1 = TextEdit.removeTextSpan(TextEdit.textSpan(1,2,3,4));
+    TextEdit edit2 = TextEdit.removeTextSpan(TextEdit.textSpan(2,3,4,5));
 
     assert_text_edits_are_ordered_as_expected(
       Collections.emptyList(),
@@ -88,22 +88,22 @@ class JavaQuickFixTest {
       List.of(edit2, edit1)
     );
 
-    JavaTextEdit edit3 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1, 1, 1, 2));
-    JavaTextEdit edit4 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1, 1, 2, 1));
+    TextEdit edit3 = TextEdit.removeTextSpan(TextEdit.textSpan(1, 1, 1, 2));
+    TextEdit edit4 = TextEdit.removeTextSpan(TextEdit.textSpan(1, 1, 2, 1));
     assert_text_edits_are_ordered_as_expected(
       List.of(edit3, edit4),
       List.of(edit4, edit3)
     );
 
-    JavaTextEdit edit5 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1, 1, 1, 1));
-    JavaTextEdit edit6 = JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(1, 2, 1, 3));
+    TextEdit edit5 = TextEdit.removeTextSpan(TextEdit.textSpan(1, 1, 1, 1));
+    TextEdit edit6 = TextEdit.removeTextSpan(TextEdit.textSpan(1, 2, 1, 3));
     assert_text_edits_are_ordered_as_expected(
       List.of(edit5, edit6),
       List.of(edit6, edit5)
     );
   }
 
-  void assert_text_edits_are_ordered_as_expected(List<JavaTextEdit> editsToAdd, List<JavaTextEdit> expectedOrder) {
+  void assert_text_edits_are_ordered_as_expected(List<TextEdit> editsToAdd, List<TextEdit> expectedOrder) {
     JavaQuickFix quickFix = JavaQuickFix.newQuickFix("Text edits should be ordered as expected")
       .addTextEdits(editsToAdd)
       .reverseSortEdits()

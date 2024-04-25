@@ -23,13 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S6833")
 public class ControllerWithRestControllerReplacementCheck extends IssuableSubscriptionVisitor {
@@ -52,7 +53,7 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
     }
 
     var secondaryLocations = new ArrayList<JavaFileScannerContext.Location>();
-    List<JavaTextEdit> edits = new ArrayList<>();
+    List<TextEdit> edits = new ArrayList<>();
 
     classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
@@ -62,7 +63,7 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
           .filter(a -> "org.springframework.web.bind.annotation.ResponseBody".equals(a.annotationType().symbolType().fullyQualifiedName()))
           .findFirst();
         methodAnnotation.ifPresent(annotationTree -> secondaryLocations.add(new JavaFileScannerContext.Location("Remove this \"@ResponseBody\" annotation.", annotationTree)));
-        methodAnnotation.ifPresent(annotationTree -> edits.add(JavaTextEdit.removeTree(annotationTree)));
+        methodAnnotation.ifPresent(annotationTree -> edits.add(AnalyzerMessage.removeTree(annotationTree)));
       });
 
     classTree.modifiers().annotations().stream()
@@ -79,7 +80,7 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
       .withMessage("Replace the \"@Controller\" annotation by \"@RestController\" and remove all \"@ResponseBody\" annotations.")
       .withSecondaries(secondaryLocations)
       .withQuickFixes(() -> List.of(JavaQuickFix.newQuickFix("Remove \"@ResponseBody\" annotations.").addTextEdits(edits).build(),
-        JavaQuickFix.newQuickFix("Replace \"@Controller\" by \"@RestController\".").addTextEdit(JavaTextEdit.replaceTree(annotation.get(), "@RestController")).build()))
+        JavaQuickFix.newQuickFix("Replace \"@Controller\" by \"@RestController\".").addTextEdit(AnalyzerMessage.replaceTree(annotation.get(), "@RestController")).build()))
       .report();
 
   }

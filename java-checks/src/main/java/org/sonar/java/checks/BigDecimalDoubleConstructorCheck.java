@@ -23,9 +23,9 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -76,7 +76,7 @@ public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisito
 
   private static JavaQuickFix valueOfQuickFix(NewClassTree newClassTree) {
     return JavaQuickFix.newQuickFix("Replace with BigDecimal.valueOf")
-      .addTextEdit(JavaTextEdit.replaceBetweenTree(newClassTree.newKeyword(), newClassTree.identifier(), "BigDecimal.valueOf"))
+      .addTextEdit(AnalyzerMessage.replaceBetweenTree(newClassTree.newKeyword(), newClassTree.identifier(), "BigDecimal.valueOf"))
       .build();
   }
 
@@ -87,7 +87,7 @@ public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisito
     }
     String newArgument = String.format("\"%s\"", argumentValue);
     return JavaQuickFix.newQuickFix("Replace with BigDecimal(%s,", newArgument)
-      .addTextEdit(JavaTextEdit.replaceTree(argument, newArgument))
+      .addTextEdit(AnalyzerMessage.replaceTree(argument, newArgument))
       .build();
   }
 }

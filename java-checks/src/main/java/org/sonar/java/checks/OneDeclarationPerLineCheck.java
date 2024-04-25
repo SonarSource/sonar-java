@@ -28,7 +28,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -40,6 +39,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
@@ -104,7 +104,7 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
   }
 
   private JavaQuickFix getQuickFixes(List<VariableTree> nodesToReport) {
-    List<JavaTextEdit> edits = new ArrayList<>();
+    List<TextEdit> edits = new ArrayList<>();
     SyntaxToken previousToken = QuickFixHelper.previousToken(nodesToReport.get(0));
 
     for (VariableTree variableTree : nodesToReport) {
@@ -118,12 +118,12 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
       .build();
   }
 
-  private JavaTextEdit getEditForVariable(VariableTree variableTree, SyntaxToken previousToken, String indentationOfLine) {
+  private TextEdit getEditForVariable(VariableTree variableTree, SyntaxToken previousToken, String indentationOfLine) {
     if (",".equals(previousToken.text())) {
-      return JavaTextEdit.replaceTextSpan(textSpanBetween(previousToken, true, variableTree.simpleName(), false),
+      return TextEdit.replaceTextSpan(textSpanBetween(previousToken, true, variableTree.simpleName(), false),
         String.format(";\n%s%s ", indentationOfLine, modifiersAndType(variableTree)));
     } else {
-      return JavaTextEdit.replaceTextSpan(textSpanBetween(previousToken, false, variableTree, false),
+      return TextEdit.replaceTextSpan(textSpanBetween(previousToken, false, variableTree, false),
         String.format("\n%s", indentationOfLine));
     }
   }

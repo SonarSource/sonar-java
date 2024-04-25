@@ -24,14 +24,15 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LineUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
@@ -59,16 +60,16 @@ public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {
 
   private static JavaQuickFix getQuickFix(EmptyStatementTree emptyStatement) {
     SyntaxToken previousToken = QuickFixHelper.previousToken(emptyStatement);
-    JavaTextEdit edit;
+    TextEdit edit;
     // Remove the statement if it is not the only one on his line, otherwise, remove the line until the previous token
     if (sameLine(previousToken, emptyStatement)) {
-      edit = JavaTextEdit.removeTree(emptyStatement);
+      edit = AnalyzerMessage.removeTree(emptyStatement);
     } else {
       SyntaxToken nextToken = QuickFixHelper.nextToken(emptyStatement);
       if (sameLine(nextToken, emptyStatement)) {
-        edit = JavaTextEdit.removeTree(emptyStatement);
+        edit = AnalyzerMessage.removeTree(emptyStatement);
       } else {
-        edit = JavaTextEdit.removeTextSpan(textSpanBetween(previousToken, false, emptyStatement, true));
+        edit = TextEdit.removeTextSpan(textSpanBetween(previousToken, false, emptyStatement, true));
       }
     }
     return JavaQuickFix.newQuickFix("Remove this empty statement")

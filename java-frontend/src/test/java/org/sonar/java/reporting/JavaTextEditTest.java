@@ -33,7 +33,7 @@ import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class JavaTextEditTest {
+class TextEditTest {
   private static final File JAVA_FILE = new File("src/test/files/api/JavaFileInternalJavaIssueBuilderTest.java");
   private static ClassTree classTree;
 
@@ -45,21 +45,21 @@ class JavaTextEditTest {
 
   @Test
   void test_remove() {
-    JavaTextEdit javaTextEdit = JavaTextEdit.removeTree(classTree.members().get(0));
+    TextEdit javaTextEdit = AnalyzerMessage.removeTree(classTree.members().get(0));
     assertThat(javaTextEdit.getReplacement()).isEmpty();
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 13);
   }
 
   @Test
   void test_replace_tree() {
-    JavaTextEdit javaTextEdit = JavaTextEdit.replaceTree(classTree.members().get(0), "replacement");
+    TextEdit javaTextEdit = AnalyzerMessage.replaceTree(classTree.members().get(0), "replacement");
     assertThat(javaTextEdit.getReplacement()).isEqualTo("replacement");
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 13);
   }
 
   @Test
   void test_insert_before_tree() {
-    JavaTextEdit javaTextEdit = JavaTextEdit.insertBeforeTree(classTree.members().get(0), "replacement");
+    TextEdit javaTextEdit = AnalyzerMessage.insertBeforeTree(classTree.members().get(0), "replacement");
     assertThat(javaTextEdit.getReplacement()).isEqualTo("replacement");
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 2);
   }
@@ -67,14 +67,14 @@ class JavaTextEditTest {
   @Test
   void test_insert_before_no_token_tree() {
     LiteralTree brokenLiteral = new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, null);
-    assertThatThrownBy(() -> JavaTextEdit.insertBeforeTree(brokenLiteral, "replacement"))
+    assertThatThrownBy(() -> AnalyzerMessage.insertBeforeTree(brokenLiteral, "replacement"))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Trying to insert a quick fix before a Tree without token.");
   }
 
   @Test
   void test_insert_after_tree() {
-    JavaTextEdit javaTextEdit = JavaTextEdit.insertAfterTree(classTree.members().get(0), "replacement");
+    TextEdit javaTextEdit = AnalyzerMessage.insertAfterTree(classTree.members().get(0), "replacement");
     assertThat(javaTextEdit.getReplacement()).isEqualTo("replacement");
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 13, 4, 13);
   }
@@ -82,7 +82,7 @@ class JavaTextEditTest {
   @Test
   void test_insert_after_no_token_tree() {
     LiteralTree brokenLiteral = new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, null);
-    assertThatThrownBy(() -> JavaTextEdit.insertAfterTree(brokenLiteral, "replacement"))
+    assertThatThrownBy(() -> AnalyzerMessage.insertAfterTree(brokenLiteral, "replacement"))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Trying to insert a quick fix after a Tree without token.");
   }
@@ -90,7 +90,7 @@ class JavaTextEditTest {
   @Test
   void test_replace_between_tree() {
     Tree firstMember = classTree.members().get(0);
-    JavaTextEdit javaTextEdit = JavaTextEdit.replaceBetweenTree(firstMember.firstToken(), firstMember.lastToken(), "replacement");
+    TextEdit javaTextEdit = AnalyzerMessage.replaceBetweenTree(firstMember.firstToken(), firstMember.lastToken(), "replacement");
     assertThat(javaTextEdit.getReplacement()).isEqualTo("replacement");
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 13);
   }
@@ -98,24 +98,24 @@ class JavaTextEditTest {
   @Test
   void test_replace_between_tree_exclude_edges() {
     Tree firstMember = classTree.members().get(0);
-    JavaTextEdit javaTextEdit = JavaTextEdit.replaceBetweenTree(firstMember.firstToken(), false, firstMember.lastToken(), false, "replacement");
+    TextEdit javaTextEdit = AnalyzerMessage.replaceBetweenTree(firstMember.firstToken(), false, firstMember.lastToken(), false, "replacement");
     assertThat(javaTextEdit.getReplacement()).isEqualTo("replacement");
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 5, 4, 12);
     
-    javaTextEdit = JavaTextEdit.replaceBetweenTree(firstMember.firstToken(), false, firstMember.lastToken(), true, "replacement");
+    javaTextEdit = AnalyzerMessage.replaceBetweenTree(firstMember.firstToken(), false, firstMember.lastToken(), true, "replacement");
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 5, 4, 13);
     
-    javaTextEdit = JavaTextEdit.replaceBetweenTree(firstMember.firstToken(), true, firstMember.lastToken(), false, "replacement");
+    javaTextEdit = AnalyzerMessage.replaceBetweenTree(firstMember.firstToken(), true, firstMember.lastToken(), false, "replacement");
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 12);
     
-    javaTextEdit = JavaTextEdit.replaceBetweenTree(firstMember.firstToken(), true, firstMember.lastToken(), true, "replacement");
+    javaTextEdit = AnalyzerMessage.replaceBetweenTree(firstMember.firstToken(), true, firstMember.lastToken(), true, "replacement");
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 13);
   }
 
   @Test
   void test_remove_between_tree() {
     Tree firstMember = classTree.members().get(0);
-    JavaTextEdit javaTextEdit = JavaTextEdit.removeBetweenTree(firstMember.firstToken(), firstMember.lastToken());
+    TextEdit javaTextEdit = AnalyzerMessage.removeBetweenTree(firstMember.firstToken(), firstMember.lastToken());
     assertThat(javaTextEdit.getReplacement()).isEmpty();
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 13);
   }

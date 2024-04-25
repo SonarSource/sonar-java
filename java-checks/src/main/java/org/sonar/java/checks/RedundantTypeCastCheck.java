@@ -29,12 +29,12 @@ import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S1905")
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
@@ -63,7 +63,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
         .withMessage("Remove this unnecessary cast to \"%s\".", newType)
         .withQuickFix(() ->
           JavaQuickFix.newQuickFix("Remove the cast to \"%s\"", newType)
-            .addTextEdit(JavaTextEdit.removeTextSpan(
+            .addTextEdit(TextEdit.removeTextSpan(
               AnalyzerMessage.textSpanBetween(
                 typeCastTree.openParenToken(), true,
                 typeCastTree.expression(), false)))

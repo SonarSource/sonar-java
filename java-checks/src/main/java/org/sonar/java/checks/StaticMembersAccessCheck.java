@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -81,7 +81,7 @@ public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
       ? ("\"" + ((IdentifierTree) leftOperand).name() + "\"")
       : "the expression";
     JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(String.format("Replace %s by \"%s\"", leftOperandAsText, type.name()))
-      .addTextEdit(JavaTextEdit.replaceTree(leftOperand, type.name()));
+      .addTextEdit(AnalyzerMessage.replaceTree(leftOperand, type.name()));
 
     if (importSupplier == null) {
       importSupplier = QuickFixHelper.newImportSupplier(context);

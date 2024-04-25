@@ -33,7 +33,6 @@ import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -51,6 +50,7 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotation;
@@ -155,7 +155,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
           textSpanToRemove = AnalyzerMessage.textSpanBetween(parameter, true, nextParameter, false);
         }
         quickFixes.add(JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE, parameter.simpleName().name())
-          .addTextEdit(JavaTextEdit.removeTextSpan(textSpanToRemove))
+          .addTextEdit(TextEdit.removeTextSpan(textSpanToRemove))
           .build());
       }
     }

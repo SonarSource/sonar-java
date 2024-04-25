@@ -38,7 +38,6 @@ import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -48,6 +47,7 @@ import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @DeprecatedRuleKey(ruleKey = "UselessImportCheck", repositoryKey = "squid")
 @Rule(key = "S1128")
@@ -191,14 +191,14 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
     JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix("Remove the %simport", importTree.isStatic() ? "static " : "");
     if (imports.size() == 1) {
       // single import not used...
-      quickFix.addTextEdit(JavaTextEdit.removeTree(importTree));
+      quickFix.addTextEdit(AnalyzerMessage.removeTree(importTree));
     } else if (!isLastImport) {
       ImportTree nextImport = imports.get(indexOfImport + 1);
-      quickFix.addTextEdit(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(importTree, true, nextImport, false)));
+      quickFix.addTextEdit(TextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(importTree, true, nextImport, false)));
     } else {
       // last import
       ImportTree previousImport = imports.get(indexOfImport - 1);
-      quickFix.addTextEdit(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(previousImport, false, importTree, true)));
+      quickFix.addTextEdit(TextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(previousImport, false, importTree, true)));
     }
     return quickFix.build();
   }

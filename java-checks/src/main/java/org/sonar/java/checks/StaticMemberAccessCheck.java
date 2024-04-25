@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -80,7 +80,7 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
     String oldType = expression.symbolType().name();
     String newType = staticType.name();
     return JavaQuickFix.newQuickFix(String.format("Use \"%s\" instead of \"%s\"", newType, oldType))
-      .addTextEdit(JavaTextEdit.replaceTree(expression, newType))
+      .addTextEdit(AnalyzerMessage.replaceTree(expression, newType))
       .build();
   }
 }

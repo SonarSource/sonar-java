@@ -32,7 +32,6 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -53,6 +52,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
@@ -95,7 +95,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
           .onTree(simpleName)
           .withMessage("Remove this unused private \"%s\" %s.", simpleName.name(), methodType)
           .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the unused %s", methodType)
-            .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(QuickFixHelper.previousToken(methodTree), false, methodTree, true)))
+            .addTextEdit(TextEdit.removeTextSpan(textSpanBetween(QuickFixHelper.previousToken(methodTree), false, methodTree, true)))
             .build())
           .report();
       });

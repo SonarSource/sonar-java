@@ -29,8 +29,8 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -166,7 +166,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     // can only be ARRAY or COLLECTION
     if (returnKind.kind == Returns.ARRAY) {
       return Collections.singletonList(JavaQuickFix.newQuickFix("Replace \"null\" with an empty array")
-        .addTextEdit(JavaTextEdit.replaceTree(returnStatement.expression(), emptyArrayString((Type.ArrayType) returnKind.type)))
+        .addTextEdit(AnalyzerMessage.replaceTree(returnStatement.expression(), emptyArrayString((Type.ArrayType) returnKind.type)))
         .build());
     }
     Optional<CollectionType> candidate = CollectionType.forType(returnKind.type);
@@ -176,7 +176,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     CollectionType collectionType = candidate.get();
 
     JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Replace \"null\" with an empty %s", collectionType.typeName)
-      .addTextEdit(JavaTextEdit.replaceTree(returnStatement.expression(), collectionType.replacement));
+      .addTextEdit(AnalyzerMessage.replaceTree(returnStatement.expression(), collectionType.replacement));
 
     if (importSupplier == null) {
       importSupplier = QuickFixHelper.newImportSupplier(context);

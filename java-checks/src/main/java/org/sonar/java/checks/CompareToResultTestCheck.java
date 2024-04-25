@@ -28,7 +28,6 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -44,6 +43,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
@@ -110,7 +110,7 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
     }
 
     return JavaQuickFix.newQuickFix("Replace with \"%s\"", newComparison)
-      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, newComparison))
+      .addTextEdit(TextEdit.replaceTextSpan(textSpan, newComparison))
       .build();
   }
 

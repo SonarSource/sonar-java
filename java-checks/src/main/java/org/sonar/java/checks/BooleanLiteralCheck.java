@@ -27,8 +27,8 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
@@ -95,13 +96,13 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
   }
 
   private static List<JavaQuickFix> getQuickFix(Tree tree) {
-    List<JavaTextEdit> edits;
+    List<TextEdit> edits;
     if (tree.is(Kind.CONDITIONAL_EXPRESSION)) {
       edits = editsForConditionalExpression((ConditionalExpressionTree) tree);
     } else if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
       String booleanValue = ((LiteralTree) ((UnaryExpressionTree) tree).expression()).value();
       edits = new ArrayList<>();
-      edits.add(JavaTextEdit.replaceTree(tree, TRUE_LITERAL.equals(booleanValue) ? FALSE_LITERAL : TRUE_LITERAL));
+      edits.add(AnalyzerMessage.replaceTree(tree, TRUE_LITERAL.equals(booleanValue) ? FALSE_LITERAL : TRUE_LITERAL));
     } else if (tree.is(Kind.EQUAL_TO)) {
       edits = editsForEquality((BinaryExpressionTree) tree, true);
     } else if (tree.is(Kind.NOT_EQUAL_TO)) {
@@ -119,8 +120,8 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
     return Collections.singletonList(JavaQuickFix.newQuickFix("Simplify the expression").addTextEdits(edits).build());
   }
 
-  private static List<JavaTextEdit> editsForConditionalExpression(ConditionalExpressionTree tree) {
-    List<JavaTextEdit> edits = new ArrayList<>();
+  private static List<TextEdit> editsForConditionalExpression(ConditionalExpressionTree tree) {
+    List<TextEdit> edits = new ArrayList<>();
     Boolean left = getBooleanValue(tree.trueExpression());
     Boolean right = getBooleanValue(tree.falseExpression());
 
@@ -130,84 +131,84 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
       } else {
         if (left) {
           // cond() ? true : expr --> cond() || expr
-          edits.add(JavaTextEdit.replaceBetweenTree(tree.questionToken(), tree.colonToken(), "||"));
+          edits.add(AnalyzerMessage.replaceBetweenTree(tree.questionToken(), tree.colonToken(), "||"));
         } else {
           // cond() ? false : expr --> !cond() && expr
-          edits.add(JavaTextEdit.replaceBetweenTree(tree.questionToken(), tree.colonToken(), "&&"));
-          List<JavaTextEdit> collection = computeNegatingTextEdits(tree.condition(), true);
+          edits.add(AnalyzerMessage.replaceBetweenTree(tree.questionToken(), tree.colonToken(), "&&"));
+          List<TextEdit> collection = computeNegatingTextEdits(tree.condition(), true);
           edits.addAll(collection);
         }
       }
     } else if (right != null) {
       // Defensive programming, if we reached this point, right must be a boolean literal
-      edits.add(JavaTextEdit.removeTextSpan(textSpanBetween(tree.trueExpression(), false, tree.falseExpression(), true)));
+      edits.add(TextEdit.removeTextSpan(textSpanBetween(tree.trueExpression(), false, tree.falseExpression(), true)));
       String operator;
       if (right) {
         // cond() ? expr : true --> !cond() || expr
         operator = "||";
-        edits.add(JavaTextEdit.insertBeforeTree(tree.condition(), "!"));
+        edits.add(AnalyzerMessage.insertBeforeTree(tree.condition(), "!"));
       } else {
         // cond() ? expr : false --> cond() && expr
         operator = "&&";
       }
-      edits.add(JavaTextEdit.replaceTree(tree.questionToken(), operator));
+      edits.add(AnalyzerMessage.replaceTree(tree.questionToken(), operator));
     }
     return edits;
   }
 
-  private static List<JavaTextEdit> computeNegatingTextEdits(ExpressionTree tree, boolean followedByConjunction) {
-    List<JavaTextEdit> edits = new ArrayList<>();
+  private static List<TextEdit> computeNegatingTextEdits(ExpressionTree tree, boolean followedByConjunction) {
+    List<TextEdit> edits = new ArrayList<>();
 
     if (tree.is(Kind.PARENTHESIZED_EXPRESSION)) {
       ParenthesizedTree expression = (ParenthesizedTree) tree;
       edits.addAll(computeNegatingTextEdits(expression.expression(), false));
     } else if (tree.is(Kind.EQUAL_TO)) {
       BinaryExpressionTree condition = (BinaryExpressionTree) tree;
-      edits.add(JavaTextEdit.replaceTree(condition.operatorToken(), "!="));
+      edits.add(AnalyzerMessage.replaceTree(condition.operatorToken(), "!="));
     } else if (tree.is(Kind.NOT_EQUAL_TO)) {
       BinaryExpressionTree condition = (BinaryExpressionTree) tree;
-      edits.add(JavaTextEdit.replaceTree(condition.operatorToken(), "=="));
+      edits.add(AnalyzerMessage.replaceTree(condition.operatorToken(), "=="));
     } else if (tree.is(Kind.CONDITIONAL_AND)) {
       BinaryExpressionTree condition = (BinaryExpressionTree) tree;
       if (followedByConjunction) {
-        edits.add(JavaTextEdit.insertAfterTree(tree, ")"));
+        edits.add(AnalyzerMessage.insertAfterTree(tree, ")"));
       }
       edits.addAll(computeNegatingTextEdits(condition.rightOperand(), followedByConjunction));
-      edits.add(JavaTextEdit.replaceTree(condition.operatorToken(), "||"));
+      edits.add(AnalyzerMessage.replaceTree(condition.operatorToken(), "||"));
       edits.addAll(computeNegatingTextEdits(condition.leftOperand(), false));
       if (followedByConjunction) {
-        edits.add(JavaTextEdit.insertBeforeTree(tree, "("));
+        edits.add(AnalyzerMessage.insertBeforeTree(tree, "("));
       }
     } else if (tree.is(Kind.CONDITIONAL_OR)) {
       BinaryExpressionTree condition = (BinaryExpressionTree) tree;
       edits.addAll(computeNegatingTextEdits(condition.rightOperand(), followedByConjunction));
-      edits.add(JavaTextEdit.replaceTree(condition.operatorToken(), "&&"));
+      edits.add(AnalyzerMessage.replaceTree(condition.operatorToken(), "&&"));
       edits.addAll(computeNegatingTextEdits(condition.leftOperand(), true));
     } else {
-      edits.add(JavaTextEdit.insertBeforeTree(tree, "!"));
+      edits.add(AnalyzerMessage.insertBeforeTree(tree, "!"));
     }
 
     return edits;
   }
 
-  private static List<JavaTextEdit> editsForConditionalBothLiterals(ConditionalExpressionTree tree, Boolean left, Boolean right) {
-    List<JavaTextEdit> edits = new ArrayList<>();
+  private static List<TextEdit> editsForConditionalBothLiterals(ConditionalExpressionTree tree, Boolean left, Boolean right) {
+    List<TextEdit> edits = new ArrayList<>();
     // Both side are literals.
-    JavaTextEdit editRemoveExpressions = JavaTextEdit.removeTextSpan(textSpanBetween(tree.condition(), false, tree.falseExpression(), true));
+    TextEdit editRemoveExpressions = TextEdit.removeTextSpan(textSpanBetween(tree.condition(), false, tree.falseExpression(), true));
     if (left && !right) {
       // cond() ? true : false --> cond()
       edits.add(editRemoveExpressions);
     } else if (!left && right) {
       // cond() ? false : true --> !cond()
       edits.add(editRemoveExpressions);
-      edits.add(JavaTextEdit.insertBeforeTree(tree, "!"));
+      edits.add(AnalyzerMessage.insertBeforeTree(tree, "!"));
     }
     // In case of "true : true" or "false : false", we do not add a quick fix as it looks like a bug (see S3923).
     return edits;
   }
 
-  private static List<JavaTextEdit> editsForEquality(BinaryExpressionTree tree, boolean equalToOperator) {
-    List<JavaTextEdit> edits = new ArrayList<>();
+  private static List<TextEdit> editsForEquality(BinaryExpressionTree tree, boolean equalToOperator) {
+    List<TextEdit> edits = new ArrayList<>();
 
     ExpressionTree leftOperand = tree.leftOperand();
     ExpressionTree rightOperand = tree.rightOperand();
@@ -223,7 +224,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
           // false == expr -> !expr, false != expr --> expr
           equalToOperator = !equalToOperator;
         }
-        edits.add(JavaTextEdit.replaceTextSpan(textSpanBetween(leftOperand, true, rightOperand, false), equalToOperator ? "" : "!"));
+        edits.add(TextEdit.replaceTextSpan(textSpanBetween(leftOperand, true, rightOperand, false), equalToOperator ? "" : "!"));
       }
     } else if (right != null) {
       // Defensive programming, if we reached this point, right must be a boolean literal
@@ -233,30 +234,30 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
     return edits;
   }
 
-  private static JavaTextEdit editForEqualityWhenBothLiterals(BinaryExpressionTree tree, Boolean left, Boolean right, boolean equalToOperator) {
+  private static TextEdit editForEqualityWhenBothLiterals(BinaryExpressionTree tree, Boolean left, Boolean right, boolean equalToOperator) {
     if (!left.equals(right)) {
       // left and right are not the same, simplification is the inverse of the operator value.
       // true == false --> false, false == true --> false, true != false --> true, false != true --> true
       equalToOperator = !equalToOperator;
     }
     // left and right are the same, simplification can be deducted thanks to the operator value.
-    return JavaTextEdit.replaceTree(tree, equalToOperator ? TRUE_LITERAL : FALSE_LITERAL);
+    return AnalyzerMessage.replaceTree(tree, equalToOperator ? TRUE_LITERAL : FALSE_LITERAL);
   }
 
-  private static List<JavaTextEdit> editsForEqualityWhenRightIsLiteral(Boolean right, ExpressionTree leftOperand, ExpressionTree rightOperand, boolean equalToOperator) {
-    List<JavaTextEdit> edits = new ArrayList<>();
+  private static List<TextEdit> editsForEqualityWhenRightIsLiteral(Boolean right, ExpressionTree leftOperand, ExpressionTree rightOperand, boolean equalToOperator) {
+    List<TextEdit> edits = new ArrayList<>();
     // Right operand is a literal
     if (!right.equals(equalToOperator)) {
       // expr == false or expr != true --> !expr
-      edits.add(JavaTextEdit.insertBeforeTree(leftOperand, "!"));
+      edits.add(AnalyzerMessage.insertBeforeTree(leftOperand, "!"));
     }
-    edits.add(JavaTextEdit.removeTextSpan(textSpanBetween(leftOperand, false, rightOperand, true)));
+    edits.add(TextEdit.removeTextSpan(textSpanBetween(leftOperand, false, rightOperand, true)));
     return edits;
   }
 
 
-  private static List<JavaTextEdit> editsForConditional(BinaryExpressionTree tree, boolean conditionalOr) {
-    List<JavaTextEdit> edits = new ArrayList<>();
+  private static List<TextEdit> editsForConditional(BinaryExpressionTree tree, boolean conditionalOr) {
+    List<TextEdit> edits = new ArrayList<>();
 
     ExpressionTree leftOperand = tree.leftOperand();
     ExpressionTree rightOperand = tree.rightOperand();
@@ -275,7 +276,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
           // false || var --> var or true && var --> var
           textSpanToRemove = textSpanBetween(leftOperand, true, rightOperand, false);
         }
-        edits.add(JavaTextEdit.removeTextSpan(textSpanToRemove));
+        edits.add(TextEdit.removeTextSpan(textSpanToRemove));
       }
     } else if (right != null) {
       // Defensive programming, if we reached this point, right must be a boolean literal
@@ -294,7 +295,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
     return null;
   }
 
-  private static JavaTextEdit editForConditionalWhenBothLiterals(BinaryExpressionTree tree, Boolean left, Boolean right, boolean conditionalOr) {
+  private static TextEdit editForConditionalWhenBothLiterals(BinaryExpressionTree tree, Boolean left, Boolean right, boolean conditionalOr) {
     boolean conditionalAnd = !conditionalOr;
     boolean simplification =
       // true || true or true || false or false || true --> true
@@ -302,10 +303,10 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
         // true && true --> true
         || (conditionalAnd && left && right);
 
-    return JavaTextEdit.replaceTree(tree, simplification ? TRUE_LITERAL : FALSE_LITERAL);
+    return AnalyzerMessage.replaceTree(tree, simplification ? TRUE_LITERAL : FALSE_LITERAL);
   }
 
-  private static Optional<JavaTextEdit> editForConditionalWhenRightIsLiteral(Boolean right, ExpressionTree leftOperand, ExpressionTree rightOperand, boolean conditionalOr) {
+  private static Optional<TextEdit> editForConditionalWhenRightIsLiteral(Boolean right, ExpressionTree leftOperand, ExpressionTree rightOperand, boolean conditionalOr) {
     TextSpan textSpanToRemove;
     if (right.equals(conditionalOr)) {
       // var || true --> true or var && false --> false
@@ -318,7 +319,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
       // var || false or var && true --> var
       textSpanToRemove = textSpanBetween(leftOperand, false, rightOperand, true);
     }
-    return Optional.of(JavaTextEdit.removeTextSpan(textSpanToRemove));
+    return Optional.of(TextEdit.removeTextSpan(textSpanToRemove));
   }
 
   private static boolean mayHaveSideEffect(Tree tree) {

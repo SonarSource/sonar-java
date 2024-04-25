@@ -23,8 +23,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -66,7 +66,7 @@ public class ThreadRunCheck extends AbstractMethodDetection {
 
   private static JavaQuickFix computeQuickFix(IdentifierTree methodName) {
     return JavaQuickFix.newQuickFix("Replace run() with start()")
-      .addTextEdit(JavaTextEdit.replaceTree(methodName, "start"))
+      .addTextEdit(AnalyzerMessage.replaceTree(methodName, "start"))
       .build();
   }
 }

@@ -23,13 +23,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 public class JavaQuickFix {
   private final String description;
-  private final List<JavaTextEdit> textEdits;
+  private final List<TextEdit> textEdits;
 
-  private JavaQuickFix(String description, List<JavaTextEdit> textEdits) {
+  private JavaQuickFix(String description, List<TextEdit> textEdits) {
     this.description = description;
     this.textEdits = textEdits;
   }
@@ -38,7 +39,7 @@ public class JavaQuickFix {
     return description;
   }
 
-  public List<JavaTextEdit> getTextEdits() {
+  public List<TextEdit> getTextEdits() {
     return textEdits;
   }
 
@@ -65,18 +66,18 @@ public class JavaQuickFix {
 
   public static class Builder {
     private final String description;
-    private final List<JavaTextEdit> textEdits = new ArrayList<>();
+    private final List<TextEdit> textEdits = new ArrayList<>();
 
     private Builder(String description) {
       this.description = description;
     }
 
-    public Builder addTextEdit(JavaTextEdit... textEdit) {
+    public Builder addTextEdit(TextEdit... textEdit) {
       textEdits.addAll(Arrays.asList(textEdit));
       return this;
     }
 
-    public Builder addTextEdits(List<JavaTextEdit> textEdits) {
+    public Builder addTextEdits(List<TextEdit> textEdits) {
       this.textEdits.addAll(textEdits);
       return this;
     }
@@ -90,10 +91,10 @@ public class JavaQuickFix {
       return new JavaQuickFix(description, textEdits);
     }
 
-    private static class TreeSorter implements Comparator<JavaTextEdit> {
+    private static class TreeSorter implements Comparator<TextEdit> {
 
       @Override
-      public int compare(JavaTextEdit a, JavaTextEdit b) {
+      public int compare(TextEdit a, TextEdit b) {
         TextSpan first = a.getTextSpan();
         TextSpan second = b.getTextSpan();
 

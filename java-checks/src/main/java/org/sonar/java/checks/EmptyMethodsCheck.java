@@ -27,7 +27,6 @@ import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -38,6 +37,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 @Rule(key = "S1186")
@@ -141,7 +141,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
     );
 
     return JavaQuickFix.newQuickFix("Insert placeholder comment")
-      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, comment))
+      .addTextEdit(TextEdit.replaceTextSpan(textSpan, comment))
       .build();
   }
 

@@ -27,7 +27,6 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
@@ -85,7 +85,7 @@ public class OmitPermittedTypesCheck extends IssuableSubscriptionVisitor {
 
   private static JavaQuickFix getQuickFix(SyntaxToken permitsKeyword, ListTree<TypeTree> typeTrees) {
     return JavaQuickFix.newQuickFix("Remove permitted list")
-      .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(
+      .addTextEdit(TextEdit.removeTextSpan(textSpanBetween(
         permitsKeyword, true, QuickFixHelper.nextToken(typeTrees), false)))
       .build();
   }
