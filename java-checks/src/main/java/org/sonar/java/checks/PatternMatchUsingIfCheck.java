@@ -22,10 +22,13 @@ package org.sonar.java.checks;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.prettyprint.FileConfig;
+import org.sonar.java.checks.prettyprint.PrettyPrintStringBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -49,11 +52,11 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final String ISSUE_MESSAGE = "Replace the chain of if/else with a switch expression.";
-  private static final int INDENT = 2;
   private static final Set<String> SCRUTINEE_TYPES_FOR_NON_PATTERN_SWITCH = Set.of(
     "byte", "short", "char", "int",
     "java.lang.Byte", "java.lang.Short", "java.lang.Character", "java.lang.Integer"
   );
+  private static final FileConfig FILE_CONFIG = new FileConfig("  ", "\n");
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -200,72 +203,60 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
 
   private JavaQuickFix computeQuickFix(List<Case> cases, IfStatementTree topLevelIfStat) {
     var canLiftReturn = cases.stream().allMatch(caze -> exprWhenReturnLifted(caze) != null);
-    var baseIndent = topLevelIfStat.firstToken().range().start().column() - 1;
-    var sb = new StringBuilder();
+    var baseIndentLevel = topLevelIfStat.firstToken().range().start().column() - 1;
+    var pps = new PrettyPrintStringBuilder(FILE_CONFIG, " ".repeat(baseIndentLevel), false);
     if (canLiftReturn) {
-      sb.append("return ");
+      pps.add("return ");
     }
-    sb.append("switch (").append(cases.get(0).scrutinee().name()).append(") {\n");
-    for (Case caze : cases) {
-      sb.append(" ".repeat(baseIndent + INDENT));
-      writeCase(caze, sb, baseIndent, canLiftReturn);
-      sb.append("\n");
-    }
-    sb.append(" ".repeat(baseIndent)).append("}");
+    pps.add("switch (").add(cases.get(0).scrutinee().name()).add(") ")
+      .blockStart()
+      .addWithSep(cases, caze -> writeCase(caze, pps, canLiftReturn), caze -> pps.newLine())
+      .blockEnd();
     if (canLiftReturn) {
-      sb.append(";");
+      pps.add(";");
     }
-    var edit = JavaTextEdit.replaceTree(topLevelIfStat, sb.toString());
+    var edit = JavaTextEdit.replaceTree(topLevelIfStat, pps.toString());
     return JavaQuickFix.newQuickFix(ISSUE_MESSAGE).addTextEdit(edit).build();
   }
 
-  private void writeCase(Case caze, StringBuilder sb, int baseIndent, boolean canLiftReturn) {
+  private void writeCase(Case caze, PrettyPrintStringBuilder pps, boolean canLiftReturn) {
     if (caze instanceof PatternMatchCase patternMatchCase) {
-      sb.append("case ").append(QuickFixHelper.contentForTree(patternMatchCase.pattern, context));
+      pps.add("case ").add(QuickFixHelper.contentForTree(patternMatchCase.pattern, context));
       if (!patternMatchCase.guards().isEmpty()) {
         List<ExpressionTree> guards = patternMatchCase.guards();
-        sb.append(" when ");
-        join(guards, " && ", sb);
+        pps.add(" when ");
+        join(guards, " && ", pps);
       }
     } else if (caze instanceof EqualityCase equalityCase) {
-      sb.append("case ");
-      join(equalityCase.constants, ", ", sb);
+      pps.add("case ");
+      join(equalityCase.constants, ", ", pps);
     } else {
-      sb.append("default");
+      pps.add("default");
     }
-    sb.append(" -> ");
+    pps.add(" -> ");
     if (canLiftReturn) {
-      sb.append(exprWhenReturnLifted(caze));
+      pps.add(Objects.requireNonNull(exprWhenReturnLifted(caze)));
     } else {
-      addIndentedExceptFirstLine(makeBlockCode(caze.body(), baseIndent), sb);
+      makeBlockCode(caze.body(), pps);
     }
   }
 
-  private String makeBlockCode(StatementTree stat, int baseIndent) {
+  private void makeBlockCode(StatementTree stat, PrettyPrintStringBuilder pps) {
     var rawCode = QuickFixHelper.contentForTree(stat, context);
     if (stat instanceof BlockTree) {
-      return rawCode;
+      pps.addWithIndentBasedOnLastLine(rawCode);
     } else {
-      return "{\n" + " ".repeat(baseIndent + INDENT) + rawCode + "\n" + " ".repeat(baseIndent) + "}";
+      pps.blockStart().add(rawCode).blockEnd();
     }
   }
 
-  private static void addIndentedExceptFirstLine(String s, StringBuilder sb) {
-    var lines = s.lines().iterator();
-    var indentStr = " ".repeat(INDENT);
-    sb.append(lines.next());
-    while (lines.hasNext()) {
-      sb.append("\n").append(indentStr).append(lines.next());
-    }
-  }
-
-  private void join(List<? extends Tree> elems, String sep, StringBuilder sb) {
+  private void join(List<? extends Tree> elems, String sep, PrettyPrintStringBuilder pps) {
     var iter = elems.iterator();
     while (iter.hasNext()) {
       var e = iter.next();
-      sb.append(QuickFixHelper.contentForTree(e, context));
+      pps.add(QuickFixHelper.contentForTree(e, context));
       if (iter.hasNext()) {
-        sb.append(sep);
+        pps.add(sep);
       }
     }
   }
