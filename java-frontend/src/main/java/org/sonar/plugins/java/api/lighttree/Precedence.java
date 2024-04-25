@@ -22,11 +22,11 @@ package org.sonar.plugins.java.api.lighttree;
 
 public enum Precedence {
 
-  // ordered from weakest to strongest precedence
+  // from strongest to weakest
   ATOM, POSTFIX, UNARY, MULTIPLICATIVE, ADDITIVE, SHIFT, RELATIONAL, EQUALITY, BITWISE_AND,
   BITWISE_XOR, BITWISE_OR, AND, OR, TERNARY, ASSIGNMENT;
 
-  boolean isStrongerThan(Precedence that){
+  public boolean isStrongerThan(Precedence that){
     return this.ordinal() < that.ordinal();
   }
 
