@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.lighttree.LightMethodInvocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
@@ -37,7 +38,7 @@ import javax.annotation.Nullable;
  * @since Java 1.3
  */
 @Beta
-public interface MethodInvocationTree extends ExpressionTree {
+public interface MethodInvocationTree extends ExpressionTree, LightMethodInvocation {
 
   /**
    * @since Java 1.5

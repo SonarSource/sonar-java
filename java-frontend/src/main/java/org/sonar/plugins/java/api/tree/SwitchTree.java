@@ -20,11 +20,12 @@
 package org.sonar.plugins.java.api.tree;
 
 import java.util.List;
+import org.sonar.plugins.java.api.lighttree.LightSwitch;
 
 /**
  * Common interface shared between {@link SwitchStatementTree} and {@link SwitchExpressionTree}
  */
-public interface SwitchTree extends Tree {
+public interface SwitchTree extends Tree, LightSwitch {
 
   SyntaxToken switchKeyword();
 

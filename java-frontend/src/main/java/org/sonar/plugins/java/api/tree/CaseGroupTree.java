@@ -22,6 +22,10 @@ package org.sonar.plugins.java.api.tree;
 import org.sonar.java.annotations.Beta;
 
 import java.util.List;
+import org.sonar.plugins.java.api.lighttree.LT;
+import org.sonar.plugins.java.api.lighttree.LightBlock;
+import org.sonar.plugins.java.api.lighttree.LightCaseGroup;
+import org.sonar.plugins.java.api.lighttree.LightStat;
 
 /**
  * Group of 'case's in a 'switch' statement.
@@ -35,10 +39,19 @@ import java.util.List;
  * @since Java 1.3
  */
 @Beta
-public interface CaseGroupTree extends Tree {
+public interface CaseGroupTree extends Tree, LightCaseGroup {
 
   List<CaseLabelTree> labels();
 
   List<StatementTree> body();
+
+  @Override
+  default LightStat bodyAsStat() {
+    if (body().size() == 1 && body().get(0) instanceof LightBlock){
+      return body().get(0);
+    } else {
+      return new LT.Block(body());
+    }
+  }
 
 }

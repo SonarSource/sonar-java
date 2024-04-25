@@ -21,6 +21,7 @@ package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
 import java.util.List;
+import org.sonar.plugins.java.api.lighttree.LightCaseLabel;
 
 /**
  * 'case' label in a 'switch' statement.
@@ -43,7 +44,7 @@ import java.util.List;
  * @since Java 12 (SonarJava 5.12 - Support of Java 12)
  */
 @Beta
-public interface CaseLabelTree extends Tree {
+public interface CaseLabelTree extends Tree, LightCaseLabel {
 
   SyntaxToken caseOrDefaultKeyword();
 

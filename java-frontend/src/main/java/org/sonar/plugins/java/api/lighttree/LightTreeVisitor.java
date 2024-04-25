@@ -18,4 +18,14 @@ public interface LightTreeVisitor {
 
   void visitLightVarDecl(LightVarDecl varDecl);
 
+  void visitLightMethodInvocation(LightMethodInvocation invocation);
+
+  void visitLightArguments(LightArguments args);
+
+  void visitLightSwitch(LightSwitch swtch);
+
+  void visitLightCaseGroup(LightCaseGroup caseGroup);
+
+  void visitLightCaseLabel(LightCaseLabel label);
+
 }

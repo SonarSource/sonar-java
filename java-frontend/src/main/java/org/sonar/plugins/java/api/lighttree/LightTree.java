@@ -4,7 +4,7 @@ public interface LightTree {
 
   default void accept(LightTreeVisitor visitor){
     // FIXME
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("not implemented on " + this.getClass());
   }
 
 }

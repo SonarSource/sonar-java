@@ -4,7 +4,7 @@ public interface LightExpr extends LightTree {
 
   default Precedence precedence(){
     // FIXME
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("not implemented in " + this.getClass());
   }
 
   default boolean hasPrecedenceOver(LightExpr that){

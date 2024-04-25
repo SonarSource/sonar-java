@@ -19,9 +19,17 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import java.util.List;
 import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.lighttree.LightArguments;
+import org.sonar.plugins.java.api.lighttree.LightExpr;
 
-public interface Arguments extends ListTree<ExpressionTree> {
+public interface Arguments extends ListTree<ExpressionTree>, LightArguments {
+
+  @Override
+  default List<? extends LightExpr> args() {
+    return this;
+  }
 
   @Nullable
   SyntaxToken openParenToken();

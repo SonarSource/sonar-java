@@ -2,14 +2,18 @@ package org.sonar.java.checks.quickfixes;
 
 import java.util.List;
 import java.util.function.Consumer;
+import org.sonar.plugins.java.api.lighttree.LightArguments;
 import org.sonar.plugins.java.api.lighttree.LightAssignExpr;
 import org.sonar.plugins.java.api.lighttree.LightBinOp;
 import org.sonar.plugins.java.api.lighttree.LightBlock;
+import org.sonar.plugins.java.api.lighttree.LightCaseGroup;
+import org.sonar.plugins.java.api.lighttree.LightCaseLabel;
 import org.sonar.plugins.java.api.lighttree.LightExpr;
 import org.sonar.plugins.java.api.lighttree.LightId;
 import org.sonar.plugins.java.api.lighttree.LightIfStat;
 import org.sonar.plugins.java.api.lighttree.LightLiteral;
-import org.sonar.plugins.java.api.lighttree.LightStat;
+import org.sonar.plugins.java.api.lighttree.LightMethodInvocation;
+import org.sonar.plugins.java.api.lighttree.LightSwitch;
 import org.sonar.plugins.java.api.lighttree.LightTree;
 import org.sonar.plugins.java.api.lighttree.LightTreeVisitor;
 import org.sonar.plugins.java.api.lighttree.LightTypeNode;
@@ -92,7 +96,45 @@ public final class PrettyPrinter implements LightTreeVisitor {
     }
   }
 
-  private <T extends LightTree> void printAllWithSep(List<T> asts, Consumer<PrettyprintStringBuilder> sep) {
+  @Override
+  public void visitLightMethodInvocation(LightMethodInvocation invocation) {
+    invocation.methodSelect().accept(this);
+    invocation.arguments().accept(this);
+  }
+
+  @Override
+  public void visitLightArguments(LightArguments args) {
+    // TODO handle type parameters
+    pps.add("(");
+    printAllWithSep(args.args(), PrettyprintStringBuilder::addComma);
+    pps.add(")");
+  }
+
+  @Override
+  public void visitLightSwitch(LightSwitch swtch) {
+    pps.add("switch(");
+    swtch.expression().accept(this);
+    pps.add(") {").incIndent().newLine();
+    swtch.cases().forEach(caze -> caze.accept(this));
+    pps.decIndent().newLine().add("}");
+  }
+
+  @Override
+  public void visitLightCaseGroup(LightCaseGroup caseGroup) {
+    printAllWithSep(caseGroup.labels(), PrettyprintStringBuilder::newLine);
+    pps.incIndent().newLine();
+    caseGroup.bodyAsStat().accept(this);
+    pps.decIndent();
+  }
+
+  @Override
+  public void visitLightCaseLabel(LightCaseLabel label) {
+    pps.add("case ");
+    printAllWithSep(label.expressions(), PrettyprintStringBuilder::addComma);
+    pps.add(":");
+  }
+
+  private void printAllWithSep(List<? extends LightTree> asts, Consumer<PrettyprintStringBuilder> sep) {
     var iter = asts.iterator();
     while (iter.hasNext()) {
       iter.next().accept(this);

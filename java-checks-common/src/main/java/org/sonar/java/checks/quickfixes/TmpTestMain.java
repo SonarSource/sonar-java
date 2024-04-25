@@ -20,17 +20,48 @@
 
 package org.sonar.java.checks.quickfixes;
 
-import org.sonar.plugins.java.api.lighttree.Operator;
+import org.sonar.plugins.java.api.lighttree.LT;
+
+import static org.sonar.plugins.java.api.lighttree.Operator.BinaryOperator.ADD;
+import static org.sonar.plugins.java.api.lighttree.Operator.BinaryOperator.DIV;
+import static org.sonar.plugins.java.api.lighttree.Operator.BinaryOperator.EQUALITY;
+import static org.sonar.plugins.java.api.lighttree.Operator.BinaryOperator.MUL;
+import static org.sonar.plugins.java.api.lighttree.Operator.BinaryOperator.SUB;
 
 public final class TmpTestMain {
 
   public static void main(String[] args) {
-    var ast = new P.IfStat(new P.BinOp(new P.Id("x"), Operator.BinaryOperator.EQUALITY, new P.Const("Hello")),
-      new P.Block(
-        new P.AssignmentExpr(new P.Id("y"), new P.Const(0))
+    var ast = new LT.IfStat(new LT.BinOp(new LT.Id("x"), EQUALITY, new LT.Const("Hello")),
+      new LT.Block(
+        new LT.AssignmentExpr(new LT.Id("y"), new LT.Const(0))
       ),
-      new P.Block(
-        new P.VarDecl(new P.TypeNode("int"), new P.Id("p"), new P.Const(42))
+      new LT.Block(
+        new LT.VarDecl(new LT.TypeNode("int"), new LT.Id("p"),
+          new LT.BinOp(
+            new LT.Const(42),
+            ADD,
+            new LT.BinOp(
+              new LT.BinOp(
+                new LT.Const(10),
+                ADD,
+                new LT.Id("a")
+              ),
+              MUL,
+              new LT.BinOp(
+                new LT.Id("b"),
+                SUB,
+                new LT.BinOp(
+                  new LT.Id("c"),
+                  DIV,
+                  new LT.Id("d")
+                )
+              )
+            )
+          )
+        ),
+        new LT.Switch(new LT.Invocation(new LT.Id("someMethod"), new LT.Args(new LT.Id("p"), new LT.Const(-10))),
+          new LT.CaseGroup(new LT.CaseLabel(new LT.Const(10)), new LT.AssignmentExpr(new LT.Id("t"), new LT.Const(0)))
+        )
       )
     );
     var str = PrettyPrinter.prettyPrint(ast, new FileConfig("  ", "\n"));
