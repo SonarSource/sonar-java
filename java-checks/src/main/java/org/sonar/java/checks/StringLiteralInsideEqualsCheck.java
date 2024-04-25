@@ -24,7 +24,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S1132")
 public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor {
@@ -74,10 +74,10 @@ public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor 
       "equalsIgnoreCase".equals(tree.name());
   }
 
-  private JavaQuickFix computeQuickFix(LiteralTree equalsArgument, ExpressionTree leftSideMember) {
+  private QuickFix computeQuickFix(LiteralTree equalsArgument, ExpressionTree leftSideMember) {
     String equalsParameterValue = QuickFixHelper.contentForTree(equalsArgument, context);
     String quickFixMessage = String.format("Move %s on the left side of .equals", cutTooLongString(equalsParameterValue));
-    return JavaQuickFix.newQuickFix(quickFixMessage)
+    return QuickFix.newQuickFix(quickFixMessage)
       .addTextEdit(AnalyzerMessage.replaceTree(equalsArgument, QuickFixHelper.contentForTree(leftSideMember, context)))
       .addTextEdit(AnalyzerMessage.replaceTree(leftSideMember, equalsParameterValue))
       .build();

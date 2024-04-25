@@ -24,7 +24,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S2209")
 public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
@@ -76,11 +76,11 @@ public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private JavaQuickFix createQuickFixes(ExpressionTree leftOperand, Type type) {
+  private QuickFix createQuickFixes(ExpressionTree leftOperand, Type type) {
     String leftOperandAsText = leftOperand.is(Tree.Kind.IDENTIFIER)
       ? ("\"" + ((IdentifierTree) leftOperand).name() + "\"")
       : "the expression";
-    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(String.format("Replace %s by \"%s\"", leftOperandAsText, type.name()))
+    QuickFix.Builder builder = QuickFix.newQuickFix(String.format("Replace %s by \"%s\"", leftOperandAsText, type.name()))
       .addTextEdit(AnalyzerMessage.replaceTree(leftOperand, type.name()));
 
     if (importSupplier == null) {

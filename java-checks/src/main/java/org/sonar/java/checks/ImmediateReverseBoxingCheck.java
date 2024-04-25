@@ -28,7 +28,6 @@ import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -42,6 +41,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S2153")
@@ -123,7 +123,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
         .forRule(this)
         .onTree(reportTree)
         .withMessage("Remove the boxing to \"%s\"; The argument is already of the same type.", argType.name())
-        .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the boxing")
+        .withQuickFix(() -> QuickFix.newQuickFix("Remove the boxing")
           .addTextEdits(removeTreeExcept(originalTree, arg0))
           .build())
         .report();
@@ -181,7 +181,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       .forRule(this)
       .onTree(tree)
       .withMessage(message)
-      .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the boxing")
+      .withQuickFix(() -> QuickFix.newQuickFix("Remove the boxing")
         .addTextEdits(removeTreeExcept(originalTree, boxingArg))
         .build())
       .report();
@@ -224,7 +224,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       .forRule(this)
       .onTree(expressionTree)
       .withMessage(message)
-      .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the unboxing")
+      .withQuickFix(() -> QuickFix.newQuickFix("Remove the unboxing")
         .addTextEdit(TextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(unboxedExpression, false, expressionTree, true)))
         .build())
       .report();

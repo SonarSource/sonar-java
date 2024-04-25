@@ -22,21 +22,23 @@ package org.sonar.java.reporting;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
+import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JavaQuickFixTest {
+class QuickFixTest {
 
   @Test
   void test_build_quick_fix_without_edits() {
-    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description").build();
+    QuickFix quickFix = QuickFix.newQuickFix("description").build();
     assertThat(quickFix.getDescription()).isEqualTo("description");
     assertThat(quickFix.getTextEdits()).isEmpty();
   }
 
   @Test
   void test_build_quick_fix_with_formated_mesasge() {
-    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description %s %d", "yolo", 42).build();
+    QuickFix quickFix = QuickFix.newQuickFix("description %s %d", "yolo", 42).build();
     assertThat(quickFix.getDescription()).isEqualTo("description yolo 42");
     assertThat(quickFix.getTextEdits()).isEmpty();
   }
@@ -44,7 +46,7 @@ class JavaQuickFixTest {
   @Test
   void test_build_quick_fix_with_edits() {
     TextEdit edit = TextEdit.removeTextSpan(TextEdit.textSpan(1,2,3,4));
-    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description")
+    QuickFix quickFix = QuickFix.newQuickFix("description")
       .addTextEdits(Collections.singletonList(edit))
       .build();
     assertThat(quickFix.getDescription()).isEqualTo("description");
@@ -55,7 +57,7 @@ class JavaQuickFixTest {
   void test_can_set_edits_multiples_times() {
     TextEdit edit1 = TextEdit.removeTextSpan(TextEdit.textSpan(1,2,3,4));
     TextEdit edit2 = TextEdit.removeTextSpan(TextEdit.textSpan(2,3,4,5));
-    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description")
+    QuickFix quickFix = QuickFix.newQuickFix("description")
       .addTextEdits(Collections.singletonList(edit1))
       .addTextEdit(edit2)
       .build();
@@ -104,7 +106,7 @@ class JavaQuickFixTest {
   }
 
   void assert_text_edits_are_ordered_as_expected(List<TextEdit> editsToAdd, List<TextEdit> expectedOrder) {
-    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("Text edits should be ordered as expected")
+    QuickFix quickFix = QuickFix.newQuickFix("Text edits should be ordered as expected")
       .addTextEdits(editsToAdd)
       .reverseSortEdits()
       .build();

@@ -28,7 +28,6 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -41,6 +40,7 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -95,7 +95,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
     return booleanLiterals;
   }
 
-  private static List<JavaQuickFix> getQuickFix(Tree tree) {
+  private static List<QuickFix> getQuickFix(Tree tree) {
     List<TextEdit> edits;
     if (tree.is(Kind.CONDITIONAL_EXPRESSION)) {
       edits = editsForConditionalExpression((ConditionalExpressionTree) tree);
@@ -117,7 +117,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
     if (edits.isEmpty()) {
       return Collections.emptyList();
     }
-    return Collections.singletonList(JavaQuickFix.newQuickFix("Simplify the expression").addTextEdits(edits).build());
+    return Collections.singletonList(QuickFix.newQuickFix("Simplify the expression").addTextEdits(edits).build());
   }
 
   private static List<TextEdit> editsForConditionalExpression(ConditionalExpressionTree tree) {

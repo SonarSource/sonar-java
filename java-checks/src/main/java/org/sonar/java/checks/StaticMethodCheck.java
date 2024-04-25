@@ -26,7 +26,6 @@ import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -40,6 +39,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S2325")
 public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -98,7 +98,7 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
     }
   }
 
-  private static JavaQuickFix getQuickFix(MethodTree tree) {
+  private static QuickFix getQuickFix(MethodTree tree) {
     Tree insertPosition = QuickFixHelper.nextToken(tree.modifiers());
 
     for (ModifierKeywordTree modifier: tree.modifiers().modifiers()) {
@@ -108,7 +108,7 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
       }
     }
 
-    return JavaQuickFix.newQuickFix("Make static")
+    return QuickFix.newQuickFix("Make static")
       .addTextEdit(AnalyzerMessage.insertBeforeTree(insertPosition, "static "))
       .build();
   }

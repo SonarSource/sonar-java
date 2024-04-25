@@ -25,7 +25,6 @@ import java.util.Deque;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -35,6 +34,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S1066")
 public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -96,8 +96,8 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
     return false;
   }
 
-  private static JavaQuickFix computeQuickFix(IfStatementTree innerIf, IfStatementTree outerIf) {
-    var quickFixBuilder = JavaQuickFix.newQuickFix("Merge this if statement with the enclosing one");
+  private static QuickFix computeQuickFix(IfStatementTree innerIf, IfStatementTree outerIf) {
+    var quickFixBuilder = QuickFix.newQuickFix("Merge this if statement with the enclosing one");
     quickFixBuilder.addTextEdit(
       AnalyzerMessage.replaceBetweenTree(outerIf.condition(), false, innerIf.condition(), false, " && "));
     addParenthesisIfRequired(quickFixBuilder, outerIf.condition());
@@ -109,7 +109,7 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
     return quickFixBuilder.build();
   }
 
-  private static void addParenthesisIfRequired(JavaQuickFix.Builder quickFixBuilder, ExpressionTree expression) {
+  private static void addParenthesisIfRequired(QuickFix.Builder quickFixBuilder, ExpressionTree expression) {
     if (isLowerOperatorPrecedenceThanLogicalAnd(expression)) {
       quickFixBuilder.addTextEdit(AnalyzerMessage.insertBeforeTree(expression, "("));
       quickFixBuilder.addTextEdit(AnalyzerMessage.insertAfterTree(expression, ")"));

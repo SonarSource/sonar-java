@@ -29,7 +29,6 @@ import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -54,6 +53,7 @@ import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S2293")
 public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -95,7 +95,7 @@ public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVer
         .forRule(this)
         .onTree(typeArguments)
         .withMessage("Replace the type specification in this constructor call with the diamond operator (\"<>\").%s", context.getJavaVersion().java7CompatibilityMessage())
-        .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with <>")
+        .withQuickFix(() -> QuickFix.newQuickFix("Replace with <>")
           .addTextEdit(AnalyzerMessage.replaceTree(typeArguments, "<>"))
           .build())
         .report();

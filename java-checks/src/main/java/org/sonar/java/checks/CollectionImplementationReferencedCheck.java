@@ -30,7 +30,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -45,6 +44,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S1319")
@@ -305,7 +305,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
       .report();
   }
 
-  private JavaQuickFix quickFix(TypeTree typeTree, String usedCollection, String targetedCollection) {
+  private QuickFix quickFix(TypeTree typeTree, String usedCollection, String targetedCollection) {
     String targetedCollectionSimpleName = toSimpleName(targetedCollection);
     List<TextEdit> edits = new ArrayList<>();
     edits.add(AnalyzerMessage.replaceTree(typeTree, targetedCollectionSimpleName));
@@ -314,7 +314,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
       .newImportEdit(targetedCollection)
       .ifPresent(edits::add);
 
-    return JavaQuickFix.newQuickFix("Replace \"%s\" by \"%s\"", usedCollection, targetedCollectionSimpleName)
+    return QuickFix.newQuickFix("Replace \"%s\" by \"%s\"", usedCollection, targetedCollectionSimpleName)
       .addTextEdits(edits)
       .build();
   }

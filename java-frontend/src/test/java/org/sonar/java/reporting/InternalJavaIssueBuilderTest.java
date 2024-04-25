@@ -398,7 +398,7 @@ class InternalJavaIssueBuilderTest {
 
     @Test
     void test_can_set_quick_fix_multiple_times() {
-      JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description").addTextEdit().build();
+      var quickFix = org.sonarsource.analyzer.commons.quickfixes.QuickFix.newQuickFix("description").addTextEdit().build();
       InternalJavaIssueBuilder builder = new InternalJavaIssueBuilder(ipf, sc)
         .forRule(CHECK)
         .onTree(cut)
@@ -407,7 +407,7 @@ class InternalJavaIssueBuilderTest {
 
       builder.withQuickFixes(() -> Arrays.asList(quickFix, quickFix));
 
-      List<Supplier<List<JavaQuickFix>>> actual = builder.quickFixes();
+      List<Supplier<List<org.sonarsource.analyzer.commons.quickfixes.QuickFix>>> actual = builder.quickFixes();
       assertThat(actual).hasSize(2);
 
       assertThat(actual.get(0).get()).hasSize(1);
@@ -511,7 +511,7 @@ class InternalJavaIssueBuilderTest {
       new InternalJavaIssueBuilder(ipf, sc).forRule(CHECK)
         .onRange(member.firstToken(), member.lastToken())
         .withMessage("msg")
-        .withQuickFix(() -> JavaQuickFix.newQuickFix("description")
+        .withQuickFix(() -> org.sonarsource.analyzer.commons.quickfixes.QuickFix.newQuickFix("description")
           .addTextEdit(AnalyzerMessage.replaceTree(tree.members().get(0), "replacement"))
           .build())
         .report();

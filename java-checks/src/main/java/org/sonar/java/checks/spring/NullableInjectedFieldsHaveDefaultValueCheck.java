@@ -29,7 +29,6 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -43,6 +42,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S6816")
 public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscriptionVisitor {
@@ -87,10 +87,10 @@ public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscri
       );
   }
 
-  private static List<JavaQuickFix> computeQuickFix(AnnotationTree annotation) {
+  private static List<QuickFix> computeQuickFix(AnnotationTree annotation) {
     ExpressionTree expression = extractExpressionTree(annotation.arguments().get(0));
     // We provide at most 2 quickfixes
-    List<JavaQuickFix> quickFixes = new ArrayList<>(2);
+    List<QuickFix> quickFixes = new ArrayList<>(2);
     // Compute replacement value
     String originalValue = ExpressionsHelper.getConstantValueAsString(expression).value();
     if (originalValue == null) {
@@ -110,14 +110,14 @@ public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscri
     }
     // Insert local replacement
     quickFixes.add(
-      JavaQuickFix.newQuickFix(quickFixMessage)
+      QuickFix.newQuickFix(quickFixMessage)
         .addTextEdit(AnalyzerMessage.replaceTree(expression, replacementValue))
         .build()
     );
     return quickFixes;
   }
 
-  private static Optional<JavaQuickFix> computeQuickFixOnOriginalDefinition(ExpressionTree expression, String replacementValue) {
+  private static Optional<QuickFix> computeQuickFixOnOriginalDefinition(ExpressionTree expression, String replacementValue) {
     Symbol symbol;
     if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       symbol = ((MemberSelectExpressionTree) expression).identifier().symbol();
@@ -129,7 +129,7 @@ public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscri
       ExpressionTree assignedExpression = ((VariableTree) declaration).initializer();
       if (assignedExpression != null) {
         return Optional.of(
-          JavaQuickFix.newQuickFix("Set null as default value")
+          QuickFix.newQuickFix("Set null as default value")
             .addTextEdit(AnalyzerMessage.replaceTree(assignedExpression, replacementValue))
             .build());
       }

@@ -26,7 +26,6 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -37,6 +36,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S3415")
 public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
@@ -133,10 +133,10 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
     }
   }
 
-  private JavaQuickFix swap(Tree x, Tree y) {
+  private QuickFix swap(Tree x, Tree y) {
     String newX = QuickFixHelper.contentForTree(y, context);
     String newY = QuickFixHelper.contentForTree(x, context);
-    return JavaQuickFix.newQuickFix("Swap arguments")
+    return QuickFix.newQuickFix("Swap arguments")
       .addTextEdit(AnalyzerMessage.replaceTree(x, newX))
       .addTextEdit(AnalyzerMessage.replaceTree(y, newY))
       .build();

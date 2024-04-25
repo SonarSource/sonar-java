@@ -42,7 +42,6 @@ import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -54,6 +53,7 @@ import org.sonar.plugins.java.api.caching.JavaWriteCache;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -710,7 +710,7 @@ class InternalCheckVerifierTest {
 
     @Test
     void test_one_quick_fix() {
-      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+      Supplier<QuickFix> quickFix = () -> QuickFix.newQuickFix("Description")
         .addTextEdit(TextEdit.replaceTextSpan(
           new TextSpan(1, 6, 1, 7), "Replacement"))
         .build();
@@ -723,7 +723,7 @@ class InternalCheckVerifierTest {
 
     @Test
     void test_one_quick_fix_wrong_description() {
-      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("wrong")
+      Supplier<QuickFix> quickFix = () -> QuickFix.newQuickFix("wrong")
         .addTextEdit(TextEdit.replaceTextSpan(
           new TextSpan(1, 6, 1, 7), "Replacement"))
         .build();
@@ -745,7 +745,7 @@ class InternalCheckVerifierTest {
     void test_one_quick_fix_wrong_number_of_edits() {
       TextEdit edit = TextEdit.replaceTextSpan(
         new TextSpan(1, 6, 1, 7), "Replacement");
-      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+      Supplier<QuickFix> quickFix = () -> QuickFix.newQuickFix("Description")
         .addTextEdit(edit, edit)
         .build();
 
@@ -766,7 +766,7 @@ class InternalCheckVerifierTest {
     void test_one_quick_fix_wrong_text_replacement() {
       TextEdit edit = TextEdit.replaceTextSpan(
         new TextSpan(1, 6, 1, 7), "Wrong");
-      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+      Supplier<QuickFix> quickFix = () -> QuickFix.newQuickFix("Description")
         .addTextEdit(edit)
         .build();
 
@@ -787,7 +787,7 @@ class InternalCheckVerifierTest {
     void test_one_quick_fix_wrong_edit_position() {
       TextEdit edit = TextEdit.replaceTextSpan(
         new TextSpan(4, 2, 6, 5), "Replacement");
-      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+      Supplier<QuickFix> quickFix = () -> QuickFix.newQuickFix("Description")
         .addTextEdit(edit)
         .build();
 
@@ -821,7 +821,7 @@ class InternalCheckVerifierTest {
     void test_no_quick_fix_expected() {
       TextEdit edit = TextEdit.replaceTextSpan(
         new TextSpan(1, 6, 1, 7), "Replacement");
-      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+      Supplier<QuickFix> quickFix = () -> QuickFix.newQuickFix("Description")
         .addTextEdit(edit)
         .build();
 
@@ -848,7 +848,7 @@ class InternalCheckVerifierTest {
     @Test
     void test_one_quick_fix_not_tested_is_accepted() {
       // One file with one Noncompliant comment but no QF specified in the comment is fine, we don't have to always test quick fixes
-      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+      Supplier<QuickFix> quickFix = () -> QuickFix.newQuickFix("Description")
         .addTextEdit(TextEdit.replaceTextSpan(
           new TextSpan(1, 6, 1, 7), "Replacement"))
         .build();
@@ -862,12 +862,12 @@ class InternalCheckVerifierTest {
 
     @Test
     void test_two_quick_fix_for_one_issue() {
-      Supplier<List<JavaQuickFix>> quickFixes = () -> Arrays.asList(
-        JavaQuickFix.newQuickFix("Description")
+      Supplier<List<QuickFix>> quickFixes = () -> Arrays.asList(
+        QuickFix.newQuickFix("Description")
           .addTextEdit(TextEdit.replaceTextSpan(
             new TextSpan(1, 6, 1, 7), "Replacement"))
           .build(),
-        JavaQuickFix.newQuickFix("Description2")
+        QuickFix.newQuickFix("Description2")
           .addTextEdit(TextEdit.replaceTextSpan(
             new TextSpan(1, 1, 1, 2), "Replacement2"))
           .build()
@@ -882,7 +882,7 @@ class InternalCheckVerifierTest {
 
     @Test
     void test_two_quick_fix_for_one_issue_1_actual_missing() {
-      Supplier<JavaQuickFix> quickFix1 = () -> JavaQuickFix.newQuickFix("Description")
+      Supplier<QuickFix> quickFix1 = () -> QuickFix.newQuickFix("Description")
         .addTextEdit(TextEdit.replaceTextSpan(
           new TextSpan(1, 6, 1, 7), "Replacement"))
         .build();
@@ -900,12 +900,12 @@ class InternalCheckVerifierTest {
 
     @Test
     void test_one_quick_fix_two_reported() {
-      Supplier<List<JavaQuickFix>> quickFixes = () -> Arrays.asList(
-        JavaQuickFix.newQuickFix("Description")
+      Supplier<List<QuickFix>> quickFixes = () -> Arrays.asList(
+        QuickFix.newQuickFix("Description")
           .addTextEdit(TextEdit.replaceTextSpan(
             new TextSpan(1, 6, 1, 7), "Replacement"))
           .build(),
-        JavaQuickFix.newQuickFix("Description2")
+        QuickFix.newQuickFix("Description2")
           .addTextEdit(TextEdit.replaceTextSpan(
             new TextSpan(1, 1, 1, 2), "Replacement2"))
           .build());
@@ -935,10 +935,10 @@ class InternalCheckVerifierTest {
 
     @Test
     void test_quick_fix_supports_new_lines() {
-      Supplier<JavaQuickFix> quickFixMultipleLine = () -> JavaQuickFix.newQuickFix("Description")
+      Supplier<QuickFix> quickFixMultipleLine = () -> QuickFix.newQuickFix("Description")
         .addTextEdit(TextEdit.replaceTextSpan(new TextSpan(1, 6, 1, 7), "line1\n  line2;"))
         .build();
-      Supplier<JavaQuickFix> quickFixSimple = () -> JavaQuickFix.newQuickFix("Description")
+      Supplier<QuickFix> quickFixSimple = () -> QuickFix.newQuickFix("Description")
         .addTextEdit(TextEdit.replaceTextSpan(new TextSpan(1, 6, 1, 7), "Replacement"))
         .build();
 
@@ -1143,13 +1143,13 @@ class InternalCheckVerifierTest {
 
   @Rule(key = "IssueWithQuickFix")
   private static final class IssueWithQuickFix extends IssuableSubscriptionVisitor {
-    Supplier<List<JavaQuickFix>> quickFixes;
+    Supplier<List<QuickFix>> quickFixes;
 
-    IssueWithQuickFix(Supplier<List<JavaQuickFix>> quickFixes) {
+    IssueWithQuickFix(Supplier<List<QuickFix>> quickFixes) {
       this.quickFixes = quickFixes;
     }
 
-    static IssueWithQuickFix of(Supplier<JavaQuickFix> quickFixes) {
+    static IssueWithQuickFix of(Supplier<QuickFix> quickFixes) {
       return new IssueWithQuickFix(() -> Collections.singletonList(quickFixes.get()));
     }
 

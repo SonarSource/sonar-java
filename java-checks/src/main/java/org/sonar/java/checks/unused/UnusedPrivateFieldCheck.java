@@ -36,7 +36,6 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Position;
@@ -56,6 +55,7 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -241,12 +241,12 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private JavaQuickFix computeQuickFix(VariableTree tree, List<AssignmentExpressionTree> assignments) {
+  private QuickFix computeQuickFix(VariableTree tree, List<AssignmentExpressionTree> assignments) {
     TextSpan textSpan = computeTextSpan(tree);
     List<TextEdit> edits = new ArrayList<>(assignments.size() + 1);
     edits.addAll(computeExpressionCaptures(assignments));
     edits.add(TextEdit.removeTextSpan(textSpan));
-    return JavaQuickFix.newQuickFix("Remove this unused private field")
+    return QuickFix.newQuickFix("Remove this unused private field")
       .addTextEdits(edits)
       .reverseSortEdits()
       .build();

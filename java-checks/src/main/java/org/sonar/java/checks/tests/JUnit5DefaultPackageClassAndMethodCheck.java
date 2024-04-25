@@ -22,10 +22,10 @@ package org.sonar.java.checks.tests;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S5786")
@@ -52,8 +52,8 @@ public class JUnit5DefaultPackageClassAndMethodCheck extends AbstractJUnit5NotCo
       .report();
   }
 
-  private static JavaQuickFix quickFix(ModifierKeywordTree modifier) {
-    return JavaQuickFix.newQuickFix("Remove \"%s\" modifier", modifier.keyword().text())
+  private static QuickFix quickFix(ModifierKeywordTree modifier) {
+    return QuickFix.newQuickFix("Remove \"%s\" modifier", modifier.keyword().text())
       .addTextEdit(TextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(modifier, true, QuickFixHelper.nextToken(modifier), false)))
       .build();
   }

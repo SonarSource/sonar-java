@@ -40,10 +40,10 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -234,7 +234,7 @@ class JavaFileScannerContextForTestsTest {
 
   @Test
   void test_quick_fixes_collected_in_context() {
-    JavaQuickFix quickFix = JavaQuickFix
+    QuickFix quickFix = QuickFix
       .newQuickFix("desc")
       .build();
 
@@ -245,7 +245,7 @@ class JavaFileScannerContextForTestsTest {
       .withQuickFix(() -> quickFix)
       .report();
 
-    Map<TextSpan, List<JavaQuickFix>> quickFixes = context.getQuickFixes();
+    Map<TextSpan, List<QuickFix>> quickFixes = context.getQuickFixes();
     assertThat(quickFixes).hasSize(1);
 
     assertThat(quickFixes.values().iterator().next()).containsExactly(quickFix);

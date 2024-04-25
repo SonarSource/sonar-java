@@ -27,7 +27,6 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -43,6 +42,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -96,7 +96,7 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
     builder.report();
   }
 
-  private static JavaQuickFix getQuickFix(BinaryExpressionTree binaryExpression, long operandValue, boolean compareToIsLeft) {
+  private static QuickFix getQuickFix(BinaryExpressionTree binaryExpression, long operandValue, boolean compareToIsLeft) {
     TextSpan textSpan;
     String newComparison;
 
@@ -109,7 +109,7 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
       textSpan = AnalyzerMessage.textSpanBetween(binaryExpression.leftOperand(), true, operatorToken, true);
     }
 
-    return JavaQuickFix.newQuickFix("Replace with \"%s\"", newComparison)
+    return QuickFix.newQuickFix("Replace with \"%s\"", newComparison)
       .addTextEdit(TextEdit.replaceTextSpan(textSpan, newComparison))
       .build();
   }

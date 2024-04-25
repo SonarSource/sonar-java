@@ -23,11 +23,11 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S6817")
 public class AsyncMethodsOnConfigurationClassCheck extends IssuableSubscriptionVisitor {
@@ -54,7 +54,7 @@ public class AsyncMethodsOnConfigurationClassCheck extends IssuableSubscriptionV
             .forRule(this)
             .onTree(annotation)
             .withMessage("Remove this \"@Async\" annotation from this method.")
-            .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove \"@Async\"")
+            .withQuickFix(() -> QuickFix.newQuickFix("Remove \"@Async\"")
               .addTextEdit(AnalyzerMessage.removeTree(annotation))
               .build())
             .report()));

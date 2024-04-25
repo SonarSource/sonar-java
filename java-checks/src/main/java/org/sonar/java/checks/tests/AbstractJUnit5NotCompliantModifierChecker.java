@@ -27,7 +27,6 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 public abstract class AbstractJUnit5NotCompliantModifierChecker extends IssuableSubscriptionVisitor {
 
@@ -51,7 +51,7 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
       .onTree(modifier)
       .withMessage(String.format(WRONG_MODIFIER_ISSUE_MESSAGE, modifier.keyword().text()))
       .withQuickFix(() ->
-        JavaQuickFix.newQuickFix("Remove modifier")
+        QuickFix.newQuickFix("Remove modifier")
           .addTextEdit(AnalyzerMessage.removeTree(modifier))
           .build())
       .report();

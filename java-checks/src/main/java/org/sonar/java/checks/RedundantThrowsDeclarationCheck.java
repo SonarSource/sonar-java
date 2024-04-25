@@ -35,7 +35,6 @@ import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -58,6 +57,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -118,7 +118,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       .report();
   }
 
-  private static JavaQuickFix createQuickFix(MethodTree methodTree, TypeTree clauseToRemove) {
+  private static QuickFix createQuickFix(MethodTree methodTree, TypeTree clauseToRemove) {
     ListTree<TypeTree> throwsClauses = methodTree.throwsClauses();
     int clauseToRemoveIndex = throwsClauses.indexOf(clauseToRemove);
     boolean isFirst = clauseToRemoveIndex == 0;
@@ -137,7 +137,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       TypeTree nextClause = throwsClauses.get(clauseToRemoveIndex + 1);
       textSpanToRemove = AnalyzerMessage.textSpanBetween(clauseToRemove, true, nextClause, false);
     }
-    return JavaQuickFix.newQuickFix("Remove \"%s\"", clauseToRemove.symbolType().name())
+    return QuickFix.newQuickFix("Remove \"%s\"", clauseToRemove.symbolType().name())
       .addTextEdit(TextEdit.removeTextSpan(textSpanToRemove))
       .build();
   }

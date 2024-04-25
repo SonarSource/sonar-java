@@ -29,18 +29,18 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.Preconditions;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
 
   private final Set<AnalyzerMessage> issues;
-  private final Map<TextSpan, List<JavaQuickFix>> quickFixes;
+  private final Map<TextSpan, List<QuickFix>> quickFixes;
   private boolean reported;
 
-  public JavaIssueBuilderForTests(InputFile inputFile, Set<AnalyzerMessage> issues, Map<TextSpan, List<JavaQuickFix>> quickFixes) {
+  public JavaIssueBuilderForTests(InputFile inputFile, Set<AnalyzerMessage> issues, Map<TextSpan, List<QuickFix>> quickFixes) {
     super(inputFile, null);
     this.issues = issues;
     this.reported = false;

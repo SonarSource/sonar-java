@@ -62,13 +62,13 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -334,7 +334,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
   }
 
-  private void checkIssues(Set<AnalyzerMessage> issues, Map<TextSpan, List<JavaQuickFix>> quickFixes) {
+  private void checkIssues(Set<AnalyzerMessage> issues, Map<TextSpan, List<QuickFix>> quickFixes) {
     if (expectations.expectNoIssues()) {
       assertNoIssues(issues);
     } else if (expectations.expectIssueAtFileLevel() || expectations.expectIssueAtProjectLevel()) {
@@ -398,7 +398,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
   }
 
-  private void assertMultipleIssues(Set<AnalyzerMessage> issues, Map<TextSpan, List<JavaQuickFix>> quickFixes) throws AssertionError {
+  private void assertMultipleIssues(Set<AnalyzerMessage> issues, Map<TextSpan, List<QuickFix>> quickFixes) throws AssertionError {
     if (issues.isEmpty()) {
       throw new AssertionError("No issue raised. At least one issue expected");
     }
@@ -684,10 +684,10 @@ public class InternalCheckVerifier implements CheckVerifier {
 
   private static class QuickFixesVerifier implements Consumer<Set<AnalyzerMessage>> {
 
-    private final Map<TextSpan, List<JavaQuickFix>> expectedQuickFixes;
-    private final Map<TextSpan, List<JavaQuickFix>> actualQuickFixes;
+    private final Map<TextSpan, List<QuickFix>> expectedQuickFixes;
+    private final Map<TextSpan, List<QuickFix>> actualQuickFixes;
 
-    public QuickFixesVerifier(Map<TextSpan, List<JavaQuickFix>> expectedQuickFixes, Map<TextSpan, List<JavaQuickFix>> actualQuickFixes) {
+    public QuickFixesVerifier(Map<TextSpan, List<QuickFix>> expectedQuickFixes, Map<TextSpan, List<QuickFix>> actualQuickFixes) {
       this.expectedQuickFixes = expectedQuickFixes;
       this.actualQuickFixes = actualQuickFixes;
     }
@@ -696,12 +696,12 @@ public class InternalCheckVerifier implements CheckVerifier {
     public void accept(Set<AnalyzerMessage> issues) {
       for (AnalyzerMessage issue : issues) {
         TextSpan primaryLocation = issue.primaryLocation();
-        List<JavaQuickFix> expected = expectedQuickFixes.get(primaryLocation);
+        List<QuickFix> expected = expectedQuickFixes.get(primaryLocation);
         if (expected == null) {
           // We don't have to always test quick fixes, we do nothing if there is no expected quick fix.
           continue;
         }
-        List<JavaQuickFix> actual = actualQuickFixes.get(primaryLocation);
+        List<QuickFix> actual = actualQuickFixes.get(primaryLocation);
         if (expected.isEmpty()) {
           if (actual != null && !actual.isEmpty()) {
             throw new AssertionError(String.format("[Quick Fix] Issue on line %d contains quick fixes while none where expected", primaryLocation.startLine));
@@ -713,7 +713,7 @@ public class InternalCheckVerifier implements CheckVerifier {
       }
     }
 
-    private static void validateIfSameSize(List<JavaQuickFix> expected, @Nullable List<JavaQuickFix> actual, AnalyzerMessage issue) {
+    private static void validateIfSameSize(List<QuickFix> expected, @Nullable List<QuickFix> actual, AnalyzerMessage issue) {
       TextSpan primaryLocation = issue.primaryLocation();
       if (actual == null || actual.isEmpty()) {
         // At this point, we know that expected is not empty
@@ -733,7 +733,7 @@ public class InternalCheckVerifier implements CheckVerifier {
       }
     }
 
-    private static void validate(AnalyzerMessage actualIssue, JavaQuickFix actual, JavaQuickFix expected) {
+    private static void validate(AnalyzerMessage actualIssue, QuickFix actual, QuickFix expected) {
       String actualDescription = actual.getDescription();
       String expectedDescription = expected.getDescription();
       if (!actualDescription.equals(expectedDescription)) {

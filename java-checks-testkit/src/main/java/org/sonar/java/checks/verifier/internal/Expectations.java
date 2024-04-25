@@ -58,12 +58,12 @@ import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -249,7 +249,7 @@ class Expectations {
   private String expectedFileIssue = null;
 
   private boolean collectQuickFixes = false;
-  private final Map<TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
+  private final Map<TextSpan, List<QuickFix>> quickFixes = new HashMap<>();
 
   private Set<String> seenFlowIds = new HashSet<>();
 
@@ -260,7 +260,7 @@ class Expectations {
     this.collectQuickFixes = true;
   }
 
-  public Map<TextSpan, List<JavaQuickFix>> quickFixes() {
+  public Map<TextSpan, List<QuickFix>> quickFixes() {
     return Collections.unmodifiableMap(quickFixes);
   }
 
@@ -375,13 +375,13 @@ class Expectations {
     private final Map<String, SortedSet<FlowComment>> flows;
 
     private final Map<TextSpan, List<String>> quickFixesForTextSpan = new LinkedHashMap<>();
-    private final Map<TextSpan, List<JavaQuickFix>> quickFixes;
+    private final Map<TextSpan, List<QuickFix>> quickFixes;
     private final Map<String, String> quickfixesMessages = new LinkedHashMap<>();
     private final Map<String, List<QuickFixEditComment>> quickfixesEdits = new LinkedHashMap<>();
 
     private boolean collectQuickFixes = false;
 
-    private Parser(Map<Integer, List<Issue>> issues, Map<String, SortedSet<FlowComment>> flows, Map<TextSpan, List<JavaQuickFix>> quickFixes) {
+    private Parser(Map<Integer, List<Issue>> issues, Map<String, SortedSet<FlowComment>> flows, Map<TextSpan, List<QuickFix>> quickFixes) {
       this.issues = issues;
       this.flows = flows;
       this.quickFixes = quickFixes;
@@ -449,7 +449,7 @@ class Expectations {
 
       for (Map.Entry<TextSpan, List<String>> entry : quickFixesForTextSpan.entrySet()) {
         TextSpan issueTextSpan = entry.getKey();
-        List<JavaQuickFix> quickFixesForIssue = new ArrayList<>();
+        List<QuickFix> quickFixesForIssue = new ArrayList<>();
 
         for (String quickFixId : entry.getValue()) {
           if (NO_QUICK_FIX_ID.equals(quickFixId)) {
@@ -466,7 +466,7 @@ class Expectations {
             throw new AssertionError("Missing edits for quick fix: " + quickFixId);
           }
 
-          JavaQuickFix javaQuickFix = JavaQuickFix.newQuickFix(message).addTextEdits(
+          QuickFix javaQuickFix = QuickFix.newQuickFix(message).addTextEdits(
             edits.stream()
               .map(edit -> getEdit(edit, issueTextSpan, quickFixId))
               .toList()

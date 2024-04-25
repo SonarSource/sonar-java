@@ -33,19 +33,19 @@ import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.Sema;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContext {
 
   private final Set<AnalyzerMessage> issues = new LinkedHashSet<>();
-  private final Map<TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
+  private final Map<TextSpan, List<QuickFix>> quickFixes = new HashMap<>();
 
   public JavaFileScannerContextForTests(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                         @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
@@ -57,7 +57,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
     return issues;
   }
 
-  public Map<TextSpan, List<JavaQuickFix>> getQuickFixes() {
+  public Map<TextSpan, List<QuickFix>> getQuickFixes() {
     return quickFixes;
   }
 

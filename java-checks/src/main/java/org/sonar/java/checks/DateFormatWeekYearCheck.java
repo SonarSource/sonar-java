@@ -26,7 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -34,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -112,12 +112,12 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
     return count;
   }
 
-  private static JavaQuickFix computeQuickFix(ExpressionTree argument,
+  private static QuickFix computeQuickFix(ExpressionTree argument,
     int literalContentStartIndex, int literalContentEndIndex, String replacement) {
 
     Position stringLiteralStart = Position.startOf(argument);
     int quoteDelimiterLength = 1;
-    return JavaQuickFix.newQuickFix("Replace year format")
+    return QuickFix.newQuickFix("Replace year format")
       .addTextEdit(TextEdit.replaceTextSpan(new TextSpan(
         stringLiteralStart.line(),
         stringLiteralStart.columnOffset() + quoteDelimiterLength + literalContentStartIndex,

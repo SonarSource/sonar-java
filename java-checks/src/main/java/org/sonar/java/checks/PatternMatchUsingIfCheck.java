@@ -27,7 +27,6 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
@@ -43,6 +42,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 
 @Rule(key = "S6880")
@@ -198,7 +198,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     return ifStat.elseStatement() instanceof IfStatementTree;
   }
 
-  private JavaQuickFix computeQuickFix(List<Case> cases, IfStatementTree topLevelIfStat) {
+  private QuickFix computeQuickFix(List<Case> cases, IfStatementTree topLevelIfStat) {
     var canLiftReturn = cases.stream().allMatch(caze -> exprWhenReturnLifted(caze) != null);
     var baseIndent = topLevelIfStat.firstToken().range().start().column() - 1;
     var sb = new StringBuilder();
@@ -216,7 +216,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
       sb.append(";");
     }
     var edit = AnalyzerMessage.replaceTree(topLevelIfStat, sb.toString());
-    return JavaQuickFix.newQuickFix(ISSUE_MESSAGE).addTextEdit(edit).build();
+    return QuickFix.newQuickFix(ISSUE_MESSAGE).addTextEdit(edit).build();
   }
 
   private void writeCase(Case caze, StringBuilder sb, int baseIndent, boolean canLiftReturn) {

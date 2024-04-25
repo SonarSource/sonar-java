@@ -25,7 +25,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S2111")
 public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisitor {
@@ -74,19 +74,19 @@ public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisito
     }
   }
 
-  private static JavaQuickFix valueOfQuickFix(NewClassTree newClassTree) {
-    return JavaQuickFix.newQuickFix("Replace with BigDecimal.valueOf")
+  private static QuickFix valueOfQuickFix(NewClassTree newClassTree) {
+    return QuickFix.newQuickFix("Replace with BigDecimal.valueOf")
       .addTextEdit(AnalyzerMessage.replaceBetweenTree(newClassTree.newKeyword(), newClassTree.identifier(), "BigDecimal.valueOf"))
       .build();
   }
 
-  private static JavaQuickFix stringConstructorQuickFix(LiteralTree argument) {
+  private static QuickFix stringConstructorQuickFix(LiteralTree argument) {
     String argumentValue = argument.value();
     if (argumentValue.endsWith("f") || argumentValue.endsWith("d") || argumentValue.endsWith("F") || argumentValue.endsWith("D")) {
       argumentValue = argumentValue.substring(0, argumentValue.length() - 1);
     }
     String newArgument = String.format("\"%s\"", argumentValue);
-    return JavaQuickFix.newQuickFix("Replace with BigDecimal(%s,", newArgument)
+    return QuickFix.newQuickFix("Replace with BigDecimal(%s,", newArgument)
       .addTextEdit(AnalyzerMessage.replaceTree(argument, newArgument))
       .build();
   }

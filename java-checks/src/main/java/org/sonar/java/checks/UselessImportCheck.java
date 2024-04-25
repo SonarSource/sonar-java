@@ -37,7 +37,6 @@ import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -47,6 +46,7 @@ import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @DeprecatedRuleKey(ruleKey = "UselessImportCheck", repositoryKey = "squid")
@@ -185,10 +185,10 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static JavaQuickFix quickFix(ImportTree importTree, List<ImportTree> imports) {
+  private static QuickFix quickFix(ImportTree importTree, List<ImportTree> imports) {
     int indexOfImport = imports.indexOf(importTree);
     boolean isLastImport = indexOfImport == imports.size() - 1;
-    JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix("Remove the %simport", importTree.isStatic() ? "static " : "");
+    QuickFix.Builder quickFix = QuickFix.newQuickFix("Remove the %simport", importTree.isStatic() ? "static " : "");
     if (imports.size() == 1) {
       // single import not used...
       quickFix.addTextEdit(AnalyzerMessage.removeTree(importTree));

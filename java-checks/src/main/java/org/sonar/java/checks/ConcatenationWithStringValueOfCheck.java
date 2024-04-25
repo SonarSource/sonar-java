@@ -24,7 +24,6 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -35,6 +34,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S1153")
 public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -83,7 +83,7 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
     scan(current);
   }
 
-  private JavaQuickFix createQuickFix(MethodInvocationTree invocationTree) {
+  private QuickFix createQuickFix(MethodInvocationTree invocationTree) {
     ExpressionTree argumentTree = invocationTree.arguments().get(0);
     String replacement = QuickFixHelper.contentForTree(argumentTree, context);
 
@@ -91,7 +91,7 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
       replacement = "(" + replacement + ")";
     }
 
-    return JavaQuickFix.newQuickFix("Remove redundant String.valueOf() wrapping")
+    return QuickFix.newQuickFix("Remove redundant String.valueOf() wrapping")
       .addTextEdit(AnalyzerMessage.replaceTree(invocationTree, replacement))
       .build();
   }

@@ -25,7 +25,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S3020")
@@ -72,13 +72,13 @@ public class ToArrayCheck extends AbstractMethodDetection {
     }
   }
 
-  private static JavaQuickFix getQuickFix(TypeCastTree castTree, MethodInvocationTree mit, MemberSelectExpressionTree methodSelect, String typeName) {
+  private static QuickFix getQuickFix(TypeCastTree castTree, MethodInvocationTree mit, MemberSelectExpressionTree methodSelect, String typeName) {
     List<TextEdit> textEdits = new ArrayList<>();
     textEdits.add(AnalyzerMessage.insertAfterTree(mit.arguments().firstToken(), typeName));
     if (!methodSelect.expression().symbolType().isRawType()) {
       textEdits.add(TextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(castTree, true, mit, false)));
     }
-    return JavaQuickFix.newQuickFix("Pass \"%s\" as argument", typeName)
+    return QuickFix.newQuickFix("Pass \"%s\" as argument", typeName)
       .addTextEdits(textEdits)
       .build();
   }

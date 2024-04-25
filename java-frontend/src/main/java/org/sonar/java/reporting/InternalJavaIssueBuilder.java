@@ -39,6 +39,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
 public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
@@ -66,7 +67,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
   private List<List<JavaFileScannerContext.Location>> flows;
   @Nullable
   private Integer cost;
-  private final List<Supplier<List<JavaQuickFix>>> quickFixes = new ArrayList<>();
+  private final List<Supplier<List<QuickFix>>> quickFixes = new ArrayList<>();
   private boolean reported;
 
   public InternalJavaIssueBuilder(InputFile inputFile, @Nullable SonarComponents sonarComponents) {
@@ -168,7 +169,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
   }
 
   @Override
-  public final InternalJavaIssueBuilder withQuickFix(Supplier<JavaQuickFix> quickFix) {
+  public final InternalJavaIssueBuilder withQuickFix(Supplier<QuickFix> quickFix) {
     requiresValueToBeSet(this.message, MESSAGE_NAME);
 
     this.quickFixes.add(() -> Collections.singletonList(quickFix.get()));
@@ -176,7 +177,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
   }
 
   @Override
-  public final InternalJavaIssueBuilder withQuickFixes(Supplier<List<JavaQuickFix>> quickFixes) {
+  public final InternalJavaIssueBuilder withQuickFixes(Supplier<List<QuickFix>> quickFixes) {
     requiresValueToBeSet(this.message, MESSAGE_NAME);
 
     this.quickFixes.add(quickFixes);
@@ -241,7 +242,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     if (quickFixes.isEmpty() || (!isQuickFixCompatible && !isSetQuickFixAvailableCompatible)) {
       return;
     }
-    final List<JavaQuickFix> flatQuickFixes = quickFixes.stream()
+    final List<QuickFix> flatQuickFixes = quickFixes.stream()
       .flatMap(s -> s.get().stream())
       .toList();
     if (flatQuickFixes.isEmpty()) {
@@ -254,9 +255,9 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     }
   }
 
-  private static void addQuickFixes(InputFile inputFile, RuleKey ruleKey, Iterable<JavaQuickFix> quickFixes, NewIssue sonarLintIssue) {
+  private static void addQuickFixes(InputFile inputFile, RuleKey ruleKey, Iterable<QuickFix> quickFixes, NewIssue sonarLintIssue) {
     try {
-      for (JavaQuickFix quickFix : quickFixes) {
+      for (QuickFix quickFix : quickFixes) {
         NewQuickFix newQuickFix = sonarLintIssue.newQuickFix()
           .message(quickFix.getDescription());
 
@@ -312,7 +313,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     return Optional.ofNullable(flows);
   }
 
-  public List<Supplier<List<JavaQuickFix>>> quickFixes() {
+  public List<Supplier<List<QuickFix>>> quickFixes() {
     return quickFixes;
   }
 

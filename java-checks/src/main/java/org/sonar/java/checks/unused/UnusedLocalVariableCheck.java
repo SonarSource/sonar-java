@@ -29,7 +29,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -39,6 +38,7 @@ import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -128,9 +128,9 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     return variable.parent().is(Tree.Kind.LIST) && variable.parent().parent().is(Tree.Kind.TRY_STATEMENT);
   }
 
-  private static List<JavaQuickFix> computeQuickFix(VariableTree variable) {
+  private static List<QuickFix> computeQuickFix(VariableTree variable) {
     return getQuickFixTextSpan(variable).map(textSpan -> Collections.singletonList(
-        JavaQuickFix.newQuickFix("Remove unused local variable")
+        QuickFix.newQuickFix("Remove unused local variable")
           .addTextEdit(TextEdit.removeTextSpan(textSpan))
           .build()
       )

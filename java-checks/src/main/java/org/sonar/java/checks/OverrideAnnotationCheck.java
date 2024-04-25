@@ -25,7 +25,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.location.Position;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S1161")
 public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
@@ -86,7 +86,7 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
    * @param methodTree the method to annotate
    * @return the quick-fix adding the @Override annotation one line above the signature
    */
-  private JavaQuickFix quickFix(MethodTree methodTree) {
+  private QuickFix quickFix(MethodTree methodTree) {
     ModifiersTree modifiersTree = methodTree.modifiers();
     Tree targetTree = modifiersTree.isEmpty() ? QuickFixHelper.nextToken(modifiersTree) : modifiersTree.get(0);
     String insertedText;
@@ -96,7 +96,7 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
     } else {
       insertedText = "@Override\n" + padding(targetTree);
     }
-    return JavaQuickFix
+    return QuickFix
       .newQuickFix("Add \"@Override\" annotation")
       .addTextEdit(AnalyzerMessage.insertBeforeTree(targetTree, insertedText))
       .build();

@@ -26,7 +26,6 @@ import java.util.function.Supplier;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -34,6 +33,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
@@ -102,7 +102,7 @@ public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
   }
 
   private void reportIfCompareToOrToString(MethodInvocationTree mit, ExpressionTree memberSelectExpression, String boxedType, Tree argument) {
-    Supplier<JavaQuickFix> quickFix;
+    Supplier<QuickFix> quickFix;
     String replacementMethod;
     if (TO_STRING.matches(mit)) {
       replacementMethod = "toString";
@@ -127,10 +127,10 @@ public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
       .report();
   }
 
-  private static Supplier<JavaQuickFix> toStringQuickFix(MethodInvocationTree mit, String boxedType, Tree argument) {
+  private static Supplier<QuickFix> toStringQuickFix(MethodInvocationTree mit, String boxedType, Tree argument) {
     String replacement = String.format("%s.toString(", boxedType);
     return () ->
-      JavaQuickFix.newQuickFix(String.format("Use %s...) instead", replacement))
+      QuickFix.newQuickFix(String.format("Use %s...) instead", replacement))
         .addTextEdit(
           TextEdit.replaceTextSpan(textSpanBetween(mit, true, argument, false), replacement),
           TextEdit.replaceTextSpan(textSpanBetween(argument, false, mit, true), ")")
@@ -138,18 +138,18 @@ public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
   }
 
 
-  private static Supplier<JavaQuickFix> toStringWithArgumentQuickFix(ExpressionTree memberSelectExpression, String type) {
+  private static Supplier<QuickFix> toStringWithArgumentQuickFix(ExpressionTree memberSelectExpression, String type) {
     return () ->
-      JavaQuickFix.newQuickFix(String.format("Use %s.toString(...) instead", type))
+      QuickFix.newQuickFix(String.format("Use %s.toString(...) instead", type))
         .addTextEdit(
           AnalyzerMessage.replaceTree(memberSelectExpression, type)
         ).build();
   }
 
-  private static Supplier<JavaQuickFix> compareToQuickFix(MethodInvocationTree mit, String type, Tree firstArgument, Tree secondArgument) {
+  private static Supplier<QuickFix> compareToQuickFix(MethodInvocationTree mit, String type, Tree firstArgument, Tree secondArgument) {
     String replacement = String.format("%s.compare(", type);
     return () ->
-      JavaQuickFix.newQuickFix(String.format("Use %s...) instead", replacement))
+      QuickFix.newQuickFix(String.format("Use %s...) instead", replacement))
         .addTextEdit(
           TextEdit.replaceTextSpan(textSpanBetween(mit, true, firstArgument, false), replacement),
           TextEdit.replaceTextSpan(textSpanBetween(firstArgument, false, secondArgument, false), ", ")

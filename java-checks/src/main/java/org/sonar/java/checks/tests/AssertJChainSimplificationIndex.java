@@ -27,10 +27,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import org.sonar.java.checks.helpers.UnitTestUtils;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -39,6 +37,8 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 import static org.sonar.java.checks.tests.AssertJChainSimplificationCheck.SimplifierWithContext;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationCheck.SimplifierWithoutContext;
@@ -540,13 +540,13 @@ public class AssertJChainSimplificationIndex {
 
   abstract static class Simplification {
     String replacement;
-    Supplier<List<JavaQuickFix>> quickFix = null;
+    Supplier<List<QuickFix>> quickFix = null;
 
     Simplification(String replacement) {
       this.replacement = replacement;
     }
 
-    Optional<Supplier<List<JavaQuickFix>>> getQuickFix() {
+    Optional<Supplier<List<QuickFix>>> getQuickFix() {
       return Optional.ofNullable(quickFix);
     }
 

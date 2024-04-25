@@ -28,8 +28,8 @@ import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -276,13 +276,13 @@ class ExpectationsTest {
       parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
       parser.parseQuickFix("// edit@qf1 [[sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
       parser.consolidateQuickFixes();
-      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      Map<TextSpan, List<QuickFix>> quickFixes = expectations.quickFixes();
 
       TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
 
       assertThat(quickFixes).hasSize(1);
-      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
-      assertJavaQuickFix(quickFix, "(42:1)-(42:3)");
+      QuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertQuickFix(quickFix, "(42:1)-(42:3)");
     }
 
 
@@ -292,13 +292,13 @@ class ExpectationsTest {
       parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
       parser.parseQuickFix("// edit@qf1 [[sl=+1;sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
       parser.consolidateQuickFixes();
-      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      Map<TextSpan, List<QuickFix>> quickFixes = expectations.quickFixes();
 
       TextSpan expectedTextSpanIssue = new TextSpan(43,4, 43,9);
 
       assertThat(quickFixes).hasSize(1);
-      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
-      assertJavaQuickFix(quickFix, "(44:1)-(43:3)");
+      QuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertQuickFix(quickFix, "(44:1)-(43:3)");
     }
 
     @Test
@@ -307,13 +307,13 @@ class ExpectationsTest {
       parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
       parser.parseQuickFix("// edit@qf1 [[sl=10;el=13;sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
       parser.consolidateQuickFixes();
-      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      Map<TextSpan, List<QuickFix>> quickFixes = expectations.quickFixes();
 
       TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
 
       assertThat(quickFixes).hasSize(1);
-      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
-      assertJavaQuickFix(quickFix, "(10:1)-(13:3)");
+      QuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertQuickFix(quickFix, "(10:1)-(13:3)");
     }
 
     @Test
@@ -322,13 +322,13 @@ class ExpectationsTest {
       parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
       parser.parseQuickFix("// edit@qf1 [[el=+2;sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
       parser.consolidateQuickFixes();
-      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      Map<TextSpan, List<QuickFix>> quickFixes = expectations.quickFixes();
 
       TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
 
       assertThat(quickFixes).hasSize(1);
-      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
-      assertJavaQuickFix(quickFix, "(42:1)-(44:3)");
+      QuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertQuickFix(quickFix, "(42:1)-(44:3)");
     }
 
     @Test
@@ -337,13 +337,13 @@ class ExpectationsTest {
       parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
       parser.parseQuickFix("// edit@qf1 [[sl=+2;sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
       parser.consolidateQuickFixes();
-      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      Map<TextSpan, List<QuickFix>> quickFixes = expectations.quickFixes();
 
       TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
 
       assertThat(quickFixes).hasSize(1);
-      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
-      assertJavaQuickFix(quickFix, "(44:1)-(42:3)");
+      QuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertQuickFix(quickFix, "(44:1)-(42:3)");
     }
 
     @Test
@@ -352,16 +352,16 @@ class ExpectationsTest {
       parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
       parser.parseQuickFix("// edit@qf1 [[el=+2;sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
       parser.consolidateQuickFixes();
-      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      Map<TextSpan, List<QuickFix>> quickFixes = expectations.quickFixes();
 
       TextSpan expectedTextSpanIssue = new TextSpan(42,4, 47,9);
 
       assertThat(quickFixes).hasSize(1);
-      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
-      assertJavaQuickFix(quickFix, "(42:1)-(44:3)");
+      QuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertQuickFix(quickFix, "(42:1)-(44:3)");
     }
 
-    private void assertJavaQuickFix(JavaQuickFix quickFix, String editTextSpan) {
+    private void assertQuickFix(QuickFix quickFix, String editTextSpan) {
       assertThat(quickFix.getDescription()).isEqualTo("message");
       List<TextEdit> textEdits = quickFix.getTextEdits();
       assertThat(textEdits).hasSize(1);
@@ -437,10 +437,10 @@ class ExpectationsTest {
       // Empty edit with non-empty text range is a deletion.
       parser.parseQuickFix("// edit@qf1 [[sc=2;ec=3]] {{}}", TEST_LINE + 2);
       parser.consolidateQuickFixes();
-      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      Map<TextSpan, List<QuickFix>> quickFixes = expectations.quickFixes();
       assertThat(quickFixes).hasSize(1);
       TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
-      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      QuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
       assertThat(quickFix.getTextEdits()).hasSize(1);
     }
 
@@ -451,10 +451,10 @@ class ExpectationsTest {
       // Empty edit with non-empty text range is an addition.
       parser.parseQuickFix("// edit@qf1 [[sc=2;ec=2]] {{something}}", TEST_LINE + 2);
       parser.consolidateQuickFixes();
-      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      Map<TextSpan, List<QuickFix>> quickFixes = expectations.quickFixes();
       assertThat(quickFixes).hasSize(1);
       TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
-      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      QuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
       assertThat(quickFix.getTextEdits()).hasSize(1);
     }
 
@@ -497,7 +497,7 @@ class ExpectationsTest {
     void unrelated_comment() {
       parser.parseQuickFix("// myMail@abc.com {{message}}", TEST_LINE);
       parser.consolidateQuickFixes();
-      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      Map<TextSpan, List<QuickFix>> quickFixes = expectations.quickFixes();
       assertThat(quickFixes).isEmpty();
     }
   }

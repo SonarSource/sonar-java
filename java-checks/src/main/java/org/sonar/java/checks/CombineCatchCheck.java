@@ -31,7 +31,6 @@ import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -40,6 +39,7 @@ import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S2147")
 public class CombineCatchCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -81,13 +81,13 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
     return version.isJava7Compatible();
   }
 
-  private JavaQuickFix computeQuickFix(CatchTree catchTree, CatchTree catchTreeToBeCompared, String qfMessage) {
+  private QuickFix computeQuickFix(CatchTree catchTree, CatchTree catchTreeToBeCompared, String qfMessage) {
     List<TypeTree> upperCatchTypes = getExceptionTypesCaught(catchTreeToBeCompared);
     List<TypeTree> lowerCatchTypes = getExceptionTypesCaught(catchTree);
 
     List<TypeTree> mergedTypes = mergeCatchTypes(upperCatchTypes, lowerCatchTypes);
 
-    var builder = JavaQuickFix.newQuickFix(qfMessage);
+    var builder = QuickFix.newQuickFix(qfMessage);
     builder.addTextEdit(AnalyzerMessage.removeTree(catchTree));
     String replacement = computeReplacementString(mergedTypes, catchTreeToBeCompared);
     builder.addTextEdit(

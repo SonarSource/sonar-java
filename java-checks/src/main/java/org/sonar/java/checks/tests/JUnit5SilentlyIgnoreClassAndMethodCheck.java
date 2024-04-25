@@ -25,13 +25,13 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S5810")
@@ -60,7 +60,7 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends AbstractJUnit5NotCo
         .onTree(methodTree.returnType())
         .withMessage("Replace the return type by void.")
         .withQuickFix(() ->
-          JavaQuickFix.newQuickFix("Replace with void")
+          QuickFix.newQuickFix("Replace with void")
             .addTextEdits(textEdits)
             .build())
         .report();

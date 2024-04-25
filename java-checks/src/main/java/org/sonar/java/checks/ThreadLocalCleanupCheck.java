@@ -26,7 +26,6 @@ import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
@@ -70,7 +70,7 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
           .forRule(this)
           .onTree(mit)
           .withMessage("Use \"remove()\" instead of \"set(null)\".")
-          .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with \"remove()\"")
+          .withQuickFix(() -> QuickFix.newQuickFix("Replace with \"remove()\"")
             .addTextEdit(AnalyzerMessage.replaceBetweenTree(ExpressionUtils.methodName(mit), mit.arguments(), "remove()"))
             .build())
           .report();

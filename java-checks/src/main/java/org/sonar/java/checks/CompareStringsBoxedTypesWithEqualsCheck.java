@@ -24,13 +24,13 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -70,7 +70,7 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
       ExpressionsHelper.getConstantValueAsBoolean(right).value() != null;
   }
 
-  private static Optional<JavaQuickFix> computeConciseQuickFix(BinaryExpressionTree tree) {
+  private static Optional<QuickFix> computeConciseQuickFix(BinaryExpressionTree tree) {
     ExpressionTree leftOperand = tree.leftOperand();
     ExpressionTree rightOperand = tree.rightOperand();
     if (leftOperand.is(Tree.Kind.STRING_LITERAL)) {
@@ -78,7 +78,7 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
         leftOperand, false,
         rightOperand, false
       );
-      JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
+      QuickFix.Builder quickFix = QuickFix.newQuickFix(QUICK_FIX_MESSAGE)
         .addTextEdit(AnalyzerMessage.insertAfterTree(rightOperand, ")"))
         .addTextEdit(TextEdit.replaceTextSpan(interOperandSpace, DOT_EQUALS_AND_OPENING_PARENTHESIS));
       if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
@@ -93,7 +93,7 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
         rightOperand, true
       );
       return Optional.of(
-        JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
+        QuickFix.newQuickFix(QUICK_FIX_MESSAGE)
           .addTextEdit(TextEdit.replaceTextSpan(leftOfOperatorToEndOfComparison, ")"))
           .addTextEdit(AnalyzerMessage.insertBeforeTree(leftOperand, callToEquals))
           .build()
@@ -102,13 +102,13 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
     return Optional.empty();
   }
 
-  private JavaQuickFix computeDefaultQuickFix(BinaryExpressionTree tree) {
+  private QuickFix computeDefaultQuickFix(BinaryExpressionTree tree) {
     String callToEquals = tree.is(Tree.Kind.NOT_EQUAL_TO) ? "!Objects.equals(" : "Objects.equals(";
     TextSpan interOperandSpace = AnalyzerMessage.textSpanBetween(
       tree.leftOperand(), false,
       tree.rightOperand(), false
     );
-    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
+    QuickFix.Builder builder = QuickFix.newQuickFix(QUICK_FIX_MESSAGE)
       .addTextEdit(AnalyzerMessage.insertAfterTree(tree.rightOperand(), ")"))
       .addTextEdit(TextEdit.replaceTextSpan(interOperandSpace, ", "))
       .addTextEdit(AnalyzerMessage.insertBeforeTree(tree.leftOperand(), callToEquals));

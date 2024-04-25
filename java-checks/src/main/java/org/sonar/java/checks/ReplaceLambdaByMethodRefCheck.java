@@ -34,7 +34,6 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -59,6 +58,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S1612")
 public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
@@ -81,7 +81,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
           .forRule(this)
           .onTree(tree.arrowToken())
           .withMessage("Replace this lambda with method reference '%s'.%s", replacement, context.getJavaVersion().java8CompatibilityMessage())
-          .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with \"%s\"", replacement)
+          .withQuickFix(() -> QuickFix.newQuickFix("Replace with \"%s\"", replacement)
             .addTextEdit(AnalyzerMessage.replaceTree(tree, replacement))
             .build())
           .report()

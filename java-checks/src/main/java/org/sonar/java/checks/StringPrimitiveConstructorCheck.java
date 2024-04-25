@@ -27,7 +27,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -35,6 +34,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S2129")
@@ -121,7 +121,7 @@ public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor
     }
   }
 
-  private JavaQuickFix computeQuickFix(NewClassTree newClassTree) {
+  private QuickFix computeQuickFix(NewClassTree newClassTree) {
     String message;
     TextEdit textEdit;
     String className = newClassTree.symbolType().name();
@@ -138,7 +138,7 @@ public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor
       String replacement = getFirstArgumentAsString(newClassTree);
       textEdit = AnalyzerMessage.replaceTree(newClassTree, replacement);
     }
-    return JavaQuickFix.newQuickFix(message).addTextEdit(textEdit).build();
+    return QuickFix.newQuickFix(message).addTextEdit(textEdit).build();
   }
 
   private static String formatQuickFixMessage(String constructor, String replacement) {

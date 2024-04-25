@@ -30,7 +30,6 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -40,6 +39,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S1168")
 public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
@@ -161,11 +161,11 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     return Boolean.TRUE.equals(tree.isOverriding());
   }
 
-  private List<JavaQuickFix> quickFix(ReturnStatementTree returnStatement) {
+  private List<QuickFix> quickFix(ReturnStatementTree returnStatement) {
     ReturnKind returnKind = returnKinds.peek();
     // can only be ARRAY or COLLECTION
     if (returnKind.kind == Returns.ARRAY) {
-      return Collections.singletonList(JavaQuickFix.newQuickFix("Replace \"null\" with an empty array")
+      return Collections.singletonList(QuickFix.newQuickFix("Replace \"null\" with an empty array")
         .addTextEdit(AnalyzerMessage.replaceTree(returnStatement.expression(), emptyArrayString((Type.ArrayType) returnKind.type)))
         .build());
     }
@@ -175,7 +175,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     }
     CollectionType collectionType = candidate.get();
 
-    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Replace \"null\" with an empty %s", collectionType.typeName)
+    QuickFix.Builder builder = QuickFix.newQuickFix("Replace \"null\" with an empty %s", collectionType.typeName)
       .addTextEdit(AnalyzerMessage.replaceTree(returnStatement.expression(), collectionType.replacement));
 
     if (importSupplier == null) {

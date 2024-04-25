@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LineUtils;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
@@ -41,7 +41,7 @@ public class RightCurlyBraceSameLineAsNextBlockCheck extends RightCurlyBraceToNe
         .forRule(this)
         .onTree(syntaxToken)
         .withMessage("Move this \"%s\" on the same line that the previous closing curly brace.", syntaxToken.text())
-        .withQuickFix(() -> JavaQuickFix.newQuickFix("Move to the same line as the closing curly brace")
+        .withQuickFix(() -> QuickFix.newQuickFix("Move to the same line as the closing curly brace")
           .addTextEdit(TextEdit.replaceTextSpan(textSpanBetween(previousBlock, false, syntaxToken, false), " ")
           ).build())
         .report();

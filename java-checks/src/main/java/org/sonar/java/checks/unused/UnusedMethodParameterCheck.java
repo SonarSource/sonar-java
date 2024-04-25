@@ -32,7 +32,6 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -50,6 +49,7 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -133,8 +133,8 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       .report();
   }
 
-  private static List<JavaQuickFix> createQuickFixes(MethodTree methodTree, List<IdentifierTree> unused) {
-    List<JavaQuickFix> quickFixes = new ArrayList<>();
+  private static List<QuickFix> createQuickFixes(MethodTree methodTree, List<IdentifierTree> unused) {
+    List<QuickFix> quickFixes = new ArrayList<>();
     List<VariableTree> parameters = methodTree.parameters();
     for (int i = 0; i < parameters.size(); i++) {
       VariableTree parameter = parameters.get(i);
@@ -154,7 +154,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
           VariableTree nextParameter = parameters.get(i + 1);
           textSpanToRemove = AnalyzerMessage.textSpanBetween(parameter, true, nextParameter, false);
         }
-        quickFixes.add(JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE, parameter.simpleName().name())
+        quickFixes.add(QuickFix.newQuickFix(QUICK_FIX_MESSAGE, parameter.simpleName().name())
           .addTextEdit(TextEdit.removeTextSpan(textSpanToRemove))
           .build());
       }

@@ -30,7 +30,6 @@ import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
@@ -44,6 +43,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.checks.helpers.QuickFixHelper.contentForRange;
@@ -101,7 +101,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private List<JavaQuickFix> computeQuickFix(Symbol.VariableSymbol symbol, VariableTree declaration, MethodTree methodWhereUsed) {
+  private List<QuickFix> computeQuickFix(Symbol.VariableSymbol symbol, VariableTree declaration, MethodTree methodWhereUsed) {
     if (wouldRelocationClashWithLocalVariables(symbol, methodWhereUsed)) {
       return Collections.emptyList();
     }
@@ -113,7 +113,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     String newDeclaration = "\n" + padding + declarationMinusModifiers;
 
     return List.of(
-      JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
+      QuickFix.newQuickFix(QUICK_FIX_MESSAGE)
         .addTextEdits(editUsagesWithThis(symbol))
         .addTextEdit(AnalyzerMessage.insertAfterTree(openingBrace, newDeclaration))
         .addTextEdit(AnalyzerMessage.removeTree(declaration))

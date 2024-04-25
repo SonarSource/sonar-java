@@ -21,11 +21,12 @@ package org.sonar.java.reporting;
 
 import java.util.List;
 import java.util.function.Supplier;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 public interface JavaIssueBuilderExtended extends FluentReporting.JavaIssueBuilder {
 
-  JavaIssueBuilderExtended withQuickFix(Supplier<JavaQuickFix> quickFixes);
+  JavaIssueBuilderExtended withQuickFix(Supplier<QuickFix> quickFixes);
 
-  JavaIssueBuilderExtended withQuickFixes(Supplier<List<JavaQuickFix>> quickFixes);
+  JavaIssueBuilderExtended withQuickFixes(Supplier<List<QuickFix>> quickFixes);
 
 }

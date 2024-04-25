@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -41,6 +40,7 @@ import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -121,8 +121,8 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
     return Optional.empty();
   }
 
-  private static JavaQuickFix reorderedFix(ModifiersTree modifiersTree) {
-    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Reorder modifiers");
+  private static QuickFix reorderedFix(ModifiersTree modifiersTree) {
+    QuickFix.Builder builder = QuickFix.newQuickFix("Reorder modifiers");
     List<AnnotationTree> annotations = new ArrayList<>(modifiersTree.annotations());
 
     if (annotations.isEmpty()) {

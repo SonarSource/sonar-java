@@ -25,10 +25,10 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S3984")
 public class UnusedThrowableCheck extends IssuableSubscriptionVisitor {
@@ -49,10 +49,10 @@ public class UnusedThrowableCheck extends IssuableSubscriptionVisitor {
           .onTree(newClassTree)
           .withMessage("Throw this exception or remove this useless statement.")
           .withQuickFixes(() -> Arrays.asList(
-            JavaQuickFix.newQuickFix("Add \"throw\"")
+            QuickFix.newQuickFix("Add \"throw\"")
               .addTextEdit(AnalyzerMessage.insertBeforeTree(newClassTree, "throw "))
               .build(),
-            JavaQuickFix.newQuickFix("Remove the statement")
+            QuickFix.newQuickFix("Remove the statement")
               .addTextEdit(
                 AnalyzerMessage.removeTree(parent)
               ).build()))

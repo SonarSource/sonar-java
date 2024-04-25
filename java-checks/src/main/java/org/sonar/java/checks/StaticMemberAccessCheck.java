@@ -24,7 +24,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S3252")
 public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
@@ -76,10 +76,10 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
     return parent.is(Tree.Kind.METHOD_INVOCATION) && LIST_SET_OF.matches((MethodInvocationTree) parent);
   }
 
-  private static JavaQuickFix quickFix(ExpressionTree expression, Type staticType) {
+  private static QuickFix quickFix(ExpressionTree expression, Type staticType) {
     String oldType = expression.symbolType().name();
     String newType = staticType.name();
-    return JavaQuickFix.newQuickFix(String.format("Use \"%s\" instead of \"%s\"", newType, oldType))
+    return QuickFix.newQuickFix(String.format("Use \"%s\" instead of \"%s\"", newType, oldType))
       .addTextEdit(AnalyzerMessage.replaceTree(expression, newType))
       .build();
   }

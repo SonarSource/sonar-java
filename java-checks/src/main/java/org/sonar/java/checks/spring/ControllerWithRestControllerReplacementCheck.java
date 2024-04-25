@@ -24,12 +24,12 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S6833")
@@ -79,8 +79,8 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
       .onTree(annotation.get())
       .withMessage("Replace the \"@Controller\" annotation by \"@RestController\" and remove all \"@ResponseBody\" annotations.")
       .withSecondaries(secondaryLocations)
-      .withQuickFixes(() -> List.of(JavaQuickFix.newQuickFix("Remove \"@ResponseBody\" annotations.").addTextEdits(edits).build(),
-        JavaQuickFix.newQuickFix("Replace \"@Controller\" by \"@RestController\".").addTextEdit(AnalyzerMessage.replaceTree(annotation.get(), "@RestController")).build()))
+      .withQuickFixes(() -> List.of(QuickFix.newQuickFix("Remove \"@ResponseBody\" annotations.").addTextEdits(edits).build(),
+        QuickFix.newQuickFix("Replace \"@Controller\" by \"@RestController\".").addTextEdit(AnalyzerMessage.replaceTree(annotation.get(), "@RestController")).build()))
       .report();
 
   }

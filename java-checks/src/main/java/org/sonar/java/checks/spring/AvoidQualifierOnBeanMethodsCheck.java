@@ -26,12 +26,12 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 
 @Rule(key = "S6831")
 public class AvoidQualifierOnBeanMethodsCheck extends IssuableSubscriptionVisitor {
@@ -72,12 +72,12 @@ public class AvoidQualifierOnBeanMethodsCheck extends IssuableSubscriptionVisito
       .orElse(null);
   }
 
-  private static List<JavaQuickFix> getQuickFix(MethodTree methodTree, AnnotationTree qualifierAnnotation) {
-    List<JavaQuickFix> quickFixes = new LinkedList<>();
+  private static List<QuickFix> getQuickFix(MethodTree methodTree, AnnotationTree qualifierAnnotation) {
+    List<QuickFix> quickFixes = new LinkedList<>();
 
     // quick fix only for @Qualifier annotations without arguments or with argument that matches the method name
     if (isFixable(methodTree, qualifierAnnotation)) {
-      var quickFix = JavaQuickFix.newQuickFix("Remove \"@Qualifier\"")
+      var quickFix = QuickFix.newQuickFix("Remove \"@Qualifier\"")
         .addTextEdit(AnalyzerMessage.removeTree(qualifierAnnotation))
         .build();
       quickFixes.add(quickFix);

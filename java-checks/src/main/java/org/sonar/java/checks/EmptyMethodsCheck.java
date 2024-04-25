@@ -26,7 +26,6 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -37,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 import org.sonarsource.analyzer.commons.quickfixes.TextSpan;
 
@@ -124,7 +124,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
     return !block.closeBraceToken().trivias().isEmpty();
   }
 
-  private static JavaQuickFix computeQuickFix(MethodTree method) {
+  private static QuickFix computeQuickFix(MethodTree method) {
     String commentFormat;
     if (LineUtils.startLine(method.block().openBraceToken()) == LineUtils.startLine(method.block().closeBraceToken())) {
       commentFormat = " /* TODO document why this %s is empty */ ";
@@ -140,7 +140,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
       method.block().closeBraceToken(), false
     );
 
-    return JavaQuickFix.newQuickFix("Insert placeholder comment")
+    return QuickFix.newQuickFix("Insert placeholder comment")
       .addTextEdit(TextEdit.replaceTextSpan(textSpan, comment))
       .build();
   }

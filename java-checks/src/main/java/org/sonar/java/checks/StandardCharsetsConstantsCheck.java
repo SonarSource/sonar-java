@@ -32,7 +32,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
@@ -47,6 +46,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 @Rule(key = "S4719")
@@ -315,7 +315,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       .report();
   }
 
-  private JavaQuickFix quickfixOnCharsetCall(ExpressionTree callExpression, String constantName) {
+  private QuickFix quickfixOnCharsetCall(ExpressionTree callExpression, String constantName) {
     List<TextEdit> edits = new ArrayList<>();
     edits.add(AnalyzerMessage.replaceTree(callExpression, "StandardCharsets." + constantName));
 
@@ -323,12 +323,12 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       .newImportEdit(JAVA_NIO_STANDARD_CHARSETS)
       .ifPresent(edits::add);
 
-    return JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
+    return QuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
         .addTextEdits(edits)
         .build();
   }
 
-  private List<JavaQuickFix> quickFixesOnMemberSelect(IdentifierTree identifierTree) {
+  private List<QuickFix> quickFixesOnMemberSelect(IdentifierTree identifierTree) {
     Tree parent = identifierTree.parent();
     if (parent.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree parentMemberSelect = (MemberSelectExpressionTree) parent;
@@ -341,7 +341,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
         .ifPresent(edits::add);
 
       return List.of(
-        JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + identifierTree.name() + "\"")
+        QuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + identifierTree.name() + "\"")
           .addTextEdits(edits)
           .build()
       );
@@ -361,7 +361,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       .forRule(this)
       .onTree(charsetNameArgument)
       .withMessage(String.format("Replace charset name argument with StandardCharsets.%s", constantName))
-      .withQuickFix(() -> JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
+      .withQuickFix(() -> QuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
           .addTextEdits(edits)
           .build())
       .report();

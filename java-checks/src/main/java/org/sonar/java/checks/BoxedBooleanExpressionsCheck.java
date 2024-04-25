@@ -31,7 +31,6 @@ import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -52,6 +51,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
@@ -264,7 +264,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
       .anyMatch(name -> "nonNull".equalsIgnoreCase(name) || "notNull".equalsIgnoreCase(name));
   }
 
-  private static List<JavaQuickFix> getQuickFix(ExpressionTree tree, ExpressionTree boxedBoolean) {
+  private static List<QuickFix> getQuickFix(ExpressionTree tree, ExpressionTree boxedBoolean) {
     if (tree.is(Kind.METHOD_INVOCATION) && OPTIONAL_OR_ELSE.matches((MethodInvocationTree) tree)) {
       // We do not suggest a quick fix when we have an optional
       return Collections.emptyList();
@@ -277,7 +277,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
     }
     edits.add(AnalyzerMessage.insertAfterTree(boxedBoolean, ")"));
 
-    return Collections.singletonList(JavaQuickFix.newQuickFix(MESSAGE_QUICKFIX)
+    return Collections.singletonList(QuickFix.newQuickFix(MESSAGE_QUICKFIX)
       .addTextEdits(edits)
       .build());
   }

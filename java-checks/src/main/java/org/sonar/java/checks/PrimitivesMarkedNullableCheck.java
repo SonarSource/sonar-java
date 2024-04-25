@@ -23,13 +23,13 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
@@ -61,7 +61,7 @@ public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVis
             .withMessage("\"@%s\" annotation should not be used on primitive types", annotationName)
             .withSecondaries(new JavaFileScannerContext.Location("Child annotation", annotationTree))
             .withQuickFix(() ->
-              JavaQuickFix.newQuickFix("Remove \"@%s\"", annotationName)
+              QuickFix.newQuickFix("Remove \"@%s\"", annotationName)
                 .addTextEdit(TextEdit.removeTextSpan(textSpanBetween(annotationTree, true,
                   QuickFixHelper.nextToken(annotationTree), false)))
                 .build())

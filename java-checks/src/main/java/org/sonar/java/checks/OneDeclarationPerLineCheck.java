@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.LineUtils;
-import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -39,6 +38,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.quickfixes.QuickFix;
 import org.sonarsource.analyzer.commons.quickfixes.TextEdit;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
@@ -103,7 +103,7 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private JavaQuickFix getQuickFixes(List<VariableTree> nodesToReport) {
+  private QuickFix getQuickFixes(List<VariableTree> nodesToReport) {
     List<TextEdit> edits = new ArrayList<>();
     SyntaxToken previousToken = QuickFixHelper.previousToken(nodesToReport.get(0));
 
@@ -113,7 +113,7 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
       previousToken = variableTree.lastToken();
     }
 
-    return JavaQuickFix.newQuickFix("Declare on separated lines")
+    return QuickFix.newQuickFix("Declare on separated lines")
       .addTextEdits(edits)
       .build();
   }
