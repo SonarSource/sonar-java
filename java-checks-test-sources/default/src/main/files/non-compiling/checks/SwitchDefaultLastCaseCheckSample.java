@@ -5,7 +5,8 @@ class SwitchDefaultLastCaseCheckSample {
   void foo(WeekendDay weekendDay) {
     int i = switch (0) {
       case 0:
-      default: // Noncompliant [[sc=7;ec=15]] {{Move this default to the end of the switch.}}
+      default: // Noncompliant {{Move this default to the end of the switch.}}
+//    ^^^^^^^^
         yield 1;
       case 1:
         yield 2;

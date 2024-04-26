@@ -11,12 +11,16 @@ public class SpringAntMatcherOrderCheckSample {
     http
       .authorizeRequests()
         .antMatchers("/login/*me").permitAll()
+//  ^^^<
         .antMatchers("/login/admin").hasRole("ADMIN")
-        .antMatchers("/login/home").permitAll() // Noncompliant [[sc=22;ec=35;secondary=-2]] {{Reorder the URL patterns from most to less specific, the pattern "/login/home" should occurs before "/login/*me".}}
+        .antMatchers("/login/home").permitAll() // Noncompliant {{Reorder the URL patterns from most to less specific, the pattern "/login/home" should occurs before "/login/*me".}}
+//                   ^^^^^^^^^^^^^
         .antMatchers(
           "/lo?in",
+//  ^^^<
           dynamicUrl,
-          "/login" // Noncompliant [[sc=11;ec=19;secondary=-2]] {{Reorder the URL patterns from most to less specific, the pattern "/login" should occurs before "/lo?in".}}
+          "/login" // Noncompliant {{Reorder the URL patterns from most to less specific, the pattern "/login" should occurs before "/lo?in".}}
+//        ^^^^^^^^
         ).permitAll();
 
     http
@@ -37,7 +41,7 @@ public class SpringAntMatcherOrderCheckSample {
     .and()
       .antMatcher("/root2")
         .authorizeRequests()
-          .antMatchers("/level1").permitAll(); // Noncompliant: TODO investigate
+          .antMatchers("/level1").permitAll(); // Noncompliant
 
     http
       .antMatcher("/root1")
@@ -48,7 +52,9 @@ public class SpringAntMatcherOrderCheckSample {
     http
       .authorizeRequests()
         .antMatchers("/", "/index", "/secured/*/**", "/authenticate").permitAll()
-        .antMatchers("/secured/*/index", "/secured/socket", "/secured/success").authenticated() // Noncompliant [[sc=22;ec=40;secondary=-1]] {{Reorder the URL patterns from most to less specific, the pattern "/secured/*/index" should occurs before "/secured/*/**".}}
+//  ^^^<
+        .antMatchers("/secured/*/index", "/secured/socket", "/secured/success").authenticated() // Noncompliant {{Reorder the URL patterns from most to less specific, the pattern "/secured/*/index" should occurs before "/secured/*/**".}}
+//                   ^^^^^^^^^^^^^^^^^^
         .anyRequest().authenticated();
 
     ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests = http.authorizeRequests();

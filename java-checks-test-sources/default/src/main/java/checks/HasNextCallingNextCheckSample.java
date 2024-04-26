@@ -8,7 +8,8 @@ class HasNextCallingNextCheckSample implements Iterator<String> {
 
   public boolean hasNext() {
     boolean b = false;
-    b = next() != null; // Noncompliant [[sc=9;ec=13]] {{Refactor the implementation of this "Iterator.hasNext()" method to not call "Iterator.next()".}}
+    b = next() != null; // Noncompliant {{Refactor the implementation of this "Iterator.hasNext()" method to not call "Iterator.next()".}}
+//      ^^^^
     b = this.next() != null; // Noncompliant
     b = other.next() != null;
     b = next("a") != null;

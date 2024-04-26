@@ -6,8 +6,10 @@ import java.util.concurrent.Executors;
 public class VirtualThreadNotSynchronizedCheckSample {
 
   void smoketest() {
-    Thread.startVirtualThread(() -> { // Noncompliant[[sc=5;ec=30;secondary=10]] {{Use a platform thread instead of a virtual thread}}
+    Thread.startVirtualThread(() -> { // Noncompliant {{Use a platform thread instead of a virtual thread}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^
       synchronized(this) {
+//  ^^^<
         System.out.println();
       }
     });
@@ -21,7 +23,9 @@ public class VirtualThreadNotSynchronizedCheckSample {
     Thread.Builder builderToCheck = Thread.ofVirtual(); // Secondary
     builderToCheck.start(() -> synchronizedMethod()); // Noncompliant
 
-    Executors.newVirtualThreadPerTaskExecutor().execute(() -> synchronizedMethod()); // Noncompliant[[sc=5;ec=56;secondary=24]]
+    Executors.newVirtualThreadPerTaskExecutor().execute(() -> synchronizedMethod()); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//  ^^^<
     ExecutorService executorToCheck = Executors.newVirtualThreadPerTaskExecutor();
     executorToCheck.execute(() -> synchronizedMethod()); // Noncompliant
     executorToCheck.submit(() -> synchronizedMethod()); // Noncompliant
@@ -63,6 +67,7 @@ public class VirtualThreadNotSynchronizedCheckSample {
 
   private void methodWithSynchronizedBlock() {
     synchronized (this) {}
+//  ^^^<
   }
 
   private void methodInvokingSynchronizedBlockL2() {
@@ -116,7 +121,8 @@ public class VirtualThreadNotSynchronizedCheckSample {
       }
     });
 
-    Thread.startVirtualThread(() -> { // Noncompliant[[sc=5;ec=30;secondary=65]]
+    Thread.startVirtualThread(() -> { // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^
       methodInvokingSynchronizedBlockL4();
     });
   }

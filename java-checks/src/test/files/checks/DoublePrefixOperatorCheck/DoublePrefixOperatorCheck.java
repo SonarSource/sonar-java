@@ -4,26 +4,35 @@ class test1 {
   int hash = 1;
   int hashCode = 2;
   
-  boolean flag2 = !!flag;  // Noncompliant  
-  int a1 = ~~~a; // Noncompliant [[sc=12;ec=14]]{{Remove multiple operator prefixes.}}
+  boolean flag2 = !!flag; // Noncompliant
+  int a1 = ~~~a; // Noncompliant {{Remove multiple operator prefixes.}}
+//         ^^
 
   boolean flag3 = !!!flag; // Noncompliant
 
-  boolean flag4 = !!!foo(); // Noncompliant [[sc=19;ec=21]]
+  boolean flag4 = !!!foo(); // Noncompliant
+//                ^^
 
-  boolean flag5 = !(!flag4); // Noncompliant [[sc=19;ec=22]] {{Remove multiple operator prefixes.}}
+  boolean flag5 = !(!flag4); // Noncompliant {{Remove multiple operator prefixes.}}
+//                ^^^
 
-  int c = ~(~(~a3));    // Noncompliant [[sc=11;ec=14]] {{Remove multiple operator prefixes.}}
+  int c = ~(~(~a3)); // Noncompliant {{Remove multiple operator prefixes.}}
+//        ^^^
   
-  boolean flag6 = !(!(!flag4)); // Noncompliant [[sc=19;ec=22]] {{Remove multiple operator prefixes.}}
+  boolean flag6 = !(!(!flag4)); // Noncompliant {{Remove multiple operator prefixes.}}
+//                ^^^
   
-  int a3 =  - - -a2;  // Noncompliant [[sc=13;ec=16]] 
+  int a3 =  - - -a2; // Noncompliant
+//          ^^^
   
-  int a4 =  - -a2;  // Noncompliant [[sc=13;ec=16]]
+  int a4 =  - -a2; // Noncompliant
+//          ^^^
   
-  int a5 =  + + +a2;  // Noncompliant [[sc=13;ec=16]]
+  int a5 =  + + +a2; // Noncompliant
+//          ^^^
   
-  int a6 =  + +a2;  // Noncompliant [[sc=13;ec=16]]
+  int a6 =  + +a2; // Noncompliant
+//          ^^^
   
   int a2 = ~~a; // Compliant
   

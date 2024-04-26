@@ -22,13 +22,16 @@ public class OneExpectedRuntimeExceptionCheckSample {
     assertThrows(IllegalStateException.class, () -> foo(foo(1)) ); // Noncompliant
     assertThrows(IllegalStateException.class, () -> foo(foo(1)), "Message"); // Noncompliant
     assertThrows(IllegalStateException.class, () -> foo(foo(1)), () -> "message"); // Noncompliant
-    assertThrows(IllegalStateException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=26,27] {{Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception.}}
+    assertThrows(IllegalStateException.class, () -> { // Noncompliant {{Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception.}}
       if (foo(1) ==
         foo(1)) {}
     } );
-    assertThrows(IllegalStateException.class, () -> // Noncompliant [[sc=5;ec=17;secondary=30,31]]
+    assertThrows(IllegalStateException.class, () -> // Noncompliant
+//  ^^^^^^^^^^^^
       new NestedClass(
+//  ^^^<
         foo(1)
+//  ^^^<
       ) );
     org.junit.Assert.assertThrows(IllegalStateException.class, () -> foo(foo(1)) ); // Noncompliant
     org.junit.Assert.assertThrows("Message", IllegalStateException.class, () -> foo(foo(1)) ); // Noncompliant
@@ -59,9 +62,12 @@ public class OneExpectedRuntimeExceptionCheckSample {
 
   @Test
   public void testGTryCatchIdiom() {
-    try { // Noncompliant [[sc=5;ec=8;secondary=63,64]] {{Refactor the body of this try/catch to have only one invocation possibly throwing a runtime exception.}}
+    try { // Noncompliant {{Refactor the body of this try/catch to have only one invocation possibly throwing a runtime exception.}}
+//  ^^^
       foo(
+//  ^^^<
         foo(1)
+//  ^^^<
       );
       Assert.fail("Expected an IllegalStateException to be thrown");
     } catch (IllegalStateException e) {
@@ -152,9 +158,12 @@ public class OneExpectedRuntimeExceptionCheckSample {
   public void test_AssertJ() {
 
     Throwable thrown = org.assertj.core.api.Assertions
-      .catchThrowableOfType(  // Noncompliant [[sc=8;ec=28;secondary=156,157]] {{Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception.}}
+      .catchThrowableOfType( // Noncompliant {{Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception.}}
+//     ^^^^^^^^^^^^^^^^^^^^
         () -> foo(
+//  ^^^<
           foo(1)),
+//  ^^^<
         IllegalStateException.class);
     org.assertj.core.api.Assertions.assertThat(thrown).hasMessage("error");
 

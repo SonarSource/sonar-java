@@ -11,7 +11,7 @@ class SpringBootSanityTest {
   }
 
   @Test
-  void anotherTest(){ // Noncompliant, no assertions
+  void anotherTest(){ // Noncompliant
 
   }
 

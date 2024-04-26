@@ -8,7 +8,8 @@ class LabelsShouldNotBeUsedCheckSample {
         {7, 8, 9}
       };
 
-      outer: for (int row = 0; row < matrix.length; row++) {   // Noncompliant [[sc=7;ec=12]] {{Refactor the code to remove this label and the need for it.}}
+      outer: for (int row = 0; row < matrix.length; row++) { // Noncompliant {{Refactor the code to remove this label and the need for it.}}
+//    ^^^^^
         for (int col = 0; col < matrix[row].length; col++) {
           if (col == row) {
             continue outer;

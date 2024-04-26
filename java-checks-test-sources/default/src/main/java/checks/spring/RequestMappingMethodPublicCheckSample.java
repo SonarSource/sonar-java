@@ -19,10 +19,11 @@ class S3751_HelloWorld {
   public String hello(String greetee) { return ""; } // Compliant
 
   @RequestMapping(value = "/greet", method = GET)
-  private String greet(String greetee) { return ""; } // Noncompliant [[sc=18;ec=23]] {{Make this method non "private".}}
+  private String greet(String greetee) { return ""; } // Noncompliant {{Make this method non "private".}}
+//               ^^^^^
 
   @GetMapping public String a() { return ""; }
-  @GetMapping private String a1() { return ""; }  // Noncompliant
+  @GetMapping private String a1() { return ""; } // Noncompliant
   @PostMapping public String b() { return ""; }
   @PostMapping private String b1() { return ""; } // Noncompliant
   @PutMapping public String c() { return ""; }
@@ -43,10 +44,11 @@ class S3751_Foo {
   public String hello(String greetee) { return ""; }// Compliant
 
   @RequestMapping(value = "/greet", method = GET)
-  private String greet(String greetee) { return ""; } // Noncompliant [[sc=18;ec=23]] {{Make this method non "private".}}
+  private String greet(String greetee) { return ""; } // Noncompliant {{Make this method non "private".}}
+//               ^^^^^
 
   @GetMapping public String a() { return ""; }
-  @GetMapping private String a1() { return ""; }  // Noncompliant
+  @GetMapping private String a1() { return ""; } // Noncompliant
   @PostMapping public String b() { return ""; }
   @PostMapping private String b1() { return ""; } // Noncompliant
   @PutMapping public String c() { return ""; }

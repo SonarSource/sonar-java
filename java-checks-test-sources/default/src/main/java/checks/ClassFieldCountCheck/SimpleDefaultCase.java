@@ -1,6 +1,7 @@
 package checks.ClassFieldCountCheck;
 
-class TooManyFields { // Noncompliant [[sc=7;ec=20]] {{Refactor this class so it has no more than 20 fields, rather than the 26 it currently has.}}
+class TooManyFields { // Noncompliant {{Refactor this class so it has no more than 20 fields, rather than the 26 it currently has.}}
+//    ^^^^^^^^^^^^^
   int field1;
   int field2;
   int field3;

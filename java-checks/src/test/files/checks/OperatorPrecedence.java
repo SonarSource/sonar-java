@@ -7,9 +7,11 @@ abstract class Class {
   boolean t;
 
   @Annotation1(1 + 2 + 3) // Compliant
-  @Annotation2(1 & 2 | 3) // Noncompliant [[sc=16;ec=21]] {{Add parentheses to make the operator precedence explicit.}}
+  @Annotation2(1 & 2 | 3) // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+//             ^^^^^
   @Annotation3(key = 1 + 2 + 3) // Compliant
-  @Annotation4(key = 1 & 2 | 3) // Noncompliant [[sc=22;ec=27]] {{Add parentheses to make the operator precedence explicit.}}
+  @Annotation4(key = 1 & 2 | 3) // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+//                   ^^^^^
   public int method(int[] array, int value) {
     ;
     // should raise an issue in initializer
@@ -114,7 +116,8 @@ abstract class Class {
     Predicate<Object> p2 = (value > 0) ? x -> false : y -> true; // Compliant
     IntFunction<Integer> p3 = (value > 0) ? x -> x++ : y -> 42; // Compliant
 
-    Predicate<Object> p4 = (value > 0) ? null : x -> { return true; }; // Noncompliant [[sc=49;ec=70]] {{Add parentheses to make the operator precedence explicit.}}
+    Predicate<Object> p4 = (value > 0) ? null : x -> { return true; }; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+//                                              ^^^^^^^^^^^^^^^^^^^^^
     Predicate<Object> p5 = (value > 0) ? null : (x -> { return true; }); // Compliant;
 
     Predicate<Object> p6 = (value > 0) ? null : x -> x == null ? true : false; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}

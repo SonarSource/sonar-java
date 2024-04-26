@@ -34,7 +34,8 @@ public class SillyEqualsCheckSample {
     // class vs array
     object.equals(arrayOfObjects); // Compliant
     arrayOfObjects.equals(object); // Compliant
-    integer.equals(arrayOfObjects); // Noncompliant [[sc=13;ec=19]] {{Remove this call to "equals"; comparisons between a type and an array always return false.}}
+    integer.equals(arrayOfObjects); // Noncompliant {{Remove this call to "equals"; comparisons between a type and an array always return false.}}
+//          ^^^^^^
     arrayOfObjects.equals(integer); // Noncompliant {{Remove this call to "equals"; comparisons between an array and a type always return false.}}
     arrayOfIntegers.equals(arrayOfStrings); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated arrays always return false.}}
     object.equals(1); // Compliant

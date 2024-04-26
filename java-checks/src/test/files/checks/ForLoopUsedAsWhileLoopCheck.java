@@ -3,7 +3,8 @@ class A {
 
   private void noncompliant() {
     int i = 0;
-    for (; i < 5;) { // Noncompliant [[sc=5;ec=8]]
+    for (; i < 5;) { // Noncompliant
+//  ^^^
       i++;
     }
   }

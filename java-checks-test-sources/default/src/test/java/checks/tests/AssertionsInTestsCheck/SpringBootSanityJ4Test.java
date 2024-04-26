@@ -14,7 +14,7 @@ public class SpringBootSanityJ4Test {
   }
 
   @Test
-  public void anotherTest(){ // Noncompliant, no assertions
+  public void anotherTest(){ // Noncompliant
 
   }
 

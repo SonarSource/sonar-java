@@ -12,7 +12,9 @@ public class PreparedStatementLoopInvariantCheckSample {
   public void basicCase1(PreparedStatement preparedStatement, List<Order> orders) throws SQLException {
     Date today = java.sql.Date.valueOf(LocalDate.now());
     for(Order order: orders) {
-      preparedStatement.setDate(0, today); // Noncompliant [[sc=7;ec=42;secondary=-1]] {{Move this loop-invariant setter invocation out of this loop.}}
+//  ^^^<
+      preparedStatement.setDate(0, today); // Noncompliant {{Move this loop-invariant setter invocation out of this loop.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       preparedStatement.executeUpdate();
     }
   }
@@ -94,30 +96,34 @@ public class PreparedStatementLoopInvariantCheckSample {
     Date dayAfterTomorrow
   ) throws SQLException {
     while(true) {
-      preparedStatement.setDate(0, yesterday); // Noncompliant [[secondary=-1]]
+//  ^^^<
+      preparedStatement.setDate(0, yesterday); // Noncompliant
       preparedStatement.setDate(0, today); // Compliant
       preparedStatement.setDate(0, tomorrow); // Compliant
       preparedStatement.setDate(0, dayAfterTomorrow); // Compliant
       today = java.sql.Date.valueOf(LocalDate.now());
       if (condition1) do {
-        preparedStatement.setDate(0, yesterday); // Noncompliant [[secondary=-1]]
-        preparedStatement.setDate(0, today); // Noncompliant [[secondary=-2]]
+//  ^^^<
+        preparedStatement.setDate(0, yesterday); // Noncompliant
+        preparedStatement.setDate(0, today); // Noncompliant
         preparedStatement.setDate(0, tomorrow); // Compliant
         preparedStatement.setDate(0, dayAfterTomorrow); // Compliant
         tomorrow = java.sql.Date.valueOf(LocalDate.now());
         if (condition2) {
           for(Order order: orders) {
-            preparedStatement.setDate(0, yesterday); // Noncompliant [[secondary=-1]]
-            preparedStatement.setDate(0, today); // Noncompliant [[secondary=-2]]
-            preparedStatement.setDate(0, tomorrow); // Noncompliant [[secondary=-3]]
+//  ^^^<
+            preparedStatement.setDate(0, yesterday); // Noncompliant
+            preparedStatement.setDate(0, today); // Noncompliant
+            preparedStatement.setDate(0, tomorrow); // Noncompliant
             preparedStatement.setDate(0, dayAfterTomorrow); // Compliant
             dayAfterTomorrow = java.sql.Date.valueOf(LocalDate.now());
           }
         }
         for(int i = 0; i < 10; i++) {
-          preparedStatement.setDate(0, yesterday); // Noncompliant [[secondary=-1]]
-          preparedStatement.setDate(0, today); // Noncompliant [[secondary=-2]]
-          preparedStatement.setDate(0, tomorrow); // Noncompliant [[secondary=-3]]
+//  ^^^<
+          preparedStatement.setDate(0, yesterday); // Noncompliant
+          preparedStatement.setDate(0, today); // Noncompliant
+          preparedStatement.setDate(0, tomorrow); // Noncompliant
           preparedStatement.setDate(0, dayAfterTomorrow); // Compliant
           if (condition2) {
             dayAfterTomorrow = java.sql.Date.valueOf(LocalDate.now());

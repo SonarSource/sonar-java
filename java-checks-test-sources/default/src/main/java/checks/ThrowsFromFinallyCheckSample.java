@@ -26,7 +26,8 @@ class ThrowsFromFinallyCheckSample {
     } catch (Exception e) {
       throw new IllegalAccessError();
     } finally {
-      throw new IllegalAccessError(); // Noncompliant {{Refactor this code to not throw exceptions in finally blocks.}} [[sc=7;ec=38]]
+      throw new IllegalAccessError(); // Noncompliant {{Refactor this code to not throw exceptions in finally blocks.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
   }
 

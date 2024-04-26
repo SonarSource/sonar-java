@@ -12,7 +12,8 @@ class SwitchLastCaseIsDefaultCheckSample {
         break;
     }
     
-    switch (0) { // Noncompliant [[sc=5;ec=11]] {{Add a default case to this switch.}}
+    switch (0) { // Noncompliant {{Add a default case to this switch.}}
+//  ^^^^^^
     }
 
     switch (0) { // Noncompliant

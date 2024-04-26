@@ -17,29 +17,32 @@ import org.springframework.http.ResponseEntity;
 public class DisclosingTechnologyFingerprints {
   
   public String noncompliants5689httpservletresponse(HttpServletResponse response) {
-    response.addHeader("x-powered-by", "myproduct"); // Noncompliant [[sc=5;ec=52]] {{Make sure disclosing version information of this web technology is safe here.}}
-    response.addHeader("Server", "apache"); // Noncompliant [[sc=5;ec=43]] {{Make sure disclosing version information of this web technology is safe here.}}
+    response.addHeader("x-powered-by", "myproduct"); // Noncompliant {{Make sure disclosing version information of this web technology is safe here.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    response.addHeader("Server", "apache"); // Noncompliant {{Make sure disclosing version information of this web technology is safe here.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     return "thymeleaf/welcome";
   }
 
   public ResponseEntity<String> noncompliants5689responseentity() {
     HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.set("x-powered-by", "myproduct"); // Noncompliant [[sc=5;ec=53]] {{Make sure disclosing version information of this web technology is safe here.}}
+    responseHeaders.set("x-powered-by", "myproduct"); // Noncompliant {{Make sure disclosing version information of this web technology is safe here.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     return new ResponseEntity<String>("Hello World", responseHeaders, HttpStatus.CREATED);
   }
 
   public ResponseEntity<String> noncompliants5689responseentitybuilder() throws URISyntaxException {
     ResponseEntity.BodyBuilder location = ResponseEntity.created(new URI("location"));
-    return location.header("server", "apache").body("Hello World");  // Noncompliant
+    return location.header("server", "apache").body("Hello World"); // Noncompliant
   }
 
   public ResponseEntity<String> noncompliants5689responseentitybuilderhttpheaders() {
 
     HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.set("x-powered-by", "myproduct");  // Noncompliant
-    responseHeaders.add("Server", "myproduct");  // Noncompliant
+    responseHeaders.set("x-powered-by", "myproduct"); // Noncompliant
+    responseHeaders.add("Server", "myproduct"); // Noncompliant
     return ResponseEntity.ok().headers(responseHeaders).body("Hello World");
   }
 

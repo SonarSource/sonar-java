@@ -5,11 +5,12 @@ class NestedSwitchExpressionCheckSample {
     int myVar = 0;
     int i = switch (myVar) {  // Compliant
       case 0:
-        int iNested = switch (0) {  // Noncompliant
+        int iNested = switch (0) { // Noncompliant
           case 0:
           case 1:
             System.out.println();
-            switch (1){ // Noncompliant [[sc=13;ec=19;el=+0]] {{Refactor the code to eliminate this nested "switch".}}
+            switch (1){ // Noncompliant {{Refactor the code to eliminate this nested "switch".}}
+//          ^^^^^^
               case 0:
               case 1:
                 yield 2;
@@ -41,7 +42,7 @@ class NestedSwitchExpressionCheckSample {
       case 2:
         yield 2;
       default:{
-        yield switch(4) {  // Noncompliant
+        yield switch(4) { // Noncompliant
           case 0:
             switch(5) { // Noncompliant
               default:
@@ -49,7 +50,7 @@ class NestedSwitchExpressionCheckSample {
             }
             yield 2;
           case 1: {
-            yield switch (6) {  // Noncompliant
+            yield switch (6) { // Noncompliant
               case 0:
                 yield 4;
               default:

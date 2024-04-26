@@ -10,8 +10,9 @@ class BasicAuthCheckSample {
   void foo(String authent, URL url) throws IOException, URISyntaxException {
     String encoding = Base64.getEncoder().encodeToString("login:passwd".getBytes(StandardCharsets.UTF_8));
     org.apache.http.client.methods.HttpPost httppost = new org.apache.http.client.methods.HttpPost(url.toURI());
-    httppost.setHeader("Authorization", "Basic " + encoding+encoding);  // Noncompliant [[sc=41;ec=49]] {{Use a more secure method than basic authentication.}}
-    httppost.addHeader("Authorization", "Basic " + encoding);  // Noncompliant
+    httppost.setHeader("Authorization", "Basic " + encoding+encoding); // Noncompliant {{Use a more secure method than basic authentication.}}
+//                                      ^^^^^^^^
+    httppost.addHeader("Authorization", "Basic " + encoding); // Noncompliant
     httppost.setHeader("Authorization", "Digest " + encoding);
     httppost.setHeader("Authorization", authent);
     httppost.setHeader("FlaFla", "Basic " + encoding);

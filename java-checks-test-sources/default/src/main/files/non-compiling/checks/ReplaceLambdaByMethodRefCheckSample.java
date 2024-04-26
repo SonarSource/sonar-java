@@ -10,8 +10,8 @@ import java.util.stream.IntStream;
 class A {
   void fun() {
     Function<String, String> method = x -> unknown(x);  // Compliant, do not propose to replace with "!unknown!::!unknownMethod!"
-    Supplier<Unknown> constructor1 = () -> new Unknown();  // Noncompliant {{Replace this lambda with method reference 'Unknown::new'.}}
-    Supplier<Unknown> constructor2 = () -> new AnyClass.Unknown();  // Noncompliant {{Replace this lambda with method reference 'AnyClass.Unknown::new'.}}
+    Supplier<Unknown> constructor1 = () -> new Unknown(); // Noncompliant {{Replace this lambda with method reference 'Unknown::new'.}}
+    Supplier<Unknown> constructor2 = () -> new AnyClass.Unknown(); // Noncompliant {{Replace this lambda with method reference 'AnyClass.Unknown::new'.}}
 
     Arrays.asList(new A()).stream().filter(a -> a.coolerThan(0, a)); // Compliant
 
@@ -98,7 +98,7 @@ class AmbiguousMethods {
   public static void main(String[] args) {
     Function<Ambiguous, String> f = a -> a.f();  // Compliant, A::f is ambiguous
 
-    Function<NotAmbiguous1, String> f2 = ambig -> ambig.f();  // Noncompliant
+    Function<NotAmbiguous1, String> f2 = ambig -> ambig.f(); // Noncompliant
     Function<NotAmbiguous2, String> f3 = a -> a.f(a);  // FN, could be replaced by NotAmbiguous2::f
 
     Function<Ambiguous, String> f4 = a -> a.unknown();  // Compliant, A::f is ambiguous

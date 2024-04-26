@@ -17,10 +17,10 @@ class CatchOfThrowableOrErrorCheck {
       }
       try {} catch (foo.java.lang.Throwable e) { // Compliant
       }
-      try {} catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+      try {} catch (Throwable e) { // Noncompliant {{Catch Exception instead of Throwable.}}
         throw e;
       }
-      try {} catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+      try {} catch (Throwable e) { // Noncompliant {{Catch Exception instead of Throwable.}}
         throw new Exception(e).getCause();
       }
       try {} catch (Throwable e) {           // Compliant
@@ -29,10 +29,10 @@ class CatchOfThrowableOrErrorCheck {
       try {} catch (java.lang.Throwable e) { // Compliant
         throw closer.rethrow(e);
       }
-      try {} catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+      try {} catch (Throwable e) { // Noncompliant {{Catch Exception instead of Throwable.}}
         throw closer.rethrow(new Exception(e));
       }
-      try {} catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+      try {} catch (Throwable e) { // Noncompliant {{Catch Exception instead of Throwable.}}
         Throwable myThrowable = new Throwable(e);
         throw closer.rethrow(myThrowable);
       }
@@ -87,7 +87,7 @@ class CatchOfThrowableOrErrorCheck {
       }
 
       // Ensure that we still raise an issue after encountering unrelated blocks containing incomplete semantics:
-      try {} catch (Throwable e) {           // Noncompliant
+      try {} catch (Throwable e) { // Noncompliant
       }
     }
 

@@ -41,7 +41,7 @@ abstract class MethodInvocationLeadingToNSEE {
   void foo6(boolean b) {
     Optional<String> o = getOptional(); // flow@foo6 [[order=1]] {{'getOptional()' can return not null.}} flow@foo6 [[order=2]] {{Implies 'o' can be not null.}}
     if (b) { // flow@foo6 [[order=3]] {{Implies 'b' is true.}}
-      MethodInvocationLeadingToNSEE.nseeIfCalledAndTrue(b, o); // Noncompliant [[flows=foo6]] {{"NoSuchElementException" will be thrown when invoking method "nseeIfCalledAndTrue()" without verifying Optional parameter.}} flow@foo6 [[order=4]] {{'o' is passed to 'nseeIfCalledAndTrue()'.}}
+      MethodInvocationLeadingToNSEE.nseeIfCalledAndTrue(b, o); // Noncompliant {{'o' is passed to 'nseeIfCalledAndTrue()'.}}
     } else {
       nseeIfCalledAndTrue(b, o); // Compliant
     }
@@ -64,7 +64,7 @@ abstract class MethodInvocationLeadingToNSEE {
 
   static void nseeIfCalledAndTrue(boolean b, Optional<String> o) {
     if (b) {
-      o.get(); // Noncompliant {{Call "o.isPresent()" before accessing the value.}} flow@foo6 [[order=5]] {{Implies 'o' is not null.}} flow@foo6 [[order=6]] {{'NoSuchElementException' is thrown.}}
+      o.get(); // Noncompliant {{'NoSuchElementException' is thrown.}}
     } else if (o.isPresent()) {
       o.get();
     }

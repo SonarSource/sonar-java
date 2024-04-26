@@ -14,7 +14,7 @@ class StringConcatenationInLoopCheckSample {
     int i = 0;
     for (; i < 10; i++) {
       s = i + " : " + s; // Noncompliant {{Use a StringBuilder instead.}}
-      s += i;// Noncompliant {{Use a StringBuilder instead.}}
+      s += i; // Noncompliant {{Use a StringBuilder instead.}}
       inner.s1 = i + " : " + inner.s1; // Noncompliant {{Use a StringBuilder instead.}}
     }
     for (Object j : list) {

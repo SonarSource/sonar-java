@@ -12,6 +12,7 @@ public class SpringIncompatibleTransactionalCheckSample {
 
   @Transactional
   public void springTransactionalDefault() {
+//  ^^^<
   }
 
   @Transactional
@@ -19,12 +20,13 @@ public class SpringIncompatibleTransactionalCheckSample {
   }
 
   public void nonTransactional() {
-    springTransactionalDefault();     // Noncompliant [[sc=5;ec=31;secondary=14]] {{"springTransactionalDefault's" @Transactional requirement is incompatible with the one for this method.}}
+    springTransactionalDefault(); // Noncompliant {{"springTransactionalDefault's" @Transactional requirement is incompatible with the one for this method.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^
     unexpectedStaticMethodAnnotatedWithTransactional(); // ignore static methods, Spring does not support @Transactional on static methods.
 
     other.springTransactionalDefault();
     getOther().springTransactionalDefault();
-    this.springTransactionalDefault();  // Noncompliant
+    this.springTransactionalDefault(); // Noncompliant
 
     equals(other);
     this.equals(other);
@@ -40,13 +42,13 @@ class SpringIncompatibleTransactionalCheckSampleIncompatibilityMatrix {
 
   public void nonTransactional() {
     nonTransactional();
-    transactional();    // Noncompliant
-    mandatory();        // Noncompliant
-    nested();           // Noncompliant
+    transactional(); // Noncompliant
+    mandatory(); // Noncompliant
+    nested(); // Noncompliant
     never();
     notSupported();
-    required();         // Noncompliant
-    requiresNew();      // Noncompliant
+    required(); // Noncompliant
+    requiresNew(); // Noncompliant
     supports();
   }
 
@@ -55,11 +57,11 @@ class SpringIncompatibleTransactionalCheckSampleIncompatibilityMatrix {
     nonTransactional();
     transactional();
     mandatory();
-    nested();       // Noncompliant
-    never();        // Noncompliant
+    nested(); // Noncompliant
+    never(); // Noncompliant
     notSupported(); // Noncompliant
     required();
-    requiresNew();  // Noncompliant
+    requiresNew(); // Noncompliant
     supports();
   }
 
@@ -68,11 +70,11 @@ class SpringIncompatibleTransactionalCheckSampleIncompatibilityMatrix {
     nonTransactional();
     transactional();
     mandatory();
-    nested();       // Noncompliant
-    never();        // Noncompliant
+    nested(); // Noncompliant
+    never(); // Noncompliant
     notSupported(); // Noncompliant
     required();
-    requiresNew();  // Noncompliant
+    requiresNew(); // Noncompliant
     supports();
   }
 
@@ -81,11 +83,11 @@ class SpringIncompatibleTransactionalCheckSampleIncompatibilityMatrix {
     nonTransactional();
     transactional();
     mandatory();
-    nested();       // Noncompliant
-    never();        // Noncompliant
+    nested(); // Noncompliant
+    never(); // Noncompliant
     notSupported(); // Noncompliant
     required();
-    requiresNew();  // Noncompliant
+    requiresNew(); // Noncompliant
     supports();
   }
 
@@ -94,11 +96,11 @@ class SpringIncompatibleTransactionalCheckSampleIncompatibilityMatrix {
     nonTransactional();
     transactional();
     mandatory();
-    nested();       // Noncompliant
-    never();        // Noncompliant
+    nested(); // Noncompliant
+    never(); // Noncompliant
     notSupported(); // Noncompliant
     required();
-    requiresNew();  // Noncompliant
+    requiresNew(); // Noncompliant
     supports();
   }
 
@@ -106,12 +108,12 @@ class SpringIncompatibleTransactionalCheckSampleIncompatibilityMatrix {
   public void never() {
     nonTransactional();
     transactional(); // Noncompliant
-    mandatory();     // Noncompliant
-    nested();        // Noncompliant
+    mandatory(); // Noncompliant
+    nested(); // Noncompliant
     never();
     notSupported();
-    required();      // Noncompliant
-    requiresNew();   // Noncompliant
+    required(); // Noncompliant
+    requiresNew(); // Noncompliant
     supports();
   }
 
@@ -119,12 +121,12 @@ class SpringIncompatibleTransactionalCheckSampleIncompatibilityMatrix {
   public void notSupported() {
     nonTransactional();
     transactional(); // Noncompliant
-    mandatory();     // Noncompliant
-    nested();        // Noncompliant
+    mandatory(); // Noncompliant
+    nested(); // Noncompliant
     never();
     notSupported();
-    required();      // Noncompliant
-    requiresNew();   // Noncompliant
+    required(); // Noncompliant
+    requiresNew(); // Noncompliant
     supports();
   }
 
@@ -133,11 +135,11 @@ class SpringIncompatibleTransactionalCheckSampleIncompatibilityMatrix {
     nonTransactional();
     transactional();
     mandatory();
-    nested();       // Noncompliant
-    never();        // Noncompliant
+    nested(); // Noncompliant
+    never(); // Noncompliant
     notSupported(); // Noncompliant
     required();
-    requiresNew();  // Noncompliant
+    requiresNew(); // Noncompliant
     supports();
   }
 
@@ -146,11 +148,11 @@ class SpringIncompatibleTransactionalCheckSampleIncompatibilityMatrix {
     nonTransactional();
     transactional();
     mandatory();
-    nested();       // Noncompliant
-    never();        // Noncompliant
+    nested(); // Noncompliant
+    never(); // Noncompliant
     notSupported(); // Noncompliant
     required();
-    requiresNew();  // Noncompliant
+    requiresNew(); // Noncompliant
     supports();
   }
 
@@ -158,12 +160,12 @@ class SpringIncompatibleTransactionalCheckSampleIncompatibilityMatrix {
   public void supports() {
     nonTransactional();
     transactional(); // Noncompliant
-    mandatory();     // Noncompliant
-    nested();        // Noncompliant
-    never();         // Noncompliant
-    notSupported();  // Noncompliant
-    required();      // Noncompliant
-    requiresNew();   // Noncompliant
+    mandatory(); // Noncompliant
+    nested(); // Noncompliant
+    never(); // Noncompliant
+    notSupported(); // Noncompliant
+    required(); // Noncompliant
+    requiresNew(); // Noncompliant
     supports();
   }
 
@@ -173,8 +175,8 @@ class SpringIncompatibleTransactionalCheckSampleSupportJavaxTransactional {
 
   public void nonTransactional() {
 
-    javaxTransactionalDefault();      // Noncompliant
-    javaxTransactionalRequired();     // Noncompliant
+    javaxTransactionalDefault(); // Noncompliant
+    javaxTransactionalRequired(); // Noncompliant
     javaxTransactionalNotSupported();
     javaxTransactionalNever();
   }

@@ -7,13 +7,15 @@ class SerialVersionUidCheckSampleA implements Cloneable {}
 class SerialVersionUidCheckSampleB implements Serializable {
   private static final long serialVersionUID = 1L;
 }
-class SerialVersionUidCheckSampleC implements Serializable {} // Noncompliant [[sc=7;ec=35]] {{Add a "static final long serialVersionUID" field to this class.}}
+class SerialVersionUidCheckSampleC implements Serializable {} // Noncompliant {{Add a "static final long serialVersionUID" field to this class.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 class SerialVersionUidCheckSampleD extends SerialVersionUidCheckSampleC {} // Noncompliant {{Add a "static final long serialVersionUID" field to this class.}}
 class SerialVersionUidCheckSampleE implements Serializable {
   private final long serialVersionUID = 1L; // Noncompliant {{Make this "serialVersionUID" field "static".}}
 }
 class SerialVersionUidCheckSampleF implements Serializable {
-  private static long serialVersionUID = 1L; // Noncompliant [[sc=23;ec=39]] {{Make this "serialVersionUID" field "final".}}
+  private static long serialVersionUID = 1L; // Noncompliant {{Make this "serialVersionUID" field "final".}}
+//                    ^^^^^^^^^^^^^^^^
 }
 class SerialVersionUidCheckSampleG implements Serializable {
   private static int serialVersionUID = 1; // Noncompliant {{Make this "serialVersionUID" field "final long".}}
@@ -34,7 +36,7 @@ class SerialVersionUidCheckSampleOuter {
 }
 
 @SuppressWarnings("serial")
-class SerialVersionUidCheckSampleJ implements Serializable {} // Noncompliant, this issue will be filtered by the supress warning filter
+class SerialVersionUidCheckSampleJ implements Serializable {} // Noncompliant
 
 enum SerialVersionUidCheckSampleMyEnum {
   FOO {

@@ -12,12 +12,17 @@ final class A {
   int b = 1;
   int c = -1;
 
-  int d = 2; // Noncompliant [[sc=11;ec=12]] {{Assign this magic number 2 to a well-named constant, and use the constant instead.}}
-  int e = 42; // Noncompliant [[sc=11;ec=13]] {{Assign this magic number 42 to a well-named constant, and use the constant instead.}}
+  int d = 2; // Noncompliant {{Assign this magic number 2 to a well-named constant, and use the constant instead.}}
+//        ^
+  int e = 42; // Noncompliant {{Assign this magic number 42 to a well-named constant, and use the constant instead.}}
+//        ^^
 
-  long aLong = 12L; // Noncompliant [[sc=16;ec=19]] {{Assign this magic number 12L to a well-named constant, and use the constant instead.}}
-  double aDouble = 12.3d; // Noncompliant [[sc=20;ec=25]] {{Assign this magic number 12.3d to a well-named constant, and use the constant instead.}}
-  float aFloat = 12.3F; // Noncompliant [[sc=18;ec=23]] {{Assign this magic number 12.3F to a well-named constant, and use the constant instead.}}
+  long aLong = 12L; // Noncompliant {{Assign this magic number 12L to a well-named constant, and use the constant instead.}}
+//             ^^^
+  double aDouble = 12.3d; // Noncompliant {{Assign this magic number 12.3d to a well-named constant, and use the constant instead.}}
+//                 ^^^^^
+  float aFloat = 12.3F; // Noncompliant {{Assign this magic number 12.3F to a well-named constant, and use the constant instead.}}
+//               ^^^^^
   String string = "string";
   String strDouble = "123.3d";
   boolean bool = true;

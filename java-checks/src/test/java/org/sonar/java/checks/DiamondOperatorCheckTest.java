@@ -29,7 +29,7 @@ class DiamondOperatorCheckTest {
 
   @Test
   void test_no_version() {
-    ((InternalCheckVerifier) CheckVerifier.newVerifier())
+    ((InternalCheckVerifier) CheckVerifier.newInternalVerifier())
       .onFile(mainCodeSourcesPath("checks/DiamondOperatorCheck_no_version.java"))
       .withCheck(new DiamondOperatorCheck())
       .withQuickFixes()

@@ -20,15 +20,22 @@ class OptionalAsParameterCheckSample {
 
   void foo(@Nullable OptionalAsParameterCheckSample a) {} // Compliant
 
-  void foo(Optional<OptionalAsParameterCheckSample> a) {} // Noncompliant [[sc=12;ec=52]] {{Specify a "OptionalAsParameterCheckSample" parameter instead.}}
-  void bar(Optional o) {} // Noncompliant [[sc=12;ec=20]] {{Specify a type instead.}}
+  void foo(Optional<OptionalAsParameterCheckSample> a) {} // Noncompliant {{Specify a "OptionalAsParameterCheckSample" parameter instead.}}
+//         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  void bar(Optional o) {} // Noncompliant {{Specify a type instead.}}
+//         ^^^^^^^^
 
-  void foo(com.google.common.base.Optional<OptionalAsParameterCheckSample> a) {} // Noncompliant [[sc=12;ec=75]] {{Specify a "OptionalAsParameterCheckSample" parameter instead.}}
-  void bar(com.google.common.base.Optional o) {} // Noncompliant [[sc=12;ec=43]] {{Specify a type instead.}}
+  void foo(com.google.common.base.Optional<OptionalAsParameterCheckSample> a) {} // Noncompliant {{Specify a "OptionalAsParameterCheckSample" parameter instead.}}
+//         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  void bar(com.google.common.base.Optional o) {} // Noncompliant {{Specify a type instead.}}
+//         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  void foo(OptionalInt i) {} // Noncompliant [[sc=12;ec=23]] {{Specify a "int" parameter instead.}}
-  void foo(OptionalLong l) {} // Noncompliant [[sc=12;ec=24]] {{Specify a "long" parameter instead.}}
-  void foo(OptionalDouble d) {} // Noncompliant [[sc=12;ec=26]] {{Specify a "double" parameter instead.}}
+  void foo(OptionalInt i) {} // Noncompliant {{Specify a "int" parameter instead.}}
+//         ^^^^^^^^^^^
+  void foo(OptionalLong l) {} // Noncompliant {{Specify a "long" parameter instead.}}
+//         ^^^^^^^^^^^^
+  void foo(OptionalDouble d) {} // Noncompliant {{Specify a "double" parameter instead.}}
+//         ^^^^^^^^^^^^^^
 }
 
 class Child extends OptionalAsParameterCheckSample {

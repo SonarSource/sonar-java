@@ -7,9 +7,11 @@ public class UseMotionSensorWithoutGyroscopeCheckSample {
 
   void nonCompliant(SensorManager sensorManager) {
     sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR); // Noncompliant {{Replace `TYPE_ROTATION_VECTOR` (11) with `TYPE_GEOMAGNETIC_ROTATION_VECTOR` (20) to optimize battery life.}}
-    sensorManager.getDefaultSensor(11); // Noncompliant [[sc=5;ec=39]]
+    sensorManager.getDefaultSensor(11); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR, true); // Noncompliant
-    sensorManager.getDefaultSensor(11, false); // Noncompliant [[sc=5;ec=46]]
+    sensorManager.getDefaultSensor(11, false); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   void compliant(SensorManager sensorManager, int type) {

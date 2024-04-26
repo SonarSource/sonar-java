@@ -14,7 +14,7 @@ class CallSuperMethodFromInnerClassCheck {
     public void plop() {}
     class Inner extends Parent {
       public void doTheThing() {
-        foo();  // Noncompliant {{Prefix this call to "foo" with "super.".}}
+        foo(); // Noncompliant {{Prefix this call to "foo" with "super.".}}
         super.foo(); //Compliant: unambiguous
         Outer.this.foo(); //Compliant: unambiguous
         qix(); //Compliant: No ambiguity, not defined in outer class
@@ -24,7 +24,8 @@ class CallSuperMethodFromInnerClassCheck {
     }
     public interface I extends I2 {
       default void toto() {
-        plop();// Noncompliant [[sc=9;ec=13]] {{Prefix this call to "plop" with "super.".}}
+        plop(); // Noncompliant {{Prefix this call to "plop" with "super.".}}
+//      ^^^^
       }
     }
     public interface I2 {

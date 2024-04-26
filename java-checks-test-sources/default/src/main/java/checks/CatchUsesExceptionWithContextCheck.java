@@ -22,14 +22,15 @@ class CatchUsesExceptionWithContextCheck {
 
   private void f(Exception x) {
     try {
-    } catch (Exception e) {                     // Noncompliant {{Either log or rethrow this exception.}} [[sc=14;ec=25]]
+    } catch (Exception e) { // Noncompliant {{Either log or rethrow this exception.}}
+//           ^^^^^^^^^^^
     }
     try {
     } catch (Exception e) {                     // Compliant
       System.out.println(e);
     }
     try {
-    }catch (Exception e) {                     // Noncompliant
+    }catch (Exception e) { // Noncompliant
       System.out.println("foo: " + e.getMessage());
     }
     try {
@@ -37,7 +38,7 @@ class CatchUsesExceptionWithContextCheck {
       System.out.println("" + e);
     }
     try {
-    } catch (Exception f) {                     // Noncompliant
+    } catch (Exception f) { // Noncompliant
       System.out.println("" + x);
     }
     try {
@@ -48,7 +49,7 @@ class CatchUsesExceptionWithContextCheck {
     } catch (Exception e) {                     // Compliant
       System.out.println("" + e);
       try {
-      } catch (Exception f) {                   // Noncompliant
+      } catch (Exception f) { // Noncompliant
       }
     }
     try {
@@ -60,7 +61,7 @@ class CatchUsesExceptionWithContextCheck {
       System.out.println("" + e);
     } catch (Exception e) {
       try {
-      } catch (Exception f) {                   // Noncompliant {{Either log or rethrow this exception.}}
+      } catch (Exception f) { // Noncompliant {{Either log or rethrow this exception.}}
         System.out.println("" + e);
       }
     }
@@ -78,7 +79,7 @@ class CatchUsesExceptionWithContextCheck {
       throw com.google.common.base.Throwables.propagate(e);
     } catch (RuntimeException e) {              // Compliant - propagation
       throw e;
-    } catch (Exception e) {                     // Noncompliant
+    } catch (Exception e) { // Noncompliant
       throw new RuntimeException("context");
     }
 
@@ -95,9 +96,9 @@ class CatchUsesExceptionWithContextCheck {
     }
 
     try {
-    } catch (Exception e) {                      // Noncompliant
+    } catch (Exception e) { // Noncompliant
       int a;
-    } catch (Throwable e) {                      // Noncompliant
+    } catch (Throwable e) { // Noncompliant
     }
 
     try {
@@ -110,7 +111,7 @@ class CatchUsesExceptionWithContextCheck {
       Files.read("");
     } catch (IOException e) {                    // Compliant
       throw new RuntimeException(e);
-    } catch (Exception e) {                      // Noncompliant
+    } catch (Exception e) { // Noncompliant
       throw new RuntimeException(e.getMessage());
     } catch (Error e) {                      // Compliant
       throw com.google.common.base.Throwables.propagate(e);

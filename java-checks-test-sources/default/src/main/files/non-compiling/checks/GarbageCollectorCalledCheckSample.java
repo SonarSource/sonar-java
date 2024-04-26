@@ -3,7 +3,8 @@ class A {
   Object o;
 
   private void f() {
-    System.gc(); // Noncompliant [[sc=12;ec=14]] {{Don't try to be smarter than the JVM, remove this call to run the garbage collector.}}
+    System.gc(); // Noncompliant {{Don't try to be smarter than the JVM, remove this call to run the garbage collector.}}
+//         ^^
     foo.gc(); // Compliant
     System.exit(0); // Compliant
     o = System.gc; // Compliant

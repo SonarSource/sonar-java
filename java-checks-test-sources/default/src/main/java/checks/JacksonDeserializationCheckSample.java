@@ -10,12 +10,14 @@ class JacksonDeserializationCheckSample {
 
   public void enableDefaultTyping() {
     ObjectMapper mapper = new ObjectMapper();
-    mapper.enableDefaultTyping(); // Noncompliant [[sc=5;ec=33]] {{Make sure using this Jackson deserialization configuration is safe here.}}
+    mapper.enableDefaultTyping(); // Noncompliant {{Make sure using this Jackson deserialization configuration is safe here.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
 }
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS) // Noncompliant [[sc=21;ec=42]] {{Make sure using this Jackson deserialization configuration is safe here.}}
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS) // Noncompliant {{Make sure using this Jackson deserialization configuration is safe here.}}
+//                  ^^^^^^^^^^^^^^^^^^^^^
 abstract class JacksonDeserializationPhoneNumber {
 
   @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS) // Noncompliant {{Make sure using this Jackson deserialization configuration is safe here.}}

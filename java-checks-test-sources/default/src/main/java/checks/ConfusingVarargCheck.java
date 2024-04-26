@@ -12,14 +12,17 @@ class ConfusingVarargCheck {
     Integer[] arrWrapper = {1, 2, 3};
     Object nullObject = null;
 
-    new A(1, null); // Noncompliant [[sc=14;ec=18]] {{Cast this argument to 'String' to pass a single element to the vararg method.}}
+    new A(1, null); // Noncompliant {{Cast this argument to 'String' to pass a single element to the vararg method.}}
+//           ^^^^
     new A(2, (String) null);
     new A(3, args);
     new A(4);
 
-    vararg(null); // Noncompliant [[sc=12;ec=16]] {{Cast this argument to 'Object' to pass a single element to the vararg method.}}
+    vararg(null); // Noncompliant {{Cast this argument to 'Object' to pass a single element to the vararg method.}}
+//         ^^^^
     vararg((null)); // Noncompliant
-    vararg(arr); // Noncompliant [[sc=12;ec=15]] {{Use an array of 'Integer' instead of an array of 'int'.}}
+    vararg(arr); // Noncompliant {{Use an array of 'Integer' instead of an array of 'int'.}}
+//         ^^^
 
     vararg((Object) null);
     vararg(arrWrapper);

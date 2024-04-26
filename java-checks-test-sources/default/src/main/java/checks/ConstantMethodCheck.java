@@ -5,18 +5,22 @@ import javax.validation.constraints.NotNull;
 public final class ConstantMethodCheck implements Comparable<ConstantMethodCheck> {
 
   int foo() {
-    return 1; // Noncompliant [[sc=12;ec=13]] {{Remove this method and declare a constant for this value.}}
+    return 1; // Noncompliant {{Remove this method and declare a constant for this value.}}
+//         ^
   }
 
   boolean baz() {
-    return true; // Noncompliant [[sc=12;ec=16]] {{Remove this method and declare a constant for this value.}}
+    return true; // Noncompliant {{Remove this method and declare a constant for this value.}}
+//         ^^^^
   }
 
   String bar() {
-    return ""; // Noncompliant [[sc=12;ec=14]] {{Remove this method and declare a constant for this value.}}
+    return ""; // Noncompliant {{Remove this method and declare a constant for this value.}}
+//         ^^
   }
   char qix() {
-    return 'c'; // Noncompliant [[sc=12;ec=15]] {{Remove this method and declare a constant for this value.}}
+    return 'c'; // Noncompliant {{Remove this method and declare a constant for this value.}}
+//         ^^^
   }
   Object lum() {
     return new Object(); // Compliant
@@ -43,7 +47,8 @@ public final class ConstantMethodCheck implements Comparable<ConstantMethodCheck
     return 0; // Compliant - method is an override
   }
   long gro() {
-    return 1L; // Noncompliant [[sc=12;ec=14]] {{Remove this method and declare a constant for this value.}}
+    return 1L; // Noncompliant {{Remove this method and declare a constant for this value.}}
+//         ^^
   }
 
   @MyAnnotation
@@ -84,7 +89,7 @@ public final class ConstantMethodCheck implements Comparable<ConstantMethodCheck
       return 1L; // Noncompliant
     }
     String noFinalMethod() {
-      // Noncompliant@+1
+ // Noncompliant@+1
       return """
           text block
         """;

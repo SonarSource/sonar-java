@@ -20,34 +20,37 @@ public class AssertionTypesCheck_AssertJ {
   @Test
   void test_assertj() {
     assertThat(bytePrimitive())
-      .isNotNull(); // Noncompliant [[sc=8;ec=17]] {{Change the assertion arguments to not compare a primitive value with null.}}
+      .isNotNull(); // Noncompliant {{Change the assertion arguments to not compare a primitive value with null.}}
+//     ^^^^^^^^^
     assertThat(shortPrimitive())
       .as("msg")
       .isNotNull() // Noncompliant
-      .isNull();   // Noncompliant
+      .isNull(); // Noncompliant
     assertThatObject(intPrimitive()).isNull(); // Noncompliant
-    assertThat(charPrimitive()).isNotNull();      // Noncompliant
+    assertThat(charPrimitive()).isNotNull(); // Noncompliant
     assertThat(getString()).isNotNull();          // Compliant
-    assertThat(longPrimitive()).isNotNull();      // Noncompliant
-    assertThat(floatPrimitive()).isNotNull();     // Noncompliant
-    assertThat(doublePrimitive()).isNotNull();    // Noncompliant
+    assertThat(longPrimitive()).isNotNull(); // Noncompliant
+    assertThat(floatPrimitive()).isNotNull(); // Noncompliant
+    assertThat(doublePrimitive()).isNotNull(); // Noncompliant
 
     assertThat(doublePrimitive())
+//  ^^^<
       .withFailMessage("msg", 42)
-      .isNotEqualTo(null); // Noncompliant [[sc=21;ec=25;secondary=35]] {{Change the assertion arguments to not compare dissimilar types.}}
+      .isNotEqualTo(null); // Noncompliant {{Change the assertion arguments to not compare dissimilar types.}}
+//                  ^^^^
 
     assertThat(booleanPrimitive())
       .describedAs("msg")
       .isNotEqualTo("foo") // Noncompliant
-      .isNotSameAs(null)  // Noncompliant
-      .isSameAs("bar");   // Noncompliant
+      .isNotSameAs(null) // Noncompliant
+      .isSameAs("bar"); // Noncompliant
 
     assertThat(doublePrimitive())
       .overridingErrorMessage("msg", 42)
       .isNotEqualTo(null); // Noncompliant
     assertThat(booleanPrimitive()).isNotEqualTo(null); // Noncompliant
 
-    assertThat(intArray()).isNotEqualTo(42);             // Noncompliant
+    assertThat(intArray()).isNotEqualTo(42); // Noncompliant
     assertThat(intArray()).isNotEqualTo(new int[] {42}); // Compliant
     assertThat(intArray()).isNotEqualTo(null);             // Compliant
 
@@ -65,9 +68,9 @@ public class AssertionTypesCheck_AssertJ {
 
     assertThat(o).isNotEqualTo(new int[] {42}); // Compliant
     assertThat(a).isNotEqualTo(new int[] {42}); // Noncompliant
-    assertThat(a).isNotEqualTo(new A[] {a});    // Noncompliant
+    assertThat(a).isNotEqualTo(new A[] {a}); // Noncompliant
     assertThat(new int[] {42}).isNotEqualTo(a); // Noncompliant
-    assertThat(new A[] {a}).isNotEqualTo(a);    // Noncompliant
+    assertThat(new A[] {a}).isNotEqualTo(a); // Noncompliant
 
     assertThat(new A[] {}).isNotEqualTo(new A[] {}); // Compliant
     assertThat(new B[] {}).isNotEqualTo(new A[] {}); // Compliant
@@ -83,7 +86,7 @@ public class AssertionTypesCheck_AssertJ {
 
     assertThat(new int[] {}).isNotEqualTo(new int[] {}); // Compliant
     assertThat(new int[] {}).isNotEqualTo(new A[] {}); // Noncompliant
-    assertThat(new int[] {}).isNotEqualTo(new long[] {});// Noncompliant
+    assertThat(new int[] {}).isNotEqualTo(new long[] {}); // Noncompliant
 
     assertThat(a2).isNotEqualTo(a); // Compliant
     assertThat(new B() {}).isNotEqualTo(b); // Compliant
@@ -96,9 +99,9 @@ public class AssertionTypesCheck_AssertJ {
     assertThat(o).isNotEqualTo(b); // Compliant
 
     org.assertj.core.api.AssertionsForInterfaceTypes.
-      assertThat(x).isNotEqualTo(a);  // Noncompliant
+      assertThat(x).isNotEqualTo(a); // Noncompliant
     org.assertj.core.api.AssertionsForClassTypes.
-      assertThat(x).isEqualTo(a);  // Noncompliant
+      assertThat(x).isEqualTo(a); // Noncompliant
 
     // Here we are not sure, but it seems valuable to raise an issue that
     // could be a false-positive because the negative assertion is useless by
@@ -113,17 +116,17 @@ public class AssertionTypesCheck_AssertJ {
     // we can raise issues without having false-positives
     assertThat(i1).isEqualTo(y); // Noncompliant
 
-    assertThat(i2).isNotEqualTo(a);   // Noncompliant
+    assertThat(i2).isNotEqualTo(a); // Noncompliant
     assertThat(i2).isEqualTo(a);      // Compliant
-    assertThat(x).isEqualTo(a);       // Noncompliant
+    assertThat(x).isEqualTo(a); // Noncompliant
 
     assertThat(i1).isNotEqualTo(i1);   // Compliant
     assertThat(i1).isEqualTo(i1);      // Compliant
 
-    assertThat(i2).isNotEqualTo(i1);   // Noncompliant
+    assertThat(i2).isNotEqualTo(i1); // Noncompliant
     assertThat(i2).isEqualTo(i1);      // Compliant
 
-    assertThat(i1).isNotEqualTo(y);   // Noncompliant
+    assertThat(i1).isNotEqualTo(y); // Noncompliant
 
     assertThat(a)
       .extracting("hashCode")
@@ -147,18 +150,18 @@ public class AssertionTypesCheck_AssertJ {
     assertThat(booleanPrimitive()).isEqualTo(Boolean.TRUE); // Compliant
     assertThat(booleanPrimitive()).isNotEqualTo(Boolean.FALSE); // Compliant
     assertThat(booleanPrimitive()).isNotEqualTo(false);     // Compliant
-    assertThat(booleanPrimitive()).isNotEqualTo(5);         // Noncompliant
-    assertThat(intPrimitive()).isNotEqualTo(5.0);           // Noncompliant
+    assertThat(booleanPrimitive()).isNotEqualTo(5); // Noncompliant
+    assertThat(intPrimitive()).isNotEqualTo(5.0); // Noncompliant
     assertThat(floatPrimitive()).isEqualTo(5);              // Compliant
-    assertThat(intPrimitive()).isNotEqualTo(5L);            // Noncompliant
+    assertThat(intPrimitive()).isNotEqualTo(5L); // Noncompliant
     assertThat(longPrimitive()).isEqualTo(5);               // Compliant
-    assertThat(floatPrimitive()).isNotEqualTo(5.0d);        // Noncompliant
+    assertThat(floatPrimitive()).isNotEqualTo(5.0d); // Noncompliant
     assertThat(doublePrimitive()).isEqualTo(5.0f);          // Compliant
     assertThat(charPrimitive()).isEqualTo('a');             // Compliant
-    assertThat(charPrimitive()).isNotEqualTo(97);           // Noncompliant
+    assertThat(charPrimitive()).isNotEqualTo(97); // Noncompliant
     assertThat(intPrimitive()).isEqualTo('a');              // Compliant
-    assertThat(charPrimitive()).isNotEqualTo("a");          // Noncompliant
-    assertThat(getString()).isNotEqualTo('a');              // Noncompliant
+    assertThat(charPrimitive()).isNotEqualTo("a"); // Noncompliant
+    assertThat(getString()).isNotEqualTo('a'); // Noncompliant
 
     assertThat(Long.valueOf(5)).isEqualTo(Long.valueOf(5));       // Compliant
     assertThat(Long.valueOf(5)).isNotEqualTo(Integer.valueOf(5)); // Noncompliant

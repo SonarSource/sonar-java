@@ -3,7 +3,8 @@ abstract class A {
   void m1();
 
   void m2(int par) {
-    int a; // Noncompliant [[sc=9;ec=10]] {{Move the declaration of "a" closer to the code that uses it.}}
+    int a; // Noncompliant {{Move the declaration of "a" closer to the code that uses it.}}
+//      ^
 
     if (true) {
     }

@@ -24,11 +24,13 @@ public class MapKeyNotComparableCheckSample {
   static class Program {
     Map<UnknownClass, Object> nonComparable = new HashMap<>(); // Potential false negative caused by unknown hierarchy
     Map<UnknownType, Object> nonComparable = new HashMap<>(); // Potential false negative caused by unknown symbol
-    Map<NonComparable, Object> nonCompliant = new HashMap<>(); // Noncompliant [[sc=9;ec=22]] {{The key type should implement Comparable.}}
+    Map<NonComparable, Object> nonCompliant = new HashMap<>(); // Noncompliant {{The key type should implement Comparable.}}
+//      ^^^^^^^^^^^^^
     Map<MyComparableType, Object> comparable = new HashMap<>(); // compliant
     Map noParams = new HashMap();
 
-    Map<NonComparable, Object> buildNonComparableMap() { // Noncompliant [[sc=9;ec=22]] {{The key type should implement Comparable.}}
+    Map<NonComparable, Object> buildNonComparableMap() { // Noncompliant {{The key type should implement Comparable.}}
+//      ^^^^^^^^^^^^^
       return nonComparable;
     }
 

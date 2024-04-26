@@ -6,8 +6,10 @@ import javax.validation.constraints.Email;
 public class EscapeSequenceControlCharacterCheckSample {
 
   void nonCompliant() {
-    Pattern.compile("\\ca"); // Noncompliant [[sc=22;ec=26]] {{Remove or replace this problematic use of \c.}}
-    Pattern.compile("ab\\cbde"); // Noncompliant [[sc=24;ec=28]]
+    Pattern.compile("\\ca"); // Noncompliant {{Remove or replace this problematic use of \c.}}
+//                   ^^^^
+    Pattern.compile("ab\\cbde"); // Noncompliant
+//                     ^^^^
     Pattern.compile("\\cb"); // Noncompliant
     Pattern.compile("\\cx"); // Noncompliant
     Pattern.compile("\\c!"); // Noncompliant
@@ -30,7 +32,8 @@ public class EscapeSequenceControlCharacterCheckSample {
     Pattern.compile("\\\\ca");
   }
 
-  @Email(regexp = "\\ca") // Noncompliant [[sc=20;ec=24]]
+  @Email(regexp = "\\ca") // Noncompliant
+//                 ^^^^
   String email;
 
 }

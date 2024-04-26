@@ -29,7 +29,8 @@ public class CollectionInappropriateCallsCheck {
     String[] myArrayString = new String[] {"myString"};
     Integer[] myArrayInteger = new Integer[] {Integer.valueOf(1)};
 
-    myList.contains(myInteger); // Noncompliant [[sc=12;ec=20]] {{A "List<String>" cannot contain a "Integer".}}
+    myList.contains(myInteger); // Noncompliant {{A "List<String>" cannot contain a "Integer".}}
+//         ^^^^^^^^
     myList.remove(myInteger); // Noncompliant {{A "List<String>" cannot contain a "Integer".}}
     myList.removeAll(myNumberList); // Noncompliant {{A "List<String>" cannot contain a "Number".}}
     myList.removeAll(Arrays.asList("a", "b"));
@@ -61,7 +62,7 @@ public class CollectionInappropriateCallsCheck {
     mapAString.remove(new A(), "val");
     mapAString.remove(new A(), new A()); // Noncompliant {{A "Map<A, String>" cannot contain a "A" in a "String" type.}}
     mapAString.remove("key", new A()); // Noncompliant
-                                       // Noncompliant@-1
+ // Noncompliant@-1
     mapAString.remove("key", "val"); // Noncompliant {{A "Map<A, String>" cannot contain a "String" in a "A" type.}}
 
     Map<String, A> mapStringA = new HashMap<>();
@@ -71,7 +72,7 @@ public class CollectionInappropriateCallsCheck {
     mapStringA.getOrDefault("key", new A());
     mapStringA.remove("key");
     mapStringA.remove(new A(), "val"); // Noncompliant
-                                       // Noncompliant@-1
+ // Noncompliant@-1
     mapStringA.remove(new A(), new A()); // Noncompliant {{A "Map<String, A>" cannot contain a "A" in a "String" type.}}
     mapStringA.remove("key", new A());
     mapStringA.remove("key", "val"); // Noncompliant {{A "Map<String, A>" cannot contain a "String" in a "A" type.}}

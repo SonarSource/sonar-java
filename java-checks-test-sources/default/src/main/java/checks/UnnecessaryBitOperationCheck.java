@@ -6,11 +6,13 @@ class UnnecessaryBitOperationCheck {
     int bitMask = 0x000F;
 
     result = bitMask & -1; // Noncompliant {{Remove this unnecessary bit operation.}}
-    result = bitMask | 0;  // Noncompliant [[sc=22;ec=23]] {{Remove this unnecessary bit operation.}}
-    result = bitMask ^ 0;  // Noncompliant {{Remove this unnecessary bit operation.}}
-    result &= -1; // Noncompliant [[sc=12;ec=14]] {{Remove this unnecessary bit operation.}}
-    result |= 0;  // Noncompliant {{Remove this unnecessary bit operation.}}
-    result ^= 0;  // Noncompliant {{Remove this unnecessary bit operation.}}
+    result = bitMask | 0; // Noncompliant {{Remove this unnecessary bit operation.}}
+//                   ^
+    result = bitMask ^ 0; // Noncompliant {{Remove this unnecessary bit operation.}}
+    result &= -1; // Noncompliant {{Remove this unnecessary bit operation.}}
+//         ^^
+    result |= 0; // Noncompliant {{Remove this unnecessary bit operation.}}
+    result ^= 0; // Noncompliant {{Remove this unnecessary bit operation.}}
 
     result = bitMask & 1; // Compliant
     result = bitMask | 1; // compliant

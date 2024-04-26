@@ -15,7 +15,8 @@ import java.io.File;
 class DocumentBuilderFactoryTest {
   // Vulnerable when nothing is made to protect against xxe
   DocumentBuilderFactory no_property() {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant [[sc=61;ec=72]] {{Disable access to external entities in XML parsing.}}
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant {{Disable access to external entities in XML parsing.}}
+//                                                          ^^^^^^^^^^^
     return factory;
   }
 
@@ -80,7 +81,8 @@ class DocumentBuilderFactoryTest {
   }
 
   void insecure_with_null_entity_resolver(InputStream is) throws Exception {
-    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance(); // Noncompliant [[sc=56;ec=67]]
+    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance(); // Noncompliant
+//                                                     ^^^^^^^^^^^
     DocumentBuilder builder = df.newDocumentBuilder();
     builder.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
     builder.setEntityResolver(null);

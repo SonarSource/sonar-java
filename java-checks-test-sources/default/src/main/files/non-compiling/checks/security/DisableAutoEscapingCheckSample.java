@@ -13,7 +13,8 @@ public class DisableAutoEscapingCheckSample {
    */
   public void jMustache() {
     Mustache.compiler()
-      .escapeHTML(false) // Noncompliant [[sc=19;ec=24]] {{Make sure disabling auto-escaping feature is safe here.}}
+      .escapeHTML(false) // Noncompliant {{Make sure disabling auto-escaping feature is safe here.}}
+//                ^^^^^
       .compile(template)
       .execute(context);
 

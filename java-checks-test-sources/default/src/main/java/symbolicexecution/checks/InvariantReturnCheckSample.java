@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 abstract class InvariantReturnCheckSample {
   private boolean bool;
 
-  private int foo(boolean a) { // Noncompliant [[flows=issue1]] {{Refactor this method to not always return the same value.}}
+  private int foo(boolean a) { // Noncompliant {{Refactor this method to not always return the same value.}}
     int b = 12;
     if (a) {
       return b; // flow@issue1 [[order=1]] {{Returned value.}}

@@ -28,6 +28,7 @@ class ChangeMethodContractCheck {
   @javax.annotation.CheckForNull
   String annotatedStrongNullable(Object a) { return null; }
   @javax.annotation.Nonnull
+//  ^^^<
   String annotatedNonNull(Object a) { return ""; }
 }
 
@@ -75,7 +76,9 @@ class ChangeMethodContractCheck_C extends ChangeMethodContractCheck {
   String annotatedWeakNullable(Object a) { return ""; } // Compliant: Weak Nullable to Nonnull
   @Deprecated
   @javax.annotation.Nullable
-  String annotatedNonNull(Object a) { return null; } // Noncompliant [[sc=3;ec=9;secondary=-1,30]] {{Fix the incompatibility of the annotation @Nullable to honor @Nonnull of the overridden method.}}
+//  ^^^<
+  String annotatedNonNull(Object a) { return null; } // Noncompliant {{Fix the incompatibility of the annotation @Nullable to honor @Nonnull of the overridden method.}}
+//^^^^^^
 
   public boolean equals(@javax.annotation.Nonnull Object o) { return false; } // Compliant, handled by by S4454.
 }
@@ -90,6 +93,7 @@ class ChangeMethodContractCheck_WithMetaAnnotations {
   }
 
   @javax.annotation.CheckForNull
+//  ^^^<
   public @interface MyCheckFroNullMetaAnnotation {
   }
 
@@ -105,6 +109,7 @@ class ChangeMethodContractCheck_WithMetaAnnotations {
     String annotatedNonnullViaMetaAnnotation2(Object a) { return "null"; }
 
     @javax.annotation.Nonnull
+//  ^^^<
     String annotatedNonnullDirectly(Object a) { return "null"; }
   }
 
@@ -128,7 +133,7 @@ class ChangeMethodContractCheck_WithMetaAnnotations {
     @Override
     // Parent directly annotated but Child with meta-annotations.
     @MyCheckFroNullMetaAnnotation
-    String annotatedNonnullDirectly(Object a) { return "null"; } // Noncompliant [[secondary=92,107]] {{Fix the incompatibility of the annotation @CheckForNull via meta-annotation to honor @Nonnull of the overridden method.}}
+    String annotatedNonnullDirectly(Object a) { return "null"; } // Noncompliant {{Fix the incompatibility of the annotation @CheckForNull via meta-annotation to honor @Nonnull of the overridden method.}}
   }
 }
 
@@ -207,7 +212,8 @@ class ChangeMethodContractCheck_FromExternalDependency {
 
     @Override
     @javax.annotation.Nonnull
-    public String apply(@lombok.NonNull String s) { // Noncompliant [[sc=48;ec=49]] {{Fix the incompatibility of the annotation @NonNull to honor @Nonnull(when=UNKNOWN) via meta-annotation of the overridden method.}}
+    public String apply(@lombok.NonNull String s) { // Noncompliant {{Fix the incompatibility of the annotation @NonNull to honor @Nonnull(when=UNKNOWN) via meta-annotation of the overridden method.}}
+//                                             ^
       return null;
     }
 

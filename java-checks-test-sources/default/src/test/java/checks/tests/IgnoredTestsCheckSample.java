@@ -6,13 +6,15 @@ import org.junit.jupiter.api.Disabled;
 
 abstract class IgnoredTestsCheckSample {
   @org.junit.Ignore
-  void foo() {} // Noncompliant [[sc=8;ec=11]] {{Either add an explanation about why this test is skipped or remove the "@Ignore" annotation.}}
+  void foo() {} // Noncompliant {{Either add an explanation about why this test is skipped or remove the "@Ignore" annotation.}}
+//     ^^^
 
   @Ignore
   void bar() {} // Noncompliant
 
   @Disabled
-  void disabledJunit5() {} // Noncompliant [[sc=8;ec=22]] {{Either add an explanation about why this test is skipped or remove the "@Disabled" annotation.}}
+  void disabledJunit5() {} // Noncompliant {{Either add an explanation about why this test is skipped or remove the "@Disabled" annotation.}}
+//     ^^^^^^^^^^^^^^
 
   void qix() {}
 
@@ -26,7 +28,9 @@ abstract class IgnoredTestsCheckSample {
   void disabledJunit5WithComment() {}
 
   void assume1() {
-    Assume.assumeTrue(false); // Noncompliant [[sc=12;ec=22;secondary=+0]] {{This assumption is called with a boolean constant; remove it or, to skip this test use an @Ignore/@Disabled annotation in combination with an explanation about why it is skipped.}}
+    Assume.assumeTrue(false); // Noncompliant {{This assumption is called with a boolean constant; remove it or, to skip this test use an @Ignore/@Disabled annotation in combination with an explanation about why it is skipped.}}
+//         ^^^^^^^^^^
+//  ^^^<
     Assume.assumeTrue(true);
   }
   void assume2() {

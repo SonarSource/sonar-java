@@ -2,7 +2,8 @@ package checks;
 
 class ParentS2390 {
   static final Class<? extends ParentS2390> IMPL = ChildS2390.class; // Compliant
-  static int childVersion1 = ChildS2390.version; // Noncompliant [[sc=30;ec=40]] {{Remove this reference to "ChildS2390".}}
+  static int childVersion1 = ChildS2390.version; // Noncompliant {{Remove this reference to "ChildS2390".}}
+//                           ^^^^^^^^^^
   static int childVersion2 = ChildS2390.getVersion(); // Noncompliant
   static ChildS2390 value;
   static {

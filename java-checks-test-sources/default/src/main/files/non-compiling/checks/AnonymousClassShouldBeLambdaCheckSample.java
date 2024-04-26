@@ -24,7 +24,7 @@ abstract class AbstractClass {
     int func();
 
     static int staticFunc() {
-      InvokeStatic f = new InvokeStatic() {  // Noncompliant
+      InvokeStatic f = new InvokeStatic() { // Noncompliant
         @Override
         public int func() {
           unknown();

@@ -47,7 +47,7 @@ class DanglingElseStatementsCheckSample {
     if (a)
       if (b)
         d++;
-    else          // Noncompliant {{Add explicit curly braces to avoid dangling else.}}
+    else // Noncompliant {{Add explicit curly braces to avoid dangling else.}}
       e++;
 
     if (a || b)

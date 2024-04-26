@@ -4,23 +4,28 @@ public class SingleCharacterAlternationWithTextBlocks {
 
   void nonCompliant(String str) {
     str.matches("""
-      a|b|c"""); // Noncompliant [[sc=7;ec=12]] {{Replace this alternation with a character class.}}
+      a|b|c"""); // Noncompliant {{Replace this alternation with a character class.}}
+//    ^^^^^
     // Matches [ab\n]
     str.matches("""
       a|b|
       """); // Noncompliant@-1
     // Matches [ab\nc]
     str.matches("""
-      a|b|
-      |c"""); // Noncompliant@-1 [[sc=7;ec=11;secondary=+0]]
+      a|b| // Noncompliant@-1
+//    ^^^^
+      |c""");
+//  ^^^<
     str.matches("""
       (?x)
-      (a|b)
-      """); // Noncompliant@-1 [[sc=8;ec=11]]
+      (a|b) // Noncompliant@-1
+//     ^^^
+      """);
     str.matches("""
       (?x)(
-      a|b
-      )"""); // Noncompliant@-1 [[sc=7;ec=10]]
+      a|b // Noncompliant@-1
+//    ^^^
+      )""");
   }
 
   void compliant(String str) {

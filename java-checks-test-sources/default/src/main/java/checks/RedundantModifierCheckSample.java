@@ -2,7 +2,8 @@ package checks;
 
 interface RedundantModifierInterface {
   void method1();
-  public void method2(); // Noncompliant [[sc=3;ec=9]] {{"public" is redundant in this context.}}
+  public void method2(); // Noncompliant {{"public" is redundant in this context.}}
+//^^^^^^
   abstract void method3(); // Noncompliant {{"abstract" is redundant in this context.}}
   int field1 = 1;
   public int field2 = 1; // Noncompliant
@@ -10,8 +11,10 @@ interface RedundantModifierInterface {
   final int field4 = 1; // Noncompliant {{"final" is redundant in this context.}}
 
 
-  static interface InnerInterface {}  // Noncompliant [[sc=3;ec=9]] {{"static" is redundant in this context.}}
-  public interface InnerInterface2 {}  // Noncompliant [[sc=3;ec=9]] {{"public" is redundant in this context.}}
+  static interface InnerInterface {} // Noncompliant {{"static" is redundant in this context.}}
+//^^^^^^
+  public interface InnerInterface2 {} // Noncompliant {{"public" is redundant in this context.}}
+//^^^^^^
   static final class InnerClass {} // Noncompliant {{"static" is redundant in this context.}}
   public final class InnerClass2 {} // Noncompliant {{"public" is redundant in this context.}}
 }
@@ -19,15 +22,15 @@ interface RedundantModifierInterface {
 public @interface RedundantModifierCheckSample {
   String method1();
   public String method2(); // Noncompliant
-  // Noncompliant@+1
+ // Noncompliant@+1
   public static class InnerClass {} // Noncompliant
 }
 
 @interface RedundantModifierAnnotation {
   String method1();
   public String method2(); // Noncompliant
-  // Noncompliant@+1
-  public static interface InnerInterface {}  // Noncompliant
+ // Noncompliant@+1
+  public static interface InnerInterface {} // Noncompliant
 }
 
 final class RedundantModifierClassFinal {
@@ -45,7 +48,7 @@ final class RedundantModifierClassFinal {
 
 class RedundantModifierNonFinalClass {
   final void method2() {}
-  public static interface InnerInterface {}  // Noncompliant {{"static" is redundant in this context.}}
+  public static interface InnerInterface {} // Noncompliant {{"static" is redundant in this context.}}
   public static final class NestedClass {}
 }
 enum RedundantModifierFoo {

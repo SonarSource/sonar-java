@@ -17,31 +17,39 @@ public class DateTimeFormatterMismatch {
 
   public void createUsingBuilder() {
     new DateTimeFormatterBuilder()
-      .appendValue(ChronoField.YEAR, 4) // Noncompliant [[sc=20;ec=36;secondary=+2]] {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+      .appendValue(ChronoField.YEAR, 4) // Noncompliant {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+//                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+//  ^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()
       .appendValue(ChronoField.MONTH_OF_YEAR, 2)
       .appendLiteral("-")
-      .appendValue(ChronoField.YEAR, 4) // Noncompliant [[sc=20;ec=36;secondary=+2]] {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+      .appendValue(ChronoField.YEAR, 4) // Noncompliant {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+//                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+//  ^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()
       .appendLiteral('[')
-      .appendValue(ChronoField.YEAR_OF_ERA, 4) // Noncompliant [[sc=20;ec=43;secondary=+3]] {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+      .appendValue(ChronoField.YEAR_OF_ERA, 4) // Noncompliant {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+//                 ^^^^^^^^^^^^^^^^^^^^^^^
       .appendLiteral(']')
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+//  ^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()
-      .appendValue(WeekFields.ISO.weekBasedYear(), 4) // Noncompliant [[sc=20;ec=50;secondary=+2]] {{Change this year format to use ChronoField.YEAR instead (or the week format to WeekFields.ISO.weekOfWeekBasedYear()).}}
+      .appendValue(WeekFields.ISO.weekBasedYear(), 4) // Noncompliant {{Change this year format to use ChronoField.YEAR instead (or the week format to WeekFields.ISO.weekOfWeekBasedYear()).}}
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
+//  ^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder() // Compliant
@@ -63,8 +71,10 @@ public class DateTimeFormatterMismatch {
       .toFormatter();
 
     DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
-      .appendValue(ChronoField.YEAR, 4) // Noncompliant [[sc=20;ec=36;secondary=+1]] {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+      .appendValue(ChronoField.YEAR, 4) // Noncompliant {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+//                 ^^^^^^^^^^^^^^^^
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+//  ^^^<
       .appendLiteral('-');
 
     builder.toFormatter();
@@ -104,38 +114,48 @@ public class DateTimeFormatterMismatch {
       .toFormatter();
 
     new DateTimeFormatterBuilder()
-      .appendValue(WeekFields.ISO.weekBasedYear(), 4)  // Noncompliant [[sc=20;ec=50;secondary=+3]] {{Change this year format to use ChronoField.YEAR instead (or the week format to WeekFields.ISO.weekOfWeekBasedYear()).}}
+      .appendValue(WeekFields.ISO.weekBasedYear(), 4) // Noncompliant {{Change this year format to use ChronoField.YEAR instead (or the week format to WeekFields.ISO.weekOfWeekBasedYear()).}}
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       .appendValue(ChronoField.YEAR_OF_ERA, 4)
       .appendLiteral('-')
       .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
+//  ^^^<
       .toFormatter();
 
     // Matches on appendValue methods with different parameter list
     new DateTimeFormatterBuilder()
-      .appendValue(ChronoField.YEAR) // Noncompliant [[sc=20;ec=36;secondary=+2]] {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+      .appendValue(ChronoField.YEAR) // Noncompliant {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+//                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear())
+//  ^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()
       .appendValue(ChronoField.MONTH_OF_YEAR)
       .appendLiteral("-")
-      .appendValue(ChronoField.YEAR) // Noncompliant [[sc=20;ec=36;secondary=+2]] {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+      .appendValue(ChronoField.YEAR) // Noncompliant {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+//                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 1, 2, SignStyle.NORMAL)
+//  ^^^<
       .toFormatter();
     new DateTimeFormatterBuilder()
-      .appendValue(ChronoField.YEAR, 2, 4, SignStyle.NORMAL) // Noncompliant [[sc=20;ec=36;secondary=+2]] {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+      .appendValue(ChronoField.YEAR, 2, 4, SignStyle.NORMAL) // Noncompliant {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+//                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 1, 2, SignStyle.NORMAL)
+//  ^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()
       .appendValue(ChronoField.MONTH_OF_YEAR, 2, 4, SignStyle.NORMAL)
       .appendLiteral("-")
-      .appendValue(ChronoField.YEAR, 4) // Noncompliant [[sc=20;ec=36;secondary=+2]] {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+      .appendValue(ChronoField.YEAR, 4) // Noncompliant {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
+//                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 1, 2, SignStyle.NORMAL)
+//  ^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()

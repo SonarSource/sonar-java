@@ -15,7 +15,7 @@ abstract class LocksNotUnlockedCheckSample {
 
   public void acquireLock() {
     Lock local = new ReentrantLock();
-    local.lock();  // Noncompliant {{Unlock this lock along all executions paths of this method.}}
+    local.lock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
     l1.lock();
   }
 
@@ -55,16 +55,16 @@ abstract class LocksNotUnlockedCheckSample {
   public void multipleLockState() {
     Lock lock = new ReentrantLock();
     if(foo) {
-      lock.lock();// Noncompliant {{Unlock this lock along all executions paths of this method.}}
+      lock.lock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
     } else {
-      lock.lock();// Noncompliant {{Unlock this lock along all executions paths of this method.}}
+      lock.lock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
     }
   }
 
   public void doTheOtherThing() {
     Lock lock = new ReentrantLock();
     try {
-      lock.tryLock();  // Noncompliant {{Unlock this lock along all executions paths of this method.}}
+      lock.tryLock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
       doSomething();
       lock.unlock(); // an exception will keep this line from being reached
     } catch (Exception e) {

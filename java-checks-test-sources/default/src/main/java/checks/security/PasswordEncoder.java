@@ -38,7 +38,7 @@ class SecurityConfig {
 
   @Autowired
   public void jdbcAuthentication(AuthenticationManagerBuilder auth, DataSource dataSource, UserDetailsService userDetailsService) throws Exception {
-    auth.jdbcAuthentication()  // Noncompliant {{Don't use the default "PasswordEncoder" relying on plain-text.}}
+    auth.jdbcAuthentication() // Noncompliant {{Don't use the default "PasswordEncoder" relying on plain-text.}}
       .dataSource(dataSource)
       .usersByUsernameQuery("SELECT * FROM users WHERE username = ?");
   }
@@ -53,7 +53,7 @@ class SecurityConfig {
 
   @Autowired
   public void userDetailsService(AuthenticationManagerBuilder auth, DataSource dataSource, UserDetailsService userDetailsService) throws Exception {
-    auth.userDetailsService(userDetailsService); // Noncompliant {Don't use the default "PasswordEncoder" relying on plain-text.}}
+    auth.userDetailsService(userDetailsService); // Noncompliant
   }
 
   @Autowired

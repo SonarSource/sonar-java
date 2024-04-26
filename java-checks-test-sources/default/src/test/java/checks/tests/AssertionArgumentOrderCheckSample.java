@@ -9,7 +9,9 @@ class AssertionArgumentOrderCheckSample {
   static final String CONSTANT = "";
   void junit() {
     assertEquals(0, new AssertionArgumentOrderCheckSample().actual());
-    assertEquals(new AssertionArgumentOrderCheckSample().actual(), 0); // Noncompliant [[sc=68;ec=69;secondary=12]]
+    assertEquals(new AssertionArgumentOrderCheckSample().actual(), 0); // Noncompliant
+//                                                                 ^
+//  ^^^<
     assertEquals("message", new AssertionArgumentOrderCheckSample().actual(), 0); // Noncompliant
     assertEquals("message", 0, new AssertionArgumentOrderCheckSample().actual());
     assertEquals("message", "constantString", actualObject());
@@ -49,7 +51,9 @@ class AssertionArgumentOrderCheckSample {
 
   void assertJ() {
     // Simple cases, we can find the expected value
-    assertThat(0).isEqualTo(new AssertionArgumentOrderCheckSample().actual()); // Noncompliant [[sc=16;ec=17;secondary=52]] {{Swap these 2 arguments so they are in the correct order: actual value, expected value.}}
+    assertThat(0).isEqualTo(new AssertionArgumentOrderCheckSample().actual()); // Noncompliant {{Swap these 2 arguments so they are in the correct order: actual value, expected value.}}
+//             ^
+//  ^^^<
     assertThat(new AssertionArgumentOrderCheckSample().actual()).isEqualTo(0);
     assertThat("a").isEqualTo("b"); // Noncompliant {{Change this assertion to not compare two literals.}}
     assertThat(actualObject()).isEqualTo("constantString");

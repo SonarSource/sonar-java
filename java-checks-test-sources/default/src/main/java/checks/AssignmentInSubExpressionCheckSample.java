@@ -19,15 +19,17 @@ abstract class AssignmentInSubExpressionCheckSample {
     int a = 0;                   // Compliant
     a = 0;                       // Compliant
     System.out.println(a);       // Compliant
-    System.out.println(a = 0);   // Noncompliant [[sc=26;ec=27]] {{Extract the assignment out of this expression.}}
-    System.out.println(a += 0);  // Noncompliant [[sc=26;ec=28]] {{Extract the assignment out of this expression.}}
+    System.out.println(a = 0); // Noncompliant {{Extract the assignment out of this expression.}}
+//                       ^
+    System.out.println(a += 0); // Noncompliant {{Extract the assignment out of this expression.}}
+//                       ^^
     System.out.println(a == 0);  // Compliant
 
     a = b = 0;                   // Compliant
     a += foo[i];                 // Compliant
 
     _stack[
-           index = 0             // Noncompliant
+           index = 0 // Noncompliant
            ] = node;
 
     while ((foo = bar()) != null) { // Compliant

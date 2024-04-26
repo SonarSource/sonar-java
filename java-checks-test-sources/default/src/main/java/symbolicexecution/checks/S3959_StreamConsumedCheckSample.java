@@ -8,13 +8,13 @@ abstract class S3959_StreamConsumedCheckSample {
   void test() {
     Stream<Integer> stream = Stream.of(1, 2, 3);
     stream.count(); // flow@stream {{Pipeline is consumed here.}}
-    stream.findAny(); // Noncompliant [[flows=stream]] {{Refactor this code so that this consumed stream pipeline is not reused.}}
+    stream.findAny(); // Noncompliant {{Refactor this code so that this consumed stream pipeline is not reused.}}
   }
 
   void intStream() {
     IntStream range = IntStream.range(0, 10);
     range.count(); // flow@is {{Pipeline is consumed here.}}
-    range.average(); // Noncompliant [[flows=is]]
+    range.average(); // Noncompliant
     range.filter(i -> true); // Doesn't raise issue, because exception is thrown on previous line and SE is stopped
   }
 
@@ -23,7 +23,7 @@ abstract class S3959_StreamConsumedCheckSample {
     range
       .filter(i -> i % 2 == 0)
       .count(); // flow@pipe {{Pipeline is consumed here.}}
-    range.average(); // Noncompliant [[flows=pipe]]
+    range.average(); // Noncompliant
   }
 
   void pipeline2() {
@@ -50,7 +50,7 @@ abstract class S3959_StreamConsumedCheckSample {
       range.count(); // flow@cond
     }
     if (other) {
-      filtered.count(); // Noncompliant [[flows=cond]]
+      filtered.count(); // Noncompliant
     }
   }
 

@@ -4,7 +4,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 class S1150_A implements S1150_Foo,
-                   Enumeration, // Noncompliant [[sc=20;ec=31]] {{Implement Iterator rather than Enumeration.}}
+                   Enumeration, // Noncompliant {{Implement Iterator rather than Enumeration.}}
+//                 ^^^^^^^^^^^
                    Iterable {
 
   @Override public Iterator iterator() { return null; }

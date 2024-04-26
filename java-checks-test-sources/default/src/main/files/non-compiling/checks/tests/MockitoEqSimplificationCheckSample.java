@@ -32,16 +32,24 @@ public class MockitoEqSimplificationCheckSample {
     Object v4 = new Object();
     Object v5 = new Object();
 
-    given(foo.bar(eq(v1), // Noncompliant [[sc=19;ec=21;secondary=+1,+2]] {{Remove this and every subsequent useless "eq(...)" invocation; pass the values directly.}}
+    given(foo.bar(eq(v1), // Noncompliant {{Remove this and every subsequent useless "eq(...)" invocation; pass the values directly.}}
+//                ^^
       eq(v2),
+//  ^^^<
       eq(v3))).willReturn(null);
-    when(foo.baz(eq(v4), // Noncompliant [[sc=18;ec=20;secondary=+1]] {{Remove this and every subsequent useless "eq(...)" invocation; pass the values directly.}}
+//  ^^^<
+    when(foo.baz(eq(v4), // Noncompliant {{Remove this and every subsequent useless "eq(...)" invocation; pass the values directly.}}
+//               ^^
       eq(v5))).thenReturn("foo");
-    when(foo.baz(Matchers.eq(v4),  // Noncompliant [[sc=18;ec=29;secondary=+1]]
+//  ^^^<
+    when(foo.baz(Matchers.eq(v4), // Noncompliant
+//               ^^^^^^^^^^^
       eq(v5))).thenReturn("foo");
-    doThrow(new RuntimeException()).when(foo).quux(eq(42)); // Noncompliant [[sc=52;ec=54]] {{Remove this useless "eq(...)" invocation; pass the values directly.}}
+//  ^^^<
+    doThrow(new RuntimeException()).when(foo).quux(eq(42)); // Noncompliant {{Remove this useless "eq(...)" invocation; pass the values directly.}}
+//                                                 ^^
     doCallRealMethod().when(foo).baz(eq(v4), eq(v5)); // Noncompliant
-    verify(foo).bar(eq(v1), eq(v2), eq(v3));   // Noncompliant
+    verify(foo).bar(eq(v1), eq(v2), eq(v3)); // Noncompliant
     verify(foo, never()).bar(eq(v1), eq(v2), eq(v3)); // Noncompliant
 
     InOrder inOrder = Mockito.inOrder(foo);

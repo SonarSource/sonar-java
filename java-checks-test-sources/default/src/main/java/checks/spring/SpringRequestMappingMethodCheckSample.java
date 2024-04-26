@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/home")
 public class SpringRequestMappingMethodCheckSample {
 
-  @RequestMapping("/") // Noncompliant [[sc=4;ec=18]] {{Make sure allowing safe and unsafe HTTP methods is safe here.}}
+  @RequestMapping("/") // Noncompliant {{Make sure allowing safe and unsafe HTTP methods is safe here.}}
+// ^^^^^^^^^^^^^^
   String home() {
     return "Hello from get";
   }
@@ -30,7 +31,8 @@ public class SpringRequestMappingMethodCheckSample {
     return "Hello from get";
   }
 
-  @RequestMapping(path = "/delete", method = {RequestMethod.GET, RequestMethod.POST}) // Noncompliant [[sc=46;ec=85]] {{Make sure allowing safe and unsafe HTTP methods is safe here.}}
+  @RequestMapping(path = "/delete", method = {RequestMethod.GET, RequestMethod.POST}) // Noncompliant {{Make sure allowing safe and unsafe HTTP methods is safe here.}}
+//                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   String delete(@RequestParam("id") String id) {
     return "Hello from delete";
   }

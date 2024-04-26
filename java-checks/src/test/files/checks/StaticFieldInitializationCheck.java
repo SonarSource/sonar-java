@@ -6,7 +6,8 @@ class A {
       return instance;
     }
 
-    instance = new Object();  // Noncompliant [[sc=5;ec=13]] {{Synchronize this lazy initialization of 'instance'}}
+    instance = new Object(); // Noncompliant {{Synchronize this lazy initialization of 'instance'}}
+//  ^^^^^^^^
     return instance;
   }
 
@@ -115,7 +116,7 @@ class A {
 
     public static void resetConfiguration2() {
       try {
-        CONFIG = null; // Noncompliant : before the lock
+        CONFIG = null; // Noncompliant
         LOCK.tryLock();
       } finally {
         LOCK.unlock();

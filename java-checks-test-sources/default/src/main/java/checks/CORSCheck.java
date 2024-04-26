@@ -25,9 +25,11 @@ class CORSCheck {
   // === Java Servlet ===
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     resp.setHeader("Content-Type", "text/plain; charset=utf-8");
-    resp.setHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
+    resp.setHeader("Access-Control-Allow-Origin", "*"); // Noncompliant
+//       ^^^^^^^^^
     // header names are case insensitive. see https://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive/5259004#5259004
-    resp.setHeader("Access-control-allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
+    resp.setHeader("Access-control-allow-Origin", "*"); // Noncompliant
+//       ^^^^^^^^^
     resp.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Compliant
 
     resp.setHeader("Access-Control-Allow-Credentials", "true"); // Compliant
@@ -36,7 +38,8 @@ class CORSCheck {
     resp.setHeader("Access-Control-Allow-Methods", "*"); // Compliant
 
     resp.addHeader("Content-Type", "text/plain; charset=utf-8");
-    resp.addHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
+    resp.addHeader("Access-Control-Allow-Origin", "*"); // Noncompliant
+//       ^^^^^^^^^
     resp.addHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // // Compliant
     resp.addHeader("Access-Control-Allow-Credentials", "true"); // Compliant
     resp.addHeader("Access-Control-Allow-Methods", "GET"); // Compliant
@@ -48,13 +51,17 @@ class CORSCheck {
   }
 
   protected void doGetJakarta(jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp) {
-    resp.setHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
-    resp.setHeader("Access-control-allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
-    resp.addHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
+    resp.setHeader("Access-Control-Allow-Origin", "*"); // Noncompliant
+//       ^^^^^^^^^
+    resp.setHeader("Access-control-allow-Origin", "*"); // Noncompliant
+//       ^^^^^^^^^
+    resp.addHeader("Access-Control-Allow-Origin", "*"); // Noncompliant
+//       ^^^^^^^^^
   }
 
   // === Spring MVC Controller annotation ===
-  @CrossOrigin(origins = "*") // Noncompliant [[sc=4;ec=15]] {{Make sure that enabling CORS is safe here.}}
+  @CrossOrigin(origins = "*") // Noncompliant {{Make sure that enabling CORS is safe here.}}
+// ^^^^^^^^^^^
   @RequestMapping("")
   public class TestController {
     public String home(ModelMap model) {
@@ -167,19 +174,23 @@ class CORSCheck {
       public CorsFilter corsFilter4() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=+1,+2]]
+        config.addAllowedOrigin("*"); // Noncompliant
         config.applyPermitDefaultValues();
+//  ^^^<
         config.applyPermitDefaultValues();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=-2,-1]]
+//  ^^^<
+        config.addAllowedOrigin("*"); // Noncompliant
         return new CorsFilter(source);
       }
     }
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     CorsConfiguration config = new CorsConfiguration();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=+1,+2]]
+    config.addAllowedOrigin("*"); // Noncompliant
     config.applyPermitDefaultValues();
+//  ^^^<
     config.applyPermitDefaultValues();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=-2,-1]]
+//  ^^^<
+    config.addAllowedOrigin("*"); // Noncompliant
     return new CorsFilter(source);
   }
 
@@ -187,7 +198,8 @@ class CORSCheck {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
       registry.addMapping("/**")
-        .allowedOrigins("*"); // Noncompliant [[sc=10;ec=24]]
+        .allowedOrigins("*"); // Noncompliant
+//       ^^^^^^^^^^^^^^
     }
   }
 

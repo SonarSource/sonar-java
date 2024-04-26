@@ -6,7 +6,7 @@ class UselessExtendsCheck {
 
   class A implements I1 {}
   class B extends A implements I1 {} // Noncompliant {{"I1" is implemented by a super class; there is no need to implement it here.}}
-  class C extends B implements I1 {} // Noncompliant  {{"I1" is implemented by a super class; there is no need to implement it here.}}
+  class C extends B implements I1 {} // Noncompliant {{"I1" is implemented by a super class; there is no need to implement it here.}}
 
   interface I3<T> {}
   class C1 {}
@@ -32,6 +32,8 @@ class UselessExtendsCheck {
 
   enum E1 implements I7, I8 {} // Noncompliant {{"I7" is already extended by "I8"; there is no need to implement it here.}}
 
-  class L extends Object {} // Noncompliant [[sc=19;ec=25]] {{"Object" should not be explicitly extended.}}
-  class M extends java.lang.Object {} // Noncompliant [[sc=19;ec=35]] {{"Object" should not be explicitly extended.}}
+  class L extends Object {} // Noncompliant {{"Object" should not be explicitly extended.}}
+//                ^^^^^^
+  class M extends java.lang.Object {} // Noncompliant {{"Object" should not be explicitly extended.}}
+//                ^^^^^^^^^^^^^^^^
 }

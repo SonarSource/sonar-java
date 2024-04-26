@@ -4,7 +4,8 @@ class Foo {
   private int foo1;
   int foo2;
   protected int foo3;
-  public int foo4; // Noncompliant [[sc=14;ec=18]] {{Make foo4 a static final constant or non-public and provide accessors if needed.}}
+  public int foo4; // Noncompliant {{Make foo4 a static final constant or non-public and provide accessors if needed.}}
+//           ^^^^
 
   public static int foo5; // Noncompliant {{Make foo5 a static final constant or non-public and provide accessors if needed.}}
   public final int foo6; // Compliant

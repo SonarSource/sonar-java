@@ -22,7 +22,7 @@ class NonNullSetToNullCheckSample {
   // ============ 2. Testing Return values ============
   @Nonnull
   public String colorMix() {
-    return null;  // Noncompliant
+    return null; // Noncompliant
   }
 
   @Nonnull

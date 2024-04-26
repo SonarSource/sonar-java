@@ -27,21 +27,21 @@ public class PrintfMisuseCheckSample {
     Locale loc = Locale.US;
     // String format ===================================================================================================
     String.format("The value of my integer is %d", "Hello World");
-    String.format("First {0} and then {1}", "foo", "bar");  // Noncompliant  {{Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here}}
-    String.format("{1}", "foo", "bar");  // Noncompliant
+    String.format("First {0} and then {1}", "foo", "bar"); // Noncompliant {{Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here}}
+    String.format("{1}", "foo", "bar"); // Noncompliant
     String.format("Duke's Birthday year is %tX", 12l);
-    String.format("Display %3$d and then %d", 1, 2, 3);   // Noncompliant {{2nd argument is not used.}}
-    String.format("Display %2$d and then %2$d", 1, 2);   // Noncompliant {{first argument is not used.}}
-    String.format("Too many arguments %d and %d", 1, 2, 3);  // Noncompliant {{3rd argument is not used.}}
+    String.format("Display %3$d and then %d", 1, 2, 3); // Noncompliant {{2nd argument is not used.}}
+    String.format("Display %2$d and then %2$d", 1, 2); // Noncompliant {{first argument is not used.}}
+    String.format("Too many arguments %d and %d", 1, 2, 3); // Noncompliant {{3rd argument is not used.}}
     String.format("Not enough arguments %d and %d", 1);
     String.format("%1$d %2$d %9$-3.3s", 1, 2, "hello");  // Compliant - not enough arguments but this will be caught by S2275
     String.format("%12$s", 1, 2, "hello");  // Compliant - not enough arguments but this will be caught by S2275
     String.format("First Line\n %d", 1); // Noncompliant {{%n should be used in place of \n to produce the platform-specific line separator.}}
-    String.format("First Line");   // Noncompliant {{String contains no format specifiers.}}
+    String.format("First Line"); // Noncompliant {{String contains no format specifiers.}}
     String.format("First Line%%"); // Noncompliant {{String contains no format specifiers.}}
     String.format("First Line%n"); // Compliant
     String.format("%< is equals to %d", 2);
-    String.format("Is myObject null ? %b", myObject);   // Noncompliant {{Directly inject the boolean value.}}
+    String.format("Is myObject null ? %b", myObject); // Noncompliant {{Directly inject the boolean value.}}
     String.format("boolean are %b, %b, %b and %b", true, Boolean.TRUE, false, Boolean.FALSE);
     String.format("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     String.format((String) "");
@@ -65,7 +65,7 @@ public class PrintfMisuseCheckSample {
     String.format("Result %s %s",new Exception()); // Compliant, reported by S2275
     String.format("Result %s %s",new Object[] {new Exception()}); // Compliant, reported by S2275
 
-    String.format("Too many arguments %d and %d and %d", 1, 2, 3, 4);  // Noncompliant {{4th argument is not used.}}
+    String.format("Too many arguments %d and %d and %d", 1, 2, 3, 4); // Noncompliant {{4th argument is not used.}}
     String.format("normal %d%% ", 1);  //Compliant
     String.format("Duke's Birthday year is %t", 12l);
     String.format("Duke's Birthday year is %tH", 12l);  // Compliant
@@ -85,17 +85,17 @@ public class PrintfMisuseCheckSample {
 
     // String.formatted ================================================================================================
     "The value of my integer is %d".formatted("Hello World");
-    "First {0} and then {1}".formatted("foo", "bar");  // Noncompliant  {{Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here}}
-    "{1}".formatted("foo", "bar");  // Noncompliant
+    "First {0} and then {1}".formatted("foo", "bar"); // Noncompliant {{Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here}}
+    "{1}".formatted("foo", "bar"); // Noncompliant
     "Duke's Birthday year is %tX".formatted(12l);
-    "Display %3$d and then %d".formatted(1, 2, 3);   // Noncompliant {{2nd argument is not used.}}
-    "Display %2$d and then %2$d".formatted(1, 2);   // Noncompliant {{first argument is not used.}}
-    "Too many arguments %d and %d".formatted(1, 2, 3);  // Noncompliant {{3rd argument is not used.}}
+    "Display %3$d and then %d".formatted(1, 2, 3); // Noncompliant {{2nd argument is not used.}}
+    "Display %2$d and then %2$d".formatted(1, 2); // Noncompliant {{first argument is not used.}}
+    "Too many arguments %d and %d".formatted(1, 2, 3); // Noncompliant {{3rd argument is not used.}}
     "Not enough arguments %d and %d".formatted(1);
     "%1$d %2$d %9$-3.3s".formatted(1, 2, "hello");  // Compliant - not enough arguments but this will be caught by S2275
     "%12$s".formatted(1, 2, "hello");  // Compliant - not enough arguments but this will be caught by S2275
     "First Line\n %d".formatted(1); // Noncompliant {{%n should be used in place of \n to produce the platform-specific line separator.}}
-    "First Line".formatted();   // Noncompliant {{String contains no format specifiers.}}
+    "First Line".formatted(); // Noncompliant {{String contains no format specifiers.}}
 
 
     // Print Writer / Stream / Formatter ===============================================================================
@@ -114,16 +114,16 @@ public class PrintfMisuseCheckSample {
     pr.format("%d", new Long(12));
     pr.format("%d", new java.math.BigInteger("12"));
 
-    pr.format("string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
-    pr.format(loc, "string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
-    pr.printf("string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
-    pr.printf(loc, "string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
-    ps.format("string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
-    ps.format(loc, "string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
-    ps.printf("string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
-    ps.printf(loc, "string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
-    formatter.format("string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
-    formatter.format(loc, "string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
+    pr.format("string without arguments"); // Noncompliant {{String contains no format specifiers.}}
+    pr.format(loc, "string without arguments"); // Noncompliant {{String contains no format specifiers.}}
+    pr.printf("string without arguments"); // Noncompliant {{String contains no format specifiers.}}
+    pr.printf(loc, "string without arguments"); // Noncompliant {{String contains no format specifiers.}}
+    ps.format("string without arguments"); // Noncompliant {{String contains no format specifiers.}}
+    ps.format(loc, "string without arguments"); // Noncompliant {{String contains no format specifiers.}}
+    ps.printf("string without arguments"); // Noncompliant {{String contains no format specifiers.}}
+    ps.printf(loc, "string without arguments"); // Noncompliant {{String contains no format specifiers.}}
+    formatter.format("string without arguments"); // Noncompliant {{String contains no format specifiers.}}
+    formatter.format(loc, "string without arguments"); // Noncompliant {{String contains no format specifiers.}}
 
     pr.format("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     pr.format(loc, "value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
@@ -171,7 +171,7 @@ public class PrintfMisuseCheckSample {
     MessageFormat.format("Result {0, number, integer} and {1, number, integer}!", 14, 42); // compliant
     MessageFormat.format("Result {0} and {1}!", 14, 42, 128); // Noncompliant {{3rd argument is not used.}}
     MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07, "$"}); // Compliant
-    MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07});  // Noncompliant {{Not enough arguments.}}
+    MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07}); // Noncompliant {{Not enough arguments.}}
     MessageFormat.format("{0,number,#.#}{1}", objs); // Compliant - skipped as the array is not initialized in the method invocation
     MessageFormat.format("{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
     MessageFormat.format("value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
@@ -243,10 +243,10 @@ public class PrintfMisuseCheckSample {
     logger4.log(level, "message ");
     logger4.log(level, "message ", new Exception());
     logger4.log(level, "message {0}", param1);
-    logger4.log(level, "message {1}", param1);  // Noncompliant {{Not enough arguments.}}
-    logger4.log(level, "message {0}", new Exception());  // Noncompliant {{Not enough arguments.}}
+    logger4.log(level, "message {1}", param1); // Noncompliant {{Not enough arguments.}}
+    logger4.log(level, "message {0}", new Exception()); // Noncompliant {{Not enough arguments.}}
     logger4.log(level, "message {0}", new Object[] {param1});
-    logger4.log(level, "message {1}", new Object[] {param1});  // Noncompliant {{Not enough arguments.}}
+    logger4.log(level, "message {1}", new Object[] {param1}); // Noncompliant {{Not enough arguments.}}
     logger4.log(level, "message {0}", new Object[] {param1, new Exception()}); // Noncompliant {{2nd argument is not used.}}
     logger4.log(level, "message {0} {1}", new Object[] {param1, param2});
     logger4.log(level, "message {0} {1}", new Object[] {param1, param2, param3}); // Noncompliant {{3rd argument is not used.}}
@@ -269,7 +269,7 @@ public class PrintfMisuseCheckSample {
     slf4jLog.debug(marker, "message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.debug(marker, "message {}", 1);
     slf4jLog.debug(marker, "message {} - {}", 1, 2);
-    slf4jLog.debug(marker, "message {}", 1, 2);// Noncompliant {{2nd argument is not used.}}
+    slf4jLog.debug(marker, "message {}", 1, 2); // Noncompliant {{2nd argument is not used.}}
     slf4jLog.debug(marker, "message {} {} {}", 1, 2, 3);
     slf4jLog.debug(marker, "message {} {}", 1, 2, 3); // Noncompliant
     slf4jLog.debug(marker, "message {} {}", new Object[]{1, 2, 3}); // Noncompliant
@@ -283,7 +283,7 @@ public class PrintfMisuseCheckSample {
     slf4jLog.debug("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.debug("message {}", 1);
     slf4jLog.debug("message {} - {}", 1, 2);
-    slf4jLog.debug("message {}", 1, 2);// Noncompliant {{2nd argument is not used.}}
+    slf4jLog.debug("message {}", 1, 2); // Noncompliant {{2nd argument is not used.}}
     slf4jLog.debug("message {} {} {}", 1, 2, 3);
     slf4jLog.debug("message {} {}", 1, 2, 3); // Noncompliant
     slf4jLog.debug("message {} {}", new Object[]{1, 2, 3}); // Noncompliant
@@ -326,7 +326,7 @@ public class PrintfMisuseCheckSample {
     }
 
     slf4jLog.info("message {} - {}", 1, 2);
-    slf4jLog.info("message {}", 1, 2);// Noncompliant {{2nd argument is not used.}}
+    slf4jLog.info("message {}", 1, 2); // Noncompliant {{2nd argument is not used.}}
     slf4jLog.info("message {} {} {}", 1, 2, 3);
     slf4jLog.info("message ", new Exception());
     slf4jLog.info("message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
@@ -355,14 +355,14 @@ public class PrintfMisuseCheckSample {
     org.apache.logging.log4j.Logger formatterLogger = LogManager.getFormatterLogger();
 
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message");  // Compliant
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message", 1);  // Noncompliant {{String contains no format specifiers.}}
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}");  // Noncompliant {{Not enough arguments.}}
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", new Exception());  // Noncompliant {{Not enough arguments.}}
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message", 1); // Noncompliant {{String contains no format specifiers.}}
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}"); // Noncompliant {{Not enough arguments.}}
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", 1);  // Compliant
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {} {}", 1);  // Noncompliant {{Not enough arguments.}}
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", 1, "hello");  // Noncompliant
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {} {}", 1); // Noncompliant {{Not enough arguments.}}
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", 1, "hello"); // Noncompliant
     formatterLogger.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1);  // Compliant
-    formatterLogger.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1, "hello");  // Noncompliant
+    formatterLogger.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1, "hello"); // Noncompliant
 
     log4j.debug("message"); // Compliant
     log4j.debug("message", 1); // Noncompliant
@@ -387,12 +387,12 @@ public class PrintfMisuseCheckSample {
     formatterLogger.debug("message %s message %d", "hello", 42); // Compliant
     formatterLogger.debug("message %s message", "hello", 42); // Noncompliant {{2nd argument is not used.}}
     formatterLogger.debug("message %s {} message", "hello", 42); // Noncompliant {{2nd argument is not used.}}
-    formatterLogger.debug("message %s {} %s message", "hello", 42); // Noncompliant - false-positive, the rule doesn't know it's a "FormatterLogger"
+    formatterLogger.debug("message %s {} %s message", "hello", 42); // Noncompliant
     formatterLogger.printf(org.apache.logging.log4j.Level.DEBUG, "message %s {} %s message", "hello", 42);
     formatterLogger.debug("message %s {} {} message", "hello", 42); // false-negative, the rule doesn't know it's a "FormatterLogger"
     formatterLogger.printf(org.apache.logging.log4j.Level.DEBUG, "message %s {} {} message", "hello", 42); // Noncompliant {{2nd argument is not used.}}
 
-    log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message"); // Noncompliant {{String contains no format specifiers.}} 
+    log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message"); // Noncompliant {{String contains no format specifiers.}}
     log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s %d", "hello", 42); // Compliant - Java formatters
     log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s", "hello", 42); // Noncompliant {{2nd argument is not used.}}
     formatterLogger.printf(org.apache.logging.log4j.Level.DEBUG, "message %s", "hello", 42); // Noncompliant {{2nd argument is not used.}}

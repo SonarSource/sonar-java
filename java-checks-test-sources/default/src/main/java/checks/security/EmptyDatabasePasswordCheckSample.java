@@ -10,23 +10,28 @@ import static checks.security.EmptyDatabasePasswordCheckVariables.NON_EMPTY_PASS
 
 class EmptyDatabasePasswordCheckSample {
   void foo(Properties connectionProps, String unknown) throws SQLException {
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", ""); // Noncompliant [[sc=5;ec=86]] {{Add password protection to this database.}}
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", ""); // Noncompliant {{Add password protection to this database.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", "Foo");
 
     String pwd = "";
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd); // Noncompliant [[secondary=-1]]
+//  ^^^<
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd); // Noncompliant
 
     String pwd2 = "foo";
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd2);
 
     String pRef = "";
+//  ^^^<
     String pwd3 = pRef;
+//  ^^^<
 
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd3); // Noncompliant [[secondary=-3,-2]]
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd3); // Noncompliant
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", getPassword());
 
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", EMPTY_PASSWORD); // Noncompliant [[sc=5;ec=98]]
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", EMPTY_PASSWORD); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", NON_EMPTY_PASSWORD);
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", unknown);

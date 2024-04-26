@@ -35,9 +35,12 @@ public class RecordPatternInsteadOfFieldAccessCheckSample {
   }
 
   int nonCompliant(Object obj) {
-    if (obj instanceof Point p) { // Noncompliant [[sc=24;ec=31;secondary=+1,+2]] {{Use the record pattern instead of this pattern match variable.}}
+    if (obj instanceof Point p) { // Noncompliant {{Use the record pattern instead of this pattern match variable.}}
+//                     ^^^^^^^
       int x = p.x();
+//  ^^^<
       int y = p.y();
+//  ^^^<
       return x + y;
     } else if (obj instanceof String s) {
       return s.length();
@@ -56,15 +59,18 @@ public class RecordPatternInsteadOfFieldAccessCheckSample {
 
   int nonCompliantSwitch(Object o) {
     return switch (o) {
-      case Point p -> p.x() + p.y(); // Noncompliant [[secondary=+0,+0]]
+      case Point p -> p.x() + p.y(); // Noncompliant
+//  ^^^<
       default -> 0;
     };
   }
 
   int nonCompliantSwitchOnLine(Object obj) {
-    if (obj instanceof Line line) { // Noncompliant [[secondary=+1,+2]]
+    if (obj instanceof Line line) { // Noncompliant
       int x = line.start().x();
+//  ^^^<
       int y = line.end().y();
+//  ^^^<
       return x + y;
     }
     return 0;

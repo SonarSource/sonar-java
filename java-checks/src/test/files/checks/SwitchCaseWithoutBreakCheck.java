@@ -9,11 +9,13 @@ class A {
     int myVariable = 0;
     switch (myVariable) {
       case 0:
-      case 1: // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}} [[sc=7;ec=14]]
+      case 1: // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}}
+//    ^^^^^^^
         System.out.println("Test");
       case 2: // Compliant
         break;
-      case (8 | 2): // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}} [[sc=7;ec=20]]
+      case (8 | 2): // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}}
+//    ^^^^^^^^^^^^^
         System.out.println("Test");
       case 3: // Compliant
         return;
@@ -104,11 +106,13 @@ class A {
     switch (b) {
       case (byte) 0: // Compliant
         break;
-      case (byte) 1: // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}} [[sc=7;ec=21]]
+      case (byte) 1: // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}}
+//    ^^^^^^^^^^^^^^
         System.out.println("Test");
       case 2: // Compliant
         break;
-      case 3: // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}} [[sc=7;ec=14]]
+      case 3: // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}}
+//    ^^^^^^^
         System.out.println("Test 2");
       case 4:
         break;
@@ -117,11 +121,13 @@ class A {
     switch (c) {
       case 'c': // Compliant
         break;
-      case 'a': // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}} [[sc=7;ec=16]]
+      case 'a': // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}}
+//    ^^^^^^^^^
         System.out.println("Test");
       case 'd': // Compliant
         break;
-      case 'e': // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}} [[sc=7;ec=16]]
+      case 'e': // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}}
+//    ^^^^^^^^^
         System.out.println("Test 2");
       case 'x':
         break;

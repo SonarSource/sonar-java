@@ -6,7 +6,8 @@ class A {
 
 
   private void doSomething() {
-    synchronized (color) { // Noncompliant [[sc=19;ec=24]] {{"color" is not "private final", and should not be used for synchronization. }}
+    synchronized (color) { // Noncompliant {{"color" is not "private final", and should not be used for synchronization. }}
+//                ^^^^^
       color = "green";
     }
 

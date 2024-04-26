@@ -5,13 +5,19 @@ import java.util.regex.Pattern;
 public class GraphemeClustersInClassesCheckSample {
 
   void noncompliant(String str) {
-    Pattern.compile("[aaaèaaa]"); // Noncompliant [[sc=22;ec=32;secondary=8]] {{Extract 1 Grapheme Cluster(s) from this character class.}}
-    Pattern.compile("[0Ṩ0]"); // Noncompliant [[sc=22;ec=29;secondary=9]] {{Extract 1 Grapheme Cluster(s) from this character class.}}
+    Pattern.compile("[aaaèaaa]"); // Noncompliant {{Extract 1 Grapheme Cluster(s) from this character class.}}
+//                   ^^^^^^^^^^
+//  ^^^<
+    Pattern.compile("[0Ṩ0]"); // Noncompliant {{Extract 1 Grapheme Cluster(s) from this character class.}}
+//                   ^^^^^^^
+//  ^^^<
     Pattern.compile("aaa[è]aaa"); // Noncompliant
     // two secondary per line: one for the regex location, and one for the cluster location
-    Pattern.compile("[èaèaè]"); // Noncompliant [[sc=22;ec=32;secondary=12,12,12]] {{Extract 3 Grapheme Cluster(s) from this character class.}}
+    Pattern.compile("[èaèaè]"); // Noncompliant {{Extract 3 Grapheme Cluster(s) from this character class.}}
+//                   ^^^^^^^^^^
+//  ^^^<
     Pattern.compile("[èa-dä]"); // Noncompliant
-    Pattern.compile("[èa]" +     // Noncompliant
+    Pattern.compile("[èa]" + // Noncompliant
       "aaa" +
       "[dè]"); // Noncompliant
 
@@ -33,7 +39,8 @@ public class GraphemeClustersInClassesCheckSample {
     Pattern.compile("ä"); // Compliant, not in a class
   }
 
-  @org.hibernate.validator.constraints.URL(regexp = "[èaèaè]") // Noncompliant [[sc=54;ec=64]] {{Extract 3 Grapheme Cluster(s) from this character class.}}
+  @org.hibernate.validator.constraints.URL(regexp = "[èaèaè]") // Noncompliant {{Extract 3 Grapheme Cluster(s) from this character class.}}
+//                                                   ^^^^^^^^^^
   String url;
 
 

@@ -4,7 +4,8 @@ import org.assertj.core.configuration.Configuration;
 
 public class AssertJApplyConfigurationCheckSample {
   void notApplied() {
-    Configuration configuration = new Configuration(); // Noncompliant [[sc=19;ec=32]] {{Apply this configuration with apply() or applyAndDisplay().}}
+    Configuration configuration = new Configuration(); // Noncompliant {{Apply this configuration with apply() or applyAndDisplay().}}
+//                ^^^^^^^^^^^^^
     configuration.setComparingPrivateFields(true);
     configuration.setMaxElementsForPrinting(1001);
   }

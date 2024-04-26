@@ -6,7 +6,8 @@ class A {
 
     for (int i    ; i < 5; ) {}
 
-    for (int i = x; false; ) {} // Noncompliant [[sc=21;ec=26]] {{This loop will never execute.}}
+    for (int i = x; false; ) {} // Noncompliant {{This loop will never execute.}}
+//                  ^^^^^
 
     for (int i = x; !true; ) {} // Noncompliant
 

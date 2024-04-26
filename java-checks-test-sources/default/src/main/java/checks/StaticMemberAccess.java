@@ -14,7 +14,7 @@ class StaticMemberAccessParent {
 
 class StaticMemberAccessChild extends StaticMemberAccessParent {
   public StaticMemberAccessChild() {
-    StaticMemberAccessChild.counter++;  // Noncompliant {{Use static access with "checks.StaticMemberAccessParent" for "counter".}}
+    StaticMemberAccessChild.counter++; // Noncompliant {{Use static access with "checks.StaticMemberAccessParent" for "counter".}}
     StaticMemberAccessParent.counter++; // Compliant
 
     StaticMemberAccessChild.foo(); // Noncompliant

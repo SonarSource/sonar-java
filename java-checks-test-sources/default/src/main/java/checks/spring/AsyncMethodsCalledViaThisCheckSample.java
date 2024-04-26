@@ -23,7 +23,8 @@ public class AsyncMethodsCalledViaThisCheckSample {
   }
 
   void asyncNoncompliant1() {
-    asyncMethod(); // Noncompliant [[sc=5;ec=18]] {{Call async methods via an injected dependency instead of directly via 'this'.}}
+    asyncMethod(); // Noncompliant {{Call async methods via an injected dependency instead of directly via 'this'.}}
+//  ^^^^^^^^^^^^^
   }
 
   void asyncNoncompliant2() {

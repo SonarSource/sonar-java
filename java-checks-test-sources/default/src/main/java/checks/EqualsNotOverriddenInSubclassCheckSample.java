@@ -18,7 +18,8 @@ class EqualsNotOverriddenInSubclassCheckSample {
     }
   }
 
-  class B extends A { // Noncompliant [[sc=9;ec=10]]  {{Override the "equals" method in this class.}}
+  class B extends A { // Noncompliant {{Override the "equals" method in this class.}}
+//      ^
     String s2;
   }
 

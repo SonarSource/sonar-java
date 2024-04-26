@@ -22,28 +22,29 @@ public class SynchronizationOnStringOrBoxedCheckSample {
   
   void method1() {
     
-    synchronized(bLock) {  // Noncompliant [[sc=18;ec=23]] {{Synchronize on a new "Object" instead.}}
+    synchronized(bLock) { // Noncompliant {{Synchronize on a new "Object" instead.}}
+//               ^^^^^
       // ...
     }
-    synchronized(iLock) {  // Noncompliant
+    synchronized(iLock) { // Noncompliant
       // ...
     }
-    synchronized(sLock) {  // Noncompliant
+    synchronized(sLock) { // Noncompliant
       // ...
     }
-    synchronized(opLock) {  // Noncompliant
+    synchronized(opLock) { // Noncompliant
       // ...
     }
-    synchronized(opIntLock) {  // Noncompliant
+    synchronized(opIntLock) { // Noncompliant
       // ...
     }
-    synchronized(opLongLock) {  // Noncompliant
+    synchronized(opLongLock) { // Noncompliant
       // ...
     }
-    synchronized(opDoubleLock) {  // Noncompliant
+    synchronized(opDoubleLock) { // Noncompliant
       // ...
     }
-    synchronized(zoneId) {  // Noncompliant
+    synchronized(zoneId) { // Noncompliant
       // ...
     }
     synchronized(oLock) {

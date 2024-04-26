@@ -16,7 +16,8 @@ class WeakSSLContextCheck {
   void foo(String protocol, String provider) throws NoSuchAlgorithmException, NoSuchProviderException {
     bar(SSLContext.getInstance(protocol));
 
-    bar(SSLContext.getInstance("SSL")); // Noncompliant [[sc=32;ec=37]] {{Change this code to use a stronger protocol.}}
+    bar(SSLContext.getInstance("SSL")); // Noncompliant {{Change this code to use a stronger protocol.}}
+//                             ^^^^^
     bar(SSLContext.getInstance("SSLv2")); // Noncompliant
     bar(SSLContext.getInstance("SSLv3")); // Noncompliant
     bar(SSLContext.getInstance("TLS")); // Noncompliant
@@ -42,11 +43,13 @@ class WeakSSLContextCheck {
 
   void okHttp(String argumentVersion) {
     ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-      .tlsVersions(TlsVersion.TLS_1_0) // Noncompliant [[sc=20;ec=38]] {{Change this code to use a stronger protocol.}}
+      .tlsVersions(TlsVersion.TLS_1_0) // Noncompliant {{Change this code to use a stronger protocol.}}
+//                 ^^^^^^^^^^^^^^^^^^
       .build();
 
     ConnectionSpec spec2 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-      .tlsVersions(TLS_1_1) // Noncompliant [[sc=20;ec=27]] {{Change this code to use a stronger protocol.}}
+      .tlsVersions(TLS_1_1) // Noncompliant {{Change this code to use a stronger protocol.}}
+//                 ^^^^^^^
       .build();
 
     ConnectionSpec spec3 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
@@ -62,7 +65,8 @@ class WeakSSLContextCheck {
       .build();
 
     ConnectionSpec specWithString = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-      .tlsVersions("TLSv1") // Noncompliant [[sc=20;ec=27]]
+      .tlsVersions("TLSv1") // Noncompliant
+//                 ^^^^^^^
       .build();
 
     ConnectionSpec specWithString2 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
@@ -74,17 +78,22 @@ class WeakSSLContextCheck {
       .build();
 
     ConnectionSpec specWithMultipleVersions = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-      .tlsVersions(TlsVersion.TLS_1_3, TlsVersion.TLS_1_1) // Noncompliant [[sc=40;ec=58]]
+      .tlsVersions(TlsVersion.TLS_1_3, TlsVersion.TLS_1_1) // Noncompliant
+//                                     ^^^^^^^^^^^^^^^^^^
       .build();
 
     ConnectionSpec specWithMultipleWeakVersions = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-      .tlsVersions(TlsVersion.TLS_1_0, // Noncompliant [[sc=20;ec=38;secondary=+1]]
+      .tlsVersions(TlsVersion.TLS_1_0, // Noncompliant
+//                 ^^^^^^^^^^^^^^^^^^
         TlsVersion.TLS_1_1)
+//  ^^^<
       .build();
 
     ConnectionSpec specWithMultipleWeakVersions2 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-      .tlsVersions("TLSv1", // Noncompliant [[sc=20;ec=27;secondary=+1]]
+      .tlsVersions("TLSv1", // Noncompliant
+//                 ^^^^^^^
         "TLSv1.1")
+//  ^^^<
       .build();
 
     ConnectionSpec specWithUnknownValue = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)

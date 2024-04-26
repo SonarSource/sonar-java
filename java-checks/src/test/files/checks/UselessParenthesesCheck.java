@@ -2,11 +2,17 @@ class Foo {
   void foo() {
     return 3;             // Compliant
     return (x);           // Compliant
-    return ((x));         // Noncompliant [[sc=13;ec=14;secondary=5]] {{Remove these useless parentheses.}}
+    return ((x)); // Noncompliant {{Remove these useless parentheses.}}
+//          ^
+//  ^^^<
     return (x + 1);       // Compliant
-    return ((x + 1));     // Noncompliant [[sc=13;ec=14;secondary=7]] {{Remove these useless parentheses.}}
+    return ((x + 1)); // Noncompliant {{Remove these useless parentheses.}}
+//          ^
+//  ^^^<
     int x = (y / 2 + 1);  // Compliant
-    int x2 = ((y / 2 + 1));  // Noncompliant [[sc=15;ec=16;secondary=9]] {{Remove these useless parentheses.}}
+    int x2 = ((y / 2 + 1)); // Noncompliant {{Remove these useless parentheses.}}
+//            ^
+//  ^^^<
     int y = (4+X) * y;    // Compliant
     int y2 = 4+(X * y);    // Compliant
 

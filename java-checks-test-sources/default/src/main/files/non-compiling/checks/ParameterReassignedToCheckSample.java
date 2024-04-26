@@ -40,7 +40,8 @@ class A {
   }
   abstract void method();
   public void f(int a) {
-    a = 0; // Noncompliant [[sc=5;ec=6]] {{Introduce a new variable instead of reusing the parameter "a".}}
+    a = 0; // Noncompliant {{Introduce a new variable instead of reusing the parameter "a".}}
+//  ^
     a += 1; // Noncompliant {{Introduce a new variable instead of reusing the parameter "a".}}
     int b = a;
 
@@ -80,7 +81,7 @@ class A {
   void meth() {
     try {
     } catch (Exception e) {
-      e = new RuntimeException(); // Noncompliant reassigned before read.
+      e = new RuntimeException(); // Noncompliant
       throw e;
     }
     while (someBool) {

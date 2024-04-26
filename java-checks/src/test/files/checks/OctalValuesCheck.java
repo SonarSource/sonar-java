@@ -2,7 +2,8 @@ class A {
   int a = 0;
   int b = 1;
   int c = 42;
-  int d = 010; // Noncompliant [[sc=11;ec=14]] {{Use decimal values instead of octal ones.}}
+  int d = 010; // Noncompliant {{Use decimal values instead of octal ones.}}
+//        ^^^
   int e = 00; // Noncompliant
   int f = 0.;
   int g = 0x00;

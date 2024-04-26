@@ -26,7 +26,7 @@ abstract class ExceptionThrown {
     }
   }
   void foo3(Map<String, Object> items, String key) {
-    Object value = items.get(key); // Noncompliant (bar2 is throwing a runtime exception)
+    Object value = items.get(key); // Noncompliant
     if (value == null) {
       items.put(key, bar2());
     }

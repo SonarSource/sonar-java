@@ -3,7 +3,8 @@ package checks;
 public class MathClampMethodsCheckSample {
 
   public void testNoncompliant(int min, int max, int value) {
-    int clampedValueConditional1 = value > max ? max : value < min ? min : value; // Noncompliant [[sc=36;ec=81]] {{Use "Math.clamp" instead of a conditional expression.}}
+    int clampedValueConditional1 = value > max ? max : value < min ? min : value; // Noncompliant {{Use "Math.clamp" instead of a conditional expression.}}
+//                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     int clampedValueConditional2 = value < min ? min : value > max ? max : value; // Noncompliant
 
     int clampedValueConditional4 = value > max ? max : Math.min(min, value); // Compliant
@@ -14,7 +15,8 @@ public class MathClampMethodsCheckSample {
     int conditionalValue = value == max ? max : value; // Compliant
     int conditionalValue2 = value > max ? max : value; // Compliant
 
-    int clampedValueMethodInvocation1 = Math.min(min, Math.max(max, value)); // Noncompliant [[sc=41;ec=76]] {{Use "Math.clamp" instead of "Math.min" or "Math.max".}}
+    int clampedValueMethodInvocation1 = Math.min(min, Math.max(max, value)); // Noncompliant {{Use "Math.clamp" instead of "Math.min" or "Math.max".}}
+//                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     int clampedValueMethodInvocation2 = Math.max(min, Math.min(max, value)); // Noncompliant
 
     int clampedValueMethodInvocation3 = Math.min(Math.min(min, value), max); // Compliant - FN
@@ -58,7 +60,7 @@ public class MathClampMethodsCheckSample {
 
     int b1 = value > max ? max : value; // Compliant
     int b2 = value > max ? value : value < min ? min : value; // Compliant
-    int b3 = value > max ? max : value > max ? value : max; // Noncompliant - stupid FP
+    int b3 = value > max ? max : value > max ? value : max; // Noncompliant
 
     int maxValue = value > min ? min : value > max ? max : value; // Compliant
 

@@ -16,7 +16,7 @@ class A extends B {
   A[] as = new A[1];
 
   public A() {
-    list.add(this); // Noncompliant [sc=16;ec=20] {{Make sure the use of "this" doesn't expose partially-constructed instances of this class in multi-threaded environments.}}
+    list.add(this); // Noncompliant {{Make sure the use of "this" doesn't expose partially-constructed instances of this class in multi-threaded environments.}}
 
     tempVal = this; // Compliant
     this.tempVal = this; // Compliant

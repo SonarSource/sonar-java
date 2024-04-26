@@ -3,13 +3,16 @@ package checks;
 public class RestrictedIdentifiersUsageCheckSample {
 
   void noncompliant() {
-    String var = "var"; // Noncompliant [[sc=12;ec=15]]{{Rename this variable to not match a restricted identifier.}}
+    String var = "var"; // Noncompliant {{Rename this variable to not match a restricted identifier.}}
+//         ^^^
     var = "what is this?";
 
-    String record = "record"; // Noncompliant [[sc=12;ec=18]]{{Rename this variable to not match a restricted identifier.}}
+    String record = "record"; // Noncompliant {{Rename this variable to not match a restricted identifier.}}
+//         ^^^^^^
   }
 
-  void yield(int i) { // Noncompliant [[sc=8;ec=13]]{{Rename this method to not match a restricted identifier.}}
+  void yield(int i) { // Noncompliant {{Rename this method to not match a restricted identifier.}}
+//     ^^^^^
     switch (i) {
       case 1:
         System.out.println(1);

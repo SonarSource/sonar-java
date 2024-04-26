@@ -10,7 +10,8 @@ class A {
     }
   }
   void plop() {
-   new A(1,2,new String[]{"1"}); // Noncompliant [[sc=8;ec=9]] {{Remove this forbidden initialization}}
+   new A(1,2,new String[]{"1"}); // Noncompliant {{Remove this forbidden initialization}}
+//     ^
    new A();
    new B(1,2,new String[]{"1"});
    new B();

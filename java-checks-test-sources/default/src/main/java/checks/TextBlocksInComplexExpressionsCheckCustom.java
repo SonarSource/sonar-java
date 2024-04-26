@@ -26,7 +26,7 @@ class TextBlocksInComplexExpressionsCheckCustom {
   
   void fun(List<String> listOfStrings) {
     listOfStrings.stream()
-      // Noncompliant@+1
+ // Noncompliant@+1
       .map(str -> !"""
         <project>
           <modelVersion>4.0.0</modelVersion>

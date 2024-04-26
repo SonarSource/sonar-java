@@ -13,7 +13,8 @@ class ConstantsShouldBeStaticFinalCheck {
 
   abstract class A extends Parent {
     private final static int foo = 1;
-    private final int f1 = 0;                             // Noncompliant [[sc=23;ec=25]] {{Make this final field static too.}}
+    private final int f1 = 0; // Noncompliant {{Make this final field static too.}}
+//                    ^^
     private final static int f2 = 0;                      // Compliant
     private static final int f3 = 0;                      // Compliant
     public final int f4 = ConstantsShouldBeStaticFinalCheckEnumTest.MY_CONSTANT; // Noncompliant
@@ -21,16 +22,16 @@ class ConstantsShouldBeStaticFinalCheck {
     private final int f6 = foo();                         // Compliant
     private final int f62 = this.foo;                     // Compliant
     private final int f63 = super.foo;                    // Compliant
-    private final int f64 = foo;                          // Noncompliant
+    private final int f64 = foo; // Noncompliant
     private int f7 = 0;                                   // Compliant
     private int f8;                                       // Compliant
     private final int f9;                                 // Compliant
     private final checks.ConstantsShouldBeStaticFinalCheck.A myA = this; // Compliant
     private final int
-      f10 = 0,                                             // Noncompliant
+      f10 = 0, // Noncompliant
       f11,                                                 // Compliant
       f12 = foo(),                                         // Compliant
-      f13 = MY_CONSTANT;                                   // Noncompliant
+      f13 = MY_CONSTANT; // Noncompliant
     private final int[] newInt = new int[42];              // Compliant
     private final String[] NOT_POSSIBLE = {}; // compliant, array are not constants
     protected final Object [] a = new Object[] {"UTF-8", null}; // compliant, array are not constants

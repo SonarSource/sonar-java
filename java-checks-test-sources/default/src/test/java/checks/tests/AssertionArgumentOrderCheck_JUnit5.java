@@ -22,7 +22,9 @@ class AssertionArgumentOrderCheck_JUnit5 {
 
   void fun() {
     assertEquals(0, new AssertionArgumentOrderCheck_JUnit5().actual());
-    assertEquals(new AssertionArgumentOrderCheck_JUnit5().actual(), 0); // Noncompliant [[sc=69;ec=70;secondary=25]] {{Swap these 2 arguments so they are in the correct order: expected value, actual value.}}
+    assertEquals(new AssertionArgumentOrderCheck_JUnit5().actual(), 0); // Noncompliant {{Swap these 2 arguments so they are in the correct order: expected value, actual value.}}
+//                                                                  ^
+//  ^^^<
     assertEquals(new AssertionArgumentOrderCheck_JUnit5().actual(), 0, "message"); // Noncompliant {{Swap these 2 arguments so they are in the correct order: expected value, actual value.}}
     assertEquals(new AssertionArgumentOrderCheck_JUnit5().actual(), 0, () -> "messageSupplier"); // Noncompliant
     assertEquals("constantString", actualObject(), "message");

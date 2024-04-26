@@ -108,12 +108,14 @@ public class AssertJChainSimplificationCheckTest {
     Comparable x = getBoolean();
     Object y = getObject();
 
-    assertThat(getObject()).isEqualTo(null); // Noncompliant [[sc=29;ec=38]] {{Use isNull() instead.}}
+    assertThat(getObject()).isEqualTo(null); // Noncompliant {{Use isNull() instead.}}
+//                          ^^^^^^^^^
     assertThat(getObject()).isNotEqualTo(null); // Noncompliant {{Use isNotNull() instead.}}
     assertThat(getObject())
       .isEqualTo(null) // Noncompliant
       .isNotEqualTo(getObject());
-    assertThat(getObject()).as("some message)").isEqualTo(getObject()).withFailMessage("another message)").isNotEqualTo(null).as("a third message"); // Noncompliant [[sc=108;ec=120]]
+    assertThat(getObject()).as("some message)").isEqualTo(getObject()).withFailMessage("another message)").isNotEqualTo(null).as("a third message"); // Noncompliant
+//                                                                                                         ^^^^^^^^^^^^
     assertThat(new Object()).isEqualTo(null) // Noncompliant
       .isNotEqualTo(null); // Noncompliant
 
@@ -123,7 +125,9 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getObject()).isEqualTo(false); // Compliant
     assertThat(getObject()).isEqualTo(""); // Compliant
     assertThat(getObject()).isEqualTo(0); // Compliant
-    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=+0]] {{Use assertThat(actual).isEqualTo(expected) instead.}}
+    assertThat(x.equals(y)).isTrue(); // Noncompliant {{Use assertThat(actual).isEqualTo(expected) instead.}}
+//                          ^^^^^^
+//  ^^^<
     assertThat(x.equals(y)).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEqualTo(expected) instead.}}
     assertThat(x == y).isTrue(); // Noncompliant {{Use assertThat(actual).isSameAs(expected) instead.}}
     assertThat(x == y).isFalse(); // Noncompliant {{Use assertThat(actual).isNotSameAs(expected) instead.}}
@@ -142,7 +146,8 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(x.compareTo(y)).isNotEqualTo(0); // Noncompliant {{Use isNotZero() instead.}}
     assertThat(getObject()).isNotEqualTo(0); // Compliant, can not use isNotZero on object
     assertThat(x.compareTo(y)).as("message").isNotEqualTo(0); // Noncompliant
-    assertThat(x.compareTo(y)).isNotEqualTo(4).isNotEqualTo(null).isNotEqualTo(-1); // Noncompliant [[sc=48;ec=60]] - but only raise issue on the 'null' check
+    assertThat(x.compareTo(y)).isNotEqualTo(4).isNotEqualTo(null).isNotEqualTo(-1); // Noncompliant
+//                                             ^^^^^^^^^^^^
 
     assertThat(x.compareTo(y)).isZero(); // Noncompliant {{Use assertThat(actual).isEqualByComparingTo(expected) instead.}}
     assertThat(x.compareTo(y)).isNotZero(); // Noncompliant {{Use assertThat(actual).isNotEqualByComparingTo(expected) instead.}}
@@ -351,45 +356,45 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getFile().length()).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
     assertThat(getFile().length()).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
     assertThat(getFile().length()).isNotZero(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
-    assertThat(getFile().length()).isNotEqualTo(0);	// Noncompliant {{Use isNotZero() instead.}}
+    assertThat(getFile().length()).isNotEqualTo(0); // Noncompliant {{Use isNotZero() instead.}}
     assertThat(getFile().length()).isEqualTo(size); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead.}}
     assertThat(getFile().length()).isPositive(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
 
     assertThat(getFile().canRead()).isTrue(); // Noncompliant {{Use assertThat(actual).canRead() instead.}}
     assertThat(getFile().canWrite()).isTrue(); // Noncompliant {{Use assertThat(actual).canWrite() instead.}}
-    assertThat(getFile().exists()).isTrue();// Noncompliant	{{Use assertThat(actual).exists() instead.}}
-    assertThat(getFile().exists()).isFalse();	// Noncompliant {{Use assertThat(actual).doesNotExist() instead.}}
+    assertThat(getFile().exists()).isTrue(); // Noncompliant {{Use assertThat(actual).exists() instead.}}
+    assertThat(getFile().exists()).isFalse(); // Noncompliant {{Use assertThat(actual).doesNotExist() instead.}}
     assertThat(getFile().getName()).isEqualTo(name); // Noncompliant {{Use assertThat(actual).hasName(expected) instead.}}
     assertThat(getFile().getParent()).isEqualTo(name); // Noncompliant {{Use assertThat(actual).hasParent(expected) instead.}}
     assertThat(getFile().getParentFile()).isEqualTo(getFile()); // Noncompliant {{Use assertThat(actual).hasParent(expected) instead.}}
-    assertThat(getFile().getParent()).isNull();	// Noncompliant {{Use assertThat(actual).hasNoParent() instead.}}
-    assertThat(getFile().getParentFile()).isNull(); // Noncompliant	{{Use assertThat(actual).hasNoParent() instead.}}
-    assertThat(getFile().isAbsolute()).isTrue(); // Noncompliant	{{Use assertThat(actual).isAbsolute() instead.}}
-    assertThat(getFile().isAbsolute()).isFalse(); // Noncompliant	{{Use assertThat(actual).isRelative() instead.}}
-    assertThat(getFile().isDirectory()).isTrue(); // Noncompliant	{{Use assertThat(actual).isDirectory() instead.}}
-    assertThat(getFile().isFile()).isTrue(); // Noncompliant	{{Use assertThat(actual).isFile() instead.}}
+    assertThat(getFile().getParent()).isNull(); // Noncompliant {{Use assertThat(actual).hasNoParent() instead.}}
+    assertThat(getFile().getParentFile()).isNull(); // Noncompliant {{Use assertThat(actual).hasNoParent() instead.}}
+    assertThat(getFile().isAbsolute()).isTrue(); // Noncompliant {{Use assertThat(actual).isAbsolute() instead.}}
+    assertThat(getFile().isAbsolute()).isFalse(); // Noncompliant {{Use assertThat(actual).isRelative() instead.}}
+    assertThat(getFile().isDirectory()).isTrue(); // Noncompliant {{Use assertThat(actual).isDirectory() instead.}}
+    assertThat(getFile().isFile()).isTrue(); // Noncompliant {{Use assertThat(actual).isFile() instead.}}
 
-    assertThat(getFile().list()).isEmpty(); // Noncompliant	{{Use assertThat(actual).isEmptyDirectory() instead.}}
-    assertThat(getFile().listFiles()).isEmpty(); // Noncompliant	{{Use assertThat(actual).isEmptyDirectory() instead.}}
-    assertThat(getFile().list()).isNotEmpty(); // Noncompliant	{{Use assertThat(actual).isNotEmptyDirectory() instead.}}
-    assertThat(getFile().listFiles()).isNotEmpty(); // Noncompliant	{{Use assertThat(actual).isNotEmptyDirectory() instead.}}
+    assertThat(getFile().list()).isEmpty(); // Noncompliant {{Use assertThat(actual).isEmptyDirectory() instead.}}
+    assertThat(getFile().listFiles()).isEmpty(); // Noncompliant {{Use assertThat(actual).isEmptyDirectory() instead.}}
+    assertThat(getFile().list()).isNotEmpty(); // Noncompliant {{Use assertThat(actual).isNotEmptyDirectory() instead.}}
+    assertThat(getFile().listFiles()).isNotEmpty(); // Noncompliant {{Use assertThat(actual).isNotEmptyDirectory() instead.}}
 
     // We report only step by step, not the final transformation possible
     assertThat(getFile().list().length).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
     assertThat(getFile().list().length).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
-    assertThat(getFile().list()).isEmpty(); // Noncompliant	{{Use assertThat(actual).isEmptyDirectory() instead.}}
+    assertThat(getFile().list()).isEmpty(); // Noncompliant {{Use assertThat(actual).isEmptyDirectory() instead.}}
     assertThat(getFile()).isEmptyDirectory(); // Compliant, 3 iterations to reach a nice assertion
   }
 
   void pathRelatedAssertionChains() {
     String name = "path";
 
-    assertThat(getPath().startsWith(name)).isTrue(); // Noncompliant	{{Use assertThat(actual).startsWithRaw(expected) instead.}}
-    assertThat(getPath().endsWith(name)).isTrue(); // Noncompliant	{{Use assertThat(actual).endsWithRaw(expected) instead.}}
-    assertThat(getPath().getParent()).isEqualTo(name); // Noncompliant	{{Use assertThat(actual).hasParentRaw(expected) instead.}}
-    assertThat(getPath().getParent()).isNull();	// Noncompliant	{{Use assertThat(actual).hasNoParentRaw() instead.}}
-    assertThat(getPath().isAbsolute()).isTrue(); // Noncompliant	{{Use assertThat(actual).isAbsolute() instead.}}
-    assertThat(getPath().isAbsolute()).isFalse(); // Noncompliant	{{Use assertThat(actual).isRelative() instead.}}
+    assertThat(getPath().startsWith(name)).isTrue(); // Noncompliant {{Use assertThat(actual).startsWithRaw(expected) instead.}}
+    assertThat(getPath().endsWith(name)).isTrue(); // Noncompliant {{Use assertThat(actual).endsWithRaw(expected) instead.}}
+    assertThat(getPath().getParent()).isEqualTo(name); // Noncompliant {{Use assertThat(actual).hasParentRaw(expected) instead.}}
+    assertThat(getPath().getParent()).isNull(); // Noncompliant {{Use assertThat(actual).hasNoParentRaw() instead.}}
+    assertThat(getPath().isAbsolute()).isTrue(); // Noncompliant {{Use assertThat(actual).isAbsolute() instead.}}
+    assertThat(getPath().isAbsolute()).isFalse(); // Noncompliant {{Use assertThat(actual).isRelative() instead.}}
   }
 
   void optionalRelatedAssertionChains() {
@@ -419,8 +424,8 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getLong()).isGreaterThanOrEqualTo(42L); // Compliant
     assertThat(getLong()).isLessThan(0L); // Noncompliant {{Use isNegative() instead.}}
     assertThat(getLong()).isLessThan(1L); // Noncompliant {{Use isNotPositive() instead.}}
-    assertThat(getLong()).isLessThanOrEqualTo(0L);// Noncompliant {{Use isNotPositive() instead.}}
-    assertThat(getLong()).isLessThanOrEqualTo(-1L);// Noncompliant {{Use isNegative() instead.}}
+    assertThat(getLong()).isLessThanOrEqualTo(0L); // Noncompliant {{Use isNotPositive() instead.}}
+    assertThat(getLong()).isLessThanOrEqualTo(-1L); // Noncompliant {{Use isNegative() instead.}}
     assertThat(getLong()).isLessThanOrEqualTo(-42L);// Compliant
     assertThat(getLong()).isNotEqualTo(0L); // Noncompliant {{Use isNotZero() instead.}}
   }

@@ -9,11 +9,13 @@ import java.util.Set;
 
 class URLHashCodeAndEqualsCheck {
   public void foo(URL url) throws Exception {
-    Map<URL, Integer> sites = new HashMap<>(); // Noncompliant [[sc=5;ec=22]] {{Use the URI class instead.}}
+    Map<URL, Integer> sites = new HashMap<>(); // Noncompliant {{Use the URI class instead.}}
+//  ^^^^^^^^^^^^^^^^^
     Set<URL> otherSites = new HashSet<>(); // Noncompliant {{Use the URI class instead.}}
 
     URL homepage = new URL("http://sonarsource.com"); // Compliant
-    homepage.equals(url); // Noncompliant [[sc=5;ec=25]] {{Use the URI class instead.}}
+    homepage.equals(url); // Noncompliant {{Use the URI class instead.}}
+//  ^^^^^^^^^^^^^^^^^^^^
     homepage.hashCode(); // Noncompliant {{Use the URI class instead.}}
 
     homepage.getPath(); // Compliant

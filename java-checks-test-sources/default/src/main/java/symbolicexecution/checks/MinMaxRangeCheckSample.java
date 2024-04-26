@@ -32,7 +32,7 @@ class MinMaxRangeCheckSample {
     int newUpper = UPPER_INT;
     int newLower = LOWER_INT;
     int result = Math.min(newLower, num); // flow@f1 [[order=1]] {{Returns the lower bound.}}
-    return Math.max(result, newUpper); // Noncompliant [[flows=f1]] flow@f1 [[order=2]] {{Returns the upper bound.}}
+    return Math.max(result, newUpper); // Noncompliant {{Returns the upper bound.}}
   }
 
   public double doRangeCheckNOK5(int num) {

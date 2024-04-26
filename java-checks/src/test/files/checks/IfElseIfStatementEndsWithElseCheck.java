@@ -15,7 +15,8 @@ class A{
     } else {
     }
     if(x == 0) {  
-    }else if( x == 1) { // Noncompliant [[sc=6;ec=13]] {{"if ... else if" constructs should end with "else" clauses.}}
+    }else if( x == 1) { // Noncompliant {{"if ... else if" constructs should end with "else" clauses.}}
+//   ^^^^^^^
     }
 
     if(x==0) {  // Compliant
@@ -24,7 +25,8 @@ class A{
       if(x == 10) {  // Compliant
       }
       if(x == 11) {  
-      }else if(x == 12){// Noncompliant  [[sc=8;ec=15]] {{"if ... else if" constructs should end with "else" clauses.}}
+      }else if(x == 12){ // Noncompliant {{"if ... else if" constructs should end with "else" clauses.}}
+//     ^^^^^^^
       }
     }
     if(x == 0) {} // Compliant
@@ -32,12 +34,13 @@ class A{
     if(x == 13) { //Compliant 
     } else {
       if(x == 14) {  
-      }else if(x == 15) {// Noncompliant  [[sc=8;ec=15]] {{"if ... else if" constructs should end with "else" clauses.}}
+      }else if(x == 15) { // Noncompliant {{"if ... else if" constructs should end with "else" clauses.}}
+//     ^^^^^^^
       }
     }
     if(x ==16) {
     }else if(x == 17) {
-    }else if(x == 18) {  // Noncompliant
+    }else if(x == 18) { // Noncompliant
     }
     if(x ==16) {
     }else if(x == 17) {
@@ -46,7 +49,7 @@ class A{
     if(x ==16) {
     }else if(x == 17) {
     }else if(x == 18) {
-    }else if(x == 19){}  // Noncompliant
+    }else if(x == 19){} // Noncompliant
   }
 
   void foo2(int op) {

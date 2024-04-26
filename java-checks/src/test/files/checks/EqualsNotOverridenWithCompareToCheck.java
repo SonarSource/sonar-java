@@ -15,7 +15,8 @@ class Foo implements Comparable<Foo> {
 class Foo2 implements Comparable<Foo2> {
 
   @Override
-  public int compareTo(Foo2 o) { // Noncompliant [[sc=14;ec=23]] {{Override "equals(Object obj)" to comply with the contract of the "compareTo(T o)" method.}}
+  public int compareTo(Foo2 o) { // Noncompliant {{Override "equals(Object obj)" to comply with the contract of the "compareTo(T o)" method.}}
+//           ^^^^^^^^^
     return 0;
   }
 
@@ -42,7 +43,7 @@ class Foo4 implements Comparable<Foo4> {
 class Foo5 implements Comparable<Foo5> {
 
   @Override
-  public int compareTo(Foo5 o) {           // Noncompliant
+  public int compareTo(Foo5 o) { // Noncompliant
     return 0;
   }
 
@@ -56,7 +57,7 @@ class Foo5 implements Comparable<Foo5> {
 class Foo6 implements Comparable<Foo6> {
 
   @Override
-  public int compareTo(Foo6 o) {           // Noncompliant
+  public int compareTo(Foo6 o) { // Noncompliant
     return 0;
   }
 
@@ -87,7 +88,7 @@ enum Foo8 implements Comparable<Foo8> {
   ;
 
   @Override
-  public int compareTo(Foo8 o) {           // Noncompliant
+  public int compareTo(Foo8 o) { // Noncompliant
     return 0;
   }
 

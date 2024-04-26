@@ -12,22 +12,28 @@ public class AwsCredentialsShouldBeSetExplicitlyCheckSample {
   public static final AwsClientBuilder BUILDER = S3Client.builder(); // Compliant FN - Could be configured closer to build call
 
   void nonCompliant() {
-    S3Client.builder().build(); // Noncompliant [[sc=5;ec=31]] {{Set the credentials provider explicitly on this builder.}}
-    S3Client client = S3Client.builder().build(); // Noncompliant [[sc=23;ec=49]] {{Set the credentials provider explicitly on this builder.}}
-    S3Client otherClient = S3Client.builder() // Noncompliant [[sl=+0;sc=28;el=+2;ec=15]] {{Set the credentials provider explicitly on this builder.}}
+    S3Client.builder().build(); // Noncompliant {{Set the credentials provider explicitly on this builder.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    S3Client client = S3Client.builder().build(); // Noncompliant {{Set the credentials provider explicitly on this builder.}}
+//                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    S3Client otherClient = S3Client.builder() // Noncompliant {{Set the credentials provider explicitly on this builder.}}
+^[sc=28;ec=15;sl=17;el=19]
       .region(Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable())))
       .build();
   }
 
   void nonCompliantBuilderAsVariable() {
-    S3ClientBuilder builder = S3Client.builder(); // Noncompliant [[sc=5;ec=50]] {{Set the credentials provider explicitly on this builder.}}
+    S3ClientBuilder builder = S3Client.builder(); // Noncompliant {{Set the credentials provider explicitly on this builder.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     builder.build();
 
-    S3ClientBuilder secondBuilder = S3Client.builder(); // Noncompliant [[sc=5;ec=56]] {{Set the credentials provider explicitly on this builder.}}
+    S3ClientBuilder secondBuilder = S3Client.builder(); // Noncompliant {{Set the credentials provider explicitly on this builder.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     secondBuilder.region(Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable())));
     secondBuilder.build();
 
-    S3ClientBuilder thirdBuilder = S3Client.builder() // Noncompliant [[sl=+0;sc=5;el=+1;ec=92]] {{Set the credentials provider explicitly on this builder.}}
+    S3ClientBuilder thirdBuilder = S3Client.builder() // Noncompliant {{Set the credentials provider explicitly on this builder.}}
+^[sc=5;ec=92;sl=30;el=31]
       .region(Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable())));
     thirdBuilder.build();
   }

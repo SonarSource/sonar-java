@@ -15,21 +15,21 @@ import static java.nio.file.StandardOpenOption.APPEND;
 class ObjectOutputStreamCheckSample {
   void noncompliant_1(String fileName) throws IOException {
     FileOutputStream fos = new FileOutputStream(fileName , true);  // fos opened in append mode
-    ObjectOutputStream out = new ObjectOutputStream(fos);  // Noncompliant {{Do not use a FileOutputStream in append mode.}}
+    ObjectOutputStream out = new ObjectOutputStream(fos); // Noncompliant {{Do not use a FileOutputStream in append mode.}}
   }
   void noncompliant_2(String fileName, boolean appendMode) throws IOException {
     if (!appendMode) return;
     FileOutputStream fos = new FileOutputStream(fileName, appendMode);  // fos opened in append mode
-    ObjectOutputStream out = new ObjectOutputStream(fos);  // Noncompliant
+    ObjectOutputStream out = new ObjectOutputStream(fos); // Noncompliant
   }
   void noncompliant_3(File file) throws IOException {
     FileOutputStream fos = new FileOutputStream(file , true);  // fos opened in append mode
-    ObjectOutputStream out = new ObjectOutputStream(fos);  // Noncompliant
+    ObjectOutputStream out = new ObjectOutputStream(fos); // Noncompliant
   }
 
   void noncompliant_10() throws IOException {
     OutputStream fos = Files.newOutputStream(Paths.get("a"), StandardOpenOption.APPEND); // flow@f1 {{FileOutputStream created here.}}
-    ObjectOutputStream out = new ObjectOutputStream(fos); // Noncompliant [[flows=f1]]
+    ObjectOutputStream out = new ObjectOutputStream(fos); // Noncompliant
   }
   void noncompliant_11() throws IOException {
     OutputStream fos = Files.newOutputStream(Paths.get("a"), StandardOpenOption.DELETE_ON_CLOSE, StandardOpenOption.APPEND);

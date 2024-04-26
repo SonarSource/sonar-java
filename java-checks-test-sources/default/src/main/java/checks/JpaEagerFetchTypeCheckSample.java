@@ -22,7 +22,8 @@ public class JpaEagerFetchTypeCheckSample {
     FetchType foo() default FetchType.LAZY;
   }
 
-  @Basic(fetch = FetchType.EAGER) // Noncompliant [[sc=28;ec=33]] {{Use lazy fetching instead.}}
+  @Basic(fetch = FetchType.EAGER) // Noncompliant {{Use lazy fetching instead.}}
+//                         ^^^^^
   private String foo;
 
   @javax.persistence.Basic(fetch = javax.persistence.FetchType.EAGER) // Noncompliant

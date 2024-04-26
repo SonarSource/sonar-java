@@ -40,7 +40,7 @@ public class AssertionTypesCheck_JUnit4 {
     assertNotEquals(new A[][] {}, new X[][] {}); // Noncompliant
 
     assertNotEquals(new int[] {}, new int[] {});
-    assertNotEquals(new A[] {}, new int[] {});    // Noncompliant
+    assertNotEquals(new A[] {}, new int[] {}); // Noncompliant
     assertNotEquals(new long[] {}, new int[] {}); // Noncompliant
 
     assertNotEquals(a, a2);

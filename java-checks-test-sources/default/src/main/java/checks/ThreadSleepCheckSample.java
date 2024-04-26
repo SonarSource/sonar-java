@@ -12,7 +12,8 @@ class ThreadSleepCheckSample {
       Thread.sleep(12, 13);
       synchronized (monitor) {
         while (notReady()) {
-          Thread.sleep(200);    // Noncompliant [[sc=18;ec=23]] {{Replace the call to "Thread.sleep(...)" with a call to "wait(...)".}}
+          Thread.sleep(200); // Noncompliant {{Replace the call to "Thread.sleep(...)" with a call to "wait(...)".}}
+//               ^^^^^
           Thread.sleep(200, 12); // Noncompliant
         }
         process();
@@ -27,7 +28,7 @@ class ThreadSleepCheckSample {
     }
 
     synchronized void foo2() throws InterruptedException {
-      Thread.sleep(200);    // Noncompliant
+      Thread.sleep(200); // Noncompliant
       Thread.sleep(200, 12); // Noncompliant
     }
   }
@@ -62,7 +63,8 @@ class ThreadSleepCheckSample {
       return s -> {
         synchronized (new Object()) {
           try {
-            Thread.sleep(200);    // Noncompliant [[sc=20;ec=25]] {{Replace the call to "Thread.sleep(...)" with a call to "wait(...)".}}
+            Thread.sleep(200); // Noncompliant {{Replace the call to "Thread.sleep(...)" with a call to "wait(...)".}}
+//                 ^^^^^
           } catch (InterruptedException e) {
             e.printStackTrace();
           }

@@ -1,11 +1,14 @@
 class CognitiveComplexityCheck {
 
 
-  public int ternaryOp(int a, int b) { // Noncompliant [[sc=14;ec=23;secondary=6,8]] {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+  public int ternaryOp(int a, int b) { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+//           ^^^^^^^^^
 
     int c = a>b?b:a;
+//  ^^^<
 
     return c>20?4:7;
+//  ^^^<
 
   }
 
@@ -24,16 +27,16 @@ class CognitiveComplexityCheck {
   public void extraConditions5() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 5 to the 0 allowed.}}
     if (a || b && c || d && e) {}
   }
-  public void extraConditions6() {// Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.}}
+  public void extraConditions6() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.}}
     if (a && b && c || d || e) {}
   }
-  public void extraConditions7() {// Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 1 to the 0 allowed.}}
+  public void extraConditions7() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 1 to the 0 allowed.}}
     if (a) {}
   }
-  public void extraConditions8() {// Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+  public void extraConditions8() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
     if (a && b && c && d && e) {}
   }
-  public void extraConditions9() {// Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+  public void extraConditions9() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
       if (a || b || c || d || e) {}
   }
   public void extraCondition10() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 4 to the 0 allowed.}}
@@ -41,20 +44,26 @@ class CognitiveComplexityCheck {
   }
 
 
-  public void switch2(){ // Noncompliant [[sc=15;ec=22;secondary=46,50,51,51,51,55,57]] {{Refactor this method to reduce its Cognitive Complexity from 12 to the 0 allowed.}}
+  public void switch2(){ // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 12 to the 0 allowed.}}
+//            ^^^^^^^
 
     switch(foo){                              //+1
+//  ^^^<
       case 1:
         break;
       case ASSIGNMENT:
         if (lhs.is(Tree.Kind.IDENTIFIER)) {   //+2 (nesting=1)
+//  ^^^<
           if (a && b && c || d) {             //+5 (nesting=2)
+//  ^^^<
 
           }
 
           if(element.is(Tree.Kind.ASSIGNMENT)) { //+3 (nesting=2)
+//  ^^^<
             out.remove(symbol);
           } else {                               //+1
+//  ^^^<
             out.add(symbol);
           }
         }
@@ -66,19 +75,26 @@ class CognitiveComplexityCheck {
     if (a || (b || c)) {}
   }
 
-  public void extraConditions12() { // Noncompliant [[secondary=70,72,74,76,78,80,81]] {{Refactor this method to reduce its Cognitive Complexity from 7 to the 0 allowed.}}
+  public void extraConditions12() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 7 to the 0 allowed.}}
     if (     // +1
+//  ^^^<
       a
       && b   // +1 - secondary on each first operator of a new sequence
+//  ^^^<
       && c
       || d   // +1
+//  ^^^<
       || e
       && f   // +1
+//  ^^^<
       && g
       || (h  // +1
+//  ^^^<
       || (i
       && j   // +1
+//  ^^^<
       || k)) // +1 - parentheses completely ignored
+//  ^^^<
       || l
       || m
       ){}
@@ -184,7 +200,7 @@ class CognitiveComplexityCheck {
     }
   }
 
-  boolean isPalindrome(char [] s, int len) { // Noncompliant Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.
+  boolean isPalindrome(char [] s, int len) { // Noncompliant
 
     if(len < 2)
       return true;

@@ -25,7 +25,8 @@ public class CollectionConstructorReferenceCheck {
     Map<Integer, List<Object>> col1 = Stream.of(1, 2, 54000)
       .collect(Collectors.toMap(
         Function.identity(),
-        ArrayList::new));// Noncompliant [[sc=9;ec=23]] {{Replace this method reference by a lambda to explicitly show the usage of ArrayList(int initialCapacity) or ArrayList().}}
+        ArrayList::new)); // Noncompliant {{Replace this method reference by a lambda to explicitly show the usage of ArrayList(int initialCapacity) or ArrayList().}}
+//      ^^^^^^^^^^^^^^
 
     Map<Integer, List<Object>> col2 = Stream.of(1, 2, 54000)
       .collect(Collectors.toMap(
@@ -46,8 +47,10 @@ public class CollectionConstructorReferenceCheck {
       BitSet::new, // Compliant, not a collection
       HashMap::new, // Noncompliant
       HashSet::new, // Noncompliant
-      Hashtable::new, // Noncompliant [[sc=7;ec=21]] {{Replace this method reference by a lambda to explicitly show the usage of Hashtable(int initialCapacity) or Hashtable().}}
-      IdentityHashMap::new, // Noncompliant [[sc=7;ec=27]] {{Replace this method reference by a lambda to explicitly show the usage of IdentityHashMap(int expectedMaxSize) or IdentityHashMap().}}
+      Hashtable::new, // Noncompliant {{Replace this method reference by a lambda to explicitly show the usage of Hashtable(int initialCapacity) or Hashtable().}}
+//    ^^^^^^^^^^^^^^
+      IdentityHashMap::new, // Noncompliant {{Replace this method reference by a lambda to explicitly show the usage of IdentityHashMap(int expectedMaxSize) or IdentityHashMap().}}
+//    ^^^^^^^^^^^^^^^^^^^^
       LinkedHashMap::new, // Noncompliant
       LinkedHashSet::new, // Noncompliant
       PriorityQueue::new, // Noncompliant

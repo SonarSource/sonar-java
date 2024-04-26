@@ -5,15 +5,18 @@ public class Fruit extends Food {
     if (obj == this) {
       return true;
     }
-    if (Fruit.class == obj.getClass()) { // Noncompliant [[sc=9;ec=20]] {{Compare to "this.getClass()" instead.}}
+    if (Fruit.class == obj.getClass()) { // Noncompliant {{Compare to "this.getClass()" instead.}}
+//      ^^^^^^^^^^^
       return ripe.equals(((Fruit) obj).getRipe());
     }
-    if (obj instanceof Fruit) {  // Noncompliant [[sc=9;ec=29]] {{Compare to "this.getClass()" instead.}}
+    if (obj instanceof Fruit) { // Noncompliant {{Compare to "this.getClass()" instead.}}
+//      ^^^^^^^^^^^^^^^^^^^^
       return ripe.equals(((Fruit) obj).getRipe());
-    } else if (obj instanceof Season) { // Noncompliant [[sc=16;ec=37]] {{Remove this comparison to an unrelated class.}}
+    } else if (obj instanceof Season) { // Noncompliant {{Remove this comparison to an unrelated class.}}
+//             ^^^^^^^^^^^^^^^^^^^^^
       // ...
     }
-    if (Fruit.class != obj.getClass()) { // Noncompliant broken for child classes
+    if (Fruit.class != obj.getClass()) { // Noncompliant
     }
   }
 }
@@ -45,7 +48,8 @@ public class Fruit3 extends Food {
         if (Foo.class==obj.getClass()){ // Noncompliant
 
         }
-        if (obj instanceof Season) { // Noncompliant [[sc=13;ec=34]] symmetry broken for Season class
+        if (obj instanceof Season) { // Noncompliant
+//          ^^^^^^^^^^^^^^^^^^^^^
           // ...
         }
         return false;
@@ -109,7 +113,8 @@ class UnrelatedClassLiteral extends Parent {
       return f.equals(((MyObject) obj).f);
     }
 
-    if (obj.getClass() == String.class) { // Noncompliant [[sc=27;ec=39]] {{Remove this comparison to an unrelated class.}}
+    if (obj.getClass() == String.class) { // Noncompliant {{Remove this comparison to an unrelated class.}}
+//                        ^^^^^^^^^^^^
       return f.equals(obj.toString());
     }
     if (obj.getClass() == Parent.class) { // Noncompliant

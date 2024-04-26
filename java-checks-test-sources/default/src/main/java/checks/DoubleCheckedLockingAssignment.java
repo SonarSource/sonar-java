@@ -11,9 +11,12 @@ public class DoubleCheckedLockingAssignment {
     if (strings == null) {
       synchronized (this) {
         if (strings == null) {
-          strings = new ArrayList<>();  // Noncompliant [[sc=11;ec=38;secondary=15,16]] {{Fully initialize "strings" before assigning it.}}
+          strings = new ArrayList<>(); // Noncompliant {{Fully initialize "strings" before assigning it.}}
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
           strings.add("Hello");
+//  ^^^<
           strings.add("World");
+//  ^^^<
         }
       }
     }
@@ -24,10 +27,13 @@ public class DoubleCheckedLockingAssignment {
     if (null == strings) {
       synchronized (this) {
         if (null == this.strings) {
-          strings = new ArrayList<>();  // Noncompliant [[sc=11;ec=38;secondary=28,30]] {{Fully initialize "strings" before assigning it.}}
+          strings = new ArrayList<>(); // Noncompliant {{Fully initialize "strings" before assigning it.}}
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
           strings.add("Hello");
+//  ^^^<
           System.out.println();
           strings.add("World");
+//  ^^^<
         }
       }
     }

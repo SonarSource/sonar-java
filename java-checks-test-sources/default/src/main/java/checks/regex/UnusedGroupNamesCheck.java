@@ -6,51 +6,59 @@ import java.util.regex.Pattern;
 abstract class UnusedGroupNamesCheck {
 
   private final Pattern p0 = Pattern.compile("(?<g1>[0-9]{2})");
+//  ^^^<
 
   void noncompliant(String input) {
 
     Matcher m0 = p0.matcher(input);
     if (m0.matches()) {
-      m0.group(1); // Noncompliant [[secondary=-6]] {{Directly use 'g1' instead of its group number.}}
-      m0.start(1); // Noncompliant [[secondary=-7]] {{Directly use 'g1' instead of its group number.}}
-      m0.end(1); // Noncompliant [[secondary=-8]] {{Directly use 'g1' instead of its group number.}}
+      m0.group(1); // Noncompliant {{Directly use 'g1' instead of its group number.}}
+      m0.start(1); // Noncompliant {{Directly use 'g1' instead of its group number.}}
+      m0.end(1); // Noncompliant {{Directly use 'g1' instead of its group number.}}
     }
 
     Pattern p1 = Pattern
       .compile(
       "(?<g1>[0-9]+)"
+//  ^^^<
         + ":"
         + "(?<g2>[0-9]+)");
+//  ^^^<
     Matcher m1 = p1.matcher(input);
     if (m1.matches()) {
-      m1.group("g3"); // Noncompliant [[secondary=-3,-5]] {{There is no group named 'g3' in the regular expression.}}
-      m1.start("g3"); // Noncompliant [[secondary=-4,-6]] {{There is no group named 'g3' in the regular expression.}}
-      m1.end("g3"); // Noncompliant [[secondary=-5,-7]] {{There is no group named 'g3' in the regular expression.}}
+      m1.group("g3"); // Noncompliant {{There is no group named 'g3' in the regular expression.}}
+      m1.start("g3"); // Noncompliant {{There is no group named 'g3' in the regular expression.}}
+      m1.end("g3"); // Noncompliant {{There is no group named 'g3' in the regular expression.}}
     }
 
     Matcher m2 = Pattern.compile(
       "(?<month>[0-9]{2})"
+//  ^^^<
         + "/"
         + "(?<year>[0-9]{2})")
+//  ^^^<
       .matcher(input);
     System.out.println(m2); // Printing the matcher does not count as the matcher escaping the scope because the parameter
                             // type of println is Object, not Matcher, so we can assume that it won't be used as a matcher
     new Bar(m2); // Same. Bar takes Object as its argument type
     if (m2.matches()) {
         m2.group(
-          1 // Noncompliant [[secondary=-9]] {{Directly use 'month' instead of its group number.}}
+          1 // Noncompliant {{Directly use 'month' instead of its group number.}}
         );
         m2.group(
-          2 // Noncompliant [[secondary=-10]] {{Directly use 'year' instead of its group number.}}
+          2 // Noncompliant {{Directly use 'year' instead of its group number.}}
         );
     }
 
     Pattern p3 = Pattern.compile(
-      "(?<g1>[a-z]+)" // Noncompliant [[secondary=+0,+2,+4]] {{Use the named groups of this regex or remove the names.}}
+      "(?<g1>[a-z]+)" // Noncompliant {{Use the named groups of this regex or remove the names.}}
+//  ^^^<
         + ":"
         + "(?<g2>[0-9]+)"
+//  ^^^<
         + "="
         + "(?<g3>[a-zA-Z0-9]+)");
+//  ^^^<
 
     if (p3.matcher(input).matches()) {
       System.out.println(input);
@@ -275,6 +283,7 @@ abstract class UnusedGroupNamesCheck {
 
   static class UsingFields2 {
     private static final Pattern CONSTANT_PATTERN = Pattern.compile("(?<group>[a-z])");
+//  ^^^<
     private final Matcher matcher;
 
     UsingFields2(String value) {
@@ -282,7 +291,7 @@ abstract class UnusedGroupNamesCheck {
     }
 
     void useMatcher() {
-      matcher.group(1); // Noncompliant [[secondary=-8]] {{Directly use 'group' instead of its group number.}}
+      matcher.group(1); // Noncompliant {{Directly use 'group' instead of its group number.}}
     }
   }
 

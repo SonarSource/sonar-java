@@ -21,7 +21,8 @@ class ObjectFinalizeOverriddenCheckSample {
   class Foo {
 
     @Override
-    protected void finalize() throws Throwable { // Noncompliant [[sc=20;ec=28]] {{Do not override the Object.finalize() method.}}
+    protected void finalize() throws Throwable { // Noncompliant {{Do not override the Object.finalize() method.}}
+//                 ^^^^^^^^
     }
 
     public void foo() { // Compliant

@@ -3,22 +3,26 @@ package checks.tests;
 public class NoTestInTestClassCustomPattern {
 }
 
-class TestJUnit4WithJUnit3 { // Noncompliant [[sc=7;ec=27]]
+class TestJUnit4WithJUnit3 { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^^^
   public void test() {
   }
 }
 
-class JUnit4WithJUnit3Test { // Noncompliant [[sc=7;ec=27]]
+class JUnit4WithJUnit3Test { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^^^
   public void test() {
   }
 }
 
-class JUnit4WithJUnit3Tests { // Noncompliant [[sc=7;ec=28]]
+class JUnit4WithJUnit3Tests { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^^^^
   public void test() {
   }
 }
 
-class JUnit4WithJUnit3TestCase { // Noncompliant [[sc=7;ec=31]]
+class JUnit4WithJUnit3TestCase { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^^^^^^^
   public void test() {
   }
 }

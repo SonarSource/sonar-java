@@ -14,31 +14,40 @@ public class SpelExpressionCheckSample {
   private static final String INVALID_PROPERTY_PLACEHOLDER = "${foo.bar[}";
   private static final String VALID_PROPERTY_PLACEHOLDER = "${foo.bar}";
 
-  @Value(UNCLOSED) // Noncompliant [[sc=10;ec=18]] {{Add missing '}' for this property placeholder or SpEL expression.}}
+  @Value(UNCLOSED) // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
+//       ^^^^^^^^
   private String complexArgument1;
 
-  @Value(INVALID_SPEL) // Noncompliant [[sc=10;ec=22]] {{Correct this malformed SpEL expression.}}
+  @Value(INVALID_SPEL) // Noncompliant {{Correct this malformed SpEL expression.}}
+//       ^^^^^^^^^^^^
   private String complexArgument2;
 
-  @Value(INVALID_PROPERTY_PLACEHOLDER) // Noncompliant [[sc=10;ec=38]] {{Correct this malformed property placeholder.}}
+  @Value(INVALID_PROPERTY_PLACEHOLDER) // Noncompliant {{Correct this malformed property placeholder.}}
+//       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   private String complexArgument3;
 
-  @Value(value = UNCLOSED) // Noncompliant [[sc=18;ec=26]] {{Add missing '}' for this property placeholder or SpEL expression.}}
+  @Value(value = UNCLOSED) // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
+//               ^^^^^^^^
   private String complexArgument4;
 
-  @Value(value = INVALID_SPEL) // Noncompliant [[sc=18;ec=30]] {{Correct this malformed SpEL expression.}}
+  @Value(value = INVALID_SPEL) // Noncompliant {{Correct this malformed SpEL expression.}}
+//               ^^^^^^^^^^^^
   private String complexArgument5;
 
-  @Value(value = INVALID_PROPERTY_PLACEHOLDER) // Noncompliant [[sc=18;ec=46]] {{Correct this malformed property placeholder.}}
+  @Value(value = INVALID_PROPERTY_PLACEHOLDER) // Noncompliant {{Correct this malformed property placeholder.}}
+//               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   private String complexArgument6;
 
-  @Value(value = "${1 + 2 + 3") // Noncompliant [[sc=19;ec=30]] {{Add missing '}' for this property placeholder or SpEL expression.}}
+  @Value(value = "${1 + 2 + 3") // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
+//                ^^^^^^^^^^^
   private String complexArgument7;
 
-  @Value(value = "#{1 * * 2}") // Noncompliant [[sc=19;ec=29]] {{Correct this malformed SpEL expression.}}
+  @Value(value = "#{1 * * 2}") // Noncompliant {{Correct this malformed SpEL expression.}}
+//                ^^^^^^^^^^
   private String complexArgument8;
 
-  @Value(value = "${foo.bar[}") // Noncompliant [[sc=19;ec=30]] {{Correct this malformed property placeholder.}}
+  @Value(value = "${foo.bar[}") // Noncompliant {{Correct this malformed property placeholder.}}
+//                ^^^^^^^^^^^
   private String complexArgument9;
 
   @Value(value = "#{1 + 2 + 3}") // Compliant
@@ -47,7 +56,8 @@ public class SpelExpressionCheckSample {
   @Value(value = VALID_PROPERTY_PLACEHOLDER) // Compliant
   private String complexArgument11;
 
-  @Value("#{systemProperties['user.region'}") // Noncompliant [[sc=11;ec=44]] {{Correct this malformed SpEL expression.}}
+  @Value("#{systemProperties['user.region'}") // Noncompliant {{Correct this malformed SpEL expression.}}
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   private String region1;
 
   @Value("#{systemProperties['user.region']}") // Compliant
@@ -83,7 +93,8 @@ public class SpelExpressionCheckSample {
   @Value("${user.region:#{  null + 3 }}") // Compliant
   private String default8;
 
-  @Value("${user.region:#{  null + * 3 }}") // Noncompliant [[sc=25;ec=41]] {{Correct this malformed SpEL expression.}}
+  @Value("${user.region:#{  null + * 3 }}") // Noncompliant {{Correct this malformed SpEL expression.}}
+//                      ^^^^^^^^^^^^^^^^
   private String default9;
 
   @Value("${user.region:#{'D'+'E'}}") // Compliant
@@ -92,10 +103,12 @@ public class SpelExpressionCheckSample {
   @Value("${user.region:#{null}:#{null}:foo.bar}") // Noncompliant
   private String default11;
 
-  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // Noncompliant [[sc=11;ec=49]] {{Correct this malformed property placeholder.}}
+  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // Noncompliant {{Correct this malformed property placeholder.}}
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   private String default12;
 
-  @Value("${user.region:#{4**4}:#{null}:foo.bar}") // Noncompliant [[sc=25;ec=32]] {{Correct this malformed SpEL expression.}}
+  @Value("${user.region:#{4**4}:#{null}:foo.bar}") // Noncompliant {{Correct this malformed SpEL expression.}}
+//                      ^^^^^^^
   private String default13;
 
   @Value("${user.2region:default-region}") // Compliant
@@ -119,13 +132,15 @@ public class SpelExpressionCheckSample {
   @Value("${server.error.path:${error.path:defaultErrorValue}}") // Compliant
   private String nestedPropertyValue2;
 
-  @Value("#{'${listOfValues}' split(',')}") // Noncompliant [[sc=11;ec=42]] {{Correct this malformed SpEL expression.}}
+  @Value("#{'${listOfValues}' split(',')}") // Noncompliant {{Correct this malformed SpEL expression.}}
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   private List<String> valuesListNc;
 
   @Value("#{'${listOfValues}'.split(',')}") // Compliant
   private List<String> valuesListC;
 
-  @Value("#{T(java.lang.Math).random() * 64h}") // Noncompliant [[sc=11;ec=46]] {{Correct this malformed SpEL expression.}}
+  @Value("#{T(java.lang.Math).random() * 64h}") // Noncompliant {{Correct this malformed SpEL expression.}}
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   private Double randPercentNc;
 
   @Value("#{T(java.lang.Math).random() * 100.0}") // Compliant
@@ -145,10 +160,12 @@ public class SpelExpressionCheckSample {
     @Query("select u from User u where u.age = ?#{[0]}") // Compliant
     List<User> findUsersByAge1(int age);
 
-    @Query("select u from User u where u.age = ?#{[0}") // Noncompliant [[sc=49;ec=54]]
+    @Query("select u from User u where u.age = ?#{[0}") // Noncompliant
+//                                              ^^^^^
     List<User> findUsersByAge2(int age);
 
-    @Query("select u from User u where u.age = ?#{[0]") // Noncompliant [[sc=49;ec=54]] {{Add missing '}' for this property placeholder or SpEL expression.}}
+    @Query("select u from User u where u.age = ?#{[0]") // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
+//                                              ^^^^^
     List<User> findUsersByAge3(int age);
 
     @Query("select u from User u where u.age = ?#{[0*]}") // Noncompliant
@@ -163,19 +180,19 @@ public class SpelExpressionCheckSample {
     @Query("select u from User u where u.name = :#{#customer.name} and u.firstname = :#{#customer.firstname}")  // Compliant
     List<User> findUsersByCustomersFullName1(@Param("customer") Customer customer);
 
-    @Query("select u from User u where u.name = :#{#customer.name} and u.firstname = :#{#customer.firstname")  // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
+    @Query("select u from User u where u.name = :#{#customer.name} and u.firstname = :#{#customer.firstname") // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
     List<User> findUsersByCustomersFullName2(@Param("customer") Customer customer);
 
-    @Query("select u from User u where u.name = :#{#customer.name and u.firstname = :#{#customer.firstname}")  // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
+    @Query("select u from User u where u.name = :#{#customer.name and u.firstname = :#{#customer.firstname}") // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
     List<User> findUsersByCustomersFullName3(@Param("customer") Customer customer);
 
-    @Query("select u from User u where u.name = :#{#customer.name and u.firstname} = :#{#*customer.firstname}")  // Noncompliant {{Correct this malformed SpEL expression.}}
+    @Query("select u from User u where u.name = :#{#customer.name and u.firstname} = :#{#*customer.firstname}") // Noncompliant {{Correct this malformed SpEL expression.}}
     List<User> findUsersByCustomersFullName4(@Param("customer") Customer customer);
 
     @Query("select u from User u where u.firstname = :#{#customer.firstname} and u.role=${admin}")  // Compliant
     List<User> findAdminUsersByFirstname1(@Param("customer") Customer customer);
 
-    @Query("select u from User u where u.firstname = :#{#customer.firstname} and u.role=${admin")  // Noncompliant
+    @Query("select u from User u where u.firstname = :#{#customer.firstname} and u.role=${admin") // Noncompliant
     List<User> findAdminUsersByFirstname2(@Param("customer") Customer customer);
   }
 
@@ -184,7 +201,8 @@ public class SpelExpressionCheckSample {
   public static class RequestController1 { }
 
   @Controller
-  @RequestMapping("#{1+2+}") // Noncompliant [[sc=20;ec=27]]
+  @RequestMapping("#{1+2+}") // Noncompliant
+//                 ^^^^^^^
   public static class RequestController2 { }
 
   @Value("foo") // Compliant
@@ -232,7 +250,8 @@ public class SpelExpressionCheckSample {
   @Value("$foo") // Compliant
   String delimiters8;
 
-  @Value("${}") // Noncompliant [[sc=11;ec=14]]
+  @Value("${}") // Noncompliant
+//        ^^^
   String delimiters9;
 
   @Value("${123") // Noncompliant
@@ -256,10 +275,10 @@ public class SpelExpressionCheckSample {
   @Value("#{{123}") // Noncompliant
   String delimiters16;
 
-  @Value("#{12{}3}") // Noncompliant, open
+  @Value("#{12{}3}") // Noncompliant
   String delimiters17;
 
-  @Value("#{{12}3{}") // Noncompliant, open
+  @Value("#{{12}3{}") // Noncompliant
   String delimiters18;
 
   @Value("#{{12}3{4{5}6}") // Noncompliant
@@ -274,13 +293,16 @@ public class SpelExpressionCheckSample {
   @Value("#{ }") // Noncompliant
   String delimiters22;
 
-  @Value("${") // Noncompliant [[sc=11;ec=13]]
+  @Value("${") // Noncompliant
+//        ^^
   String delimiters23;
 
-  @Value("${ ") // Noncompliant [[sc=11;ec=14]]
+  @Value("${ ") // Noncompliant
+//        ^^^
   String delimiters24;
 
-  @Value("#{ ") // Noncompliant [[sc=11;ec=14]]
+  @Value("#{ ") // Noncompliant
+//        ^^^
   String delimiters25;
 
   @Value("#{ " + "") // Noncompliant

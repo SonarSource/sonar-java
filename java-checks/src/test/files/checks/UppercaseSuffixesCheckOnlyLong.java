@@ -1,6 +1,7 @@
 class A {
   double f = 1.;
-  long long1 = 1l; // Noncompliant [[sc=16;ec=18]] {{Upper-case this literal "l" suffix.}}
+  long long1 = 1l; // Noncompliant {{Upper-case this literal "l" suffix.}}
+//             ^^
   float float1 = 1.0f; // Compliant
   double double1 = 1.0d; // Compliant
 

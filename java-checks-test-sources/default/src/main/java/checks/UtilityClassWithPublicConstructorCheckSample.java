@@ -55,7 +55,8 @@ class UtilityClassWithPublicConstructorCheckSample {
     }
   }
 
-  class Foo3 { // Noncompliant [[sc=9;ec=13]] {{Add a private constructor to hide the implicit public one.}}
+  class Foo3 { // Noncompliant {{Add a private constructor to hide the implicit public one.}}
+//      ^^^^
     public static void foo() {
     }
   }
@@ -145,7 +146,8 @@ class UtilityClassWithPublicConstructorCheckSample {
     ;
   }
 
-  class Foo14 { // Noncompliant [[sc=9;ec=14]] {{Add a private constructor to hide the implicit public one.}}
+  class Foo14 { // Noncompliant {{Add a private constructor to hide the implicit public one.}}
+//      ^^^^^
     static {
     }
   }

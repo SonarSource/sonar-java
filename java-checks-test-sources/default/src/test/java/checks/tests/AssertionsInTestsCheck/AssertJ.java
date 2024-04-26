@@ -214,7 +214,7 @@ public abstract class AssertJ {
   }
 
   @Test
-  public void bdd_assertions_example_without_assertion() { // Noncompliant - nothing is asserted here
+  public void bdd_assertions_example_without_assertion() { // Noncompliant
     BDDAssertions.then(listStringMethod());
   }
 

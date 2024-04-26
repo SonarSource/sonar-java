@@ -7,7 +7,8 @@ class A {
     Condition condition;
     synchronized (obj) {
       if (!suitableCondition()){
-        obj.wait(12); // Noncompliant [[sc=13;ec=17]] {{Remove this call to "wait" or move it into a "while" loop.}}
+        obj.wait(12); // Noncompliant {{Remove this call to "wait" or move it into a "while" loop.}}
+//          ^^^^
         condition.await(); // Noncompliant
       }
       for(;;){

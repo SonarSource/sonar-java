@@ -12,7 +12,8 @@ class AndroidBiometricAuthWithoutCryptoCheckSample {
     Executor executor,
     BiometricPrompt.AuthenticationCallback callback) {
 
-    bp.authenticate(cancel, executor, callback); // Noncompliant [[sc=8;ec=20]] {{Make sure performing a biometric authentication without a "CryptoObject" is safe here.}}
+    bp.authenticate(cancel, executor, callback); // Noncompliant {{Make sure performing a biometric authentication without a "CryptoObject" is safe here.}}
+//     ^^^^^^^^^^^^
   }
 
   void android_crypto(
@@ -28,7 +29,8 @@ class AndroidBiometricAuthWithoutCryptoCheckSample {
   void androidx_no_crypto(
     androidx.biometric.BiometricPrompt bp, androidx.biometric.BiometricPrompt.PromptInfo info) {
 
-    bp.authenticate(info); // Noncompliant [[sc=8;ec=20]] {{Make sure performing a biometric authentication without a "CryptoObject" is safe here.}}
+    bp.authenticate(info); // Noncompliant {{Make sure performing a biometric authentication without a "CryptoObject" is safe here.}}
+//     ^^^^^^^^^^^^
   }
 
   void androidx_crypto(

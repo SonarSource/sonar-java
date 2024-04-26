@@ -12,8 +12,10 @@ class A {
   }
 
   public boolean isFruitGrape(Fruit candidateFruit) {
-    if("".equals(Fruit.GRAPE)) { } // Noncompliant [[sc=11;ec=17]]
-    if(Fruit.GRAPE.equals("")) { } // Noncompliant [[sc=20;ec=26]]
+    if("".equals(Fruit.GRAPE)) { } // Noncompliant
+//        ^^^^^^
+    if(Fruit.GRAPE.equals("")) { } // Noncompliant
+//                 ^^^^^^
     if(equals(new A())) { }
     return candidateFruit.equals(Fruit.GRAPE); // Noncompliant {{Use "==" to perform this enum comparison instead of using "equals"}}
   }

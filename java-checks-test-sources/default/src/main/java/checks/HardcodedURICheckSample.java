@@ -31,16 +31,22 @@ class HardcodedURICheckSample {
     new URI(s); // Compliant
     new File(s); // Compliant
     new File("", s); // Compliant
-    new File("", s + "/" + s); // Noncompliant [[sc=22;ec=25]] {{Remove this hard-coded path-delimiter.}}
+    new File("", s + "/" + s); // Noncompliant {{Remove this hard-coded path-delimiter.}}
+//                   ^^^
 
     new URI("http:https"); // Compliant
-    new URI("http://www.mywebsite.com"); // Noncompliant [[sc=13;ec=39]] {{Refactor your code to get this URI from a customizable parameter.}}
-    new File("/home/path/to/my/file.txt"); // Noncompliant [[sc=14;ec=41]] {{Refactor your code to get this URI from a customizable parameter.}}
-    new File(s, "~\\blah\\blah\\blah.txt"); // Noncompliant [[sc=17;ec=42]] {{Refactor your code to get this URI from a customizable parameter.}}
-    new File("/Folder/", s); // Noncompliant [[sc=14;ec=24]] {{Refactor your code to get this URI from a customizable parameter.}}
+    new URI("http://www.mywebsite.com"); // Noncompliant {{Refactor your code to get this URI from a customizable parameter.}}
+//          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    new File("/home/path/to/my/file.txt"); // Noncompliant {{Refactor your code to get this URI from a customizable parameter.}}
+//           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    new File(s, "~\\blah\\blah\\blah.txt"); // Noncompliant {{Refactor your code to get this URI from a customizable parameter.}}
+//              ^^^^^^^^^^^^^^^^^^^^^^^^^
+    new File("/Folder/", s); // Noncompliant {{Refactor your code to get this URI from a customizable parameter.}}
+//           ^^^^^^^^^^
 
     String filename;
-    String path = "/home/path/to/my/file.txt"; // Noncompliant [[sc=19;ec=46]] {{Refactor your code to get this URI from a customizable parameter.}}
+    String path = "/home/path/to/my/file.txt"; // Noncompliant {{Refactor your code to get this URI from a customizable parameter.}}
+//                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
     String fileName = "\\\\blah\\blah\\"; // Noncompliant {{Refactor your code to get this URI from a customizable parameter.}}
     String fileNAME = s; // Compliant
     String stuff = "/home/path/to/my/file.txt"; // Compliant  - requires a variable with adequate name
@@ -48,7 +54,7 @@ class HardcodedURICheckSample {
     stuffs[0] = "/home/path/to/my/file.txt"; // Compliant - require a variable with adequate name
 
     fileNAME = s + "//" + s; // Noncompliant {{Remove this hard-coded path-delimiter.}}
-    fileNAME = s + "\\\\" + s; // Noncompliant {{Remove this hard-coded path-delimiter.}}t
+    fileNAME = s + "\\\\" + s; // Noncompliant {{Remove this hard-coded path-delimiter.}}
     fileNAME = s + "hello" + s; // Compliant
     fileNAME = "c:\\blah\\blah\\blah.txt"; // Noncompliant
 

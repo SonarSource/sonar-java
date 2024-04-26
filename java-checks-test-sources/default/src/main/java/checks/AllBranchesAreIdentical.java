@@ -5,7 +5,8 @@ abstract class AllBranchesAreIdentical {
   int x;
 
   void conditionalExpression () {
-    x = true ? 1 : // Noncompliant [[sc=9;ec=15]] {{This conditional operation returns the same value whether the condition is "true" or "false".}}
+    x = true ? 1 : // Noncompliant {{This conditional operation returns the same value whether the condition is "true" or "false".}}
+//      ^^^^^^
       (1);
     x = true ? 1 * 5 : 1 * 5; // Noncompliant {{This conditional operation returns the same value whether the condition is "true" or "false".}}
     x = true ? 1 : 2;
@@ -13,7 +14,8 @@ abstract class AllBranchesAreIdentical {
   }
 
   void switchStatement() {
-    switch (1) {  // Noncompliant [[sc=5;ec=11]] {{Remove this conditional structure or edit its code blocks so that they're not all the same.}}
+    switch (1) { // Noncompliant {{Remove this conditional structure or edit its code blocks so that they're not all the same.}}
+//  ^^^^^^
       case 1:
         doSomething();
         break;
@@ -63,7 +65,8 @@ abstract class AllBranchesAreIdentical {
 
 
   void ifStatement(int b) {
-    if (b == 0) {  // Noncompliant [[sc=5;ec=7]] {{Remove this conditional structure or edit its code blocks so that they're not all the same.}}
+    if (b == 0) { // Noncompliant {{Remove this conditional structure or edit its code blocks so that they're not all the same.}}
+//  ^^
       doOneMoreThing();
     } else {
       doOneMoreThing();

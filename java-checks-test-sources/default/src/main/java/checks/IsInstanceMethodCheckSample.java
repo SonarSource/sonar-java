@@ -2,7 +2,8 @@ package checks;
 
 public class IsInstanceMethodCheckSample {
   int noncompliant1(Object o) {
-    if (String.class.isInstance(o)) {  // Noncompliant [[sc=9;ec=35]]{{Replace this usage of "String.class.isInstance()" with "instanceof String".}}
+    if (String.class.isInstance(o)) { // Noncompliant {{Replace this usage of "String.class.isInstance()" with "instanceof String".}}
+//      ^^^^^^^^^^^^^^^^^^^^^^^^^^
       return 42;
     }
     return 0;
@@ -17,7 +18,7 @@ public class IsInstanceMethodCheckSample {
       
     }
     
-    if (String.class.isInstance(n)) {  // Noncompliant
+    if (String.class.isInstance(n)) { // Noncompliant
       return 42;
     }
     return 0;

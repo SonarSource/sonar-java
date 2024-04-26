@@ -1,7 +1,8 @@
 package checks;
 
-import java.io.*; // Noncompliant [[sc=8;ec=17]] {{Explicitly import the specific classes needed.}}
-import java.util.*;         // Noncompliant {{Explicitly import the specific classes needed.}}
+import java.io.*; // Noncompliant {{Explicitly import the specific classes needed.}}
+//     ^^^^^^^^^
+import java.util.*; // Noncompliant {{Explicitly import the specific classes needed.}}
 import org.apache.commons.io.*; // Noncompliant {{Explicitly import the specific classes needed.}}
 import java.sql.Date; // Not used in code but at least one non static import
 import static java.util.Arrays.*; // Compliant, exception with static imports

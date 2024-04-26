@@ -72,7 +72,8 @@ public class InvariantReturnCheckSample {
 
   class NoncompliantExample {
 
-    boolean filter(SelectableChannel channel) { // Noncompliant [[sc=13;ec=19]] {{Refactor this method to not always return the same value.}}
+    boolean filter(SelectableChannel channel) { // Noncompliant {{Refactor this method to not always return the same value.}}
+//          ^^^^^^
       if (channel == null){
         return false;
       }

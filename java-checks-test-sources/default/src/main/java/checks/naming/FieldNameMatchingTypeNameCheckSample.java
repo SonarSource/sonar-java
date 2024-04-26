@@ -1,7 +1,8 @@
 package checks.naming;
 
 class A {
-  String A; // Noncompliant {{Rename field "A"}} [[sc=10;ec=11]]
+  String A; // Noncompliant {{Rename field "A"}}
+//       ^
   public String B;
   void A() {
   }
@@ -9,7 +10,8 @@ class A {
 class B extends A {
 }
 class aClass {
-  String AcLass; // Noncompliant [[sc=10;ec=16]]
+  String AcLass; // Noncompliant
+//       ^^^^^^
   aClass AClass; // Noncompliant
   void method() {
     String AcLaSS;

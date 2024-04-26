@@ -2,7 +2,8 @@ package checks;
 
 class SwitchWithTooManyCasesCheckCustom {
   void foo() {
-    switch (1) { // Noncompliant [[sc=5;ec=11]] {{Reduce the number of non-empty switch cases from 35 to at most 5.}}
+    switch (1) { // Noncompliant {{Reduce the number of non-empty switch cases from 35 to at most 5.}}
+//  ^^^^^^
       case 1:
         System.out.println("");
       case 2:
@@ -79,18 +80,24 @@ class SwitchWithTooManyCasesCheckCustom {
       default:
         System.out.println("");
     }
-    switch (1) { // Noncompliant [[secondary=+1,+3,+5,+7,+9,+11]]
+    switch (1) { // Noncompliant
       case 1:
+//  ^^^<
         break;
       case 2:
+//  ^^^<
         break;
       case 3:
+//  ^^^<
         System.out.println("");
       case 4:
+//  ^^^<
         break;
       case 5:
+//  ^^^<
         break;
       case 6:
+//  ^^^<
       case 7:
         System.out.println("");
     }

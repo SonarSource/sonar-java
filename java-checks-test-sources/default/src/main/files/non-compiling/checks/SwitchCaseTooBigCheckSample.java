@@ -9,7 +9,8 @@ class SwitchCaseTooBigCheckSample {
         System.out.println(); // 3
         System.out.println(); // 4
         yield 1; // 5
-      case 1: // Noncompliant [[sc=7;ec=14]] {{Reduce this switch case number of lines from 7 to at most 5, for example by extracting code into methods.}}
+      case 1: // Noncompliant {{Reduce this switch case number of lines from 7 to at most 5, for example by extracting code into methods.}}
+//    ^^^^^^^
         System.out.println(); // 1
         System.out.println(); // 2
         System.out.println(); // 3
@@ -17,7 +18,7 @@ class SwitchCaseTooBigCheckSample {
         System.out.println(); // 5
         System.out.println(); // 6
         yield 1;              // 7
-      case 2: { System.out.println();   // Noncompliant 1
+      case 2: { System.out.println(); // Noncompliant
         System.out.println();           // 2
         System.out.println();           // 3
         System.out.println();           // 4
@@ -58,7 +59,7 @@ class SwitchCaseTooBigCheckSample {
     };
 
     int j = switch (myVariable) {
-      case 0 ->  { System.out.println();  // Noncompliant 1
+      case 0 ->  { System.out.println(); // Noncompliant
         System.out.println();             // 2
         System.out.println();             // 3
         System.out.println();             // 4

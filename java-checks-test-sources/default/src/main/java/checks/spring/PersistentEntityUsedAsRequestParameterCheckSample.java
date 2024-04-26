@@ -62,7 +62,8 @@ class PersistentEntityUsedAsRequestParameterCheckSample {
     }
 
     @RequestMapping(path = "/foo", method = RequestMethod.POST)
-    public void foo1(Foo foo) { // Noncompliant [[sc=26;ec=29]] {{Replace this persistent entity with a simple POJO or DTO object.}}
+    public void foo1(Foo foo) { // Noncompliant {{Replace this persistent entity with a simple POJO or DTO object.}}
+//                       ^^^
     }
 
     @GetMapping

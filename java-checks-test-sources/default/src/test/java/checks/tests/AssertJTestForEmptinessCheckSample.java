@@ -15,7 +15,9 @@ public class AssertJTestForEmptinessCheckSample {
   @Test
   void simple_all_match() {
     List<String> logs = getLogs();
-    assertThat(logs).allMatch(e -> e.contains("error")); // Noncompliant [[sc=22;ec=30;secondary=18]] {{Test the emptiness of the list before calling this assertion predicate.}}
+    assertThat(logs).allMatch(e -> e.contains("error")); // Noncompliant {{Test the emptiness of the list before calling this assertion predicate.}}
+//                   ^^^^^^^^
+//  ^^^<
   }
 
   @Test

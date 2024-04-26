@@ -7,7 +7,8 @@ import javax.annotation.Nullable;
 
 interface NullShouldNotBeUsedWithOptionalCheck_guava {
 
-  @Nullable // Noncompliant [[sc=3;ec=12]] {{Methods with an "Optional" return type should not be "@Nullable".}}
+  @Nullable // Noncompliant {{Methods with an "Optional" return type should not be "@Nullable".}}
+//^^^^^^^^^
   public Optional<String> getOptionalKo();
 
 }
@@ -17,9 +18,11 @@ class NullShouldNotBeUsedWithOptionalCheck_guavaClassA {
   public NullShouldNotBeUsedWithOptionalCheck_guavaClassA() {
   }
 
-  @Nullable // Noncompliant [[sc=3;ec=12]] {{Methods with an "Optional" return type should not be "@Nullable".}}
+  @Nullable // Noncompliant {{Methods with an "Optional" return type should not be "@Nullable".}}
+//^^^^^^^^^
   public Optional<String> getOptionalKo() {
-    return null; // Noncompliant [[sc=12;ec=16]] {{Methods with an "Optional" return type should never return null.}}
+    return null; // Noncompliant {{Methods with an "Optional" return type should never return null.}}
+//         ^^^^
   }
 
   public Optional<String> getOptionalOk() {
@@ -40,14 +43,17 @@ class NullShouldNotBeUsedWithOptionalCheck_guavaClassA {
   }
 
   public int doSomething3(Optional<String> arg) {
-    if (arg == null) { // Noncompliant [[sc=9;ec=20]] {{Ensure this "Optional" could never be null and remove this null-check.}}
+    if (arg == null) { // Noncompliant {{Ensure this "Optional" could never be null and remove this null-check.}}
+//      ^^^^^^^^^^^
       return 0;
     }
 
     Optional<String> optional = getOptionalOk();
-    if (optional == null) { // Noncompliant [[sc=9;ec=25]] {{Ensure this "Optional" could never be null and remove this null-check.}}
+    if (optional == null) { // Noncompliant {{Ensure this "Optional" could never be null and remove this null-check.}}
+//      ^^^^^^^^^^^^^^^^
       return 0;
-    } else if (null != optional) { // Noncompliant [[sc=16;ec=32]] {{Ensure this "Optional" could never be null and remove this null-check.}}
+    } else if (null != optional) { // Noncompliant {{Ensure this "Optional" could never be null and remove this null-check.}}
+//             ^^^^^^^^^^^^^^^^
       return 0;
     }
 
@@ -59,7 +65,8 @@ class NullShouldNotBeUsedWithOptionalCheck_guavaClassA {
     }
 
     Optional<String> optional3 = getOptionalOk();
-    return optional3 == null ? 0 : 1; // Noncompliant [[sc=12;ec=29]] {{Ensure this "Optional" could never be null and remove this null-check.}}
+    return optional3 == null ? 0 : 1; // Noncompliant {{Ensure this "Optional" could never be null and remove this null-check.}}
+//         ^^^^^^^^^^^^^^^^^
   }
 
   public Optional<String> doSomething4(List<String> myList) {
@@ -74,17 +81,21 @@ class NullShouldNotBeUsedWithOptionalCheck_guavaClassA {
 
   @Deprecated
   public Optional<String> doSomething5(List<String> myList) {
-    return myList.isEmpty() ? Optional.of("hello") : null; // Noncompliant [[sc=54;ec=58]] {{Methods with an "Optional" return type should never return null.}}
+    return myList.isEmpty() ? Optional.of("hello") : null; // Noncompliant {{Methods with an "Optional" return type should never return null.}}
+//                                                   ^^^^
   }
 
-  @Nullable // Noncompliant [[sc=3;ec=12]] {{"Optional" variables should not be "@Nullable".}}
+  @Nullable // Noncompliant {{"Optional" variables should not be "@Nullable".}}
+//^^^^^^^^^
   private Optional<String> field;
 
-  public void doSomething6(@Nullable Optional<String> arg) { // Noncompliant [[sc=28;ec=37]] {{"Optional" variables should not be "@Nullable".}}
+  public void doSomething6(@Nullable Optional<String> arg) { // Noncompliant {{"Optional" variables should not be "@Nullable".}}
+//                         ^^^^^^^^^
   }
 
   public void doSomething7() {
-    @Nullable // Noncompliant [[sc=5;ec=14]] {{"Optional" variables should not be "@Nullable".}}
+    @Nullable // Noncompliant {{"Optional" variables should not be "@Nullable".}}
+//  ^^^^^^^^^
     Optional<String> var;
   }
   

@@ -20,11 +20,13 @@ public class AssertionCompareToSelfCheck_Assertj {
     assertThat(actual).isEqualTo(expected); // Compliant
     assertThat(
       actual
-      ).isEqualTo(actual); // Noncompliant [[sc=19;ec=25;secondary=22]] {{Replace this assertion to not have the same actual and expected expression.}}
-    assertThatObject(actual).as("message").isEqualTo(actual);   // Noncompliant
-    assertThat(actual).describedAs("message").isEqualTo(actual);   // Noncompliant
-    assertThat(actual).withFailMessage("message", 1, 2).isEqualTo(actual);   // Noncompliant
-    assertThat(actual).overridingErrorMessage("message", 1, 2).isEqualTo(actual);   // Noncompliant
+//  ^^^<
+      ).isEqualTo(actual); // Noncompliant {{Replace this assertion to not have the same actual and expected expression.}}
+//                ^^^^^^
+    assertThatObject(actual).as("message").isEqualTo(actual); // Noncompliant
+    assertThat(actual).describedAs("message").isEqualTo(actual); // Noncompliant
+    assertThat(actual).withFailMessage("message", 1, 2).isEqualTo(actual); // Noncompliant
+    assertThat(actual).overridingErrorMessage("message", 1, 2).isEqualTo(actual); // Noncompliant
     assertThat(getRandomObjects()).isEqualTo(getRandomObjects()); // Compliant, actual and expected could be different
     assertThat(getRandomObjects().length).isEqualTo(getRandomObjects().length); // Compliant
     assertThat(new Random()).isEqualTo(new Random()); // Compliant
@@ -59,8 +61,8 @@ public class AssertionCompareToSelfCheck_Assertj {
     String actual = "foo";
     String expected = "foo";
     assertThat(actual).contains(expected); // Compliant
-    assertThat(actual).contains(actual);   // Noncompliant
-    assertThat(actual).containsIgnoringCase(actual);   // Noncompliant
+    assertThat(actual).contains(actual); // Noncompliant
+    assertThat(actual).containsIgnoringCase(actual); // Noncompliant
     assertThat(actual).doesNotContain(actual); // Noncompliant
     assertThat(actual).containsSequence(actual); // Noncompliant
     assertThat(actual).containsSubsequence(actual); // Noncompliant
@@ -79,16 +81,16 @@ public class AssertionCompareToSelfCheck_Assertj {
     List<Object> actual = new ArrayList<>();
     Object expected = new Object();
     assertThat(actual).contains(expected); // Compliant
-    assertThat(actual).contains(actual);   // Noncompliant
-    assertThat(actual).containsAll(actual);  // Noncompliant
-    assertThat(actual).containsAnyOf(actual);  // Noncompliant
-    assertThat(actual).containsOnly(actual);  // Noncompliant
-    assertThat(actual).containsOnlyElementsOf(actual);  // Noncompliant
-    assertThat(actual).hasSameElementsAs(actual);  // Noncompliant
-    assertThat(actual).hasSameHashCodeAs(actual);  // Noncompliant
-    assertThat(actual).hasSameSizeAs(actual);  // Noncompliant
-    assertThat(actual).isEqualTo(actual);  // Noncompliant
-    assertThat(actual).isSameAs(actual);  // Noncompliant
+    assertThat(actual).contains(actual); // Noncompliant
+    assertThat(actual).containsAll(actual); // Noncompliant
+    assertThat(actual).containsAnyOf(actual); // Noncompliant
+    assertThat(actual).containsOnly(actual); // Noncompliant
+    assertThat(actual).containsOnlyElementsOf(actual); // Noncompliant
+    assertThat(actual).hasSameElementsAs(actual); // Noncompliant
+    assertThat(actual).hasSameHashCodeAs(actual); // Noncompliant
+    assertThat(actual).hasSameSizeAs(actual); // Noncompliant
+    assertThat(actual).isEqualTo(actual); // Noncompliant
+    assertThat(actual).isSameAs(actual); // Noncompliant
 
     assertThat(actual).contains(); // Compliant
     assertThat(actual).containsAnyOf();  // Compliant
@@ -100,7 +102,7 @@ public class AssertionCompareToSelfCheck_Assertj {
     Map<Object, Object> actual = new HashMap<>();
     Map<Object, Object> expected = new HashMap<>();
     assertThat(actual).containsAllEntriesOf(expected); // Compliant
-    assertThat(actual).containsAllEntriesOf(actual);   // Noncompliant
+    assertThat(actual).containsAllEntriesOf(actual); // Noncompliant
     assertThat(actual).containsExactlyInAnyOrderEntriesOf(actual); // Noncompliant
   }
 

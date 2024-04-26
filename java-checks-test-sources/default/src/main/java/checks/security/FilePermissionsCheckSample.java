@@ -38,7 +38,8 @@ class FilePermissionsCheckSample {
   public void setOthersPermissionsHardCoded(Path filePath) throws Exception {
     Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxrwx---")); // Compliant
 
-    Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxrwxr--")); // Noncompliant [[sc=77;ec=88]] {{Make sure this permission is safe.}}
+    Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxrwxr--")); // Noncompliant {{Make sure this permission is safe.}}
+//                                                                          ^^^^^^^^^^^
     Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxrwx-w-")); // Noncompliant
     Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxrwx--x")); // Noncompliant
 

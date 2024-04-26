@@ -2,6 +2,7 @@ class A {
   int a;
 
   public double divide(int divisor, int dividend) {
+//  ^^^<
     return divisor / dividend;
   }
 
@@ -16,9 +17,11 @@ class A {
     alpha(A);
     int divisor = 15;
     int dividend = 5;
-    double result = divide(dividend, divisor); // Noncompliant [[sc=27;ec=46;secondary=4,4]] {{Parameters to divide have the same names but not the same order as the method arguments.}}
+    double result = divide(dividend, divisor); // Noncompliant {{Parameters to divide have the same names but not the same order as the method arguments.}}
+//                        ^^^^^^^^^^^^^^^^^^^
     double result1 = divide(new B().alpha, divisor); // Compliant
-    double result2 = divide(new B().dividend, divisor); // Noncompliant [[sc=28;ec=55;secondary=4,4]] {{Parameters to divide have the same names but not the same order as the method arguments.}}
+    double result2 = divide(new B().dividend, divisor); // Noncompliant {{Parameters to divide have the same names but not the same order as the method arguments.}}
+//                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
     Unknown e;
     String b ="";
     beta(e, b);   // Compliant
@@ -79,7 +82,7 @@ class A {
     new B().test2(a, b); // Compliant
     new B().test2(b, a); // Noncompliant
     new B().test2(a, b, entry); // Compliant
-    new B().test2(c, b, a); // Noncompliant [[secondary=101,103]]
+    new B().test2(c, b, a); // Noncompliant
   }
 
   public void foo2() {
@@ -99,8 +102,10 @@ class B {
 
   public void test2(
     int a,
+//  ^^^<
     int b,
     int c) {
+//  ^^^<
   };
 
   public void test2(int a, String b) {

@@ -7,7 +7,8 @@ import com.google.common.io.Files;
 import java.io.IOException;
 
 class ReplaceGuavaWithJavaCheckSample {
-  ReplaceGuavaWithJavaCheckSample(com.google.common.base.Predicate p) {} // Noncompliant [[sc=35;ec=67]] {{Use "java.util.function.Predicate" instead.}}
+  ReplaceGuavaWithJavaCheckSample(com.google.common.base.Predicate p) {} // Noncompliant {{Use "java.util.function.Predicate" instead.}}
+//                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   ReplaceGuavaWithJavaCheckSample(com.google.common.base.Function f) {} // Noncompliant {{Use "java.util.function.Function" instead.}}
   ReplaceGuavaWithJavaCheckSample(com.google.common.base.Supplier s) {} // Noncompliant {{Use "java.util.function.Supplier" instead.}}
   ReplaceGuavaWithJavaCheckSample(com.google.common.base.Optional o) {} // Noncompliant {{Use "java.util.Optional" instead.}}
@@ -40,7 +41,8 @@ class ReplaceGuavaWithJavaCheckSample {
   }
 
   void doWithLambda(B<com.google.common.base.Optional<String>> b) {
-    b.foo(o -> o.isPresent()); // Noncompliant [[sc=11;ec=12]] {{Use "java.util.Optional" instead.}}
+    b.foo(o -> o.isPresent()); // Noncompliant {{Use "java.util.Optional" instead.}}
+//        ^
   }
 
   static class B<T> {
@@ -48,8 +50,10 @@ class ReplaceGuavaWithJavaCheckSample {
   }
   
   void tempDir() throws IOException {
-    com.google.common.io.Files.createTempDir(); // Noncompliant [[sc=5;ec=47]] {{Use "java.nio.file.Files.createTempDirectory" instead.}}
-    Files.createTempDir(); // Noncompliant [[sc=5;ec=26]] {{Use "java.nio.file.Files.createTempDirectory" instead.}}
+    com.google.common.io.Files.createTempDir(); // Noncompliant {{Use "java.nio.file.Files.createTempDirectory" instead.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    Files.createTempDir(); // Noncompliant {{Use "java.nio.file.Files.createTempDirectory" instead.}}
+//  ^^^^^^^^^^^^^^^^^^^^^
 
     java.nio.file.Files.createTempDirectory(""); // Compliant
   }

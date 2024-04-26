@@ -1,4 +1,5 @@
-class MyClass<TYPE> { // Noncompliant [[sc=15;ec=19]] {{Rename this generic name to match the regular expression '^[A-Z][0-9]?$'.}}
+class MyClass<TYPE> { // Noncompliant {{Rename this generic name to match the regular expression '^[A-Z][0-9]?$'.}}
+//            ^^^^
   <TYPE> void addAll(Collection<TYPE> c) { // Noncompliant
   }
 }

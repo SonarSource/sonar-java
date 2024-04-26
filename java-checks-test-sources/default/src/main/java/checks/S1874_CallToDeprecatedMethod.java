@@ -6,8 +6,10 @@ class S1874_CallToDeprecatedMethod {
 
   public S1874_CallToDeprecatedMethod() {
     String string = new String("my string");
-    string.getBytes(1, 1, new byte[3], 7); // Noncompliant [[sc=12;ec=20]] {{Remove this use of "getBytes"; it is deprecated.}}
-    new DeprecatedConstructor(); // Noncompliant [[sc=9;ec=30]] {{Remove this use of "DeprecatedConstructor"; it is deprecated.}}
+    string.getBytes(1, 1, new byte[3], 7); // Noncompliant {{Remove this use of "getBytes"; it is deprecated.}}
+//         ^^^^^^^^
+    new DeprecatedConstructor(); // Noncompliant {{Remove this use of "DeprecatedConstructor"; it is deprecated.}}
+//      ^^^^^^^^^^^^^^^^^^^^^
     new MyDeprecatedClass(); // Noncompliant
     old++; // Noncompliant
     MyDeprecatedClass.a++; // Noncompliant
@@ -30,7 +32,8 @@ class S1874_CallToDeprecatedMethod {
     static int a;
   }
 
-  public static class ExtendsDeprecatedClass extends MyDeprecatedClass { // Noncompliant [[sc=54;ec=71]] {{Remove this use of "MyDeprecatedClass"; it is deprecated.}}
+  public static class ExtendsDeprecatedClass extends MyDeprecatedClass { // Noncompliant {{Remove this use of "MyDeprecatedClass"; it is deprecated.}}
+//                                                   ^^^^^^^^^^^^^^^^^
   }
 
   public static abstract class ClassWithDeprecatedMethods {
@@ -50,7 +53,8 @@ class S1874_CallToDeprecatedMethod {
   }
 
   public static class ClassOverridingDeprecatedMethods extends ClassWithDeprecatedMethods implements InterfaceWithDeprecatedMethods {
-    public void deprecatedMethod1() { // Noncompliant [[sc=17;ec=34]] {{Don't override a deprecated method or explicitly mark it as "@Deprecated".}}
+    public void deprecatedMethod1() { // Noncompliant {{Don't override a deprecated method or explicitly mark it as "@Deprecated".}}
+//              ^^^^^^^^^^^^^^^^^
     }
     @Deprecated
     public void deprecatedMethod2() { // Compliant, explicitely marked as "@Deprecated"
@@ -119,7 +123,8 @@ class MyDeprecatedType {
 class MethodResolution {
   public static void test() {
     HasDeprecations.method(new ArrayList<>());
-    HasDeprecations.method(new HashMap<>()); // Noncompliant [[sc=21;ec=27]] {{Remove this use of "method"; it is deprecated.}}
+    HasDeprecations.method(new HashMap<>()); // Noncompliant {{Remove this use of "method"; it is deprecated.}}
+//                  ^^^^^^
   }
 
   static class HasDeprecations {

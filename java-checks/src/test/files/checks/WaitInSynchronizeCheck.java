@@ -17,10 +17,11 @@ class A {
     notifyAll();
   }
   void bar() {
-    obj.wait();    // Noncompliant [[sc=9;ec=13]] {{Move this call to "wait()" into a synchronized block to be sure the monitor on "String" is held.}}
+    obj.wait(); // Noncompliant {{Move this call to "wait()" into a synchronized block to be sure the monitor on "String" is held.}}
+//      ^^^^
     wait(1, 2); // Noncompliant {{Move this call to "wait()" into a synchronized block to be sure the monitor on "this" is held.}}
-    wait(1);   // Noncompliant
-    notify();  // Noncompliant
+    wait(1); // Noncompliant
+    notify(); // Noncompliant
     notifyAll(); // Noncompliant
   }
 

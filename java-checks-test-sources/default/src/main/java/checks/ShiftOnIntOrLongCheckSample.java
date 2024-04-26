@@ -14,7 +14,8 @@ class ShiftOnIntOrLongCheckSample {
     b = a <<  31;
     b = a >> -31;
     b = a <<  32; // Noncompliant {{Remove this useless shift}}
-    b = a >> -32; // Noncompliant [[sc=11;ec=13]] {{Remove this useless shift}}
+    b = a >> -32; // Noncompliant {{Remove this useless shift}}
+//        ^^
     b = a <<  33; // Noncompliant {{Either make "a" a "long" or correct this shift to 1}}
     b = a >> -33; // Noncompliant {{Either make "a" a "long" or correct this shift to -1}}
 
@@ -41,7 +42,8 @@ class ShiftOnIntOrLongCheckSample {
     a >>=  64; // Noncompliant
     a <<= -64; // Noncompliant
     a >>=  65; // Noncompliant
-    a <<= -65; // Noncompliant [[sc=7;ec=10]]
+    a <<= -65; // Noncompliant
+//    ^^^
     return b >> +96; // Noncompliant
   }
 
@@ -106,12 +108,12 @@ class ShiftOnIntOrLongCheckSample {
   void aligned(byte b1, byte b2) {
     b1 = (byte) (value >> 8);
     b2 = (byte) (value >> 0); // Compliant
-    b2 = (byte) (value << 0); // Noncompliant - another type of shift
+    b2 = (byte) (value << 0); // Noncompliant
     System.out.println();
-    b2 = (byte) (value >> 0); // Noncompliant - aligned but interrupted
+    b2 = (byte) (value >> 0); // Noncompliant
     System.out.println();
     System.out.println();
-    b2 = (byte) (value >> 0); // Noncompliant  - aligned but interrupted
-    b2 = (byte) (value    >> 0); // Noncompliant  - aligned but interrupted
+    b2 = (byte) (value >> 0); // Noncompliant
+    b2 = (byte) (value    >> 0); // Noncompliant
   }
 }

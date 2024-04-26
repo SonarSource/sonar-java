@@ -24,8 +24,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PublicStaticMutableMembersCheckSample {
-  public static String [] strings1 = {"first","second"};  // Noncompliant [[sc=27;ec=35]] {{Make this member "protected".}}
-  public static String [] strings2 = {"first","second"};  // Noncompliant
+  public static String [] strings1 = {"first","second"}; // Noncompliant {{Make this member "protected".}}
+//                        ^^^^^^^^
+  public static String [] strings2 = {"first","second"}; // Noncompliant
 
   protected static final String [] strings3 = {"first","second"};
   private static String [] strings4 = {"first","second"};
@@ -52,8 +53,8 @@ public class PublicStaticMutableMembersCheckSample {
   public static final int[] EMPTY_DATA_2 = {}; // Compliant
   public static final int[] EMPTY_DATA_3 = new int[]{}; // Compliant
   public static final int[] EMPTY_DATA_4 = EMPTY_DATA_3; // Compliant
-  public static final int[] NON_EMPTY_DATA_1 = new int[]{ 0 }; // Noncompliant - dim 1 array
-  public static final int[][] NON_EMPTY_DATA_2 = {new int[0], {}}; // Noncompliant - you can still modify sub array
+  public static final int[] NON_EMPTY_DATA_1 = new int[]{ 0 }; // Noncompliant
+  public static final int[][] NON_EMPTY_DATA_2 = {new int[0], {}}; // Noncompliant
   public static final int[] NON_EMPTY_DATA_3 = NON_EMPTY_DATA_1; // Noncompliant
 
   public static int[] data2 = new int[5]; // Noncompliant

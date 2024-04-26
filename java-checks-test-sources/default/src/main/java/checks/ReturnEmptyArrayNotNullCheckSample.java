@@ -20,7 +20,8 @@ class ReturnEmptyArrayNotNullCheckSampleA {
   }
 
   public int[] f2() {
-    return null;        // Noncompliant [[sc=12;ec=16]] {{Return an empty array instead of null.}}
+    return null; // Noncompliant {{Return an empty array instead of null.}}
+//         ^^^^
   }
 
   public Object f3() {
@@ -28,7 +29,7 @@ class ReturnEmptyArrayNotNullCheckSampleA {
   }
 
   public Object f4()[] {
-    return null;        // Noncompliant
+    return null; // Noncompliant
   }
 
   public int[] f5(boolean cond) {
@@ -38,36 +39,36 @@ class ReturnEmptyArrayNotNullCheckSampleA {
       }
 
       public int[] g2() {
-        return null;    // Noncompliant
+        return null; // Noncompliant
       }
     };
     if (cond) {
       return new int[0];
     }
-    return null;        // Noncompliant
+    return null; // Noncompliant
   }
 
   public List f6() {
-    return null;        // Noncompliant
+    return null; // Noncompliant
   }
 
   public ArrayList f7() {
-    return null;        // Noncompliant
+    return null; // Noncompliant
   }
 
   public Set<Integer> f8(boolean cond) {
     if (cond) {
       return Collections.EMPTY_SET;
     }
-    return null;        // Noncompliant {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}}
   }
 
   public <T> List<Integer>[] f9() {
-    return null;        // Noncompliant {{Return an empty array instead of null.}}
+    return null; // Noncompliant {{Return an empty array instead of null.}}
   }
 
   public java.util.Collection f10() {
-    return null;        // Noncompliant
+    return null; // Noncompliant
   }
 }
 
@@ -100,7 +101,7 @@ interface ReturnEmptyArrayNotNullCheckSampleB{
 class ReturnEmptyArrayNotNullCheckSampleC {
   @SuppressWarnings("Something")
   public int[] gul() {
-    return null;  // Noncompliant
+    return null; // Noncompliant
   }
 
   @Nullable

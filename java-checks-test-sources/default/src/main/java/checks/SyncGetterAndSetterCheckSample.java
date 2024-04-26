@@ -12,11 +12,11 @@ public abstract class SyncGetterAndSetterCheckSample {
     this.name = name;
   }
 
-  public String getName() {  // Noncompliant
+  public String getName() { // Noncompliant
     return this.name;
   }
 
-  public void setAge(int age) {  // Noncompliant
+  public void setAge(int age) { // Noncompliant
     this.age = age;
   }
 

@@ -11,7 +11,8 @@ public class AccessibilityChangeOnRecordsCheckSample {
     Person person = new Person("A", 26);
     Field field = Person.class.getDeclaredField("name");
     field.setAccessible(true);
-    field.set(person, "B"); // Noncompliant {{Remove this private field update which will never succeed}}[[secondary=-1]]
+//  ^^^<
+    field.set(person, "B"); // Noncompliant {{Remove this private field update which will never succeed}}
 
 
     Field nameField = Person.class.getDeclaredField("name");

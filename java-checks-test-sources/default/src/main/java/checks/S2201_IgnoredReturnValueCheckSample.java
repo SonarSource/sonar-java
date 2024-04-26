@@ -45,7 +45,8 @@ class S2201_IgnoredReturnValueCheckSample {
     new S2201_IgnoredReturnValueCheckSample().intMethod();// Compliant
     new S2201_IgnoredReturnValueCheckSample().voidMethod();// Compliant
     Integer.valueOf("1").byteValue(); // Noncompliant {{The return value of "byteValue" must be used.}}
-    "plop".replace('p', 'b'); // Noncompliant [[sc=12;ec=19]] {{The return value of "replace" must be used.}}
+    "plop".replace('p', 'b'); // Noncompliant {{The return value of "replace" must be used.}}
+//         ^^^^^^^
     new RuntimeException("plop").getStackTrace()[0].getClassName(); // Noncompliant {{The return value of "getClassName" must be used.}}
     a++;
     list.stream().filter(s -> s.length() > 4).map(String::length).forEach(i -> {System.out.println(i);});
@@ -77,7 +78,7 @@ class S2201_IgnoredReturnValueCheckSample {
 
     Character c = Character.valueOf('c');
     c.toChars(0, new char[42], 21); // Compliant
-    s.getBytes(java.nio.charset.Charset.forName("UTF-8")); // Noncompliant not within a try/catch
+    s.getBytes(java.nio.charset.Charset.forName("UTF-8")); // Noncompliant
 
     list.size(); // Noncompliant
     list.iterator(); // Noncompliant
@@ -169,7 +170,7 @@ class S2201_IgnoredReturnValueCheckSample {
     Stream.of("a", "b", "c").collect(this::makeList, List::add, List::addAll); // FN because we don't follow methods to check whether they return a new or existing collection
 
     Collector collector = Collectors.toCollection(() -> myList);
-    Stream.of("a", "b", "c").collect(collector); // Noncompliant FP because we don't check collectors for exclusion if they aren't created directly as a method argument
+    Stream.of("a", "b", "c").collect(collector); // Noncompliant
   }
 
   List<String> makeList() {

@@ -4,7 +4,8 @@ class JdbcDriverExplicitLoadingCheckSample {
   private static final String DRIVER = "com.mysql.jdbc.Driver";
 
   void doStuff() throws ClassNotFoundException {
-    Class.forName("org.h2.Driver"); // Noncompliant [[sc=11;ec=18]] {{Remove this "Class.forName()", it is useless.}}
+    Class.forName("org.h2.Driver"); // Noncompliant {{Remove this "Class.forName()", it is useless.}}
+//        ^^^^^^^
     Class.forName("com.mysql.jdbc.Driver"); // Noncompliant
     Class.forName("oracle.jdbc.driver.OracleDriver"); // Noncompliant
     Class.forName("com.ibm.db2.jdbc.app.DB2Driver"); // Noncompliant

@@ -37,7 +37,8 @@ class Foo7 {
 }
 
 @Component
-class Bar1 { } // Noncompliant [[sc=7;ec=11]] {{'Bar1' is not reachable by @ComponentScan or @SpringBootApplication. Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.}}
+class Bar1 { } // Noncompliant {{'Bar1' is not reachable by @ComponentScan or @SpringBootApplication. Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.}}
+//    ^^^^
 
 @Service
 class Bar2 { } // Noncompliant
@@ -46,7 +47,7 @@ class Bar2 { } // Noncompliant
 class Bar3 { } // Noncompliant
 
 @RestController
-class Bar4 { } // Noncompliant, we ignore basePackageClasses
+class Bar4 { } // Noncompliant
 
 @Configuration
 class Bar5 { } // ignored annotation

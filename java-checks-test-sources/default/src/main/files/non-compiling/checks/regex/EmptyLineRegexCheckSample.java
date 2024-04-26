@@ -10,11 +10,15 @@ public class EmptyLineRegexCheckSample {
     """;
 
   void non_compliant_pattern_assigned(String str) {
-    Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant [[sc=34;ec=38;secondary=15,14]] {{Remove MULTILINE mode or change the regex.}}
+    Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant {{Remove MULTILINE mode or change the regex.}}
+//                               ^^^^
     p1.matcher(str).find();
+//  ^^^<
     p1.matcher((str)).find();
+//  ^^^<
 
-    Pattern p2 = Pattern.compile("(?m)^$"); // Noncompliant [[sc=34;ec=42]]
+    Pattern p2 = Pattern.compile("(?m)^$"); // Noncompliant
+//                               ^^^^^^^^
     p2.matcher(str).find();
 
     Pattern p3 = Pattern.compile("(?m)^$", Pattern.MULTILINE); // Noncompliant
@@ -22,7 +26,8 @@ public class EmptyLineRegexCheckSample {
   }
 
   void non_compliant_pattern_directly_used(String str) {
-    Pattern.compile("^$", Pattern.MULTILINE).matcher(str).find(); // Noncompliant [[sc=21;ec=25]]
+    Pattern.compile("^$", Pattern.MULTILINE).matcher(str).find(); // Noncompliant
+//                  ^^^^
     Pattern.compile("(^$)", Pattern.MULTILINE).matcher(str).find(); // Noncompliant
     Pattern.compile("(?:^$)", Pattern.MULTILINE).matcher(str).find(); // Noncompliant
     Pattern.compile("(?m)^$").matcher(str).find(); // Noncompliant
@@ -41,9 +46,10 @@ public class EmptyLineRegexCheckSample {
   void nonCompliantOnString(String str) {
     Pattern.compile("^$", Pattern.MULTILINE).matcher("").find(); // Noncompliant
 
-    Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant [[secondary=46]]
+    Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant
     boolean b1 = p1.matcher("notEmpty").find();
     boolean b2 = p1.matcher("").find();
+//  ^^^<
   }
 
   void not_used_in_problematic_situations(String str) {
@@ -129,12 +135,13 @@ public class EmptyLineRegexCheckSample {
   }
 
   boolean not_tested_for_emptiness(String str1, String str2) {
-    Pattern p4 = Pattern.compile("(?m)^$"); // Noncompliant [[secondary=137]]
+    Pattern p4 = Pattern.compile("(?m)^$"); // Noncompliant
     if (str1.isEmpty()) {
       return false;
     }
     return p4.matcher(str1).find()
       && p4.matcher(str2).find();
+//  ^^^<
   }
 
   void not_identifier(String str1) {
@@ -157,7 +164,8 @@ public class EmptyLineRegexCheckSample {
   }
 
   void in_replace(String str) {
-    String s1 = str.replaceAll("(?m)^$", "Empty"); // Noncompliant [[sc=32;ec=40]]
+    String s1 = str.replaceAll("(?m)^$", "Empty"); // Noncompliant
+//                             ^^^^^^^^
     String s2 = str.replaceAll("^$", "Empty"); // Compliant
     String s3 = "".replaceAll("(?m)^$", "Empty"); // Noncompliant
     String s4 = (str).replaceAll("(?m)^$", "Empty"); // Noncompliant

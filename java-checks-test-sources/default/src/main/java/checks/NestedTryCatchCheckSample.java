@@ -42,13 +42,15 @@ class NestedTryCatchCheckSample {
     }
 
     try {
-      try {             // Noncompliant {{Extract this nested try block into a separate method.}}
+//  ^^^<
+      try { // Noncompliant {{Extract this nested try block into a separate method.}}
       } catch (Exception e) {
       }
 
-      try {             // Noncompliant
+      try { // Noncompliant
       } catch (Exception e) {
-        try {           // Noncompliant [[sc=9;ec=12;secondary=44]]
+        try { // Noncompliant
+//      ^^^
 
         } catch (Exception e1) {
         }

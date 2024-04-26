@@ -39,8 +39,9 @@ abstract class TransactionalMethodVisibilityCheckSample {
   public void publicTransactionalMethod() {} // Compliant
 
   @org.springframework.transaction.annotation.Transactional
-  protected void protectedTransactionalMethod() {} // Noncompliant [[sc=18;ec=46]] {{Make this method "public" or remove the "@Transactional" annotation.}}
+  protected void protectedTransactionalMethod() {} // Noncompliant {{Make this method "public" or remove the "@Transactional" annotation.}}
+//               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   
   @org.springframework.transaction.annotation.Transactional
-  void defaultVisibilityTransactionalMethod() {} // Noncompliant  {{Make this method "public" or remove the "@Transactional" annotation.}}
+  void defaultVisibilityTransactionalMethod() {} // Noncompliant {{Make this method "public" or remove the "@Transactional" annotation.}}
 }

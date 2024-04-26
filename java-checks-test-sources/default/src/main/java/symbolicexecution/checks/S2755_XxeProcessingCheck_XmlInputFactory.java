@@ -9,7 +9,8 @@ import javax.xml.stream.XMLStreamException;
 class XMLInputFactoryTest {
   // Vulnerable when nothing is made to protect against xxe
   XMLInputFactory no_property_new_instance() {
-    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant [[sc=47;ec=58]] {{Disable access to external entities in XML parsing.}}
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant {{Disable access to external entities in XML parsing.}}
+//                                            ^^^^^^^^^^^
     return factory;
   }
 
@@ -195,28 +196,28 @@ class XMLInputFactoryTest {
   }
 
   XMLInputFactory setProperty_dtd_schema_non_empty(Object value) {
-    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant [[flows=dtd]]
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
     factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "all");  // flow@dtd [[sc=5;ec=65]] {{Implies 'factory' is unsecured. Set to "" (empty string) to protect against XXE.}}
     factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
     return factory;
   }
 
   XMLInputFactory setProperty_dtd_schema_non_empty_2(Object value) {
-    XMLInputFactory myFactory = XMLInputFactory.newInstance(); // Noncompliant [[flows=dtd21]]
+    XMLInputFactory myFactory = XMLInputFactory.newInstance(); // Noncompliant
     myFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "all");  // flow@dtd21 [[sc=5;ec=67]] {{Implies 'myFactory' is unsecured. Set to "" (empty string) to protect against XXE.}}
     myFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "all"); // flow@dtd21 [[sc=5;ec=70]] {{Implies 'myFactory' is unsecured. Set to "" (empty string) to protect against XXE.}}
     return myFactory;
   }
 
   XMLInputFactory setProperty_dtd_schema_unknown(String value) {
-    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant [[flows=unknown1]]
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
     factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, value); // flow@unknown1 [[sc=5;ec=65]] {{Implies 'factory' is unsecured. Set to "" (empty string) to protect against XXE.}}
     factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, value); // flow@unknown1 [[sc=5;ec=68]] {{Implies 'factory' is unsecured. Set to "" (empty string) to protect against XXE.}}
     return factory;
   }
 
   void two_path_two_flow(boolean b, java.io.Reader reader) throws XMLStreamException {
-    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant [[flows=flow1,flow2]]
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
     if (b) {
       factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "all"); // flow@flow1 [[sc=7;ec=67]] {{Implies 'factory' is unsecured. Set to "" (empty string) to protect against XXE.}}
       factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "all"); // flow@flow1 [[sc=7;ec=70]] {{Implies 'factory' is unsecured. Set to "" (empty string) to protect against XXE.}}

@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SuperfluousResponseBodyAnnotationCheckSample {
-  @ResponseBody // Noncompliant [[sc=3;ec=16]] {{Remove this superfluous "@ResponseBody" annotation.}}
+  @ResponseBody // Noncompliant {{Remove this superfluous "@ResponseBody" annotation.}}
+//^^^^^^^^^^^^^
   @GetMapping("foo")
   public String get() {
     return "Hello world!";

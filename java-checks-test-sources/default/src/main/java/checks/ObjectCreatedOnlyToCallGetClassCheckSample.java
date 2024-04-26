@@ -15,7 +15,8 @@ class CallGetClassCheck_A {
     getClass(); // Compliant
 
     new CallGetClassCheck_C().getClass(); // Noncompliant {{Remove this object instantiation and use "CallGetClassCheck_C.class" instead.}}
-    CallGetClassCheck_A a2 = new CallGetClassCheck_C(); // Noncompliant [[sc=30;ec=55]] {{Remove this object instantiation and use "CallGetClassCheck_C.class" instead.}}
+    CallGetClassCheck_A a2 = new CallGetClassCheck_C(); // Noncompliant {{Remove this object instantiation and use "CallGetClassCheck_C.class" instead.}}
+//                           ^^^^^^^^^^^^^^^^^^^^^^^^^
     a2.getClass();
 
     CallGetClassCheck_A a3 = new CallGetClassCheck_A(); // Compliant

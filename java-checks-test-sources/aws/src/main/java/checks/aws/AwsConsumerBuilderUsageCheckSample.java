@@ -18,7 +18,8 @@ public class AwsConsumerBuilderUsageCheckSample {
   void test_destination(Destination destination1) {
 
     software.amazon.awssdk.services.sesv2.model.SendEmailRequest.builder()
-      .destination(Destination.builder() // Noncompliant [[sc=8;ec=19]] {{Consider using the Consumer Builder method instead of creating this nested builder.}}
+      .destination(Destination.builder() // Noncompliant {{Consider using the Consumer Builder method instead of creating this nested builder.}}
+//     ^^^^^^^^^^^
         .toAddresses("to-email@domain.com")
         .bccAddresses("bcc-email@domain.com")
         .build())

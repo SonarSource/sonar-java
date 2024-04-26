@@ -32,7 +32,8 @@ class ModelAttributeNamingConventionForSpELCheckSample {
     model.addAllAttributes(Map.ofEntries(Map.entry(" m", 42), Map.entry(" a", 22))); // Noncompliant
 
     model.addAttribute("", 5); // Noncompliant
-    model.addAttribute(" a", ""); // Noncompliant [[sc=24;ec=28]] {{Attribute names must begin with a letter (a-z, A-Z), underscore (_), or dollar sign ($) and can be
+    model.addAttribute(" a", ""); // Noncompliant
+//                     ^^^^
                                   // followed by letters, digits, underscores, or dollar signs.}}
     model.addAttribute("a-b", ""); // Noncompliant
     model.addAttribute("1c", 42); // Noncompliant

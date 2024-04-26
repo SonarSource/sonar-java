@@ -15,65 +15,65 @@ public class RegexComplexityCheckWithThreshold0 {
   }
 
   void nonCompliant(String str) {
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
     str.matches(
       "(?=abc)"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
     str.matches(
       "(?i:abc)"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 3 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 3 to the 0 allowed.}}
     str.matches(
       "(?i:a(?-i:bc))"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
     str.matches(
       "(?i)abc"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
     str.matches(
       "[a-z0-9]]"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 2 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 2 to the 0 allowed.}}
     str.matches(
       "[a-z&&0-9]]"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 3 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 3 to the 0 allowed.}}
     str.matches(
       "[a-z&&0-9&&b-d]]"
     );
 
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
     str.matches(
       "x*"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
     str.matches(
       "(?:abc)*"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
     str.matches(
       "((?:abc)*)"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 3 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 3 to the 0 allowed.}}
     str.matches(
       "((?:abc)*)?"
     );
 
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
     str.matches(
       "a|b"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 2 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 2 to the 0 allowed.}}
     str.matches(
       "a|b|c"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 3 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 3 to the 0 allowed.}}
     str.matches(
       "(?:a|b)*"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 4 to the 0 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 4 to the 0 allowed.}}
     str.matches(
       "(?:a|b|c)*"
     );

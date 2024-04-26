@@ -14,10 +14,13 @@ public class ExpectedExceptionCheckSample {
   @Test
   public void assertions_before_and_after_expect() throws IOException {
     Assert.assertEquals(1, 1);
-    expectedException.expect(IOException.class); // Noncompliant [[sc=23;ec=29;secondary=19,20]] {{Consider using org.junit.Assert.assertThrows before other assertions.}}
+    expectedException.expect(IOException.class); // Noncompliant {{Consider using org.junit.Assert.assertThrows before other assertions.}}
+//                    ^^^^^^
     functionThrowingIOException();
     Assert.assertEquals(1, 1);
+//  ^^^<
     Assert.assertNotEquals(2, 3);
+//  ^^^<
   }
 
   @Test

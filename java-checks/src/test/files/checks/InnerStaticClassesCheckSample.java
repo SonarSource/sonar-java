@@ -3,7 +3,8 @@ package foo;
 class Fruit {
   private int value;
 
-  public class Seed {  // Noncompliant [[sc=16;ec=20]]{{Make this a "static" inner class.}}
+  public class Seed { // Noncompliant {{Make this a "static" inner class.}}
+//             ^^^^
     int germinationDays = 0;
     public Seed(int germinationDays) {
       this.germinationDays = germinationDays;

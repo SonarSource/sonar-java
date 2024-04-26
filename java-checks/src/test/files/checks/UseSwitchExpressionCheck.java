@@ -9,7 +9,7 @@ class A {
 
   void foo(DoW day) {
     int numLetters;
-    switch (day) {  // Noncompliant {{Use "switch" expression to set value of "numLetters".}}
+    switch (day) { // Noncompliant {{Use "switch" expression to set value of "numLetters".}}
       case MONDAY:
       case FRIDAY:
       case SUNDAY:
@@ -32,7 +32,7 @@ class A {
 
   void two_throwing_branches(DoW day) {
     boolean isWeekday = false;
-    switch (day) {  // Noncompliant {{Use "switch" expression to set value of "isWeekday".}}
+    switch (day) { // Noncompliant {{Use "switch" expression to set value of "isWeekday".}}
       case MONDAY:
       case TUESDAY:
       case WEDNESDAY:
@@ -104,7 +104,7 @@ class A {
 
   void expression_switch_non_compliant() {
     int numLetters;
-    switch (day) {  // Noncompliant {{Use "switch" expression to set value of "numLetters".}}
+    switch (day) { // Noncompliant {{Use "switch" expression to set value of "numLetters".}}
       case MONDAY, FRIDAY, SUNDAY -> {
         numLetters = 6;
       }

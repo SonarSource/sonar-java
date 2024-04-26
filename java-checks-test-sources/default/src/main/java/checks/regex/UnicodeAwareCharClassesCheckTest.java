@@ -26,10 +26,13 @@ import javax.validation.constraints.Pattern.Flag;
 
 public class UnicodeAwareCharClassesCheckTest {
 
-  @Email(regexp = "[a-z]") // Noncompliant [[sc=21;ec=24]] {{Replace this character range with a Unicode-aware character class.}}
+  @Email(regexp = "[a-z]") // Noncompliant {{Replace this character range with a Unicode-aware character class.}}
+//                  ^^^
   String email;
 
-  @URL(regexp = "\\p{Lower}", flags = jakarta.validation.constraints.Pattern.Flag.DOTALL) // Noncompliant [[sc=4;ec=7;secondary=32]] {{Enable the "(?U)" flag or use a Unicode-aware alternative.}}
+  @URL(regexp = "\\p{Lower}", flags = jakarta.validation.constraints.Pattern.Flag.DOTALL) // Noncompliant {{Enable the "(?U)" flag or use a Unicode-aware alternative.}}
+// ^^^
+//  ^^^<
   String url1;
 
   @URL(regexp = "(?U)\\p{Lower}") // Compliant
@@ -39,18 +42,24 @@ public class UnicodeAwareCharClassesCheckTest {
   String url3;
 
   void NoncompliantCharRanges() {
-    Pattern.compile("[a-z]"); // Noncompliant [[sc=23;ec=26]] {{Replace this character range with a Unicode-aware character class.}}
+    Pattern.compile("[a-z]"); // Noncompliant {{Replace this character range with a Unicode-aware character class.}}
+//                    ^^^
     Pattern.compile("[A-Z]"); // Noncompliant
     Pattern.compile("[0-9a-z]"); // Noncompliant
     Pattern.compile("[abcA-Zdef]"); // Noncompliant
-    Pattern.compile("[\\x{61}-\\x{7A}]"); // Noncompliant [[sc=23;ec=38]]
-    Pattern.compile("[a-zA-Z]"); // Noncompliant [[sc=22;ec=30;secondary=47,47]] {{Replace these character ranges with Unicode-aware character classes.}}
+    Pattern.compile("[\\x{61}-\\x{7A}]"); // Noncompliant
+//                    ^^^^^^^^^^^^^^^
+    Pattern.compile("[a-zA-Z]"); // Noncompliant {{Replace these character ranges with Unicode-aware character classes.}}
+//                   ^^^^^^^^
+//  ^^^<
     String regex = "[a-zA-Z]"; // Noncompliant
     Pattern.compile(regex + regex);
   }
 
   void NoncompliantPredefinedPosixClasses() {
-    Pattern.compile("\\p{Lower}"); // Noncompliant [[sc=13;ec=20;secondary=53]] {{Enable the "UNICODE_CHARACTER_CLASS" flag or use a Unicode-aware alternative.}}
+    Pattern.compile("\\p{Lower}"); // Noncompliant {{Enable the "UNICODE_CHARACTER_CLASS" flag or use a Unicode-aware alternative.}}
+//          ^^^^^^^
+//  ^^^<
     Pattern.compile("\\p{Alnum}"); // Noncompliant
     Pattern.compile("\\p{Space}"); // Noncompliant
     Pattern.compile("\\s"); // Noncompliant

@@ -15,10 +15,14 @@ public class UnpredictableSaltCheck {
 
   public void testNonRandomPBESpec(char[] chars, String str) throws NoSuchAlgorithmException {
     byte[] salt = "notrandom".getBytes(); // secondary location
-    PBEKeySpec spec = new PBEKeySpec(chars, salt, 1); // Noncompliant [[sc=23;ec=53;secondary=-1]] {{Make this salt unpredictable.}}
+//  ^^^<
+    PBEKeySpec spec = new PBEKeySpec(chars, salt, 1); // Noncompliant {{Make this salt unpredictable.}}
+//                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     
     final byte[] finalSalt = "notrandom".getBytes(); //secondary location
-    PBEKeySpec specFinal = new PBEKeySpec(chars, finalSalt, 1); // Noncompliant [[sc=28;ec=63;secondary=-1]] {{Make this salt unpredictable.}}
+//  ^^^<
+    PBEKeySpec specFinal = new PBEKeySpec(chars, finalSalt, 1); // Noncompliant {{Make this salt unpredictable.}}
+//                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     
     byte[] salt1 = this.secureSalt();
     PBEKeySpec spec2 = new PBEKeySpec(chars, salt1, 2); // Compliant
@@ -38,9 +42,11 @@ public class UnpredictableSaltCheck {
     PBEKeySpec spec6 = new PBEKeySpec(chars, new MyMessageDigest("").engineDigest(), 2); // Compliant
     PBEKeySpec spec666 = new PBEKeySpec(chars, str.getBytes(), 2); // Compliant
     
-    new PBEParameterSpec("notrandom".getBytes(), 10000);  // Noncompliant {{Make this salt unpredictable.}}
-    new PBEParameterSpec(salt, 10000);  // Noncompliant [[sc=5;ec=38;secondary=17]]
-    new PBEParameterSpec(finalSalt, 10000);  // Noncompliant [[sc=5;ec=43;secondary=20]]
+    new PBEParameterSpec("notrandom".getBytes(), 10000); // Noncompliant {{Make this salt unpredictable.}}
+    new PBEParameterSpec(salt, 10000); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    new PBEParameterSpec(finalSalt, 10000); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   private byte[] secureSalt() {

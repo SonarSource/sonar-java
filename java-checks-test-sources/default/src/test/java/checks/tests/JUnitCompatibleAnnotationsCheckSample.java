@@ -8,8 +8,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class JUnitCompatibleAnnotationsCheckSample {
 
   @Test
+//  ^^^<
   @RepeatedTest(2)
-  void test() { // Noncompliant [[sc=8;ec=12;secondary=10,11]]{{Remove one of these conflicting annotations.}}
+//  ^^^<
+  void test() { // Noncompliant {{Remove one of these conflicting annotations.}}
+//     ^^^^
   }
 
   @RepeatedTest(4)
@@ -19,7 +22,7 @@ public class JUnitCompatibleAnnotationsCheckSample {
   @ParameterizedTest
   @Test
   @MethodSource("methodSource")
-  void test3(int argument) {  // Noncompliant
+  void test3(int argument) { // Noncompliant
   }
 
 }

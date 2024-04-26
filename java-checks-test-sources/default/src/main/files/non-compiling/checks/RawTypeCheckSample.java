@@ -16,7 +16,8 @@ class RawTypeCheckSample {
       return second.compareTo(first);
     }
 
-    public void checkNotNull(Comparable left) { // Noncompliant [[sc=30;ec=40]]
+    public void checkNotNull(Comparable left) { // Noncompliant
+//                           ^^^^^^^^^^
     }
 
     public void method(Comparable arg1, Unknown arg2) { // Compliant, unknown arg2 type, so may override

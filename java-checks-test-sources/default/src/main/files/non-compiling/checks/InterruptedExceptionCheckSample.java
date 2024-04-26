@@ -21,7 +21,8 @@ public class InterruptedExceptionCheckSample {
       }
     }catch (java.io.IOException e) {
       LOGGER.log(Level.WARN, "Interrupted!", e);
-    }catch (InterruptedException e) { // Noncompliant [[sc=13;ec=35]] {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
+    }catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
+//          ^^^^^^^^^^^^^^^^^^^^^^
         LOGGER.log(Level.WARN, "Interrupted!", e);
     }
   }
@@ -43,7 +44,8 @@ public class InterruptedExceptionCheckSample {
       while (true) {
         // do stuff
       }
-    } catch (InterruptedException | java.io.IOException e) { // Noncompliant [[sc=14;ec=58]] {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
+    } catch (InterruptedException | java.io.IOException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
+//           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       unknownField.log(Level.WARN, "Interrupted!", e);
     }
   }
@@ -189,13 +191,13 @@ class Interruptable {
 
     try {
       throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, unknown exception type is not regarded an InterruptedException
+    } catch (InterruptedException e) { // Noncompliant
       throw new NonExistentException();
     }
 
     try {
       throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, unknown supertype of exception is not regarded an InterruptedException
+    } catch (InterruptedException e) { // Noncompliant
       throw new CustomizedInterruptedException();
     }
   }

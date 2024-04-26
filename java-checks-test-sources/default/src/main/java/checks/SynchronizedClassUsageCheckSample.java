@@ -14,30 +14,35 @@ public class SynchronizedClassUsageCheckSample {
   public SynchronizedClassUsageCheckSample() {}
 
   interface IA {
-    // Noncompliant@+2 {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
-    // Noncompliant@+1 {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+ // Noncompliant@+2 {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+ // Noncompliant@+1 {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
     Vector f3(Vector a);
   }
 
   class A implements IA {
-    List a = new Vector();         // Noncompliant [[sc=14;ec=26]] {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
-    // Noncompliant@+2 [[sc=5;ec=11]] {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
-    // Noncompliant@+1 [[sc=17;ec=29]] {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
-    Vector a1 = new Vector();
-    // Noncompliant@+2 [[sc=5;ec=14]] {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
-    // Noncompliant@+1 [[sc=20;ec=35]] {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
-    Hashtable a2 = new Hashtable();
-    Map a3 = new Hashtable();       // Noncompliant {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
-    Hashtable a4 = foo();           // Noncompliant {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
+    List a = new Vector(); // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+//           ^^^^^^^^^^^^
+
+
+    Vector a1 = new Vector(); // Noncompliant@+1 {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+//              ^^^^^^^^^^^^
+
+
+    Hashtable a2 = new Hashtable(); // Noncompliant@+1 {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
+//                 ^^^^^^^^^^^^^^^
+    Map a3 = new Hashtable(); // Noncompliant {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
+    Hashtable a4 = foo(); // Noncompliant {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
     HashMap a5 = new HashMap();     // Compliant
     ArrayList a6 = new ArrayList(); // Compliant
-    Vector<Integer> a7;             // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
-    // Noncompliant@+2 [[sc=5;ec=17]] {{Replace the synchronized class "StringBuffer" by an unsynchronized one such as "StringBuilder".}}
-    // Noncompliant@+1 [[sc=23;ec=41]] {{Replace the synchronized class "StringBuffer" by an unsynchronized one such as "StringBuilder".}}
-    StringBuffer a8 = new StringBuffer();
-    // Noncompliant@+2 [[sc=5;ec=20]] {{Replace the synchronized class "Stack" by an unsynchronized one such as "Deque".}}
-    // Noncompliant@+1 [[sc=26;ec=47]] {{Replace the synchronized class "Stack" by an unsynchronized one such as "Deque".}}
-    java.util.Stack a9 = new java.util.Stack();
+    Vector<Integer> a7; // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+
+
+    StringBuffer a8 = new StringBuffer(); // Noncompliant@+1 {{Replace the synchronized class "StringBuffer" by an unsynchronized one such as "StringBuilder".}}
+//                    ^^^^^^^^^^^^^^^^^^
+
+
+    java.util.Stack a9 = new java.util.Stack(); // Noncompliant@+1 {{Replace the synchronized class "Stack" by an unsynchronized one such as "Deque".}}
+//                       ^^^^^^^^^^^^^^^^^^^^^
     List l = null; // Compliant
     List<Object> listeners = getVector(); // Compliant
 
@@ -57,7 +62,8 @@ public class SynchronizedClassUsageCheckSample {
       List result2 = new java.util.Vector<Integer>(); // Noncompliant
     }
 
-    private Vector getVector() { // Noncompliant [[sc=13;ec=19]]{{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+    private Vector getVector() { // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+//          ^^^^^^
       return new Vector();
     }
 
@@ -67,7 +73,8 @@ public class SynchronizedClassUsageCheckSample {
       return null;
     }
 
-    public void f(Vector a) { // Noncompliant [[sc=19;ec=25]] {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+    public void f(Vector a) { // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+//                ^^^^^^
     }
 
     @Override
@@ -92,7 +99,7 @@ public class SynchronizedClassUsageCheckSample {
   }
 
   interface AInterface {
-    // Noncompliant@+1
+ // Noncompliant@+1
     Vector a(Vector a); // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
   }
 
@@ -126,9 +133,10 @@ public class SynchronizedClassUsageCheckSample {
       Collections.sort(v, (s1, s2) -> -1);
       Collections.sort(v, (Vector<String> s1, Vector<String> s2) -> -1);
       Collections.sort(v, (Vector<String> s1, Vector<String> s2) -> {
-        // Noncompliant@+2 [[sc=9;ec=23]]
-        // Noncompliant@+1 [[sc=28;ec=30]]
-        Vector<String> x = s1;
+
+
+        Vector<String> x = s1; // Noncompliant@+1
+//                         ^^
         return -1;
       });
     }
@@ -137,9 +145,10 @@ public class SynchronizedClassUsageCheckSample {
     String fComponents[] = new String[]{"Hello"};
 
     public String toString() {
-      // Noncompliant@+2 [[sc=7;ec=19]]
-      // Noncompliant@+1 [[sc=26;ec=44]]
-      StringBuffer buf = new StringBuffer();
+
+
+      StringBuffer buf = new StringBuffer(); // Noncompliant@+1
+//                       ^^^^^^^^^^^^^^^^^^
 
       for (int i = 0; i < fComponents.length; i++) {
         buf.append(fComponents[i]);

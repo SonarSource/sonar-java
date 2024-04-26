@@ -1,4 +1,5 @@
-@SuppressWarnings("unused") // Noncompliant [[sc=2;ec=18]] {{Suppressing warnings is not allowed}}
+@SuppressWarnings("unused") // Noncompliant {{Suppressing warnings is not allowed}}
+^[sc=2;ec=18]
 class A {
   
   private final String BOXING = "boxing";

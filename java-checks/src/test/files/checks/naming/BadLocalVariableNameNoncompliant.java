@@ -1,6 +1,7 @@
 class BadLocalVariableName {
   void method(
-    int BAD_FORMAL_PARAMETER // Noncompliant [[sc=9;ec=29]] {{Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
+    int BAD_FORMAL_PARAMETER // Noncompliant {{Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
+//      ^^^^^^^^^^^^^^^^^^^^
   ) {
     int BAD; // Noncompliant
     int good;

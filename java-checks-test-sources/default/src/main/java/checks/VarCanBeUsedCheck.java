@@ -22,7 +22,8 @@ public class VarCanBeUsedCheck {
     String undefinedString;
     
     String s = "ABC"; // Noncompliant
-    String s1 = new String("ABC"); // Noncompliant [[sc=12;ec=14]] {{Declare this local variable with "var" instead.}}
+    String s1 = new String("ABC"); // Noncompliant {{Declare this local variable with "var" instead.}}
+//         ^^
     int i = 10; // Noncompliant
     long l = 10L; // Noncompliant
 

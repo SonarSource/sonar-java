@@ -9,7 +9,7 @@ public class ControlCharacterInLiteralCheckWithTextBlockSupport {
     """
       \u200B
     """,
-    // Noncompliant@+1 {{Remove the non-escaped \u200B character from this literal.}}
+ // Noncompliant@+1 {{Remove the non-escaped \u200B character from this literal.}}
     """
       U+200B '​' zero width space
     """,
@@ -18,7 +18,7 @@ public class ControlCharacterInLiteralCheckWithTextBlockSupport {
     """
       U+0009 \u0009 tab here
     """,
-    // Noncompliant@+1 {{Remove the non-escaped \u0009 character from this literal.}}
+ // Noncompliant@+1 {{Remove the non-escaped \u0009 character from this literal.}}
     """
       U+0009 '	' tab here
     """,
@@ -30,7 +30,7 @@ public class ControlCharacterInLiteralCheckWithTextBlockSupport {
   };
 
   public String returnWithU0009() {
-    // Noncompliant@+1 {{Remove the non-escaped \u0009 character from this literal.}}
+ // Noncompliant@+1 {{Remove the non-escaped \u0009 character from this literal.}}
     return """
       <html>
   \t 	<head>

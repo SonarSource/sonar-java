@@ -2,10 +2,12 @@ class A {
   void myMethod(int x, int y, int z) {
     int j = 0, k = 0;
     for (int i = x; i < y; i++) {}
-    for (int i = x; i > y; i++) {} // Noncompliant [[sc=21;ec=26]] {{"i" is incremented and will never reach "stop condition".}}
+    for (int i = x; i > y; i++) {} // Noncompliant {{"i" is incremented and will never reach "stop condition".}}
+//                  ^^^^^
     for (int i = x; i >=y; i++) {} // Noncompliant
     for (int i = x; i > y; i--) {}
-    for (int z = x; z < y; z--) {} // Noncompliant [[sc=21;ec=26]] {{"z" is decremented and will never reach "stop condition".}}
+    for (int z = x; z < y; z--) {} // Noncompliant {{"z" is decremented and will never reach "stop condition".}}
+//                  ^^^^^
     for (int i = x; i <=y; i--) {} // Noncompliant
     for (int i = x; y > i; i++) {}
     for (int i = x; y < i; i++) {} // Noncompliant

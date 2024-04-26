@@ -1,5 +1,6 @@
 class A{
-  @SomeAnnotations({ // Noncompliant [[sc=4;ec=19]] {{Remove the 'SomeAnnotations' wrapper from this annotation group}}
+  @SomeAnnotations({ // Noncompliant {{Remove the 'SomeAnnotations' wrapper from this annotation group}}
+// ^^^^^^^^^^^^^^^
       @SomeAnnotation("a"),
       @SomeAnnotation("b"),
       @SomeAnnotation("c"),

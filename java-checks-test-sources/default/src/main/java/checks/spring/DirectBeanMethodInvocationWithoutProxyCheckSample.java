@@ -19,7 +19,8 @@ public class DirectBeanMethodInvocationWithoutProxyCheckSample {
 
     @Bean
     public CompositeBean compositeBean() {
-      return new CompositeBean(simpleBean()); // Noncompliant [[sc=32;ec=44]] {{Replace this bean method invocation with a dependency injection.}}
+      return new CompositeBean(simpleBean()); // Noncompliant {{Replace this bean method invocation with a dependency injection.}}
+//                             ^^^^^^^^^^^^
     }
 
     @Bean
@@ -30,7 +31,8 @@ public class DirectBeanMethodInvocationWithoutProxyCheckSample {
 
     @Bean
     public CompositeBean anotherCompositeBean() {
-      return new CompositeBean(anotherSimpleBean()); // Noncompliant [[sc=32;ec=51]] {{Replace this bean method invocation with a dependency injection.}}
+      return new CompositeBean(anotherSimpleBean()); // Noncompliant {{Replace this bean method invocation with a dependency injection.}}
+//                             ^^^^^^^^^^^^^^^^^^^
     }
 
     @Bean
@@ -41,7 +43,8 @@ public class DirectBeanMethodInvocationWithoutProxyCheckSample {
 
     @Bean
     public CompositeBean yetAnotherCompositeBean() {
-      return new CompositeBean(yetAnotherSimpleBean()); // Noncompliant [[sc=32;ec=54]] {{Replace this bean method invocation with a dependency injection.}}
+      return new CompositeBean(yetAnotherSimpleBean()); // Noncompliant {{Replace this bean method invocation with a dependency injection.}}
+//                             ^^^^^^^^^^^^^^^^^^^^^^
     }
   }
 

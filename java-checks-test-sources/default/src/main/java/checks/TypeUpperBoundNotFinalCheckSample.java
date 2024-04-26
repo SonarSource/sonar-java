@@ -34,25 +34,32 @@ public class TypeUpperBoundNotFinalCheckSample {
 
   public static void boundedWildcard(Collection<? extends FinalClass> c) { } // Noncompliant
 
-  public static class FinalAndNonFinalBounds<T extends FinalClass & Comparable> { } // Noncompliant [[sc=46;ec=79]]
+  public static class FinalAndNonFinalBounds<T extends FinalClass & Comparable> { } // Noncompliant
+//                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   @Nullable
   public static <T extends FinalClass & Comparable & Serializable> T multipleBounds() { // Noncompliant
     return null;
   }
 
-  public static <T extends FinalClass<T>> void finalParameterizedBound() { } // Noncompliant [[sc=18;ec=41]]
+  public static <T extends FinalClass<T>> void finalParameterizedBound() { } // Noncompliant
+//               ^^^^^^^^^^^^^^^^^^^^^^^
 
-  public static <T extends NonFinalClass<? extends FinalClass>> void finalInnerBound() { } // Noncompliant [[sc=42;ec=62]]
+  public static <T extends NonFinalClass<? extends FinalClass>> void finalInnerBound() { } // Noncompliant
+//                                       ^^^^^^^^^^^^^^^^^^^^
 
-  public static <T extends TwoParams<? extends NonFinalClass, ? extends FinalClass>> void complexFinalInnerBound() { } // Noncompliant [[sc=63;ec=83]]
+  public static <T extends TwoParams<? extends NonFinalClass, ? extends FinalClass>> void complexFinalInnerBound() { } // Noncompliant
+//                                                            ^^^^^^^^^^^^^^^^^^^^
 
-  public static <T extends NonFinalClass, B extends FinalClass> void multipleTypeParams() { } // Noncompliant [[sc=43;ec=63]]
+  public static <T extends NonFinalClass, B extends FinalClass> void multipleTypeParams() { } // Noncompliant
+//                                        ^^^^^^^^^^^^^^^^^^^^
 
-  public static NonFinalClass<? extends FinalClass<T>> methodReturn() { return null; } // Noncompliant [[sc=31;ec=54]]
+  public static NonFinalClass<? extends FinalClass<T>> methodReturn() { return null; } // Noncompliant
+//                            ^^^^^^^^^^^^^^^^^^^^^^^
 
   public static final class ImmutableClass<B> {
-    public <T extends B> NonFinalClass<B> extendsClass(Map<? extends Class<? extends T>, ? extends T> map) { return null; } // Noncompliant [[sc=60;ec=88]]
+    public <T extends B> NonFinalClass<B> extendsClass(Map<? extends Class<? extends T>, ? extends T> map) { return null; } // Noncompliant
+//                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
 

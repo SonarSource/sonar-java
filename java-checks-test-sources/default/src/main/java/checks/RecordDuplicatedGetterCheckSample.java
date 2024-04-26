@@ -10,15 +10,18 @@ public class RecordDuplicatedGetterCheckSample {
 
     private static final Being CTHULU = new Being("Cthulhu", Integer.MAX_VALUE, Double.MAX_VALUE, Integer.MIN_VALUE, Collections.emptyList(), true, Color.GREEN, 0);
 
-    public String getName() { return name.toUpperCase(Locale.ROOT); }         // Noncompliant [[sc=19;ec=26]] {{Remove this getter 'getName()' from record and override an existing one 'name()'.}}
-    public boolean isAlive() { return CTHULU.alive; }                         // Noncompliant [[sc=20;ec=27]] {{Remove this getter 'isAlive()' from record and override an existing one 'alive()'.}}
-    public double getSize() { return Math.random(); }                         // Noncompliant
-    public int getTentacles() { return this.friends; }                        // Noncompliant
-    public void getAncestors() { assert(!ancestors.isEmpty()); }              // Noncompliant
+    public String getName() { return name.toUpperCase(Locale.ROOT); } // Noncompliant {{Remove this getter 'getName()' from record and override an existing one 'name()'.}}
+//                ^^^^^^^
+    public boolean isAlive() { return CTHULU.alive; } // Noncompliant {{Remove this getter 'isAlive()' from record and override an existing one 'alive()'.}}
+//                 ^^^^^^^
+    public double getSize() { return Math.random(); } // Noncompliant
+    public int getTentacles() { return this.friends; } // Noncompliant
+    public void getAncestors() { assert(!ancestors.isEmpty()); } // Noncompliant
     public Color getColor() { System.out.println("yellow"); return color(); } // Noncompliant
 
     @Override public int age() { return age; }
-    public int getAge() {        return age + 42; } // Noncompliant [[sc=16;ec=22]] {{Remove this getter 'getAge()' from record and override an existing one 'age()'.}}
+    public int getAge() {        return age + 42; } // Noncompliant {{Remove this getter 'getAge()' from record and override an existing one 'age()'.}}
+//             ^^^^^^
   }
 
   record Person(String name, int age, double size, int friends, boolean alive, Color color, float power, int tentacles) {

@@ -12,7 +12,7 @@ class ReverseSequencedCollectionCheckSample {
 
   List<String> test_read_only_usage_as_argument(List<String> source) {
     var list = new ArrayList<>(source);
-    Collections.reverse(list); // Noncompliant, only readonly access after
+    Collections.reverse(list); // Noncompliant
     var list2 = new ArrayList<>(list);
     list2.addAll(list);
     return List.copyOf(list);

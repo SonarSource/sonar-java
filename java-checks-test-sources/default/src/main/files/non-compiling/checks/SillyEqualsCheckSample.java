@@ -11,7 +11,7 @@ public class SillyEqualsCheckSample {
 
   boolean foo(String x) {
     lombok.val y = "Hello World";
-    return x.equals(y); // Noncompliant - FP - removed by the lombok filter
+    return x.equals(y); // Noncompliant
   }
 
 }

@@ -23,8 +23,10 @@ abstract class PreparedStatementAndResultSetCheckSample {
   void foo(Connection connection) throws SQLException {
     PreparedStatement ps = connection.prepareStatement("SELECT fname, lname FROM employees where hireDate > ? and salary < ?");
 
-    ps.setDate(0, new Date(0)); // Noncompliant [[sc=16;ec=17]] {{PreparedStatement indices start at 1.}}
-    ps.setDouble(3, 0.0); // Noncompliant [[sc=18;ec=19]] {{This "PreparedStatement" only has 2 parameters.}}
+    ps.setDate(0, new Date(0)); // Noncompliant {{PreparedStatement indices start at 1.}}
+//             ^
+    ps.setDouble(3, 0.0); // Noncompliant {{This "PreparedStatement" only has 2 parameters.}}
+//               ^
     ps.setString(getIntValue(), ""); // Compliant - first argument can not be evaluated
     ps.setInt(1, 0); // Compliant
 
@@ -38,7 +40,8 @@ abstract class PreparedStatementAndResultSetCheckSample {
     PreparedStatement ps = connection.prepareStatement("SELECT fname, lname FROM employees where hireDate > 1986");
 
     ps.setDate(0, new Date(0)); // Noncompliant {{PreparedStatement indices start at 1.}}
-    ps.setDouble(3, 0.0); // Noncompliant [[sc=18;ec=19]] {{This "PreparedStatement" has no parameters.}}
+    ps.setDouble(3, 0.0); // Noncompliant {{This "PreparedStatement" has no parameters.}}
+//               ^
   }
 
   void dam(Connection connection, String query) throws SQLException {
@@ -143,7 +146,7 @@ abstract class PreparedStatementAndResultSetCheckSample {
 
       for (Map.Entry<String, Integer> e : salesForWeek.entrySet()) {
         updateSales.setInt(1, e.getValue().intValue()); // Compliant
-        updateSales.setString(2, e.getKey());  // Noncompliant
+        updateSales.setString(2, e.getKey()); // Noncompliant
         updateTotal.setInt(1, e.getValue().intValue()); // Compliant
         updateTotal.setString(2, e.getKey()); // Compliant
         other.setInt(2, getIntValue()); // Noncompliant

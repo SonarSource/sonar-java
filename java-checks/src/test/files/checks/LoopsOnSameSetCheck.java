@@ -12,7 +12,8 @@ public class A {
   public void doSomethingToAList(List<String> strings, List<String> strings2) {
     for (String str : strings);
     foo();
-    for (String str : strings); // Noncompliant [[sc=23;ec=30]] {{Combine this loop with the one that starts on line 13.}}
+    for (String str : strings); // Noncompliant {{Combine this loop with the one that starts on line 13.}}
+//                    ^^^^^^^
     strings = null;
     for (String str : strings); // strings get reassigned
     for (String str : getList());

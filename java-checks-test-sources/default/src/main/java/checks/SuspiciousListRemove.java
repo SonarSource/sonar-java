@@ -12,7 +12,7 @@ public class SuspiciousListRemove {
     for (int i = 0; i < list.size(); i++) {
       if (list.get(i).isEmpty()) {
         // actual: remaining elements are shifted, so the one immediately following will be skipped
-        list.remove(i); // Noncompliant  {{Verify that "remove()" is used correctly.}}
+        list.remove(i); // Noncompliant {{Verify that "remove()" is used correctly.}}
       }
     }
   }
@@ -89,7 +89,7 @@ public class SuspiciousListRemove {
     List<String> deleted = new ArrayList<>();
     for (int i = 0; i < list.size(); i++) {
       if (list.get(i).isEmpty()) {
-        deleted.add(list.remove(i));  // Noncompliant
+        deleted.add(list.remove(i)); // Noncompliant
       }
     }
     return deleted;  // "return" is outside the loop

@@ -9,7 +9,8 @@ class ModulusEqualityCheckSample {
   boolean b;
 
   void myMethod(int x, int y, Integer z) {
-     b = x % 2 == 1; // Noncompliant [[sc=12;ec=13]] {{The results of this modulus operation may not be positive.}}
+     b = x % 2 == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
+//         ^
      b = x % 2 == -1; // Noncompliant {{The results of this modulus operation may not be negative.}}
      b = 2 % x == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
      b = 1 == x % 2; // Noncompliant {{The results of this modulus operation may not be positive.}}

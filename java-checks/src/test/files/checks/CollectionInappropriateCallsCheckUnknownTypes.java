@@ -54,6 +54,6 @@ class Test {
 class LombokVal {
   boolean foo(List<String> words) {
     lombok.val y = "Hello World";
-    return  words.contains(y); // Noncompliant - FP - handled by lombok filter
+    return  words.contains(y); // Noncompliant
   }
 }

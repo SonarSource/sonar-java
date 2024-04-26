@@ -8,7 +8,8 @@ public class MyTest {
     try {
       File.createTempFile(null, null);
     } catch (IOException e) {
-      Assert.fail(e.getMessage()); // Noncompliant [[sc=7;ec=34]] {{Remove this failure assertion and simply add the exception type to the method signature.}}
+      Assert.fail(e.getMessage()); // Noncompliant {{Remove this failure assertion and simply add the exception type to the method signature.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
     Assert.fail(); // Compliant, not in catch
   }
@@ -20,32 +21,37 @@ public class MyTest {
       // Some code
     } catch (Exception e) {
       if (true) {
-        Assert.fail(e.getMessage()); // Noncompliant [[sc=9;ec=36]] {{Remove this failure assertion and simply add the exception type to the method signature.}}
+        Assert.fail(e.getMessage()); // Noncompliant {{Remove this failure assertion and simply add the exception type to the method signature.}}
+//      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
       }
     }
 
     try {
       // Some code
     } catch (Exception e) {
-      org.junit.Assert.fail(e.getMessage()); // Noncompliant [[sc=7;ec=44]] {{Remove this failure assertion and simply add the exception type to the method signature.}}
+      org.junit.Assert.fail(e.getMessage()); // Noncompliant {{Remove this failure assertion and simply add the exception type to the method signature.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
 
     try {
       // Some code
     } catch (Exception e) {
-      org.junit.jupiter.api.Assertions.fail(e.getMessage()); // Noncompliant [[sc=7;ec=60]] {{Remove this failure assertion and simply add the exception type to the method signature.}}
+      org.junit.jupiter.api.Assertions.fail(e.getMessage()); // Noncompliant {{Remove this failure assertion and simply add the exception type to the method signature.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
 
     try {
       // Some code
     } catch (Exception e) {
-      junit.framework.Assert.fail(e.getMessage()); // Noncompliant [[sc=7;ec=50]] {{Remove this failure assertion and simply add the exception type to the method signature.}}
+      junit.framework.Assert.fail(e.getMessage()); // Noncompliant {{Remove this failure assertion and simply add the exception type to the method signature.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
 
     try {
       // Some code
     } catch (Exception e) {
-      org.fest.assertions.Fail.fail(); // Noncompliant [[sc=7;ec=38]] {{Remove this failure assertion and simply add the exception type to the method signature.}}
+      org.fest.assertions.Fail.fail(); // Noncompliant {{Remove this failure assertion and simply add the exception type to the method signature.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
 
     try {
@@ -67,19 +73,22 @@ public class MyTest {
     try {
       // Some code
     } catch (Exception e) {
-      Assert.fail(); // Noncompliant [[sc=7;ec=20]] {{Remove this failure assertion and simply add the exception type to the method signature.}}
+      Assert.fail(); // Noncompliant {{Remove this failure assertion and simply add the exception type to the method signature.}}
+//    ^^^^^^^^^^^^^
     }
 
     try {
       // Some code
     } catch (Exception e) {
-      org.junit.Assert.fail(); // Noncompliant [[sc=7;ec=30]] {{Remove this failure assertion and simply add the exception type to the method signature.}}
+      org.junit.Assert.fail(); // Noncompliant {{Remove this failure assertion and simply add the exception type to the method signature.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^
     }
 
     try {
       // Some code
     } catch (Exception e) {
-      junit.framework.Assert.fail(); // Noncompliant [[sc=7;ec=36]] {{Remove this failure assertion and simply add the exception type to the method signature.}}
+      junit.framework.Assert.fail(); // Noncompliant {{Remove this failure assertion and simply add the exception type to the method signature.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
 
   }

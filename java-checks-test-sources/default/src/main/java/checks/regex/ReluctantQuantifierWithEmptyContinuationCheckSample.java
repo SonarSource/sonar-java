@@ -14,7 +14,8 @@ public class ReluctantQuantifierWithEmptyContinuationCheckSample {
     Pattern.compile(".+?").matcher(str).find(); // Noncompliant {{Fix this reluctant quantifier that will only ever match 1 repetition.}}
     Pattern.compile(".{4}?").matcher(str).find(); // Noncompliant {{Fix this reluctant quantifier that will only ever match 4 repetitions.}}
     Pattern.compile(".{2,4}?").matcher(str).find(); // Noncompliant {{Fix this reluctant quantifier that will only ever match 2 repetitions.}}
-    Pattern.compile(".*?x?").matcher(str).find(); // Noncompliant [[sc=22;ec=25]] {{Fix this reluctant quantifier that will only ever match 0 repetitions.}}
+    Pattern.compile(".*?x?").matcher(str).find(); // Noncompliant {{Fix this reluctant quantifier that will only ever match 0 repetitions.}}
+//                   ^^^
     Pattern.compile(".*?()").matcher(str).find(); // Noncompliant {{Fix this reluctant quantifier that will only ever match 0 repetitions.}}
     Pattern.compile(".*?x?^").matcher(str).find(); // Noncompliant {{Fix this reluctant quantifier that will only ever match 0 repetitions.}}
     str.split(".*?x?^"); // Noncompliant {{Fix this reluctant quantifier that will only ever match 0 repetitions.}}

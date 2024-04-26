@@ -1,6 +1,7 @@
 public class Greeter {
 
-  public static Foo foo = new Foo();        // Noncompliant {{Make this "public static foo" field final}} [[sc=21;ec=24]]
+  public static Foo foo = new Foo(); // Noncompliant {{Make this "public static foo" field final}}
+//                  ^^^
 
   public static final Bar bar = new Bar();  // Compliant
   public final Bar bar2 = new Bar();         // Compliant

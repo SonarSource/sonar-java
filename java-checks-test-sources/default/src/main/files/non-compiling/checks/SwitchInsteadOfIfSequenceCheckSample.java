@@ -7,8 +7,9 @@ public class SwitchInsteadOfIfSequenceCheckSample {
   String myStringMethod(){
     return "";
   }
-  void foo() { // Noncompliant@+1 [[sc=9;ec=25]] {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
-    if (""" 
+  void foo() {
+    if ("""  // Noncompliant@+1 {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
+//      ^^^^^^^^^^^^^^^^
       red
       """.equals(choice)) {  
       dispenseRed();
@@ -65,7 +66,7 @@ public class SwitchInsteadOfIfSequenceCheckSample {
     }
   }
 
-  void foo3() {  // Noncompliant@+1 {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
+  void foo3() { // Noncompliant@+1 {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
     if ("""
       red
       """.equals(choice)) {

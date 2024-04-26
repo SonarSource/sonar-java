@@ -1,9 +1,11 @@
 package checks;
 
-class ErrorClassExtendedCheckSampleA extends Error { // Noncompliant [[sc=46;ec=51]] {{Extend "java.lang.Exception" or one of its subclasses.}}
+class ErrorClassExtendedCheckSampleA extends Error { // Noncompliant {{Extend "java.lang.Exception" or one of its subclasses.}}
+//                                           ^^^^^
 }
 
-class ErrorClassExtendedCheckSampleB extends java.lang.Error { // Noncompliant [[sc=46;ec=61]]
+class ErrorClassExtendedCheckSampleB extends java.lang.Error { // Noncompliant
+//                                           ^^^^^^^^^^^^^^^
 }
 
 class ErrorClassExtendedCheckSampleC { // Compliant

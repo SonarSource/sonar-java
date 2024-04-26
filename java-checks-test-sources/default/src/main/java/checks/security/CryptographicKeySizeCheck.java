@@ -11,7 +11,8 @@ import java.security.SecureRandom;
 class CryptographicKeySizeCheckRSA {
   public void key_variable() throws NoSuchAlgorithmException {
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-    keyGen.initialize(1024); // Noncompliant [[sc=5;ec=28]]  {{Use a key length of at least 2048 bits for RSA cipher algorithm.}}
+    keyGen.initialize(1024); // Noncompliant {{Use a key length of at least 2048 bits for RSA cipher algorithm.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   public void key_variable_assign_after_decl() throws NoSuchAlgorithmException {
@@ -114,7 +115,8 @@ interface CryptographicKeySizeCheckI {
 class CryptographicKeySizeCheckDH {
   public void key_variable_DH() throws NoSuchAlgorithmException {
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DH");
-    keyGen.initialize(1024); // Noncompliant [[sc=5;ec=28]]  {{Use a key length of at least 2048 bits for DH cipher algorithm.}}
+    keyGen.initialize(1024); // Noncompliant {{Use a key length of at least 2048 bits for DH cipher algorithm.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   public void key_variable_compliant_DH() throws NoSuchAlgorithmException {
@@ -124,7 +126,8 @@ class CryptographicKeySizeCheckDH {
 
   public void key_variable() throws NoSuchAlgorithmException {
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DiffieHellman");
-    keyGen.initialize(1024); // Noncompliant [[sc=5;ec=28]]  {{Use a key length of at least 2048 bits for DiffieHellman cipher algorithm.}}
+    keyGen.initialize(1024); // Noncompliant {{Use a key length of at least 2048 bits for DiffieHellman cipher algorithm.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   public void key_variable_compliant() throws NoSuchAlgorithmException {
@@ -136,7 +139,8 @@ class CryptographicKeySizeCheckDH {
 class CryptographicKeySizeCheckDSA {
   public void key_variable_DSA() throws NoSuchAlgorithmException {
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
-    keyGen.initialize(1024, new SecureRandom()); // Noncompliant [[sc=5;ec=48]]  {{Use a key length of at least 2048 bits for DSA cipher algorithm.}}
+    keyGen.initialize(1024, new SecureRandom()); // Noncompliant {{Use a key length of at least 2048 bits for DSA cipher algorithm.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   public void key_variable_compliant_DSA() throws NoSuchAlgorithmException {
@@ -148,7 +152,8 @@ class CryptographicKeySizeCheckDSA {
 class CryptographicKeySizeCheckAES {
   public void key_variable() throws NoSuchAlgorithmException {
     KeyGenerator keyGen1 = KeyGenerator.getInstance("AES");
-    keyGen1.init(64); // Noncompliant [[sc=5;ec=21]]  {{Use a key length of at least 128 bits for AES cipher algorithm.}}
+    keyGen1.init(64); // Noncompliant {{Use a key length of at least 128 bits for AES cipher algorithm.}}
+//  ^^^^^^^^^^^^^^^^
   }
 
   public void key_variable_compliant() throws NoSuchAlgorithmException {
@@ -160,7 +165,8 @@ class CryptographicKeySizeCheckAES {
 class CryptographicKeySizeCheckEC {
   public void key_EC() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
     KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("EC");
-    ECGenParameterSpec ecSpec1 = new ECGenParameterSpec("secp112r1"); // Noncompliant [[sc=34;ec=69]]  {{Use a key length of at least 224 bits for EC cipher algorithm.}}
+    ECGenParameterSpec ecSpec1 = new ECGenParameterSpec("secp112r1"); // Noncompliant {{Use a key length of at least 224 bits for EC cipher algorithm.}}
+//                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     keyPairGen.initialize(ecSpec1);
     ECGenParameterSpec ecSpec2 = new ECGenParameterSpec("secp112r2"); // Noncompliant
     keyPairGen.initialize(ecSpec2);

@@ -46,7 +46,8 @@ class BooleanMethodReturnCheckSampleB {
         return null; // Compliant
       }
     }
-    return null; // Noncompliant [[sc=12;ec=16]] {{Null is returned but a "Boolean" is expected.}}
+    return null; // Noncompliant {{Null is returned but a "Boolean" is expected.}}
+//         ^^^^
   }
 
   @CheckForNull

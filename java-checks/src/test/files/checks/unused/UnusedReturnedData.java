@@ -7,8 +7,10 @@ public class Class {
     final java.io.Reader rd;
     java.io.BufferedReader brd;
 
-    rd.read(); // Noncompliant [[sc=8;ec=12]] {{Use or store the value returned from "read" instead of throwing it away.}}
-    brd.readLine(); // Noncompliant [[sc=9;ec=17]] {{Use or store the value returned from "readLine" instead of throwing it away.}}
+    rd.read(); // Noncompliant {{Use or store the value returned from "read" instead of throwing it away.}}
+//     ^^^^
+    brd.readLine(); // Noncompliant {{Use or store the value returned from "readLine" instead of throwing it away.}}
+//      ^^^^^^^^
 
     String line = brd.readLine(); // Compliant
     line = brd.readLine(); // Compliant

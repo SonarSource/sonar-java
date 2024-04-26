@@ -4,23 +4,31 @@ import static org.hamcrest.core.IsNot.not;
 
 class BooleanOrNullLiteralInAssertionsCheckSample {
   void booleans() {
-    org.junit.Assert.assertTrue( // Noncompliant [[sc=22;ec=32;secondary=8]] {{Remove or correct this assertion.}}
+    org.junit.Assert.assertTrue( // Noncompliant {{Remove or correct this assertion.}}
+//                   ^^^^^^^^^^
       true
+//  ^^^<
     );
-    org.junit.Assert.assertEquals( // Noncompliant [[sc=22;ec=34;secondary=11,12]] {{Remove or correct this assertion.}}
+    org.junit.Assert.assertEquals( // Noncompliant {{Remove or correct this assertion.}}
+//                   ^^^^^^^^^^^^
       true,
+//  ^^^<
       true
+//  ^^^<
     );
     org.junit.Assert.assertTrue("message", true); // Noncompliant {{Remove or correct this assertion.}}
     org.junit.Assert.assertTrue(1 > 2);
     org.junit.Assert.assertFalse(false); // Noncompliant
     org.junit.Assert.assertFalse("message", false); // Noncompliant
-    org.junit.jupiter.api.Assertions.assertTrue(true); // Noncompliant [[sc=38;ec=48]] {{Remove or correct this assertion.}}
+    org.junit.jupiter.api.Assertions.assertTrue(true); // Noncompliant {{Remove or correct this assertion.}}
+//                                   ^^^^^^^^^^
     org.junit.jupiter.api.Assertions.assertFalse(true); // Noncompliant
     org.junit.jupiter.api.Assertions.assertTrue(getBool());
     org.junit.jupiter.api.Assertions.assertFalse(getBool());
-    org.junit.jupiter.api.Assertions.assertEquals(true, getBool()); // Noncompliant [[sc=38;ec=50]] {{Use assertTrue instead.}}
-    org.junit.jupiter.api.Assertions.assertSame(getBool(), false); // Noncompliant [[sc=38;ec=48]] {{Use assertFalse instead.}}
+    org.junit.jupiter.api.Assertions.assertEquals(true, getBool()); // Noncompliant {{Use assertTrue instead.}}
+//                                   ^^^^^^^^^^^^
+    org.junit.jupiter.api.Assertions.assertSame(getBool(), false); // Noncompliant {{Use assertFalse instead.}}
+//                                   ^^^^^^^^^^
     org.junit.jupiter.api.Assertions.assertNotEquals(true, getBool()); // Noncompliant {{Use assertFalse instead.}}
     org.junit.jupiter.api.Assertions.assertNotEquals(false, getBool()); // Noncompliant {{Use assertTrue instead.}}
 

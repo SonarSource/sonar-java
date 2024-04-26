@@ -6,7 +6,8 @@ import java.util.Map;
 class Address {
 }
 class Person implements Serializable {
-  Address address; // Noncompliant [[sc=11;ec=18]] {{Make "address" transient or serializable.}}
+  Address address; // Noncompliant {{Make "address" transient or serializable.}}
+//        ^^^^^^^
   UnknownField unknownField; // Compliant
 }
 

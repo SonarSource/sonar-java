@@ -11,20 +11,20 @@ abstract class CollectionSizeAndArrayLengthCheck implements List<String> {
 
   void foo(Collection<String> coll, String[] arr, B b) {
 
-    if (size() >= 0) { }           // Noncompliant {{The size of a collection is always ">=0", so update this test to use isEmpty().}}
+    if (size() >= 0) { } // Noncompliant {{The size of a collection is always ">=0", so update this test to use isEmpty().}}
     if (0 >= size()) { }           // Compliant - not always true or false
 
-    if (getList().size() < 0) { }  // Noncompliant {{The size of a collection is always ">=0", so update this test to use isEmpty().}}
-    if (coll.size() >= 0) { }      // Noncompliant {{The size of "coll" is always ">=0", so update this test to use isEmpty().}}
-    if (0 <= coll.size()) { }      // Noncompliant {{The size of "coll" is always ">=0", so update this test to use isEmpty().}}
+    if (getList().size() < 0) { } // Noncompliant {{The size of a collection is always ">=0", so update this test to use isEmpty().}}
+    if (coll.size() >= 0) { } // Noncompliant {{The size of "coll" is always ">=0", so update this test to use isEmpty().}}
+    if (0 <= coll.size()) { } // Noncompliant {{The size of "coll" is always ">=0", so update this test to use isEmpty().}}
 
-    if (arr.length >= 0) { }       // Noncompliant {{The length of "arr" is always ">=0", so update this test to either "==0" or ">0".}}
+    if (arr.length >= 0) { } // Noncompliant {{The length of "arr" is always ">=0", so update this test to either "==0" or ">0".}}
     if (getArray().length < 0) { } // Noncompliant {{The length of an array is always ">=0", so update this test to either "==0" or ">0".}}
-    if (this.ray.length >= 0) { }  // Noncompliant {{The length of "ray" is always ">=0", so update this test to either "==0" or ">0".}}
-    if (0 <= arr.length) { }       // Noncompliant {{The length of "arr" is always ">=0", so update this test to either "==0" or ">0".}}
+    if (this.ray.length >= 0) { } // Noncompliant {{The length of "ray" is always ">=0", so update this test to either "==0" or ">0".}}
+    if (0 <= arr.length) { } // Noncompliant {{The length of "arr" is always ">=0", so update this test to either "==0" or ">0".}}
 
-    if (0 > coll.size()) { }       // Noncompliant {{The size of "coll" is always ">=0", so update this test to use isEmpty().}}
-    if (0 > arr.length)  { }       // Noncompliant {{The length of "arr" is always ">=0", so update this test to either "==0" or ">0".}}
+    if (0 > coll.size()) { } // Noncompliant {{The size of "coll" is always ">=0", so update this test to use isEmpty().}}
+    if (0 > arr.length)  { } // Noncompliant {{The length of "arr" is always ">=0", so update this test to either "==0" or ">0".}}
     if (arr.length > 0)  { }       // Compliant
 
     if (coll.size() == 0) { }      // Compliant - will be handled by S1155

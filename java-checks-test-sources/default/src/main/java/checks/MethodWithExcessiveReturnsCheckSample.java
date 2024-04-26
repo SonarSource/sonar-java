@@ -8,11 +8,16 @@ class MethodWithExcessiveReturnsCheckSample {
    return false;
   }
 
-  boolean foo2() { // Noncompliant [[sc=11;ec=15;secondary=12,13,14,15]] {{This method has 4 returns, which is more than the 3 allowed.}}
+  boolean foo2() { // Noncompliant {{This method has 4 returns, which is more than the 3 allowed.}}
+//        ^^^^
     if (false) return true;
+//  ^^^<
     if (false) return false;
+//  ^^^<
     if (false) return true;
+//  ^^^<
     return false;
+//  ^^^<
   }
 
   void foo3() { // Noncompliant {{This method has 4 returns, which is more than the 3 allowed.}}
@@ -20,12 +25,18 @@ class MethodWithExcessiveReturnsCheckSample {
     if (false) return;
 
     new MethodWithExcessiveReturnsCheckSample() {
-      public void f() { // Noncompliant [[sc=19;ec=20;secondary=24,25,26,27,28]] {{This method has 5 returns, which is more than the 3 allowed.}}
+      public void f() { // Noncompliant {{This method has 5 returns, which is more than the 3 allowed.}}
+//                ^
         if (false) return;
+//  ^^^<
         if (false) return;
+//  ^^^<
         if (false) return;
+//  ^^^<
         if (false) return;
+//  ^^^<
         return;
+//  ^^^<
       }
 
       public void g() { // Compliant
@@ -57,7 +68,7 @@ class MethodWithExcessiveReturnsCheckSample {
     return intMember == other.intMember && Objects.equals(stringMember, other.stringMember);
   }
 
-  public boolean equals(MethodWithExcessiveReturnsCheckSample obj) { // Noncompliant because this is not a proper equals method
+  public boolean equals(MethodWithExcessiveReturnsCheckSample obj) { // Noncompliant
     if (this == obj) {
       return true;
     }

@@ -42,14 +42,14 @@ class A {
 	}
 
   ActiveMQConnectionFactory trust_all_packages_true_with_restrict_packages() {
-    ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");   // Noncompliant
+    ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616"); // Noncompliant
     factory.setTrustAllPackages(BOOLEAN_TRUE);
     factory.setTrustedPackages(packages);
     return factory;
   }
 
   ActiveMQConnectionFactory trust_all_packages_false_without_restrict_packages() {
-		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");   // Noncompliant
+		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616"); // Noncompliant
 		factory.setTrustAllPackages(false);
 		return factory;
 	}	
@@ -93,7 +93,7 @@ class A {
   }
 
   void chained_and_not_secured(boolean condition) throws JMSException {
-    new ActiveMQConnectionFactory("tcp://localhost:61616").createConnection();  // Noncompliant
+    new ActiveMQConnectionFactory("tcp://localhost:61616").createConnection(); // Noncompliant
   }
 
   void cannot_resolved_symbol(boolean condition) throws JMSException {
@@ -110,7 +110,7 @@ class A {
   }
 
   ActiveMQConnectionFactory trust_all_packages_using_placeholder() {
-    ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");   // Noncompliant
+    ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616"); // Noncompliant
     factory.setTrustedPackages(Arrays.asList("*"));
     return factory;
   }

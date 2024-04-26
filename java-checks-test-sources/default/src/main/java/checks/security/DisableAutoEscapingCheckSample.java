@@ -22,7 +22,8 @@ public class DisableAutoEscapingCheckSample {
    */
   public void jMustache(boolean arg) {
     Mustache.compiler()
-      .escapeHTML(false) // Noncompliant [[sc=19;ec=24]] {{Make sure disabling auto-escaping feature is safe here.}}
+      .escapeHTML(false) // Noncompliant {{Make sure disabling auto-escaping feature is safe here.}}
+//                ^^^^^
       .compile(template)
       .execute(context);
 
@@ -37,7 +38,8 @@ public class DisableAutoEscapingCheckSample {
       .execute(context);
 
     Mustache.compiler()
-      .withEscaper(Escapers.NONE) // Noncompliant [[sc=20;ec=33]] {{Make sure disabling auto-escaping feature is safe here.}}
+      .withEscaper(Escapers.NONE) // Noncompliant {{Make sure disabling auto-escaping feature is safe here.}}
+//                 ^^^^^^^^^^^^^
       .compile(template)
       .execute(context);
 
@@ -117,7 +119,8 @@ public class DisableAutoEscapingCheckSample {
    * https://freemarker.apache.org/
    */
   public void freemarker(freemarker.template.Configuration config) {
-    config.setAutoEscapingPolicy(DISABLE_AUTO_ESCAPING_POLICY); // Noncompliant [[sc=34;ec=62]] {{Make sure disabling auto-escaping feature is safe here.}}
+    config.setAutoEscapingPolicy(DISABLE_AUTO_ESCAPING_POLICY); // Noncompliant {{Make sure disabling auto-escaping feature is safe here.}}
+//                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     config.setAutoEscapingPolicy(freemarker.template.Configuration.DISABLE_AUTO_ESCAPING_POLICY); // Noncompliant
     config.setAutoEscapingPolicy(MyConstant.DISABLE_AUTO_ESCAPING_POLICY); // Compliant, user defined constant
     config.setAutoEscapingPolicy(ENABLE_IF_SUPPORTED_AUTO_ESCAPING_POLICY); // Compliant

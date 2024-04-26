@@ -27,7 +27,7 @@ public class S3749_CustomAnnotations {
 class ConstructorInjection {
   private String env;  // Compliant
   private String yyyAdaptor; // Compliant
-  private String jaxbContext; // Noncompliant - not used in @Autowired constructor
+  private String jaxbContext; // Noncompliant
 
   @S3749_CustomAnnotations.MyInjectionAnnotation
   public ConstructorInjection(String env, String yyyAdaptor,

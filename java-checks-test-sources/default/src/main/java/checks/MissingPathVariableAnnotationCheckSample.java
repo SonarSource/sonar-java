@@ -24,7 +24,8 @@ public class MissingPathVariableAnnotationCheckSample {
 
 
 
-  @GetMapping("/{id}") // Noncompliant [[sc=3;ec=23]] {{Bind path variable "id" to a method parameter.}}
+  @GetMapping("/{id}") // Noncompliant {{Bind path variable "id" to a method parameter.}}
+//^^^^^^^^^^^^^^^^^^^^
   public String get(String id) {
     return "Hello World";
   }
@@ -212,7 +213,7 @@ public class MissingPathVariableAnnotationCheckSample {
       return "Hello World";
     }
 
-    @GetMapping("/{id}/{name}/{age}") // Noncompliant  {{Bind path variable "age" to a method parameter.}}
+    @GetMapping("/{id}/{name}/{age}") // Noncompliant {{Bind path variable "age" to a method parameter.}}
     public String get3() {
       return "Hello World";
     }

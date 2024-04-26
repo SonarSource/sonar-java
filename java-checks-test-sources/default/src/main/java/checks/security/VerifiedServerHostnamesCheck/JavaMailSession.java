@@ -6,7 +6,8 @@ public class JavaMailSession {
 
   public void foo() {
     Properties props = new Properties();
-    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");// Noncompliant [[sc=5;ec=81]] {{Enable server hostname verification on this SSL/TLS connection, by setting "mail.smtp.ssl.checkserveridentity" to true.}}
+    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); // Noncompliant {{Enable server hostname verification on this SSL/TLS connection, by setting "mail.smtp.ssl.checkserveridentity" to true.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   public void foo2() {
@@ -56,7 +57,7 @@ public class JavaMailSession {
 
   public void foo9() {
     Properties props = new Properties();
-    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");// Noncompliant
+    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); // Noncompliant
     anotherUnrelatedCall();
   }
 

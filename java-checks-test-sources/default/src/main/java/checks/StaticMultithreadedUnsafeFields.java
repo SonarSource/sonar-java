@@ -27,9 +27,12 @@ public class StaticMultithreadedUnsafeFields {
   private static int field; // Compliant
 
   private java.text.SimpleDateFormat format1; // Compliant
-  private static java.text.SimpleDateFormat format2; // Noncompliant [[sc=45;ec=52]] {{Make "format2" an instance variable.}}
-  private static java.text.SimpleDateFormat format3; // Noncompliant [[sc=45;ec=52]] {{Make "format3" an instance variable.}}
-  public static java.text.SimpleDateFormat format4; // Noncompliant [[sc=44;ec=51]] {{Make "format4" an instance variable.}}
+  private static java.text.SimpleDateFormat format2; // Noncompliant {{Make "format2" an instance variable.}}
+//                                          ^^^^^^^
+  private static java.text.SimpleDateFormat format3; // Noncompliant {{Make "format3" an instance variable.}}
+//                                          ^^^^^^^
+  public static java.text.SimpleDateFormat format4; // Noncompliant {{Make "format4" an instance variable.}}
+//                                         ^^^^^^^
   private static java.text.DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); // Noncompliant
   private static java.text.DateFormat dateFormat2 = null;
 

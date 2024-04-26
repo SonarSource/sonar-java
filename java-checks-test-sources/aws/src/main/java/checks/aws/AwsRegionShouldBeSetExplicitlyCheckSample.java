@@ -11,18 +11,21 @@ public class AwsRegionShouldBeSetExplicitlyCheckSample {
   public static final AwsClientBuilder BUILDER = getABuilder();
 
   void nonCompliantChained() {
-    S3Client s3Client = S3Client.builder() // Noncompliant [[sl=+0;sc=25;el=+2;ec=15]] {{Set the region explicitly on this builder.}}
+    S3Client s3Client = S3Client.builder() // Noncompliant {{Set the region explicitly on this builder.}}
+^[sc=25;ec=15;sl=14;el=16]
       .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
       .build();
   }
 
   void nonCompliantVariable() {
-    S3ClientBuilder builder = S3Client.builder(); // Noncompliant [[sc=5;ec=50]] {{Set the region explicitly on this builder.}}
+    S3ClientBuilder builder = S3Client.builder(); // Noncompliant {{Set the region explicitly on this builder.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     builder.build();
   }
 
   class NonCompliantClientAsField {
-    S3Client incompleteClient = S3Client.builder().build(); // Noncompliant [[sc=33;ec=59]] {{Set the region explicitly on this builder.}}
+    S3Client incompleteClient = S3Client.builder().build(); // Noncompliant {{Set the region explicitly on this builder.}}
+//                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   void compliantChained() {

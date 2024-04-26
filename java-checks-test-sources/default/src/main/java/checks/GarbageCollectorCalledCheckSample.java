@@ -19,8 +19,10 @@ class GarbageCollectorCalledCheckSample {
   }
 
   private void f() {
-    System.gc(); // Noncompliant [[sc=12;ec=14]] {{Don't try to be smarter than the JVM, remove this call to run the garbage collector.}}
-    System.runFinalization(); // Noncompliant [[sc=12;ec=27]] {{Don't try to be smarter than the JVM, remove this call to run the garbage collector.}}
+    System.gc(); // Noncompliant {{Don't try to be smarter than the JVM, remove this call to run the garbage collector.}}
+//         ^^
+    System.runFinalization(); // Noncompliant {{Don't try to be smarter than the JVM, remove this call to run the garbage collector.}}
+//         ^^^^^^^^^^^^^^^
     foo.gc(); // Compliant
     System.exit(0); // Compliant
     Runtime.getRuntime().gc(); // Noncompliant

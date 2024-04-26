@@ -17,19 +17,19 @@ public class PrintfFailCheckSample {
     Locale loc = Locale.US;
     // String format ===================================================================================================
     double value = 1.0;
-    String.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
+    String.format("The value of my integer is %d", "Hello World"); // Noncompliant {{An 'int' is expected rather than a String.}}
     String.format("First {0} and then {1}", "foo", "bar");
-    String.format("Duke's Birthday year is %tX", 12l);  // Noncompliant {{X is not a supported time conversion character}}
+    String.format("Duke's Birthday year is %tX", 12l); // Noncompliant {{X is not a supported time conversion character}}
     String.format("Display %3$d and then %d", 1, 2, 3);
     String.format("Too many arguments %d and %d", 1, 2, 3);
-    String.format("Not enough arguments %d and %d", 1);  // Noncompliant {{Not enough arguments.}}
-    String.format("%1$d %2$d %9$-3.3s", 1, 2, "hello");  // Noncompliant {{Not enough arguments to feed formater at index 9: '%9$'.}}
-    String.format("%12$s", 1, 2, "hello");  // Noncompliant {{Not enough arguments to feed formater at index 12: '%12$'.}}
+    String.format("Not enough arguments %d and %d", 1); // Noncompliant {{Not enough arguments.}}
+    String.format("%1$d %2$d %9$-3.3s", 1, 2, "hello"); // Noncompliant {{Not enough arguments to feed formater at index 9: '%9$'.}}
+    String.format("%12$s", 1, 2, "hello"); // Noncompliant {{Not enough arguments to feed formater at index 12: '%12$'.}}
     String.format("First Line\n %d", 1);
     String.format("First Line");
     String.format("First Line%%");
     String.format("First Line%n"); // Compliant
-    String.format("%< is equals to %d", 2);   // Noncompliant {{The argument index '<' refers to the previous format specifier but there isn't one.}}
+    String.format("%< is equals to %d", 2); // Noncompliant {{The argument index '<' refers to the previous format specifier but there isn't one.}}
     String.format("Is myObject null ? %b", myObject);
     String.format("value is " + value); // Compliant
     String.format("string without arguments");
@@ -46,21 +46,21 @@ public class PrintfFailCheckSample {
     String.format("Result %s %s",new Exception(),new Exception()); // Compliant
     String.format("Result %s %s",new Object[] {new Exception(),new Exception()}); // Compliant
     String.format("Result %s %s",new Exception()); // Noncompliant {{Not enough arguments.}}
-    String.format("Result %s %s",new Object[] {new Exception()});  // Noncompliant {{Not enough arguments.}}
+    String.format("Result %s %s",new Object[] {new Exception()}); // Noncompliant {{Not enough arguments.}}
     String.format("%s " + value, new Exception()); // Compliant, reported by S3457
     String.format("%s " + value); // Compliant, reported by S3457
 
     String.format("Too many arguments %d and %d and %d", 1, 2, 3, 4);
     String.format("normal %d%% ", 1);  //Compliant
-    String.format("Duke's Birthday year is %t", 12l);  // Noncompliant {{Time conversion requires a second character.}}
+    String.format("Duke's Birthday year is %t", 12l); // Noncompliant {{Time conversion requires a second character.}}
     String.format("Duke's Birthday year is %tH", 12l);  // Compliant
     String.format("Duke's Birthday year is %tH", Long.valueOf(12L));  // Compliant
-    String.format("Duke's Birthday year is %tH", loc);  // Noncompliant {{Time argument is expected (long, Long, Calendar, Date and TemporalAccessor).}}
+    String.format("Duke's Birthday year is %tH", loc); // Noncompliant {{Time argument is expected (long, Long, Calendar, Date and TemporalAccessor).}}
     String.format("%08d%n", 1);
     GregorianCalendar gc = (GregorianCalendar) GregorianCalendar.getInstance();
     String.format("Duke's Birthday year is %tH", gc);
-    // Noncompliant@+1
-    String.format("Duke's Birthday year is %t", loc);  // Noncompliant
+ // Noncompliant@+1
+    String.format("Duke's Birthday year is %t", loc); // Noncompliant
     String.format("Accessed before %tF%n", java.time.LocalDate.now()); // Compliant
     System.out.printf("%1$ty_%1$tm_%1$td_%1$tH_%1$tM_%1$tS", java.time.LocalDateTime.now()); // Compliant
 
@@ -71,14 +71,14 @@ public class PrintfFailCheckSample {
     String.format("%0$s", "tmp"); // Compliant, reported by S3457
 
     // String.formatted ================================================================================================
-    "The value of my integer is %d".formatted("Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
+    "The value of my integer is %d".formatted("Hello World"); // Noncompliant {{An 'int' is expected rather than a String.}}
     "First {0} and then {1}".formatted("foo", "bar");
-    "Duke's Birthday year is %tX".formatted(12l);  // Noncompliant {{X is not a supported time conversion character}}
+    "Duke's Birthday year is %tX".formatted(12l); // Noncompliant {{X is not a supported time conversion character}}
     "Display %3$d and then %d".formatted(1, 2, 3);
     "Too many arguments %d and %d".formatted(1, 2, 3);
-    "Not enough arguments %d and %d".formatted(1);  // Noncompliant {{Not enough arguments.}}
-    "%1$d %2$d %9$-3.3s".formatted(1, 2, "hello");  // Noncompliant {{Not enough arguments to feed formater at index 9: '%9$'.}}
-    "%12$s".formatted(1, 2, "hello");  // Noncompliant {{Not enough arguments to feed formater at index 12: '%12$'.}}
+    "Not enough arguments %d and %d".formatted(1); // Noncompliant {{Not enough arguments.}}
+    "%1$d %2$d %9$-3.3s".formatted(1, 2, "hello"); // Noncompliant {{Not enough arguments to feed formater at index 9: '%9$'.}}
+    "%12$s".formatted(1, 2, "hello"); // Noncompliant {{Not enough arguments to feed formater at index 12: '%12$'.}}
     "First Line\n %d".formatted(1);
     "First Line".formatted();
     "First Line%%".formatted();
@@ -89,11 +89,11 @@ public class PrintfFailCheckSample {
     PrintStream ps = new PrintStream("file");
     Formatter formatter = new Formatter();
 
-    pr.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
-    pr.printf("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
-    ps.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
-    ps.printf(loc, "The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
-    formatter.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
+    pr.format("The value of my integer is %d", "Hello World"); // Noncompliant {{An 'int' is expected rather than a String.}}
+    pr.printf("The value of my integer is %d", "Hello World"); // Noncompliant {{An 'int' is expected rather than a String.}}
+    ps.format("The value of my integer is %d", "Hello World"); // Noncompliant {{An 'int' is expected rather than a String.}}
+    ps.printf(loc, "The value of my integer is %d", "Hello World"); // Noncompliant {{An 'int' is expected rather than a String.}}
+    formatter.format("The value of my integer is %d", "Hello World"); // Noncompliant {{An 'int' is expected rather than a String.}}
     pr.format("%s:\tintCompact %d\tintVal %d\tscale %d\tprecision %d%n","", 1, 1, 1, 1);
     pr.format("%s:\tintCompact %n%n%n%d\tintVal %d\tscale %d\tprecision %d%n","", 1, 1, 1, 1);
     pr.format("%TH", 1l);

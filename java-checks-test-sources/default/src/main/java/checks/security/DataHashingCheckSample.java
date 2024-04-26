@@ -26,10 +26,12 @@ class HashMethodsCheck {
 
   void myMethod(String algorithm, Provider provider, Properties props) throws NoSuchAlgorithmException, NoSuchProviderException {
     MessageDigest md = null;
-    md = MessageDigest.getInstance("MD2"); // Noncompliant [[sc=24;ec=35]] {{Make sure this weak hash algorithm is not used in a sensitive context here.}}
+    md = MessageDigest.getInstance("MD2"); // Noncompliant {{Make sure this weak hash algorithm is not used in a sensitive context here.}}
+//                     ^^^^^^^^^^^
     md = MessageDigest.getInstance("MD4"); // Noncompliant {{Make sure this weak hash algorithm is not used in a sensitive context here.}}
     md = MessageDigest.getInstance("MD6"); // Noncompliant {{Make sure this weak hash algorithm is not used in a sensitive context here.}}
-    md = MessageDigest.getInstance("MD5"); // Noncompliant [[sc=24;ec=35]] {{Make sure this weak hash algorithm is not used in a sensitive context here.}}
+    md = MessageDigest.getInstance("MD5"); // Noncompliant {{Make sure this weak hash algorithm is not used in a sensitive context here.}}
+//                     ^^^^^^^^^^^
     md = MessageDigest.getInstance("HAVAL-128"); // Noncompliant {{Make sure this weak hash algorithm is not used in a sensitive context here.}}
     md = MessageDigest.getInstance("HMAC-MD5"); // Noncompliant {{Make sure this weak hash algorithm is not used in a sensitive context here.}}
     md = MessageDigest.getInstance("RIPEMD"); // Noncompliant {{Make sure this weak hash algorithm is not used in a sensitive context here.}}

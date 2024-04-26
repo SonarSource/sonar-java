@@ -28,13 +28,13 @@ class CatchUsesExceptionWithContextCheck {
       foo(null, e).bar();
     } catch (Exception e) {                      // Compliant
       throw foo(e).bar();
-    } catch (Exception e) {                      // Noncompliant
+    } catch (Exception e) { // Noncompliant
       throw e.getCause();
     } catch (Exception e) {                      // Compliant
       throw (Exception)e;
     } catch (Exception e) {                      // Compliant
       throw (e);
-    } catch (Exception e) {                      // Noncompliant
+    } catch (Exception e) { // Noncompliant
       throw (e).getClause();
     } catch (Exception e) {                      // Compliant
       Exception e2 = e;
@@ -50,11 +50,12 @@ class CatchUsesExceptionWithContextCheck {
     } catch (MalformedURLException e) {  // Compliant
     } catch (java.time.format.DateTimeParseException e) {          // Compliant
     } catch (java.text.ParseException e) {        // Compliant
-    } catch (java.text.foo e) {                   // Noncompliant
-    } catch (java.foo.ParseException e) {         // Noncompliant [[sc=14;ec=39]]
-    } catch (foo.text.ParseException e) {         // Noncompliant
-    } catch (text.ParseException e) {             // Noncompliant
-    } catch (foo.java.text.ParseException e) {    // Noncompliant
+    } catch (java.text.foo e) { // Noncompliant
+    } catch (java.foo.ParseException e) { // Noncompliant
+//           ^^^^^^^^^^^^^^^^^^^^^^^^^
+    } catch (foo.text.ParseException e) { // Noncompliant
+    } catch (text.ParseException e) { // Noncompliant
+    } catch (foo.java.text.ParseException e) { // Noncompliant
     } catch (Exception e) {                       // Compliant
       Exception foo = false ? e : null;
     } catch (Exception e) {                       // Compliant
@@ -67,9 +68,9 @@ class CatchUsesExceptionWithContextCheck {
     } catch (Exception e) {                       // Compliant
       throw wrapHttpException ? null : e;
     }
-    catch (Exception e) {                     // Noncompliant
+    catch (Exception e) { // Noncompliant
       try {
-      } catch (Exception f) {                   // Noncompliant
+      } catch (Exception f) { // Noncompliant
         System.out.println("", e.getCause());
       }
     }

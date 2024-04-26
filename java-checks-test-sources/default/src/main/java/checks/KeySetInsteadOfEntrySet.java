@@ -66,7 +66,8 @@ class KeySetInsteadOfEntrySetCheckExtendedClass extends KeySetInsteadOfEntrySetC
     for (String key4 : this.keySet()) { // Noncompliant {{Iterate over the "entrySet" instead of the "keySet".}}
       Object value = this.get(key4);
     }
-    for (String key5 : super.keySet()) { // Noncompliant [[sc=5;ec=8]] {{Iterate over the "entrySet" instead of the "keySet".}}
+    for (String key5 : super.keySet()) { // Noncompliant {{Iterate over the "entrySet" instead of the "keySet".}}
+//  ^^^
       Object value = super.get(key5);
     }
     for (String key5 : map.keySet()) { // Noncompliant {{Iterate over the "entrySet" instead of the "keySet".}}

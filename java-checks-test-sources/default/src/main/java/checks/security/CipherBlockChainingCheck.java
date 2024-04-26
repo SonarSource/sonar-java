@@ -28,11 +28,12 @@ class CipherBlockChainingCheck {
 
   void foo2() throws UnsupportedEncodingException {
     byte[] bytes = "111".getBytes("UTF-8");
-    IvParameterSpec iv = new IvParameterSpec(bytes); // Noncompliant [[sc=26;ec=52]] {{Use a dynamically-generated, random IV.}}
+    IvParameterSpec iv = new IvParameterSpec(bytes); // Noncompliant {{Use a dynamically-generated, random IV.}}
+//                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   void foo3() {
-    IvParameterSpec iv = new IvParameterSpec(bytes2); // Noncompliant FN, will be fixed with SE engine
+    IvParameterSpec iv = new IvParameterSpec(bytes2); // Noncompliant
   }
 
   void foo4() throws UnsupportedEncodingException {
@@ -90,14 +91,14 @@ class CipherBlockChainingCheck {
   void foo12() throws UnsupportedEncodingException {
     byte[] bytes = "111".getBytes("UTF-8");
     random.nextBytes(bytes);
-    IvParameterSpec iv = new IvParameterSpec(null); // Noncompliant Coverage reasons
+    IvParameterSpec iv = new IvParameterSpec(null); // Noncompliant
   }
 
   void foo13() throws UnsupportedEncodingException {
     byte[] bytes = "111".getBytes("UTF-8");
     random.nextBytes(bytes);
     byte[] bytes2 = "111222".getBytes("UTF-8");
-    IvParameterSpec iv = new IvParameterSpec(bytes2); // Noncompliant Coverage reasons
+    IvParameterSpec iv = new IvParameterSpec(bytes2); // Noncompliant
   }
 
   void foo14() throws UnsupportedEncodingException {
@@ -167,7 +168,7 @@ class CipherBlockChainingCheck {
   }
 
   static void decryptImpl3(SecretKeySpec ks) throws Exception {
-    new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used
+    new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks);
@@ -175,21 +176,21 @@ class CipherBlockChainingCheck {
 
   static void decryptImpl4(SecretKeySpec ks) throws Exception {
     byte[] biv = new byte[IV_SIZE];
-    IvParameterSpec iv = new IvParameterSpec(biv); // Noncompliant - not random
+    IvParameterSpec iv = new IvParameterSpec(biv); // Noncompliant
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.ENCRYPT_MODE, ks, iv);
   }
 
   static void decryptImpl5(SecretKeySpec ks, IvParameterSpec iv) throws Exception {
-    new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used
+    new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks, iv);
   }
 
   static void decryptImpl6(SecretKeySpec ks, IvParameterSpec iv) throws Exception {
-    IvParameterSpec iv2 = new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant - not used
+    IvParameterSpec iv2 = new IvParameterSpec("111".getBytes("UTF-8")); // Noncompliant
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks, iv);

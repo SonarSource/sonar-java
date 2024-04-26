@@ -2,14 +2,15 @@ package checks;
 
 import org.sonar.api.Properties;
 
-class LeftCurlyBraceStartLineCheckSample {    // Noncompliant [[sc=42;ec=43]] {{Move this left curly brace to the beginning of next line of code.}}
+class LeftCurlyBraceStartLineCheckSample { // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
+//                                       ^
 
   class Gul
   {              // Compliant
   }
 
   class
-  Doo {          // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
+  Doo { // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
   }
 
   class Koo

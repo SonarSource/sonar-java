@@ -59,12 +59,12 @@ abstract class OptionalGetBeforeIsPresentCheck_jdk11 {
 
   void test_junit5_2(Optional<String> op){
     Assertions.assertTrue(op.isEmpty(), "Hello");
-    op.get();  // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
+    op.get(); // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
   }
 
   void test_junit5_3(Optional<String> op){
     Assertions.assertFalse(op.isPresent());
-    op.get();   // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
+    op.get(); // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
   }
 
   void test_junit5_4(Optional<String> op){
@@ -74,7 +74,7 @@ abstract class OptionalGetBeforeIsPresentCheck_jdk11 {
 
   void test_junit5_5(Optional<String> op, int i){
     Assertions.assertFalse(i < 0);
-    op.get();   // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
+    op.get(); // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
   }
 
   void test_junit5_6(Optional<String> op){
@@ -89,7 +89,7 @@ abstract class OptionalGetBeforeIsPresentCheck_jdk11 {
 
   void test_junit5_8(Optional<String> op, int i){
     Assertions.assertFalse(i < 0, () -> "Hello");
-    op.get();   // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
+    op.get(); // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
   }
 
   void test_junit5_9(Optional<String> op){
@@ -124,7 +124,7 @@ abstract class OptionalGetBeforeIsPresentCheck_jdk11 {
 
   void test_junit5_15(Optional<String> op){
     Assertions.assertFalse(op.isPresent(), "Hello");
-    op.get();  // Noncompliant
+    op.get(); // Noncompliant
   }
 
   void test_junit4_1(Optional<String> op){
@@ -134,12 +134,12 @@ abstract class OptionalGetBeforeIsPresentCheck_jdk11 {
 
   void test_junit4_2(Optional<String> op){
     Assert.assertTrue("Hello", op.isEmpty());
-    op.get();  // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
+    op.get(); // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
   }
 
   void test_junit4_3(Optional<String> op){
     Assert.assertFalse(op.isPresent());
-    op.get();   // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
+    op.get(); // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
   }
 
   void test_junit4_4(Optional<String> op){
@@ -149,7 +149,7 @@ abstract class OptionalGetBeforeIsPresentCheck_jdk11 {
 
   void test_junit4_5(Optional<String> op, int i){
     Assert.assertFalse(i < 0);
-    op.get();   // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
+    op.get(); // Noncompliant {{Call "op.isPresent()" or "!op.isEmpty()" before accessing the value.}}
   }
 
   void test_junit4_6(Optional<String> op){

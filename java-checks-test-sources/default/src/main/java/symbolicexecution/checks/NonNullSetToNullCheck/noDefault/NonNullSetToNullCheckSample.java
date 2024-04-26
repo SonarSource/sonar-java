@@ -42,7 +42,8 @@ class NonNullSetToNullCheckSample {
     if (color != null) {
       secondary = null;
     }
-    primary = color;  // Noncompliant [[sc=5;ec=20]] {{"primary" is marked "@Nonnull" but is set to null.}}
+    primary = color; // Noncompliant {{"primary" is marked "@Nonnull" but is set to null.}}
+//  ^^^^^^^^^^^^^^^
     testObject = new Object();
     otherNonnullField = "";
   }
@@ -54,7 +55,8 @@ class NonNullSetToNullCheckSample {
     otherNonnullField = "";
   }
 
-  public NonNullSetToNullCheckSample() { // Noncompliant [[sc=10;ec=37]] {{"primary" is marked "@Nonnull" but is not initialized in this constructor.}}
+  public NonNullSetToNullCheckSample() { // Noncompliant {{"primary" is marked "@Nonnull" but is not initialized in this constructor.}}
+//       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
     return; // Just for coverage
   }
 
@@ -115,7 +117,7 @@ class NonNullSetToNullCheckSample {
   // ============ 2. Testing Return values ============
   @Nonnull
   public String colorMix() {
-    return null;  // Noncompliant {{This method's return value is marked "@Nonnull" but null is returned.}}
+    return null; // Noncompliant {{This method's return value is marked "@Nonnull" but null is returned.}}
   }
 
   @Nonnull(when = When.MAYBE)
@@ -136,7 +138,7 @@ class NonNullSetToNullCheckSample {
   @Nonnull
   public String indirectMix() {
     String mix = null;
-    return mix;  // Noncompliant {{This method's return value is marked "@Nonnull" but null is returned.}}
+    return mix; // Noncompliant {{This method's return value is marked "@Nonnull" but null is returned.}}
   }
 
   @Nonnull
@@ -167,17 +169,18 @@ class NonNullSetToNullCheckSample {
   // ============ 3. Testing nullable value passed as argument ============
   public static void initialize1() {
     NonNullSetToNullCheckSample instance =
-      new NonNullSetToNullCheckSample(null, "Blue");  // Noncompliant [[sc=7;ec=52]] {{Parameter 1 to this constructor is marked "@Nonnull" but null could be passed.}}
+      new NonNullSetToNullCheckSample(null, "Blue"); // Noncompliant {{Parameter 1 to this constructor is marked "@Nonnull" but null could be passed.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   public static void initialize2() {
     NonNullSetToNullCheckSample instance = new NonNullSetToNullCheckSample("Black", null);
-    instance.setColors(null, "Green");  // Noncompliant {{Parameter 1 to this call is marked "@Nonnull" but null could be passed.}}
+    instance.setColors(null, "Green"); // Noncompliant {{Parameter 1 to this call is marked "@Nonnull" but null could be passed.}}
   }
 
   public static void initialize3() {
     NonNullSetToNullCheckSample instance = new NonNullSetToNullCheckSample("Red", null);
-    instance.setSecondary(null);  // Noncompliant {{Parameter 1 to this call is marked "@Nonnull" but null could be passed.}}
+    instance.setSecondary(null); // Noncompliant {{Parameter 1 to this call is marked "@Nonnull" but null could be passed.}}
   }
 
   public static void initiliaze4() {
@@ -191,7 +194,7 @@ class NonNullSetToNullCheckSample {
 
   public static void initialize5() {
     NonNullSetToNullCheckSample instance =
-      new NonNullSetToNullCheckSample(checkForNull(), "Blue");  // Noncompliant
+      new NonNullSetToNullCheckSample(checkForNull(), "Blue"); // Noncompliant
   }
 
   // ============ 4. Local variable assigned nullable value ============
@@ -283,11 +286,11 @@ class NonNullSetToNullCheckSampleCallingOtherConstructor {
     this(Integer.valueOf(s));
   }
 
-  NonNullSetToNullCheckSampleCallingOtherConstructor(Object o) { // Noncompliant - calls super constructor but do not initialize value
+  NonNullSetToNullCheckSampleCallingOtherConstructor(Object o) { // Noncompliant
     super();
   }
 
-  NonNullSetToNullCheckSampleCallingOtherConstructor(String s, Object o) { // Noncompliant - calls other method
+  NonNullSetToNullCheckSampleCallingOtherConstructor(String s, Object o) { // Noncompliant
     this.foo(o);
   }
 
@@ -409,7 +412,7 @@ class JpaEntityInvalidDefault {
 
   private String otherField;
 
-  public JpaEntityInvalidDefault() { // Noncompliant  {{"itemName" is marked "@Nonnull" but is not initialized in this constructor.}}
+  public JpaEntityInvalidDefault() { // Noncompliant {{"itemName" is marked "@Nonnull" but is not initialized in this constructor.}}
     otherField = "test";
   }
 }
@@ -483,7 +486,7 @@ class HandleNonNullByDefault {
 
   // 2. return values
   public String returnNull() {
-    return null;  // Noncompliant {{This method's return value is marked "@NonNullByDefault at class level" but null is returned.}}
+    return null; // Noncompliant {{This method's return value is marked "@NonNullByDefault at class level" but null is returned.}}
   }
 
   // 3.
@@ -568,7 +571,7 @@ class JakartaJpaEntityInvalidDefault {
 
   private String otherField;
 
-  public JakartaJpaEntityInvalidDefault() { // Noncompliant  {{"itemName" is marked "@Nonnull" but is not initialized in this constructor.}}
+  public JakartaJpaEntityInvalidDefault() { // Noncompliant {{"itemName" is marked "@Nonnull" but is not initialized in this constructor.}}
     otherField = "test";
   }
   public void setColors2(@jakarta.annotation.Nullable String color) {

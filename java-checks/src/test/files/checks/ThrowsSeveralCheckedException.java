@@ -27,7 +27,8 @@ public class ThrowsSeveralCheckedException extends Base {
   public void foo8() throws IllegalArgumentException, MyException, NullPointerException {
   }
 
-  public void foo9() throws IOException, MyException { // Noncompliant [[sc=15;ec=19]] {{Refactor this method to throw at most one checked exception instead of: java.io.IOException, ThrowsSeveralCheckedException$MyException}}
+  public void foo9() throws IOException, MyException { // Noncompliant {{Refactor this method to throw at most one checked exception instead of: java.io.IOException, ThrowsSeveralCheckedException$MyException}}
+//            ^^^^
   }
 
   public void foo10() throws IOException, IOException, SQLException { // Noncompliant {{Refactor this method to throw at most one checked exception instead of: java.io.IOException, java.io.IOException, java.sql.SQLException}}

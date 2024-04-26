@@ -22,7 +22,8 @@ class HardCodedSecretCheckSample {
     // ========== 1. String literal ==========
     // The variable name does not influence the issue, only the string is considered.
     String variable1 = "blabla";
-    String variable2 = "login=a&secret=abcdefghijklmnopqrs"; // Noncompliant [[sc=24;ec=60]] {{'secret' detected in this expression, review this potentially hard-coded secret.}}
+    String variable2 = "login=a&secret=abcdefghijklmnopqrs"; // Noncompliant {{'secret' detected in this expression, review this potentially hard-coded secret.}}
+//                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     String variable3 = "login=a&token=abcdefghijklmnopqrs"; // Noncompliant
     String variable4 = "login=a&api_key=abcdefghijklmnopqrs"; // Noncompliant
     String variable5 = "login=a&api.key=abcdefghijklmnopqrs"; // Noncompliant
@@ -81,13 +82,17 @@ class HardCodedSecretCheckSample {
     // ========== 2. Variable declaration ==========
     // The variable name should contain a secret word
     final String MY_SECRET = "abcdefghijklmnopqrs"; // Noncompliant
-    String variableNameWithSecretInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=38]]
-    String variableNameWithSecretaryInIt = "abcdefghijklmnopqrs"; // Noncompliant, false-positive Secretary is not Secret
-    String variableNameWithAuthorshipInIt = "abcdefghijklmnopqrs"; // Noncompliant, false-positive Authorship is not Auth
+    String variableNameWithSecretInIt = "abcdefghijklmnopqrs"; // Noncompliant
+//         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    String variableNameWithSecretaryInIt = "abcdefghijklmnopqrs"; // Noncompliant
+    String variableNameWithAuthorshipInIt = "abcdefghijklmnopqrs"; // Noncompliant
     String variableNameWithTokenInIt = "abcdefghijklmnopqrs"; // Noncompliant
-    String variableNameWithApiKeyInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=38]]
-    String variableNameWithCredentialInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=42]]
-    String variableNameWithAuthInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=36]]
+    String variableNameWithApiKeyInIt = "abcdefghijklmnopqrs"; // Noncompliant
+//         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    String variableNameWithCredentialInIt = "abcdefghijklmnopqrs"; // Noncompliant
+//         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    String variableNameWithAuthInIt = "abcdefghijklmnopqrs"; // Noncompliant
+//         ^^^^^^^^^^^^^^^^^^^^^^^^
     // Secrets with less than 2 characters, explicitly "anonymous", are ignored
     String variableNameWithSecretInItEmpty = "";
     String variableNameWithSecretInItOneChar = "X";
@@ -231,7 +236,8 @@ class HardCodedSecretCheckSample {
     myA.setProperty(new Object(), new Object());
     myA.setProperty("secret", "secret"); // Compliant
     myA.setProperty("secret", "auth"); // Compliant
-    myA.setProperty("something", "else").setProperty("secret", "abcdefghijklmnopqrs"); // Noncompliant [[sc=42;ec=53]]
+    myA.setProperty("something", "else").setProperty("secret", "abcdefghijklmnopqrs"); // Noncompliant
+//                                       ^^^^^^^^^^^
   }
 
   private char[] getSecret(String s) {

@@ -14,6 +14,6 @@ class LazyArgEvaluationCheck {
     }
     MyUnknownRecord myUnknownRecord = new MyUnknownRecord(new Unknown());
     logger.log(Level.SEVERE, "Something went wrong: " + myUnknownRecord.name()); // Compliant - unkown types are filtered out
-    logger.log(Level.SEVERE, "Something went wrong: " + myUnknownRecord.age()); //  Noncompliant - not a getter
+    logger.log(Level.SEVERE, "Something went wrong: " + myUnknownRecord.age()); // Noncompliant
   }
 }

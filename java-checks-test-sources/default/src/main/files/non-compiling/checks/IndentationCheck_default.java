@@ -185,7 +185,7 @@ class TestSwitch {
 
 class Foo {
   int a;                          // Compliant
-   int b;                         // Noncompliant {{Make this line start after 2 spaces instead of 3 in order to indent the code consistently. (Indentation level is at 2.)}}
+   int b; // Noncompliant {{Make this line start after 2 spaces instead of 3 in order to indent the code consistently. (Indentation level is at 2.)}}
  int c;                           // Compliant - already reported
 
   public void foo1() {            // Compliant
@@ -193,20 +193,20 @@ class Foo {
     }                             // Compliant
 
  public void foo2() {             // Compliant
-   System.out.println("hehe");    // Noncompliant
+   System.out.println("hehe"); // Noncompliant
     System.out.println();         // Compliant - already reported
   }
 
   public void foo3() {            // Compliant
-System.out.println();             // Noncompliant
+System.out.println(); // Noncompliant
 System.out.println();             // Compliant - already reported
 System.out.println();             // Compliant - already reported
 
 if (true) {                       // Compliant - already reported
-  System.out.println();           // Noncompliant
+  System.out.println(); // Noncompliant
   if (true) {                     // Compliant - already reported
         System.out.println();     // Compliant
-    System.out.println();         // Noncompliant {{Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 2.)}}
+    System.out.println(); // Noncompliant {{Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 2.)}}
   }
 
       ; System.out.println();     // Compliant
@@ -217,7 +217,7 @@ if (true) {                       // Compliant - already reported
 
     int a;                        // Compliant
 
-  int b;                          // Noncompliant
+  int b; // Noncompliant
 
   }
 
@@ -328,13 +328,13 @@ enum Bar {
   public void foo1() {            // Compliant
   }
 
- public void foo2() {             // Noncompliant
+ public void foo2() { // Noncompliant
  }
 }
 
 interface Qix {
 
- void foo1();                     // Noncompliant
+ void foo1(); // Noncompliant
 
   void foo2();                    // Compliant
 
@@ -346,9 +346,9 @@ class Baz {
     new MyInterface() {
       public void foo() {         // Compliant
         System.out.println();     // Compliant
-          System.out.println();   // Noncompliant
+          System.out.println(); // Noncompliant
       }
-        public void bar() {       // Noncompliant
+        public void bar() { // Noncompliant
         }
     };
   }
@@ -360,7 +360,7 @@ class Baz {
 
 }
 
- class Qiz {                      // Noncompliant
+ class Qiz { // Noncompliant
   public void foo() {
     switch (0) {
       case 0:

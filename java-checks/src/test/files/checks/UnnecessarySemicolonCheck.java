@@ -11,10 +11,12 @@ public class UnnecessarySemicolonCheck {
 
   public static void main(String[] args) throws IOException {
 
-    try(InputStream i1 = input("i1");) { // Noncompliant [[sc=37;ec=38]] {{Remove this extraneous semicolon.}}
+    try(InputStream i1 = input("i1");) { // Noncompliant {{Remove this extraneous semicolon.}}
+//                                  ^
     }
 
-    try(InputStream i1 = input("i1");InputStream i2 = input("i2");) { // Noncompliant [[sc=66;ec=67]]
+    try(InputStream i1 = input("i1");InputStream i2 = input("i2");) { // Noncompliant
+//                                                               ^
     }
 
     try(InputStream i1 = input("i1")) { // Compliant

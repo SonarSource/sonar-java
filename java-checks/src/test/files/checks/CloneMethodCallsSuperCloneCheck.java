@@ -1,6 +1,7 @@
 class A {
   @Override
-  protected A clone() throws CloneNotSupportedException { // Noncompliant [[sc=15;ec=20]] {{Use super.clone() to create and seed the cloned instance to be returned.}}
+  protected A clone() throws CloneNotSupportedException { // Noncompliant {{Use super.clone() to create and seed the cloned instance to be returned.}}
+//            ^^^^^
     return new A();
   }
 

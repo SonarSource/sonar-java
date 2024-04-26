@@ -23,7 +23,8 @@ public class XmlParserLoadsExternalSchemasCheck {
       // Securing against S2755
       factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
       factory.setValidating(true); // We only report on the first location
-      factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true); // Noncompliant [[sc=7;ec=97]] {{Disable loading of external schemas in XML parsing.}}
+      factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true); // Noncompliant {{Disable loading of external schemas in XML parsing.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       return factory;
     }
 
@@ -32,7 +33,8 @@ public class XmlParserLoadsExternalSchemasCheck {
       // Securing against S2755
       factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
       factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true);
-      factory.setValidating(true); // Noncompliant [[sc=7;ec=34]] {{Disable loading of external schemas in XML parsing.}}
+      factory.setValidating(true); // Noncompliant {{Disable loading of external schemas in XML parsing.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
       return factory;
     }
 
@@ -73,7 +75,7 @@ public class XmlParserLoadsExternalSchemasCheck {
       // Securing against S2755
       saxReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
-      saxReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true);  // Noncompliant {{Disable loading of external schemas in XML parsing.}}
+      saxReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true); // Noncompliant {{Disable loading of external schemas in XML parsing.}}
       return saxReader;
     }
 

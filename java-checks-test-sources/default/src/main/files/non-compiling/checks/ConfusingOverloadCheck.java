@@ -9,7 +9,7 @@ class ConfusingOverloadCheck {
 
   public class SomeChild extends SomeParent {
     // Signature overloading of a static method does not compile
-    public void staticDifference(int i) {  // Noncompliant {{Rename this method or make it "static".}}
+    public void staticDifference(int i) { // Noncompliant {{Rename this method or make it "static".}}
       return -1;
     }
   }

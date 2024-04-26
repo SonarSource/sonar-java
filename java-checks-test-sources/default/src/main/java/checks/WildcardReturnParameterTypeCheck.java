@@ -8,7 +8,7 @@ import java.util.stream.Collector;
 class WildcardReturnParameterTypeCheck {
 
   class Animal {
-    public List<? extends Animal> getAnimals() {        // Noncompliant
+    public List<? extends Animal> getAnimals() { // Noncompliant
       Collection<?> c = new ArrayList<String>();        // Compliant
       return null;
     }
@@ -19,7 +19,8 @@ class WildcardReturnParameterTypeCheck {
   }
 
   class Cat extends Animal {
-    public List<? extends Cat> getCats() {            // Noncompliant [[sc=17;ec=18]]
+    public List<? extends Cat> getCats() { // Noncompliant
+//              ^
       return null;
     }
   }
@@ -57,11 +58,11 @@ class WildcardReturnParameterTypeCheck {
 
   public Collector<?, // Noncompliant
     Integer,
-    ?> getCollector2() {  // Noncompliant
+    ?> getCollector2() { // Noncompliant
     return null;
   }
 
-  public MyCollector<Integer, ?, Integer>  getMyCollector() {  // Noncompliant
+  public MyCollector<Integer, ?, Integer>  getMyCollector() { // Noncompliant
     return null;
   }
 

@@ -9,7 +9,8 @@ import org.springframework.scheduling.annotation.Async;
 
 public class AsyncMethodsReturnTypeCheckSample {
   @Async
-  String asyncString() { // Noncompliant [[sc=3;ec=9]] {{Async methods should return 'void' or a 'Future' type.}}
+  String asyncString() { // Noncompliant {{Async methods should return 'void' or a 'Future' type.}}
+//^^^^^^
     return null;
   }
 

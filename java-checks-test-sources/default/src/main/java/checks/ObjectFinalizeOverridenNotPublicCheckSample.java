@@ -2,7 +2,8 @@ package checks;
 
 class ObjectFinalizeOverridenNotPublicCheckSample_Noncompliant {
   @Override
-  public void finalize() throws Throwable {    // Noncompliant [[sc=15;ec=23]] {{Make this finalize() method protected.}}
+  public void finalize() throws Throwable { // Noncompliant {{Make this finalize() method protected.}}
+//            ^^^^^^^^
   }
 }
 

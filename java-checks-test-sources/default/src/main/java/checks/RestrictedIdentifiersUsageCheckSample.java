@@ -3,7 +3,7 @@ package checks;
 public class RestrictedIdentifiersUsageCheckSample {
 
   void noncompliant() {
-    var var = "var"; // Noncompliant: compiles but this code is confusing
+    var var = "var"; // Noncompliant
     var = "what is this?";
   }
 

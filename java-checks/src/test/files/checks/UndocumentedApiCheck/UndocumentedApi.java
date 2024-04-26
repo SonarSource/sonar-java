@@ -3,7 +3,8 @@ package org.foo.api.mypackage;
  * some documentation
  */
 public class UndocumentedApi { // Compliant - documented
-  public String p; // Noncompliant [[sc=17;ec=18]]
+  public String p; // Noncompliant
+//              ^
   private String key; // Compliant - private
 
   public UndocumentedApi() { // Compliant - empty constructor
@@ -66,7 +67,7 @@ public class AClass { // Noncompliant {{Document this public class by adding an 
 /**
  * This is a Javadoc comment
  */
-public class MyClass<T> implements Runnable {    // Noncompliant {{Document the parameter(s): <T>}}
+public class MyClass<T> implements Runnable { // Noncompliant {{Document the parameter(s): <T>}}
 
  private int status;                            // Compliant - not public
 
@@ -75,7 +76,7 @@ public class MyClass<T> implements Runnable {    // Noncompliant {{Document the 
    */
  public String message;                         // Compliant - well documented
 
- public MyClass() {                             // Noncompliant
+ public MyClass() { // Noncompliant
    this.status = 0;
  }
 
@@ -101,13 +102,13 @@ public class MyClass<T> implements Runnable {    // Noncompliant {{Document the 
   * Valid descriptions.
   * @return foo Valid descriptions.
    */
- public int doSomething2(int value) {            // Noncompliant {{Document the parameter(s): value}}
+ public int doSomething2(int value) { // Noncompliant {{Document the parameter(s): value}}
    return value;
  }
 
  /** Valid descriptions.
   *  */
- public int doSomething3() {                     // Noncompliant {{Document this method return value.}}
+ public int doSomething3() { // Noncompliant {{Document this method return value.}}
    return value;
  }
 }
@@ -162,7 +163,7 @@ class FooPackage { // Compliant - non public
 /** Valid descriptions..
  */
 public class Foo { // Compliant
-  // Noncompliant@+3
+ // Noncompliant@+3
   /** Valid descriptions.
    */
   public int foo1(int a, int b, int c) { // Noncompliant
@@ -286,7 +287,8 @@ public class MyRunner extends Foo {
 
   @Target({METHOD})
   @Retention(RUNTIME)
-  public @interface Transient { // Noncompliant [[sc=21;ec=30]]
+  public @interface Transient { // Noncompliant
+//                  ^^^^^^^^^
       boolean value() default true; // Noncompliant
   }
 }

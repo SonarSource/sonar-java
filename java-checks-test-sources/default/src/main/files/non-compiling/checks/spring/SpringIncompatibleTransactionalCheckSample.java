@@ -72,7 +72,7 @@ class SpringIncompatibleTransactionalCheckSampleClassAnnotatedUnknown {
 class SpringIncompatibleTransactionalCheckSampleSupportJavaxTransactional {
 
   public void nonTransactional() {
-    javaxTransactionalDefault();      // Noncompliant
+    javaxTransactionalDefault(); // Noncompliant
     javaxTransactionalRequired();     // Compliant, REQUIRED has unknown type
     javaxTransactionalNotSupported();
     javaxTransactionalNever();

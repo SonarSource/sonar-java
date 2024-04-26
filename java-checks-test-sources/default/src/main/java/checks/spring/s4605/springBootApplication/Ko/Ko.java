@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 // Different from root package hierarchy
 
 @Component
-class Ko1 {} // Noncompliant [[sc=7;ec=10]] {{'Ko1' is not reachable by @ComponentScan or @SpringBootApplication. Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.}}
+class Ko1 {} // Noncompliant {{'Ko1' is not reachable by @ComponentScan or @SpringBootApplication. Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.}}
+//    ^^^
 
 @Service
 class Ko2 {} // Noncompliant

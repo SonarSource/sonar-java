@@ -5,12 +5,14 @@ import java.util.regex.Pattern;
 public class SingleCharCharacterClassCheckSample {
 
   void nonCompliant() {
-    Pattern.compile("[0]");   // Noncompliant {{Replace this character class by the character itself.}}
-    Pattern.compile("a[b]c"); // Noncompliant [[sc=24;ec=25]]
-    Pattern.compile("[ ]");   // Noncompliant
+    Pattern.compile("[0]"); // Noncompliant {{Replace this character class by the character itself.}}
+    Pattern.compile("a[b]c"); // Noncompliant
+//                     ^
+    Pattern.compile("[ ]"); // Noncompliant
 
     // Nested character classes
-    Pattern.compile("[ab[c]de]"); // Noncompliant [[sc=26;ec=27]]
+    Pattern.compile("[ab[c]de]"); // Noncompliant
+//                       ^
     Pattern.compile("[[0]]"); // Noncompliant
   }
 
@@ -37,10 +39,10 @@ public class SingleCharCharacterClassCheckSample {
 
     // "\", "^" and "[" can not be inside characters classes without escaping, the character class is redundant
     Pattern.compile("[\\\\]"); // Noncompliant
-    Pattern.compile("[\\^]");  // Noncompliant
-    Pattern.compile("[\\[]");  // Noncompliant
+    Pattern.compile("[\\^]"); // Noncompliant
+    Pattern.compile("[\\[]"); // Noncompliant
     // "]" does not need to be escaped
-    Pattern.compile("[]]");    // Noncompliant
+    Pattern.compile("[]]"); // Noncompliant
     Pattern.compile("a]b");
   }
 }

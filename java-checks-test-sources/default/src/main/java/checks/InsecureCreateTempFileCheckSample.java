@@ -37,7 +37,7 @@ class InsecureCreateTempFileCheckSample {
     File tempDir;
     tempDir = (File.createTempFile("", "."));
     tempDir.delete();
-    tempDir.mkdir();  // Noncompliant {{Use "Files.createTempDirectory" to create this directory instead.}}
+    tempDir.mkdir(); // Noncompliant {{Use "Files.createTempDirectory" to create this directory instead.}}
     File tempDir2 = File.createTempFile("", ".");
     tempDir2.delete();
     tempDir2.mkdir(); // Noncompliant
@@ -50,7 +50,7 @@ class InsecureCreateTempFileCheckSample {
       private void noncompliant() throws IOException {
         b = File.createTempFile("", ".");
         b.delete();
-        b.mkdir();  // Noncompliant
+        b.mkdir(); // Noncompliant
       }
     };
 

@@ -16,11 +16,13 @@ class StrongCipherAlgorithmCheckSample {
   private final static String DES = "DES";
 
   void foo() throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
-    Cipher.getInstance("DESede/ECB/PKCS5Padding"); // Noncompliant [[sc=24;ec=49]] {{Use a strong cipher algorithm.}}
-    Cipher.getInstance("DES/ECB/PKCS5Padding");// Noncompliant
+    Cipher.getInstance("DESede/ECB/PKCS5Padding"); // Noncompliant {{Use a strong cipher algorithm.}}
+//                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+    Cipher.getInstance("DES/ECB/PKCS5Padding"); // Noncompliant
     Cipher.getInstance("RC2/ECB/PKCS5Padding"); // Noncompliant
     Cipher.getInstance("AES/GCM/NoPadding");//Compliant
-    new NullCipher(); // Noncompliant [[sc=9;ec=19]] {{Use a strong cipher algorithm.}}
+    new NullCipher(); // Noncompliant {{Use a strong cipher algorithm.}}
+//      ^^^^^^^^^^
     new javax.crypto.NullCipher(); // Noncompliant
     new MyCipher();
 

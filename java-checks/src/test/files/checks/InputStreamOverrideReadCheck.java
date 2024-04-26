@@ -1,6 +1,7 @@
 import java.io.*;
 
-public class MyStream extends InputStream { // Noncompliant [[sc=14;ec=22]]{{Provide an override of "read(byte[],int,int)" for this class.}}
+public class MyStream extends InputStream { // Noncompliant {{Provide an override of "read(byte[],int,int)" for this class.}}
+//           ^^^^^^^^
   private FileInputStream fin;
 
   public MyStream(File file) throws IOException {

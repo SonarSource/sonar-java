@@ -12,7 +12,7 @@ public final class PrivateConstructorFinalClass {  // Compliant, declared final
 }
 
 
-public class PrivateConstructorNotFinalClass {  // Noncompliant {{Make this class "final" or add a public constructor.}}
+public class PrivateConstructorNotFinalClass { // Noncompliant {{Make this class "final" or add a public constructor.}}
 
   private PrivateConstructorNotFinalClass() {
     // ...

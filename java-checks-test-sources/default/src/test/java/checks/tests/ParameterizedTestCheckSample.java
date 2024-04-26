@@ -14,15 +14,18 @@ import static org.junit.Assert.assertNotNull;
 public class ParameterizedTestCheckSample {
   String setup = "a";
   @Test
-  void testSum11() {  // Noncompliant [[sc=8;ec=17;secondary=21,21,21,25,33]] {{Replace these 3 tests with a single Parameterized one.}}
+  void testSum11() { // Noncompliant {{Replace these 3 tests with a single Parameterized one.}}
+//     ^^^^^^^^^
     setup(setup);
     setup(setup);
     setup(setup);
     assertEquals(Integer.sum(1, 1), 2);
+//  ^^^<
   }
 
   @Test
   void testSum12() {  // Similar test
+//  ^^^<
     setup(setup);
     setup(setup);
     setup(setup);
@@ -31,6 +34,7 @@ public class ParameterizedTestCheckSample {
 
   @Test
   void testSum22() {  // Similar test
+//  ^^^<
     setup(setup);
     setup(setup);
     setup(setup);
@@ -57,38 +61,44 @@ public class ParameterizedTestCheckSample {
   // Only consider ints,shorts,bytes,longs,floats,doubles,chars,strings,boolean. Types does not need to be the same
   // ints
   @Test
-  void testInt1() {  // Noncompliant [[secondary=63,63,66,72]] {{Replace these 3 tests with a single Parameterized one.}}
+  void testInt1() { // Noncompliant {{Replace these 3 tests with a single Parameterized one.}}
     setup();
     setup();
     assertEquals(getObject(1), 1);
+//  ^^^<
   }
   @Test
   void testInt2() {
+//  ^^^<
     setup();
     setup();
     assertEquals(getObject(2), 2);
   }
   @Test
   void testInt3() {
+//  ^^^<
     setup();
     setup();
     assertEquals(getObject(3), 3);
   }
   // shorts
   @Test
-  void testShort1() { // Noncompliant [[secondary=82,82,85,91]]
+  void testShort1() { // Noncompliant
     setup();
     setup();
     assertEquals(getObject((short) 1), 1);
+//  ^^^<
   }
   @Test
   void testShort2() {
+//  ^^^<
     setup();
     setup();
     assertEquals(getObject((short) 2), 2);
   }
   @Test
   void testShort3() {
+//  ^^^<
     setup();
     setup();
     assertEquals(getObject((short) 3), 3);
@@ -123,19 +133,22 @@ public class ParameterizedTestCheckSample {
   }
   // strings
   @Test
-  void testString1() { // Noncompliant [[secondary=129,129,132,138,152]]
+  void testString1() { // Noncompliant
     setup();
     setup();
     assertEquals(getObject("1"), "1");
+//  ^^^<
   }
   @Test
   void testString2() {
+//  ^^^<
     setup();
     setup();
     assertEquals(getObject("2"), "2");
   }
   @Test
   void testString3() {
+//  ^^^<
     setup();
     setup();
     assertEquals(getObject("3"), "3");
@@ -150,25 +163,29 @@ public class ParameterizedTestCheckSample {
   // null
   @Test
   void testNull() { // null and string are compatible, the method can be parameterized together with testString1
+//  ^^^<
     setup();
     setup();
     assertEquals(getObject(null), null);
   }
   // booleans
   @Test
-  void testBoolean1() { // Noncompliant [[secondary=162,162,165,171]]
+  void testBoolean1() { // Noncompliant
     setup();
     setup();
     assertEquals(getObject(true), true);
+//  ^^^<
   }
   @Test
   void testBoolean2() {
+//  ^^^<
     setup();
     setup();
     assertEquals(getObject(true), false);
   }
   @Test
   void testBoolean3() {
+//  ^^^<
     setup();
     setup();
     assertEquals(getObject(false), false);
@@ -181,7 +198,7 @@ public class ParameterizedTestCheckSample {
   }
 
   @Test
-  void testComplex1() { // Noncompliant [secondary=186,188,189,193,202]]
+  void testComplex1() { // Noncompliant
     setup("Always the same, no need to parameterize");
     Object o = getObject(1);
     assertNotNull(o);
