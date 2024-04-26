@@ -134,13 +134,13 @@ public class JavaCheckVerifier implements CheckVerifier {
     return singleFileVerifier;
   }
 
-  private static void addIssues(JavaFileScannerContextForTests testJavaFileScannerContext, SingleFileVerifier singleFileVerifier) {
-    testJavaFileScannerContext.getIssues().forEach(issue -> {
+  private static void addIssues(JavaFileScannerContextForTests scannerContext, SingleFileVerifier singleFileVerifier) {
+    scannerContext.getIssues().forEach(issue -> {
       String issueMessage = issue.getMessage();
       AnalyzerMessage.TextSpan textSpan = issue.primaryLocation();
       SingleFileVerifier.Issue verifierIssue = null;
       if (textSpan != null) {
-        verifierIssue = singleFileVerifier.reportIssue(issueMessage).onRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
+        verifierIssue = singleFileVerifier.reportIssue(issueMessage).onRange(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter);
       } else if (issue.getLine() != null) {
         verifierIssue = singleFileVerifier.reportIssue(issueMessage).onLine(issue.getLine());
       } else {
@@ -154,12 +154,12 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   private static void addSecondary(SingleFileVerifier.Issue issue, AnalyzerMessage secondary) {
     AnalyzerMessage.TextSpan textSpan = secondary.primaryLocation();
-    issue.addSecondary(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter, secondary.getMessage());
+    issue.addSecondary(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter, secondary.getMessage());
   }
 
   private static void addComments(SingleFileVerifier singleFileVerifier, CommentLinesVisitor commentLinesVisitor) {
     var syntaxTrivias = commentLinesVisitor.getSyntaxTrivia();
-    syntaxTrivias.forEach(trivia -> singleFileVerifier.addComment(trivia.range().start().line(), trivia.range().start().columnOffset(), trivia.comment(), COMMENT_PREFIX_LENGTH,
+    syntaxTrivias.forEach(trivia -> singleFileVerifier.addComment(trivia.range().start().line(), trivia.range().start().column(), trivia.comment(), COMMENT_PREFIX_LENGTH,
       COMMENT_SUFFIX_LENGTH));
   }
 
