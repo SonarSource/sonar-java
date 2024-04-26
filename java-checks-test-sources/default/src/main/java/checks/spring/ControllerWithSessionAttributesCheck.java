@@ -10,7 +10,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
 @SessionAttributes("foo") // Noncompliant {{Add a call to "setComplete()" on the SessionStatus object in a "@RequestMapping" method.}}
-^[sc=2;ec=19]
+//^[sc=2;ec=19]
 class S3753 {
   private int field;
 

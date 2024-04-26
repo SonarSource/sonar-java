@@ -18,7 +18,7 @@ class SystemOutOrErrUsageCheckSample {
     java.lang.System.out.println(""); // Noncompliant
 //  ^^^^^^^^^^^^^^^^^^^^
     java.lang. // Noncompliant
-^[sc=5;ec=17;sl=18;el=19]
+//^[sc=5;ec=17;sl=18;el=19]
       System.out.println("");
   }
 

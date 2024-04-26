@@ -5,7 +5,7 @@ import java.util.Map;
 
 class DoubleBraceInitializationCheckSample {
   Map<String, String> source = new HashMap() {{ // Noncompliant {{Use another way to initialize this instance.}}
-^[sc=46;ec=5;sl=7;el=10]
+//^[sc=46;ec=5;sl=7;el=10]
     put("firstName", "John");
     put("lastName", "Smith");
   }};

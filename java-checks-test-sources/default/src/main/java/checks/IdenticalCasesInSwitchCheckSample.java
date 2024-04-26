@@ -12,13 +12,13 @@ class IdenticalCasesInSwitchCheckSample {
         System.out.println("bar"); //Compliant
         break;
       case 3: // Noncompliant {{This case's code block is the same as the block for the case on line 6.}}
-^[sc=7;ec=15;sl=13;el=17]
+//^[sc=7;ec=15;sl=13;el=17]
       case 4:
         System.out.println("plop");
         System.out.println("plop");
         break;
       case 5: // Noncompliant {{This case's code block is the same as the block for the case on line 6.}}
-^[sc=7;ec=15;sl=18;el=21]
+//^[sc=7;ec=15;sl=18;el=21]
         System.out.println("plop");
         System.out.println("plop");
         break;
@@ -153,11 +153,11 @@ class IdenticalCasesInSwitchCheckSample {
     } else if (true) {
       System.out.println("bar");
     } else if (true) { // Noncompliant {{This branch's code block is the same as the block for the branch on line 140.}}
-^[sc=22;ec=6;sl=149;el=152]
+//^[sc=22;ec=6;sl=149;el=152]
       System.out.println("foo");
       System.out.println("foo");
     } else { // Noncompliant {{This branch's code block is the same as the block for the branch on line 140.}}
-^[sc=12;ec=6;sl=152;el=155]
+//^[sc=12;ec=6;sl=152;el=155]
       System.out.println("foo");
       System.out.println("foo");
     }

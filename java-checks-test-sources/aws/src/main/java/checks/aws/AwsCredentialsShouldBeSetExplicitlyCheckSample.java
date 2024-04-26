@@ -17,7 +17,7 @@ public class AwsCredentialsShouldBeSetExplicitlyCheckSample {
     S3Client client = S3Client.builder().build(); // Noncompliant {{Set the credentials provider explicitly on this builder.}}
 //                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
     S3Client otherClient = S3Client.builder() // Noncompliant {{Set the credentials provider explicitly on this builder.}}
-^[sc=28;ec=15;sl=17;el=19]
+//^[sc=28;ec=15;sl=17;el=19]
       .region(Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable())))
       .build();
   }
@@ -33,7 +33,7 @@ public class AwsCredentialsShouldBeSetExplicitlyCheckSample {
     secondBuilder.build();
 
     S3ClientBuilder thirdBuilder = S3Client.builder() // Noncompliant {{Set the credentials provider explicitly on this builder.}}
-^[sc=5;ec=92;sl=30;el=31]
+//^[sc=5;ec=92;sl=30;el=31]
       .region(Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable())));
     thirdBuilder.build();
   }

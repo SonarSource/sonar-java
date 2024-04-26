@@ -12,7 +12,7 @@ public class AwsRegionShouldBeSetExplicitlyCheckSample {
 
   void nonCompliantChained() {
     S3Client s3Client = S3Client.builder() // Noncompliant {{Set the region explicitly on this builder.}}
-^[sc=25;ec=15;sl=14;el=16]
+//^[sc=25;ec=15;sl=14;el=16]
       .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
       .build();
   }
