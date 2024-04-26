@@ -93,8 +93,8 @@ public class JavaCheckVerifier implements CheckVerifier {
   private ReadCache readCache;
   private WriteCache writeCache;
 
-  private SingleFileVerifier createVerifier() {
-    SingleFileVerifier singleFileVerifier = SingleFileVerifier.create(Path.of(files.get(0).relativePath()), UTF_8);
+  private SingleFileVerifier createVerifier(int index, boolean onFile) {
+    SingleFileVerifier singleFileVerifier = SingleFileVerifier.create(Path.of(files.get(index).relativePath()), UTF_8);
 
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
     List<File> actualClasspath = classpath == null ? DEFAULT_CLASSPATH : classpath;
@@ -127,24 +127,26 @@ public class JavaCheckVerifier implements CheckVerifier {
     JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
     if (testJavaFileScannerContext != null) {
-      addIssues(testJavaFileScannerContext, singleFileVerifier);
-      addIssues(testModuleScannerContext, singleFileVerifier);
+      addIssues(testJavaFileScannerContext, singleFileVerifier, onFile);
+      addIssues(testModuleScannerContext, singleFileVerifier, onFile);
     }
 
     return singleFileVerifier;
   }
 
-  private static void addIssues(JavaFileScannerContextForTests scannerContext, SingleFileVerifier singleFileVerifier) {
+  private static void addIssues(JavaFileScannerContextForTests scannerContext, SingleFileVerifier singleFileVerifier, boolean onFile) {
     scannerContext.getIssues().forEach(issue -> {
       String issueMessage = issue.getMessage();
       AnalyzerMessage.TextSpan textSpan = issue.primaryLocation();
       SingleFileVerifier.Issue verifierIssue = null;
-      if (textSpan != null) {
-        verifierIssue = singleFileVerifier.reportIssue(issueMessage).onRange(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter);
-      } else if (issue.getLine() != null) {
-        verifierIssue = singleFileVerifier.reportIssue(issueMessage).onLine(issue.getLine());
-      } else {
+      if (onFile) {
         verifierIssue = singleFileVerifier.reportIssue(issueMessage).onFile();
+      } else {
+        if (textSpan != null) {
+          verifierIssue = singleFileVerifier.reportIssue(issueMessage).onRange(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter);
+        } else if (issue.getLine() != null) {
+          verifierIssue = singleFileVerifier.reportIssue(issueMessage).onLine(issue.getLine());
+        }
       }
       List<AnalyzerMessage> secondaries = issue.flows.stream().map(l -> l.isEmpty() ? null : l.get(0)).filter(Objects::nonNull).toList();
       SingleFileVerifier.Issue finalVerifierIssue = verifierIssue;
@@ -297,12 +299,12 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   @Override
   public void verifyIssues() {
-    createVerifier().assertOneOrMoreIssues();
+    files.forEach(file -> createVerifier(files.indexOf(file), false).assertOneOrMoreIssues());
   }
 
   @Override
   public void verifyIssueOnFile(String expectedIssueMessage) {
-    createVerifier().assertOneOrMoreIssues();
+    files.forEach(file -> createVerifier(files.indexOf(file), true).assertOneOrMoreIssues());
   }
 
   @Override
@@ -312,7 +314,7 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   @Override
   public void verifyNoIssues() {
-    createVerifier().assertNoIssuesRaised();
+    files.forEach(file -> createVerifier(files.indexOf(file), false).assertNoIssuesRaised());
   }
 
 }
