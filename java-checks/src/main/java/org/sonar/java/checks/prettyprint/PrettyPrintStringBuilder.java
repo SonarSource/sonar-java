@@ -21,8 +21,8 @@
 package org.sonar.java.checks.prettyprint;
 
 import java.util.function.Consumer;
-import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.helpers.QuickFixHelper.contentForTree;
@@ -34,9 +34,10 @@ public final class PrettyPrintStringBuilder {
   private final StringBuilder sb = new StringBuilder();
   private int indentLevel = 0;
 
-  public PrettyPrintStringBuilder(FileConfig fileConfig, String baseIndent, boolean indentFirstLine) {
+  public PrettyPrintStringBuilder(FileConfig fileConfig, SyntaxToken indentReferenceToken, boolean indentFirstLine) {
+    var baseIndentLevel = indentReferenceToken.firstToken().range().start().column() - 1;
     this.fileConfig = fileConfig;
-    this.baseIndent = baseIndent;
+    this.baseIndent = fileConfig.indentMode().indentCharAsStr().repeat(baseIndentLevel);
     if (indentFirstLine) {
       makeIndent();
     }
@@ -106,6 +107,10 @@ public final class PrettyPrintStringBuilder {
     return this;
   }
 
+  public PrettyPrintStringBuilder addTreeContent(Tree tree, JavaFileScannerContext ctx){
+    return add(contentForTree(tree, ctx));
+  }
+
   public <T> PrettyPrintStringBuilder addWithSep(Iterable<T> elems, Consumer<T> elemAdder, Runnable separator) {
     var iter = elems.iterator();
     while (iter.hasNext()) {
@@ -135,7 +140,7 @@ public final class PrettyPrintStringBuilder {
   }
 
   public PrettyPrintStringBuilder addTreesContentWithSep(Iterable<? extends Tree> elems, String separator, JavaFileScannerContext ctx) {
-    return addWithSep(elems, elem -> add(contentForTree(elem, ctx)), separator);
+    return addWithSep(elems, elem -> addTreeContent(elem, ctx), separator);
   }
 
   @Override

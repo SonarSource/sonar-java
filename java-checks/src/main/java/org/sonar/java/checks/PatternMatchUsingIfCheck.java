@@ -58,7 +58,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     "byte", "short", "char", "int",
     "java.lang.Byte", "java.lang.Short", "java.lang.Character", "java.lang.Integer"
   );
-  private static final FileConfig FILE_CONFIG = new FileConfig("  ", "\n");
+  private static final FileConfig FILE_CONFIG = new FileConfig(new FileConfig.IndentMode.Spaces(2), "\n");
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -205,8 +205,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
 
   private JavaQuickFix computeQuickFix(List<Case> cases, IfStatementTree topLevelIfStat) {
     var canLiftReturn = cases.stream().allMatch(caze -> exprWhenReturnLifted(caze) != null);
-    var baseIndentLevel = topLevelIfStat.firstToken().range().start().column() - 1;
-    var pps = new PrettyPrintStringBuilder(FILE_CONFIG, " ".repeat(baseIndentLevel), false);
+    var pps = new PrettyPrintStringBuilder(FILE_CONFIG, topLevelIfStat.firstToken(), false);
     if (canLiftReturn) {
       pps.add("return ");
     }

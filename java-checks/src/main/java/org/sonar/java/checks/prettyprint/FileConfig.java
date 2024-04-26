@@ -20,5 +20,39 @@
 
 package org.sonar.java.checks.prettyprint;
 
-public record FileConfig(String indent, String endOfLine) {
+public record FileConfig(IndentMode indentMode, String endOfLine) {
+
+  public String indent() {
+    return indentMode.indent();
+  }
+
+  public sealed interface IndentMode {
+    char indentChar();
+
+    int nRep();
+
+    default String indentCharAsStr(){
+      return Character.toString(indentChar());
+    }
+
+    default String indent() {
+      return indentCharAsStr().repeat(nRep());
+    }
+
+    record Spaces(int nRep) implements IndentMode {
+      @Override
+      public char indentChar() {
+        return ' ';
+      }
+    }
+
+    record Tabs(int nRep) implements IndentMode {
+      @Override
+      public char indentChar() {
+        return '\t';
+      }
+    }
+
+  }
+
 }
