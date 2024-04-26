@@ -75,10 +75,10 @@ public class MapKeyNotComparableCheckSample {
     }
 
     // Should throw twice because NomComparable and NonComparable2 are different
-    Map<NonComparable, Object> highFunc2(Function<Map<NonComparable2, String>, String> f) { // Noncompliant
+    Map<NonComparable, Object> highFunc2 // Noncompliant
 //      ^^^^^^^^^^^^^
-// Noncompliant@-2
-//                ^^^^^^^^^^^^^^@-2
+    (Function<Map<NonComparable2, String>, String> f) { // Noncompliant
+//                ^^^^^^^^^^^^^^
 
       return null;
     }
