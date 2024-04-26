@@ -15,12 +15,12 @@ public class UnpredictableSaltCheck {
 
   public void testNonRandomPBESpec(char[] chars, String str) throws NoSuchAlgorithmException {
     byte[] salt = "notrandom".getBytes(); // secondary location
-//  ^^^<
+//                ^^^^^^^^^^^^^^^^^^^^^^>
     PBEKeySpec spec = new PBEKeySpec(chars, salt, 1); // Noncompliant {{Make this salt unpredictable.}}
 //                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     
     final byte[] finalSalt = "notrandom".getBytes(); //secondary location
-//  ^^^<
+//                           ^^^^^^^^^^^^^^^^^^^^^^>
     PBEKeySpec specFinal = new PBEKeySpec(chars, finalSalt, 1); // Noncompliant {{Make this salt unpredictable.}}
 //                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     
