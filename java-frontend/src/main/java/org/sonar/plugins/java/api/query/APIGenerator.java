@@ -143,8 +143,10 @@ public record APIGenerator(
       Files.writeString(dstClassPath, """
         package ${dstPackageName};
 
-        import java.util.function.Function;
         import java.util.List;
+        import java.util.function.Function;
+        import java.util.function.BiConsumer;
+        import java.util.function.BiPredicate;
         import ${srcPackageName}.*;
 
         public class ${dstClassName}<C> extends CommonTreeQuery<C, ${srcClassName}> {
@@ -155,6 +157,11 @@ public record APIGenerator(
         
           protected ${dstClassName}(Selector<C, ? extends Tree> parent) {
             super(${srcClassName}.class, parent);
+          }
+
+          public ${dstClassName}<C> visit(BiConsumer<C, ${srcClassName}> visitor) {
+            this.visitors.add(visitor);
+            return this;
           }
 
         ${getters}${filters}
@@ -176,13 +183,23 @@ public record APIGenerator(
       var derivedQueryName = queryClassName(derivedClass);
       out.append("""
           public ${derivedQueryName}<C> filter${derivedClassName}() {
-            return  addConversion(new ${derivedQueryName}<C>(this), tree -> tree instanceof ${derivedClassName} t ? t : null);
+            Function<${srcClassName}, ${derivedClassName}> conversion = tree -> tree instanceof ${derivedClassName} t ? t : null;
+            return add(new Conversion<>(new ${derivedQueryName}<C>(this), conversion));
           }
 
         """
+        .replace("${srcClassName}", srcClass.getSimpleName())
         .replace("${derivedClassName}", derivedClassName)
         .replace("${derivedQueryName}", derivedQueryName));
     });
+    out.append("""
+          public ${srcQueryName}<C> filter(BiPredicate<C, ${srcClassName}> predicate) {
+            return add(new PredicateFilter<>(new ${srcQueryName}<C>(this), predicate));
+          }
+
+        """
+      .replace("${srcClassName}", srcClass.getSimpleName())
+      .replace("${srcQueryName}", queryClassName(srcClass)));
     return out;
   }
 

@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.query;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.query.QueryViewerUtils.TestContext;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.plugins.java.api.query.QueryViewerUtils.applyQueryOnSourceCodeAndUpdateTheIssues;
@@ -35,17 +36,24 @@ public class QueryViewer {
     // so you can play with the query or the source code and see the result using one shortcut (run)
     var source = """
       package org.foo;
+      
       class A {
         private int a;
       
         int foo() {
             ^^^ {1}
           return a;
+          ^^^^^^ {2}
         }
       
         int bar() {
             ^^^ {1}
           return a;
+          ^^^^^^ {2}
+        }
+      
+        int boo(int b) {
+          return b;
         }
       }
       """;
@@ -55,8 +63,14 @@ public class QueryViewer {
       .filterClassTree()
       .members()
       .filterMethodTree()
+      .filter((ctx, method) -> method.parameters().isEmpty())
       .simpleName()
-      .visit((ctx, it) -> ctx.reportIssue(it, "1"));
+      .visit((ctx, simpleName) -> ctx.reportIssue(simpleName, "1"))
+      .parent()
+      .subtreesIf((ctx, tree) -> !tree.is(Kind.LAMBDA_EXPRESSION))
+      .filterReturnStatementTree()
+      .returnKeyword()
+      .visit((ctx, keyword) -> ctx.reportIssue(keyword, "2"));
 
     String actual = applyQueryOnSourceCodeAndUpdateTheIssues(query, source, QueryViewer.class);
     assertThat(actual).isEqualTo(source);

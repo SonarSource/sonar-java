@@ -41,11 +41,6 @@ public class Selector<C, T> {
     this.parent = parent;
   }
 
-  public Selector<C, T> visit(BiConsumer<C, T> visitor) {
-    this.visitors.add(visitor);
-    return this;
-  }
-
   public Selector<C, T> apply(C ctx, Tree tree) {
     root.rootApply(ctx, tree);
     return this;
@@ -77,11 +72,24 @@ public class Selector<C, T> {
     return visitor.query();
   }
 
+  protected <Q extends Selector<C, T>> Q add(PredicateFilter<C, T, Q> visitor) {
+    visitors.add(visitor::visit);
+    return visitor.query();
+  }
+
   protected record Conversion<C, T, R, Q extends Selector<C, R>>(Q query, Function<T, R> getter) {
     void visit(C ctx, T tree) {
       var childTree = getter.apply(tree);
       if (childTree != null) {
         query.visit(ctx, childTree);
+      }
+    }
+  }
+
+  protected record PredicateFilter<C, T, Q extends Selector<C, T>>(Q query, BiPredicate<C, T> predicate) {
+    void visit(C ctx, T tree) {
+      if (tree != null && predicate.test(ctx, tree)) {
+        query.visit(ctx, tree);
       }
     }
   }
