@@ -22,7 +22,10 @@ package org.sonar.plugins.java.api.query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
+import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class Selector<T> {
@@ -95,6 +98,32 @@ public class Selector<T> {
           if (childTree != null) {
             query.visit(ctx, childTree);
           }
+        }
+      }
+    }
+  }
+
+  protected static class SubTreeVisitor extends BaseTreeVisitor {
+    private final Selector<Tree> query;
+    private final BiPredicate<Context, Tree> visitChildren;
+    private Context ctx;
+
+    public SubTreeVisitor(Selector<Tree> query, BiPredicate<Context, Tree> visitChildren) {
+      this.query = query;
+      this.visitChildren = visitChildren;
+    }
+
+    void visit(Context ctx, Tree tree) {
+      this.ctx = ctx;
+      scan(tree);
+    }
+
+    @Override
+    protected void scan(@Nullable Tree tree) {
+      if (tree != null) {
+        query.visit(ctx, tree);
+        if (visitChildren.test(ctx, tree)) {
+          tree.accept(this);
         }
       }
     }

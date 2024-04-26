@@ -89,6 +89,7 @@ public record APIGenerator(
         appendDerivedClasses(derivedTreeClasses, treeClass, treeClass.getSuperclass());
         appendDerivedClasses(derivedTreeClasses, treeClass, treeClass.getInterfaces());
       }
+      generator.generateCommonTreeQuery();
       for (var treeClass : treeClasses) {
         generator.generate(treeClass, derivedTreeClasses);
       }
@@ -107,6 +108,32 @@ public record APIGenerator(
     }
   }
 
+  public void generateCommonTreeQuery() throws IOException {
+    System.out.println("Generating CommonTreeQuery class");
+    Path dstClassPath = dstPackageDirectory.resolve("CommonTreeQuery.java");
+    Files.writeString(dstClassPath, """
+      package ${dstPackageName};
+      
+      import ${srcPackageName}.Tree;
+      
+      public class CommonTreeQuery<T extends Tree> extends Selector<T> {
+      
+        public CommonTreeQuery(Class<T> selectorType, Selector<?> parent) {
+          super(selectorType, parent);
+        }
+      
+        public Query subtreesIf(java.util.function.BiPredicate<Context, Tree> visitChildren) {
+          Query query = new Query(this);
+          SubTreeVisitor subTreeVisitor = new Selector.SubTreeVisitor(query, visitChildren);
+          this.visitors.add(subTreeVisitor::visit);
+          return query;
+        }
+      }
+      """
+      .replace("${srcPackageName}", srcPackageName)
+      .replace("${dstPackageName}", dstPackageName), UTF_8);
+  }
+
   public void generate(Class<?> srcClass, Map<Class<?>, Set<Class<?>>> derivedTreeClasses) throws IOException {
     if (Tree.class.isAssignableFrom(srcClass)) {
       String srcClassName = srcClass.getSimpleName();
@@ -120,7 +147,7 @@ public record APIGenerator(
         import java.util.List;
         import ${srcPackageName}.*;
 
-        public class ${dstClassName} extends Selector<${srcClassName}> {
+        public class ${dstClassName} extends CommonTreeQuery<${srcClassName}> {
 
           public ${dstClassName}() {
             this(null);

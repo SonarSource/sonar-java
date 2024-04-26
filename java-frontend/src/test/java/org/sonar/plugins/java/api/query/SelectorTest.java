@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.query.Selector.Context;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,20 +38,32 @@ class SelectorTest {
       .packageKeyword()
       .visit((ctx, it) -> ctx.reportIssue(it, "I'm findPackageKeywordQuery"));
 
-    var findAllMethodNamesQuery = new CompilationUnitQuery()
+    var findMethodNamesNotDeepQuery = new CompilationUnitQuery()
       .types()
       .filterClassTree()
       .members()
       .filterMethodTree()
       .simpleName()
-      .visit((ctx, it) -> ctx.reportIssue(it, "It's method: " + it.name()));
+      .visit((ctx, it) -> ctx.reportIssue(it, "It's method1: " + it.name()));
+
+    var findAllMethodNamesQuery = new CompilationUnitQuery()
+      .subtreesIf((ctx, tree) -> !tree.is(Kind.METHOD, Kind.LAMBDA_EXPRESSION))
+      .filterMethodTree()
+      .simpleName()
+      .visit((ctx, it) -> ctx.reportIssue(it, "It's method2: " + it.name()));
 
     var compilationUnit = JParserTestUtils.parse("""
       package org.foo;
       class A {
         private int a;
+      
         int foo() {
           return a;
+        }
+        class B {
+          int bar() {
+            return a;
+          }
         }
       }
       """);
@@ -58,12 +71,15 @@ class SelectorTest {
     var ctx = new TestContext();
 
     findPackageKeywordQuery.apply(ctx, compilationUnit);
+    findMethodNamesNotDeepQuery.apply(ctx, compilationUnit);
     findAllMethodNamesQuery.apply(ctx, compilationUnit);
 
     assertThat(ctx.issues())
       .containsExactly(
         "1:1-1:8 I'm findPackageKeywordQuery",
-        "4:7-4:10 It's method: foo");
+        "5:7-5:10 It's method1: foo",
+        "5:7-5:10 It's method2: foo",
+        "9:9-9:12 It's method2: bar");
   }
 
   record TestContext(List<String> issues) implements Context {
