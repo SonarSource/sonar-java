@@ -107,6 +107,7 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
     quickFixBuilder.addTextEdit(
       JavaTextEdit.replaceTree(ifStatement, replacement)
     );
+    // FIXME does not take operators precedence into account
     var replacementStringPrefix = shouldMergeConditions ? " && " : " when ";
     quickFixBuilder.addTextEdit(
       JavaTextEdit.insertBeforeTree(caseLabel.colonOrArrowToken(),
