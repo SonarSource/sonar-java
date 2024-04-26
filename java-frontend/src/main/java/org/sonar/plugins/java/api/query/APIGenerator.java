@@ -116,14 +116,14 @@ public record APIGenerator(
       
       import ${srcPackageName}.Tree;
       
-      public class CommonTreeQuery<T extends Tree> extends Selector<T> {
+      public class CommonTreeQuery<C, T extends Tree> extends Selector<C, T> {
       
-        public CommonTreeQuery(Class<T> selectorType, Selector<?> parent) {
+        public CommonTreeQuery(Class<T> selectorType, Selector<C, ?> parent) {
           super(selectorType, parent);
         }
       
-        public Query subtreesIf(java.util.function.BiPredicate<Context, Tree> visitChildren) {
-          Query query = new Query(this);
+        public Query<C> subtreesIf(java.util.function.BiPredicate<C, Tree> visitChildren) {
+          Query<C> query = new Query<C>(this);
           SubTreeVisitor subTreeVisitor = new Selector.SubTreeVisitor(query, visitChildren);
           this.visitors.add(subTreeVisitor::visit);
           return query;
@@ -147,13 +147,13 @@ public record APIGenerator(
         import java.util.List;
         import ${srcPackageName}.*;
 
-        public class ${dstClassName} extends CommonTreeQuery<${srcClassName}> {
+        public class ${dstClassName}<C> extends CommonTreeQuery<C, ${srcClassName}> {
 
           public ${dstClassName}() {
             this(null);
           }
         
-          protected ${dstClassName}(Selector<? extends Tree> parent) {
+          protected ${dstClassName}(Selector<C, ? extends Tree> parent) {
             super(${srcClassName}.class, parent);
           }
 
@@ -175,8 +175,8 @@ public record APIGenerator(
       var derivedClassName = derivedClass.getSimpleName();
       var derivedQueryName = queryClassName(derivedClass);
       out.append("""
-          public ${derivedQueryName} filter${derivedClassName}() {
-            return  addConversion(new ${derivedQueryName}(this), tree -> tree instanceof ${derivedClassName} t ? t : null);
+          public ${derivedQueryName}<C> filter${derivedClassName}() {
+            return  addConversion(new ${derivedQueryName}<C>(this), tree -> tree instanceof ${derivedClassName} t ? t : null);
           }
 
         """
@@ -211,9 +211,9 @@ public record APIGenerator(
     var returnTreeName = method.getReturnType().getSimpleName();
     var returnQueryName = queryClassName(method.getReturnType());
     out.append("""
-        public ${returnQueryName} ${methodName}() {
+        public ${returnQueryName}<C> ${methodName}() {
           Function<${srcClassName}, ${returnTreeName}> conversion = tree -> tree.${methodName}();
-          return add(new Conversion<>(new ${returnQueryName}(this), conversion));
+          return add(new Conversion<>(new ${returnQueryName}<C>(this), conversion));
         }
 
       """
@@ -227,9 +227,9 @@ public record APIGenerator(
     var elementTreeName = listElementClass.getSimpleName();
     var returnQueryName = queryClassName(listElementClass);
     out.append("""
-        public ${returnQueryName} ${methodName}() {
+        public ${returnQueryName}<C> ${methodName}() {
           Function<${srcClassName}, List<${elementTreeName}>> conversion = tree -> tree.${methodName}();
-          return add(new ListConversion<>(new ${returnQueryName}(this), conversion));
+          return add(new ListConversion<>(new ${returnQueryName}<C>(this), conversion));
         }
 
       """

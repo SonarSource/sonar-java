@@ -28,61 +28,57 @@ import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class Selector<T> {
-
-  public interface Context {
-    void reportIssue(Tree tree, String message);
-  }
+public class Selector<C, T> {
 
   private final Class<T> selectorType;
-  private final Selector<?> root;
-  private final Selector<?> parent;
-  protected final List<BiConsumer<Context, T>> visitors = new ArrayList<>();
+  private final Selector<C, ?> root;
+  private final Selector<C, ?> parent;
+  protected final List<BiConsumer<C, T>> visitors = new ArrayList<>();
 
-  public Selector(Class<T> selectorType, Selector<?> parent) {
+  public Selector(Class<T> selectorType, Selector<C, ?> parent) {
     this.selectorType = selectorType;
     this.root = parent != null ? parent.root : this;
     this.parent = parent;
   }
 
-  public Selector<T> visit(BiConsumer<Context, T> visitor) {
+  public Selector<C, T> visit(BiConsumer<C, T> visitor) {
     this.visitors.add(visitor);
     return this;
   }
 
-  public Selector<T> apply(Context ctx, Tree tree) {
+  public Selector<C, T> apply(C ctx, Tree tree) {
     root.rootApply(ctx, tree);
     return this;
   }
 
-  private void rootApply(Context ctx, Tree tree) {
+  private void rootApply(C ctx, Tree tree) {
     if (selectorType.isInstance(tree)) {
       visit(ctx, selectorType.cast(tree));
     }
   }
 
-  protected void visit(Context ctx, T tree) {
+  protected void visit(C ctx, T tree) {
     visitors.forEach(visitor -> visitor.accept(ctx, tree));
   }
 
-  protected <R, Q extends Selector<R>> Q addConversion(Q resultQuery, Function<T, R> conversion) {
-    var visitor = new Conversion<T, R, Q>(resultQuery, conversion);
+  protected <R, Q extends Selector<C, R>> Q addConversion(Q resultQuery, Function<T, R> conversion) {
+    var visitor = new Conversion<C, T, R, Q>(resultQuery, conversion);
     visitors.add(visitor::visit);
     return resultQuery;
   }
 
-  protected <R, Q extends Selector<R>> Q add(Conversion<T, R, Q> visitor) {
+  protected <R, Q extends Selector<C, R>> Q add(Conversion<C, T, R, Q> visitor) {
     visitors.add(visitor::visit);
     return visitor.query();
   }
 
-  protected <R, Q extends Selector<R>> Q add(ListConversion<T, R, Q> visitor) {
+  protected <R, Q extends Selector<C, R>> Q add(ListConversion<C, T, R, Q> visitor) {
     visitors.add(visitor::visit);
     return visitor.query();
   }
 
-  protected record Conversion<T, R, Q extends Selector<R>>(Q query, Function<T, R> getter) {
-    void visit(Context ctx, T tree) {
+  protected record Conversion<C, T, R, Q extends Selector<C, R>>(Q query, Function<T, R> getter) {
+    void visit(C ctx, T tree) {
       var childTree = getter.apply(tree);
       if (childTree != null) {
         query.visit(ctx, childTree);
@@ -90,8 +86,8 @@ public class Selector<T> {
     }
   }
 
-  protected record ListConversion<T, R, Q extends Selector<R>>(Q query, Function<T, List<R>> getter) {
-    void visit(Context ctx, T tree) {
+  protected record ListConversion<C, T, R, Q extends Selector<C, R>>(Q query, Function<T, List<R>> getter) {
+    void visit(C ctx, T tree) {
       var childTreeList = getter.apply(tree);
       if (childTreeList != null) {
         for (R childTree : childTreeList) {
@@ -103,17 +99,17 @@ public class Selector<T> {
     }
   }
 
-  protected static class SubTreeVisitor extends BaseTreeVisitor {
-    private final Selector<Tree> query;
-    private final BiPredicate<Context, Tree> visitChildren;
-    private Context ctx;
+  protected static class SubTreeVisitor<C> extends BaseTreeVisitor {
+    private final Selector<C, Tree> query;
+    private final BiPredicate<C, Tree> visitChildren;
+    private C ctx;
 
-    public SubTreeVisitor(Selector<Tree> query, BiPredicate<Context, Tree> visitChildren) {
+    public SubTreeVisitor(Selector<C, Tree> query, BiPredicate<C, Tree> visitChildren) {
       this.query = query;
       this.visitChildren = visitChildren;
     }
 
-    void visit(Context ctx, Tree tree) {
+    void visit(C ctx, Tree tree) {
       this.ctx = ctx;
       scan(tree);
     }

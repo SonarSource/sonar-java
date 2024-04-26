@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
-import org.sonar.plugins.java.api.query.Selector.Context;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -33,12 +32,12 @@ class SelectorTest {
 
   @Test
   void test_find_package_keyword() {
-    var findPackageKeywordQuery = new CompilationUnitQuery()
+    var findPackageKeywordQuery = new CompilationUnitQuery<TestContext>()
       .packageDeclaration()
       .packageKeyword()
       .visit((ctx, it) -> ctx.reportIssue(it, "I'm findPackageKeywordQuery"));
 
-    var findMethodNamesNotDeepQuery = new CompilationUnitQuery()
+    var findMethodNamesNotDeepQuery = new CompilationUnitQuery<TestContext>()
       .types()
       .filterClassTree()
       .members()
@@ -46,7 +45,7 @@ class SelectorTest {
       .simpleName()
       .visit((ctx, it) -> ctx.reportIssue(it, "It's method1: " + it.name()));
 
-    var findAllMethodNamesQuery = new CompilationUnitQuery()
+    var findAllMethodNamesQuery = new CompilationUnitQuery<TestContext>()
       .subtreesIf((ctx, tree) -> !tree.is(Kind.METHOD, Kind.LAMBDA_EXPRESSION))
       .filterMethodTree()
       .simpleName()
@@ -82,7 +81,7 @@ class SelectorTest {
         "9:9-9:12 It's method2: bar");
   }
 
-  record TestContext(List<String> issues) implements Context {
+  public record TestContext(List<String> issues) {
     public TestContext() {
       this(new ArrayList<>());
     }
