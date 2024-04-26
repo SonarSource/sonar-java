@@ -22,10 +22,13 @@ package org.sonar.java.checks.prettyprint;
 
 import java.util.function.Consumer;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.helpers.QuickFixHelper.contentForTree;
+import static org.sonar.java.checks.prettyprint.Associativity.isKnownAssociativeOperator;
+import static org.sonar.java.checks.prettyprint.Precedence.precedence;
 
 public final class PrettyPrintStringBuilder {
   private final FileConfig fileConfig;
@@ -51,6 +54,13 @@ public final class PrettyPrintStringBuilder {
       if (remLines.hasNext()) {
         newLine();
       }
+    }
+    return this;
+  }
+
+  public PrettyPrintStringBuilder addIf(String str, boolean condition){
+    if (condition){
+      add(str);
     }
     return this;
   }
@@ -141,6 +151,24 @@ public final class PrettyPrintStringBuilder {
 
   public PrettyPrintStringBuilder addTreesContentWithSep(Iterable<? extends Tree> elems, String separator, JavaFileScannerContext ctx) {
     return addWithSep(elems, elem -> addTreeContent(elem, ctx), separator);
+  }
+
+  public PrettyPrintStringBuilder addBinop(ExpressionTree lhs, Tree.Kind operator, ExpressionTree rhs, JavaFileScannerContext ctx){
+    var operatorPrecedence = precedence(operator);
+    var rhsPrecedence = precedence(rhs);
+    var parenthesizeLhs = operatorPrecedence.bindsStrongerThan(precedence(lhs));
+    var parenthesizeRhs = operatorPrecedence.bindsStrongerThan(rhsPrecedence)
+      || (rhsPrecedence == operatorPrecedence && !isKnownAssociativeOperator(operator));
+    addIf("(", parenthesizeLhs);
+    addTreeContent(lhs, ctx);
+    addIf(")", parenthesizeLhs);
+    addSpace();
+    add(KindsPrinter.printExprKind(operator));
+    addSpace();
+    addIf("(", parenthesizeRhs);
+    addTreeContent(rhs, ctx);
+    addIf(")", parenthesizeRhs);
+    return this;
   }
 
   @Override
