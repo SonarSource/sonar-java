@@ -47,6 +47,8 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import static org.sonar.java.checks.helpers.QuickFixHelper.contentForTree;
+
 
 @Rule(key = "S6880")
 public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -210,7 +212,7 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     }
     pps.add("switch (").add(cases.get(0).scrutinee().name()).add(") ")
       .blockStart()
-      .addWithSep(cases, caze -> writeCase(caze, pps, canLiftReturn), caze -> pps.newLine())
+      .addWithSep(cases, caze -> writeCase(caze, pps, canLiftReturn), pps::newLine)
       .blockEnd();
     if (canLiftReturn) {
       pps.add(";");
@@ -221,15 +223,13 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
 
   private void writeCase(Case caze, PrettyPrintStringBuilder pps, boolean canLiftReturn) {
     if (caze instanceof PatternMatchCase patternMatchCase) {
-      pps.add("case ").add(QuickFixHelper.contentForTree(patternMatchCase.pattern, context));
+      pps.add("case ").add(contentForTree(patternMatchCase.pattern, context));
       if (!patternMatchCase.guards().isEmpty()) {
         List<ExpressionTree> guards = patternMatchCase.guards();
-        pps.add(" when ");
-        join(guards, " && ", pps);
+        pps.add(" when ").addTreesContentWithSep(guards, " && ", context);
       }
     } else if (caze instanceof EqualityCase equalityCase) {
-      pps.add("case ");
-      join(equalityCase.constants, ", ", pps);
+      pps.add("case ").addTreesContentWithSep(equalityCase.constants, ", ", context);
     } else {
       pps.add("default");
     }
@@ -242,22 +242,11 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   }
 
   private void makeBlockCode(StatementTree stat, PrettyPrintStringBuilder pps) {
-    var rawCode = QuickFixHelper.contentForTree(stat, context);
+    var rawCode = contentForTree(stat, context);
     if (stat instanceof BlockTree) {
       pps.addWithIndentBasedOnLastLine(rawCode);
     } else {
       pps.blockStart().add(rawCode).blockEnd();
-    }
-  }
-
-  private void join(List<? extends Tree> elems, String sep, PrettyPrintStringBuilder pps) {
-    var iter = elems.iterator();
-    while (iter.hasNext()) {
-      var e = iter.next();
-      pps.add(QuickFixHelper.contentForTree(e, context));
-      if (iter.hasNext()) {
-        pps.add(sep);
-      }
     }
   }
 
@@ -267,9 +256,9 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
       stat = block.body().get(0);
     }
     if (stat instanceof ReturnStatementTree returnStat && returnStat.expression() != null) {
-      return QuickFixHelper.contentForTree(returnStat.expression(), context) + ";";
+      return contentForTree(returnStat.expression(), context) + ";";
     } else if (stat instanceof ThrowStatementTree throwStatementTree) {
-      return QuickFixHelper.contentForTree(throwStatementTree, context);
+      return contentForTree(throwStatementTree, context);
     }
     return null;
   }

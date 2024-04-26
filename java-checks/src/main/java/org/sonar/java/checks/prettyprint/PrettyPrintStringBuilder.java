@@ -21,6 +21,11 @@
 package org.sonar.java.checks.prettyprint;
 
 import java.util.function.Consumer;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.checks.helpers.QuickFixHelper.contentForTree;
 
 public final class PrettyPrintStringBuilder {
   private final FileConfig fileConfig;
@@ -51,14 +56,14 @@ public final class PrettyPrintStringBuilder {
 
   public PrettyPrintStringBuilder addWithIndentBasedOnLastLine(String str) {
     var lines = str.lines().toList();
-    var numCharsToRemove = numLeadingIndentChars(lines.get(lines.size()-1));
+    var numCharsToRemove = numLeadingIndentChars(lines.get(lines.size() - 1));
     return add(str.indent(-numCharsToRemove));
   }
 
-  private int numLeadingIndentChars(String str){
+  private int numLeadingIndentChars(String str) {
     var indent = fileConfig.indent();
     var idx = 0;
-    while (idx < str.length() && str.startsWith(indent, idx)){
+    while (idx < str.length() && str.startsWith(indent, idx)) {
       idx += indent.length();
     }
     return idx;
@@ -101,16 +106,36 @@ public final class PrettyPrintStringBuilder {
     return this;
   }
 
-  public <T> PrettyPrintStringBuilder addWithSep(Iterable<T> elems, Consumer<T> elemAdder, Consumer<T> separator) {
+  public <T> PrettyPrintStringBuilder addWithSep(Iterable<T> elems, Consumer<T> elemAdder, Runnable separator) {
     var iter = elems.iterator();
     while (iter.hasNext()) {
       var elem = iter.next();
       elemAdder.accept(elem);
       if (iter.hasNext()) {
-        separator.accept(elem);
+        separator.run();
       }
     }
     return this;
+  }
+
+  public <T> PrettyPrintStringBuilder addWithSep(Iterable<T> elems, Consumer<T> elemAdder, String separator) {
+    return addWithSep(elems, elemAdder, () -> add(separator));
+  }
+
+  public <T> PrettyPrintStringBuilder addWithSep(Iterable<T> elems, Runnable separator) {
+    return addWithSep(elems, elem -> add(elem.toString()), separator);
+  }
+
+  public <T> PrettyPrintStringBuilder addWithSep(Iterable<T> elems, String separator) {
+    return addWithSep(elems, () -> add(separator));
+  }
+
+  public PrettyPrintStringBuilder addTreesContentWithSep(Iterable<? extends Tree> elems, Runnable separator, JavaFileScannerContext ctx) {
+    return addWithSep(elems, elem -> add(contentForTree(elem, ctx)), separator);
+  }
+
+  public PrettyPrintStringBuilder addTreesContentWithSep(Iterable<? extends Tree> elems, String separator, JavaFileScannerContext ctx) {
+    return addWithSep(elems, elem -> add(contentForTree(elem, ctx)), separator);
   }
 
   @Override
