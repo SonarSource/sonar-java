@@ -10,7 +10,8 @@ public class ForLoopFalseConditionCheckSample {
     for(int i = 12; i > 1 + 2 * 5; i++) {}  // Compliant
     for(int i = 12; i > (1 + 2) * 5; i++) {} // Noncompliant
     for(int i = 2; i > (1 + 5) / 5; i++) {}  // Compliant
-    for(int i = 2; i > 1 + 5 / 5; i++) {} // Noncompliant
+    for(int i = 2; i > 1 + 5 / 5; // Noncompliant
+        i++) {}
 
 
     int j = 0, k = 0;
