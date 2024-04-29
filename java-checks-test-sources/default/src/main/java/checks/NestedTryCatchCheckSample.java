@@ -42,7 +42,7 @@ class NestedTryCatchCheckSample {
     }
 
     try {
-//  ^^^<
+//  ^^^>
       try { // Noncompliant {{Extract this nested try block into a separate method.}}
       } catch (Exception e) {
       }
