@@ -19,7 +19,8 @@ import org.apache.struts.actions.BaseAction;
 class UnusedMethodParameterCheck extends B {
   void doSomething() { }
 
-  void doSomething(int a, int b) { // Noncompliant [[sc=31;ec=32;quickfixes=qf_1_1]] {{Remove this unused method parameter "b".}}
+  void doSomething(int a, int b) { // Noncompliant [[quickfixes=qf_1_1]] {{Remove this unused method parameter "b".}}
+//                            ^
     // fix@qf_1_1 {{Remove "b"}}
     // edit@qf_1_1 [[sc=25;ec=32]] {{}}
     compute(a);
@@ -56,11 +57,15 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int a, // Noncompliant [[sc=16;ec=17;secondary=+1,+3,+4;quickfixes=qf_2_1,qf_2_2,qf_2_3,qf_2_4]] {{Remove these unused method parameters "a", "b", "d", "e".}}
+  void foo(int a, // Noncompliant [[quickfixes=qf_2_1,qf_2_2,qf_2_3,qf_2_4]] {{Remove these unused method parameters "a", "b", "d", "e".}}
+//             ^
            @Nullable Object b,
+//  ^^^<
            int c,
            int d,
+//  ^^^<
            @Nullable Object e) {
+//  ^^^<
     // fix@qf_2_1 {{Remove "a"}}
     // edit@qf_2_1 [[sl=+0;sc=12;el=+1;ec=12]] {{}}
     // fix@qf_2_2 {{Remove "b"}}
@@ -73,7 +78,8 @@ class D extends C {
   }
 }
 class E extends C {
-  void bar(int a){ // Noncompliant [[sc=16;ec=17;quickfixes=qf_3_1]] {{Remove this unused method parameter "a".}}
+  void bar(int a){ // Noncompliant [[quickfixes=qf_3_1]] {{Remove this unused method parameter "a".}}
+//             ^
     // fix@qf_3_1 {{Remove "a"}}
     // edit@qf_3_1 [[sc=12;ec=17]] {{}}
     System.out.println("");
@@ -129,7 +135,7 @@ class OpenForExtension {
     //no-op
   }
 
-  // Noncompliant@+1
+ // Noncompliant@+1
   private void qiz(int arg1, int arg2) {
 
   }
@@ -156,7 +162,8 @@ class Annotations {
     System.out.println(arg2);
   }
 
-  public void bar(@Nonnull Object event, int arg2) { // Noncompliant {{Remove this unused method parameter "event".}} [[sc=35;ec=40]]
+  public void bar(@Nonnull Object event, int arg2) { // Noncompliant {{Remove this unused method parameter "event".}}
+//                                ^^^^^
     System.out.println(arg2);
   }
 
@@ -175,12 +182,14 @@ class Annotations {
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  void foobar(List list, int unused) { // Noncompliant {{Remove this unused method parameter "unused".}} [[sc=30;ec=36]]
+  void foobar(List list, int unused) { // Noncompliant {{Remove this unused method parameter "unused".}}
+//                           ^^^^^^
     List<String> strings = (List<String>) list;
   }
 
   @SuppressWarnings("unchecked")
-  void uncheckedFoobar(List<?> list, int unused) { // Noncompliant {{Remove this unused method parameter "unused".}} [[sc=42;ec=48]]
+  void uncheckedFoobar(List<?> list, int unused) { // Noncompliant {{Remove this unused method parameter "unused".}}
+//                                       ^^^^^^
     List<String> strings = (List<String>) list;
   }
 }
@@ -254,21 +263,21 @@ class DocumentedMethod {
   /**
    * @param firstArg proper javadoc description
    */
-  private void nonOverrideableMethod(String firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
+  private void nonOverrideableMethod(String firstArg) { // Noncompliant {{Remove this unused method parameter "firstArg".}}
     System.out.println();
   }
 
   /**
    * @param firstArg proper javadoc description
    */
-  static void nonOverrideableMethod(int firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
+  static void nonOverrideableMethod(int firstArg) { // Noncompliant {{Remove this unused method parameter "firstArg".}}
     System.out.println();
   }
 
   /**
    * @param firstArg proper javadoc description
    */
-  final void nonOverrideableMethod(Object firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
+  final void nonOverrideableMethod(Object firstArg) { // Noncompliant {{Remove this unused method parameter "firstArg".}}
     System.out.println();
   }
 }
@@ -277,7 +286,7 @@ final class FinalDocumentedMethod {
   /**
    * @param firstArg proper javadoc description
    */
-  void nonOverrideableMethod(int firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
+  void nonOverrideableMethod(int firstArg) { // Noncompliant {{Remove this unused method parameter "firstArg".}}
     System.out.println();
   }
 }
@@ -302,7 +311,7 @@ final class FinalClass extends Parent {
     // do something
   }
 
-  public void barPublic(Object o) {  // Noncompliant
+  public void barPublic(Object o) { // Noncompliant
     // do something
   }
 
@@ -348,18 +357,23 @@ class UsingMethodReference {
 }
 
 class JakartaAnnotations {
-  void fooBar(int a, // Noncompliant [[sc=19;ec=20;secondary=+1,+3,+4]] {{Remove these unused method parameters "a", "b", "d", "e".}}
+  void fooBar(int a, // Noncompliant {{Remove these unused method parameters "a", "b", "d", "e".}}
+//                ^
     @jakarta.annotation.Nullable Boolean b,
+//  ^^^<
     int c,
     int d,
+//  ^^^<
     @jakarta.annotation.Nullable Object e) {
+//  ^^^<
     System.out.println(c);
   }
   public void foo(@jakarta.enterprise.event.Observes Object event, int arg2) { // Compliant
     System.out.println(arg2);
   }
 
-  public void bar(@jakarta.annotation.Nonnull Object event, int arg2) { // Noncompliant {{Remove this unused method parameter "event".}} [[sc=54;ec=59]]
+  public void bar(@jakarta.annotation.Nonnull Object event, int arg2) { // Noncompliant {{Remove this unused method parameter "event".}}
+//                                                   ^^^^^
     System.out.println(arg2);
   }
 }

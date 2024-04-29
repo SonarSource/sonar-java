@@ -65,7 +65,8 @@ class ImmediatelyReturnedVariableCheckSample {
   }
 
   public long testQuickFixes(long hours, long minutes, long seconds) {
-    long duration = (((hours * 60) + minutes) * 60 + seconds ) * 1000; // Noncompliant [[sc=21;ec=70;quickfixes=qf1]]
+    long duration = (((hours * 60) + minutes) * 60 + seconds ) * 1000; // Noncompliant [[quickfixes=qf1]]
+//                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     return duration;
     // fix@qf1 {{Inline expression}}
     // edit@qf1 [[sc=5;ec=21]] {{return }}
@@ -73,7 +74,8 @@ class ImmediatelyReturnedVariableCheckSample {
   }
 
   public long testQuickFixesWithSpaces(long hours, long minutes, long seconds) {
-    long duration = (((hours * 60) + minutes) * 60 + seconds ) * 1000; // Noncompliant [[sc=21;ec=70;quickfixes=qf2]]
+    long duration = (((hours * 60) + minutes) * 60 + seconds ) * 1000; // Noncompliant [[quickfixes=qf2]]
+//                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
     return duration;
@@ -83,7 +85,8 @@ class ImmediatelyReturnedVariableCheckSample {
   }
 
   public long testQuickFixesThrow() {
-    RuntimeException myException = new RuntimeException(); // Noncompliant [[sc=36;ec=58;quickfixes=qf3]]
+    RuntimeException myException = new RuntimeException(); // Noncompliant [[quickfixes=qf3]]
+//                                 ^^^^^^^^^^^^^^^^^^^^^^
     throw myException;
     // fix@qf3 {{Inline expression}}
     // edit@qf3 [[sc=5;ec=36]] {{throw }}
@@ -91,7 +94,8 @@ class ImmediatelyReturnedVariableCheckSample {
   }
 
   public long testQuickFixesWithFinalVariable(long hours) {
-    final long duration = hours * 60; // Noncompliant [[sc=27;ec=37;quickfixes=qf4]]
+    final long duration = hours * 60; // Noncompliant [[quickfixes=qf4]]
+//                        ^^^^^^^^^^
     return duration;
     // fix@qf4 {{Inline expression}}
     // edit@qf4 [[sc=5;ec=27]] {{return }}
@@ -100,7 +104,8 @@ class ImmediatelyReturnedVariableCheckSample {
 
   public long testQuickFixesInitOnNextLine(long hours) {
     final long duration =
-      hours * 60; // Noncompliant [[sc=7;ec=17;quickfixes=qf5]]
+      hours * 60; // Noncompliant [[quickfixes=qf5]]
+//    ^^^^^^^^^^
     return duration;
     // fix@qf5 {{Inline expression}}
     // edit@qf5 [[sl=-1;sc=5;ec=7]] {{return }}

@@ -14,7 +14,9 @@ import javax.annotation.Nullable;
 abstract class PrimitivesMarkedNullableCheckSample {
 
   @CheckForNull
-  abstract int getInt0(); // Noncompliant [[sc=12;ec=15;secondary=-1]] {{"@CheckForNull" annotation should not be used on primitive types}}
+//  ^^^<
+  abstract int getInt0(); // Noncompliant {{"@CheckForNull" annotation should not be used on primitive types}}
+//         ^^^
 
   abstract int getInt1();
 
@@ -22,12 +24,14 @@ abstract class PrimitivesMarkedNullableCheckSample {
   abstract int getInt2();
 
   @Nullable
-  protected abstract boolean isBool(); // Noncompliant [[sc=22;ec=29;quickfixes=qf1]] {{"@Nullable" annotation should not be used on primitive types}}
+  protected abstract boolean isBool(); // Noncompliant [[quickfixes=qf1]] {{"@Nullable" annotation should not be used on primitive types}}
+//                   ^^^^^^^
   // fix@qf1 {{Remove "@Nullable"}}
   // edit@qf1 [[sl=-1;el=+0;sc=3;ec=3]] {{}}
 
   @javax.annotation.CheckForNull
-  public double getDouble0() { return 0.0; } // Noncompliant [[sc=10;ec=16;quickfixes=qf2]] {{"@CheckForNull" annotation should not be used on primitive types}}
+  public double getDouble0() { return 0.0; } // Noncompliant [[quickfixes=qf2]] {{"@CheckForNull" annotation should not be used on primitive types}}
+//       ^^^^^^
   // fix@qf2 {{Remove "@CheckForNull"}}
   // edit@qf2 [[sl=-1;el=+0;sc=3;ec=3]] {{}}
 
@@ -56,7 +60,8 @@ abstract class PrimitivesMarkedNullableCheckSample {
 
   public Object getObj2() { return null; }
 
-  protected abstract @Nullable boolean isBool2(); // Noncompliant [[sc=32;ec=39;quickfixes=qf3]] {{"@Nullable" annotation should not be used on primitive types}}
+  protected abstract @Nullable boolean isBool2(); // Noncompliant [[quickfixes=qf3]] {{"@Nullable" annotation should not be used on primitive types}}
+//                             ^^^^^^^
   // fix@qf3 {{Remove "@Nullable"}}
   // edit@qf3 [[sc=22;ec=32]] {{}}
 

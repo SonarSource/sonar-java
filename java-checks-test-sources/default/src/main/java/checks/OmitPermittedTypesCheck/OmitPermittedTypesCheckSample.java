@@ -1,10 +1,15 @@
 package checks.OmitPermittedTypesCheck;
 
-sealed class InSameFileA permits // Noncompliant [[sc=26;ec=33;secondary=+1,+2,+3,+4;quickfixes=qf0]] {{Remove this redundant permitted list.}}
+sealed class InSameFileA permits // Noncompliant [[quickfixes=qf0]] {{Remove this redundant permitted list.}}
+//                       ^^^^^^^
   InSameFileB,
+//  ^^^<
   InSameFileC,
+//  ^^^<
   InSameFileD,
+//  ^^^<
   InSameFileE {}
+//  ^^^<
 // fix@qf0 {{Remove permitted list}}
 // edit@qf0 [[sl=3;sc=26;el=7;ec=15]] {{}}
 final class InSameFileB extends InSameFileA {}
@@ -17,11 +22,13 @@ sealed class InSameClassA {  // Compliant
   final class InSameClassC extends InSameClassA {}
 }
 
-sealed class InSameFile2A permits InSameFile2B, InSameFile2C {} // Noncompliant [[sc=27;ec=34;quickfixes=qf1]]
+sealed class InSameFile2A permits InSameFile2B, InSameFile2C {} // Noncompliant [[quickfixes=qf1]]
+//                        ^^^^^^^
 // fix@qf1 {{Remove permitted list}}
 // edit@qf1 [[sc=27;ec=62]] {{}}
 final class InSameFile2B extends InSameFile2A {}
-sealed class InSameFile2C extends InSameFile2A permits InSameFile2D {} // Noncompliant [[sc=48;ec=55;quickfixes=qf2]] {{Remove this redundant permitted list.}}
+sealed class InSameFile2C extends InSameFile2A permits InSameFile2D {} // Noncompliant [[quickfixes=qf2]] {{Remove this redundant permitted list.}}
+//                                             ^^^^^^^
 // fix@qf2 {{Remove permitted list}}
 // edit@qf2 [[sc=48;ec=69]] {{}}
 non-sealed class InSameFile2D extends InSameFile2C {}

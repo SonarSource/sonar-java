@@ -5,7 +5,8 @@ import javax.annotation.Nonnull;
 public class EqualsParametersMarkedNonNullCheckSample {
 
   static class A {
-    public boolean equals(@Nonnull Object obj) { // Noncompliant [[sc=27;ec=35;quickfixes=qf1]] {{"equals" method parameters should not be marked "@Nonnull".}}
+    public boolean equals(@Nonnull Object obj) { // Noncompliant [[quickfixes=qf1]] {{"equals" method parameters should not be marked "@Nonnull".}}
+//                        ^^^^^^^^
       // fix@qf1 {{Remove "@Nonnull"}}
       // edit@qf1 [[sc=27;ec=36]] {{}}
       return true;
@@ -42,7 +43,8 @@ public class EqualsParametersMarkedNonNullCheckSample {
 
   static class F {
     public boolean equals(
-      @javax.validation.constraints.NotNull // Noncompliant [[sc=7;ec=44;el=+0;quickfixes=qf2]] {{"equals" method parameters should not be marked "@NotNull".}}
+      @javax.validation.constraints.NotNull // Noncompliant [[quickfixes=qf2]] {{"equals" method parameters should not be marked "@NotNull".}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       java.lang.Object object) {
       // fix@qf2 {{Remove "@NotNull"}}
       // edit@qf2 [[sc=7;ec=7;el=+1]] {{}}

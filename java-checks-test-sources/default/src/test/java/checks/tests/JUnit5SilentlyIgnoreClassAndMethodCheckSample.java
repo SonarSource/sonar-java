@@ -11,7 +11,8 @@ import org.junit.jupiter.api.TestFactory;
 class JUnit5SilentlyIgnoreClassAndMethodCheckSample {
 
   @Test
-  private void testPrivate() {} // Noncompliant [[sc=3;ec=10]] {{Remove this 'private' modifier.}}
+  private void testPrivate() {} // Noncompliant {{Remove this 'private' modifier.}}
+//^^^^^^^
 
   @Test
   void testDefault() {} // Compliant
@@ -36,7 +37,8 @@ class JUnit5SilentlyIgnoreClassAndMethodCheckSample {
   }
 
   @Nested
-  private class PrivateWithOneTest { // Noncompliant [[sc=3;ec=10]] {{Remove this 'private' modifier.}}
+  private class PrivateWithOneTest { // Noncompliant {{Remove this 'private' modifier.}}
+//^^^^^^^
     @Test
     void test() {}
   }
@@ -54,10 +56,12 @@ class JUnit5SilentlyIgnoreClassAndMethodCheckSample {
   }
 
   @Test
-  static void staticTest() {} // Noncompliant [[sc=3;ec=9]] {{Remove this 'static' modifier.}}
+  static void staticTest() {} // Noncompliant {{Remove this 'static' modifier.}}
+//^^^^^^
 
   @Test
-  int testReturningValue() { return 0; } // Noncompliant [[sc=3;ec=6]] {{Replace the return type by void.}}
+  int testReturningValue() { return 0; } // Noncompliant {{Replace the return type by void.}}
+//^^^
 
   @TestFactory
   Collection<DynamicTest> testFactory() { // Compliant, TestFactory returning a value
@@ -74,17 +78,20 @@ class JUnit5SilentlyIgnoreClassAndMethodCheckSample {
   @Nested
   class Quickfixes {
     @Test
-    private void testPrivate() {} // Noncompliant [[sc=5;ec=12;quickfixes=qf4]]
+    private void testPrivate() {} // Noncompliant [[quickfixes=qf4]]
+//  ^^^^^^^
     // fix@qf4 {{Remove modifier}}
     // edit@qf4 [[sc=5;ec=12]] {{}}
 
     @Test
-    static void staticTest() {} // Noncompliant [[sc=5;ec=11;quickfixes=qf5]]
+    static void staticTest() {} // Noncompliant [[quickfixes=qf5]]
+//  ^^^^^^
     // fix@qf5 {{Remove modifier}}
     // edit@qf5 [[sc=5;ec=11]] {{}}
 
     @Nested
-    private class PrivateWithOneTest { // Noncompliant [[sc=5;ec=12;quickfixes=qf3]]
+    private class PrivateWithOneTest { // Noncompliant [[quickfixes=qf3]]
+//  ^^^^^^^
       // fix@qf3 {{Remove modifier}}
       // edit@qf3 [[sc=5;ec=12]] {{}}
       @Test
@@ -92,13 +99,15 @@ class JUnit5SilentlyIgnoreClassAndMethodCheckSample {
     }
 
     @Test
-    List<String> quickFixes() { return Collections.emptyList(); } // Noncompliant [[sc=5;ec=17;quickfixes=qf1]]
+    List<String> quickFixes() { return Collections.emptyList(); } // Noncompliant [[quickfixes=qf1]]
+//  ^^^^^^^^^^^^
     // fix@qf1 {{Replace with void}}
     // edit@qf1 [[sc=5;ec=17]] {{void}}
     // edit@qf1 [[sc=40;ec=63]] {{}}
     
     @Test
-    Object bar(boolean b, Object o) { // Noncompliant [[sc=5;ec=11;quickfixes=qf2]]
+    Object bar(boolean b, Object o) { // Noncompliant [[quickfixes=qf2]]
+//  ^^^^^^
       // fix@qf2 {{Replace with void}}
       // edit@qf2 [[sc=5;ec=11]] {{void}}
       // edit@qf2 [[sl=+6;sc=16;el=+6;ec=39]] {{}}

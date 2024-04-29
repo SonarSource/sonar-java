@@ -2,7 +2,8 @@ package checks;
 
 class ToStringUsingBoxingCheckSample {
   private void f() {
-    new Byte((byte) 12).toString(); // Noncompliant [[sc=5;ec=35]] {{Call the static method Byte.toString(...) instead of instantiating a temporary object.}}
+    new Byte((byte) 12).toString(); // Noncompliant {{Call the static method Byte.toString(...) instead of instantiating a temporary object.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     new Short((short) 0).toString(); // Noncompliant {{Call the static method Short.toString(...) instead of instantiating a temporary object.}}
     new Integer(0).toString(); // Noncompliant {{Call the static method Integer.toString(...) instead of instantiating a temporary object.}}
     new java.lang.Integer(0).toString(); // Noncompliant {{Call the static method Integer.toString(...) instead of instantiating a temporary object.}}
@@ -19,7 +20,8 @@ class ToStringUsingBoxingCheckSample {
     int myInt = 4;
     new Integer(myInt).toString(); // Noncompliant {{Call the static method Integer.toString(...) instead of instantiating a temporary object.}}
     new Integer(myInt).compareTo(0); // Noncompliant {{Call the static method Integer.compare(...) instead of instantiating a temporary object.}}
-    Integer.valueOf(myInt).compareTo(0); // Noncompliant [[sc=5;ec=40]] {{Call the static method Integer.compare(...) instead of instantiating a temporary object.}}
+    Integer.valueOf(myInt).compareTo(0); // Noncompliant {{Call the static method Integer.compare(...) instead of instantiating a temporary object.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     Integer.toString(0); // Compliant
     Integer.toString(0, 2); // Compliant
 
@@ -70,33 +72,40 @@ class ToStringUsingBoxingCheckSample {
   }
 
   private void quickFixes(boolean myBoolean) {
-    new Byte((byte) 1).toString(); // Noncompliant [[sc=5;ec=34;quickfixes=qf1]]
+    new Byte((byte) 1).toString(); // Noncompliant [[quickfixes=qf1]]
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     // fix@qf1 {{Use Byte.toString(...) instead}}
     // edit@qf1 [[sc=5;ec=14]] {{Byte.toString(}}
     // edit@qf1 [[sc=22;ec=34]] {{)}}
-    new Short((short) 0).toString(); // Noncompliant [[sc=5;ec=36;quickfixes=qf2]]
+    new Short((short) 0).toString(); // Noncompliant [[quickfixes=qf2]]
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     // fix@qf2 {{Use Short.toString(...) instead}}
     // edit@qf2 [[sc=5;ec=15]] {{Short.toString(}}
     // edit@qf2 [[sc=24;ec=36]] {{)}}
-    new java.lang.Integer(0).toString(); // Noncompliant [[sc=5;ec=40;quickfixes=qf3]]
+    new java.lang.Integer(0).toString(); // Noncompliant [[quickfixes=qf3]]
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     // fix@qf3 {{Use Integer.toString(...) instead}}
     // edit@qf3 [[sc=5;ec=27]] {{Integer.toString(}}
     // edit@qf3 [[sc=28;ec=40]] {{)}}
-    new Integer(0).compareTo(1); // Noncompliant [[sc=5;ec=32;quickfixes=qf4]]
+    new Integer(0).compareTo(1); // Noncompliant [[quickfixes=qf4]]
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
     // fix@qf4 {{Use Integer.compare(...) instead}}
     // edit@qf4 [[sc=5;ec=17]] {{Integer.compare(}}
     // edit@qf4 [[sc=18;ec=30]] {{, }}
 
-    Boolean.valueOf(myBoolean).compareTo(false);// Noncompliant [[sc=5;ec=48;quickfixes=qf5]]
+    Boolean.valueOf(myBoolean).compareTo(false); // Noncompliant [[quickfixes=qf5]]
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     // fix@qf5 {{Use Boolean.compare(...) instead}}
     // edit@qf5 [[sc=5;ec=21]] {{Boolean.compare(}}
     // edit@qf5 [[sc=30;ec=42]] {{, }}
 
     // Special cases, the creation of Integer is in fact completely useless.
-    new Integer(0).toString(1); // Noncompliant [[sc=5;ec=31;quickfixes=qf6]]
+    new Integer(0).toString(1); // Noncompliant [[quickfixes=qf6]]
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^
     // fix@qf6 {{Use Integer.toString(...) instead}}
     // edit@qf6 [[sc=5;ec=19]] {{Integer}}
-    new Integer(0).toString(1, 2); // Noncompliant [[sc=5;ec=34;quickfixes=qf7]]
+    new Integer(0).toString(1, 2); // Noncompliant [[quickfixes=qf7]]
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     // fix@qf7 {{Use Integer.toString(...) instead}}
     // edit@qf7 [[sc=5;ec=19]] {{Integer}}
   }

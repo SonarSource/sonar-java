@@ -26,7 +26,8 @@ public class RedundantThrowsDeclarationCheckSample {
   public void foo7() throws MyRuntimeException { // Compliant
   }
 
-  public void foo8() throws MyException, Exception { // Noncompliant [[sc=29;ec=40;quickfixes=qf_first]] {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheckSample$MyException' which is a subclass of 'java.lang.Exception'.}}
+  public void foo8() throws MyException, Exception { // Noncompliant [[quickfixes=qf_first]] {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheckSample$MyException' which is a subclass of 'java.lang.Exception'.}}
+//                          ^^^^^^^^^^^
     // fix@qf_first {{Remove "MyException"}}
     // edit@qf_first [[sc=29;ec=42]] {{}}
   }
@@ -72,7 +73,8 @@ abstract class MySuperClass {
 }
 
 abstract class ThrownCheckedExceptions extends MySuperClass {
-  public ThrownCheckedExceptions(String s) throws MyException { // Noncompliant [[sc=51;ec=62;quickfixes=qf_all_throws]] {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from constructor's body.}}
+  public ThrownCheckedExceptions(String s) throws MyException { // Noncompliant [[quickfixes=qf_all_throws]] {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from constructor's body.}}
+//                                                ^^^^^^^^^^^
     // fix@qf_all_throws {{Remove "MyException"}}
     // edit@qf_all_throws [[sc=43;ec=62]] {{}}
     bar();
@@ -137,11 +139,11 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     throw new UnsupportedOperationException();
   }
 
-  private int foo11() throws MyException { // Noncompliant - private
+  private int foo11() throws MyException { // Noncompliant
     return 0;
   }
 
-  Object foo12() throws MyException { // Noncompliant - only target litteral
+  Object foo12() throws MyException { // Noncompliant
     return new Object();
   }
 
@@ -173,7 +175,8 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     }
   }
 
-  void foo18(java.io.File file) throws IOException, ParseException { // Noncompliant  [[sc=53;ec=67;quickfixes=qf_last]] {{Remove the declaration of thrown exception 'java.text.ParseException', as it cannot be thrown from method's body.}}
+  void foo18(java.io.File file) throws IOException, ParseException { // Noncompliant [[quickfixes=qf_last]] {{Remove the declaration of thrown exception 'java.text.ParseException', as it cannot be thrown from method's body.}}
+//                                                  ^^^^^^^^^^^^^^
     // fix@qf_last {{Remove "ParseException"}}
     // edit@qf_last [[sc=51;ec=67]] {{}}
     try (MyCloseable mac = getMyCloseable(file)) {
@@ -320,7 +323,8 @@ abstract class NonThrownExceptionClass {
      * @exception MyException proper javadoc description
      * @throws  MyException2 proper javadoc description
      */
-    public void missingJavadocForException() throws MyException, java.io.IOException, MyException2 { // Noncompliant [[sc=66;ec=85;quickfixes=qf_middle]] {{Remove the declaration of thrown exception 'java.io.IOException', as it cannot be thrown from method's body.}}
+    public void missingJavadocForException() throws MyException, java.io.IOException, MyException2 { // Noncompliant [[quickfixes=qf_middle]] {{Remove the declaration of thrown exception 'java.io.IOException', as it cannot be thrown from method's body.}}
+//                                                               ^^^^^^^^^^^^^^^^^^^
       // fix@qf_middle {{Remove "IOException"}}
       // edit@qf_middle [[sc=66;ec=87]] {{}}
       bar();

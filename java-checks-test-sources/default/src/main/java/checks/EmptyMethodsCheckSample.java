@@ -9,12 +9,13 @@ class EmptyMethodsCheckSample {
     public A() {
     }
 
-    // Noncompliant@+1 - if the constructor takes an argument it should do something with it (or explain why it doesn't)
+ // Noncompliant@+1
     public A(int c) {
     }
 
-    // Noncompliant@+1 [[sc=18;ec=19]] {{Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.}}
-    private void f() {
+
+    private void f() { // Noncompliant@+1 {{Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.}}
+//               ^
     }
 
     // Compliant
@@ -32,7 +33,7 @@ class EmptyMethodsCheckSample {
       return 0;
     }
 
-    // Noncompliant@+1
+ // Noncompliant@+1
     private void j() {
       ;
     }
@@ -43,7 +44,7 @@ class EmptyMethodsCheckSample {
     private <T> AwithGenerics() {
     }
 
-    // Noncompliant@+1
+ // Noncompliant@+1
     private <T> void f() {
     }
   }
@@ -58,14 +59,14 @@ class EmptyMethodsCheckSample {
       }
 
       class C {
-        // Noncompliant@+1
+ // Noncompliant@+1
         private void g() {
         }
       }
     }
 
     IFoo bar = new IFoo() {
-      // Noncompliant@+1
+ // Noncompliant@+1
       public void f() {
       }
     };
@@ -74,7 +75,7 @@ class EmptyMethodsCheckSample {
   enum AEnum {
     ;
 
-    // Noncompliant@+1
+ // Noncompliant@+1
     public void f() {
     }
 
@@ -87,7 +88,7 @@ class EmptyMethodsCheckSample {
     enum B {
       ;
 
-      // Noncompliant@+1
+ // Noncompliant@+1
       public void f() {
       }
     }
@@ -96,7 +97,7 @@ class EmptyMethodsCheckSample {
   public interface IFoo {
 
     static IFoo FOO = new IFoo() {
-      // Noncompliant@+1
+ // Noncompliant@+1
       public void foo() {
       }
 
@@ -111,7 +112,7 @@ class EmptyMethodsCheckSample {
   enum Foo {
 
     FOO {
-      // Noncompliant@+1
+ // Noncompliant@+1
       public void foo() {
       }
 
@@ -121,7 +122,7 @@ class EmptyMethodsCheckSample {
       }
     };
 
-    // Noncompliant@+1
+ // Noncompliant@+1
     public void foo() {
     }
 
@@ -129,7 +130,7 @@ class EmptyMethodsCheckSample {
 
   class Constructors {
     class C {
-      // Noncompliant@+1
+ // Noncompliant@+1
       public C() {
       }
     }
@@ -155,25 +156,28 @@ class EmptyMethodsCheckSample {
   }
 
   record MyRecord() {
-    // Noncompliant@+1
+ // Noncompliant@+1
     void foo() {
     }
   }
 
   class QuickFixes {
-    // Noncompliant@+1 [[sc=12;ec=22;quickfixes=qf0]]
-    public QuickFixes() {}
+
+    public QuickFixes() {} // Noncompliant@+1 [[quickfixes=qf0]]
+//         ^^^^^^^^^^
     // fix@qf0 {{Insert placeholder comment}}
     // edit@qf0 [[sc=26;ec=26]] {{ /* TODO document why this constructor is empty */ }}
 
-    // Noncompliant@+1 [[sc=18;ec=29;quickfixes=qf1]]
-    private void emptyMethod() {
+
+    private void emptyMethod() { // Noncompliant@+1 [[quickfixes=qf1]]
+//               ^^^^^^^^^^^
     }
     // fix@qf1 {{Insert placeholder comment}}
     // edit@qf1 [[sl=+0;el=+1;sc=33;ec=5]] {{\n      // TODO document why this method is empty\n    }}
 
-    // Noncompliant@+1 [[sc=18;ec=30;quickfixes=qf2]]
-    private void emptyMethod2() {
+
+    private void emptyMethod2() { // Noncompliant@+1 [[quickfixes=qf2]]
+//               ^^^^^^^^^^^^
 
     }
     // fix@qf2 {{Insert placeholder comment}}

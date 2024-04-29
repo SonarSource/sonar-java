@@ -7,13 +7,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 public class ControllerWithRestControllerReplacementCheck {
 
-  @Controller // Noncompliant [[sc=3;ec=14;secondary=16;quickfixes=qf1,qf2]] {{Replace the "@Controller" annotation by "@RestController" and remove all
+  @Controller // Noncompliant [[quickfixes=qf1,qf2]]
+//^^^^^^^^^^^
               // "@ResponseBody" annotations.}}
   // fix@qf2 {{Replace "@Controller" by "@RestController".}}
   // edit@qf2 [[sl=10;el=10;sc=3;ec=14]] {{@RestController}}
   class ClassOne {
 
     @ResponseBody
+//  ^^^<
     // fix@qf1 {{Remove "@ResponseBody" annotations.}}
     // edit@qf1 [[sl=16;el=16;sc=5;ec=18]] {{}}
     public void m() {
@@ -62,19 +64,22 @@ public class ControllerWithRestControllerReplacementCheck {
     }
   }
 
-  @Controller // Noncompliant [[sc=3;ec=14;secondary=71,77;quickfixes=qf3,qf4]] {{Replace the "@Controller" annotation by "@RestController" and remove all
+  @Controller // Noncompliant [[quickfixes=qf3,qf4]]
+//^^^^^^^^^^^
               // "@ResponseBody" annotations.}}
   // fix@qf4 {{Replace "@Controller" by "@RestController".}}
   // edit@qf4 [[sl=65;el=65;sc=3;ec=14]] {{@RestController}}
   class ClassSeven {
 
     @ResponseBody
+//  ^^^<
     // fix@qf3 {{Remove "@ResponseBody" annotations.}}
     // edit@qf3 [[sl=71;el=71;sc=5;ec=18]] {{}}
     public void m() {
     }
 
     @ResponseBody
+//  ^^^<
     // fix@qf3 {{Remove "@ResponseBody" annotations.}}
     // edit@qf3 [[sl=77;el=77;sc=5;ec=18]] {{}}
     public void m2() {
