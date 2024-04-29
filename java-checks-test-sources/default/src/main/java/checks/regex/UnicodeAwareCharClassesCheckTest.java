@@ -32,7 +32,7 @@ public class UnicodeAwareCharClassesCheckTest {
 
   @URL(regexp = "\\p{Lower}", flags = jakarta.validation.constraints.Pattern.Flag.DOTALL) // Noncompliant {{Enable the "(?U)" flag or use a Unicode-aware alternative.}}
 // ^^^
-//  ^^^<
+//               ^^^^^^^^^^@-1<
   String url1;
 
   @URL(regexp = "(?U)\\p{Lower}") // Compliant
@@ -51,7 +51,8 @@ public class UnicodeAwareCharClassesCheckTest {
 //                    ^^^^^^^^^^^^^^^
     Pattern.compile("[a-zA-Z]"); // Noncompliant {{Replace these character ranges with Unicode-aware character classes.}}
 //                   ^^^^^^^^
-//  ^^^<
+//                    ^^^@-1<
+//                       ^^^@-2<
     String regex = "[a-zA-Z]"; // Noncompliant
     Pattern.compile(regex + regex);
   }
@@ -59,7 +60,7 @@ public class UnicodeAwareCharClassesCheckTest {
   void NoncompliantPredefinedPosixClasses() {
     Pattern.compile("\\p{Lower}"); // Noncompliant {{Enable the "UNICODE_CHARACTER_CLASS" flag or use a Unicode-aware alternative.}}
 //          ^^^^^^^
-//  ^^^<
+//                   ^^^^^^^^^^@-1<
     Pattern.compile("\\p{Alnum}"); // Noncompliant
     Pattern.compile("\\p{Space}"); // Noncompliant
     Pattern.compile("\\s"); // Noncompliant
