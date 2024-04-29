@@ -10,14 +10,14 @@ class IndentationAfterConditionalCheckSample {
     if (i <= 1) // Noncompliant {{Use indentation to denote the code conditionally executed by this "if".}}
 //  ^^^^^^^^^^^
     i = 1;
-//  ^^^<
+//  ^^^^^^<
     i++;
 
     if(i > 0) // Noncompliant
 //  ^^^^^^^^^
     // ......
     doTheOtherThing();
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^<
     //.....
     doTheThing();
 
@@ -36,7 +36,7 @@ class IndentationAfterConditionalCheckSample {
     if(i <= 11) // Noncompliant
 //  ^^^^^^^^^^^
     doTheThing();
-//  ^^^<
+//  ^^^^^^^^^^^^^<
     doTheOtherThing();
     somethingElseEntirely();
 
@@ -73,7 +73,7 @@ class IndentationAfterConditionalCheckSample {
     for (; i <= 1;) // Noncompliant {{Use indentation to denote the code conditionally executed by this "for".}}
 //  ^^^^^^^^^^^^^^^
     i = 1;
-//  ^^^<
+//  ^^^^^^<
     i++;
 
     for (; i <= 1;) { // Compliant
@@ -95,7 +95,7 @@ class IndentationAfterConditionalCheckSample {
     while(i<=11) // Noncompliant {{Use indentation to denote the code conditionally executed by this "while".}}
 //  ^^^^^^^^^^^^
     i++;
-//  ^^^<
+//  ^^^^<
     i+=10;
 
     List<Integer> l=null;
@@ -105,13 +105,13 @@ class IndentationAfterConditionalCheckSample {
     for(Integer ii : l) // Noncompliant {{Use indentation to denote the code conditionally executed by this "for".}}
 //  ^^^^^^^^^^^^^^^^^^^
     i=1;
-//  ^^^<
+//  ^^^^<
     i=2;
 
     for(Integer ii : l) // Noncompliant {{Use indentation to denote the code conditionally executed by this "for".}}
 //  ^^^^^^^^^^^^^^^^^^^
    if(ii == 1) // Noncompliant {{Use indentation to denote the code conditionally executed by this "if".}}
-//  ^^^<
+// [^[el=+2;ec=7]<
    i++;
    i=2;
 
@@ -123,13 +123,13 @@ class IndentationAfterConditionalCheckSample {
     for(i =0;i<10;i++) // Noncompliant {{Use indentation to denote the code conditionally executed by this "for".}}
 //  ^^^^^^^^^^^^^^^^^^
   if(i==1)
-//  ^^^<
+//^[el=+2;ec=8]<
     i++;
     if(i == 1)   // Compliant
       if(i == 2) // Noncompliant {{Use indentation to denote the code conditionally executed by this "if".}}
 //    ^^^^^^^^^^
       i++;
-//  ^^^<
+//    ^^^^<
       i+=2;
       
     if(i == 0)
@@ -141,16 +141,15 @@ class IndentationAfterConditionalCheckSample {
     else // Noncompliant {{Use indentation to denote the code conditionally executed by this "else".}}
 //  ^^^^
     i=1;
-//  ^^^<
+//  ^^^^<
     
     while(i<=0)
       for(;i<10;) // Noncompliant {{Use indentation to denote the code conditionally executed by this "for".}}
 //    ^^^^^^^^^^^
      if(i<1) // Noncompliant {{Use indentation to denote the code conditionally executed by this "if".}}
 //   ^^^^^^^
-//  ^^^<
     return 2;   
-//  ^^^<
+//  ^^^^^^^^^<
     
     if(i == 1)
       return i;
@@ -167,7 +166,7 @@ class IndentationAfterConditionalCheckSample {
       if ((i > 0) && (i > 3)) // Noncompliant {{Use indentation to denote the code conditionally executed by this "if".}}
 //    ^^^^^^^^^^^^^^^^^^^^^^^
     return i;
-//  ^^^<
+//  ^^^^^^^^^<
       return 1;
     }
 
@@ -197,7 +196,7 @@ class IndentationAfterConditionalCheckSample {
     else if(i ==2) // Noncompliant {{Use indentation to denote the code conditionally executed by this "if".}}
 //  ^^^^^^^^^^^^^^
     i+=2;  
-//  ^^^<
+//  ^^^^^<
     else 
       if(i==1)
         return 1;
