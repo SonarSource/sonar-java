@@ -21,7 +21,7 @@ public class DateTimeFormatterMismatch {
 //                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()
@@ -31,7 +31,7 @@ public class DateTimeFormatterMismatch {
 //                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()
@@ -41,7 +41,7 @@ public class DateTimeFormatterMismatch {
       .appendLiteral(']')
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()
@@ -49,7 +49,7 @@ public class DateTimeFormatterMismatch {
 //                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder() // Compliant
@@ -74,7 +74,7 @@ public class DateTimeFormatterMismatch {
       .appendValue(ChronoField.YEAR, 4) // Noncompliant {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
 //                 ^^^^^^^^^^^^^^^^
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       .appendLiteral('-');
 
     builder.toFormatter();
@@ -119,7 +119,7 @@ public class DateTimeFormatterMismatch {
       .appendValue(ChronoField.YEAR_OF_ERA, 4)
       .appendLiteral('-')
       .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       .toFormatter();
 
     // Matches on appendValue methods with different parameter list
@@ -128,7 +128,7 @@ public class DateTimeFormatterMismatch {
 //                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear())
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()
@@ -138,14 +138,14 @@ public class DateTimeFormatterMismatch {
 //                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 1, 2, SignStyle.NORMAL)
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       .toFormatter();
     new DateTimeFormatterBuilder()
       .appendValue(ChronoField.YEAR, 2, 4, SignStyle.NORMAL) // Noncompliant {{Change this year format to use the week-based year instead (or the week format to Chronofield.ALIGNED_WEEK_OF_YEAR).}}
 //                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 1, 2, SignStyle.NORMAL)
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()
@@ -155,7 +155,7 @@ public class DateTimeFormatterMismatch {
 //                 ^^^^^^^^^^^^^^^^
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 1, 2, SignStyle.NORMAL)
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       .toFormatter();
 
     new DateTimeFormatterBuilder()
