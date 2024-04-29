@@ -15,10 +15,11 @@ class ModifiersOrderCheckSample {
 
   @RequestMapping(value = "/restComTool", method = RequestMethod.GET)
   public
-  @Annotation1 // Noncompliant@+3 {{Reorder the modifiers to comply with the Java Language Specification.}}
-//^^^^^^^^^^^^
+   @Annotation1 // Noncompliant {{Reorder the modifiers to comply with the Java Language Specification.}}
+// ^^^^^^^^^^^^
   static
   Map<String, List<Object>> queries(@RequestParam(value = "id", required = true, defaultValue = "-1") final Long id,
+
                                     @RequestParam(value = "q", required = false, defaultValue = "") final String query,
                                     @RequestParam(value = "callback", required = false, defaultValue = "") final String callback){
     return null;
