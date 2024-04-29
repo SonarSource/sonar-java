@@ -3,7 +3,7 @@ abstract class A {
   private String code;
 
   public String getCode() { return code; }
-//  ^^^<
+//              ^^^^^^^>
   public String getName() { return code; } // Noncompliant {{Update this method so that its implementation is not identical to "getCode" on line 5.}}
 //              ^^^^^^^
   public String getWord() { return code; } // Noncompliant {{Update this method so that its implementation is not identical to "getCode" on line 5.}}
@@ -13,7 +13,7 @@ abstract class A {
   String getOtherName() { return CODE; } // Compliant - not getters (not public)
 
   void greek1() {
-//  ^^^<
+//     ^^^^^^>
     Object x = null;
     try {
       x = new Object();
@@ -26,7 +26,7 @@ abstract class A {
     }
   }
 
-  void greek2() { // Noncompliant {{Update this method so that its implementation is not identical to "greek1" on line 12.}}
+  void greek2() { // Noncompliant {{Update this method so that its implementation is not identical to "greek1" on line 15.}}
 //     ^^^^^^
     Object x = null;
     try {
