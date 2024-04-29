@@ -11,13 +11,13 @@ public class SpringAntMatcherOrderCheckSample {
     http
       .authorizeRequests()
         .antMatchers("/login/*me").permitAll()
-//  ^^^<
+//                   ^^^^^^^^^^^^>
         .antMatchers("/login/admin").hasRole("ADMIN")
         .antMatchers("/login/home").permitAll() // Noncompliant {{Reorder the URL patterns from most to less specific, the pattern "/login/home" should occurs before "/login/*me".}}
 //                   ^^^^^^^^^^^^^
         .antMatchers(
           "/lo?in",
-//  ^^^<
+//        ^^^^^^^^>
           dynamicUrl,
           "/login" // Noncompliant {{Reorder the URL patterns from most to less specific, the pattern "/login" should occurs before "/lo?in".}}
 //        ^^^^^^^^
@@ -52,7 +52,7 @@ public class SpringAntMatcherOrderCheckSample {
     http
       .authorizeRequests()
         .antMatchers("/", "/index", "/secured/*/**", "/authenticate").permitAll()
-//  ^^^<
+//                                  ^^^^^^^^^^^^^^^>
         .antMatchers("/secured/*/index", "/secured/socket", "/secured/success").authenticated() // Noncompliant {{Reorder the URL patterns from most to less specific, the pattern "/secured/*/index" should occurs before "/secured/*/**".}}
 //                   ^^^^^^^^^^^^^^^^^^
         .anyRequest().authenticated();
