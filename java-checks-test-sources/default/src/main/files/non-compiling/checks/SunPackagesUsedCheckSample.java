@@ -4,8 +4,9 @@ class SunPackagesUsedCheckSample {
   private void f() {
     java.util.List a;
     sun.Foo b; // Noncompliant
+//  ^^^^^^^
     sun.Foo.toto.asd c; // secondary
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^<
     
   }
 

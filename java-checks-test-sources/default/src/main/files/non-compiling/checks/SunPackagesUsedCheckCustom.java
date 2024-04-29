@@ -12,7 +12,7 @@ class SunPackagesUsedCheckCustom {
     db.setErrorHandler(new com.sun.org.apache.xml.internal.security.utils
         .IgnoreAllErrorHandler());
     sun       // secondary
-//  ^^^<
+//  ^[el=+3;ec=12]<
         .Foo.toto
         .asd c;
 
