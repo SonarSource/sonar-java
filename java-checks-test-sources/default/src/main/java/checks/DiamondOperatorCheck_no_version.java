@@ -14,7 +14,7 @@ class DiamonOperatorCheck_no_version {
   // edit@qf1 [[sc=39;ec=47]] {{<>}}
 
   List<Object> myList3 = new ArrayList< // Noncompliant [[quickfixes=qf2]]
-^[sc=39;ec=6;sl=15;el=17]
+//^[sc=39;ec=6;sl=15;el=17]
     Object
     >();
   // fix@qf2 {{Replace with <>}}
