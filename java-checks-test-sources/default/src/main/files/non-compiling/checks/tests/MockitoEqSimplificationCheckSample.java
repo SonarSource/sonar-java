@@ -35,17 +35,17 @@ public class MockitoEqSimplificationCheckSample {
     given(foo.bar(eq(v1), // Noncompliant {{Remove this and every subsequent useless "eq(...)" invocation; pass the values directly.}}
 //                ^^
       eq(v2),
-//  ^^^<
+//    ^^<
       eq(v3))).willReturn(null);
-//  ^^^<
+//    ^^<
     when(foo.baz(eq(v4), // Noncompliant {{Remove this and every subsequent useless "eq(...)" invocation; pass the values directly.}}
 //               ^^
       eq(v5))).thenReturn("foo");
-//  ^^^<
+//    ^^<
     when(foo.baz(Matchers.eq(v4), // Noncompliant
 //               ^^^^^^^^^^^
       eq(v5))).thenReturn("foo");
-//  ^^^<
+//    ^^<
     doThrow(new RuntimeException()).when(foo).quux(eq(42)); // Noncompliant {{Remove this useless "eq(...)" invocation; pass the values directly.}}
 //                                                 ^^
     doCallRealMethod().when(foo).baz(eq(v4), eq(v5)); // Noncompliant
