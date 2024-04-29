@@ -9,7 +9,7 @@ class ArrayDesignatorOnVariableCheckSample {
 //      ^^^
         e,
         f // Noncompliant [[quickfixes=!]] {{Move the array designators [] to the type.}}
-^[sc=9;ec=11;sl=9;el=10]
+//^[sc=9;ec=11;sl=9;el=10]
         [];
 
   interface B {

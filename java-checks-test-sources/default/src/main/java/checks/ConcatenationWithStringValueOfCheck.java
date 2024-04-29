@@ -61,7 +61,7 @@ class ConcatenationWithStringValueOfCheck {
 
     a = "" + String.valueOf(2 +
       3 * 4 - // Noncompliant@+1 [[quickfixes=qfml]]
-^[sc=14;ec=6;sl=58;el=61]
+//^[sc=14;ec=6;sl=58;el=61]
       5 / 6
     ) + 7;
 

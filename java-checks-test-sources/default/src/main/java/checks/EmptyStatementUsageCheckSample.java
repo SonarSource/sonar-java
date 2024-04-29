@@ -9,7 +9,7 @@ import java.util.Collection;; // Noncompliant [[quickfixes=qf1]] {{Remove this e
   // edit@qf1 [[sc=29;ec=30]] {{}}
 
 ; // Noncompliant [[quickfixes=qf2]] {{Remove this empty statement.}}
-^[sc=1;ec=2]
+//^[sc=1;ec=2]
 // fix@qf2 {{Remove this empty statement}}
 // edit@qf2 [[sl=-4;sc=30;el=+0;ec=2]] {{}}
 
@@ -17,7 +17,7 @@ abstract class EmptyStatementUsageCheckSample {
   int a; // Compliant
   int b;; // Noncompliant {{Remove this empty statement.}}
   ; // Noncompliant {{Remove this empty statement.}}
-  
+
   public EmptyStatementUsageCheckSample() {
     ; // Noncompliant {{Remove this empty statement.}}
   }
@@ -56,7 +56,7 @@ abstract class EmptyStatementUsageCheckSample {
 
     for (Object object : getCollection())
       ; // compliant
-    
+
     return; // Compliant
   }
 
@@ -79,13 +79,13 @@ abstract class EmptyStatementUsageCheckSample {
 
 class EmptyStatementUsageCheckSampleBar {
   public enum MyEnum { APPLICATION, HANDLER }; // Noncompliant {{Remove this empty statement.}}
-  
+
   Closeable c = new Closeable() {
     @Override
     public void close() throws IOException {
     }; // Noncompliant {{Remove this empty statement.}}
   };
-  
+
   void foo (MyEnum scope) {
     switch (scope) {
       case APPLICATION:
@@ -112,4 +112,4 @@ enum EmptyEnum {
 // fix@qf_last_statement {{Remove this empty statement}}
 // edit@qf_last_statement [[sl=-4;sc=2;el=+0;ec=2]] {{}}
 ; // Noncompliant@+3 [[quickfixes=qf_last_statement]]
-^[sc=1;ec=2]
+//^[sc=1;ec=2]

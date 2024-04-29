@@ -58,7 +58,7 @@ class StaticMembersAccessCheckSampleB {
     d().counter++; // Noncompliant
 
     ( // Noncompliant@+1 [[quickfixes=qf5]]
-^[sc=5;ec=6;sl=56;el=59]
+//^[sc=5;ec=6;sl=56;el=59]
       (StaticMembersAccessCheckSampleA.StaticMembersAccessCheckSampleD) d()
     ).counter++;
     // fix@qf5 {{Replace the expression by "StaticMembersAccessCheckSampleD"}}
