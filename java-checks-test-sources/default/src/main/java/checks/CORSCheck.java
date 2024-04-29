@@ -176,9 +176,7 @@ class CORSCheck {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("*"); // Noncompliant
         config.applyPermitDefaultValues();
-//  ^^^<
         config.applyPermitDefaultValues();
-//  ^^^<
         config.addAllowedOrigin("*"); // Noncompliant
         return new CorsFilter(source);
       }
@@ -187,9 +185,7 @@ class CORSCheck {
     CorsConfiguration config = new CorsConfiguration();
     config.addAllowedOrigin("*"); // Noncompliant
     config.applyPermitDefaultValues();
-//  ^^^<
     config.applyPermitDefaultValues();
-//  ^^^<
     config.addAllowedOrigin("*"); // Noncompliant
     return new CorsFilter(source);
   }
