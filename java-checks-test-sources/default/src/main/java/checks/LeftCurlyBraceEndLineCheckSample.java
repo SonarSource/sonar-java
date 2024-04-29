@@ -19,8 +19,7 @@ class LeftCurlyBraceEndLineCheckSample {
   public enum MyEnum {
     A(1)
     // Duplicated issue...
- // Noncompliant@+1
-    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant 2
     },
     B(2),
     C(42) {                             // Compliant
