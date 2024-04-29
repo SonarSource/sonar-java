@@ -12,7 +12,7 @@ class ForLoopIncrementAndUpdateCheckSample {
     for (i = 0; i< 10; j++, m[0]++) { // Noncompliant {{Move the update of "i" into this loop's update clause.}}
 //  ^^^
       i++;
-//  ^^^<
+//    ^^^<
     }
     for (i = 0; i< 10; j++) { // Compliant - i is updated multiple times
       if (blah()) {
@@ -28,15 +28,17 @@ class ForLoopIncrementAndUpdateCheckSample {
     for (i = 0; k< 10 && l<10 ; i++, j++, l++) {} // Compliant
     for (i = 0; k< 10 ; i++, j++, l++) {} // Compliant
     for (i = 0; k< 10 && l<10; i++, j++) { // Noncompliant {{Move the update of "k" into this loop's update clause.}}
+//  ^^^
       l -= 42;
       k++;
-//  ^^^<
+//    ^^^<
     }
     for (i = 0; k< 10 && l<10; i++, j++) { // Noncompliant {{Move the update of "k","l" into this loop's update clause.}}
+//  ^^^
       l--;
-//  ^^^<
+//    ^^^<
       k++;
-//  ^^^<
+//    ^^^<
     }
     for (i = 0; i< 10; i+= 2) {} // Compliant
     for (i = 0; i< 10; a.myField+= 2) {} // Compliant
