@@ -63,7 +63,6 @@ class SecureCookieCheckSample {
 
     Cookie c7 = new Cookie("name", "value");
     boolean b = false;
-//  ^^^<
     c7.setSecure(b); // Noncompliant
 
     Cookie c8 = new Cookie("name", "value");
