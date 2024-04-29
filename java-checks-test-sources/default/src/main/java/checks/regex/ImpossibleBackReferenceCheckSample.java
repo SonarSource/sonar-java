@@ -6,13 +6,13 @@ public class ImpossibleBackReferenceCheckSample {
     str.matches("\\1" + // Noncompliant {{Fix this backreference, so that it refers to a group that can be matched before it.}}
 //               ^^^
       "(.)");
-//  ^^^<
+//     ^^^<
     str.matches("\\k<name>" + // Noncompliant {{Fix this backreference, so that it refers to a group that can be matched before it.}}
 //               ^^^^^^^^^
       "(?<name>.)");
-//  ^^^<
+//     ^^^^^^^^^^<
     str.matches("(.)|" +
-//  ^^^<
+
       "\\1"); // Noncompliant
 //     ^^^
     str.matches("\\1"); // Noncompliant {{Fix this backreference - it refers to a capturing group that doesn't exist.}}
@@ -57,7 +57,6 @@ public class ImpossibleBackReferenceCheckSample {
 
   @org.hibernate.validator.constraints.URL(regexp = "\\1(.)") // Noncompliant {{Fix this backreference, so that it refers to a group that can be matched before it.}}
 //                                                   ^^^
-//  ^^^<
   String url;
 
 }
