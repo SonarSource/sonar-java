@@ -6,29 +6,28 @@ import java.util.logging.Logger;
 public class CollapsibleIfCandidateCheck {
   private static final Logger LOGGER = Logger.getLogger(CollapsibleIfCandidateCheck.class.getCanonicalName());
 
+  // fix@qf1 {{Merge this if statement with the enclosing one}}
+  // edit@qf1 [[sl=-1;sc=5;el=+3;ec=6]] {{if (file != null && (file.isFile() || file.isDirectory())) {\n      LOGGER.log(Level.INFO, file.getAbsolutePath());\n    }}}
   void testMyFile(File file) {
+    // Noncompliant@+2 [[sc=7;ec=9;quickfixes=qf1]]
     if (file != null) {
-      if (file.isFile() || file.isDirectory()) { // Noncompliant [[sc=7;ec=9;quickfixes=qf1]]
+      if (file.isFile() || file.isDirectory()) {
         LOGGER.log(Level.INFO, file.getAbsolutePath());
       }
-      // fix@qf1 {{Merge this if statement with the enclosing one}}
-      // edit@qf1 [[sl=-1;el=+0;sc=21;ec=11]] {{ && }}
-      // edit@qf1 [[sc=11;ec=11]] {{(}}
-      // edit@qf1 [[sc=46;ec=46]] {{)}}
-      // edit@qf1 [[sl=+8;el=+8;sc=5;ec=6]] {{}}
     }
   }
 
+  // fix@qf2 {{Merge this if statement with the enclosing one}}
+  // edit@qf2 [[sl=-1;sc=5;el=+2;ec=8]] {{if (file != null && (file.isFile() || file.isDirectory())) {\n      LOGGER.log(Level.INFO, file.getAbsolutePath());\n    }}}
   void noBraceOnOuter(File file) {
+    // Noncompliant@+2 [[sc=7;ec=9;quickfixes=qf2]]
     if (file != null)
-      if (file.isFile() || file.isDirectory()) { // Noncompliant [[sc=7;ec=9;quickfixes=qf2]]
+      if (file.isFile() || file.isDirectory()) {
         LOGGER.log(Level.INFO, file.getAbsolutePath());
       }
-    // fix@qf2 {{Merge this if statement with the enclosing one}}
-    // edit@qf2 [[sl=-1;el=+0;sc=21;ec=11]] {{ && }}
-    // edit@qf2 [[sc=11;ec=11]] {{(}}
-    // edit@qf2 [[sc=46;ec=46]] {{)}}
   }
+
+  // TODO update other quickfixes
 
   void noBraceOnInner(File file) {
     if (file != null) {

@@ -24,20 +24,22 @@ import java.util.Collections;
 import java.util.Deque;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.prettyprint.FileConfig;
+import org.sonar.java.checks.prettyprint.PrettyPrintStringBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1066")
 public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final FileConfig FILE_CONFIG = new FileConfig(new FileConfig.IndentMode.Spaces(2), "\n");
 
   private JavaFileScannerContext context;
   private Deque<IfStatementTree> outerIf = new ArrayDeque<>();
@@ -96,29 +98,15 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
     return false;
   }
 
-  private static JavaQuickFix computeQuickFix(IfStatementTree innerIf, IfStatementTree outerIf) {
+  private JavaQuickFix computeQuickFix(IfStatementTree innerIf, IfStatementTree outerIf) {
     var quickFixBuilder = JavaQuickFix.newQuickFix("Merge this if statement with the enclosing one");
-    quickFixBuilder.addTextEdit(
-      JavaTextEdit.replaceBetweenTree(outerIf.condition(), false, innerIf.condition(), false, " && "));
-    addParenthesisIfRequired(quickFixBuilder, outerIf.condition());
-    addParenthesisIfRequired(quickFixBuilder, innerIf.condition());
-
-    if (outerIf.thenStatement() instanceof BlockTree outerBlock) {
-      quickFixBuilder.addTextEdit(JavaTextEdit.removeTree(outerBlock.closeBraceToken()));
-    }
+    quickFixBuilder.addTextEdit(JavaTextEdit.replaceTree(
+      outerIf,
+      new PrettyPrintStringBuilder(FILE_CONFIG, outerIf.firstToken(), false)
+        .add("if (").addBinop(outerIf.condition(), Tree.Kind.CONDITIONAL_AND, innerIf.condition(), context).add(") ")
+        .addTreeContentWithIndentBasedOnLastLine(innerIf.thenStatement(), context)
+        .toString()
+    ));
     return quickFixBuilder.build();
-  }
-
-  private static void addParenthesisIfRequired(JavaQuickFix.Builder quickFixBuilder, ExpressionTree expression) {
-    if (isLowerOperatorPrecedenceThanLogicalAnd(expression)) {
-      quickFixBuilder.addTextEdit(JavaTextEdit.insertBeforeTree(expression, "("));
-      quickFixBuilder.addTextEdit(JavaTextEdit.insertAfterTree(expression, ")"));
-    }
-  }
-
-  private static boolean isLowerOperatorPrecedenceThanLogicalAnd(ExpressionTree expression) {
-    return (expression instanceof BinaryExpressionTree binExpression)
-      ? "||".equals(binExpression.operatorToken().text())
-      : expression.is(Tree.Kind.CONDITIONAL_EXPRESSION, Tree.Kind.ASSIGNMENT);
   }
 }

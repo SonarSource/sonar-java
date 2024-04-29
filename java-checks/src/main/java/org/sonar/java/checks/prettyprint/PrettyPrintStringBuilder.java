@@ -117,8 +117,12 @@ public final class PrettyPrintStringBuilder {
     return this;
   }
 
-  public PrettyPrintStringBuilder addTreeContent(Tree tree, JavaFileScannerContext ctx){
+  public PrettyPrintStringBuilder addTreeContentRaw(Tree tree, JavaFileScannerContext ctx){
     return add(contentForTree(tree, ctx));
+  }
+
+  public PrettyPrintStringBuilder addTreeContentWithIndentBasedOnLastLine(Tree tree, JavaFileScannerContext ctx){
+    return addWithIndentBasedOnLastLine(contentForTree(tree, ctx));
   }
 
   public <T> PrettyPrintStringBuilder addWithSep(Iterable<T> elems, Consumer<T> elemAdder, Runnable separator) {
@@ -150,7 +154,7 @@ public final class PrettyPrintStringBuilder {
   }
 
   public PrettyPrintStringBuilder addTreesContentWithSep(Iterable<? extends Tree> elems, String separator, JavaFileScannerContext ctx) {
-    return addWithSep(elems, elem -> addTreeContent(elem, ctx), separator);
+    return addWithSep(elems, elem -> addTreeContentRaw(elem, ctx), separator);
   }
 
   public PrettyPrintStringBuilder addBinop(ExpressionTree lhs, Tree.Kind operator, ExpressionTree rhs, JavaFileScannerContext ctx){
@@ -160,13 +164,13 @@ public final class PrettyPrintStringBuilder {
     var parenthesizeRhs = operatorPrecedence.bindsStrongerThan(rhsPrecedence)
       || (rhsPrecedence == operatorPrecedence && !isKnownAssociativeOperator(operator));
     addIf("(", parenthesizeLhs);
-    addTreeContent(lhs, ctx);
+    addTreeContentRaw(lhs, ctx);
     addIf(")", parenthesizeLhs);
     addSpace();
     add(KindsPrinter.printExprKind(operator));
     addSpace();
     addIf("(", parenthesizeRhs);
-    addTreeContent(rhs, ctx);
+    addTreeContentRaw(rhs, ctx);
     addIf(")", parenthesizeRhs);
     return this;
   }
