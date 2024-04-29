@@ -20,7 +20,7 @@ public class ParameterizedTestCheckSample {
     setup(setup);
     setup(setup);
     assertEquals(Integer.sum(1, 1), 2);
-//  ^^^<
+//                           ^< ^<  ^<
   }
 
   @Test

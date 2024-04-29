@@ -5,14 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class HelloWorld {
 
   @Autowired // Noncompliant {{Remove this annotation and use constructor injection instead.}}
+//^^^^^^^^^^
   private String name = null;
 
   @Autowired
-//  ^^^<
+//^^^^^^^^^^<
   private String surname = null;
 
   HelloWorld() {
-//  ^^^<
+//^^^^^^^^^^<
   }
 }
 

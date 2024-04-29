@@ -29,7 +29,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class RedundantTypeCastCheckTest {
   @Test
   void test() {
-    ((InternalCheckVerifier) CheckVerifier.newVerifier())
+    ((InternalCheckVerifier) CheckVerifier.newInternalVerifier())
       .onFile(mainCodeSourcesPath("checks/RedundantTypeCastCheckSample.java"))
       .withCheck(new RedundantTypeCastCheck())
       .withQuickFixes()
@@ -46,7 +46,7 @@ class RedundantTypeCastCheckTest {
 
   @Test
   void testWithoutSemantic() {
-    ((InternalCheckVerifier) CheckVerifier.newVerifier())
+    ((InternalCheckVerifier) CheckVerifier.newInternalVerifier())
       .onFile(mainCodeSourcesPath("checks/RedundantTypeCastCheckSample.java"))
       .withCheck(new RedundantTypeCastCheck())
       .withoutSemantic()

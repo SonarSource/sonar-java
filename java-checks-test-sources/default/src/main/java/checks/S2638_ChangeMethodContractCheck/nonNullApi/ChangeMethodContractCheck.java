@@ -22,14 +22,14 @@ class ChangeMethodContractCheck_Child extends ChangeMethodContractCheck {
 }
 
 @org.eclipse.jdt.annotation.NonNullByDefault
-//  ^^^<
+//^[sc=2;ec=44]>
 class ChangeMethodContractCheckAtClassLevel {
   void argAnnotatedNonNullViaClassAnnotation(Object a) { }
 }
 
 class ChangeMethodContractCheckAtClassLevel_Child extends ChangeMethodContractCheckAtClassLevel {
   @javax.annotation.Nullable
-//  ^^^<
+// ^^^^^^^^^^^^^^^^^^^^^^^^^>
   @Override
   void argAnnotatedNonNullViaClassAnnotation(Object a) { } // Noncompliant {{Fix the incompatibility of the annotation @Nullable to honor @NonNullByDefault at class level of the overridden method.}}
 }
