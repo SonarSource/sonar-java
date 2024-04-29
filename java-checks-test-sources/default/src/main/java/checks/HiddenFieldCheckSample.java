@@ -59,7 +59,7 @@ public class HiddenFieldCheckSample extends MyBaseClass {
     int myInnerClass1;
 
     public void foo() {
-      int bar = 0; // Noncompliant {{Rename "bar" which hides the field declared at line 57.}}
+      int bar = 0; // Noncompliant {{Rename "bar" which hides the field declared at line 58.}}
       System.out.println(bar);
     }
 
@@ -151,5 +151,5 @@ class FooHiddenField {
 
 class FieldWithLambda {
   Object p;
-  java.util.function.Consumer<String> f = p -> { }; // Noncompliant {{Rename "p" which hides the field declared at line 152.}}
+  java.util.function.Consumer<String> f = p -> { }; // Noncompliant {{Rename "p" which hides the field declared at line 153.}}
 }
