@@ -7,11 +7,10 @@ public class SwitchInsteadOfIfSequenceCheckSample {
   String myStringMethod(){
     return "";
   }
-  void foo() {
-    if (""" // Noncompliant@+1 {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
-//      ^^^^^^^^^^^^^^^^
+  void foo() { // Noncompliant@+1 {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
+    if (""" 
       red
-      """.equals(choice)) {  
+      """.equals(choice)) {
       dispenseRed();
     } else if ("""
       blue
