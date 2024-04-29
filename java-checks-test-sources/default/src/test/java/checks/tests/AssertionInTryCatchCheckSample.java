@@ -21,7 +21,7 @@ public class AssertionInTryCatchCheckSample {
       org.junit.Assert.fail("Expected an AssertionError!"); // Noncompliant {{Don't use fail() inside a try-catch catching an AssertionError.}}
 //                     ^^^^
     } catch (AssertionError e) {}
-//  ^^^<
+//           ^^^^^^^^^^^^^^<
   }
 
   @Test
@@ -33,7 +33,7 @@ public class AssertionInTryCatchCheckSample {
     } catch (IllegalStateException e) {
 
     } catch (AssertionError e) {}
-//  ^^^<
+//           ^^^^^^^^^^^^^^<
   }
 
   @Test

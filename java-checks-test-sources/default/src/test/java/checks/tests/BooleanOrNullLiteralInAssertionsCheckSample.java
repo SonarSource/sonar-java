@@ -7,14 +7,14 @@ class BooleanOrNullLiteralInAssertionsCheckSample {
     org.junit.Assert.assertTrue( // Noncompliant {{Remove or correct this assertion.}}
 //                   ^^^^^^^^^^
       true
-//  ^^^<
+//    ^^^^<
     );
     org.junit.Assert.assertEquals( // Noncompliant {{Remove or correct this assertion.}}
 //                   ^^^^^^^^^^^^
       true,
-//  ^^^<
+//    ^^^^<
       true
-//  ^^^<
+//    ^^^^<
     );
     org.junit.Assert.assertTrue("message", true); // Noncompliant {{Remove or correct this assertion.}}
     org.junit.Assert.assertTrue(1 > 2);

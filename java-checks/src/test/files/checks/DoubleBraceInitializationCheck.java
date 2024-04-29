@@ -3,7 +3,7 @@ import java.util.Map;
 
 class A {
   Map<String, String> source = new HashMap() {{ // Noncompliant {{Use another way to initialize this instance.}}
-^[sc=46;ec=5;sl=5;el=8]
+//^[sc=46;ec=5;sl=5;el=8]
     put("firstName", "John");
     put("lastName", "Smith");
   }};

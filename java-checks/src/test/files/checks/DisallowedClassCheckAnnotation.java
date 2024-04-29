@@ -1,7 +1,7 @@
 package org.foo;
 
 @MyAnnotation // Noncompliant
-^[sc=2;ec=14]
+//^[sc=2;ec=14]
 public class A {
 
   @org.foo.MyAnnotation( // Noncompliant {{Remove the use of this forbidden class.}}

@@ -8,7 +8,7 @@ class IdenticalCasesInSwitchCheckSample {
         trivial();
         yield 1;
       case SUNDAY: // Noncompliant {{This case's code block is the same as the block for the case on line 6.}}
-^[sc=7;ec=17;sl=9;el=11]
+//^[sc=7;ec=17;sl=9;el=11]
         trivial();
         yield 1;
     };
