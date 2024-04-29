@@ -2,7 +2,7 @@ class A {
   int a;
 
   public double divide(int divisor, int dividend) {
-//  ^^^<
+//                     ^^^^^^^^^^^^>^^^^^^^^^^^^>
     return divisor / dividend;
   }
 
@@ -102,10 +102,8 @@ class B {
 
   public void test2(
     int a,
-//  ^^^<
     int b,
     int c) {
-//  ^^^<
   };
 
   public void test2(int a, String b) {
