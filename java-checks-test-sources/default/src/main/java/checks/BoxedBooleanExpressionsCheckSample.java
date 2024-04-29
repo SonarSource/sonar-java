@@ -438,7 +438,7 @@ class BoxedBooleanExpressionsCheckSample {
     }
     Boolean checkedBeforeUse4 = getSurprizeBoxedBoolean();
     if (checkedBeforeUse4 == alwaysTrue) {
-      while (checkedBeforeUse4)  {} // // Noncompliant
+      while (checkedBeforeUse4)  {} // Noncompliant
     }
     Boolean checkedBeforeUse5 = getSurprizeBoxedBoolean();
     if (checkedBeforeUse5 == Boolean.TRUE) {
@@ -493,7 +493,7 @@ class BoxedBooleanExpressionsCheckSample {
     }
     Boolean checkedBeforeUse4 = getSurprizeBoxedBoolean();
     if (checkedBeforeUse4 == alwaysTrue) {
-      do {} while (checkedBeforeUse4); // // Noncompliant
+      do {} while (checkedBeforeUse4); // Noncompliant
     }
     Boolean checkedBeforeUse5 = getSurprizeBoxedBoolean();
     if (checkedBeforeUse5 == Boolean.TRUE) {
@@ -549,7 +549,7 @@ class BoxedBooleanExpressionsCheckSample {
     }
     Boolean checkedBeforeUse4 = getSurprizeBoxedBoolean();
     if (checkedBeforeUse4 == alwaysTrue) {
-      if (checkedBeforeUse4) {} // // Noncompliant
+      if (checkedBeforeUse4) {} // Noncompliant
     }
     Boolean checkedBeforeUse5 = getSurprizeBoxedBoolean();
     if (checkedBeforeUse5 == Boolean.TRUE) {
