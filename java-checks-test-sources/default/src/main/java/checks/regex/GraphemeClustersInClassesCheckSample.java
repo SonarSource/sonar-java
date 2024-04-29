@@ -7,15 +7,17 @@ public class GraphemeClustersInClassesCheckSample {
   void noncompliant(String str) {
     Pattern.compile("[aaaèaaa]"); // Noncompliant {{Extract 1 Grapheme Cluster(s) from this character class.}}
 //                   ^^^^^^^^^^
-//  ^^^<
+//                           ^@-1<
     Pattern.compile("[0Ṩ0]"); // Noncompliant {{Extract 1 Grapheme Cluster(s) from this character class.}}
 //                   ^^^^^^^
-//  ^^^<
+//                        ^@-1<
     Pattern.compile("aaa[è]aaa"); // Noncompliant
     // two secondary per line: one for the regex location, and one for the cluster location
     Pattern.compile("[èaèaè]"); // Noncompliant {{Extract 3 Grapheme Cluster(s) from this character class.}}
 //                   ^^^^^^^^^^
-//  ^^^<
+//                          ^^@-1<
+//                          ^^@-2<
+//                          ^^@-3<
     Pattern.compile("[èa-dä]"); // Noncompliant
     Pattern.compile("[èa]" + // Noncompliant
       "aaa" +
