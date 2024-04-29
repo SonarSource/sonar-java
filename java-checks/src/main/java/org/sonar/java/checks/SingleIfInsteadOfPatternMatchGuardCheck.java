@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.prettyprint.FileConfig;
+import org.sonar.java.checks.prettyprint.PrettyPrintStringBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -34,6 +36,7 @@ import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.NullPatternTree;
+import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 
@@ -42,6 +45,8 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
 
   private static final String ISSUE_MESSAGE_REPLACE = "Replace this \"if\" statement with a pattern match guard.";
   private static final String ISSUE_MESSAGE_MERGE = "Merge this \"if\" statement with the enclosing pattern match guard.";
+
+  private static final FileConfig FILE_CONFIG = new FileConfig(new FileConfig.IndentMode.Spaces(2), "\n");
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -63,17 +68,15 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
       return;
     }
     var caseLabel = caseGroup.labels().get(0);
-    if (isCaseDefaultOrNull(caseLabel)) {
+    var pattern = extractNonDefaultPattern(caseLabel);
+    if (pattern == null) {
       return;
     }
 
-    var caseExpression = caseLabel.expressions().get(0);
-    boolean isGuardedPattern = caseExpression instanceof GuardedPatternTree;
-
     QuickFixHelper.newIssue(context).forRule(this)
       .onTree(ifStatement)
-      .withMessage(isGuardedPattern ? ISSUE_MESSAGE_MERGE : ISSUE_MESSAGE_REPLACE)
-      .withQuickFix(() -> computeQuickFix(ifStatement, caseLabel, isGuardedPattern, context))
+      .withMessage(pattern instanceof GuardedPatternTree ? ISSUE_MESSAGE_MERGE : ISSUE_MESSAGE_REPLACE)
+      .withQuickFix(() -> computeQuickFix(caseGroup, pattern, ifStatement, context))
       .report();
 
   }
@@ -89,30 +92,28 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
     return null;
   }
 
-  private static boolean isCaseDefaultOrNull(CaseLabelTree caseLabel) {
-    return caseLabel.expressions().isEmpty() || caseLabel.expressions().get(0) instanceof NullPatternTree;
+  private static PatternTree extractNonDefaultPattern(CaseLabelTree caseLabel) {
+    return (caseLabel.expressions().size() == 1
+      && caseLabel.expressions().get(0) instanceof PatternTree patternTree
+      && !(patternTree instanceof NullPatternTree)
+    ) ?
+      patternTree : null;
   }
 
-  private static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, CaseLabelTree caseLabel, boolean shouldMergeConditions,
-    JavaFileScannerContext context) {
+  private static JavaQuickFix computeQuickFix(CaseGroupTree caseGroup, PatternTree pattern, IfStatementTree ifStatement,
+                                              JavaFileScannerContext context) {
+    var shouldMergeConditions = pattern instanceof GuardedPatternTree;
     var quickFixBuilder = JavaQuickFix.newQuickFix(shouldMergeConditions ? ISSUE_MESSAGE_MERGE : ISSUE_MESSAGE_REPLACE);
-    String replacement;
-    if (ifStatement.thenStatement() instanceof BlockTree block && !block.body().isEmpty()) {
-      var firstToken = QuickFixHelper.nextToken(block.openBraceToken());
-      var lastToken = QuickFixHelper.previousToken(block.closeBraceToken());
-      replacement = QuickFixHelper.contentForRange(firstToken, lastToken, context);
+    var pps = new PrettyPrintStringBuilder(FILE_CONFIG, caseGroup.firstToken(), false);
+    pps.add("case ");
+    if (pattern instanceof GuardedPatternTree guardedPattern){
+      pps.addTreeContentRaw(guardedPattern.pattern(), context)
+        .add(" when ").addBinop(guardedPattern.expression(), Tree.Kind.CONDITIONAL_AND, ifStatement.condition(), context);
     } else {
-      replacement = QuickFixHelper.contentForTree(ifStatement.thenStatement(), context);
+      pps.addTreeContentRaw(pattern, context).add(" when ").addTreeContentRaw(ifStatement.condition(), context);
     }
-    quickFixBuilder.addTextEdit(
-      JavaTextEdit.replaceTree(ifStatement, replacement)
-    );
-    // FIXME does not take operators precedence into account
-    var replacementStringPrefix = shouldMergeConditions ? " && " : " when ";
-    quickFixBuilder.addTextEdit(
-      JavaTextEdit.insertBeforeTree(caseLabel.colonOrArrowToken(),
-        replacementStringPrefix + QuickFixHelper.contentForTree(ifStatement.condition(), context) + " ")
-    );
+    pps.add(" -> ").addTreeContentWithIndentBasedOnLastLine(ifStatement.thenStatement(), context);
+    quickFixBuilder.addTextEdit(JavaTextEdit.replaceTree(caseGroup, pps.toString()));
     return quickFixBuilder.build();
   }
 

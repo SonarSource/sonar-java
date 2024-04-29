@@ -3,12 +3,11 @@ package checks;
 public class SingleIfInsteadOfPatternMatchGuardCheckSample {
 
   // fix@qf3 {{Merge this "if" statement with the enclosing pattern match guard.}}
-  // edit@qf3 [[sl=+0;el=+2;sc=9;ec=10]] {{System.out.println("two");}}
-  // edit@qf3 [[sl=-2;el=-2;sc=44;ec=44]] {{ && s.length() == 2 }}
+  // edit@qf3 [[sl=-1;el=+3;sc=7;ec=8]] {{case String s when s.startsWith("a") && s.length() == 2 -> {\n        System.out.println("two");\n      }}}
   void conditionsShouldBeMerged(Object o) {
     switch (o) {
+      // Noncompliant@+2 [[sl=+2;el=+4;sc=9;ec=10;quickfixes=qf3]] {{Merge this "if" statement with the enclosing pattern match guard.}}
       case String s when s.startsWith("a") -> {
-        // Noncompliant@+1 [[sl=+1;el=+3;sc=9;ec=10;quickfixes=qf3]] {{Merge this "if" statement with the enclosing pattern match guard.}}
         if (s.length() == 2) {
           System.out.println("two");
         }
