@@ -16,10 +16,11 @@ class LoggedRethrownExceptionsCheckSample {
     try {
       doSomething();
     } catch (SQLException e) { // Noncompliant {{Either log this exception and handle it, or rethrow it with some contextual information.}}
+//           ^^^^^^^^^^^^^^
       logger.log(Level.ALL, "", e);
-//  ^^^<
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       throw new MySQLException(contextInfo, e);
-//  ^^^<
+//          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
     }
 
     try {
