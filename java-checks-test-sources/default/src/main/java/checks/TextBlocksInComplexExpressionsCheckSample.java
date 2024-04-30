@@ -24,8 +24,8 @@ class TextBlocksInComplexExpressionsCheckSample {
   void fun(List<String> listOfStrings) {
     listOfStrings.stream()
 
-      .map(str -> { // Noncompliant@+1 {{Move this text block out of the lambda body and refactor it to a local variable or a static final field.}}
-//^[sc=18;ec=14;sl=28;el=42]
+      .map(str -> { // Noncompliant@+2 {{Move this text block out of the lambda body and refactor it to a local variable or a static final field.}}
+//^[sc=18;ec=13;sl=29;el=42]
         var b = !"""
           <project>
             <modelVersion>4.0.0</modelVersion>
