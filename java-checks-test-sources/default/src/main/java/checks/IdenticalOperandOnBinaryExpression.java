@@ -4,8 +4,8 @@ class IdenticalOperandOnBinaryExpressionCheck {
   void foo(boolean a, boolean b, boolean c, boolean e) {
     if(a == b) { }
     if(a == a) { } // Noncompliant {{Correct one of the identical sub-expressions on both sides of operator "=="}}
-//          ^
-//  ^^^<
+//     ^>   ^
+
     if(a != a) { } // Noncompliant {{Correct one of the identical sub-expressions on both sides of operator "!="}}
 //          ^
     if(a || a) { } // Noncompliant
@@ -16,12 +16,9 @@ class IdenticalOperandOnBinaryExpressionCheck {
     if(a || a || b) {} // Noncompliant
     if(a || b || c || e && a) {}
     if(a && b && c && e && a) {} // Noncompliant
-//                         ^
-    if(b
-        || a
-//  ^^^<
-        || a) {} // Noncompliant
-//         ^
+//     ^>                  ^
+    if(b || a || a) {} // Noncompliant
+//               ^
 
     double d = 0.0d;
     float f = 0.0f;
