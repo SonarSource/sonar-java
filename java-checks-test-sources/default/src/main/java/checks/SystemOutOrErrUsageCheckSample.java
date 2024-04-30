@@ -17,9 +17,8 @@ class SystemOutOrErrUsageCheckSample {
     System.arraycopy(null, 0, null, 0, 0);   // Compliant
     java.lang.System.out.println(""); // Noncompliant
 //  ^^^^^^^^^^^^^^^^^^^^
-    java.lang. // Noncompliant
-//^[sc=5;ec=17;sl=18;el=19]
-      System.out.println("");
+    java.lang.System.out.println(""); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^
   }
 
   void g(PrintStream stream){
