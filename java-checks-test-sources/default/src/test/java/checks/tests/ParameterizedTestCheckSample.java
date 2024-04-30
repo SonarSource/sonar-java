@@ -25,7 +25,7 @@ public class ParameterizedTestCheckSample {
 
   @Test
   void testSum12() {  // Similar test
-//  ^^^<
+//     ^^^^^^^^^<
     setup(setup);
     setup(setup);
     setup(setup);
@@ -34,7 +34,7 @@ public class ParameterizedTestCheckSample {
 
   @Test
   void testSum22() {  // Similar test
-//  ^^^<
+//     ^^^^^^^^^<
     setup(setup);
     setup(setup);
     setup(setup);
@@ -62,21 +62,22 @@ public class ParameterizedTestCheckSample {
   // ints
   @Test
   void testInt1() { // Noncompliant {{Replace these 3 tests with a single Parameterized one.}}
+//     ^^^^^^^^
     setup();
     setup();
     assertEquals(getObject(1), 1);
-//  ^^^<
+//                         ^<  ^<
   }
   @Test
   void testInt2() {
-//  ^^^<
+//     ^^^^^^^^<
     setup();
     setup();
     assertEquals(getObject(2), 2);
   }
   @Test
   void testInt3() {
-//  ^^^<
+//     ^^^^^^^^<
     setup();
     setup();
     assertEquals(getObject(3), 3);
@@ -84,21 +85,22 @@ public class ParameterizedTestCheckSample {
   // shorts
   @Test
   void testShort1() { // Noncompliant
+//     ^^^^^^^^^^
     setup();
     setup();
     assertEquals(getObject((short) 1), 1);
-//  ^^^<
+//                                 ^<  ^<
   }
   @Test
   void testShort2() {
-//  ^^^<
+//     ^^^^^^^^^^<
     setup();
     setup();
     assertEquals(getObject((short) 2), 2);
   }
   @Test
   void testShort3() {
-//  ^^^<
+//     ^^^^^^^^^^<
     setup();
     setup();
     assertEquals(getObject((short) 3), 3);
@@ -134,21 +136,22 @@ public class ParameterizedTestCheckSample {
   // strings
   @Test
   void testString1() { // Noncompliant
+//     ^^^^^^^^^^^
     setup();
     setup();
     assertEquals(getObject("1"), "1");
-//  ^^^<
+//                         ^^^<  ^^^<
   }
   @Test
   void testString2() {
-//  ^^^<
+//     ^^^^^^^^^^^<
     setup();
     setup();
     assertEquals(getObject("2"), "2");
   }
   @Test
   void testString3() {
-//  ^^^<
+//     ^^^^^^^^^^^<
     setup();
     setup();
     assertEquals(getObject("3"), "3");
@@ -163,7 +166,7 @@ public class ParameterizedTestCheckSample {
   // null
   @Test
   void testNull() { // null and string are compatible, the method can be parameterized together with testString1
-//  ^^^<
+//     ^^^^^^^^<
     setup();
     setup();
     assertEquals(getObject(null), null);
@@ -171,21 +174,22 @@ public class ParameterizedTestCheckSample {
   // booleans
   @Test
   void testBoolean1() { // Noncompliant
+//     ^^^^^^^^^^^^
     setup();
     setup();
     assertEquals(getObject(true), true);
-//  ^^^<
+//                         ^^^^<  ^^^^<
   }
   @Test
   void testBoolean2() {
-//  ^^^<
+//     ^^^^^^^^^^^^<
     setup();
     setup();
     assertEquals(getObject(true), false);
   }
   @Test
   void testBoolean3() {
-//  ^^^<
+//     ^^^^^^^^^^^^<
     setup();
     setup();
     assertEquals(getObject(false), false);

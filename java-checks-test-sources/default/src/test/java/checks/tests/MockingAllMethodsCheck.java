@@ -11,11 +11,11 @@ public class MockingAllMethodsCheck {
     MyClass myClassMock = mock(MyClass.class); // Noncompliant {{Refactor this test instead of mocking every non-private member of this class.}}
 //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     when(myClassMock.f()).thenReturn(1);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^<
     when(myClassMock.g()).thenReturn(2);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^<
     when(myClassMock.h()).thenReturn(3);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^<
     //...
   }
 
@@ -48,10 +48,11 @@ public class MockingAllMethodsCheck {
   @Test
   void test_mocking_MyConcreteClass() {
     MyConcreteClass myClassMock = mock(MyConcreteClass.class); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     when(myClassMock.f()).thenReturn(1);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^<
     when(myClassMock.g()).thenReturn(2);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^<
     //...
   }
 
@@ -99,10 +100,11 @@ public class MockingAllMethodsCheck {
   @Test
   void test_mocking_MyClass4() {
     MyClass4 myClassMock = mock(MyClass4.class); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     when(myClassMock.f()).thenReturn(1);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^<
     when(myClassMock.g()).thenReturn(2);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^<
     //...
   }
 
@@ -136,12 +138,13 @@ public class MockingAllMethodsCheck {
   void test_mocking_MyClass4_extremely_weirdly() {
     // FP because we falsely make the analysis think that realInstance's methods are being mocked
     MyConcreteClass realInstance = new MyConcreteClass(); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     mock(MyClass4.class).f();
     when(realInstance.f()).thenReturn(1);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^^<
     mock(MyClass4.class).f();
     when(realInstance.g()).thenReturn(2);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^^<
     //...
   }
 
@@ -195,11 +198,12 @@ public class MockingAllMethodsCheck {
   void test_mocking_MyClass4_through_a_mutable_variable() {
     // FP because we don't recognize that `myClassMock` is reassigned
     MyClass4 myClassMock = mock(MyClass4.class); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     when(myClassMock.f()).thenReturn(1);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^<
     myClassMock = mock(MyClass4.class);
     when(myClassMock.g()).thenReturn(2);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^<
   }
 
   @Test
@@ -214,23 +218,25 @@ public class MockingAllMethodsCheck {
   void test_mocking_Child() {
     // Just mocking the methods from child is enough to trigger the rule because we don't look at the parent class
     Child childMock = mock(Child.class); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     when(childMock.h()).thenReturn(1);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^<
     when(childMock.i()).thenReturn(2);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^<
   }
 
   void test_mocking_Child_and_Parent_methods() {
     // Mocking methods other than the ones we're looking at won't make the issue disappear
     Child childMock = mock(Child.class); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     when(childMock.f()).thenReturn(1);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^<
     when(childMock.g()).thenReturn(2);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^<
     when(childMock.h()).thenReturn(3);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^<
     when(childMock.i()).thenReturn(4);
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^<
 
   }
 

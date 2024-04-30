@@ -37,7 +37,7 @@ class TooManyLinesOfCodeInFileCheckTest {
   void test() {
     TooManyLinesOfCodeInFileCheck check = new TooManyLinesOfCodeInFileCheck();
     check.maximum = 1;
-    CheckVerifier.newVerifier()
+    CheckVerifier.newInternalVerifier()
       .onFile(mainCodeSourcesPath("checks/TooManyLinesOfCode.java"))
       .withCheck(check)
       .verifyIssueOnFile("This file has 11 lines, which is greater than 1 authorized. Split it into smaller files.");
