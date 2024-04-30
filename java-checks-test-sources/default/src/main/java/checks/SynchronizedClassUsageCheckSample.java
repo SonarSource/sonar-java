@@ -23,26 +23,26 @@ public class SynchronizedClassUsageCheckSample {
     List a = new Vector(); // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
 //           ^^^^^^^^^^^^
 
+//  Noncompliant@+1
+    Vector a1 = new Vector(); // Noncompliant
+//  ^^^^^^
 
-    Vector a1 = new Vector(); // Noncompliant@+1 {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
-//              ^^^^^^^^^^^^
 
+//  Noncompliant@+1
+    Hashtable a2 = new Hashtable(); // Noncompliant
 
-    Hashtable a2 = new Hashtable(); // Noncompliant@+1 {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
-//                 ^^^^^^^^^^^^^^^
     Map a3 = new Hashtable(); // Noncompliant {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
     Hashtable a4 = foo(); // Noncompliant {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
     HashMap a5 = new HashMap();     // Compliant
     ArrayList a6 = new ArrayList(); // Compliant
     Vector<Integer> a7; // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
 
+// Noncompliant@+1
+    StringBuffer a8 = new StringBuffer(); // Noncompliant
 
-    StringBuffer a8 = new StringBuffer(); // Noncompliant@+1 {{Replace the synchronized class "StringBuffer" by an unsynchronized one such as "StringBuilder".}}
-//                    ^^^^^^^^^^^^^^^^^^
+// Noncompliant@+1
+    java.util.Stack a9 = new java.util.Stack(); // Noncompliant
 
-
-    java.util.Stack a9 = new java.util.Stack(); // Noncompliant@+1 {{Replace the synchronized class "Stack" by an unsynchronized one such as "Deque".}}
-//                       ^^^^^^^^^^^^^^^^^^^^^
     List l = null; // Compliant
     List<Object> listeners = getVector(); // Compliant
 
@@ -100,7 +100,7 @@ public class SynchronizedClassUsageCheckSample {
 
   interface AInterface {
  // Noncompliant@+1
-    Vector a(Vector a); // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+    Vector a(Vector a); // Noncompliant
   }
 
   enum AEnum implements AInterface {
@@ -134,9 +134,8 @@ public class SynchronizedClassUsageCheckSample {
       Collections.sort(v, (Vector<String> s1, Vector<String> s2) -> -1);
       Collections.sort(v, (Vector<String> s1, Vector<String> s2) -> {
 
-
-        Vector<String> x = s1; // Noncompliant@+1
-//                         ^^
+// Noncompliant@+1
+        Vector<String> x = s1; // Noncompliant
         return -1;
       });
     }
@@ -146,9 +145,8 @@ public class SynchronizedClassUsageCheckSample {
 
     public String toString() {
 
-
-      StringBuffer buf = new StringBuffer(); // Noncompliant@+1
-//                       ^^^^^^^^^^^^^^^^^^
+// Noncompliant@+1
+      StringBuffer buf = new StringBuffer(); // Noncompliant
 
       for (int i = 0; i < fComponents.length; i++) {
         buf.append(fComponents[i]);

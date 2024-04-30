@@ -9,7 +9,7 @@ public class SwitchCasesShouldBeCommaSeparatedCheckSample {
         doSomething();
         break;
       case "b":
-//  ^^^<
+//    ^^^^^^^^^>
       case "c": // Noncompliant {{Merge the previous cases into this one using comma-separated label.}}
 //    ^^^^^^^^^
         doSomething();
@@ -22,15 +22,15 @@ public class SwitchCasesShouldBeCommaSeparatedCheckSample {
     // Switch Statement with multiple issues
     switch (mode) {
       case "a":
-//  ^^^<
+//    ^^^^^^^^^>
       case "b":
-//  ^^^<
+//    ^^^^^^^^^>
       case "c": // Noncompliant {{Merge the previous cases into this one using comma-separated label.}}
 //    ^^^^^^^^^
         doSomething();
         break;
       case "d":
-//  ^^^<
+//    ^^^^^^^^^>
       case "e": // Noncompliant {{Merge the previous cases into this one using comma-separated label.}}
 //    ^^^^^^^^^
       default:

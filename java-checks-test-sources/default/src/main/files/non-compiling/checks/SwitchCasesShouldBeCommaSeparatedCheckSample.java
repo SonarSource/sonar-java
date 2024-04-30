@@ -8,7 +8,9 @@ public class SwitchCasesShouldBeCommaSeparatedCheckSample {
       case "a":
         yield 0;
       case "b":
-      case "c": // Noncompliant [[sc=7;ec=16;secondary=-1]] {{Merge the previous cases into this one using comma-separated label.}}
+//    ^^^^^^^^^>
+      case "c": // Noncompliant {{Merge the previous cases into this one using comma-separated label.}}
+//    ^^^^^^^^^
         yield 42;
       default:
         yield returnSomethingElse();
@@ -17,11 +19,16 @@ public class SwitchCasesShouldBeCommaSeparatedCheckSample {
     // Switch expression with multiple issues
     i = switch (mode) {
       case "a":
+//    ^^^^^^^^^>
       case "b":
-      case "c": // Noncompliant [[sc=7;ec=16;secondary=-1,-2]] {{Merge the previous cases into this one using comma-separated label.}}
+//    ^^^^^^^^^>
+      case "c": // Noncompliant {{Merge the previous cases into this one using comma-separated label.}}
+//    ^^^^^^^^^
         yield 42;
       case "d":
-      case "e": // Noncompliant [[sc=7;ec=16;secondary=-1,]] {{Merge the previous cases into this one using comma-separated label.}}
+//    ^^^^^^^^^>
+      case "e": // Noncompliant {{Merge the previous cases into this one using comma-separated label.}}
+//    ^^^^^^^^^
       default:
         yield returnSomethingElse();
     };
