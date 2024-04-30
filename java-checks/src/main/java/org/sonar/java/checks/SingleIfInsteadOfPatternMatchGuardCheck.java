@@ -46,8 +46,6 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
   private static final String ISSUE_MESSAGE_REPLACE = "Replace this \"if\" statement with a pattern match guard.";
   private static final String ISSUE_MESSAGE_MERGE = "Merge this \"if\" statement with the enclosing pattern match guard.";
 
-  private static final FileConfig FILE_CONFIG = new FileConfig(new FileConfig.IndentMode.Spaces(2), "\n");
-
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
     return version.isJava21Compatible();
@@ -104,7 +102,7 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
                                               JavaFileScannerContext context) {
     var shouldMergeConditions = pattern instanceof GuardedPatternTree;
     var quickFixBuilder = JavaQuickFix.newQuickFix(shouldMergeConditions ? ISSUE_MESSAGE_MERGE : ISSUE_MESSAGE_REPLACE);
-    var pps = new PrettyPrintStringBuilder(FILE_CONFIG, caseGroup.firstToken(), false);
+    var pps = new PrettyPrintStringBuilder(FileConfig.DEFAULT_FILE_CONFIG, caseGroup.firstToken(), false);
     pps.add("case ");
     if (pattern instanceof GuardedPatternTree guardedPattern){
       pps.addTreeContentRaw(guardedPattern.pattern(), context)

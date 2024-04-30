@@ -22,6 +22,8 @@ package org.sonar.java.checks.prettyprint;
 
 public record FileConfig(IndentMode indentMode, String endOfLine) {
 
+  public static final FileConfig DEFAULT_FILE_CONFIG = new FileConfig(new FileConfig.IndentMode.Spaces(2), "\n");
+
   public String indent() {
     return indentMode.indent();
   }

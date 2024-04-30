@@ -58,8 +58,6 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
   private static final String MESSAGE = "Remove the \"%s\" field and declare it as a local variable in the relevant methods.";
   private static final String QUICK_FIX_MESSAGE = "Move this field to the only method where it is used";
 
-  private static final FileConfig FILE_CONFIG = new FileConfig(new FileConfig.IndentMode.Spaces(2), "\n");
-
   @Override
   public List<Kind> nodesToVisit() {
     return Collections.singletonList(Kind.CLASS);
@@ -109,7 +107,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     }
     BlockTree block = methodWhereUsed.block();
     String declarationMinusModifiers = contentForRange(declaration.type().firstToken(), declaration.endToken(), context);
-    var pps = new PrettyPrintStringBuilder(FILE_CONFIG, block.body().get(0).firstToken(), false);
+    var pps = new PrettyPrintStringBuilder(FileConfig.DEFAULT_FILE_CONFIG, block.body().get(0).firstToken(), false);
     pps.newLine().addStripLeading(declarationMinusModifiers);
     return List.of(
       JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)

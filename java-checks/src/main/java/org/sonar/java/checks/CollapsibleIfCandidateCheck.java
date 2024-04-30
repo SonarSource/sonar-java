@@ -39,8 +39,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S1066")
 public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final FileConfig FILE_CONFIG = new FileConfig(new FileConfig.IndentMode.Spaces(2), "\n");
-
   private JavaFileScannerContext context;
   private Deque<IfStatementTree> outerIf = new ArrayDeque<>();
 
@@ -102,7 +100,7 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
     var quickFixBuilder = JavaQuickFix.newQuickFix("Merge this if statement with the enclosing one");
     quickFixBuilder.addTextEdit(JavaTextEdit.replaceTree(
       outerIf,
-      new PrettyPrintStringBuilder(FILE_CONFIG, outerIf.firstToken(), false)
+      new PrettyPrintStringBuilder(FileConfig.DEFAULT_FILE_CONFIG, outerIf.firstToken(), false)
         .add("if (").addBinop(outerIf.condition(), Tree.Kind.CONDITIONAL_AND, innerIf.condition(), context).add(") ")
         .addTreeContentWithIndentBasedOnLastLine(innerIf.thenStatement(), context)
         .toString()
