@@ -38,8 +38,9 @@ class ConstantAlreadyDefined {
 
   void test() {
     System.out.println("constant"); // Noncompliant {{Use already-defined constant 'A' instead of duplicating its value here.}}
+//                     ^^^^^^^^^^
     System.out.println("constant");
-//  ^^^<
+//                     ^^^^^^^^^^<
     System.out.println("blabla"); // Noncompliant {{Use already-defined constant 'REPORT_WITHOUT_THRESHOLD' instead of duplicating its value here.}}
   }
 

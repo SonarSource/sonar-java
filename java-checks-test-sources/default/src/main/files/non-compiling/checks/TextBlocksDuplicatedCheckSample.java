@@ -43,8 +43,8 @@ class AllConstants {
       allConstant
         allConstant
        allConstant
-    """;  
-  
+    """;
+
   private static final String Constant4 = """
         allConstant
   
@@ -64,31 +64,39 @@ class ConstantAlreadyDefined {
                       blabla""";
 
   void test() {
-    System.out.println("""
-      constant"""); // Noncompliant@-1 {{Use already-defined constant 'A' instead of duplicating its value here.}}
-    System.out.println("""
-//  ^^^<
+// Noncompliant@+1 {{Use already-defined constant 'A' instead of duplicating its value here.}}
+    System.out.println("""     
       constant""");
+//                     ^[sl=68;el=69;ec=17]
+
+
     System.out.println("""
-      blabla"""); // Noncompliant@-1 {{Use already-defined constant 'REPORT_WITHOUT_THRESHOLD' instead of duplicating its value here.}}
+      constant""");
+//                     ^[sl=73;el=74;ec=17]<
+
+
+// Noncompliant@+1 {{Use already-defined constant 'REPORT_WITHOUT_THRESHOLD' instead of duplicating its value here.}}
+    System.out.println("""
+      blabla""");
+//                     ^[sl=79;el=80;ec=15]
 
     System.out.println("""
       constant
       constant"""); // Noncompliant@-2 {{Use already-defined constant 'C' instead of duplicating its value here.}}
-    
-    System.out.println("blabla"); 
-//  ^^^<
+
+    System.out.println("blabla");
+//                     ^^^^^^^^<
     System.out.println("""
-//  ^^^<
-      blabla"""); 
+      blabla""");
+//                     ^[sl=89;el=90;ec=15]<
     System.out.println("""
-      blabla           """); 
-    System.out.println("""
-      blabla           
-      """); 
+      blabla           """);
     System.out.println("""
       blabla           
-"""); 
+      """);
+    System.out.println("""
+      blabla           
+""");
   }
 
   public ConstantAlreadyDefined setProject(Proj project) {
@@ -100,7 +108,7 @@ class ConstantAlreadyDefined {
   }
 
   private void setFieldValue(String projectName, Object longName) {
-    
+
   }
 
   public ConstantAlreadyDefined setProject(String projectKey, String projectName) {
@@ -135,3 +143,4 @@ class CompleteCoverage {
   private static final String NOT_USED = """
     this constant is not used anywhere""";
 }
+
