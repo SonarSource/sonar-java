@@ -6,9 +6,9 @@ interface InterfaceAsConstantContainerCheckSample {
 interface InterfaceAsConstantContainerCheckSampleA { // Noncompliant {{Move constants defined in this interfaces to another class or enum.}}
 //        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   int a = 0;
-//  ^^^<
+//    ^<
   int b = 0;
-//  ^^^<
+//    ^<
 }
 
 interface InterfaceAsConstantContainerCheckSampleB {

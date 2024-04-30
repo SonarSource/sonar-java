@@ -37,7 +37,7 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
       i1, // Noncompliant {{Add an "eq()" argument matcher on these parameters.}}
 //    ^^
       i2))
-//  ^^^<
+//    ^^<
       .willReturn(null);
     when(foo.baz(eq(val1), val2)).thenReturn("hi"); // Noncompliant {{Add an "eq()" argument matcher on this parameter.}}
 //                         ^^^^
@@ -48,7 +48,7 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
 //    ^^
       anyInt(),
       i2);
-//  ^^^<
+//    ^^<
 
     ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
     verify(foo).bar(captor.capture(),

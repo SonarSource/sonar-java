@@ -14,9 +14,9 @@ public class DoubleCheckedLockingAssignment {
           strings = new ArrayList<>(); // Noncompliant {{Fully initialize "strings" before assigning it.}}
 //        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
           strings.add("Hello");
-//  ^^^<
+//        ^^^^^^^<
           strings.add("World");
-//  ^^^<
+//        ^^^^^^^<
         }
       }
     }
@@ -30,10 +30,10 @@ public class DoubleCheckedLockingAssignment {
           strings = new ArrayList<>(); // Noncompliant {{Fully initialize "strings" before assigning it.}}
 //        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
           strings.add("Hello");
-//  ^^^<
+//        ^^^^^^^<
           System.out.println();
           strings.add("World");
-//  ^^^<
+//        ^^^^^^^<
         }
       }
     }

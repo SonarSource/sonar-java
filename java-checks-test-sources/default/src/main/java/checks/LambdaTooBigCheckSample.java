@@ -16,7 +16,7 @@ class LambdaTooBigCheckSampleA {
     System.out.println();
     return 1;
   };
-//  ^^^<
+//^<
 
   Callable<Integer> c2 = () -> {
     System.out.println();

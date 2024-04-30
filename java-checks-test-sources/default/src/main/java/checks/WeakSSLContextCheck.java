@@ -86,14 +86,14 @@ class WeakSSLContextCheck {
       .tlsVersions(TlsVersion.TLS_1_0, // Noncompliant
 //                 ^^^^^^^^^^^^^^^^^^
         TlsVersion.TLS_1_1)
-//  ^^^<
+//      ^^^^^^^^^^^^^^^^^^<
       .build();
 
     ConnectionSpec specWithMultipleWeakVersions2 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
       .tlsVersions("TLSv1", // Noncompliant
 //                 ^^^^^^^
         "TLSv1.1")
-//  ^^^<
+//      ^^^^^^^^^<
       .build();
 
     ConnectionSpec specWithUnknownValue = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)

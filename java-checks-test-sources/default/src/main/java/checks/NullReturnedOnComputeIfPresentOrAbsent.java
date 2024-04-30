@@ -11,7 +11,7 @@ public class NullReturnedOnComputeIfPresentOrAbsent {
     map.computeIfPresent("myKey", (key, value) -> // Noncompliant {{Use "Map.containsKey(key)" followed by "Map.put(key, null)" to add null values.}}
 //      ^^^^^^^^^^^^^^^^
       null);
-//  ^^^<
+//    ^^^^<
 
     map.computeIfPresent("myKey", NullReturnedOnComputeIfPresentOrAbsent::presentLambda); // Compliant uninteresting corner case
 
@@ -32,7 +32,7 @@ public class NullReturnedOnComputeIfPresentOrAbsent {
     map.computeIfAbsent("myKey", key -> // Noncompliant {{Use "Map.containsKey(key)" followed by "Map.put(key, null)" to add null values.}}
 //      ^^^^^^^^^^^^^^^
       null);
-//  ^^^<
+//    ^^^^<
     map.computeIfAbsent("myKey", NullReturnedOnComputeIfPresentOrAbsent::absentLambda); // Compliant uninteresting corner case
 
     String nullValue = null;

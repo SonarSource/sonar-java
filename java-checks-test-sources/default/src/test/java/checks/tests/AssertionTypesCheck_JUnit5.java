@@ -38,7 +38,7 @@ public class AssertionTypesCheck_JUnit5 {
       null, // Noncompliant {{Change the assertion arguments to not compare dissimilar types.}}
 //    ^^^^
       doublePrimitive());
-//  ^^^<
+//    ^^^^^^^^^^^^^^^^^<
     assertEquals(null, booleanPrimitive(), "msg"); // Noncompliant
 
     assertNotEquals(null, doublePrimitive()); // Noncompliant

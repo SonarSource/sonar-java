@@ -29,7 +29,7 @@ public class AssertionTypesCheck_JUnit4 {
       null, // Noncompliant {{Change the assertion arguments to not compare dissimilar types.}}
 //    ^^^^
       doublePrimitive());
-//  ^^^<
+//    ^^^^^^^^^^^^^^^^^<
     assertEquals(
       doublePrimitive(), // Noncompliant
       null);

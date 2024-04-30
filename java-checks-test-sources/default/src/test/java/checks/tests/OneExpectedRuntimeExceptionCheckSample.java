@@ -29,9 +29,9 @@ public class OneExpectedRuntimeExceptionCheckSample {
     assertThrows(IllegalStateException.class, () -> // Noncompliant
 //  ^^^^^^^^^^^^
       new NestedClass(
-//  ^^^<
+//        ^^^^^^^^^^^<
         foo(1)
-//  ^^^<
+//      ^^^<
       ) );
     org.junit.Assert.assertThrows(IllegalStateException.class, () -> foo(foo(1)) ); // Noncompliant
     org.junit.Assert.assertThrows("Message", IllegalStateException.class, () -> foo(foo(1)) ); // Noncompliant
@@ -65,9 +65,9 @@ public class OneExpectedRuntimeExceptionCheckSample {
     try { // Noncompliant {{Refactor the body of this try/catch to have only one invocation possibly throwing a runtime exception.}}
 //  ^^^
       foo(
-//  ^^^<
+//    ^^^<
         foo(1)
-//  ^^^<
+//      ^^^<
       );
       Assert.fail("Expected an IllegalStateException to be thrown");
     } catch (IllegalStateException e) {
@@ -161,9 +161,9 @@ public class OneExpectedRuntimeExceptionCheckSample {
       .catchThrowableOfType( // Noncompliant {{Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception.}}
 //     ^^^^^^^^^^^^^^^^^^^^
         () -> foo(
-//  ^^^<
+//            ^^^<
           foo(1)),
-//  ^^^<
+//        ^^^<
         IllegalStateException.class);
     org.assertj.core.api.Assertions.assertThat(thrown).hasMessage("error");
 

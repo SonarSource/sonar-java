@@ -27,7 +27,7 @@ public class MissingOverridesInRecordWithArrayComponentCheckSample {
   record MissingEverything( // Noncompliant {{Override equals, hashCode and toString to consider array's content in the method}}
 //       ^^^^^^^^^^^^^^^^^
     Object[] objects) {
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^<
     static Object defaultValue = null;
     void doNothing(){}
   }
@@ -93,9 +93,9 @@ public class MissingOverridesInRecordWithArrayComponentCheckSample {
 //       ^^^^^^^^^^^^^^
     Object a,
     int[] b,
-//  ^^^<
+//  ^^^^^^^^<
     Object c,
     java.util.Collection<Object[]> d, // not an array
     int... e) {}
-//  ^^^<
+//  ^^^^^^^^<
 }

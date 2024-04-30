@@ -11,9 +11,9 @@ class TryWithResourcesCheck_no_java_version {
     try { // Noncompliant {{Change this "try" to a try-with-resources. (sonar.java.source not set. Assuming 7 or greater.)}}
 //  ^^^
       fr = new FileReader(fileName);
-//  ^^^<
+//         ^^^^^^^^^^^^^^^^^^^^^^^^<
       br = new BufferedReader(fr);
-//  ^^^<
+//         ^^^^^^^^^^^^^^^^^^^^^^<
       return br.readLine();
     } catch (Exception e) {
     } finally {

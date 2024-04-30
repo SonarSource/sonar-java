@@ -283,13 +283,13 @@ public class AssertionsCompletenessCheckSample {
 
   private void doIncompleteSoftAssertions2() {
     doIncompleteSoftAssertions3();
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^<
   }
 
   private void doIncompleteSoftAssertions3() {
     org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
     softly.assertAll();
-//  ^^^<
+//  ^^^^^^^^^^^^^^^^<
   }
 
   private void doBoth(org.assertj.core.api.SoftAssertions softly, boolean doItAgain) {

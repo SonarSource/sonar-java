@@ -21,7 +21,7 @@ class LambdaTooBigCheckCustom {
       System.out.println();
       return 1;
     };
-//  ^^^<
+//  ^<
 
 
     Callable<Integer> c2 = () -> 1 + 2;
@@ -33,7 +33,7 @@ class LambdaTooBigCheckCustom {
       3 +
       1 +
       1;
-//  ^^^<
+//    ^<
 
     Runnable r2 = () -> System.out.println("Hello world two!");
 

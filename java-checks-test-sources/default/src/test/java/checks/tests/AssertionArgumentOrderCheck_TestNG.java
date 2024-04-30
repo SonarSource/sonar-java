@@ -19,7 +19,7 @@ public class AssertionArgumentOrderCheck_TestNG {
       "abc", // Noncompliant {{Swap these 2 arguments so they are in the correct order: actual value, expected value.}}
 //    ^^^^^
       actualString());
-//  ^^^<
+//    ^^^^^^^^^^^^^^<
     assertSame("abc", actualString(), "message"); // Noncompliant
 
     assertNotSame(actualString(), "abc"); // Compliant

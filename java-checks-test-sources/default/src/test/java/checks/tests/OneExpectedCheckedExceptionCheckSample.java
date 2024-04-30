@@ -29,9 +29,9 @@ public class OneExpectedCheckedExceptionCheckSample {
     assertThrows(IOException.class, () -> // Noncompliant
 //  ^^^^^^^^^^^^
       new ThrowingIOException(
-//  ^^^<
+//        ^^^^^^^^^^^^^^^^^^^<
         throwIOException(1)
-//  ^^^<
+//      ^^^^^^^^^^^^^^^^<
       ) );
     org.junit.Assert.assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)) ); // Noncompliant
     org.junit.Assert.assertThrows("Message", IOException.class, () -> throwIOException2(throwIOException(1)) ); // Noncompliant
@@ -57,9 +57,9 @@ public class OneExpectedCheckedExceptionCheckSample {
     try { // Noncompliant {{Refactor the body of this try/catch to not have multiple invocations throwing the same checked exception.}}
 //  ^^^
       throwIOException2(
-//  ^^^<
+//    ^^^^^^^^^^^^^^^^^<
         throwIOException(1)
-//  ^^^<
+//      ^^^^^^^^^^^^^^^^<
       );
       Assert.fail("Expected an IOException to be thrown");
     } catch (IOException e) {
@@ -166,9 +166,9 @@ public class OneExpectedCheckedExceptionCheckSample {
       .catchThrowableOfType( // Noncompliant {{Refactor the code of the lambda to not have multiple invocations throwing the same checked exception.}}
 //     ^^^^^^^^^^^^^^^^^^^^
       () -> throwIOException2(
-//  ^^^<
+//          ^^^^^^^^^^^^^^^^^<
         throwIOException(1)),
-//  ^^^<
+//      ^^^^^^^^^^^^^^^^<
       IOException.class);
     org.assertj.core.api.Assertions.assertThat(thrown).hasMessage("error");
 

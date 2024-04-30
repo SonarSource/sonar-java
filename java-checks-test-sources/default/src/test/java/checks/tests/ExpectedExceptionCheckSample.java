@@ -18,9 +18,9 @@ public class ExpectedExceptionCheckSample {
 //                    ^^^^^^
     functionThrowingIOException();
     Assert.assertEquals(1, 1);
-//  ^^^<
+//         ^^^^^^^^^^^^<
     Assert.assertNotEquals(2, 3);
-//  ^^^<
+//         ^^^^^^^^^^^^^^^<
   }
 
   @Test

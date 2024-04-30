@@ -11,9 +11,9 @@ public class TestAnnotationWithExpectedExceptionCheckSample {
   public void testException2() {
     throwingMethod();
     org.junit.Assert.assertTrue(true);
-//  ^^^<
+//                   ^^^^^^^^^^<
     org.junit.Assert.assertTrue(true);
-//  ^^^<
+//                   ^^^^^^^^^^<
   }
 
   @org.junit.Test(expected = ArrayIndexOutOfBoundsException.class, timeout = 0) // Noncompliant

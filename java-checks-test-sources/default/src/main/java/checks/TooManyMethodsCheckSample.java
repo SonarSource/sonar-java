@@ -3,33 +3,33 @@ package checks;
 class TooManyMethodsCheckSample { // Noncompliant {{class "TooManyMethodsCheckSample" has 6 methods, which is greater than the 4 authorized. Split it into smaller classes.}}
 //    ^^^^^^^^^^^^^^^^^^^^^^^^^
   TooManyMethodsCheckSample () {}
-//  ^^^<
+//^^^^^^^^^^^^^^^^^^^^^^^^^<
   void method1() {}
-//  ^^^<
+//     ^^^^^^^<
   public void method2() {}
-//  ^^^<
+//            ^^^^^^^<
   void method3() {}
-//  ^^^<
+//     ^^^^^^^<
   public void method4() {}
-//  ^^^<
+//            ^^^^^^^<
   void method5() {}
-//  ^^^<
+//     ^^^^^^^<
 }
 
 record TooManyMethodsRecord() { // Noncompliant {{record "TooManyMethodsRecord" has 6 methods, which is greater than the 4 authorized. Split it into smaller records.}}
 //     ^^^^^^^^^^^^^^^^^^^^
   TooManyMethodsRecord {}
-//  ^^^<
+//^^^^^^^^^^^^^^^^^^^^<
   void m1() {}
-//  ^^^<
+//     ^^<
   void m2() {}
-//  ^^^<
+//     ^^<
   void m3() {}
-//  ^^^<
+//     ^^<
   void m4() {}
-//  ^^^<
+//     ^^<
   void m5() {}
-//  ^^^<
+//     ^^<
 }
 
 class TooManyMethodsCheckSampleA {
