@@ -21,6 +21,7 @@
 package org.sonar.java.checks.prettyprint;
 
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -47,7 +48,16 @@ public final class PrettyPrintStringBuilder {
   }
 
   public PrettyPrintStringBuilder add(String str) {
-    var remLines = str.lines().iterator();
+    return addLines(str.lines());
+  }
+
+  public PrettyPrintStringBuilder addStripLeading(String str) {
+    var remLines = str.lines().map(String::stripLeading);
+    return addLines(remLines);
+  }
+
+  public PrettyPrintStringBuilder addLines(Stream<String> lines){
+    var remLines = lines.iterator();
     while (remLines.hasNext()) {
       var line = remLines.next();
       sb.append(line);
@@ -177,9 +187,6 @@ public final class PrettyPrintStringBuilder {
 
   @Override
   public String toString() {
-    if (indentLevel != 0) {
-      throw new IllegalStateException("protocol violation: trying to build PrettyPrintString with an indentation level different of 0 (" + indentLevel + ")");
-    }
     return sb.toString();
   }
 

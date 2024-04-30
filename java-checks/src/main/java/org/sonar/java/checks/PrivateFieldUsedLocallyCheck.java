@@ -28,6 +28,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.prettyprint.FileConfig;
+import org.sonar.java.checks.prettyprint.PrettyPrintStringBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -40,7 +42,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -56,6 +57,8 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Remove the \"%s\" field and declare it as a local variable in the relevant methods.";
   private static final String QUICK_FIX_MESSAGE = "Move this field to the only method where it is used";
+
+  private static final FileConfig FILE_CONFIG = new FileConfig(new FileConfig.IndentMode.Spaces(2), "\n");
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -105,16 +108,13 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
       return Collections.emptyList();
     }
     BlockTree block = methodWhereUsed.block();
-    SyntaxToken openingBrace = block.openBraceToken();
-
-    String padding = generateLeftPadding(block);
     String declarationMinusModifiers = contentForRange(declaration.type().firstToken(), declaration.endToken(), context);
-    String newDeclaration = "\n" + padding + declarationMinusModifiers;
-
+    var pps = new PrettyPrintStringBuilder(FILE_CONFIG, block.body().get(0).firstToken(), false);
+    pps.newLine().addStripLeading(declarationMinusModifiers);
     return List.of(
       JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
         .addTextEdits(editUsagesWithThis(symbol))
-        .addTextEdit(JavaTextEdit.insertAfterTree(openingBrace, newDeclaration))
+        .addTextEdit(JavaTextEdit.insertAfterTree(block.openBraceToken(), pps.toString()))
         .addTextEdit(JavaTextEdit.removeTree(declaration))
         .build()
     );
@@ -133,11 +133,6 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     return collector.variables
       .stream()
       .anyMatch(variable -> variable.symbol().name().equals(symbol.name()));
-  }
-
-  private static String generateLeftPadding(BlockTree block) {
-    int spacesOnTheLeft = Math.max(0, block.body().get(0).firstToken().range().start().column() - 1);
-    return " ".repeat(spacesOnTheLeft);
   }
 
   /**
