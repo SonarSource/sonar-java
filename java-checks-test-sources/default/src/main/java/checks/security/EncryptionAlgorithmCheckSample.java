@@ -9,7 +9,7 @@ abstract class EncryptionAlgorithmCheckSample {
   static final String RSA = "RSA";
   static final String NO_PADDING = "/NONE/NoPadding";
   static final String RSA_NO_PADDING = RSA + NO_PADDING;
-//  ^^^<
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
 
   public void foo(java.util.Properties props) {
     /*
@@ -21,6 +21,10 @@ abstract class EncryptionAlgorithmCheckSample {
     */
 
     try {
+
+      Cipher.getInstance(RSA_NO_PADDING); // Noncompliant
+//                       ^^^^^^^^^^^^^^
+
       // First case
       Cipher.getInstance("AES"); // Noncompliant {{Use a secure padding scheme.}}
 //                       ^^^^^
@@ -62,21 +66,19 @@ abstract class EncryptionAlgorithmCheckSample {
       Cipher.getInstance(null); // Compliant
       Cipher.getInstance(""); // Noncompliant
       String algo = props.getProperty("myAlgo", "AES/ECB/PKCS5Padding");
-//  ^^^<
+//                                              ^^^^^^^^^^^^^^^^^^^^^^>
       Cipher.getInstance(algo); // Noncompliant
 //                       ^^^^
       String s = "RSA/NONE/NoPadding"; // Compliant
-//  ^^^<
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
       Cipher.getInstance(s); // Noncompliant
 //                       ^
 
       String sPlus = "RSA" + "/NONE/NoPadding"; // Compliant
-//  ^^^<
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
       Cipher.getInstance(sPlus); // Noncompliant
 //                       ^^^^^
 
-      Cipher.getInstance(RSA_NO_PADDING); // Noncompliant
-//                       ^^^^^^^^^^^^^^
 
       Cipher.getInstance(separator); // Compliant, can not resolve the declaration, for coverage
 
@@ -87,7 +89,7 @@ abstract class EncryptionAlgorithmCheckSample {
       Cipher.getInstance("DES/CBC/NOPADDING"); // Compliant
       Cipher.getInstance("RSA/NONE/OAEPWITHSHA-1AndMGF1Padding"); // Compliant
       String algoUpperCase = props.getProperty("myAlgo", "AES/ECB/PKCS5PADDING");
-//  ^^^<
+//                                                       ^^^^^^^^^^^^^^^^^^^^^^>
       Cipher.getInstance(algoUpperCase); // Noncompliant
 //                       ^^^^^^^^^^^^^
 
