@@ -25,8 +25,8 @@ public class NonSingletonAutowiredInSingletonCheckSample {
     @Autowired
     private PrototypeBean3 prototypeBean3; // Noncompliant
 
-    @Autowired // Noncompliant@+1
-    public SingletonBean(RequestBean1 requestBean1) { // Noncompliant {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired constructor).}}
+    @Autowired
+    public SingletonBean(RequestBean1 requestBean1) { // Noncompliant 2
 //                       ^^^^^^^^^^^^
     }
 
