@@ -8,9 +8,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class JUnitCompatibleAnnotationsCheckSample {
 
   @Test
-//  ^^^<
+//^^^^^>
   @RepeatedTest(2)
-//  ^^^<
+//^^^^^^^^^^^^^^^^>
   void test() { // Noncompliant {{Remove one of these conflicting annotations.}}
 //     ^^^^
   }

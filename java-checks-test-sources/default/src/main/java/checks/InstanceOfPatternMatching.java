@@ -6,8 +6,9 @@ public abstract class InstanceOfPatternMatching {
 
   int if1(Object o) {
     if (o instanceof String) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
+//      ^^^^^^^^^^^^^^^^^^^
       String str = (String) o;
-//  ^^^<
+//                 ^^^^^^^^^^<
       return str.length();
     }
     return 0;
@@ -22,9 +23,10 @@ public abstract class InstanceOfPatternMatching {
 
   int if2(Object o) {
     if (1 > 2 && o instanceof String && 3 > 4) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
+//               ^^^^^^^^^^^^^^^^^^^
       System.out.println("holla");
       String str = (String) o;
-//  ^^^<
+//                 ^^^^^^^^^^<
       return str.length();
     }
     return 0;
@@ -32,9 +34,10 @@ public abstract class InstanceOfPatternMatching {
 
   int if3(Object o) {
     if (o instanceof String) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
+//      ^^^^^^^^^^^^^^^^^^^
       if (23 < 42) {
         String str = (String) o;
-//  ^^^<
+//                   ^^^^^^^^^^<
         return str.length();
       }
     }
@@ -44,8 +47,9 @@ public abstract class InstanceOfPatternMatching {
   Object o;
   int if4() {
     if (o instanceof String) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
+//      ^^^^^^^^^^^^^^^^^^^
       String str = (String) o;
-//  ^^^<
+//                 ^^^^^^^^^^<
       return str.length();
     }
     return 0;
@@ -62,8 +66,9 @@ public abstract class InstanceOfPatternMatching {
 
   int if5(Map<String, Object> map) {
     if (map.get("hello") instanceof String) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
+//      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       String str = (String) map.get("hello");
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^<
       return str.length();
     }
     return 0;
@@ -81,9 +86,10 @@ public abstract class InstanceOfPatternMatching {
     // Since the assignment of the cast happens separately from the variable declaration, we don't use the variable name
     // in the error message
     if (o instanceof String) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String string'}}
+//      ^^^^^^^^^^^^^^^^^^^
       String str;
       str = (String) o;
-//  ^^^<
+//          ^^^^^^^^^^<
       return str.length();
     }
     return 0;
@@ -126,9 +132,10 @@ public abstract class InstanceOfPatternMatching {
 
   int ifElse1(Object o) {
     if (!(o instanceof String)) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
+//        ^^^^^^^^^^^^^^^^^^^
     } else {
       String str = (String) o;
-//  ^^^<
+//                 ^^^^^^^^^^<
       return str.length();
     }
     return 0;
@@ -145,9 +152,10 @@ public abstract class InstanceOfPatternMatching {
 
   int ifElse3(Object o) {
     if (!(o instanceof String || 1 < 2)) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
+//        ^^^^^^^^^^^^^^^^^^^
     } else {
       String str = (String) o;
-//  ^^^<
+//                 ^^^^^^^^^^<
       return str.length();
     }
     return 0;
@@ -173,9 +181,10 @@ public abstract class InstanceOfPatternMatching {
 
   int ifElse6(Object o) {
     if (!!!(o instanceof String)) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
+//          ^^^^^^^^^^^^^^^^^^^
     } else {
       String str = (String) o;
-//  ^^^<
+//                 ^^^^^^^^^^<
       return str.length();
     }
     return 0;
@@ -183,7 +192,8 @@ public abstract class InstanceOfPatternMatching {
 
   boolean and1(Object o) {
     return (o instanceof String && ((String) o).length() > 0); // Noncompliant {{Replace this instanceof check and cast with 'instanceof String string'}}
-//  ^^^<
+//          ^^^^^^^^^^^^^^^^^^^
+//                                  ^^^^^^^^^^@-1<
   }
 
   boolean and1Compliant(Object o) {
@@ -192,7 +202,8 @@ public abstract class InstanceOfPatternMatching {
 
   boolean and2(Object o) {
     return (1 < 4 && o instanceof String && ((String) o).length() > 0 && 23 < 42); // Noncompliant {{Replace this instanceof check and cast with 'instanceof String string'}}
-//  ^^^<
+//                   ^^^^^^^^^^^^^^^^^^^
+//                                           ^^^^^^^^^^@-1<
   }
 
   boolean and3(Object o) {
@@ -201,7 +212,8 @@ public abstract class InstanceOfPatternMatching {
 
   boolean or1(Object o) {
     return (!(o instanceof String) || ((String) o).length() > 0); // Noncompliant {{Replace this instanceof check and cast with 'instanceof String string'}}
-//  ^^^<
+//            ^^^^^^^^^^^^^^^^^^^
+//                                     ^^^^^^^^^^@-1<
   }
 
   boolean or2(Object o) {
@@ -211,7 +223,8 @@ public abstract class InstanceOfPatternMatching {
 
   int ternary(Object o) {
     return (o instanceof String) ? ((String) o).length() : 0; // Noncompliant {{Replace this instanceof check and cast with 'instanceof String string'}}
-//  ^^^<
+//          ^^^^^^^^^^^^^^^^^^^
+//                                  ^^^^^^^^^^@-1<
   }
 
   int ternaryCompliant(Object o) {
@@ -223,8 +236,9 @@ public abstract class InstanceOfPatternMatching {
   void whileLoop1() {
     Object o = getNext();
     while (o instanceof String) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
+//         ^^^^^^^^^^^^^^^^^^^
       String str = (String) o;
-//  ^^^<
+//                 ^^^^^^^^^^<
       o = getNext();
     }
   }
@@ -247,8 +261,9 @@ public abstract class InstanceOfPatternMatching {
 
   void forLoop1() {
     for (Object o = getNext(); o instanceof String; o = getNext()) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
+//                             ^^^^^^^^^^^^^^^^^^^
       String str = (String) o;
-//  ^^^<
+//                 ^^^^^^^^^^<
     }
   }
 

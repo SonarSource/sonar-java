@@ -11,7 +11,7 @@ public class PossessiveQuantifierContinuationCheckSample {
     f(compile("a+?abc"));
     f(compile("a++abc")); // Noncompliant {{Change this impossible to match sub-pattern that conflicts with the previous possessive quantifier.}}
 //                ^
-//  ^^^<
+//             ^^^@-1<
     f(compile("\\d*+[02468]")); // Noncompliant
 //                  ^^^^^^^
     f(compile("(\\d)*+([02468])")); // Noncompliant

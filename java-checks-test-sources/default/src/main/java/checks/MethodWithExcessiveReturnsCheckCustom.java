@@ -46,13 +46,20 @@ class MethodWithExcessiveReturnsCheckCustom {
       if(false) return o2;
       return o1;
     });
-    bar.sort((o1, o2)-> { // Noncompliant [[sc=22;ec=24;secondary=50,51,52,53,54,55]]]] {{This method has 6 returns, which is more than the 4 allowed.}}
+    bar.sort((o1, o2)-> { // Noncompliant {{This method has 6 returns, which is more than the 4 allowed.}}
+//                   ^^
       if(false) return o2;
+//              ^^^^^^<
       if(false) return o1;
+//              ^^^^^^<
       if(false) return o2;
+//              ^^^^^^<
       if(false) return o1;
+//              ^^^^^^<
       if(false) return o1;
+//              ^^^^^^<
       return o1;
+//    ^^^^^^<
     });
     return null;
   }

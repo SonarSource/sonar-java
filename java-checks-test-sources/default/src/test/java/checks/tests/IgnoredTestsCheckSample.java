@@ -30,7 +30,7 @@ abstract class IgnoredTestsCheckSample {
   void assume1() {
     Assume.assumeTrue(false); // Noncompliant {{This assumption is called with a boolean constant; remove it or, to skip this test use an @Ignore/@Disabled annotation in combination with an explanation about why it is skipped.}}
 //         ^^^^^^^^^^
-//  ^^^<
+//                   ^^^^^^^@-1<
     Assume.assumeTrue(true);
   }
   void assume2() {

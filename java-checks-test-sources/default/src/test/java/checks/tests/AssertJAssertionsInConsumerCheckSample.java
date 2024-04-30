@@ -19,13 +19,13 @@ public abstract class AssertJAssertionsInConsumerCheckSample {
     Consumer<String> myPredicateAsConsumer = s -> s.equals("b");
     assertThat(myObj).isInstanceOfSatisfying(String.class, "b"::equals); // Noncompliant {{Rework this assertion to assert something inside the Consumer argument.}}
 //                    ^^^^^^^^^^^^^^^^^^^^^^
-//  ^^^<
+//                                                         ^^^^^^^^^^^@-1<
     assertThat(myObj).isInstanceOfSatisfying(String.class, s -> s.equals("b")); // Noncompliant
 //                    ^^^^^^^^^^^^^^^^^^^^^^
-//  ^^^<
+//                                                         ^^^^^^^^^^^^^^^^^^@-1<
     assertThat(myObj).isInstanceOfSatisfying(String.class, myPredicateAsConsumer); // Noncompliant
 //                    ^^^^^^^^^^^^^^^^^^^^^^
-//  ^^^<
+//                                                         ^^^^^^^^^^^^^^^^^^^^^@-1<
 
     Consumer<String> myRequirements = s -> assertThat(s).isEqualTo("b");
     assertThat(myObj).isInstanceOfSatisfying(String.class, s -> assertThat(s).isEqualTo("b"));
@@ -58,13 +58,15 @@ public abstract class AssertJAssertionsInConsumerCheckSample {
     Consumer<String> myRequirements = s -> assertThat(s).isEqualTo("b");
 
     assertThat("a").satisfiesAnyOf("b"::equals, "c"::equals); // Noncompliant
-//  ^^^<
+//                  ^^^^^^^^^^^^^^              ^^^^^^^^^^^<
+//                                 ^^^^^^^^^^^@-1<
     assertThat("a").satisfiesAnyOf("b"::equals, "c"::equals, "d"::equals); // Noncompliant
-//  ^^^<
+//                  ^^^^^^^^^^^^^^ ^^^^^^^^^^^< ^^^^^^^^^^^< ^^^^^^^^^^^<
+
     assertThat("a").satisfiesAnyOf("b"::equals, "c"::equals, "d"::equals, "e"::equals); // Noncompliant
     assertThat("a").satisfiesAnyOf("b"::equals, s -> s.equals("b"), myPredicateAsConsumer); // Noncompliant
     assertThat("a").satisfiesAnyOf(myRequirements, myRequirements, myRequirements, "c"::equals); // Noncompliant
-//  ^^^<
+//                  ^^^^^^^^^^^^^^                                                 ^^^^^^^^^^^<
 
     assertThat("a").satisfiesAnyOf(myRequirements, myRequirements);
     assertThat("a").satisfiesAnyOf(myRequirements, myRequirements, myRequirements);

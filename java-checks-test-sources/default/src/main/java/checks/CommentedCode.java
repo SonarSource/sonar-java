@@ -52,16 +52,18 @@ public class CommentedCode {
     /* } */
 
 
+// Noncompliant@+2
     /* Limitation: only the first line of a commented block is highlighted
-     * for (Visitor visitor : visitors) { // Noncompliant@+2
+     * for (Visitor visitor : visitors) {
 //     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
      *   continue;
+//       ^^^^^^^^<
      * }
      */
 
 
     // Only one issue is highlighted per list of consecutive comments
-    /* for (Visitor visitor : visitors) { } */     /* for (Visitor visitor : visitors) { } */ // Noncompliant@+2
+    /* for (Visitor visitor : visitors) { } */     /* for (Visitor visitor : visitors) { } */ // Noncompliant
 //     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
  // Noncompliant@+3
@@ -70,29 +72,31 @@ public class CommentedCode {
     if (/* for (Visitor visitor : visitors) { } */field == 0) { /* for (Visitor visitor : visitors) { } */
     }
 
-
+// Noncompliant@+2
     // Comment prefix and suffix are not highlighted
-    /*         for (Visitor visitor : visitors) { }           */ // Noncompliant@+2
+    /*         for (Visitor visitor : visitors) { }           */
 //             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+// Noncompliant@+2
     /* Leading star is not highlighted
-     *   for (Visitor visitor : visitors) { } // Noncompliant@+2
+     *   for (Visitor visitor : visitors) { }
 //       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
      */
 
 
+// Noncompliant@+2
     /* Leading spaces are not highlighted
-         for (Visitor visitor : visitors) { } // Noncompliant@+2
+         for (Visitor visitor : visitors) { }
 //       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
      */
 
 
+// Noncompliant@+2
     // Leading spaces are not highlighted
-    //         for (Visitor visitor : visitors) { // Noncompliant@+2
+    //         for (Visitor visitor : visitors) {
 //             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     //         }
-//  ^^^<
 
     // TODO
     /**
@@ -122,14 +126,15 @@ public class CommentedCode {
   }-*/
 
 
+// Noncompliant@+3
   /*
    * This is not a documentation comment
-   * for (Visitor visitor : visitors) { // Noncompliant@+3
+   * for (Visitor visitor : visitors) {
 //   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    *   continue;
-//  ^^^<
+//     ^^^^^^^^<
    * }
-//  ^^^<
+//  ^<
    */
   public void method(String s) {
   }

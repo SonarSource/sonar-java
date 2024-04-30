@@ -24,7 +24,7 @@ class CombineCatchCheckWithVersion {
       doCleanup();
       throw e;
     }
-   catch (ArrayStoreException e) { // Noncompliant {{Combine this catch with the one at line 16, which has the same body.}}
+   catch (ArrayStoreException e) { // Noncompliant {{Combine this catch with the one at line 17, which has the same body.}}
 //        ^^^^^^^^^^^^^^^^^^^^^
     doCleanup();
     logger.log(e);
@@ -37,7 +37,7 @@ class CombineCatchCheckWithVersion {
       doCleanup();
       logger.log(e);
     }
-    catch (SQLException e) { // Noncompliant {{Combine this catch with the one at line 31, which has the same body.}}
+    catch (SQLException e) { // Noncompliant {{Combine this catch with the one at line 35, which has the same body.}}
 //         ^^^^^^^^^^^^^^
       doCleanup();
       logger.log(e);

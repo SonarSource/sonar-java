@@ -127,7 +127,7 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getObject()).isEqualTo(0); // Compliant
     assertThat(x.equals(y)).isTrue(); // Noncompliant {{Use assertThat(actual).isEqualTo(expected) instead.}}
 //                          ^^^^^^
-//  ^^^<
+//             ^^^^^^^^^^^@-1<
     assertThat(x.equals(y)).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEqualTo(expected) instead.}}
     assertThat(x == y).isTrue(); // Noncompliant {{Use assertThat(actual).isSameAs(expected) instead.}}
     assertThat(x == y).isFalse(); // Noncompliant {{Use assertThat(actual).isNotSameAs(expected) instead.}}

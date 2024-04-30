@@ -3,16 +3,13 @@ class Foo {
     return 3;             // Compliant
     return (x);           // Compliant
     return ((x)); // Noncompliant {{Remove these useless parentheses.}}
-//          ^
-//  ^^^<
+//          ^  ^<
     return (x + 1);       // Compliant
     return ((x + 1)); // Noncompliant {{Remove these useless parentheses.}}
-//          ^
-//  ^^^<
+//          ^      ^<
     int x = (y / 2 + 1);  // Compliant
     int x2 = ((y / 2 + 1)); // Noncompliant {{Remove these useless parentheses.}}
-//            ^
-//  ^^^<
+//            ^          ^<
     int y = (4+X) * y;    // Compliant
     int y2 = 4+(X * y);    // Compliant
 

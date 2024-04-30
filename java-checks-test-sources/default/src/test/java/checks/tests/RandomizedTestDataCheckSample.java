@@ -8,11 +8,33 @@ public class RandomizedTestDataCheckSample {
 
   @Test
   public void randomizedTest() {
-    int userAge = new Random().nextInt(42); // Noncompliant {{Replace randomly generated values with fixed ones.}}
-//                ^^^^^^^^^^^^
+
     UUID userID = UUID.randomUUID(); // Noncompliant {{Replace randomly generated values with fixed ones.}}
 //                ^^^^^^^^^^^^^^^^^
+    UUID u1 = UUID.randomUUID();
+//            ^^^^^^^^^^^^^^^^^<
+    UUID u2 = UUID.randomUUID();
+//            ^^^^^^^^^^^^^^^^^<
+    UUID u3 = UUID.randomUUID();
+//            ^^^^^^^^^^^^^^^^^<
+    UUID u4 = UUID.randomUUID();
+//            ^^^^^^^^^^^^^^^^^<
+    UUID u5 = UUID.randomUUID();
+//            ^^^^^^^^^^^^^^^^^<
 
+    int userAge = new Random().nextInt(42); // Noncompliant {{Replace randomly generated values with fixed ones.}}
+//                ^^^^^^^^^^^^
+
+    int age1 = new Random().nextInt(42);
+//             ^^^^^^^^^^^^<
+    int age2 = new Random().nextInt(42);
+//             ^^^^^^^^^^^^<
+    int age3 = new Random().nextInt(42);
+//             ^^^^^^^^^^^^<
+    int age4 = new Random().nextInt(42);
+//             ^^^^^^^^^^^^<
+    int age5 = new Random().nextInt(42);
+//             ^^^^^^^^^^^^<
     MyRandom myRandom = new MyRandom(); // Compliant
   }
 
@@ -22,37 +44,13 @@ public class RandomizedTestDataCheckSample {
     UUID userID = UUID.fromString("00000000-000-0000-0000-000000000001"); //Compliant
   }
 
-  @Test
-  public void secondaryLocations() {
-    int age1 = new Random().nextInt(42);
-//  ^^^<
-    UUID u1 = UUID.randomUUID();
-//  ^^^<
-    int age2 = new Random().nextInt(42);
-//  ^^^<
-    UUID u2 = UUID.randomUUID();
-//  ^^^<
-    int age3 = new Random().nextInt(42);
-//  ^^^<
-    UUID u3 = UUID.randomUUID();
-//  ^^^<
-    int age4 = new Random().nextInt(42);
-//  ^^^<
-    UUID u4 = UUID.randomUUID();
-//  ^^^<
-    int age5 = new Random().nextInt(42);
-//  ^^^<
-    UUID u5 = UUID.randomUUID();
-//  ^^^<
-  }
-
   class MyRandom {
   }
 
   @Test
   public void randomizedTestWithSeed() {
     int userAge = new Random(111111111111L).nextInt(42);
-//  ^^^<
+//                ^^^^^^^^^^^^^^^^^^^^^^^^^<
   }
 
 }

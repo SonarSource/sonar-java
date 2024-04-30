@@ -12,7 +12,7 @@ public class SpringIncompatibleTransactionalCheckSample {
 
   @Transactional
   public void springTransactionalDefault() {
-//  ^^^<
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^>
   }
 
   @Transactional

@@ -53,8 +53,7 @@ class ForLoopVariableTypeCheckSample {
       for (A a : listOfB) {
       }
       for (A a : listOfB) { // Noncompliant {{Change "A" to the type handled by the Collection.}}
-//         ^
-//  ^^^<
+//         ^     ^^^^^^^<
         B b = (B) a;
       }
       for (Object o : listOfB) {

@@ -3,11 +3,9 @@ package checks;
 class StaticFieldUpdateInConstructorCheckSample {
   String field;
   static String staticField;
-//  ^^^<
+//^^^^^^^^^^^^^^^^^^^^^^^^^^>
   static String[] words = {"yolo", "fun"};
-//  ^^^<
   static int value = 14;
-//  ^^^<
 
   StaticFieldUpdateInConstructorCheckSample() {
     field = "world"; // Compliant
@@ -17,8 +15,10 @@ class StaticFieldUpdateInConstructorCheckSample {
 //                                            ^^^^^^^^^^^
     words[0] = "noFun"; // Noncompliant {{Remove this assignment of "words".}}
 //  ^^^^^
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@-10<
     value = 42; // Noncompliant {{Remove this assignment of "value".}}
 //  ^^^^^
+//^^^^^^^^^^^^^^^^^^^^^^@-12<
     value += 1; // Noncompliant {{Remove this assignment of "value".}}
 //  ^^^^^
 

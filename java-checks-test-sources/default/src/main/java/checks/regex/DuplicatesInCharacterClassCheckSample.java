@@ -6,18 +6,17 @@ public class DuplicatesInCharacterClassCheckSample {
     String str = "123";
     str.matches("[0-99]"); // Noncompliant {{Remove duplicates in this character class.}}
 //                ^^^
-//  ^^^<
+//                   ^@-1<
     str.matches("[90-9]"); // Noncompliant
 //                ^
-//  ^^^<
+//                 ^^^@-1<
     str.matches("[0-73-9]"); // Noncompliant
 //                ^^^
     str.matches("[0-93-57]"); // Noncompliant
-//                ^^^
-//  ^^^<
+//                ^^^   ^<
+//                   ^^^@-1<
     str.matches("[4-92-68]"); // Noncompliant
 //                ^^^
-//  ^^^<
     str.matches("[0-33-9]"); // Noncompliant
 //                ^^^
     str.matches("[0-70-9]"); // Noncompliant
@@ -28,7 +27,8 @@ public class DuplicatesInCharacterClassCheckSample {
 //                ^^^
     str.matches("[xxx]"); // Noncompliant
 //                ^
-//  ^^^<
+//                 ^@-1<
+//                  ^@-2<
     str.matches("[A-z_]"); // Noncompliant
 //                ^^^
     str.matches("(?i)[A-Za-z]"); // Noncompliant
@@ -100,61 +100,72 @@ public class DuplicatesInCharacterClassCheckSample {
 //     ^^^
       "d-e" +
       "9]");
-//  ^^^<
+//     ^<
     str.matches("[a-z" + // Noncompliant
 //                ^^^
       "0-9" +
-//  ^^^<
+//     ^^^<
       "b" +
-//  ^^^<
+//     ^<
       "9]");
-//  ^^^<
+//     ^<
     str.matches("[a-z" + // Noncompliant
 //                ^^^
       "0-9" +
-//  ^^^<
+//     ^^^<
       "b" +
-//  ^^^<
+//     ^<
       "c" +
-//  ^^^<
+//     ^<
       "9]");
-//  ^^^<
+//     ^<
     str.matches("[ba-zc]"); // Noncompliant
-//                ^
-//  ^^^<
+//                ^   ^<
+//                 ^^^@-1<
     // Miss "b" in secondary locations
     str.matches("[aba-z]"); // Noncompliant
 //                ^
-//  ^^^<
+//                 ^@-1<
+//                  ^^^@-2<
     str.matches("[aba-zc]"); // Noncompliant
-//                ^
-//  ^^^<
+//                ^    ^<
+//                 ^@-1<
+//                  ^^^@-2<
     str.matches("[a-c" + // Noncompliant
 //                ^^^
       "b" +
-//  ^^^<
+//     ^<
       "a-z" +
-//  ^^^<
+//     ^^^<
       "d]");
-//  ^^^<
+//     ^<
     str.matches("[0-54-6]"); // Noncompliant
 //                ^^^
-//  ^^^<
+//                   ^^^@-1<
     str.matches("[0-352-6]"); // Noncompliant
 //                ^^^
-//  ^^^<
+//                   ^@-1<
+//                    ^^^@-2<
     str.matches("[0-392-43-54-65-76-87-9]"); // Noncompliant
-//                ^^^
-//  ^^^<
+//                ^^^    ^^^<
+//                   ^@-1<
+//                    ^^^@-2<
+//                          ^^^@-3<
+//                             ^^^@-4<
+//                                ^^^@-5<
+//                                   ^^^@-6<
     str.matches("[0-397-96-85-72-44-63-5]"); // Noncompliant
-//                   ^
-//  ^^^<
     str.matches("[0-397-96-8" + // Noncompliant
 //                   ^
-//  ^^^<
+//                ^^^@-1<
+//                    ^^^@-2<
+//                       ^^^@-3<
       "a" + // not included
       "5-72-44-63-5]");
-//  ^^^<
+//     ^^^<
+//        ^^^@-1<
+//           ^^^@-2<
+//              ^^^@-3<
   }
 
   void compliant() {

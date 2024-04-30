@@ -1,7 +1,8 @@
 class EmptyBlock {
 
-  static { // Noncompliant@+1 {{Either remove or fill this block of code.}}
-//       ^
+// Noncompliant@+1
+  static {
+
   }
 
   static {
@@ -41,7 +42,7 @@ class EmptyBlock {
     }
 
 
-    switch (1) { // Noncompliant@+1 {{Either remove or fill this block of code.}}
+    switch (1) { // Noncompliant {{Either remove or fill this block of code.}}
 //             ^
     }
 

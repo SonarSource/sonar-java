@@ -15,12 +15,9 @@ class NestedIfStatementsCheckSample {
     }
 
     if (false) { // Compliant - 1
-//  ^^^<
       if (true) { // Compliant - 2
-//  ^^^<
       } else {
         if (false) { // Compliant - 3
-//  ^^^<
           if (true) { // Noncompliant {{Refactor this code to not nest more than 3 if/for/while/switch/try statements.}}
 //        ^^
             if (false) { // Compliant - 5

@@ -21,9 +21,9 @@ public class AssertJConsecutiveAssertionCheckSample {
     assertThat(myString).hasSize(2); // Noncompliant {{Join these multiple assertions subject to one assertion chain.}}
 //  ^^^^^^^^^^
     assertThat(myString).startsWith("4");
-//  ^^^<
+//  ^^^^^^^^^^<
     assertThat(myString).isEqualTo("42");
-//  ^^^<
+//  ^^^^^^^^^^<
   }
 
   @Test
@@ -52,11 +52,11 @@ public class AssertJConsecutiveAssertionCheckSample {
     assertThat(myOtherString).hasSize(2); // Noncompliant
 //  ^^^^^^^^^^
     assertThat(myOtherString).startsWith("2");
-//  ^^^<
+//  ^^^^^^^^^^<
     assertThat(myString).startsWith("4"); // Noncompliant
 //  ^^^^^^^^^^
     assertThat(myString).isEqualTo("42");
-//  ^^^<
+//  ^^^^^^^^^^<
   }
 
   @Test
@@ -301,34 +301,38 @@ class CustomAssertions {
   @Test
   void nonCompliantTypeTest1() {
     assertThat(myType).isNotNull(); // Noncompliant
+//  ^^^^^^^^^^
     assertThat(myType).isEqualTo(new MyType());
-//  ^^^<
+//  ^^^^^^^^^^<
 
     CustomAssert.assertThat(myType).isFoo(); // Noncompliant
+//               ^^^^^^^^^^
     CustomAssert.assertThat(myType).isBar();
-//  ^^^<
+//               ^^^^^^^^^^<
   }
 
   @Test
   void nonCompliantTypeTest2() {
     CustomAssert.assertThat(myType).isFoo(); // Noncompliant
+//               ^^^^^^^^^^
     CustomAssert.assertThat(myType).isBar();
-//  ^^^<
+//               ^^^^^^^^^^<
 
     assertThat(myType).isNotNull(); // will be included
-//  ^^^<
+//  ^^^^^^^^^^<
     assertThat(myType).isEqualTo(new MyType());
-//  ^^^<
+//  ^^^^^^^^^^<
   }
 
   @Test
   void nonCompliantTypeTest3() {
     CustomAssert.assertThat(myType) // Noncompliant
+//               ^^^^^^^^^^
       .isFoo()
       .isBar();
 
     assertThat(myType)
-//  ^^^<
+//  ^^^^^^^^^^<
       .isNotNull()
       .isEqualTo(new MyType());
   }
@@ -337,10 +341,11 @@ class CustomAssertions {
   void nonCompliantTypeTest4() {
     assertThat(myType).isNotNull(); // Compliant - mixed, can not be chained
     CustomAssert.assertThat(myType).isBar(); // Noncompliant
+//               ^^^^^^^^^^
     assertThat(myType).isEqualTo(new MyType());
-//  ^^^<
+//  ^^^^^^^^^^<
     CustomAssert.assertThat(myType).isBar();
-//  ^^^<
+//               ^^^^^^^^^^<
   }
 
   @Test

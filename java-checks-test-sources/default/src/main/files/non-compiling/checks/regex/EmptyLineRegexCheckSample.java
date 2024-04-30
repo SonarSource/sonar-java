@@ -6,16 +6,15 @@ public class EmptyLineRegexCheckSample {
 
   private static final int MY_FLAG = 0x10;
 
-  private static final String MY_FIELD_STRING = """
-    """;
+  private static final String MY_FIELD_STRING = "";
 
   void non_compliant_pattern_assigned(String str) {
     Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant {{Remove MULTILINE mode or change the regex.}}
 //                               ^^^^
     p1.matcher(str).find();
-//  ^^^<
+//             ^^^<
     p1.matcher((str)).find();
-//  ^^^<
+//             ^^^^^<
 
     Pattern p2 = Pattern.compile("(?m)^$"); // Noncompliant
 //                               ^^^^^^^^
@@ -27,7 +26,7 @@ public class EmptyLineRegexCheckSample {
 
   void non_compliant_pattern_directly_used(String str) {
     Pattern.compile("^$", Pattern.MULTILINE).matcher(str).find(); // Noncompliant
-//                  ^^^^
+//                  ^^^^                             ^^^<
     Pattern.compile("(^$)", Pattern.MULTILINE).matcher(str).find(); // Noncompliant
     Pattern.compile("(?:^$)", Pattern.MULTILINE).matcher(str).find(); // Noncompliant
     Pattern.compile("(?m)^$").matcher(str).find(); // Noncompliant
@@ -47,9 +46,10 @@ public class EmptyLineRegexCheckSample {
     Pattern.compile("^$", Pattern.MULTILINE).matcher("").find(); // Noncompliant
 
     Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant
+//                               ^^^^
     boolean b1 = p1.matcher("notEmpty").find();
     boolean b2 = p1.matcher("").find();
-//  ^^^<
+//                          ^^<
   }
 
   void not_used_in_problematic_situations(String str) {
@@ -136,12 +136,13 @@ public class EmptyLineRegexCheckSample {
 
   boolean not_tested_for_emptiness(String str1, String str2) {
     Pattern p4 = Pattern.compile("(?m)^$"); // Noncompliant
+//                               ^^^^^^^^
     if (str1.isEmpty()) {
       return false;
     }
     return p4.matcher(str1).find()
       && p4.matcher(str2).find();
-//  ^^^<
+//                  ^^^^<
   }
 
   void not_identifier(String str1) {
@@ -197,8 +198,7 @@ public class EmptyLineRegexCheckSample {
   }
 
   String getString() {
-    return """
-  """;
+    return "";
   }
 
   @javax.validation.constraints.Pattern(regexp = "^$") // ignored

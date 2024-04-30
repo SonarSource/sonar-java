@@ -9,7 +9,6 @@ class NestedEnumStaticClass {
   }
 
   static enum MyNestedStaticEnum { // Noncompliant {{Remove this redundant "static" qualifier; nested enum types are implicitly static.}}
-//^^^^^^
-//  ^^^<
+//^^^^^^ ^^^^<
   }
 }

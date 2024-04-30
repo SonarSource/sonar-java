@@ -11,9 +11,9 @@ class TryWithResourcesCheckSample {
     try { // Noncompliant {{Change this "try" to a try-with-resources.}}
 //  ^^^
       fr = new FileReader(fileName);
-//  ^^^<
+//         ^^^^^^^^^^^^^^^^^^^^^^^^<
       br = new BufferedReader(fr);
-//  ^^^<
+//         ^^^^^^^^^^^^^^^^^^^^^^<
       return br.readLine();
     } catch (Exception e) {
     } finally {
@@ -46,9 +46,9 @@ class TryWithResourcesCheckSample {
 
   void newJustBeforeTryStatement() {
     Auto a1 = new Auto();
-//  ^^^<
+//            ^^^^^^^^^^>
     Auto a2 = new Auto();
-//  ^^^<
+//            ^^^^^^^^^^>
     try { // Noncompliant {{Change this "try" to a try-with-resources.}}
 //  ^^^
       a1.doSomething();
@@ -61,11 +61,11 @@ class TryWithResourcesCheckSample {
   void newJustBeforeAndAfterTryStatement() {
     Auto a1 = null;
     Auto a2 = new Auto();
-//  ^^^<
+//            ^^^^^^^^^^>
     try { // Noncompliant {{Change this "try" to a try-with-resources.}}
 //  ^^^
       a1 = new Auto();
-//  ^^^<
+//         ^^^^^^^^^^<
       a1.doSomething();
     }  finally {
       a1.close();
@@ -117,12 +117,12 @@ class TryWithResourcesCheckSample {
 
   void enclosedTryWithFinallyStatements() {
     Auto a1 = new Auto();
-//  ^^^<
+//            ^^^^^^^^^^>
     try { // Noncompliant {{Change this "try" to a try-with-resources.}}
 //  ^^^
       a1.doSomething();
       Auto a2 = new Auto();
-//  ^^^<
+//              ^^^^^^^^^^<
       try {
         a2.doSomething();
       } finally {
@@ -135,12 +135,12 @@ class TryWithResourcesCheckSample {
 
   void enclosedTryStatements() {
     Auto a1 = new Auto();
-//  ^^^<
+//            ^^^^^^^^^^>
     try { // Noncompliant {{Change this "try" to a try-with-resources.}}
 //  ^^^
       a1.doSomething();
       Auto a2 = new Auto();
-//  ^^^<
+//              ^^^^^^^^^^<
       try {
         a2.doSomething();
         a2.close();

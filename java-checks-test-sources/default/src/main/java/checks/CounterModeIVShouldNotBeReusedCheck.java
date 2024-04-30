@@ -24,44 +24,43 @@ public class CounterModeIVShouldNotBeReusedCheck {
 
       
       char[] chars = "testme".toCharArray();
-//  ^^^<
+//                   ^^^^^^^^^^^^^^^^^^^^^^>
       byte[] bytes = String.valueOf(chars).getBytes(utf8);
-//  ^^^<
+//                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
       GCMParameterSpec params5 = new GCMParameterSpec(128, bytes);
-//  ^^^<
+//                                                         ^^^^^>
       cipher.init(1, skeySpec, params5); // Noncompliant
-//           ^^^^
-//  ^^^<
+//           ^^^^              ^^^^^^^<
       cipher.init(Cipher.DECRYPT_MODE, skeySpec, params5); // Compliant decrypt mode
       
       byte[] KEY_BYTES = {0x41, 0x70, 0x61, 0x63, 0x68, 0x65, 0x43, 0x6F, 0x6D, 0x6D, 0x6F, 0x6E, 0x73, 0x56, 0x46, 0x53};
-//  ^^^<
+//                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
       GCMParameterSpec params4 = new GCMParameterSpec(128, KEY_BYTES);
-//  ^^^<
+//                                                         ^^^^^^^^^>
       cipher.init(1, skeySpec, params4); // Noncompliant
-//           ^^^^
-//  ^^^<
+//           ^^^^              ^^^^^^^<
       
       byte[] src = "7cVgr5cbdCZV".getBytes(utf8);
-//  ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
       GCMParameterSpec params = new GCMParameterSpec(128, src);
-//  ^^^<
+//                                                        ^^^>
       cipher.init(1, skeySpec, params); // Noncompliant {{Use a dynamically-generated initialization vector (IV) to avoid IV-key pair reuse.}}
-//  ^^^<
+//           ^^^^              ^^^^^^<
       cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new GCMParameterSpec(128, src)); // Noncompliant
-//  ^^^<
+//           ^^^^                                                          ^^^<
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@-7<
       cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new GCMParameterSpec(128, new byte[]{}));
       
       String staticPiece1 = "imjustthefirsthalf";
-//  ^^^<
+//                          ^^^^^^^^^^^^^^^^^^^^>
       String staticPiece2 = "secondhalf";
-//  ^^^<
+//                          ^^^^^^^^^^^^>
       byte[] bytes1 = (staticPiece1+staticPiece2).getBytes();
-//  ^^^<
+//                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
       GCMParameterSpec gcm = new GCMParameterSpec(128, bytes1);
-//  ^^^<
+//                                                     ^^^^^^>
       cipher.init(1, skeySpec, gcm); // Noncompliant
-//  ^^^<
+//           ^^^^              ^^^<
       
       GCMParameterSpec gcm3 = new GCMParameterSpec(128, unkownBytes);
       cipher.init(1, skeySpec, gcm3);
@@ -92,13 +91,12 @@ public class CounterModeIVShouldNotBeReusedCheck {
       CCMBlockCipher ccmCipher   = new CCMBlockCipher(engine);
       GCMBlockCipher gcmCipher = new GCMBlockCipher(engine);
       byte[] nonce    = "7cVgr5cbdCZV".getBytes(utf8); // Secondary location: The initialization vector is a static value
-//  ^^^<
+//                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
       AEADParameters params   = new AEADParameters(new KeyParameter(key), 128, nonce); // Secondary location: The initialization vector is configured here.
-//  ^^^<
+//                                                                             ^^^^^>
       ccmCipher.init(true, params); // Noncompliant
       gcmCipher.init(true, params); // Noncompliant
-//              ^^^^
-//  ^^^<
+//              ^^^^       ^^^^^^<
       gcmCipher.init(false, params); // Compliant
       
       AEADParameters staticParams = new AEADParameters(new KeyParameter(key), 0, byteArrayFromElsewhere);
