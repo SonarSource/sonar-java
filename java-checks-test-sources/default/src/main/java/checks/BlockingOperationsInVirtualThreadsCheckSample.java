@@ -14,7 +14,7 @@ public class BlockingOperationsInVirtualThreadsCheckSample {
   void newThread() throws IOException {
 
     new Thread(() -> {
-//  ^^^<
+//      ^^^^^^>
       try {
         con.getResponseMessage(); // Noncompliant {{Use virtual threads for heavy blocking operations.}}
 //          ^^^^^^^^^^^^^^^^^^
