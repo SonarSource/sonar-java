@@ -11,8 +11,7 @@ public class ImpossibleBoundariesCheckSample {
 
   void noncompliant(String str) {
 
-    str.matches("$[a-z]^"); // Noncompliant {{Remove or replace this boundary that will never match because it appears after mandatory input.}}
-//                     ^
+    str.matches("$[a-z]^"); // Noncompliant {{Remove or replace this boundary that will never match because it appears before mandatory input.}} {{Remove or replace this boundary that will never match because it appears after mandatory input.}}
     str.matches("$[a-z]"); // Noncompliant {{Remove or replace this boundary that will never match because it appears before mandatory input.}}
 //               ^
     str.matches("$(abc)"); // Noncompliant
