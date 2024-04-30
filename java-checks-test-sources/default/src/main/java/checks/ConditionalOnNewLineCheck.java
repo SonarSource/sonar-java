@@ -6,7 +6,7 @@ class ConditionalOnNewLineCheck {
       // ...
     } if (condition2) { // Noncompliant {{Move this "if" to a new line or add the missing "else".}}
 //    ^^
-//  ^^^<
+//  ^@-1<
       //...
     }
     if (condition1) {
@@ -15,7 +15,7 @@ class ConditionalOnNewLineCheck {
 
     } if (condition2) { // Noncompliant {{Move this "if" to a new line or add the missing "else".}}
 //    ^^
-//  ^^^<
+//  ^@-1<
         //...
       }
 
@@ -25,7 +25,7 @@ class ConditionalOnNewLineCheck {
 
     } if (condition2) { // Noncompliant {{Move this "if" to a new line or add the missing "else".}}
 //    ^^
-//  ^^^<
+//  ^@-1<
       //...
     }
     if (condition1) {
@@ -46,7 +46,7 @@ class ConditionalOnNewLineCheck {
 
     } if (condition1) { // Noncompliant {{Move this "if" to a new line or add the missing "else".}}
 //    ^^
-//  ^^^<
+//  ^@-1<
       // ...
     } else {
       // ...
@@ -58,7 +58,7 @@ class ConditionalOnNewLineCheck {
       // ...
     } if (condition1) { // Noncompliant {{Move this "if" to a new line or add the missing "else".}}
 //    ^^
-//  ^^^<
+//  ^@-1<
         // ...
       } else {
         // ...
@@ -70,7 +70,7 @@ class ConditionalOnNewLineCheck {
       // ...
     } if (condition1) { // Noncompliant {{Move this "if" to a new line or add the missing "else".}}
 //    ^^
-//  ^^^<
+//  ^@-1<
       // ...
     } else {
       // ...
