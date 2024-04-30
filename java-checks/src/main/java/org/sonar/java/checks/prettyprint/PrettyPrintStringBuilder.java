@@ -47,15 +47,27 @@ public final class PrettyPrintStringBuilder {
     }
   }
 
+  /**
+   * Add the parameter to the builder. Each line but the first one will be prefixed with a number of indents corresponding to the current
+   * indentation level
+   */
   public PrettyPrintStringBuilder add(String str) {
     return addLines(str.lines());
   }
 
+  /**
+   * Add the parameter to the builder. The spaces at the beginning of each line but the first one will be removed and replaced with a
+   * number of indents corresponding to the current indentation level
+   */
   public PrettyPrintStringBuilder addStripLeading(String str) {
     var remLines = str.lines().map(String::stripLeading);
     return addLines(remLines);
   }
 
+  /**
+   * Consume the parameter stream and add the lines it contains to the builder, after prefixing them with a number of indents that
+   * corresponds to the current indentation level
+   */
   public PrettyPrintStringBuilder addLines(Stream<String> lines){
     var remLines = lines.iterator();
     while (remLines.hasNext()) {
@@ -68,6 +80,9 @@ public final class PrettyPrintStringBuilder {
     return this;
   }
 
+  /**
+   * Like {@link #add(String)} but the addition is performed only if the condition is true
+   */
   public PrettyPrintStringBuilder addIf(String str, boolean condition){
     if (condition){
       add(str);
@@ -75,6 +90,10 @@ public final class PrettyPrintStringBuilder {
     return this;
   }
 
+  /**
+   * Add the argument to the builder, adjusting the indents so that the last line is at the current indentation level
+   * (useful when adding blocks as text)
+   */
   public PrettyPrintStringBuilder addWithIndentBasedOnLastLine(String str) {
     var lines = str.lines().toList();
     var numCharsToRemove = numLeadingIndentChars(lines.get(lines.size() - 1));
@@ -94,17 +113,26 @@ public final class PrettyPrintStringBuilder {
     return add(" ");
   }
 
+  /**
+   * Add a new line to the builder and make an indent at the beginning (with the current indentation level)
+   */
   public PrettyPrintStringBuilder newLine() {
     sb.append(fileConfig.endOfLine());
     makeIndent();
     return this;
   }
 
+  /**
+   * Increment current indentation level
+   */
   public PrettyPrintStringBuilder incIndent() {
     indentLevel += 1;
     return this;
   }
 
+  /**
+   * Decrement current indentation level
+   */
   public PrettyPrintStringBuilder decIndent() {
     indentLevel -= 1;
     if (indentLevel < 0) {
@@ -113,10 +141,16 @@ public final class PrettyPrintStringBuilder {
     return this;
   }
 
+  /**
+   * Start a block: "{" followed by a new line with one more level of indentation
+   */
   public PrettyPrintStringBuilder blockStart() {
     return add("{").incIndent().newLine();
   }
 
+  /**
+   * End a block: new line and "}", after reducing the indentation level
+   */
   public PrettyPrintStringBuilder blockEnd() {
     return decIndent().newLine().add("}");
   }
@@ -135,6 +169,15 @@ public final class PrettyPrintStringBuilder {
     return addWithIndentBasedOnLastLine(contentForTree(tree, ctx));
   }
 
+  /**
+   * Add a sequence of elements to the builder, with a separator
+   * <p>
+   * Intended use (example): {@code pps.addWithSep(list, pps::addWithIndentBasedOnLastLine, pps::semicolonAndNewLine)}
+   *
+   * @param elems the elements to add
+   * @param elemAdder a lambda to add each element to the builder
+   * @param separator a lambda to add a separator to the builder
+   */
   public <T> PrettyPrintStringBuilder addWithSep(Iterable<T> elems, Consumer<T> elemAdder, Runnable separator) {
     var iter = elems.iterator();
     while (iter.hasNext()) {
@@ -167,6 +210,9 @@ public final class PrettyPrintStringBuilder {
     return addWithSep(elems, elem -> addTreeContentRaw(elem, ctx), separator);
   }
 
+  /**
+   * Creates a binary operation (lhs operator rhs), adding parentheses if needed to preserve the semantics
+   */
   public PrettyPrintStringBuilder addBinop(ExpressionTree lhs, Tree.Kind operator, ExpressionTree rhs, JavaFileScannerContext ctx){
     var operatorPrecedence = precedence(operator);
     var rhsPrecedence = precedence(rhs);
