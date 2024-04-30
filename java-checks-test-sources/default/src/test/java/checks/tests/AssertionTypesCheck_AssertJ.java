@@ -34,7 +34,7 @@ public class AssertionTypesCheck_AssertJ {
     assertThat(doublePrimitive()).isNotNull(); // Noncompliant
 
     assertThat(doublePrimitive())
-//  ^^^<
+//             ^^^^^^^^^^^^^^^^^>
       .withFailMessage("msg", 42)
       .isNotEqualTo(null); // Noncompliant {{Change the assertion arguments to not compare dissimilar types.}}
 //                  ^^^^
