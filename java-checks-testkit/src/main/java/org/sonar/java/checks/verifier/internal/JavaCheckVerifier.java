@@ -143,7 +143,12 @@ public class JavaCheckVerifier implements CheckVerifier {
         verifierIssue = singleFileVerifier.reportIssue(issueMessage).onFile();
       } else {
         if (textSpan != null) {
-          verifierIssue = singleFileVerifier.reportIssue(issueMessage).onRange(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter);
+          if (textSpan.endCharacter < 0) {
+            // Sometimes we create a textspan with endCharacter < 0 to raise an issue on the line.
+            verifierIssue = singleFileVerifier.reportIssue(issueMessage).onLine(textSpan.startLine);
+          } else {
+            verifierIssue = singleFileVerifier.reportIssue(issueMessage).onRange(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter);
+          }
         } else if (issue.getLine() != null) {
           verifierIssue = singleFileVerifier.reportIssue(issueMessage).onLine(issue.getLine());
         }
