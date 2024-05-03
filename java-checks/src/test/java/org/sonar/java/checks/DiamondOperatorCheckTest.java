@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -29,10 +28,9 @@ class DiamondOperatorCheckTest {
 
   @Test
   void test_no_version() {
-    ((InternalCheckVerifier) CheckVerifier.newInternalVerifier())
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/DiamondOperatorCheck_no_version.java"))
       .withCheck(new DiamondOperatorCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 
