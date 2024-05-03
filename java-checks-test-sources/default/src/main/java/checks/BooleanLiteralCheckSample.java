@@ -24,8 +24,7 @@ class BooleanLiteralCheckSample {
     false && foo(), // Noncompliant
     foo() || true, // Noncompliant
     true || false, // Noncompliant {{Remove the unnecessary boolean literals.}}
-//  ^^^^
-//  ^^^<
+//  ^^^^    ^^^^^<
 
     var == foo(true),   // Compliant
     !foo,               // Compliant
@@ -36,7 +35,7 @@ class BooleanLiteralCheckSample {
     var = foo() ? true : // Noncompliant {{Remove the unnecessary boolean literals.}} [[quickfixes=qf_cond1]]
 //                ^^^^
       false;
-//  ^^^<
+//    ^^^^^<
     // fix@qf_cond1 {{Simplify the expression}}
     // edit@qf_cond1 [[sc=16;el=+1;ec=12]] {{}}
     var = foo() ? false : true; // Noncompliant [[quickfixes=qf_cond2]]

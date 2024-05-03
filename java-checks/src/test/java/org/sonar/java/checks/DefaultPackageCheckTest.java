@@ -31,7 +31,7 @@ class DefaultPackageCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/EmptyFile.java"))
       .withCheck(new DefaultPackageCheck())
-      .verifyIssueOnFile("Move this file to a named package.");
+      .verifyIssues();
   }
 
   @Test
