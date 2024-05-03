@@ -21,19 +21,17 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class CompareStringsBoxedTypesWithEqualsCheckTest {
 
   @Test
   void detected() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheck.java"))
       .withCheck(new CompareStringsBoxedTypesWithEqualsCheck())
-      .withQuickFixes()
       .verifyIssues();
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheck.java"))

@@ -13,8 +13,8 @@ class EmptyMethodsCheckNoSemantics {
     public A(int c) {
     }
 
-
-    private void f() { // Noncompliant@+1 {{Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.}}
+    // Noncompliant@+1 {{Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.}}
+    private void f() {
 //               ^
     }
 

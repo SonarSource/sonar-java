@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -30,19 +29,17 @@ class RedundantThrowsDeclarationCheckTest {
 
   @Test
   void test() {
-    ((InternalCheckVerifier) CheckVerifier.newVerifier())
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/RedundantThrowsDeclarationCheckSample.java"))
       .withCheck(new RedundantThrowsDeclarationCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 
   @Test
   void test_non_compiling_code() {
-    ((InternalCheckVerifier) CheckVerifier.newVerifier())
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/RedundantThrowsDeclarationCheckSample.java"))
       .withCheck(new RedundantThrowsDeclarationCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

@@ -31,7 +31,7 @@ class TabCharacterCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/TabCharacter.java"))
       .withCheck(new TabCharacterCheck())
-      .verifyIssueOnFile("Replace all tab characters in this file by sequences of white-spaces.");
+      .verifyIssues();
   }
 
   @Test

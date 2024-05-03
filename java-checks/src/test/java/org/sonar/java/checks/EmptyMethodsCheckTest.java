@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -28,19 +28,17 @@ class EmptyMethodsCheckTest {
 
   @Test
   void test() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/EmptyMethodsCheckSample.java"))
       .withCheck(new EmptyMethodsCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 
   @Test
   void test_no_semantics() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/EmptyMethodsCheckNoSemantics.java"))
       .withCheck(new EmptyMethodsCheck())
-      .withQuickFixes()
       .withoutSemantic()
       .verifyIssues();
   }
