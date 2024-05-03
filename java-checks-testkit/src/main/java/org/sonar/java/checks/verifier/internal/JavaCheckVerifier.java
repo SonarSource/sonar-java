@@ -119,7 +119,7 @@ public class JavaCheckVerifier implements CheckVerifier {
 
     astScanner.setVisitorBridge(visitorsBridge);
 
-    List<InputFile> filesToParse = files;
+    List<InputFile> filesToParse = List.of(files.get(index));
     if (isCacheEnabled) {
       visitorsBridge.setCacheContext(cacheContext);
       filesToParse = astScanner.scanWithoutParsing(files).get(false);

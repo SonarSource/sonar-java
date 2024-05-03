@@ -21,18 +21,16 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class RedundantTypeCastCheckTest {
   @Test
   void test() {
-    ((InternalCheckVerifier) CheckVerifier.newInternalVerifier())
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/RedundantTypeCastCheckSample.java"))
       .withCheck(new RedundantTypeCastCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 
@@ -46,11 +44,10 @@ class RedundantTypeCastCheckTest {
 
   @Test
   void testWithoutSemantic() {
-    ((InternalCheckVerifier) CheckVerifier.newInternalVerifier())
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/RedundantTypeCastCheckSample.java"))
       .withCheck(new RedundantTypeCastCheck())
       .withoutSemantic()
-      .withQuickFixes()
       .verifyIssues();
 
     CheckVerifier.newVerifier()
