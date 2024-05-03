@@ -12,7 +12,7 @@ public class UnreachableCatchCheck {
     try {
       throwExtendsCustomException();
     } catch (ExtendsCustomException e) {
-//  ^^^<
+//           ^^^^^^^^^^^^^^^^^^^^^^>
       // ...
     } catch (CustomException e) { // Noncompliant {{Remove or refactor this catch clause because it is unreachable, hidden by previous catch block(s).}}
 //    ^^^^^
@@ -22,7 +22,7 @@ public class UnreachableCatchCheck {
     try {
       throw new ExtendsCustomException();
     } catch (ExtendsCustomException e) {
-//  ^^^<
+//           ^^^^^^^^^^^^^^^^^^^^^^>
       // ...
     } catch (CustomException|IllegalStateException e) { // Noncompliant {{Remove this type because it is unreachable, hidden by previous catch block(s).}}
 //           ^^^^^^^^^^^^^^^
@@ -33,10 +33,10 @@ public class UnreachableCatchCheck {
       if (true) throw new ExtendsExtendsCustomException();
       throw new ExtendsOtherExtendsCustomException();
     } catch (ExtendsExtendsCustomException e) {
-//  ^^^<
+//           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
       // ...
     } catch (ExtendsOtherExtendsCustomException e) {
-//  ^^^<
+//           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
       // ...
     } catch (ExtendsCustomException | OtherExtendsCustomException e) { // Noncompliant {{Remove or refactor this catch clause because it is unreachable, hidden by previous catch block(s).}}
 //    ^^^^^
@@ -62,10 +62,8 @@ public class UnreachableCatchCheck {
     try {
       throwExtendsExtendsCustomException();
     } catch (ExtendsExtendsCustomException e) {
-//  ^^^<
       // ...
     } catch (ExtendsCustomException e) { // Noncompliant
-//  ^^^<
       // ...
     } catch (CustomException e) { // Noncompliant
       // ...
@@ -74,10 +72,8 @@ public class UnreachableCatchCheck {
     try {
       throwExtendsCustomException();
     } catch (ExtendsExtendsCustomException e) { // reported as secondary, even if it can not be raised from code
-//  ^^^<
       // ...
     } catch (ExtendsCustomException e) {
-//  ^^^<
       // ...
     } catch (CustomException e) { // Noncompliant
       // ...
@@ -87,7 +83,6 @@ public class UnreachableCatchCheck {
       throwExtendsCustomException();
       throwIOException();
     } catch (ExtendsCustomException e) {
-//  ^^^<
       // ...
     } catch (IOException e) { // Compliant
       // ...
@@ -99,10 +94,10 @@ public class UnreachableCatchCheck {
       throwExtendsExtendsCustomException();
       throwIOException();
     } catch (ExtendsCustomException | IOException e) {
-//  ^^^<
+//           ^^^^^^^^^^^^^^^^^^^^^^>
       // ...
     } catch (CustomException e) { // Noncompliant
-      // ...
+    //^^^^^
     }
 
     try {

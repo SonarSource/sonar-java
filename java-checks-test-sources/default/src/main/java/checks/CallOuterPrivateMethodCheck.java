@@ -10,7 +10,7 @@ class CallOuterPrivateMethodCheck {
   }
   private void baz(){} // Noncompliant {{Move this method into "Inner".}}
 //             ^^^
-  private void bax(){} // Noncompliant {{Move this method into the anonymous class declared at line 59.}}
+  private void bax(){} // Noncompliant {{Move this method into the anonymous class declared at line 63.}}
 //             ^^^
   private static void bay(){} // Compliant, can't move static method into non-static inner class
   private static void baw() {} // Noncompliant {{Move this method into "StaticInner".}}

@@ -23,7 +23,7 @@ class SQLInjection {
       Connection conn = DriverManager.getConnection("url", "user1", "password");
       Statement stmt = conn.createStatement();
       ResultSet rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = 2001");
-      rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant [[sc=30;ec=79]] {{Make sure using a dynamically formatted SQL query is safe here.}}
+      rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant {{Make sure using a dynamically formatted SQL query is safe here.}} [[sc=30;ec=79]]
       String query = "SELECT Lname FROM Customers WHERE Snum = "+param;
       rs = stmt.executeQuery(query); // Noncompliant
 
@@ -118,15 +118,18 @@ class SQLInjection {
     String s3;
     s3 = "SELECT";
     s3 += param;
-    conn.prepareStatement(s3); // Noncompliant, true positive
+    conn.prepareStatement(s3); // Noncompliant
   }
 
   void testSecondaryLocations(String param) throws SQLException {
     Connection conn = DriverManager.getConnection("url", "user1", "password");
 
     String query1 = "SELECT"; // secondary location
+  //                ^^^^^^^^>
     query1 += param; // secondary location
-    conn.prepareStatement(query1); // Noncompliant [[secondary=128,127]]]
+  //          ^^^^^>
+    conn.prepareStatement(query1); // Noncompliant
+  //                      ^^^^^^
 
 
     boolean bool = false;

@@ -29,9 +29,9 @@ class EmptyFileCheckTest {
   @Test
   void test_empty_file() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/EmptyFile.java"))
+      .onFile(mainCodeSourcesPath("checks/EmptyFileCheckSample.java"))
       .withCheck(new EmptyFileCheck())
-      .verifyIssueOnFile("This file has 0 lines of code.");
+      .verifyIssues();
   }
 
   @Test

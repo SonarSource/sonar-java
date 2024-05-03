@@ -81,23 +81,24 @@ class SwitchWithTooManyCasesCheckCustom {
         System.out.println("");
     }
     switch (1) { // Noncompliant
+  //^^^^^^
       case 1:
-//  ^^^<
+//    ^^^^^^^<
         break;
       case 2:
-//  ^^^<
+//    ^^^^^^^<
         break;
       case 3:
-//  ^^^<
+//    ^^^^^^^<
         System.out.println("");
       case 4:
-//  ^^^<
+//    ^^^^^^^<
         break;
       case 5:
-//  ^^^<
+//    ^^^^^^^<
         break;
       case 6:
-//  ^^^<
+//    ^^^^^^^<
       case 7:
         System.out.println("");
     }

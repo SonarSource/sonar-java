@@ -5,29 +5,28 @@ class MembersDifferOnlyByCapitalizationCheckSample {
 abstract class A implements MyInterface {
   private static final long var1 = -9215047833775013803L; // Compliant
   public long var2 = 0L;
-//  ^^^<
 
   public void equAls(Object obj) {} // Noncompliant {{Rename method "equAls" to prevent any misunderstanding/clash with method "equals" defined in superclass "java.lang.Object".}}
-//            ^^^^^^
+
   protected void finaliZe() {} // Noncompliant {{Rename method "finaliZe" to prevent any misunderstanding/clash with method "finalize" defined in superclass "java.lang.Object".}}
 
   public void myMethod() {}
-//  ^^^<
 
   public Object stuff;
-//  ^^^<
+//              ^^^^^>
   public void stuff() {} // Noncompliant {{Rename method "stuff" to prevent any misunderstanding/clash with field "stuff".}}
+  //          ^^^^^
   public void stuff(int i) {} // Noncompliant {{Rename method "stuff" to prevent any misunderstanding/clash with field "stuff".}}
 
   public void foo(int i) {} // Compliant
-//  ^^^<
   public void foo(boolean i) {} // Compliant
 
   public void myOtherMethoD() {} // Noncompliant {{Rename method "myOtherMethoD" to prevent any misunderstanding/clash with method "myOtherMethod" defined in interface "checks.MembersDifferOnlyByCapitalizationCheckSample$MyInterface".}}
-
+//            ^^^^^^^^^^^^^
   private static void gUl() {} // Noncompliant {{Rename method "gUl" to prevent any misunderstanding/clash with method "gul".}}
+                    //^^^
   public void gul() {} // Compliant
-//  ^^^<
+//            ^^^<
 
   private boolean qix;
 
@@ -45,7 +44,6 @@ abstract class A implements MyInterface {
 
 interface MyInterface {
   public boolean myOtherMethod();
-//  ^^^<
   public void gul();
   public void myField();
 }
@@ -53,8 +51,9 @@ interface MyInterface {
 abstract class B extends A {
   private static final long var1 = -9215047833775013803L; // Compliant
   public void var2() {}; // Noncompliant
-//  ^^^<
+//            ^^^^>
   public void vAr2() {}; // Noncompliant
+            //^^^^
 
   public void myMethoD() {} // Noncompliant {{Rename method "myMethoD" to prevent any misunderstanding/clash with method "myMethod" defined in superclass "checks.MembersDifferOnlyByCapitalizationCheckSample$A".}}
 
@@ -65,9 +64,10 @@ abstract class B extends A {
 
 class Visibility {
   public int tmp0;
-//  ^^^<
+//           ^^^^>
   private void tmp0() {}
   public void tmp0(int i) {} // Noncompliant {{Rename method "tmp0" to prevent any misunderstanding/clash with field "tmp0".}}
+  //          ^^^^
   protected void tmp0(long l) {}
   void tmp0(short s) {}
 
@@ -78,18 +78,20 @@ class Visibility {
   void tmp1(short s) {}
 
   int tmp2;
-//  ^^^<
+//    ^^^^>
   private void tmp2() {}
   public void tmp2(int i) {}
   protected void tmp2(long l) {}
   void tmp2(short s) {} // Noncompliant {{Rename method "tmp2" to prevent any misunderstanding/clash with field "tmp2".}}
+  //   ^^^^
 
   protected int tmp3;
-//  ^^^<
+//              ^^^^>
   private void tmp3() {}
   public void tmp3(int i) {}
   protected void tmp3(long l) {} // Noncompliant {{Rename method "tmp3" to prevent any misunderstanding/clash with field "tmp3".}}
-  void tmp3(short s) {} 
+  //             ^^^^
+  void tmp3(short s) {}
 }
 
 public enum MyEnum {
@@ -102,7 +104,7 @@ public enum MyEnum {
 class ABuilder {
   String name;
   String wrong;
-//  ^^^<
+//       ^^^^^>
   String value;
 
   ABuilder name(String name) { // Compliant - exception for builder pattern
@@ -111,6 +113,7 @@ class ABuilder {
   }
 
   ABuilder WRONG(String wrong) { // Noncompliant
+    //     ^^^^^
     this.wrong = value;
     return this;
   }
@@ -194,8 +197,9 @@ class SameName {
 
   class NoDuplications {
     void Abcde(){ }
-//  ^^^<
+//       ^^^^^>
     void aBcde(){ } // Noncompliant {{Rename method "aBcde" to prevent any misunderstanding/clash with method "Abcde".}}
+    //   ^^^^^
     void abCde(){ } // Noncompliant {{Rename method "abCde" to prevent any misunderstanding/clash with method "Abcde".}}
     void abcDe(){ } // Noncompliant {{Rename method "abcDe" to prevent any misunderstanding/clash with method "Abcde".}}
     void abcdE(){ } // Noncompliant {{Rename method "abcdE" to prevent any misunderstanding/clash with method "Abcde".}}
