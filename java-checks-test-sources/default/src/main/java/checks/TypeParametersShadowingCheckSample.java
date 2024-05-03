@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.function.Function;
 
 public class TypeParametersShadowingCheckSample<T0> {
-//  ^^^<
+//                                              ^^>
   class TypeParameterHidesAnotherType<T> {
-//  ^^^<
+//                                    ^>
     public class Inner<T> { // Noncompliant {{Rename "T" which hides a type parameter from the outer scope.}}
 //                     ^
       //...

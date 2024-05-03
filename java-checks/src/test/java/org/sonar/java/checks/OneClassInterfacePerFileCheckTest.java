@@ -39,7 +39,7 @@ class OneClassInterfacePerFileCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/OneClassInterfacePerFileCheckNoncompliant.java"))
       .withCheck(new OneClassInterfacePerFileCheck())
-      .verifyIssueOnFile("There are 4 top-level types in this file; move all but one of them to other files.");
+      .verifyIssues();
   }
 
 }

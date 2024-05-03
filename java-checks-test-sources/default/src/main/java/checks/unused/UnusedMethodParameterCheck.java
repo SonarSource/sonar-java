@@ -58,14 +58,14 @@ class C extends B {
 
 class D extends C {
   void foo(int a, // Noncompliant {{Remove these unused method parameters "a", "b", "d", "e".}} [[quickfixes=qf_2_1,qf_2_2,qf_2_3,qf_2_4]]
-//             ^
            @Nullable Object b,
-//  ^^^<
            int c,
            int d,
-//  ^^^<
            @Nullable Object e) {
-//  ^^^<
+//             ^@-4
+//                          ^@-4<
+//             ^@-3<
+//                          ^@-3<
     // fix@qf_2_1 {{Remove "a"}}
     // edit@qf_2_1 [[sl=+0;sc=12;el=+1;ec=12]] {{}}
     // fix@qf_2_2 {{Remove "b"}}
@@ -360,12 +360,12 @@ class JakartaAnnotations {
   void fooBar(int a, // Noncompliant {{Remove these unused method parameters "a", "b", "d", "e".}}
 //                ^
     @jakarta.annotation.Nullable Boolean b,
-//  ^^^<
+//                                       ^<
     int c,
     int d,
-//  ^^^<
+//      ^<
     @jakarta.annotation.Nullable Object e) {
-//  ^^^<
+//                                      ^<
     System.out.println(c);
   }
   public void foo(@jakarta.enterprise.event.Observes Object event, int arg2) { // Compliant

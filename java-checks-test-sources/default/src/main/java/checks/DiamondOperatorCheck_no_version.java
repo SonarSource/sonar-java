@@ -14,11 +14,11 @@ class DiamonOperatorCheck_no_version {
   // edit@qf1 [[sc=39;ec=47]] {{<>}}
 
   List<Object> myList3 = new ArrayList< // Noncompliant [[quickfixes=qf2]]
-//^[sc=39;ec=6;sl=15;el=17]
+//^[sc=39;ec=5;el=+3]
     Object
     >();
   // fix@qf2 {{Replace with <>}}
-  // edit@qf2 [[sc=39;el=+2;ec=6]] {{<>}}
+  // edit@qf2 [[sc=39;el=+3;ec=6]] {{<>}}
 
   void foo() {
     List<Object> myList;
