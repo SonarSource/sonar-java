@@ -38,10 +38,9 @@ class PrivateFieldUsedLocallyCheckTest {
 
   @Test
   void test_quick_fixes() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/PrivateFieldUsedLocallyCheckSample.java"))
       .withCheck(new PrivateFieldUsedLocallyCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

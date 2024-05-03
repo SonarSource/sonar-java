@@ -30,10 +30,9 @@ class ThreadLocalCleanupCheckTest {
 
   @Test
   void test() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/ThreadLocalCleanup.java"))
       .withCheck(new ThreadLocalCleanupCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

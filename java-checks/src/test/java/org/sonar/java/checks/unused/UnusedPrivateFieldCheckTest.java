@@ -30,10 +30,9 @@ class UnusedPrivateFieldCheckTest {
 
   @Test
   void test() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldCheck.java"))
       .withCheck(new UnusedPrivateFieldCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 
@@ -55,10 +54,9 @@ class UnusedPrivateFieldCheckTest {
 
   @Test
   void test_quick_fixes() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldCheckWithQuickfixes.java"))
       .withCheck(new UnusedPrivateFieldCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

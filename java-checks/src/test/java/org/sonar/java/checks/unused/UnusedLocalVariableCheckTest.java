@@ -28,10 +28,9 @@ class UnusedLocalVariableCheckTest {
 
   @Test
   void test() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/unused/UnusedLocalVariableCheck.java"))
       .withCheck(new UnusedLocalVariableCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

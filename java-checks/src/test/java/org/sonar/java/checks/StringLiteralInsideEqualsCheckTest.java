@@ -20,7 +20,8 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
+
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
@@ -28,19 +29,17 @@ class StringLiteralInsideEqualsCheckTest {
 
   @Test
   void test() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/StringLiteralInsideEqualsCheckSample.java"))
       .withCheck(new StringLiteralInsideEqualsCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
-  
+
   @Test
   void testNonCompiling() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/StringLiteralInsideEqualsCheckSample.java"))
       .withCheck(new StringLiteralInsideEqualsCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

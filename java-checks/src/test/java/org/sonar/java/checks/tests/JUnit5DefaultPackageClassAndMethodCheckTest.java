@@ -31,10 +31,9 @@ class JUnit5DefaultPackageClassAndMethodCheckTest {
 
   @Test
   void test() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(testSourcePath)
       .withCheck(new JUnit5DefaultPackageClassAndMethodCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

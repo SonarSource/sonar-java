@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -28,10 +28,9 @@ class BigDecimalDoubleConstructorCheckTest {
 
   @Test
   void test() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/BigDecimalDoubleConstructorCheckSample.java"))
       .withCheck(new BigDecimalDoubleConstructorCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 }

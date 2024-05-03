@@ -38,10 +38,9 @@ class OverrideAnnotationCheckTest {
 
   @Test
   void quickfixes() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/OverrideAnnotationCheck_QuickFixes.java"))
       .withCheck(new OverrideAnnotationCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

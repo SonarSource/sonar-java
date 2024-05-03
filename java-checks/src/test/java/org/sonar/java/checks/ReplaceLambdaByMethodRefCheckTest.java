@@ -33,18 +33,16 @@ class ReplaceLambdaByMethodRefCheckTest {
 
   @Test
   void java8() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath(FILENAME))
       .withCheck(new ReplaceLambdaByMethodRefCheck())
       .withJavaVersion(8)
-      .withQuickFixes()
       .verifyIssues();
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath(FILENAME))
       .withCheck(new ReplaceLambdaByMethodRefCheck())
       .withJavaVersion(8)
       .withoutSemantic()
-      .withQuickFixes()
       .verifyIssues();
   }
 
