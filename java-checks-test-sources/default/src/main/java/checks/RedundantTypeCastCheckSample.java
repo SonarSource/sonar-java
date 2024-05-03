@@ -17,7 +17,7 @@ class Outer {
   List list;
   List<String> foo() {
     Object obj = null;
-    Object o1 = (List<String>) foo(); // Noncompliant [[quickfixes=qf1]] {{Remove this unnecessary cast to "List".}}
+    Object o1 = (List<String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}} [[quickfixes=qf1]]
 //              ^^^^^^^^^^^^^^
                                       // fix@qf1 {{Remove the cast to "List"}}
                                       // edit@qf1 [[sc=17;ec=32]] {{}}

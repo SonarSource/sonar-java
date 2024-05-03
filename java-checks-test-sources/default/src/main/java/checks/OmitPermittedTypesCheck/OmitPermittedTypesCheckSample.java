@@ -1,6 +1,6 @@
 package checks.OmitPermittedTypesCheck;
 
-sealed class InSameFileA permits // Noncompliant [[quickfixes=qf0]] {{Remove this redundant permitted list.}}
+sealed class InSameFileA permits // Noncompliant {{Remove this redundant permitted list.}} [[quickfixes=qf0]]
 //                       ^^^^^^^
   InSameFileB,
 //  ^^^<
@@ -27,7 +27,7 @@ sealed class InSameFile2A permits InSameFile2B, InSameFile2C {} // Noncompliant 
 // fix@qf1 {{Remove permitted list}}
 // edit@qf1 [[sc=27;ec=62]] {{}}
 final class InSameFile2B extends InSameFile2A {}
-sealed class InSameFile2C extends InSameFile2A permits InSameFile2D {} // Noncompliant [[quickfixes=qf2]] {{Remove this redundant permitted list.}}
+sealed class InSameFile2C extends InSameFile2A permits InSameFile2D {} // Noncompliant {{Remove this redundant permitted list.}} [[quickfixes=qf2]]
 //                                             ^^^^^^^
 // fix@qf2 {{Remove permitted list}}
 // edit@qf2 [[sc=48;ec=69]] {{}}

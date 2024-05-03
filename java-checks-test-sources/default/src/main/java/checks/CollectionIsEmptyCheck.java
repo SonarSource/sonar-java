@@ -12,7 +12,7 @@ class CollectionIsEmptyCheck {
     boolean b;
     int i;
 
-    b = myCollection.size() == 0; // Noncompliant [[quickfixes=qf1]] {{Use isEmpty() to check whether the collection is empty or not.}}
+    b = myCollection.size() == 0; // Noncompliant {{Use isEmpty() to check whether the collection is empty or not.}} [[quickfixes=qf1]]
 //      ^^^^^^^^^^^^^^^^^^^^^^^^
     // fix@qf1 {{Use "isEmpty()"}}
     // edit@qf1 [[sc=22;ec=33]] {{isEmpty()}}

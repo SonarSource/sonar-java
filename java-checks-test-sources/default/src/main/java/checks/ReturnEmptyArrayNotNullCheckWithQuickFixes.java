@@ -20,7 +20,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   Object[] array1() {
     Object[] result = new Object[0];
-    return null; // Noncompliant [[quickfixes=array]] {{Return an empty array instead of null.}}
+    return null; // Noncompliant {{Return an empty array instead of null.}} [[quickfixes=array]]
 //         ^^^^
     // fix@array {{Replace "null" with an empty array}}
     // edit@array [[sc=12;ec=16]] {{new Object[0]}}
@@ -28,7 +28,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   String[][] array2() {
     String[][] result = new String[0][0];
-    return null; // Noncompliant [[quickfixes=multi_dim_array]] {{Return an empty array instead of null.}}
+    return null; // Noncompliant {{Return an empty array instead of null.}} [[quickfixes=multi_dim_array]]
 //         ^^^^
     // fix@multi_dim_array {{Replace "null" with an empty array}}
     // edit@multi_dim_array [[sc=12;ec=16]] {{new String[0][0]}}
@@ -36,7 +36,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   List<String>[] array_generics() {
     List<String>[] result = new List[0];
-    return null; // Noncompliant [[quickfixes=array_generics]] {{Return an empty array instead of null.}}
+    return null; // Noncompliant {{Return an empty array instead of null.}} [[quickfixes=array_generics]]
 //         ^^^^
     // fix@array_generics {{Replace "null" with an empty array}}
     // edit@array_generics [[sc=12;ec=16]] {{new List[0]}}
@@ -44,7 +44,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   List<Map<String[], Set<Object>>[]>[][] strange_array() {
     List<Map<String[], Set<Object>>[]>[][] result = new List[0][0];
-    return null; // Noncompliant [[quickfixes=strange_array]] {{Return an empty array instead of null.}}
+    return null; // Noncompliant {{Return an empty array instead of null.}} [[quickfixes=strange_array]]
 //         ^^^^
     // fix@strange_array {{Replace "null" with an empty array}}
     // edit@strange_array [[sc=12;ec=16]] {{new List[0][0]}}
@@ -52,7 +52,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   List<Object> list() {
     List<Object> result = Collections.emptyList();
-    return null; // Noncompliant [[quickfixes=list]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=list]]
 //         ^^^^
     // fix@list {{Replace "null" with an empty List}}
     // edit@list [[sc=12;ec=16]] {{Collections.emptyList()}}
@@ -60,7 +60,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   ArrayList<Object> arraylist() {
     ArrayList<Object> result = new ArrayList<>();
-    return null; // Noncompliant [[quickfixes=arraylist]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=arraylist]]
 //         ^^^^
     // fix@arraylist {{Replace "null" with an empty ArrayList}}
     // edit@arraylist [[sc=12;ec=16]] {{new ArrayList<>()}}
@@ -68,7 +68,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   LinkedList<Object> linkedlist() {
     LinkedList<Object> result = new LinkedList<>();
-    return null; // Noncompliant [[quickfixes=linkedlist]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=linkedlist]]
 //         ^^^^
     // fix@linkedlist {{Replace "null" with an empty LinkedList}}
     // edit@linkedlist [[sc=12;ec=16]] {{new LinkedList<>()}}
@@ -76,13 +76,13 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   // we don't know if there is a constructor
   MyCustomList<Object> customList() {
-    return null; // Noncompliant [[quickfixes=!]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=!]]
 //         ^^^^
   }
 
   Set<Object> set() {
     Set<Object> result = Collections.emptySet();
-    return null; // Noncompliant [[quickfixes=set]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=set]]
 //         ^^^^
     // fix@set {{Replace "null" with an empty Set}}
     // edit@set [[sc=12;ec=16]] {{Collections.emptySet()}}
@@ -90,7 +90,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   HashSet<Object> hashset() {
     HashSet<Object> result = new HashSet<>();
-    return null; // Noncompliant [[quickfixes=hashset]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=hashset]]
 //         ^^^^
     // fix@hashset {{Replace "null" with an empty HashSet}}
     // edit@hashset [[sc=12;ec=16]] {{new HashSet<>()}}
@@ -98,7 +98,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   TreeSet<Object> treeset() {
     TreeSet<Object> result = new TreeSet<>();
-    return null; // Noncompliant [[quickfixes=treeset]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=treeset]]
 //         ^^^^
     // fix@treeset {{Replace "null" with an empty TreeSet}}
     // edit@treeset [[sc=12;ec=16]] {{new TreeSet<>()}}
@@ -106,7 +106,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   SortedSet<Object> sortedset() {
     SortedSet<Object> result = Collections.emptySortedSet();
-    return null; // Noncompliant [[quickfixes=sortedset]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=sortedset]]
 //         ^^^^
     // fix@sortedset {{Replace "null" with an empty SortedSet}}
     // edit@sortedset [[sc=12;ec=16]] {{Collections.emptySortedSet()}}
@@ -114,7 +114,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   NavigableSet<Object> navigableset() {
     NavigableSet<Object> result = Collections.emptyNavigableSet();
-    return null; // Noncompliant [[quickfixes=navigableset]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=navigableset]]
 //         ^^^^
     // fix@navigableset {{Replace "null" with an empty NavigableSet}}
     // edit@navigableset [[sc=12;ec=16]] {{Collections.emptyNavigableSet()}}
@@ -122,7 +122,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   Map<Object, Object> map() {
     Map<Object, Object> result = Collections.emptyMap();
-    return null; // Noncompliant [[quickfixes=map]] {{Return an empty map instead of null.}}
+    return null; // Noncompliant {{Return an empty map instead of null.}} [[quickfixes=map]]
 //         ^^^^
     // fix@map {{Replace "null" with an empty Map}}
     // edit@map [[sc=12;ec=16]] {{Collections.emptyMap()}}
@@ -130,7 +130,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   HashMap<Object, Object> hashmap() {
     HashMap<Object, Object> result = new HashMap<>();
-    return null; // Noncompliant [[quickfixes=hashmap]] {{Return an empty map instead of null.}}
+    return null; // Noncompliant {{Return an empty map instead of null.}} [[quickfixes=hashmap]]
 //         ^^^^
     // fix@hashmap {{Replace "null" with an empty HashMap}}
     // edit@hashmap [[sc=12;ec=16]] {{new HashMap<>()}}
@@ -138,7 +138,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   SortedMap<Object,Object> sortedmap() {
     SortedMap<Object, Object> result = Collections.emptySortedMap();
-    return null; // Noncompliant [[quickfixes=sortedmap]] {{Return an empty map instead of null.}}
+    return null; // Noncompliant {{Return an empty map instead of null.}} [[quickfixes=sortedmap]]
 //         ^^^^
     // fix@sortedmap {{Replace "null" with an empty SortedMap}}
     // edit@sortedmap [[sc=12;ec=16]] {{Collections.emptySortedMap()}}
@@ -146,7 +146,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   NavigableMap<Object, Object> navigableMap() {
     NavigableMap<Object, Object> result = Collections.emptyNavigableMap();
-    return null; // Noncompliant [[quickfixes=navigableMap]] {{Return an empty map instead of null.}}
+    return null; // Noncompliant {{Return an empty map instead of null.}} [[quickfixes=navigableMap]]
 //         ^^^^
     // fix@navigableMap {{Replace "null" with an empty NavigableMap}}
     // edit@navigableMap [[sc=12;ec=16]] {{Collections.emptyNavigableMap()}}
@@ -154,7 +154,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   Collection<Object> collection() {
     Collection<Object> result = Collections.emptyList();
-    return null; // Noncompliant [[quickfixes=collection]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=collection]]
 //         ^^^^
     // fix@collection {{Replace "null" with an empty Collection}}
     // edit@collection [[sc=12;ec=16]] {{Collections.emptyList()}}
@@ -163,7 +163,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
   // using vectors triggers java:S1149 - so no quick-fix
   Vector<Object> vector() {
     Vector<Object> result = new Vector<>();
-    return null; // Noncompliant [[quickfixes=!]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=!]]
 //         ^^^^
   }
 

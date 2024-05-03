@@ -19,7 +19,7 @@ import org.apache.struts.actions.BaseAction;
 class UnusedMethodParameterCheck extends B {
   void doSomething() { }
 
-  void doSomething(int a, int b) { // Noncompliant [[quickfixes=qf_1_1]] {{Remove this unused method parameter "b".}}
+  void doSomething(int a, int b) { // Noncompliant {{Remove this unused method parameter "b".}} [[quickfixes=qf_1_1]]
 //                            ^
     // fix@qf_1_1 {{Remove "b"}}
     // edit@qf_1_1 [[sc=25;ec=32]] {{}}
@@ -57,7 +57,7 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int a, // Noncompliant [[quickfixes=qf_2_1,qf_2_2,qf_2_3,qf_2_4]] {{Remove these unused method parameters "a", "b", "d", "e".}}
+  void foo(int a, // Noncompliant {{Remove these unused method parameters "a", "b", "d", "e".}} [[quickfixes=qf_2_1,qf_2_2,qf_2_3,qf_2_4]]
 //             ^
            @Nullable Object b,
 //  ^^^<
@@ -78,7 +78,7 @@ class D extends C {
   }
 }
 class E extends C {
-  void bar(int a){ // Noncompliant [[quickfixes=qf_3_1]] {{Remove this unused method parameter "a".}}
+  void bar(int a){ // Noncompliant {{Remove this unused method parameter "a".}} [[quickfixes=qf_3_1]]
 //             ^
     // fix@qf_3_1 {{Remove "a"}}
     // edit@qf_3_1 [[sc=12;ec=17]] {{}}

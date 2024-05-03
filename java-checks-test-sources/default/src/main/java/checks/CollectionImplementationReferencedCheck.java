@@ -16,7 +16,7 @@ class EmployeesTopLevel {
 
   public EmployeesTopLevel(String s) { }
 
-  public HashSet<Employee> employees = new HashSet<>(); // Noncompliant [[quickfixes=HashSet1]] {{The type of "employees" should be an interface such as "Set" rather than the implementation "HashSet".}}
+  public HashSet<Employee> employees = new HashSet<>(); // Noncompliant {{The type of "employees" should be an interface such as "Set" rather than the implementation "HashSet".}} [[quickfixes=HashSet1]]
 //       ^^^^^^^
                                                                  // fix@HashSet1 {{Replace "HashSet" by "Set"}}
                                                                  // edit@HashSet1 [[sc=10;ec=17]] {{Set}}
@@ -24,7 +24,7 @@ class EmployeesTopLevel {
 
   public HashSet<Employee> getEmployees() { return employees; } // Noncompliant {{The return type of this method should be an interface such as "Set" rather than the implementation "HashSet".}}
 
-  public LinkedList<Employee> foo1() { return null; } // Noncompliant [[quickfixes=LinkedList]] {{The return type of this method should be an interface such as "List" rather than the implementation "LinkedList".}}
+  public LinkedList<Employee> foo1() { return null; } // Noncompliant {{The return type of this method should be an interface such as "List" rather than the implementation "LinkedList".}} [[quickfixes=LinkedList]]
 //       ^^^^^^^^^^
                                                                  // fix@LinkedList {{Replace "LinkedList" by "List"}}
                                                                  // edit@LinkedList [[sc=10;ec=20]] {{List}}
@@ -32,7 +32,7 @@ class EmployeesTopLevel {
 
   private LinkedList<Employee> foo2() { return null; }
 
-  public java.util.HashSet<Employee> foo3() { return null; } // Noncompliant [[quickfixes=HashSet2]] {{The return type of this method should be an interface such as "Set" rather than the implementation "HashSet".}}
+  public java.util.HashSet<Employee> foo3() { return null; } // Noncompliant {{The return type of this method should be an interface such as "Set" rather than the implementation "HashSet".}} [[quickfixes=HashSet2]]
 //       ^^^^^^^^^^^^^^^^^
                                                                   // fix@HashSet2 {{Replace "HashSet" by "Set"}}
                                                                   // edit@HashSet2 [[sc=10;ec=27]] {{Set}}
@@ -45,7 +45,7 @@ class EmployeesTopLevel {
   public LinkedList<Employee> publicList; // Noncompliant {{The type of "publicList" should be an interface such as "List" rather than the implementation "LinkedList".}}
   private LinkedList<Employee> privateList;
 
-  public ConcurrentHashMap<?,?> concurrentHashMap() { return null; } // Noncompliant [[quickfixes=ConcurrentHashMap]] {{The return type of this method should be an interface such as "ConcurrentMap" rather than the implementation "ConcurrentHashMap".}}
+  public ConcurrentHashMap<?,?> concurrentHashMap() { return null; } // Noncompliant {{The return type of this method should be an interface such as "ConcurrentMap" rather than the implementation "ConcurrentHashMap".}} [[quickfixes=ConcurrentHashMap]]
 //       ^^^^^^^^^^^^^^^^^
                                                                      // fix@ConcurrentHashMap {{Replace "ConcurrentHashMap" by "ConcurrentMap"}}
                                                                      // edit@ConcurrentHashMap [[sc=10;ec=27]] {{ConcurrentMap}}

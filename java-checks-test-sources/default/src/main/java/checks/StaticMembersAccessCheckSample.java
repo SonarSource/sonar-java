@@ -36,7 +36,7 @@ class StaticMembersAccessCheckSampleB {
   }
 
   public void noncompliant() {
-    first.counter ++; // Noncompliant [[quickfixes=qf1]] {{Change this instance-reference to a static reference.}}
+    first.counter ++; // Noncompliant {{Change this instance-reference to a static reference.}} [[quickfixes=qf1]]
 //  ^^^^^
     // fix@qf1 {{Replace "first" by "StaticMembersAccessCheckSampleA"}}
     // edit@qf1 [[sc=5;ec=10]] {{StaticMembersAccessCheckSampleA}}

@@ -16,12 +16,12 @@ class ArrayHashCodeAndToStringCheckSample {
   }
 
   void testQuickfixes(String[] args) {
-    String argStr = args.toString(); // Noncompliant [[quickfixes=qfToString]] {{Use "Arrays.toString(array)" instead.}}
+    String argStr = args.toString(); // Noncompliant {{Use "Arrays.toString(array)" instead.}} [[quickfixes=qfToString]]
 //                       ^^^^^^^^
     // fix@qfToString {{Use "Arrays.toString(array)" instead}}
     // edit@qfToString [[sc=21;ec=36]] {{Arrays.toString(args)}}
 
-    int argHash = args.hashCode(); // Noncompliant [[quickfixes=qfHashCode]] {{Use "Arrays.hashCode(array)" instead.}}
+    int argHash = args.hashCode(); // Noncompliant {{Use "Arrays.hashCode(array)" instead.}} [[quickfixes=qfHashCode]]
 //                     ^^^^^^^^
     // fix@qfHashCode {{Use "Arrays.hashCode(array)" instead}}
     // edit@qfHashCode [[sc=19;ec=34]] {{Arrays.hashCode(args)}}
@@ -30,12 +30,12 @@ class ArrayHashCodeAndToStringCheckSample {
     argHash = Arrays.hashCode(args); // Compliant
 
     int[][] array = new int[42][42];
-    array[0].toString(); // Noncompliant [[quickfixes=qfToString1]] {{Use "Arrays.toString(array)" instead.}}
+    array[0].toString(); // Noncompliant {{Use "Arrays.toString(array)" instead.}} [[quickfixes=qfToString1]]
 //           ^^^^^^^^
     // fix@qfToString1 {{Use "Arrays.toString(array)" instead}}
     // edit@qfToString1 [[sc=5;ec=24]] {{Arrays.toString(array[0])}}
 
-    this.foo.bar.myArray.toString(); // Noncompliant [[quickfixes=qfToString2]] {{Use "Arrays.toString(array)" instead.}}
+    this.foo.bar.myArray.toString(); // Noncompliant {{Use "Arrays.toString(array)" instead.}} [[quickfixes=qfToString2]]
 //                       ^^^^^^^^
     // fix@qfToString2 {{Use "Arrays.toString(array)" instead}}
     // edit@qfToString2 [[sc=5;ec=36]] {{Arrays.toString(this.foo.bar.myArray)}}

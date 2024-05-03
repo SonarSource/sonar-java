@@ -289,41 +289,41 @@ class CastCheck {
 
   void quickFixes(List<String> strings) {
     IntStream.range(1, 5).forEach(x -> staticMethod(x)); // Compliant, shorter
-    IntStream.range(1, 5).forEach(x -> CastCheck.staticMethod(x)); // Noncompliant [[quickfixes=qf1]] {{Replace this lambda with method reference 'CastCheck::staticMethod'.}}
+    IntStream.range(1, 5).forEach(x -> CastCheck.staticMethod(x)); // Noncompliant {{Replace this lambda with method reference 'CastCheck::staticMethod'.}} [[quickfixes=qf1]]
 //                                  ^^
     // fix@qf1 {{Replace with "CastCheck::staticMethod"}}
     // edit@qf1 [[sc=35;ec=65]] {{CastCheck::staticMethod}}
-    IntStream.range(1, 5).forEach(param -> staticMethod(param)); // Noncompliant [[quickfixes=qf2]] {{Replace this lambda with method reference 'CastCheck::staticMethod'.}}
+    IntStream.range(1, 5).forEach(param -> staticMethod(param)); // Noncompliant {{Replace this lambda with method reference 'CastCheck::staticMethod'.}} [[quickfixes=qf2]]
 //                                      ^^
     // fix@qf2 {{Replace with "CastCheck::staticMethod"}}
     // edit@qf2 [[sc=35;ec=63]] {{CastCheck::staticMethod}}
-    IntStream.range(1, 5).forEach(x -> notStatic(x)); // Noncompliant [[quickfixes=qf3]] {{Replace this lambda with method reference 'this::notStatic'.}}
+    IntStream.range(1, 5).forEach(x -> notStatic(x)); // Noncompliant {{Replace this lambda with method reference 'this::notStatic'.}} [[quickfixes=qf3]]
 //                                  ^^
     // fix@qf3 {{Replace with "this::notStatic"}}
     // edit@qf3 [[sc=35;ec=52]] {{this::notStatic}}
     Nested n = new Nested(1);
-    IntStream.range(1, 5).forEach(x -> n.takeInt(x)); // Noncompliant [[quickfixes=qf4]] {{Replace this lambda with method reference 'n::takeInt'.}}
+    IntStream.range(1, 5).forEach(x -> n.takeInt(x)); // Noncompliant {{Replace this lambda with method reference 'n::takeInt'.}} [[quickfixes=qf4]]
 //                                  ^^
     // fix@qf4 {{Replace with "n::takeInt"}}
     // edit@qf4 [[sc=35;ec=52]] {{n::takeInt}}
     IntStream.range(1, 5).forEach(x -> NestedStatic.takeIntStatic(x)); // FN, do not report an issue because NestedStatic is not final
 
-    IntStream.range(1, 5).forEach(x -> new Nested(x)); // Noncompliant [[quickfixes=qf_new_class]] {{Replace this lambda with method reference 'Nested::new'.}}
+    IntStream.range(1, 5).forEach(x -> new Nested(x)); // Noncompliant {{Replace this lambda with method reference 'Nested::new'.}} [[quickfixes=qf_new_class]]
 //                                  ^^
     // fix@qf_new_class {{Replace with "Nested::new"}}
     // edit@qf_new_class [[sc=35;ec=53]] {{Nested::new}}
-    IntStream.range(1, 5).forEach(x -> new CastCheck.Nested(x)); // Noncompliant [[quickfixes=qf_new_class2]] {{Replace this lambda with method reference 'CastCheck.Nested::new'.}}
+    IntStream.range(1, 5).forEach(x -> new CastCheck.Nested(x)); // Noncompliant {{Replace this lambda with method reference 'CastCheck.Nested::new'.}} [[quickfixes=qf_new_class2]]
 //                                  ^^
     // fix@qf_new_class2 {{Replace with "CastCheck.Nested::new"}}
     // edit@qf_new_class2 [[sc=35;ec=63]] {{CastCheck.Nested::new}}
 
-    IntStream.range(1, 5).forEach(x -> new NestedStatic.NestedInNested(x)); // Noncompliant [[quickfixes=qf_new_class3]] {{Replace this lambda with method reference 'NestedStatic.NestedInNested::new'.}}
+    IntStream.range(1, 5).forEach(x -> new NestedStatic.NestedInNested(x)); // Noncompliant {{Replace this lambda with method reference 'NestedStatic.NestedInNested::new'.}} [[quickfixes=qf_new_class3]]
 //                                  ^^
     // fix@qf_new_class3 {{Replace with "NestedStatic.NestedInNested::new"}}
     // edit@qf_new_class3 [[sc=35;ec=74]] {{NestedStatic.NestedInNested::new}}
 
     strings.stream()
-      .map(s -> s.toLowerCase()) // Noncompliant [[quickfixes=qf5]] {{Replace this lambda with method reference 'String::toLowerCase'.}}
+      .map(s -> s.toLowerCase()) // Noncompliant {{Replace this lambda with method reference 'String::toLowerCase'.}} [[quickfixes=qf5]]
 //           ^^
       // fix@qf5 {{Replace with "String::toLowerCase"}}
       // edit@qf5 [[sc=12;ec=32]] {{String::toLowerCase}}
@@ -333,7 +333,7 @@ class CastCheck {
       })
       // fix@qf6 {{Replace with "String::toLowerCase"}}
       // edit@qf6 [[sc=12;el=+2;ec=8]] {{String::toLowerCase}}
-      .forEach(x -> System.out.println(x)); // Noncompliant [[quickfixes=qf7]] {{Replace this lambda with method reference 'System.out::println'.}}
+      .forEach(x -> System.out.println(x)); // Noncompliant {{Replace this lambda with method reference 'System.out::println'.}} [[quickfixes=qf7]]
 //               ^^
     // fix@qf7 {{Replace with "System.out::println"}}
     // edit@qf7 [[sc=16;ec=42]] {{System.out::println}}
@@ -370,13 +370,13 @@ class CastCheck {
 
   class Nested {
     {
-      IntStream.range(1, 5).forEach(parameter -> takeInt(parameter)); // Noncompliant [[quickfixes=qf_init]] {{Replace this lambda with method reference 'Nested.this::takeInt'.}}
+      IntStream.range(1, 5).forEach(parameter -> takeInt(parameter)); // Noncompliant {{Replace this lambda with method reference 'Nested.this::takeInt'.}} [[quickfixes=qf_init]]
 //                                            ^^
       // Could be simpler: "this::takeInt", but add the class name since we can not get the enclosing method
       // fix@qf_init {{Replace with "Nested.this::takeInt"}}
       // edit@qf_init [[sc=37;ec=68]] {{Nested.this::takeInt}}
 
-      IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant [[quickfixes=qf_init2]] {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}}
+      IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}} [[quickfixes=qf_init2]]
 //                                            ^^
       // fix@qf_init2 {{Replace with "CastCheck.this::notStatic"}}
       // edit@qf_init2 [[sc=37;ec=70]] {{CastCheck.this::notStatic}}
@@ -387,12 +387,12 @@ class CastCheck {
     }
 
     void quickFixInNestedClass() {
-      IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant [[quickfixes=qf_this]] {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}}
+      IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}} [[quickfixes=qf_this]]
 //                                            ^^
       // fix@qf_this {{Replace with "CastCheck.this::notStatic"}}
       // edit@qf_this [[sc=37;ec=70]] {{CastCheck.this::notStatic}}
 
-      IntStream.range(1, 5).forEach(parameter -> staticMethod(parameter)); // Noncompliant [[quickfixes=qf_this2]] {{Replace this lambda with method reference 'CastCheck::staticMethod'.}}
+      IntStream.range(1, 5).forEach(parameter -> staticMethod(parameter)); // Noncompliant {{Replace this lambda with method reference 'CastCheck::staticMethod'.}} [[quickfixes=qf_this2]]
 //                                            ^^
       // fix@qf_this2 {{Replace with "CastCheck::staticMethod"}}
       // edit@qf_this2 [[sc=37;ec=73]] {{CastCheck::staticMethod}}
@@ -400,7 +400,7 @@ class CastCheck {
 
     class NestedDeeper {
       void quickFixInNestedClass() {
-        IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant [[quickfixes=qf_this3]] {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}}
+        IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}} [[quickfixes=qf_this3]]
 //                                              ^^
         // fix@qf_this3 {{Replace with "CastCheck.this::notStatic"}}
         // edit@qf_this3 [[sc=39;ec=72]] {{CastCheck.this::notStatic}}

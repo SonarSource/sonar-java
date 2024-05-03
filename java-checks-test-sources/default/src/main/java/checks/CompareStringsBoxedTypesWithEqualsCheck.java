@@ -12,7 +12,7 @@ class CompareStringsBoxedTypesWithEqualsCheck {
     int myInt2 = 2;
 
     void offerQuickFixes() {
-      if (str1 == str2) {} // Noncompliant [[quickfixes=qf0]] {{Strings and Boxed types should be compared using "equals()".}}
+      if (str1 == str2) {} // Noncompliant {{Strings and Boxed types should be compared using "equals()".}} [[quickfixes=qf0]]
 //             ^^
       // fix@qf0 {{Replace with boxed comparison}}
       // edit@qf0 [[sc=23;ec=23]]{{)}}

@@ -18,7 +18,7 @@ public class MathClampRangeCheckSample {
     Math.clamp(i1, 0, 10); // Compliant
 
     // equals
-    Math.clamp(d1, d2, d2); // Noncompliant [[quickfixes=!]] {{Change the "clamp(value,min,max)"'s arguments so "min" is not equals to "max".}}
+    Math.clamp(d1, d2, d2); // Noncompliant {{Change the "clamp(value,min,max)"'s arguments so "min" is not equals to "max".}} [[quickfixes=!]]
 //                 ^^
     Math.clamp(f1, f1, f3); // Noncompliant {{Change the "clamp(value,min,max)"'s arguments so "min" is not equals to "value".}}
     Math.clamp(l1, l2, l1); // Noncompliant {{Change the "clamp(value,min,max)"'s arguments so "max" is not equals to "value".}}
@@ -34,7 +34,7 @@ public class MathClampRangeCheckSample {
     // less than
     Math.clamp(i1, i2, i3); // Compliant
 
-    Math.clamp(l1, 10L, 0L); // Noncompliant [[quickfixes=qf1]] {{Change the "clamp(value,min,max)"'s arguments so "max" is not always less than "min".}}
+    Math.clamp(l1, 10L, 0L); // Noncompliant {{Change the "clamp(value,min,max)"'s arguments so "max" is not always less than "min".}} [[quickfixes=qf1]]
 //                      ^^
 //  ^^^<
     // fix@qf1 {{Swap "max" and "min" arguments}}

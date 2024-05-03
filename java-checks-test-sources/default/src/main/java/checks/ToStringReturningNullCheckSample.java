@@ -27,7 +27,7 @@ class ToStringReturningNullCheckSampleC {
 
 class ToStringReturningNullCheckSampleD {
   protected Object clone() {
-    return null; // Noncompliant [[quickfixes=!]] {{Return a non null object.}}
+    return null; // Noncompliant {{Return a non null object.}} [[quickfixes=!]]
 //         ^^^^
   }
 }

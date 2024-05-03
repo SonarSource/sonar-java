@@ -69,7 +69,7 @@ abstract class ImmediateReverseBoxingCheckSample {
   void quickFixes(int int1, Integer integer1, Double double1, double doublePrimitive) {
     // Visit METHOD_INVOCATION
     // valueOf - checkForUnboxing
-    Double.valueOf(double1.doubleValue()); // Noncompliant [[quickfixes=qf1]] {{Remove the unboxing of "double1".}}
+    Double.valueOf(double1.doubleValue()); // Noncompliant {{Remove the unboxing of "double1".}} [[quickfixes=qf1]]
 //                 ^^^^^^^^^^^^^^^^^^^^^
     // fix@qf1 {{Remove the unboxing}}
     // edit@qf1 [[sc=27;ec=41]] {{}}

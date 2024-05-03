@@ -9,13 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class JUnit5DefaultPackageClassAndMethodCheckSample {
 
   @Test
-  public void testPublic() {} // Noncompliant [[quickfixes=qf1]] {{Remove this 'public' modifier.}}
+  public void testPublic() {} // Noncompliant {{Remove this 'public' modifier.}} [[quickfixes=qf1]]
 //^^^^^^
   // fix@qf1 {{Remove "public" modifier}}
   // edit@qf1 [[sc=3;ec=10]] {{}}
 
   @Test
-  public static void testPublicStatic() {} // Noncompliant [[quickfixes=qf2]] {{Remove this 'public' modifier.}}
+  public static void testPublicStatic() {} // Noncompliant {{Remove this 'public' modifier.}} [[quickfixes=qf2]]
 //^^^^^^
   // fix@qf2 {{Remove "public" modifier}}
   // edit@qf2 [[sc=3;ec=10]] {{}}
@@ -52,7 +52,7 @@ class JUnit5DefaultPackageClassAndMethodCheckSample {
 
   }
 
-  protected static class PublicWithOneTest { // Noncompliant [[quickfixes=qf4]] {{Remove this 'protected' modifier.}}
+  protected static class PublicWithOneTest { // Noncompliant {{Remove this 'protected' modifier.}} [[quickfixes=qf4]]
 //^^^^^^^^^
   // fix@qf4 {{Remove "protected" modifier}}
   // edit@qf4 [[sc=3;ec=13]] {{}}

@@ -38,7 +38,7 @@ class ConcatenationWithStringValueOfCheck {
 
   private void quickfixes() {
     var num = 99;
-    var a = "" + String.valueOf(num) + " balloons"; // Noncompliant [[quickfixes=qf1]] {{Directly append the argument of String.valueOf().}}
+    var a = "" + String.valueOf(num) + " balloons"; // Noncompliant {{Directly append the argument of String.valueOf().}} [[quickfixes=qf1]]
 //               ^^^^^^^^^^^^^^^^^^^
     // fix@qf1 {{Remove redundant String.valueOf() wrapping}}
     // edit@qf1 [[sc=18;ec=37]] {{num}}

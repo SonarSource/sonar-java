@@ -4,7 +4,7 @@ import java.util.List;
 
 class ArrayDesignatorAfterTypeCheckSample {
 
-  public int getVector()[] { return new int[0]; } // Noncompliant [[quickfixes=qf1]] {{Move the array designators [] to the end of the return type.}}
+  public int getVector()[] { return new int[0]; } // Noncompliant {{Move the array designators [] to the end of the return type.}} [[quickfixes=qf1]]
 //                      ^^
   // fix@qf1 {{Move [] to the return type}}
   // edit@qf1 [[sc=25;ec=27]] {{}}
@@ -22,7 +22,7 @@ class ArrayDesignatorAfterTypeCheckSample {
 
   public int[][] getMatrixCompliant() { return new int[0][]; }  // Compliant
 
-  public int foo()[][][][] { return new int[0][][][]; } // Noncompliant [[quickfixes=qf3]] {{Move the array designators [][][][] to the end of the return type.}}
+  public int foo()[][][][] { return new int[0][][][]; } // Noncompliant {{Move the array designators [][][][] to the end of the return type.}} [[quickfixes=qf3]]
 //                ^^^^^^^^
   // fix@qf3 {{Move [][][][] to the return type}}
   // edit@qf3 [[sc=19;ec=27]] {{}}

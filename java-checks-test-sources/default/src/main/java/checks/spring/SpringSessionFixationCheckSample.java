@@ -27,10 +27,12 @@ public class SpringSessionFixationCheckSample {
 
     public SecurityFilterChain filterChainSessionFixation(HttpSecurity http) throws Exception {
 
-      http.sessionManagement(sessionConfigurer -> sessionConfigurer.sessionFixation(fixationConfigurer -> fixationConfigurer.none())); // Noncompliant@+1 {{Create a new session during user authentication to prevent session fixation attacks.}}
+      // Noncompliant@+1 {{Create a new session during user authentication to prevent session fixation attacks.}}
+      http.sessionManagement(sessionConfigurer -> sessionConfigurer.sessionFixation(fixationConfigurer -> fixationConfigurer.none()));
 //                                                                                                                           ^^^^
 
-      http.sessionManagement(sessionConfigurer -> sessionConfigurer.sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::none)); // Noncompliant@+1 {{Create a new session during user authentication to prevent session fixation attacks.}}
+      // Noncompliant@+1 {{Create a new session during user authentication to prevent session fixation attacks.}}
+      http.sessionManagement(sessionConfigurer -> sessionConfigurer.sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::none));
 //                                                                                                                                         ^^^^
       return http.build();
     }

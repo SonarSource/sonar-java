@@ -8,7 +8,7 @@ import java.util.Map;
 
 class DiamonOperatorCheck_no_version {
   List<Object> myList1 = new ArrayList<>(); // Compliant
-  List<Object> myList2 = new ArrayList<Object>(); // Noncompliant [[quickfixes=qf1]] {{Replace the type specification in this constructor call with the diamond operator ("<>"). (sonar.java.source not set. Assuming 7 or greater.)}}
+  List<Object> myList2 = new ArrayList<Object>(); // Noncompliant {{Replace the type specification in this constructor call with the diamond operator ("<>"). (sonar.java.source not set. Assuming 7 or greater.)}} [[quickfixes=qf1]]
 //                                    ^^^^^^^^
   // fix@qf1 {{Replace with <>}}
   // edit@qf1 [[sc=39;ec=47]] {{<>}}

@@ -52,7 +52,7 @@ class C extends UnknownParent {
 
 record MyRecord(int a) {
   // [Compilation ERROR] invalid compact constructor in record MyRecord, throws clause not allowed for compact constructor
-  private MyRecord throws IOException { // Noncompliant [[quickfixes=qf_all_in_record]] {{Remove the declaration of thrown exception 'java.io.IOException', as it cannot be thrown from constructor's body.}}
+  private MyRecord throws IOException { // Noncompliant {{Remove the declaration of thrown exception 'java.io.IOException', as it cannot be thrown from constructor's body.}} [[quickfixes=qf_all_in_record]]
 //                        ^^^^^^^^^^^
     // fix@qf_all_in_record {{Remove "IOException"}}
     // edit@qf_all_in_record [[sc=19;ec=38]] {{}}

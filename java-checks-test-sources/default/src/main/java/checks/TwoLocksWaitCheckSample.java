@@ -6,10 +6,10 @@ class TwoLocksWaitCheckSample {
 
   public TwoLocksWaitCheckSample() throws Exception {
     synchronized (this.mon1) {
-//  ^^^<
+//  ^^^^^^^^^^^^>
       System.out.println("Hello");
       synchronized (this.mon2) {
-//  ^^^<
+//    ^^^^^^^^^^^^>
         this.mon2.wait(); // Noncompliant {{Don't use "wait()" here; multiple locks are held.}}
 //      ^^^^^^^^^^^^^^^^
       }
@@ -17,9 +17,9 @@ class TwoLocksWaitCheckSample {
   }
 
   public synchronized void method() throws Exception {
-//  ^^^<
+//       ^^^^^^^^^^^^>
     synchronized (this.mon2) {
-//  ^^^<
+//  ^^^^^^^^^^^^>
       this.mon2.wait(); // Noncompliant {{Don't use "wait()" here; multiple locks are held.}}
 //    ^^^^^^^^^^^^^^^^
     }

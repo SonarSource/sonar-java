@@ -13,7 +13,7 @@ public class AvoidQualifierOnBeanMethodsCheckSample {
   @Configuration
   class Configuration1 {
     @Bean
-    @Qualifier("foo") // Noncompliant [[quickfixes=qf1]] {{Remove this redundant "@Qualifier" annotation and rely on the @Bean method.}}
+    @Qualifier("foo") // Noncompliant {{Remove this redundant "@Qualifier" annotation and rely on the @Bean method.}} [[quickfixes=qf1]]
 //  ^^^^^^^^^^^^^^^^^
     // fix@qf1 {{Remove "@Qualifier"}}
     // edit@qf1 [[sc=5;ec=22]] {{}}
@@ -61,7 +61,7 @@ public class AvoidQualifierOnBeanMethodsCheckSample {
     }
 
     @Bean(name = "bar")
-    @Qualifier // Noncompliant [[quickfixes=qf3]] {{Remove this redundant "@Qualifier" annotation and rely on the @Bean method.}}
+    @Qualifier // Noncompliant {{Remove this redundant "@Qualifier" annotation and rely on the @Bean method.}} [[quickfixes=qf3]]
 //  ^^^^^^^^^^
     // fix@qf3 {{Remove "@Qualifier"}}
     // edit@qf3 [[sc=5;ec=15]] {{}}

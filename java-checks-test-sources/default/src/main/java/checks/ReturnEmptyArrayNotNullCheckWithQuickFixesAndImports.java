@@ -6,7 +6,7 @@ import java.util.Map;
 class ReturnEmptyArrayNotNullCheckWithQuickFixesAndImports {
 
   java.util.List<Object> list() {
-    return null; // Noncompliant [[quickfixes=list]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=list]]
 //         ^^^^
     // fix@list {{Replace "null" with an empty List}}
     // edit@list [[sc=12;ec=16]] {{Collections.emptyList()}}
@@ -14,7 +14,7 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixesAndImports {
   }
 
   java.util.LinkedList<Object> linkedList() {
-    return null; // Noncompliant [[quickfixes=linkedList]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=linkedList]]
 //         ^^^^
     // fix@linkedList {{Replace "null" with an empty LinkedList}}
     // edit@linkedList [[sc=12;ec=16]] {{new LinkedList<>()}}
@@ -22,14 +22,14 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixesAndImports {
   }
 
   HashSet<Object> hashset() {
-    return null; // Noncompliant [[quickfixes=HashSet]] {{Return an empty collection instead of null.}}
+    return null; // Noncompliant {{Return an empty collection instead of null.}} [[quickfixes=HashSet]]
 //         ^^^^
     // fix@HashSet {{Replace "null" with an empty HashSet}}
     // edit@HashSet [[sc=12;ec=16]] {{new HashSet<>()}}
   }
 
   Map<String, String> map() {
-    return null; // Noncompliant [[quickfixes=map]] {{Return an empty map instead of null.}}
+    return null; // Noncompliant {{Return an empty map instead of null.}} [[quickfixes=map]]
 //         ^^^^
     // fix@map {{Replace "null" with an empty Map}}
     // edit@map [[sc=12;ec=16]] {{Collections.emptyMap()}}

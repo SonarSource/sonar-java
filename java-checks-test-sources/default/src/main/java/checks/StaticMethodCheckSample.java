@@ -280,7 +280,7 @@ final class ChildClass extends ParentClass {
 final class FinalClass {
   static int magicNumber = 42;
 
-  public int getMagicNumber() { // Noncompliant [[quickfixes=qf_public_in_final]] {{Make "getMagicNumber" a "static" method.}}
+  public int getMagicNumber() { // Noncompliant {{Make "getMagicNumber" a "static" method.}} [[quickfixes=qf_public_in_final]]
 //           ^^^^^^^^^^^^^^
     // fix@qf_public_in_final {{Make static}}
     // edit@qf_public_in_final [[sc=10;ec=10]]{{static }}

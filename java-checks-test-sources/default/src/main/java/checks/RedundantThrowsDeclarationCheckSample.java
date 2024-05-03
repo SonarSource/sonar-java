@@ -26,7 +26,7 @@ public class RedundantThrowsDeclarationCheckSample {
   public void foo7() throws MyRuntimeException { // Compliant
   }
 
-  public void foo8() throws MyException, Exception { // Noncompliant [[quickfixes=qf_first]] {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheckSample$MyException' which is a subclass of 'java.lang.Exception'.}}
+  public void foo8() throws MyException, Exception { // Noncompliant {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheckSample$MyException' which is a subclass of 'java.lang.Exception'.}} [[quickfixes=qf_first]]
 //                          ^^^^^^^^^^^
     // fix@qf_first {{Remove "MyException"}}
     // edit@qf_first [[sc=29;ec=42]] {{}}
@@ -73,7 +73,7 @@ abstract class MySuperClass {
 }
 
 abstract class ThrownCheckedExceptions extends MySuperClass {
-  public ThrownCheckedExceptions(String s) throws MyException { // Noncompliant [[quickfixes=qf_all_throws]] {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from constructor's body.}}
+  public ThrownCheckedExceptions(String s) throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from constructor's body.}} [[quickfixes=qf_all_throws]]
 //                                                ^^^^^^^^^^^
     // fix@qf_all_throws {{Remove "MyException"}}
     // edit@qf_all_throws [[sc=43;ec=62]] {{}}
@@ -175,7 +175,7 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     }
   }
 
-  void foo18(java.io.File file) throws IOException, ParseException { // Noncompliant [[quickfixes=qf_last]] {{Remove the declaration of thrown exception 'java.text.ParseException', as it cannot be thrown from method's body.}}
+  void foo18(java.io.File file) throws IOException, ParseException { // Noncompliant {{Remove the declaration of thrown exception 'java.text.ParseException', as it cannot be thrown from method's body.}} [[quickfixes=qf_last]]
 //                                                  ^^^^^^^^^^^^^^
     // fix@qf_last {{Remove "ParseException"}}
     // edit@qf_last [[sc=51;ec=67]] {{}}
@@ -323,7 +323,7 @@ abstract class NonThrownExceptionClass {
      * @exception MyException proper javadoc description
      * @throws  MyException2 proper javadoc description
      */
-    public void missingJavadocForException() throws MyException, java.io.IOException, MyException2 { // Noncompliant [[quickfixes=qf_middle]] {{Remove the declaration of thrown exception 'java.io.IOException', as it cannot be thrown from method's body.}}
+    public void missingJavadocForException() throws MyException, java.io.IOException, MyException2 { // Noncompliant {{Remove the declaration of thrown exception 'java.io.IOException', as it cannot be thrown from method's body.}} [[quickfixes=qf_middle]]
 //                                                               ^^^^^^^^^^^^^^^^^^^
       // fix@qf_middle {{Remove "IOException"}}
       // edit@qf_middle [[sc=66;ec=87]] {{}}

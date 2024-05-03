@@ -18,7 +18,7 @@ class UserSession {
   }
 
   public void incorrectCleanup() {
-    DELEGATE.set(null); // Noncompliant [[quickfixes=qf1]] {{Use "remove()" instead of "set(null)".}}
+    DELEGATE.set(null); // Noncompliant {{Use "remove()" instead of "set(null)".}} [[quickfixes=qf1]]
 //  ^^^^^^^^^^^^^^^^^^
     // fix@qf1 {{Replace with "remove()"}}
     // edit@qf1 [[sc=14;ec=23]] {{remove()}}

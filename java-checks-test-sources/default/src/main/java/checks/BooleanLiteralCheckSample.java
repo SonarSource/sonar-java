@@ -33,7 +33,7 @@ class BooleanLiteralCheckSample {
     };
 
     boolean exp = foo();
-    var = foo() ? true : // Noncompliant [[quickfixes=qf_cond1]] {{Remove the unnecessary boolean literals.}}
+    var = foo() ? true : // Noncompliant {{Remove the unnecessary boolean literals.}} [[quickfixes=qf_cond1]]
 //                ^^^^
       false;
 //  ^^^<
