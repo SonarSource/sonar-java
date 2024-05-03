@@ -50,6 +50,7 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
@@ -57,6 +58,9 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonarsource.analyzer.commons.checks.verifier.SingleFileVerifier;
+import org.sonarsource.analyzer.commons.checks.verifier.quickfix.QuickFix;
+import org.sonarsource.analyzer.commons.checks.verifier.quickfix.TextEdit;
+import org.sonarsource.analyzer.commons.checks.verifier.quickfix.TextSpan;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -139,24 +143,46 @@ public class JavaCheckVerifier implements CheckVerifier {
       String issueMessage = issue.getMessage();
       AnalyzerMessage.TextSpan textSpan = issue.primaryLocation();
       SingleFileVerifier.Issue verifierIssue = null;
-      if (onFile) {
-        verifierIssue = singleFileVerifier.reportIssue(issueMessage).onFile();
+      if (textSpan != null) {
+        if (textSpan.endCharacter < 0) {
+          // Sometimes we create a textspan with endCharacter < 0 to raise an issue on the line.
+          verifierIssue = singleFileVerifier.reportIssue(issueMessage).onLine(textSpan.startLine);
+        } else {
+          verifierIssue = singleFileVerifier.reportIssue(issueMessage)
+            .onRange(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter);
+        }
+      } else if (issue.getLine() != null) {
+        verifierIssue = singleFileVerifier.reportIssue(issueMessage).onLine(issue.getLine());
       } else {
-        if (textSpan != null) {
-          if (textSpan.endCharacter < 0) {
-            // Sometimes we create a textspan with endCharacter < 0 to raise an issue on the line.
-            verifierIssue = singleFileVerifier.reportIssue(issueMessage).onLine(textSpan.startLine);
-          } else {
-            verifierIssue = singleFileVerifier.reportIssue(issueMessage).onRange(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter);
-          }
-        } else if (issue.getLine() != null) {
-          verifierIssue = singleFileVerifier.reportIssue(issueMessage).onLine(issue.getLine());
+        verifierIssue = singleFileVerifier.reportIssue(issueMessage).onFile();
+      }
+
+      var quickfixes = scannerContext.getQuickFixes().get(textSpan);
+      if (quickfixes != null) {
+        for (var qf : quickfixes) {
+          verifierIssue = verifierIssue.addQuickFix(convertQuickFix(qf));
         }
       }
+
       List<AnalyzerMessage> secondaries = issue.flows.stream().map(l -> l.isEmpty() ? null : l.get(0)).filter(Objects::nonNull).toList();
       SingleFileVerifier.Issue finalVerifierIssue = verifierIssue;
       secondaries.forEach(secondary -> addSecondary(finalVerifierIssue, secondary));
     });
+  }
+
+  private static QuickFix convertQuickFix(JavaQuickFix javaQuickFix) {
+    return QuickFix.newQuickFix(javaQuickFix.getDescription())
+      .addTextEdits(javaQuickFix.getTextEdits().stream()
+        .map(te -> TextEdit.replaceTextSpan(convertTextSpan(te.getTextSpan()), convertReplacement(te.getReplacement()))).toList())
+      .build();
+  }
+
+  private static TextSpan convertTextSpan(AnalyzerMessage.TextSpan textSpan) {
+    return new TextSpan(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter + 1);
+  }
+
+  private static String convertReplacement(String replacement) {
+    return replacement.replace("\n", "\\n");
   }
 
   private static void addSecondary(SingleFileVerifier.Issue issue, AnalyzerMessage secondary) {
