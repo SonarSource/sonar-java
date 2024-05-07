@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 abstract class PrimitivesMarkedNullableCheckSample {
 
   @CheckForNull
-//  ^^^<
+//^^^^^^^^^^^^^>
   abstract int getInt0(); // Noncompliant {{"@CheckForNull" annotation should not be used on primitive types}}
 //         ^^^
 

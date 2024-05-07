@@ -1,7 +1,7 @@
 package checks;
 
-abstract class AbstractClass1 {
-//  ^^^<
+  abstract class AbstractClass1 {
+//^^^^^^^^>
   public AbstractClass1 () { // Noncompliant {{Change the visibility of this constructor to "protected".}}
 //^^^^^^
     //do sth here

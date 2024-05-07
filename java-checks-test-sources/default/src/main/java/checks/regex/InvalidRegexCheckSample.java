@@ -7,18 +7,18 @@ public class InvalidRegexCheckSample {
   void noncompliant(String str) {
     Pattern.compile("("); // Noncompliant {{Fix the syntax error inside this regex.}}
 //                    ^
-//  ^^^<
+//                    ^@-1<
 
     str.matches("("); // Noncompliant
     str.replaceAll("(", "{"); // Noncompliant
 
     str.replaceAll("x{1,2,3}|(", "x"); // Noncompliant {{Fix the syntax errors inside this regex.}}
 //                       ^
-//  ^^^<
+//                       ^@-1<^@-1<
 
     str.matches("(\\w+-(\\d+)"); // Noncompliant {{Fix the syntax error inside this regex.}}
 //                           ^
-//  ^^^<
+//                           ^@-1<
   }
 
   void compliant(String str) {
@@ -43,7 +43,7 @@ public class InvalidRegexCheckSample {
 
   @javax.validation.constraints.Pattern(regexp = "(") // Noncompliant {{Fix the syntax error inside this regex.}}
 //                                                 ^
-//  ^^^<
+//                                                 ^@-1<
   String pattern;
 
   void unicode16(String str) {

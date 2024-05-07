@@ -3,15 +3,15 @@ package checks.OmitPermittedTypesCheck;
 sealed class InSameFileA permits // Noncompliant {{Remove this redundant permitted list.}} [[quickfixes=qf0]]
 //                       ^^^^^^^
   InSameFileB,
-//  ^^^<
+//^^^^^^^^^^^<
   InSameFileC,
-//  ^^^<
+//^^^^^^^^^^^<
   InSameFileD,
-//  ^^^<
+//^^^^^^^^^^^<
   InSameFileE {}
-//  ^^^<
+//^^^^^^^^^^^<
 // fix@qf0 {{Remove permitted list}}
-// edit@qf0 [[sl=3;sc=26;el=7;ec=15]] {{}}
+// edit@qf0 [[sl=3;sc=26;el=11;ec=15]] {{}}
 final class InSameFileB extends InSameFileA {}
 final class InSameFileC extends InSameFileA {}
 final class InSameFileD extends InSameFileA {}

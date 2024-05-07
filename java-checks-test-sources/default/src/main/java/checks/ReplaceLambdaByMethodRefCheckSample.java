@@ -327,8 +327,7 @@ class CastCheck {
 //           ^^
       // fix@qf5 {{Replace with "String::toLowerCase"}}
       // edit@qf5 [[sc=12;ec=32]] {{String::toLowerCase}}
-      .map(s -> { // Noncompliant [[quickfixes=qf6]]
-//           ^^
+      .map(s -> { // Noncompliant [[sc=14;ec=16;quickfixes=qf6]]
         return s.toLowerCase();
       })
       // fix@qf6 {{Replace with "String::toLowerCase"}}

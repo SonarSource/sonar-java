@@ -330,6 +330,11 @@ public class JavaCheckVerifier implements CheckVerifier {
     return this;
   }
 
+  public CheckVerifier withComment(String comment){
+
+    return this;
+  }
+
   @Override
   public void verifyIssues() {
     files.forEach(file -> createVerifier(files.indexOf(file), false).assertOneOrMoreIssues());

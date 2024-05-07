@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
-@SessionAttributes("foo") // Noncompliant {{Add a call to "setComplete()" on the SessionStatus object in a "@RequestMapping" method.}}
-//^[sc=2;ec=19]
+ @SessionAttributes("foo") // Noncompliant {{Add a call to "setComplete()" on the SessionStatus object in a "@RequestMapping" method.}}
+//^^^^^^^^^^^^^^^^^
 class S3753 {
   private int field;
 

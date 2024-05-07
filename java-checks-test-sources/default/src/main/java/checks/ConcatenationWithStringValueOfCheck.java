@@ -58,10 +58,9 @@ class ConcatenationWithStringValueOfCheck {
     // fix@qf4 {{Remove redundant String.valueOf() wrapping}}
     // edit@qf4 [[sc=14;ec=34]] {{-num}}
 
-
+// Noncompliant@+1 [[sc=14;ec=6;sl=+0;el=+3;quickfixes=qfml]]
     a = "" + String.valueOf(2 +
-      3 * 4 - // Noncompliant@+1 [[quickfixes=qfml]]
-//^[sc=14;ec=6;sl=58;el=61]
+      3 * 4 -
       5 / 6
     ) + 7;
 

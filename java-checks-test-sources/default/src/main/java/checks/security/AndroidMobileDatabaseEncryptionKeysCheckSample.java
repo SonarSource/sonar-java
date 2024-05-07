@@ -21,7 +21,7 @@ class AndroidMobileDatabaseEncryptionKeysCheckSample {
 
   void SQLiteDatabase_openOrCreateDatabase(String databasePath, SQLiteDatabaseHook hook, SQLiteDatabase.CursorFactory cursorFactory) {
     String password = "pwd";
-//  ^^^<
+//                    ^^^^^>
     SQLiteDatabase database;
 
     database = new SQLiteDatabase("path", "pwd".toCharArray(), cursorFactory, 0); // Noncompliant

@@ -17,15 +17,15 @@ public class WeakSSLContextCheckSample {
   public WeakSSLContextCheckSample(SslProperties props, DefaultSslBundleRegistry registry, Set<String> propsSet) {
     props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of("TLSv1.1", // Noncompliant {{Change this code to use a stronger protocol.}}
 //                                                  ^^^^^^^^^^^^^^^^^^^
-//  ^^^<
+//                                                                             ^^^^^^^^^@-1<
       "test",
       "TLSv1.0"));
-//  ^^^<
+//    ^^^^^^^^^<
     props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of("TLSv1.0")); // Noncompliant
 
     props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of(TLSV_1_0)); // Noncompliant {{Change this code to use a stronger protocol.}}
 //                                                  ^^^^^^^^^^^^^^^^^^^
-//  ^^^<
+//                                                                             ^^^^^^^^@-1<
     props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of(null)); // coverage
 
     props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of("TLSv1")); // Compliant

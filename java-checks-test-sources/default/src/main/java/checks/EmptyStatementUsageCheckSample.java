@@ -3,15 +3,15 @@ package checks;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;; // Noncompliant {{Remove this empty statement.}} [[quickfixes=qf1]]
-//                          ^
-  // fix@qf1 {{Remove this empty statement}}
-  // edit@qf1 [[sc=29;ec=30]] {{}}
+import java.util.Collection;
 
-; // Noncompliant {{Remove this empty statement.}} [[quickfixes=qf2]]
-//^[sc=1;ec=2]
+;
+// Noncompliant@-1 {{Remove this empty statement.}} [[sc=1;ec=2;quickfixes=qf1]]
+// fix@qf1 {{Remove this empty statement}}
+// edit@qf1 [[sl=-2;sc=29;el=+0;ec=2]] {{}}
+; // Noncompliant {{Remove this empty statement.}} [[sc=1;ec=2;quickfixes=qf2]]
 // fix@qf2 {{Remove this empty statement}}
-// edit@qf2 [[sl=-4;sc=30;el=+0;ec=2]] {{}}
+// edit@qf2 [[sl=-4;sc=2;el=+0;ec=2]] {{}}
 
 abstract class EmptyStatementUsageCheckSample {
   int a; // Compliant
@@ -111,5 +111,4 @@ enum EmptyEnum {
 
 // fix@qf_last_statement {{Remove this empty statement}}
 // edit@qf_last_statement [[sl=-4;sc=2;el=+0;ec=2]] {{}}
-; // Noncompliant@+3 [[quickfixes=qf_last_statement]]
-//^[sc=1;ec=2]
+; // Noncompliant [[sc=1;ec=2;quickfixes=qf_last_statement]]

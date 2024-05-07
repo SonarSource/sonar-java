@@ -20,7 +20,7 @@ public class AssertionCompareToSelfCheck_Assertj {
     assertThat(actual).isEqualTo(expected); // Compliant
     assertThat(
       actual
-//  ^^^<
+//    ^^^^^^>
       ).isEqualTo(actual); // Noncompliant {{Replace this assertion to not have the same actual and expected expression.}}
 //                ^^^^^^
     assertThatObject(actual).as("message").isEqualTo(actual); // Noncompliant

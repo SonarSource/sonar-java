@@ -10,7 +10,7 @@ class RegexStackOverflowCheckWithHighStackConsumption {
     Pattern.compile("(.|\n)*?"), // Noncompliant
     Pattern.compile("(.|\n)*?(.|\n)*"), // Noncompliant
 //                   ^^^^^^^^
-//  ^^^<
+//                           ^^^^^^^@-1<
     Pattern.compile("(.|\n)*?"), // Noncompliant
     Pattern.compile("(ab?){42,}"), // Noncompliant
     Pattern.compile("(a|hello world)*"), // Noncompliant

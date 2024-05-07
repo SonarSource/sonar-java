@@ -10,9 +10,9 @@ class A {
     for (int i = 0; i < 42; i++) { // Noncompliant {{Reduce the total number of break and continue statements in this loop to use at most one.}}
 //  ^^^
       break;
-//  ^^^<
+//    ^^^^^^<
       break;
-//  ^^^<
+//    ^^^^^^<
     }
 
     for (int i = 0; i < 42; i++) { // Noncompliant
@@ -23,9 +23,9 @@ class A {
     while (true) { // Noncompliant
 //  ^^^^^
       continue;
-//  ^^^<
+//    ^^^^^^^^^<
       continue;
-//  ^^^<
+//    ^^^^^^^^^<
     }
 
     for (Integer a: a) { // Compliant
@@ -42,13 +42,13 @@ class A {
     do { // Noncompliant
 //  ^^
       break;
-//  ^^^<
+//    ^^^^^^<
       switch (foo) {
         case 0:
           continue;
-//  ^^^<
+//        ^^^^^^^^^<
           continue;
-//  ^^^<
+//        ^^^^^^^^^<
         case 0:
           break;
           break;
