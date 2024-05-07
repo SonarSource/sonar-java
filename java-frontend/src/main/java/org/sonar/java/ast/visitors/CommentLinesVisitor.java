@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.visitors;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +33,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
 
   private Set<Integer> comments = new HashSet<>();
   private Set<Integer> noSonarLines = new HashSet<>();
-  private List<SyntaxTrivia> syntaxTrivia = new ArrayList<>();
+  private Set<SyntaxTrivia> syntaxTrivia = new HashSet<>();
   private boolean seenFirstToken;
 
   @Override
@@ -76,7 +75,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
     }
   }
 
-  public List<SyntaxTrivia> getSyntaxTrivia() {
+  public Set<SyntaxTrivia> getSyntaxTrivia() {
     return syntaxTrivia;
   }
 

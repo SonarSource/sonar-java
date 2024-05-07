@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -191,9 +192,10 @@ public class JavaCheckVerifier implements CheckVerifier {
   }
 
   private static void addComments(SingleFileVerifier singleFileVerifier, CommentLinesVisitor commentLinesVisitor) {
-    var syntaxTrivias = commentLinesVisitor.getSyntaxTrivia();
-    syntaxTrivias.forEach(trivia -> singleFileVerifier.addComment(trivia.range().start().line(), trivia.range().start().column(), trivia.comment(), COMMENT_PREFIX_LENGTH,
-      COMMENT_SUFFIX_LENGTH));
+    commentLinesVisitor.getSyntaxTrivia().stream()
+      .sorted(Comparator.comparingInt(t -> t.range().start().line()))
+      .forEach(trivia -> singleFileVerifier.addComment(trivia.range().start().line(), trivia.range().start().column(), trivia.comment(), COMMENT_PREFIX_LENGTH,
+        COMMENT_SUFFIX_LENGTH));
   }
 
   private SonarComponents sonarComponents() {
