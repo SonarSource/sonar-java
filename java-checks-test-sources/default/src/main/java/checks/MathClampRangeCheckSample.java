@@ -36,7 +36,7 @@ public class MathClampRangeCheckSample {
 
     Math.clamp(l1, 10L, 0L); // Noncompliant {{Change the "clamp(value,min,max)"'s arguments so "max" is not always less than "min".}} [[quickfixes=qf1]]
 //                      ^^
-//  ^^^<
+//                 ^^^@-1<
     // fix@qf1 {{Swap "max" and "min" arguments}}
     // edit@qf1 [[sc=25;ec=27]] {{10L}}
     // edit@qf1 [[sc=20;ec=23]] {{0L}}

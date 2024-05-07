@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.function.Function;
 
 public class TypeParametersShadowingCheckSample<T0> {
-//                                              ^^>
   class TypeParameterHidesAnotherType<T> {
 //                                    ^>
     public class Inner<T> { // Noncompliant {{Rename "T" which hides a type parameter from the outer scope.}}
@@ -12,6 +11,8 @@ public class TypeParametersShadowingCheckSample<T0> {
       //...
     }
     public class Inner2<T0> { // Noncompliant {{Rename "T0" which hides a type parameter from the outer scope.}}
+//                      ^^
+//                                              ^^@-8<
       //...
     }
     private <T> T method() { // Noncompliant {{Rename "T" which hides a type parameter from the outer scope.}}
@@ -33,7 +34,6 @@ public class TypeParametersShadowingCheckSample<T0> {
   }
 
   class MultipleHiding<T, Q> {
-//  ^^^<
     public class Inner<T> { // Noncompliant {{Rename "T" which hides a type parameter from the outer scope.}}
 //                     ^
       private <T> T method2() { // Noncompliant {{Rename "T" which hides a type parameter from the outer scope.}}
@@ -41,6 +41,7 @@ public class TypeParametersShadowingCheckSample<T0> {
       }
       private <Q> T method() { // Noncompliant {{Rename "Q" which hides a type parameter from the outer scope.}}
 //             ^
+//                        ^@-7<
         return null;
       }
     }
@@ -50,7 +51,7 @@ public class TypeParametersShadowingCheckSample<T0> {
   }
 
   class TypeExtend<E extends Comparable<E>, Q> {
-//  ^^^<
+//                 ^>
     public class Inner<E extends Q> { // Noncompliant {{Rename "E" which hides a type parameter from the outer scope.}}
 //                     ^
     }
@@ -59,19 +60,22 @@ public class TypeParametersShadowingCheckSample<T0> {
   }
 
   class DeeplyNestedIntoAnonymousClass<T> {
-//  ^^^<
     public class Inner<S> { // Compliant
-//  ^^^<
       private <Q> T method() { // Compliant
-//  ^^^<
         new Function<Integer, Integer>() {
           class InnerAnonymousHidingT<T> { // Noncompliant
+//                                    ^
+//                                     ^@-5<
             //...
           }
           class InnerAnonymousHidingS<S> { // Noncompliant
+//                                    ^
+//                     ^@-9<
             //...
           }
           class InnerAnonymousHidingQ<Q> { // Noncompliant
+//                                    ^
+//             ^@-13<
             //...
           }
           @Override
@@ -89,7 +93,6 @@ public class TypeParametersShadowingCheckSample<T0> {
     return null;
   }
   public static class Inner<T0, P, Q> { // Compliant, static member, T0 is not hiding anything
-//  ^^^<
     private <Q> Q method2() { // Noncompliant
       return null;
     }
@@ -98,9 +101,10 @@ public class TypeParametersShadowingCheckSample<T0> {
       return null;
     }
     private static <P> P method1() { // Compliant, static member, not hiding anything
-//  ^^^<
       new Function<Integer, Integer>() {
         class InnerAnonymousHidingT<P> { // Noncompliant
+//                                  ^
+//                  ^@-3<
           //...
         }
         @Override

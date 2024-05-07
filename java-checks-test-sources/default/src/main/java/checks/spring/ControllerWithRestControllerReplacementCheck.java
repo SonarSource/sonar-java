@@ -17,7 +17,7 @@ public class ControllerWithRestControllerReplacementCheck {
     @ResponseBody
 //  ^^^^^^^^^^^^^<
     // fix@qf1 {{Remove "@ResponseBody" annotations.}}
-    // edit@qf1 [[sl=16;el=16;sc=5;ec=18]] {{}}
+    // edit@qf1 [[sl=17;el=17;sc=5;ec=18]] {{}}
     public void m() {
     }
   }
@@ -68,20 +68,20 @@ public class ControllerWithRestControllerReplacementCheck {
 //^^^^^^^^^^^
               // "@ResponseBody" annotations.}}
   // fix@qf4 {{Replace "@Controller" by "@RestController".}}
-  // edit@qf4 [[sl=65;el=65;sc=3;ec=14]] {{@RestController}}
+  // edit@qf4 [[sl=67;el=67;sc=3;ec=14]] {{@RestController}}
   class ClassSeven {
 
     @ResponseBody
 //  ^^^^^^^^^^^^^<
     // fix@qf3 {{Remove "@ResponseBody" annotations.}}
-    // edit@qf3 [[sl=71;el=71;sc=5;ec=18]] {{}}
+    // edit@qf3 [[sl=74;el=74;sc=5;ec=18]] {{}}
     public void m() {
     }
 
     @ResponseBody
 //  ^^^^^^^^^^^^^<
     // fix@qf3 {{Remove "@ResponseBody" annotations.}}
-    // edit@qf3 [[sl=77;el=77;sc=5;ec=18]] {{}}
+    // edit@qf3 [[sl=81;el=81;sc=5;ec=18]] {{}}
     public void m2() {
     }
   }

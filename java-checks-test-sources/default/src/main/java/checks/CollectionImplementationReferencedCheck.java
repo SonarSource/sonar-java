@@ -137,16 +137,16 @@ abstract class ApiEnforcesClassSonarjava4590 {
 
 
 
-  public Integer foo12(LinkedList<Integer> l1, LinkedList<Integer> l2, LinkedList<Integer> l3) { // Noncompliant@+1
-//                                                                     ^^^^^^^^^^
+  public Integer foo12(LinkedList<Integer> l1, LinkedList<Integer> l2, LinkedList<Integer> l3) { // Noncompliant 2
+//                     ^^^^^^^^^^
     return l1.get(0) + l2.poll() + l3.get(0);
   }
 
 
 
 
-  public abstract Integer foo13(LinkedList<Integer> l1, LinkedList<Integer> l2, LinkedList<Integer> l3); // Noncompliant@+1
-//                                                                              ^^^^^^^^^^
+  public abstract Integer foo13(LinkedList<Integer> l1, LinkedList<Integer> l2, LinkedList<Integer> l3); // Noncompliant 3
+//                              ^^^^^^^^^^
 
   public Integer foo14(LinkedList<Integer> list) { // Noncompliant
 //                     ^^^^^^^^^^

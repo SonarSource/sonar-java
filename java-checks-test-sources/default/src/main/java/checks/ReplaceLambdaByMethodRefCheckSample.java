@@ -331,7 +331,7 @@ class CastCheck {
         return s.toLowerCase();
       })
       // fix@qf6 {{Replace with "String::toLowerCase"}}
-      // edit@qf6 [[sc=12;el=+2;ec=8]] {{String::toLowerCase}}
+      // edit@qf6 [[sc=12;el=+3;ec=8]] {{String::toLowerCase}}
       .forEach(x -> System.out.println(x)); // Noncompliant {{Replace this lambda with method reference 'System.out::println'.}} [[quickfixes=qf7]]
 //               ^^
     // fix@qf7 {{Replace with "System.out::println"}}

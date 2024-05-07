@@ -104,13 +104,14 @@ class UnusedPrivateMethodCheck {
   private void testQuickFix1() { // Noncompliant [[quickfixes=qf1]]
 //             ^^^^^^^^^^^^^
     // fix@qf1 {{Remove the unused method}}
-    // edit@qf1 [[sl=-3;sc=4;el=+4;ec=7]] {{}}
+    // edit@qf1 [[sl=-3;sc=4;el=+5;ec=4]] {{}}
     int i = 12;
-     }
+  }
+
   private void testQuickFix2() { // Noncompliant [[quickfixes=qf2]]
 //             ^^^^^^^^^^^^^
     // fix@qf2 {{Remove the unused method}}
-    // edit@qf2 [[sl=-1;sc=7;el=+5;ec=4]] {{}}
+    // edit@qf2 [[sl=-2;sc=4;el=+6;ec=4]] {{}}
     int i = 12;
     int j = 12;
   }
