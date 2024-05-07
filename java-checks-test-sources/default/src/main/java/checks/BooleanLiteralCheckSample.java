@@ -37,7 +37,7 @@ class BooleanLiteralCheckSample {
       false;
 //    ^^^^^<
     // fix@qf_cond1 {{Simplify the expression}}
-    // edit@qf_cond1 [[sc=16;el=+1;ec=12]] {{}}
+    // edit@qf_cond1 [[sc=16;el=+2;ec=12]] {{}}
     var = foo() ? false : true; // Noncompliant [[quickfixes=qf_cond2]]
 //                ^^^^^
     // fix@qf_cond2 {{Simplify the expression}}

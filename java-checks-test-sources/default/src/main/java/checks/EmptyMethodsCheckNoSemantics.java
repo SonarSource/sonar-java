@@ -9,14 +9,14 @@ class EmptyMethodsCheckNoSemantics {
     public A() {
     }
 
- // Noncompliant@+1
+    // Noncompliant@+1
     public A(int c) {
     }
 
     // Noncompliant@+1 {{Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.}}
     private void f() {
-//               ^
     }
+//               ^@-1
 
     // Compliant
     private void g() {
@@ -33,7 +33,7 @@ class EmptyMethodsCheckNoSemantics {
       return 0;
     }
 
- // Noncompliant@+1
+    // Noncompliant@+1
     private void j() {
       ;
     }
@@ -44,7 +44,7 @@ class EmptyMethodsCheckNoSemantics {
     private <T> AwithGenerics() {
     }
 
- // Noncompliant@+1
+    // Noncompliant@+1
     private <T> void f() {
     }
   }
@@ -59,14 +59,14 @@ class EmptyMethodsCheckNoSemantics {
       }
 
       class C {
- // Noncompliant@+1
+        // Noncompliant@+1
         private void g() {
         }
       }
     }
 
     IFoo bar = new IFoo() {
- // Noncompliant@+1
+      // Noncompliant@+1
       public void f() {
       }
     };
@@ -75,7 +75,7 @@ class EmptyMethodsCheckNoSemantics {
   enum AEnum {
     ;
 
- // Noncompliant@+1
+    // Noncompliant@+1
     public void f() {
     }
 
@@ -88,7 +88,7 @@ class EmptyMethodsCheckNoSemantics {
     enum B {
       ;
 
- // Noncompliant@+1
+      // Noncompliant@+1
       public void f() {
       }
     }
@@ -97,7 +97,7 @@ class EmptyMethodsCheckNoSemantics {
   public interface IFoo {
 
     static IFoo FOO = new IFoo() {
- // Noncompliant@+1
+      // Noncompliant@+1
       public void foo() {
       }
 
@@ -112,7 +112,7 @@ class EmptyMethodsCheckNoSemantics {
   enum Foo {
 
     FOO {
- // Noncompliant@+1
+      // Noncompliant@+1
       public void foo() {
       }
 
@@ -122,7 +122,7 @@ class EmptyMethodsCheckNoSemantics {
       }
     };
 
- // Noncompliant@+1
+    // Noncompliant@+1
     public void foo() {
     }
 
@@ -130,7 +130,7 @@ class EmptyMethodsCheckNoSemantics {
 
   class Constructors {
     class C {
- // Noncompliant@+1
+      // Noncompliant@+1
       public C() {
       }
     }
@@ -156,32 +156,32 @@ class EmptyMethodsCheckNoSemantics {
   }
 
   record MyRecord() {
- // Noncompliant@+1
+    // Noncompliant@+1
     void foo() {
     }
   }
 
   class QuickFixes {
 
-    public QuickFixes() {} // Noncompliant@+1 [[quickfixes=qf0]]
+    public QuickFixes() {} // Noncompliant [[quickfixes=qf0]]
 //         ^^^^^^^^^^
     // fix@qf0 {{Insert placeholder comment}}
     // edit@qf0 [[sc=26;ec=26]] {{ /* TODO document why this constructor is empty */ }}
 
-
-    private void emptyMethod() { // Noncompliant@+1 [[quickfixes=qf1]]
-//               ^^^^^^^^^^^
+    // Noncompliant@+1 [[quickfixes=qf1]]
+    private void emptyMethod() {
     }
+//               ^^^^^^^^^^^@-1
     // fix@qf1 {{Insert placeholder comment}}
     // edit@qf1 [[sl=+0;el=+1;sc=33;ec=5]] {{\n      // TODO document why this method is empty\n    }}
 
 
-    private void emptyMethod2() { // Noncompliant@+1 [[quickfixes=qf2]]
-//               ^^^^^^^^^^^^
-
+    // Noncompliant@+1 [[quickfixes=qf2]]
+    private void emptyMethod2() {
     }
+//               ^^^^^^^^^^^^@-1
     // fix@qf2 {{Insert placeholder comment}}
-    // edit@qf2 [[sl=+0;el=+2;sc=34;ec=5]] {{\n      // TODO document why this method is empty\n    }}
+    // edit@qf2 [[sl=+0;el=+1;sc=34;ec=5]] {{\n      // TODO document why this method is empty\n    }}
   }
 
   private class ExceptionalCompliantCases {

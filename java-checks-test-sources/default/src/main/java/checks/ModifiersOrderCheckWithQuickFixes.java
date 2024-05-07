@@ -17,17 +17,17 @@ class ModifiersOrderCheckWithQuickFixes {
 
   @Annotation0(p1 = "foo", p2 = false)
   final
-  @Annotation2 // Noncompliant@+3 [[quickfixes=qf3]]
+  @Annotation2 // Noncompliant [[quickfixes=qf3]]
 //^^^^^^^^^^^^
   static
   void foo() {}
   // fix@qf3 {{Reorder modifiers}}
-  // edit@qf3 [[sl=17;sc=3;el=18;ec=3]] {{}} - "final\n  "
-  // edit@qf3 [[sl=19;sc=3;el=20;ec=3]] {{}} - "static\n  "
-  // edit@qf3 [[sl=20;sc=3;el=20;ec=3]] {{static final }}
+  // edit@qf3 [[sl=19;sc=3;el=20;ec=3]] {{}}
+  // edit@qf3 [[sl=22;sc=3;el=23;ec=3]] {{}}
+  // edit@qf3 [[sl=23;sc=3;el=23;ec=3]] {{static final }}
 
 
-  final public native @Annotation2 synchronized static void bar(); // Noncompliant@+1 [[quickfixes=qf4]]
+  final public native @Annotation2 synchronized static void bar(); // Noncompliant [[quickfixes=qf4]]
 //      ^^^^^^
   // fix@qf4 {{Reorder modifiers}}
   // edit@qf4 [[sc=3;ec=9]]   {{}} - final
