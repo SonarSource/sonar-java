@@ -8,7 +8,8 @@ public class CanonEqFlagInRegexCheck {
 
   @Email(regexp = "éeéc") // Noncompliant {{Use the CANON_EQ flag with this pattern.}}
 //                 ^^^^
-//  ^^^<
+    //             ^@-1<
+  //                 ^@-2<
   String email1;
 
   @Email(regexp = "éeéc", flags = Flag.CANON_EQ) // Compliant
@@ -16,7 +17,6 @@ public class CanonEqFlagInRegexCheck {
 
   @jakarta.validation.constraints.Email(regexp = "éeéc") // Noncompliant {{Use the CANON_EQ flag with this pattern.}}
 //                                                ^^^^
-//  ^^^<
   String email3;
 
   @jakarta.validation.constraints.Email(regexp = "éeéc", flags = jakarta.validation.constraints.Pattern.Flag.CANON_EQ) // Compliant
@@ -25,7 +25,6 @@ public class CanonEqFlagInRegexCheck {
   void noncompliant(String str) {
     Pattern.compile("éeéc"); // Noncompliant {{Use the CANON_EQ flag with this pattern.}}
 //                   ^^^^
-//  ^^^<
     Pattern.compile("é"); // Noncompliant
     Pattern.compile("é|è"); // Noncompliant
     Pattern.compile("à"); // Noncompliant

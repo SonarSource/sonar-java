@@ -9,7 +9,13 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertLinesMatch;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class AssertionArgumentOrderCheck_JUnit5 {
   static final String CONSTANT = "";
@@ -23,8 +29,7 @@ class AssertionArgumentOrderCheck_JUnit5 {
   void fun() {
     assertEquals(0, new AssertionArgumentOrderCheck_JUnit5().actual());
     assertEquals(new AssertionArgumentOrderCheck_JUnit5().actual(), 0); // Noncompliant {{Swap these 2 arguments so they are in the correct order: expected value, actual value.}}
-//                                                                  ^
-//  ^^^<
+//               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^> ^ 1
     assertEquals(new AssertionArgumentOrderCheck_JUnit5().actual(), 0, "message"); // Noncompliant {{Swap these 2 arguments so they are in the correct order: expected value, actual value.}}
     assertEquals(new AssertionArgumentOrderCheck_JUnit5().actual(), 0, () -> "messageSupplier"); // Noncompliant
     assertEquals("constantString", actualObject(), "message");

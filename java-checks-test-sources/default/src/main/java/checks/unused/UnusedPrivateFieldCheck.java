@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Optional;
 
-import javax.validation.constraints.NotNull;
-
 class UnusedPrivateFieldCheck {
 
   private int unusedField; // Noncompliant {{Remove this unused "unusedField" private field.}}
@@ -110,10 +108,17 @@ class UnusedPrivateFieldCheckQuickfix {
   //  fix@qf1 {{Remove this unused private field}}
   // edit@qf1 [[sc=18;ec=31]]{{}}
 
+  void split(){
+    // The CommentLinesVisitor has a bug when scanning more fields declared on the same line like the following 2 fields
+    // To fix it a non-comment block of code is needed between them and the comments above
+  }
+
   private String usedFirst, unusedSecond; // Noncompliant [[quickfixes=qf2]]
 //                          ^^^^^^^^^^^^
   //  fix@qf2 {{Remove this unused private field}}
   // edit@qf2 [[sc=27;ec=41]]{{}}
+
+  void split2(){}
 
   private static int unusedStatic; // Noncompliant [[quickfixes=qf3]]
 //                   ^^^^^^^^^^^^
@@ -130,15 +135,21 @@ class UnusedPrivateFieldCheckQuickfix {
   //  fix@qf5 {{Remove this unused private field}}
   // edit@qf5 [[sc=3;ec=50]]{{}}
 
+  void split3(){}
+
   private static int unusedStaticFirst, usedStaticSecond; // Noncompliant [[quickfixes=qf6]]
 //                   ^^^^^^^^^^^^^^^^^
   //  fix@qf6 {{Remove this unused private field}}
   // edit@qf6 [[sc=22;ec=41]]{{}}
 
+  void split4(){}
+
   private final int unusedFinalFirst = 0, usedFinalSecond = 0; // Noncompliant [[quickfixes=qf7]]
 //                  ^^^^^^^^^^^^^^^^
   //  fix@qf7 {{Remove this unused private field}}
   // edit@qf7 [[sc=21;ec=43]]{{}}
+
+  void split5(){}
 
   private static final int unusedStaticFinalFirst = 0, usedStaticFinalSecond = 0; // Noncompliant [[quickfixes=qf8]]
 //                         ^^^^^^^^^^^^^^^^^^^^^^

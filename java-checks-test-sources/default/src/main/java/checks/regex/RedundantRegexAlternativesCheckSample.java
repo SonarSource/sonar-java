@@ -9,7 +9,7 @@ public class RedundantRegexAlternativesCheckSample {
   public void f(Pattern pattern) {
     f(compile("" +
       "." +
-      "|a")); // Noncompliant [[sc=9;ec=10;secondary=-1]] {{Remove or rework this redundant alternative.}}
+      "|a")); // Noncompliant  {{Remove or rework this redundant alternative.}} [[sc=9;ec=10;secondary=-1]]
     f(compile("" +
       "a" + // Noncompliant [[sc=8;ec=9;secondary=+1]]
       "|."));

@@ -47,7 +47,7 @@ public class EqualsParametersMarkedNonNullCheckSample {
 //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       java.lang.Object object) {
       // fix@qf2 {{Remove "@NotNull"}}
-      // edit@qf2 [[sc=7;ec=7;el=+1]] {{}}
+      // edit@qf2 [[sc=7;ec=7;el=+2]] {{}}
       return false;
     }
   }

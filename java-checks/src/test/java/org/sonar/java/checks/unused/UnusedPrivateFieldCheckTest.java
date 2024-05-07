@@ -21,7 +21,6 @@ package org.sonar.java.checks.unused;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -72,7 +71,7 @@ class UnusedPrivateFieldCheckTest {
 
   @Test
   void test_lombok_annotations() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldLombok.java"))
       .withCheck(new UnusedPrivateFieldCheck())
       .verifyIssues();

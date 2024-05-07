@@ -5,11 +5,11 @@ public class SwitchRedundantKeywordCheckSample {
   int switchExpression(String mode) {
     int nonCompliant = switch (mode) {
       case "a" -> {
-//  ^^^<
+//                ^>
         yield 1; // Noncompliant {{Remove this redundant block and "yield".}}
 //      ^^^^^
       }
-//  ^^^<
+//    ^<
       default -> {
         yield 2; // Noncompliant {{Remove this redundant block and "yield".}}
       }
@@ -70,12 +70,12 @@ public class SwitchRedundantKeywordCheckSample {
 
     switch (mode) {
       case "a" -> {
-//  ^^^<
+//                ^>
         result = 1;
         break; // Noncompliant {{Remove this redundant block and "break".}}
 //      ^^^^^^
       }
-//  ^^^<
+//    ^<
       case "b" -> {
         result = 2;
         break; // Noncompliant {{Remove this redundant block and "break".}}
@@ -105,7 +105,7 @@ public class SwitchRedundantKeywordCheckSample {
 //                ^
         result = 2;
       }
-//  ^^^<
+//    ^<
       case "c" -> { // Compliant, probably not the best code, but no choice to add an empty block if you want a case that does nothing.
       }
       default -> { // Compliant

@@ -5,10 +5,10 @@ class CognitiveComplexityCheck {
 //           ^^^^^^^^^
 
     int c = a>b?b:a;
-//  ^^^<
+//             ^<
 
     return c>20?4:7;
-//  ^^^<
+//             ^<
 
   }
 
@@ -48,22 +48,22 @@ class CognitiveComplexityCheck {
 //            ^^^^^^^
 
     switch(foo){                              //+1
-//  ^^^<
+//  ^^^^^^<
       case 1:
         break;
       case ASSIGNMENT:
         if (lhs.is(Tree.Kind.IDENTIFIER)) {   //+2 (nesting=1)
-//  ^^^<
+//      ^^<
           if (a && b && c || d) {             //+5 (nesting=2)
-//  ^^^<
+//        ^^<   ^^<       ^^<
 
           }
 
           if(element.is(Tree.Kind.ASSIGNMENT)) { //+3 (nesting=2)
-//  ^^^<
+//        ^^<
             out.remove(symbol);
           } else {                               //+1
-//  ^^^<
+//          ^^^^<
             out.add(symbol);
           }
         }
@@ -76,25 +76,26 @@ class CognitiveComplexityCheck {
   }
 
   public void extraConditions12() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 7 to the 0 allowed.}}
+            //^^^^^^^^^^^^^^^^^
     if (     // +1
-//  ^^^<
+//  ^^<
       a
       && b   // +1 - secondary on each first operator of a new sequence
-//  ^^^<
+//    ^^<
       && c
       || d   // +1
-//  ^^^<
+//    ^^<
       || e
       && f   // +1
-//  ^^^<
+//    ^^<
       && g
       || (h  // +1
-//  ^^^<
+//    ^^<
       || (i
       && j   // +1
-//  ^^^<
+//    ^^<
       || k)) // +1 - parentheses completely ignored
-//  ^^^<
+//    ^^<
       || l
       || m
       ){}

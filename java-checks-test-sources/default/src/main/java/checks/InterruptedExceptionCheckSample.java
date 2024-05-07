@@ -147,7 +147,7 @@ class Interruptable {
   public void catchGenericException() throws InterruptedException {
     try {
       throwsInterruptedException();
-//  ^^^<
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^>
     } catch (Exception e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
 //           ^^^^^^^^^^^
       LOGGER.log(Level.WARN, "Interrupted!", e);
@@ -155,7 +155,7 @@ class Interruptable {
 
     try {
       throwsInterruptedException();
-//  ^^^<
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^>
       throwsException();
     } catch (Exception e) { // Noncompliant
 //           ^^^^^^^^^^^

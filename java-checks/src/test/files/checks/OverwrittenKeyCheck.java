@@ -6,8 +6,9 @@ class A {
 
   void map() {
     map.put("a", "Apple");
-//  ^^^<
+//          ^^^>
     map.put("a", "Banana"); // Noncompliant {{Verify this is the key that was intended; it was already set before.}}
+  //        ^^^
   }
 
   void map2() {
@@ -17,18 +18,20 @@ class A {
     if (blah) {
       map.put(3, "test");
       map.put(4, "another");
-//  ^^^<
+//            ^>
       map.put(4, "another"); // Noncompliant
+      //      ^
       map.put(4, "another");
-//  ^^^<
+//            ^<
       map.put(4, "another");
-//  ^^^<
+//            ^<
     }
 
     for (int i = 0; i < 10; i++) {
       map.put(i, "test");
-//  ^^^<
+//            ^>
       map.put(i, "test"); // Noncompliant
+    //        ^
     }
 
     for (int i = 0; i < 10; i++) {
@@ -39,14 +42,13 @@ class A {
 
   void mix(Map<?,?> other, Object[] arr) {
     arr[1] = null;
-//  ^^^<
+//      ^>
     map.put("a", 1);
-//  ^^^<
     other.put("a", 2);
-//  ^^^<
+    arr[1] = null; // Noncompliant
+    //  ^
     map.put("a", 1); // Noncompliant
     other.put("a", 2); // Noncompliant
-    arr[1] = null; // Noncompliant
   }
 
   int[] ints;
@@ -54,8 +56,9 @@ class A {
   void arrays() {
     int i;
     ints[i] = 1;
-//  ^^^<
+//       ^>
     ints[i] = 2; // Noncompliant {{Verify this is the index that was intended; it was already set before.}}
+  //     ^
   }
 
   void marrays(int[][] arr) {
@@ -67,21 +70,16 @@ class A {
   void hashMap() {
     HashMap<Object, Object> hashMap = new HashMap<>();
     hashMap.put("a", "Apple");
-//  ^^^<
     hashMap.put("a", "Apple"); // Noncompliant
     hashMap.put("a", "Banana");
-//  ^^^<
   }
 
   void rhs(int[] arr, Map<Integer, Integer> map, int i) {
     arr[i] = arr[i] + 1;
     arr[i] = arr[i] + 1; // compliant arr[i] is used on RHS
-//  ^^^<
     arr[i] = 3; // Noncompliant
     arr[i] = 3;
-//  ^^^<
     arr[i] = i;
-//  ^^^<
     arr[i++] = i; // index is not a symbol
   }
 

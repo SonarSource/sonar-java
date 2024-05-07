@@ -2,9 +2,9 @@ package checks;
 
 class SynchronizedOverrideCheckSample {
   public synchronized void f1(){}
+//                         ^^>
   public void f2(){}
   public synchronized void f3(){}
-//  ^^^<
 }
 
 class SynchronizedOverrideCheckSample_B extends SynchronizedOverrideCheckSample {
