@@ -8,7 +8,7 @@ class A {
     }
 
     if (false) { // Compliant 3
-//      ^^^^^>
+//  ^^>
       if (false) { // Noncompliant {{Merge this if statement with the enclosing one.}}
 //    ^^
       }
@@ -40,7 +40,6 @@ class A {
 
     if (false) { // Compliant 13
     } else if (false) { // Compliant  14
-//  ^^^<
       if (false) { // Noncompliant {{Merge this if statement with the enclosing one.}}
 //    ^^
       }
