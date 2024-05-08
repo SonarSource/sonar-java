@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -39,12 +38,12 @@ class StandardCharsetsConstantsCheckTest {
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(7)
       .verifyIssues();
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheck_java8.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(8)
       .verifyIssues();
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/StandardCharsetsConstantsCheck_java10.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(10)

@@ -20,7 +20,7 @@
 package org.sonar.java.checks.design;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -32,7 +32,7 @@ class BrainMethodCheckTest {
 
   @Test
   void testHighComplexityFileWithDefaultThresholds() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(highComplexityFilePath)
       .withChecks(new BrainMethodCheck())
       .verifyIssues();
@@ -47,7 +47,7 @@ class BrainMethodCheckTest {
     check.nestingThreshold = 8;
     check.cyclomaticThreshold = 45;
 
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(highComplexityFilePath)
       .withChecks(check)
       .verifyNoIssues();
@@ -55,7 +55,7 @@ class BrainMethodCheckTest {
 
   @Test
   void testLowComplexityFileWithDefaultThresholds() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(lowComplexityFilePath)
       .withChecks(new BrainMethodCheck())
       .verifyNoIssues();
@@ -69,12 +69,12 @@ class BrainMethodCheckTest {
     check.noavThreshold = 4;
     check.cyclomaticThreshold = 5;
 
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(lowComplexityFilePath)
       .withChecks(check)
       .verifyIssues();
   }
-  
+
   @Test
   void testSubsetOfIssuesWithLowerThresholds() {
     var check = new BrainMethodCheck();
@@ -85,8 +85,8 @@ class BrainMethodCheckTest {
     check.nestingThreshold = 1;
 
     check.numberOfIssuesToReport = 1;
-    
-    InternalCheckVerifier.newInstance()
+
+    CheckVerifier.newVerifier()
       .onFile(subsetFilePath)
       .withChecks(check)
       .verifyIssues();

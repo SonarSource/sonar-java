@@ -22,12 +22,11 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SynchronizedClassUsageCheckTest {
-  
+
   @Test
   void detected() {
     CheckVerifier.newVerifier()

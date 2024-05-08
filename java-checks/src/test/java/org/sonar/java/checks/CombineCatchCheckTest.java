@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -46,7 +45,7 @@ class CombineCatchCheckTest {
 
   @Test
   void java_version_set() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/CombineCatchCheck.java"))
       .withCheck(new CombineCatchCheck())
       .withJavaVersion(7)

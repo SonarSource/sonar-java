@@ -61,7 +61,7 @@ class UselessPackageInfoCheckTest {
   void initVerifier() {
     this.readCache = new InternalReadCache();
     this.writeCache = new InternalWriteCache().bind(readCache);
-    this.verifier = CheckVerifier.newInternalVerifier()
+    this.verifier = CheckVerifier.newVerifier()
       .withCache(readCache, writeCache);
   }
 
@@ -128,7 +128,7 @@ class UselessPackageInfoCheckTest {
     populatedReadCache.put(HashCacheTestHelper.contentHashKey(changedFilePath1), new byte[0]);
     populatedReadCache.put(HashCacheTestHelper.contentHashKey(changedFilePath2), new byte[0]);
     var writeCache2 = new InternalWriteCache().bind(populatedReadCache);
-    CheckVerifier.newInternalVerifier()
+    CheckVerifier.newVerifier()
       .withCache(populatedReadCache, writeCache2)
       .addFiles(InputFile.Status.SAME,
         mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"),
