@@ -20,4 +20,4 @@ class TooManyLinesOfCode {
 
   int field7;
   // This line does not count
-}
+} // Noncompliant@0
