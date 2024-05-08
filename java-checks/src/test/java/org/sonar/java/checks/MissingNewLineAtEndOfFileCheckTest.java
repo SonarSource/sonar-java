@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class MissingNewLineAtEndOfFileCheckTest {
@@ -44,10 +45,11 @@ class MissingNewLineAtEndOfFileCheckTest {
 
   @Test
   void completely_empty_file() {
-    CheckVerifier.newVerifier()
+    var verifier = CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/CompletelyEmptyFile.java"))
-      .withCheck(new MissingNewLineAtEndOfFileCheck())
-      .verifyIssues();
+      .withCheck(new MissingNewLineAtEndOfFileCheck());
+    assertThatThrownBy(() -> verifier.verifyNoIssues())
+      .hasMessageContaining("No issues were expected, but some were found.");
   }
 
   @Test
