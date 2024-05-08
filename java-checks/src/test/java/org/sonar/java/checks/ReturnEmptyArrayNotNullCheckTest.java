@@ -35,10 +35,10 @@ class ReturnEmptyArrayNotNullCheckTest {
 
   @Test
   void quick_fixes() {
-    /*CheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/ReturnEmptyArrayNotNullCheckWithQuickFixes.java"))
       .withCheck(new ReturnEmptyArrayNotNullCheck())
-      .verifyIssues();*/
+      .verifyIssues();
 
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/ReturnEmptyArrayNotNullCheckWithQuickFixesAndImports.java"))

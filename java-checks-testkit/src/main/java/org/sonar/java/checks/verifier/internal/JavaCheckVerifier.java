@@ -59,8 +59,6 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonarsource.analyzer.commons.checks.verifier.MultiFileVerifier;
-import org.sonarsource.analyzer.commons.checks.verifier.SingleFileVerifier;
-import org.sonarsource.analyzer.commons.checks.verifier.internal.InternalIssueVerifier;
 import org.sonarsource.analyzer.commons.checks.verifier.quickfix.QuickFix;
 import org.sonarsource.analyzer.commons.checks.verifier.quickfix.TextEdit;
 import org.sonarsource.analyzer.commons.checks.verifier.quickfix.TextSpan;
@@ -143,18 +141,12 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   private static void addIssues(JavaFileScannerContextForTests scannerContext, MultiFileVerifier verifier) {
     scannerContext.getIssues().forEach(issue -> {
-      Path path = ((InternalInputFile)issue.getInputComponent()).path();
+      Path path = ((InternalInputFile) issue.getInputComponent()).path();
       String issueMessage = issue.getMessage();
       AnalyzerMessage.TextSpan textSpan = issue.primaryLocation();
-      MultiFileVerifier.Issue verifierIssue = null;
+      MultiFileVerifier.Issue verifierIssue;
       if (textSpan != null) {
-        if (textSpan.endCharacter < 0) {
-          // Sometimes we create a textspan with endCharacter < 0 to raise an issue on the line.
-          verifierIssue = verifier.reportIssue(path, issueMessage).onLine(textSpan.startLine);
-        } else {
-          verifierIssue = verifier.reportIssue(path, issueMessage)
-            .onRange(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter);
-        }
+        verifierIssue = getIssueForTextSpan(verifier, textSpan, path, issueMessage);
       } else if (issue.getLine() != null) {
         verifierIssue = verifier.reportIssue(path, issueMessage).onLine(issue.getLine());
       } else {
@@ -172,6 +164,18 @@ public class JavaCheckVerifier implements CheckVerifier {
       MultiFileVerifier.Issue finalVerifierIssue = verifierIssue;
       secondaries.forEach(secondary -> addSecondary(path, finalVerifierIssue, secondary));
     });
+  }
+
+  private static MultiFileVerifier.Issue getIssueForTextSpan(MultiFileVerifier verifier, AnalyzerMessage.TextSpan textSpan, Path path, String issueMessage) {
+    MultiFileVerifier.Issue verifierIssue;
+    if (textSpan.endCharacter < 0) {
+      // Sometimes we create a textspan with endCharacter < 0 to raise an issue on the line.
+      verifierIssue = verifier.reportIssue(path, issueMessage).onLine(textSpan.startLine);
+    } else {
+      verifierIssue = verifier.reportIssue(path, issueMessage)
+        .onRange(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter);
+    }
+    return verifierIssue;
   }
 
   private static QuickFix convertQuickFix(JavaQuickFix javaQuickFix) {
