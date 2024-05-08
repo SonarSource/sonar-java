@@ -70,7 +70,7 @@ class UselessPackageInfoCheckTest {
     verifier
       .onFile(mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java"))
       .withCheck(new UselessPackageInfoCheck())
-      .verifyIssueOnFile("Remove this package.");
+      .verifyIssues();
   }
 
   @Test

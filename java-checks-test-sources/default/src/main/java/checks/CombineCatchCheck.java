@@ -10,13 +10,12 @@ class CombineCatchCheckWithVersion {
     try {
       canThrow();
     } catch (IOException e) {
-//  ^^^<
+//    ^[el=+4;ec=5]>
       doCleanup();
       logger.log(e);
     }
     catch (SQLException e) { // Noncompliant {{Combine this catch with the one at line 12, which has the same body.}}
 //         ^^^^^^^^^^^^^^
-//  ^^^<
       doCleanup();
       logger.log(e);
     }
@@ -33,11 +32,11 @@ class CombineCatchCheckWithVersion {
     try {
       canThrow();
     } catch (IOException | java.lang.IllegalArgumentException e) {
-//  ^^^<
+//    ^[el=+4;ec=5]>
       doCleanup();
       logger.log(e);
     }
-    catch (SQLException e) { // Noncompliant {{Combine this catch with the one at line 35, which has the same body.}}
+    catch (SQLException e) { // Noncompliant {{Combine this catch with the one at line 34, which has the same body.}}
 //         ^^^^^^^^^^^^^^
       doCleanup();
       logger.log(e);
