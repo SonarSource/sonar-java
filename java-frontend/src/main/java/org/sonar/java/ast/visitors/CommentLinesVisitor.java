@@ -20,6 +20,7 @@
 package org.sonar.java.ast.visitors;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,7 +74,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
       } else if (!isBlank(commentLine)) {
         Path path = Path.of("");
         if (context != null) {
-          path = Path.of(context.getInputFile().relativePath());
+          path = Paths.get(context.getInputFile().uri());
         }
         syntaxTrivia.computeIfAbsent(path, k -> new HashSet<>()).add(trivia);
         comments.add(line);

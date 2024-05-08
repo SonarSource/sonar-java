@@ -99,7 +99,7 @@ public class JavaCheckVerifier implements CheckVerifier {
   private WriteCache writeCache;
 
   private MultiFileVerifier createVerifier() {
-    MultiFileVerifier verifier = MultiFileVerifier.create(Path.of(files.get(0).relativePath()), UTF_8);
+    MultiFileVerifier verifier = MultiFileVerifier.create(Paths.get(files.get(0).uri()), UTF_8);
 
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
     List<File> actualClasspath = classpath == null ? DEFAULT_CLASSPATH : classpath;
