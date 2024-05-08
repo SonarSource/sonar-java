@@ -10,7 +10,7 @@ import java.util.Objects;
 abstract class MapComputeIfAbsentOrPresentCheckSample {
 
   void foo(Map<String,Object> map, String key) {
- // Noncompliant@+1 {{Replace this "Map.get()" and condition with a call to "Map.computeIfAbsent()".}}
+    // Noncompliant@+1 [[flows=computeIfAbsent]] {{Replace this "Map.get()" and condition with a call to "Map.computeIfAbsent()".}}
     Object value = map.get(key);  // flow@computeIfAbsent [[order=1]] {{'Map.get()' is invoked.}}
     if (value == null) { // flow@computeIfAbsent [[order=2]] {{Implies 'value' can be null.}}
       map.put(key, new Object()); // flow@computeIfAbsent [[order=3]] {{'Map.put()' is invoked with same key.}}

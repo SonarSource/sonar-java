@@ -10,7 +10,7 @@ class SwitchExpressions {
       case A -> null;
       case B -> new Object();
     };
- // Noncompliant@+1
+    // Noncompliant@+1 [[flows=se_1]]
     res.toString(); // flow@se_1 {{'res' is dereferenced.}}
   }
 
@@ -29,7 +29,7 @@ class SwitchExpressions {
       case A -> null;
       default -> new Object();
     };
- // Noncompliant@+1
+    // Noncompliant@+1 [[flows=se_2]]
     res.toString(); // flow@se_2 {{'res' is dereferenced.}}
   }
 

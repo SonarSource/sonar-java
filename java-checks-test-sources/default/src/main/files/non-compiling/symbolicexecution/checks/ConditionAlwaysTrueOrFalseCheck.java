@@ -79,22 +79,20 @@ class Class extends SuperClass {
     }
     if (false && parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
- // Noncompliant@+1
+    // Noncompliant@+1
     if (true && false) { // Noncompliant
     }
- // Noncompliant@+1 {{Remove this expression which always evaluates to "true"}}
+    // Noncompliant@+1 {{Remove this expression which always evaluates to "true"}}
     if (true && true) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
     }
     if (true && parameter2) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
     }
     if (parameter1 && false) { // Noncompliant {{Remove this expression which always evaluates to "false"}}
     }
-    if (parameter1 && true) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
-//                    ^^^^
+    if (parameter1 && true) { // Noncompliant [[sc=23;ec=27]] {{Remove this expression which always evaluates to "true"}}
     }
     if (parameter1 && parameter2) { // Compliant, unknown
-      if(parameter3 || (!parameter3)){} // Noncompliant {{Remove this expression which always evaluates to "true"}}
-//                      ^^^^^^^^^^^
+      if(parameter3 || (!parameter3)){} // Noncompliant [[sc=25;ec=36]] {{Remove this expression which always evaluates to "true"}}
     }
 
   }
@@ -102,22 +100,18 @@ class Class extends SuperClass {
   void precise_issue_location(int max, int min, int R, boolean param) {
 
     if (max != R && (min == R || min > max)) {
-    } else if (min < R || max < R) { // Noncompliant {{Remove this expression which always evaluates to "false"}}
-//                        ^^^^^^^
+    } else if (min < R || max < R) { // Noncompliant [[sc=27;ec=34]] {{Remove this expression which always evaluates to "false"}}
     }
 
     if ((min == R || min > max)) {
-      if (max != R && (min == R || min > max)) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
-//                                 ^^^^^^^^^
+      if (max != R && (min == R || min > max)) { // Noncompliant [[sc=36;ec=45]] {{Remove this expression which always evaluates to "true"}}
 
       }
     }
-    while (param && true) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
-//                  ^^^^
+    while (param && true) { // Noncompliant [[sc=21;ec=25]] {{Remove this expression which always evaluates to "true"}}
       break;
     }
-    do{}while (param && false); // Noncompliant {{Remove this expression which always evaluates to "false"}}
-//                      ^^^^^
+    do{}while (param && false); // Noncompliant [[sc=25;ec=30]] {{Remove this expression which always evaluates to "false"}}
   }
 
   public void bitwise_and(boolean parameter1, boolean parameter2) {
@@ -142,10 +136,10 @@ class Class extends SuperClass {
   }
 
   public void conditional_or(boolean parameter1, boolean parameter2) {
- // Noncompliant@+1
+    // Noncompliant@+1
     if (false || false) { // Noncompliant {{Remove this expression which always evaluates to "false"}}
     }
- // Noncompliant@+1
+    // Noncompliant@+1
     if (false || true) { // Noncompliant
     }
     if (false || parameter2) { // Noncompliant {{Remove this expression which always evaluates to "false"}}
@@ -476,34 +470,34 @@ class Class extends SuperClass {
     }
     if (parameter1 == parameter2 || parameter1 == parameter2) { // Noncompliant {{Remove this expression which always evaluates to "false"}}
     }
- // Noncompliant@+1 {{Remove this expression which always evaluates to "false"}}
+    // Noncompliant@+1 {{Remove this expression which always evaluates to "false"}}
     if (parameter1 == parameter2 && parameter1 != parameter2) {
     }
- // Noncompliant@+1 {{Remove this expression which always evaluates to "false"}}
+    // Noncompliant@+1 {{Remove this expression which always evaluates to "false"}}
     if (parameter1 == parameter2 && parameter1 > parameter2) {
     }
- // Noncompliant@+1 {{Remove this expression which always evaluates to "false"}}
+    // Noncompliant@+1 {{Remove this expression which always evaluates to "false"}}
     if (parameter1 == parameter2 && parameter1 < parameter2) {
     }
   }
   public void tests2(boolean parameter1, boolean parameter2, boolean condition) {
- // Noncompliant@+1 {{Remove this expression which always evaluates to "true"}}
+    // Noncompliant@+1 {{Remove this expression which always evaluates to "true"}}
     if (parameter1 == parameter2 || parameter1 != parameter2) {
     }
     if (condition && !condition) { // Noncompliant {{Remove this expression which always evaluates to "false"}}
     }
     if (condition || !condition) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
     }
- // Noncompliant@+1
+    // Noncompliant@+1
     if ((parameter1 == parameter2 || condition) && !(parameter1 == parameter2 || condition)) {
     }
- // Noncompliant@+1
+    // Noncompliant@+1
     if ((parameter1 == parameter2 || condition) || !(parameter1 == parameter2 || condition)) { // Noncompliant
     }
- // Noncompliant@+1
+    // Noncompliant@+1
     if (!(parameter1 == parameter2 || condition) && (parameter1 == parameter2 || condition)) { // Noncompliant
     }
- // Noncompliant@+1
+    //Noncompliant@+1
     if (!(parameter1 == parameter2 || condition) || (parameter1 == parameter2 || condition)) { // Noncompliant
     }
   }
@@ -688,7 +682,7 @@ class Class extends SuperClass {
 
   public void relational_ne(boolean parameter1, boolean parameter2) {
     if (parameter1 != parameter2) {
-     if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
       if (parameter1 != parameter2) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
       }
@@ -826,7 +820,7 @@ class Class extends SuperClass {
 
     this.field1 = false;
     this.field2 = this.field1;
- // Noncompliant@+1 {{Remove this expression which always evaluates to "false"}}
+    // Noncompliant@+1 {{Remove this expression which always evaluates to "false"}}
     if (field1 || field2) { // Noncompliant {{Remove this expression which always evaluates to "false"}}
     }
     if (field1 && !field1) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
@@ -856,7 +850,7 @@ class Class extends SuperClass {
 
     super.field1 = false;
     super.field2 = super.field1;
- // Noncompliant@+1 {{Remove this expression which always evaluates to "false"}}
+    // Noncompliant@+1 {{Remove this expression which always evaluates to "false"}}
     if (super.field1 || super.field2) { // Noncompliant {{Remove this expression which always evaluates to "false"}}
     }
 
@@ -1197,13 +1191,13 @@ class Class extends SuperClass {
   public void ternary3(boolean condition) {
     if (true ? condition : false) { // Noncompliant
     }
- // Noncompliant@+1
+    // Noncompliant@+1
     if (true ? false : condition) { // Noncompliant
     }
 
     if (false ? true : condition) { // Noncompliant
     }
- // Noncompliant@+1
+    // Noncompliant@+1
     if (false ? condition : true) { // Noncompliant
     }
   }
@@ -1277,8 +1271,8 @@ class SuperClass {
 
   protected boolean shouldGzip() {
     return env.gzip()
-        && env.prodMode()
-        && request.header(ACCEPT_ENCODING, "").contains(GZIP);
+      && env.prodMode()
+      && request.header(ACCEPT_ENCODING, "").contains(GZIP);
   }
 
   private Object mutex;
@@ -1337,7 +1331,7 @@ class SuperClass {
     Entry entry = new Object();
     printState();
     boolean reusable = entry instanceof ImmutableMapEntry
-        && entry.isReusable();
+      && entry.isReusable();
     printState();
     Object o = reusable ? entry : new Object(); // compliant both path are explored.
     return;
@@ -1386,21 +1380,21 @@ class SuperClass {
 
   public void booleanObjectAssignment() {
     boolean b = Boolean.FALSE;
-    if (b) { // Noncompliant
+    if (b) {   // Noncompliant
       log("B true");
     }
   }
 
   public void staticBooleanObjectAssignment() {
     boolean b = TRUE;
-    if (b) { // Noncompliant
+    if (b) {   // Noncompliant
       log("B true");
     }
   }
 
   public void repeatedConditions(Object a, Object b) {
     if (a == b) {
-      if ( a == b) { // Noncompliant
+      if ( a == b) {   // Noncompliant
         log("Are same!");
       } else {
         log("Not same!");
@@ -1410,7 +1404,7 @@ class SuperClass {
 
   public void invertedConditions(Object a, Object b) {
     if (a == b) {
-      if ( a != b) { // Noncompliant
+      if ( a != b) {   // Noncompliant
         log("Not same!");
       } else {
         log("Are same!");
@@ -1420,7 +1414,7 @@ class SuperClass {
 
   public void negatedConditions(Object a, Object b) {
     if (!(a == b)) {
-      if ( a != b) { // Noncompliant
+      if ( a != b) {   // Noncompliant
         log("Not same!");
       } else {
         log("Are same!");
@@ -1430,7 +1424,7 @@ class SuperClass {
 
   public void invertedConditionsNotFirst(Object a, Object b) {
     if (a != b) {
-      if ( a == b) { // Noncompliant
+      if ( a == b) {   // Noncompliant
         log("Are same!");
       } else {
         log("Not same!");
@@ -1441,7 +1435,7 @@ class SuperClass {
   public void transitiveConditions(Object a, Object b, Object c) {
     if (a == b) {
       if (b == c) {
-        if ( a == c) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+        if ( a == c) {   // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
           log("Are same!");
         } else {
           log("Not same!");
@@ -1988,19 +1982,19 @@ class MyConstantsTestClass {
 }
 
 class Squid2583 {
-    private final transient java.io.ByteArrayOutputStream trasientBaos = new java.io.ByteArrayOutputStream();
+  private final transient java.io.ByteArrayOutputStream trasientBaos = new java.io.ByteArrayOutputStream();
 
-    private final java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+  private final java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 
-    public void raiseIssue() {
-        if (trasientBaos != null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
-            trasientBaos.reset();
-        }
-
-        if (baos != null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
-            baos.reset();
-        }
+  public void raiseIssue() {
+    if (trasientBaos != null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
+      trasientBaos.reset();
     }
+
+    if (baos != null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
+      baos.reset();
+    }
+  }
 }
 
 class NestedMax {
@@ -2074,8 +2068,7 @@ class NestedMax {
   boolean foo(Object o1, Object o2) {
     if(o1 == null && o2 == null)
       return false;
-    if((o1 != null && o2 == null) || (o1 == null && o2 != null)) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
-//                                                  ^^^^^^^^^^
+    if((o1 != null && o2 == null) || (o1 == null && o2 != null)) { // Noncompliant [[sc=53;ec=63]] {{Remove this expression which always evaluates to "true"}}
       return false;
     }
     return true;
@@ -2187,7 +2180,7 @@ class SimpleAssignments {
 class Test {
   void less_than_method_equals(int a, int b) {
     if (a < b) {
-      if (java.util.Objects.equals(a, b)) { // Noncompliant
+      if (java.util.Objects.equals(a, b)) {  // Noncompliant
 
       }
     }

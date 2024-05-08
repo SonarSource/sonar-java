@@ -29,7 +29,7 @@ class ObjectOutputStreamCheckSample {
 
   void noncompliant_10() throws IOException {
     OutputStream fos = Files.newOutputStream(Paths.get("a"), StandardOpenOption.APPEND); // flow@f1 {{FileOutputStream created here.}}
-    ObjectOutputStream out = new ObjectOutputStream(fos); // Noncompliant
+    ObjectOutputStream out = new ObjectOutputStream(fos); // Noncompliant [[flows=f1]]
   }
   void noncompliant_11() throws IOException {
     OutputStream fos = Files.newOutputStream(Paths.get("a"), StandardOpenOption.DELETE_ON_CLOSE, StandardOpenOption.APPEND);

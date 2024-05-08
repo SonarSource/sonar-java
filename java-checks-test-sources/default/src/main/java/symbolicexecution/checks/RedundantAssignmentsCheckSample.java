@@ -11,7 +11,7 @@ class RedundantAssignmentsCheckSample {
   void foo() {
     a = b; // flow@foo {{Implies 'a' has the same value as 'b'.}}
     c = a; // flow@foo {{Implies 'c' has the same value as 'a'.}}
-    b = c; // Noncompliant {{Remove this useless assignment; "b" already holds the assigned value along all execution paths.}}
+    b = c; // Noncompliant  [[flows=foo]]  {{Remove this useless assignment; "b" already holds the assigned value along all execution paths.}}
 //  ^^^^^
   }
 
@@ -29,7 +29,7 @@ class RedundantAssignmentsCheckSample {
     } else {
       d = c; // flow@xmi2 {{Implies 'd' has the same value as 'c'.}}
     }
-    b = d; // Noncompliant {{Remove this useless assignment; "b" already holds the assigned value along all execution paths.}}
+    b = d; // Noncompliant [[flows=xmi1,xmi2]] {{Remove this useless assignment; "b" already holds the assigned value along all execution paths.}}
 //  ^^^^^
   }
 

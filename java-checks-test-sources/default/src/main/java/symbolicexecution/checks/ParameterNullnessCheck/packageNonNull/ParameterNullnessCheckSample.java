@@ -11,7 +11,7 @@ abstract class ParameterNullnessCheckSample {
   Object field;
 
   void foo(Object o) { // flow@foo [[order=2]] {{Method 'foo' declaration.}}
-    foo( // Noncompliant {{Annotate the parameter with @javax.annotation.Nullable in method 'foo' declaration, or make sure that null can not be passed as argument.}}
+    foo( // Noncompliant [[flows=foo]] {{Annotate the parameter with @javax.annotation.Nullable in method 'foo' declaration, or make sure that null can not be passed as argument.}}
 //  ^^^
       null); // flow@foo [[order=1]] {{Argument can be null.}}
     bar(o, null); // Compliant, annotated Nullable
