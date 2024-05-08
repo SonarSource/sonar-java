@@ -2,36 +2,43 @@ package checks.UselessImportCheck;
 
 import java.util.Map;
 // fix@qf1 {{Remove the import}}
-// edit@qf1 [[sl=6;sc=1;el=7;ec=1]] ̣{{}}
-import a.b.c.NotReferencedFromJavadoc; // Noncompliant [[sc=8;ec=38;quickfixes=qf1]]
+// edit@qf1 [[sl=6;sc=1;el=8;ec=1]] ̣{{}}
+import a.b.c.NotReferencedFromJavadoc; // Noncompliant [[quickfixes=qf1]]
+//     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 import java.util.List;
 import javax.annotation.Nonnull;
 //fix@qf2 {{Remove the import}}
-//edit@qf2 [[sl=11;sc=1;el=12;ec=1]] ̣{{}}
-import java.lang.String;            // Noncompliant  {{Remove this unnecessary import: java.lang classes are always implicitly imported.}} [[sc=8;ec=24;quickfixes=qf2]]
-import java.lang.*;                 // Noncompliant  {{Remove this unnecessary import: java.lang classes are always implicitly imported.}} [[sc=8;ec=19;quickfixes=qf3]]
+//edit@qf2 [[sl=12;sc=1;el=14;ec=1]] ̣{{}}
+import java.lang.String;            // Noncompliant [[quickfixes=qf2]]
+//     ^^^^^^^^^^^^^^^^
+import java.lang.*;                 // Noncompliant [[quickfixes=qf3]]
+//     ^^^^^^^^^^^
 //fix@qf3 {{Remove the import}}
-//edit@qf3 [[sl=12;sc=1;el=15;ec=1]] ̣{{}}
+//edit@qf3 [[sl=14;sc=1;el=18;ec=1]] ̣{{}}
 import javax.annotation.Nullable;
 import a.b.c.Foo;
-import a.b.c.Foo;                   // Noncompliant  {{Remove this duplicated import.}} [[sc=8;ec=17;quickfixes=qf4]]
+import a.b.c.Foo;                   // Noncompliant [[quickfixes=qf4]]
+//     ^^^^^^^^^
 //fix@qf4 {{Remove the import}}
-//edit@qf4 [[sl=17;sc=1;el=21;ec=1]] ̣{{}}
+//edit@qf4 [[sl=20;sc=1;el=25;ec=1]] ̣{{}}
 
-import checks.UselessImportCheck.*; // Noncompliant  {{Remove this unnecessary import: same package classes are always implicitly imported.}} [[sc=8;ec=35;quickfixes=qf5]]
+import checks.UselessImportCheck.*; // Noncompliant [[quickfixes=qf5]]
+//     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //fix@qf5 {{Remove the import}}
-//edit@qf5 [[sl=21;sc=1;el=25;ec=1]] ̣{{}}
+//edit@qf5 [[sl=25;sc=1;el=30;ec=1]] ̣{{}}
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static checks.UselessImportCheck.SomeEntity.FIND_BY_AGE;    // Noncompliant [[sc=15;ec=63;quickfixes=qf6]]
+import static checks.UselessImportCheck.SomeEntity.FIND_BY_AGE;    // Noncompliant [[quickfixes=qf6]]
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //fix@qf6 {{Remove the static import}}
-//edit@qf6 [[sl=28;sc=1;el=31;ec=1]] ̣{{}}
+//edit@qf6 [[sl=33;sc=1;el=37;ec=1]] ̣{{}}
 import static checks.UselessImportCheck.Foo2WithQuickFixes.A.FLUP; // compliant, used outside of owning class
-import static checks.UselessImportCheck.Foo2WithQuickFixes.A.qix;  // Noncompliant [[sc=15;ec=65;quickfixes=qf7]]
+import static checks.UselessImportCheck.Foo2WithQuickFixes.A.qix;  // Noncompliant [[quickfixes=qf7]]
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //fix@qf7 {{Remove the static import}}
-//edit@qf7 [[sl=31;sc=67;el=32;ec=66]] ̣{{}}
+//edit@qf7 [[sl=37;sc=67;el=38;ec=66]] ̣{{}}
 
 class Foo2WithQuickFixes extends Foo {
 
