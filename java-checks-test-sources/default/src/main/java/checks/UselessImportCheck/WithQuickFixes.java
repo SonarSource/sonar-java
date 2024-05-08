@@ -8,17 +8,17 @@ import java.util.List;
 import javax.annotation.Nonnull;
 //fix@qf2 {{Remove the import}}
 //edit@qf2 [[sl=11;sc=1;el=12;ec=1]] ̣{{}}
-import java.lang.String;            // Noncompliant [[sc=8;ec=24;quickfixes=qf2]] {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
-import java.lang.*;                 // Noncompliant [[sc=8;ec=19;quickfixes=qf3]] {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
+import java.lang.String;            // Noncompliant  {{Remove this unnecessary import: java.lang classes are always implicitly imported.}} [[sc=8;ec=24;quickfixes=qf2]]
+import java.lang.*;                 // Noncompliant  {{Remove this unnecessary import: java.lang classes are always implicitly imported.}} [[sc=8;ec=19;quickfixes=qf3]]
 //fix@qf3 {{Remove the import}}
 //edit@qf3 [[sl=12;sc=1;el=15;ec=1]] ̣{{}}
 import javax.annotation.Nullable;
 import a.b.c.Foo;
-import a.b.c.Foo;                   // Noncompliant [[sc=8;ec=17;quickfixes=qf4]] {{Remove this duplicated import.}}
+import a.b.c.Foo;                   // Noncompliant  {{Remove this duplicated import.}} [[sc=8;ec=17;quickfixes=qf4]]
 //fix@qf4 {{Remove the import}}
 //edit@qf4 [[sl=17;sc=1;el=21;ec=1]] ̣{{}}
 
-import checks.UselessImportCheck.*; // Noncompliant [[sc=8;ec=35;quickfixes=qf5]] {{Remove this unnecessary import: same package classes are always implicitly imported.}}
+import checks.UselessImportCheck.*; // Noncompliant  {{Remove this unnecessary import: same package classes are always implicitly imported.}} [[sc=8;ec=35;quickfixes=qf5]]
 //fix@qf5 {{Remove the import}}
 //edit@qf5 [[sl=21;sc=1;el=25;ec=1]] ̣{{}}
 

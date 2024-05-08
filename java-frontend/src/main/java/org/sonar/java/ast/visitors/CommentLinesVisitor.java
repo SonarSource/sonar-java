@@ -19,9 +19,12 @@
  */
 package org.sonar.java.ast.visitors;
 
+import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -33,7 +36,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
 
   private Set<Integer> comments = new HashSet<>();
   private Set<Integer> noSonarLines = new HashSet<>();
-  private Set<SyntaxTrivia> syntaxTrivia = new HashSet<>();
+  private Map<Path, Set<SyntaxTrivia>> syntaxTrivia = new HashMap<>();
   private boolean seenFirstToken;
 
   @Override
@@ -68,14 +71,15 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
       if(commentLine.contains("NOSONAR")) {
         noSonarLines.add(line);
       } else if (!isBlank(commentLine)) {
-        syntaxTrivia.add(trivia);
+        Path path = Path.of(context.getInputFile().relativePath());
+        syntaxTrivia.computeIfAbsent(path, k -> new HashSet<>()).add(trivia);
         comments.add(line);
       }
       line++;
     }
   }
 
-  public Set<SyntaxTrivia> getSyntaxTrivia() {
+  public Map<Path, Set<SyntaxTrivia>> getSyntaxTrivia() {
     return syntaxTrivia;
   }
 

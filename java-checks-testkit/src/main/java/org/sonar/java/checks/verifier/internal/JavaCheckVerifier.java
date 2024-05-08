@@ -58,7 +58,9 @@ import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonarsource.analyzer.commons.checks.verifier.MultiFileVerifier;
 import org.sonarsource.analyzer.commons.checks.verifier.SingleFileVerifier;
+import org.sonarsource.analyzer.commons.checks.verifier.internal.InternalIssueVerifier;
 import org.sonarsource.analyzer.commons.checks.verifier.quickfix.QuickFix;
 import org.sonarsource.analyzer.commons.checks.verifier.quickfix.TextEdit;
 import org.sonarsource.analyzer.commons.checks.verifier.quickfix.TextSpan;
@@ -98,8 +100,8 @@ public class JavaCheckVerifier implements CheckVerifier {
   private ReadCache readCache;
   private WriteCache writeCache;
 
-  private SingleFileVerifier createVerifier(int index, boolean onFile) {
-    SingleFileVerifier singleFileVerifier = SingleFileVerifier.create(Path.of(files.get(index).relativePath()), UTF_8);
+  private SingleFileVerifier createVerifier() {
+    InternalIssueVerifier verifier = (InternalIssueVerifier) MultiFileVerifier.create(Path.of(files.get(0).relativePath()), UTF_8);
 
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
     List<File> actualClasspath = classpath == null ? DEFAULT_CLASSPATH : classpath;
@@ -120,42 +122,43 @@ public class JavaCheckVerifier implements CheckVerifier {
 
     astScanner.setVisitorBridge(visitorsBridge);
 
-    List<InputFile> filesToParse = List.of(files.get(index));
+    List<InputFile> filesToParse = files;
     if (isCacheEnabled) {
       visitorsBridge.setCacheContext(cacheContext);
       filesToParse = astScanner.scanWithoutParsing(files).get(false);
     }
     astScanner.scan(filesToParse);
 
-    addComments(singleFileVerifier, commentLinesVisitor);
+    addComments(verifier, commentLinesVisitor);
 
     JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
     if (testJavaFileScannerContext != null) {
-      addIssues(testJavaFileScannerContext, singleFileVerifier, onFile);
-      addIssues(testModuleScannerContext, singleFileVerifier, onFile);
+      addIssues(testJavaFileScannerContext, verifier);
+      addIssues(testModuleScannerContext, verifier);
     }
 
-    return singleFileVerifier;
+    return verifier;
   }
 
-  private static void addIssues(JavaFileScannerContextForTests scannerContext, SingleFileVerifier singleFileVerifier, boolean onFile) {
+  private static void addIssues(JavaFileScannerContextForTests scannerContext, MultiFileVerifier verifier) {
     scannerContext.getIssues().forEach(issue -> {
+      Path path = ((InternalInputFile)issue.getInputComponent()).path();
       String issueMessage = issue.getMessage();
       AnalyzerMessage.TextSpan textSpan = issue.primaryLocation();
-      SingleFileVerifier.Issue verifierIssue = null;
+      MultiFileVerifier.Issue verifierIssue = null;
       if (textSpan != null) {
         if (textSpan.endCharacter < 0) {
           // Sometimes we create a textspan with endCharacter < 0 to raise an issue on the line.
-          verifierIssue = singleFileVerifier.reportIssue(issueMessage).onLine(textSpan.startLine);
+          verifierIssue = verifier.reportIssue(path, issueMessage).onLine(textSpan.startLine);
         } else {
-          verifierIssue = singleFileVerifier.reportIssue(issueMessage)
+          verifierIssue = verifier.reportIssue(path, issueMessage)
             .onRange(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter);
         }
       } else if (issue.getLine() != null) {
-        verifierIssue = singleFileVerifier.reportIssue(issueMessage).onLine(issue.getLine());
+        verifierIssue = verifier.reportIssue(path, issueMessage).onLine(issue.getLine());
       } else {
-        verifierIssue = singleFileVerifier.reportIssue(issueMessage).onFile();
+        verifierIssue = verifier.reportIssue(path, issueMessage).onFile();
       }
 
       var quickfixes = scannerContext.getQuickFixes().get(textSpan);
@@ -166,8 +169,8 @@ public class JavaCheckVerifier implements CheckVerifier {
       }
 
       List<AnalyzerMessage> secondaries = issue.flows.stream().map(l -> l.isEmpty() ? null : l.get(0)).filter(Objects::nonNull).toList();
-      SingleFileVerifier.Issue finalVerifierIssue = verifierIssue;
-      secondaries.forEach(secondary -> addSecondary(finalVerifierIssue, secondary));
+      MultiFileVerifier.Issue finalVerifierIssue = verifierIssue;
+      secondaries.forEach(secondary -> addSecondary(path, finalVerifierIssue, secondary));
     });
   }
 
@@ -186,16 +189,22 @@ public class JavaCheckVerifier implements CheckVerifier {
     return replacement.replace("\n", "\\n");
   }
 
-  private static void addSecondary(SingleFileVerifier.Issue issue, AnalyzerMessage secondary) {
+  private static void addSecondary(Path path, MultiFileVerifier.Issue issue, AnalyzerMessage secondary) {
     AnalyzerMessage.TextSpan textSpan = secondary.primaryLocation();
-    issue.addSecondary(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter, secondary.getMessage());
+    issue.addSecondary(path, textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter, secondary.getMessage());
   }
 
-  private static void addComments(SingleFileVerifier singleFileVerifier, CommentLinesVisitor commentLinesVisitor) {
-    commentLinesVisitor.getSyntaxTrivia().stream()
-      .sorted(Comparator.comparingInt(t -> t.range().start().line()))
-      .forEach(trivia -> singleFileVerifier.addComment(trivia.range().start().line(), trivia.range().start().column(), trivia.comment(), COMMENT_PREFIX_LENGTH,
-        COMMENT_SUFFIX_LENGTH));
+  private static void addComments(MultiFileVerifier singleFileVerifier, CommentLinesVisitor commentLinesVisitor) {
+    commentLinesVisitor.getSyntaxTrivia().keySet()
+      .forEach(path -> commentLinesVisitor.getSyntaxTrivia().get(path).stream()
+        .sorted(Comparator.comparingInt(t -> t.range().start().line()))
+        .forEach(trivia -> singleFileVerifier.addComment(
+          path,
+          trivia.range().start().line(),
+          trivia.range().start().column(),
+          trivia.comment(),
+          COMMENT_PREFIX_LENGTH,
+          COMMENT_SUFFIX_LENGTH)));
   }
 
   private SonarComponents sonarComponents() {
@@ -330,19 +339,14 @@ public class JavaCheckVerifier implements CheckVerifier {
     return this;
   }
 
-  public CheckVerifier withComment(String comment){
-
-    return this;
-  }
-
   @Override
   public void verifyIssues() {
-    files.forEach(file -> createVerifier(files.indexOf(file), false).assertOneOrMoreIssues());
+    createVerifier().assertOneOrMoreIssues();
   }
 
   @Override
   public void verifyIssueOnFile(String expectedIssueMessage) {
-    files.forEach(file -> createVerifier(files.indexOf(file), true).assertOneOrMoreIssues());
+    createVerifier().assertOneOrMoreIssues();
   }
 
   @Override
@@ -352,7 +356,7 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   @Override
   public void verifyNoIssues() {
-    files.forEach(file -> createVerifier(files.indexOf(file), false).assertNoIssuesRaised());
+    createVerifier().assertNoIssuesRaised();
   }
 
 }
