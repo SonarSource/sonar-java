@@ -9,7 +9,8 @@ public class ATest {
 
   @Test
   public void myTest() {
-    if (someCondition) { // Noncompliant [[sc=5;ec=7]] {{Remove this 'if' statement from this test.}}
+    if (someCondition) { // Noncompliant {{Remove this 'if' statement from this test.}}
+//  ^^
       // verify something
     }
   }
