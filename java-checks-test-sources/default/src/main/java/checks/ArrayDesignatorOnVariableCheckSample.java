@@ -3,17 +3,17 @@ package checks;
 class ArrayDesignatorOnVariableCheckSample {
   int[] a,
         b,
-        c[][][][][], // Noncompliant {{Move the array designators [][][][][] to the type.}} [[quickfixes=!]]
+        c[][][][][], // Noncompliant {{Move the array designators [][][][][] to the type.}}
 //      ^^^^^^^^^^^
-        d[], // Noncompliant {{Move the array designators [] to the type.}} [[quickfixes=!]]
+        d[], // Noncompliant [[quickfixes=!]]
 //      ^^^
         e,
-        f // Noncompliant {{Move the array designators [] to the type.}} [[quickfixes=!]]
-//^[sc=9;ec=11;sl=9;el=10]
+        f // Noncompliant [[quickfixes=!]]
+//      ^[sc=9;ec=10;sl=11;el=13]
         [];
 
   interface B {
-    int a[] = null; // Noncompliant {{Move the array designators [] to the type.}} [[quickfixes=qf1]]
+    int a[] = null; // Noncompliant [[quickfixes=qf1]]
 //      ^^^
     // fix@qf1 {{Move [] to the variable type}}
     // edit@qf1 [[sc=10;ec=12]] {{}}
@@ -24,13 +24,13 @@ class ArrayDesignatorOnVariableCheckSample {
   class C {
     private void foo(
       int[] a,
-      int b[]) { // Noncompliant {{Move the array designators [] to the type.}} [[quickfixes=qf2]]
+      int b[]) { // Noncompliant [[quickfixes=qf2]]
 //        ^^^
       // fix@qf2 {{Move [] to the variable type}}
       // edit@qf2 [[sc=12;ec=14]] {{}}
       // edit@qf2 [[sc=10;ec=10]]{{[]}}
 
-      for (String c[] : new String[0][]) { // Noncompliant {{Move the array designators [] to the type.}} [[quickfixes=qf3]]
+      for (String c[] : new String[0][]) { // Noncompliant [[quickfixes=qf3]]
 //                ^^^
         // fix@qf3 {{Move [] to the variable type}}
         // edit@qf3 [[sc=20;ec=22]] {{}}

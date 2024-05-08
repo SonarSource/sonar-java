@@ -106,7 +106,8 @@ class JUnit5SilentlyIgnoreClassAndMethodCheckSample {
     // edit@qf1 [[sc=40;ec=63]] {{}}
     
     @Test
-    Object bar(boolean b, Object o) { // Noncompliant [[sc=5;ec=11;quickfixes=qf2]]
+    Object bar(boolean b, Object o) { // Noncompliant [[quickfixes=qf2]]
+//  ^^^^^^
       // fix@qf2 {{Replace with void}}
       // edit@qf2 [[sc=5;ec=11]] {{void}}
       // edit@qf2 [[sl=+7;sc=16;el=+7;ec=39]] {{}}

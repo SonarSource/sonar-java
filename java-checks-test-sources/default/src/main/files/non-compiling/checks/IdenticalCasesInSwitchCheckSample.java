@@ -4,11 +4,11 @@ class IdenticalCasesInSwitchCheckSample {
   void foo(WeekendDay weekendDay){
     int i = switch (weekendDay) {
       case SATURDAY:
-//  ^^^<
+//    ^[el=+3;ec=16]>
         trivial();
         yield 1;
       case SUNDAY: // Noncompliant {{This case's code block is the same as the block for the case on line 6.}}
-//^[sc=7;ec=17;sl=9;el=11]
+//^[sc=7;ec=16;sl=10;el=13]
         trivial();
         yield 1;
     };

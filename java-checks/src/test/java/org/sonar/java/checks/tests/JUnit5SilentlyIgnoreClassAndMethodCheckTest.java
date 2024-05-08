@@ -40,7 +40,7 @@ class JUnit5SilentlyIgnoreClassAndMethodCheckTest {
 
   @Test
   void test_without_semantic() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath(SOURCE_PATH))
       .withCheck(new JUnit5SilentlyIgnoreClassAndMethodCheck())
       .withoutSemantic()
@@ -49,7 +49,7 @@ class JUnit5SilentlyIgnoreClassAndMethodCheckTest {
 
   @Test
   void test_unknown_symbols() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath(SOURCE_PATH))
       .withCheck(new JUnit5SilentlyIgnoreClassAndMethodCheck())
       .verifyIssues();
