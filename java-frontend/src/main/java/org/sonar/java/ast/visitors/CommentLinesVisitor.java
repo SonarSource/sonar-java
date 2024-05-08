@@ -68,10 +68,13 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
     String[] commentLines = getContents(trivia.comment()).split("(\r)?\n|\r", -1);
     int line = LineUtils.startLine(trivia);
     for (String commentLine : commentLines) {
-      if(commentLine.contains("NOSONAR")) {
+      if (commentLine.contains("NOSONAR")) {
         noSonarLines.add(line);
       } else if (!isBlank(commentLine)) {
-        Path path = Path.of(context.getInputFile().relativePath());
+        Path path = Path.of("");
+        if (context != null) {
+          path = Path.of(context.getInputFile().relativePath());
+        }
         syntaxTrivia.computeIfAbsent(path, k -> new HashSet<>()).add(trivia);
         comments.add(line);
       }
@@ -101,7 +104,6 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
     }
     return true;
   }
-
 
   private static String getContents(String comment) {
     return comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
