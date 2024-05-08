@@ -16,7 +16,7 @@ public class CollapsibleIfCandidateCheck {
       // edit@qf1 [[sl=-1;el=+0;sc=21;ec=11]] {{ && }}
       // edit@qf1 [[sc=11;ec=11]] {{(}}
       // edit@qf1 [[sc=46;ec=46]] {{)}}
-      // edit@qf1 [[sl=+8;el=+8;sc=5;ec=6]] {{}}
+      // edit@qf1 [[sl=+9;el=+9;sc=5;ec=6]] {{}}
     }
   }
 
@@ -40,7 +40,7 @@ public class CollapsibleIfCandidateCheck {
       // edit@qf3 [[sl=-1;el=+0;sc=21;ec=11]] {{ && }}
       // edit@qf3 [[sc=11;ec=11]] {{(}}
       // edit@qf3 [[sc=46;ec=46]] {{)}}
-      // edit@qf3 [[sl=+6;el=+6;sc=5;ec=6]] {{}}
+      // edit@qf3 [[sl=+7;el=+7;sc=5;ec=6]] {{}}
     }
   }
 
@@ -52,7 +52,7 @@ public class CollapsibleIfCandidateCheck {
         // edit@qf4 [[sl=-1;el=+0;sc=15;ec=11]] {{ && }}
         // edit@qf4 [[sl=-1;el=-1;sc=9;ec=9]] {{(}}
         // edit@qf4 [[sl=-1;el=-1;sc=15;ec=15]] {{)}}
-        // edit@qf4 [[sl=+7;el=+7;sc=5;ec=6]] {{}}
+        // edit@qf4 [[sl=+8;el=+8;sc=5;ec=6]] {{}}
       }
     }
   }
@@ -65,7 +65,7 @@ public class CollapsibleIfCandidateCheck {
         // edit@qf5 [[sl=-1;el=+0;sc=10;ec=11]] {{ && }}
         // edit@qf5 [[sc=11;ec=11]] {{(}}
         // edit@qf5 [[sc=17;ec=17]] {{)}}
-        // edit@qf5 [[sl=+7;el=+7;sc=5;ec=6]] {{}}
+        // edit@qf5 [[sl=+8;el=+8;sc=5;ec=6]] {{}}
       }
     }
   }
@@ -80,7 +80,7 @@ public class CollapsibleIfCandidateCheck {
         // edit@qf6 [[sl=-1;el=-1;sc=15;ec=15]] {{)}}
         // edit@qf6 [[sc=11;ec=11]] {{(}}
         // edit@qf6 [[sc=17;ec=17]] {{)}}
-        // edit@qf6 [[sl=+9;el=+9;sc=5;ec=6]] {{}}
+        // edit@qf6 [[sl=+10;el=+10;sc=5;ec=6]] {{}}
       }
     }
   }
@@ -91,7 +91,7 @@ public class CollapsibleIfCandidateCheck {
 //    ^^
         // fix@qf7 {{Merge this if statement with the enclosing one}}
         // edit@qf7 [[sl=-1;el=+0;sc=10;ec=11]] {{ && }}
-        // edit@qf7 [[sl=+5;el=+5;sc=5;ec=6]] {{}}
+        // edit@qf7 [[sl=+6;el=+6;sc=5;ec=6]] {{}}
       }
     }
   }
@@ -119,7 +119,7 @@ public class CollapsibleIfCandidateCheck {
         // edit@qf11 [[sl=-1;el=+0;sc=14;ec=11]] {{ && }}
         // edit@qf11 [[sl=-1;el=-1;sc=9;ec=9]] {{(}}
         // edit@qf11 [[sl=-1;el=-1;sc=14;ec=14]] {{)}}
-        // edit@qf11 [[sl=+7;el=+7;sc=5;ec=6]] {{}}
+        // edit@qf11 [[sl=+8;el=+8;sc=5;ec=6]] {{}}
       }
     }
     if (a? b: c) {
@@ -129,7 +129,7 @@ public class CollapsibleIfCandidateCheck {
         // edit@qf12 [[sl=-1;el=+0;sc=16;ec=11]] {{ && }}
         // edit@qf12 [[sl=-1;el=-1;sc=9;ec=9]] {{(}}
         // edit@qf12 [[sl=-1;el=-1;sc=16;ec=16]] {{)}}
-        // edit@qf12 [[sl=+7;el=+7;sc=5;ec=6]] {{}}
+        // edit@qf12 [[sl=+8;el=+8;sc=5;ec=6]] {{}}
       }
     }
   }
@@ -140,7 +140,7 @@ public class CollapsibleIfCandidateCheck {
 //    ^^
         // fix@qf13 {{Merge this if statement with the enclosing one}}
         // edit@qf13 [[sl=-1;el=+0;sc=14;ec=11]] {{ && }}
-        // edit@qf13 [[sl=+5;el=+5;sc=5;ec=6]] {{}}
+        // edit@qf13 [[sl=+6;el=+6;sc=5;ec=6]] {{}}
       }
     }
   }
