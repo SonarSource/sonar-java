@@ -100,8 +100,8 @@ public class JavaCheckVerifier implements CheckVerifier {
   private ReadCache readCache;
   private WriteCache writeCache;
 
-  private SingleFileVerifier createVerifier() {
-    InternalIssueVerifier verifier = (InternalIssueVerifier) MultiFileVerifier.create(Path.of(files.get(0).relativePath()), UTF_8);
+  private MultiFileVerifier createVerifier() {
+    MultiFileVerifier verifier = MultiFileVerifier.create(Path.of(files.get(0).relativePath()), UTF_8);
 
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
     List<File> actualClasspath = classpath == null ? DEFAULT_CLASSPATH : classpath;
