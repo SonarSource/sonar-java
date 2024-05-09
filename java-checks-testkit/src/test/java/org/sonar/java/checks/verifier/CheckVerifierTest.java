@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.verifier;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -46,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class CheckVerifierTest {
 
   private static final String FILENAME_ISSUES = "src/test/files/JavaCheckVerifier.java";
+  private static final String FILENAME_ISSUES_JAVA_CHECK_VERIFIER = "src/test/files/java-check-verifier/CommonsJavaCheckVerifier.java";
   private static final String FILENAME_NO_ISSUE = "src/test/files/JavaCheckVerifierNoIssue.java";
   private static final IssuableSubscriptionVisitor NO_EFFECT_VISITOR = new IssuableSubscriptionVisitor() {
     @Override
@@ -58,7 +58,16 @@ class CheckVerifierTest {
   void verify_line_issues() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     CheckVerifier.newInternalVerifier()
-      .onFile("src/test/files/JavaCheckVerifier.java")
+      .onFile(FILENAME_ISSUES)
+      .withCheck(visitor)
+      .verifyIssues();
+  }
+
+  @Test
+  void verify_line_issues_java_verifier() {
+    IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssuesForJavaCheckVerifier();
+    CheckVerifier.newVerifier()
+      .onFile(FILENAME_ISSUES_JAVA_CHECK_VERIFIER)
       .withCheck(visitor)
       .verifyIssues();
   }
@@ -73,6 +82,18 @@ class CheckVerifierTest {
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Unexpected at [4]");
+    }
+  }
+
+  @Test
+  void verify_unexpected_issue_java_verifier() {
+    IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssuesForJavaCheckVerifier().withIssue(4, "extra message");
+    CheckVerifier verifier = CheckVerifier.newVerifier().onFile(FILENAME_ISSUES_JAVA_CHECK_VERIFIER).withCheck(visitor);
+    try {
+      verifier.verifyIssues();
+      Fail.fail("Should have failed");
+    } catch (AssertionError e) {
+      assertThat(e).hasMessageContaining("ERROR: Expect 9 issues instead of 10. In file (CommonsJavaCheckVerifier.java:7)");
     }
   }
 
@@ -113,6 +134,16 @@ class CheckVerifierTest {
   }
 
   @Test
+  void verify_issue_on_file_java_verifier() {
+    String expectedMessage = "messageOnFile";
+    IssuableSubscriptionVisitor visitor = new FakeVisitor().withIssueOnFile(expectedMessage);
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/java-check-verifier/CommonsJavaCheckVerifierOnFile.java")
+      .withCheck(visitor)
+      .verifyIssueOnFile(expectedMessage);
+  }
+
+  @Test
   void verify_issue_on_file_incorrect() {
     CheckVerifier verifier = CheckVerifier.newInternalVerifier().onFile(FILENAME_ISSUES).withCheck(new FakeVisitor().withDefaultIssues());
     assertThrows(AssertionError.class, () -> verifier.onFile("messageOnFile"));
@@ -121,6 +152,14 @@ class CheckVerifierTest {
   @Test
   void verify_no_issue() {
     CheckVerifier.newInternalVerifier()
+      .onFile(FILENAME_NO_ISSUE)
+      .withCheck(NO_EFFECT_VISITOR)
+      .verifyNoIssues();
+  }
+
+  @Test
+  void verify_no_issue_java_verifier() {
+    CheckVerifier.newVerifier()
       .onFile(FILENAME_NO_ISSUE)
       .withCheck(NO_EFFECT_VISITOR)
       .verifyNoIssues();
@@ -138,7 +177,18 @@ class CheckVerifierTest {
   }
 
   @Test
-  void verify_with_default_test_jar() throws IOException {
+  void verify_with_provided_classes_java_verifier() {
+    IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssuesForJavaCheckVerifier();
+
+    CheckVerifier.newVerifier()
+      .onFile(FILENAME_ISSUES_JAVA_CHECK_VERIFIER)
+      .withCheck(visitor)
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
+  }
+
+  @Test
+  void verify_with_default_test_jar() {
     // This path is the actual test-jars path for this project, as the currently supplied jar doesn't cause any issues in the test file
     // retain the actual folder with contents. This will prevent other tests to fail which rely on the supplied bytecode.
     CheckVerifier.newInternalVerifier()
@@ -148,7 +198,7 @@ class CheckVerifierTest {
   }
 
   @Test
-  void verify_should_fail_when_using_incorrect_shift() throws IOException {
+  void verify_should_fail_when_using_incorrect_shift() {
     CheckVerifier verifier = CheckVerifier.newInternalVerifier()
       .onFile("src/test/files/JavaCheckVerifierIncorrectShift.java")
       .withCheck(NO_EFFECT_VISITOR);
@@ -162,7 +212,7 @@ class CheckVerifierTest {
   }
 
   @Test
-  void verify_should_fail_when_using_incorrect_attribute() throws IOException {
+  void verify_should_fail_when_using_incorrect_attribute() {
     CheckVerifier verifier = CheckVerifier.newInternalVerifier()
       .onFile("src/test/files/JavaCheckVerifierIncorrectAttribute.java")
       .withCheck(NO_EFFECT_VISITOR);
@@ -176,7 +226,7 @@ class CheckVerifierTest {
   }
 
   @Test
-  void verify_should_fail_when_using_incorrect_attribute2() throws IOException {
+  void verify_should_fail_when_using_incorrect_attribute2() {
     CheckVerifier verifier = CheckVerifier.newInternalVerifier()
       .onFile("src/test/files/JavaCheckVerifierIncorrectAttribute2.java")
       .withCheck(NO_EFFECT_VISITOR);
@@ -190,7 +240,7 @@ class CheckVerifierTest {
   }
 
   @Test
-  void verify_should_fail_when_using_incorrect_endLine() throws IOException {
+  void verify_should_fail_when_using_incorrect_endLine() {
     CheckVerifier verifier = CheckVerifier.newInternalVerifier()
       .onFile("src/test/files/JavaCheckVerifierIncorrectEndLine.java")
       .withCheck(NO_EFFECT_VISITOR);
@@ -204,7 +254,7 @@ class CheckVerifierTest {
   }
 
   @Test
-  void verify_should_fail_when_using_incorrect_secondaryLocation() throws IOException {
+  void verify_should_fail_when_using_incorrect_secondaryLocation() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     CheckVerifier verifier = CheckVerifier.newInternalVerifier()
       .onFile("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java")
@@ -219,7 +269,7 @@ class CheckVerifierTest {
   }
 
   @Test
-  void verify_should_fail_when_using_incorrect_secondaryLocation2() throws IOException {
+  void verify_should_fail_when_using_incorrect_secondaryLocation2() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     CheckVerifier verifier = CheckVerifier.newInternalVerifier()
       .onFile("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java")
@@ -402,7 +452,8 @@ class CheckVerifierTest {
 
   @Test
   void verify_fail_when_same_explicit_order_is_provided() {
-    Throwable throwable = catchThrowable(() -> CheckVerifier.newInternalVerifier().onFile("src/test/files/JavaCheckVerifierFlowsDuplicateExplicitOrder.java").withCheck(new FakeVisitor()).verifyIssues());
+    Throwable throwable = catchThrowable(
+      () -> CheckVerifier.newInternalVerifier().onFile("src/test/files/JavaCheckVerifierFlowsDuplicateExplicitOrder.java").withCheck(new FakeVisitor()).verifyIssues());
     assertThat(throwable)
       .isInstanceOf(AssertionError.class)
       .hasMessageContaining("Same explicit ORDER=1 provided for two comments.")
@@ -412,7 +463,8 @@ class CheckVerifierTest {
 
   @Test
   void verify_fail_when_mixing_explicit_and_implicit_order() {
-    Throwable throwable = catchThrowable(() -> CheckVerifier.newInternalVerifier().onFile("src/test/files/JavaCheckVerifierFlowsMixedExplicitOrder.java").withCheck(new FakeVisitor()).verifyIssues());
+    Throwable throwable = catchThrowable(
+      () -> CheckVerifier.newInternalVerifier().onFile("src/test/files/JavaCheckVerifierFlowsMixedExplicitOrder.java").withCheck(new FakeVisitor()).verifyIssues());
     assertThat(throwable)
       .isInstanceOf(AssertionError.class)
       .hasMessageContaining("Mixed explicit and implicit order in same flow.")
@@ -462,13 +514,14 @@ class CheckVerifierTest {
       .flowItem(5, "f2")
       .flowItem(6, "line6")
       .add();
-    Throwable throwable = catchThrowable(() -> CheckVerifier.newInternalVerifier().onFile("src/test/files/JavaCheckVerifierFlowsWithSameLines2.java").withCheck(fakeVisitor).verifyIssues());
+    Throwable throwable = catchThrowable(
+      () -> CheckVerifier.newInternalVerifier().onFile("src/test/files/JavaCheckVerifierFlowsWithSameLines2.java").withCheck(fakeVisitor).verifyIssues());
     assertThat(throwable)
       .hasMessage("Unexpected flows: [6,5,4]\n" + "[6,5,4]. Missing flows: wrong_msg1 [6,5,4],wrong_msg2 [6,5,4].");
   }
 
   @Rule(key = "JavaCheckVerifier-Tester")
-  private static class FakeVisitor extends IssuableSubscriptionVisitor implements IssueWithFlowBuilder {
+  private static class FakeVisitor extends IssuableSubscriptionVisitor {
 
     Map<Integer, List<String>> issues = new LinkedHashMap<>();
     Map<Integer, List<AnalyzerMessage>> preciseIssues = new LinkedHashMap<>();
@@ -476,6 +529,20 @@ class CheckVerifierTest {
     private static final InputFile FAKE_INPUT_FILE = TestUtils.emptyInputFile("a");
     private static final InputFile OTHER_FAKE_INPUT_FILE = TestUtils.emptyInputFile("f");
     private AnalyzerMessage issueWithFlow;
+
+    private FakeVisitor withDefaultIssuesForJavaCheckVerifier() {
+      AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, FAKE_INPUT_FILE, new AnalyzerMessage.TextSpan(19, 24, 19, 30), "message12", 0);
+      withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, FAKE_INPUT_FILE, new AnalyzerMessage.TextSpan(17, 21, 17, 23), "no message", 0)));
+      return this.withIssue(1, "message")
+        .withIssue(3, "message1")
+        .withIssue(7, "message2")
+        .withIssue(8, "message3")
+        .withIssue(8, "message3")
+        .withPreciseIssue(withMultipleLocation)
+        .withPreciseIssue(new AnalyzerMessage(this, FAKE_INPUT_FILE, 14, "no message", 0))
+        .withPreciseIssue(new AnalyzerMessage(this, FAKE_INPUT_FILE, 15, "message12", 0))
+        .withPreciseIssue(new AnalyzerMessage(this, FAKE_INPUT_FILE, new AnalyzerMessage.TextSpan(11, 9, 11, 10), "message4", 0));
+    }
 
     private FakeVisitor withDefaultIssues() {
       AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, FAKE_INPUT_FILE, new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 3);
@@ -618,10 +685,6 @@ class CheckVerifierTest {
     if (!condition) {
       throw new IllegalStateException(errorMessage);
     }
-  }
-
-  private interface IssueWithFlowBuilder {
-
   }
 
 }
