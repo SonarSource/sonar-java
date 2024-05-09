@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
-import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,12 +42,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
-import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.annotations.VisibleForTesting;
@@ -58,8 +54,6 @@ import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.classpath.ClasspathForMain;
-import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
@@ -72,6 +66,11 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
+import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.CHECK_OR_CHECKS;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.FILE_OR_FILES;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.requiresNonEmpty;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.requiresNonNull;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.requiresNull;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.EFFORT_TO_FIX;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_LINE;
@@ -81,9 +80,6 @@ import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribut
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.START_COLUMN;
 
 public class InternalCheckVerifier implements CheckVerifier {
-
-  private static final String CHECK_OR_CHECKS = "check(s)";
-  private static final String FILE_OR_FILES = "file(s)";
 
   private static final JavaVersion DEFAULT_JAVA_VERSION = new JavaVersionImpl();
   private static final List<File> DEFAULT_CLASSPATH;
@@ -300,7 +296,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     } else {
       visitors.add(expectations.parser());
     }
-    SonarComponents sonarComponents = sonarComponents();
+    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache);
     VisitorsBridgeForTests visitorsBridge;
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
     if (withoutSemantic) {
@@ -634,52 +630,6 @@ public class InternalCheckVerifier implements CheckVerifier {
 
   private static String flowToString(List<AnalyzerMessage> flow) {
     return flow.stream().map(m -> String.valueOf(m.getLine())).collect(Collectors.joining(",", "[", "]"));
-  }
-
-  private static void requiresNull(@Nullable Object obj, String fieldName) {
-    if (obj != null) {
-      throw new AssertionError(String.format("Do not set %s multiple times!", fieldName));
-    }
-  }
-
-  private static void requiresNonNull(@Nullable Object obj, String fieldName) {
-    if (obj == null) {
-      throw new AssertionError(String.format("Set %s before calling any verification method!", fieldName));
-    }
-  }
-
-  private static void requiresNonEmpty(Collection<?> objects, String fieldName) {
-    if (objects.isEmpty()) {
-      throw new AssertionError(String.format("Provide at least one %s!", fieldName));
-    }
-  }
-
-  private SonarComponents sonarComponents() {
-    SensorContext sensorContext;
-    if (isCacheEnabled) {
-      sensorContext = new CacheEnabledSensorContext(readCache, writeCache);
-    } else {
-      sensorContext = new InternalSensorContext();
-    }
-    FileSystem fileSystem = sensorContext.fileSystem();
-    Configuration config = sensorContext.config();
-
-    ClasspathForMain classpathForMain = new ClasspathForMain(config, fileSystem);
-    ClasspathForTest classpathForTest = new ClasspathForTest(config, fileSystem);
-
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null, null) {
-      @Override
-      public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
-        throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));
-      }
-
-      @Override
-      public boolean canSkipUnchangedFiles() {
-        return isCacheEnabled;
-      }
-    };
-    sonarComponents.setSensorContext(sensorContext);
-    return sonarComponents;
   }
 
   private static class QuickFixesVerifier implements Consumer<Set<AnalyzerMessage>> {

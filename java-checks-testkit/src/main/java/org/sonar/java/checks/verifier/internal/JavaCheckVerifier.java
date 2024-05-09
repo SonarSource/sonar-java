@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
-import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,12 +32,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
-import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
@@ -47,8 +43,6 @@ import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.classpath.ClasspathForMain;
-import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -64,6 +58,11 @@ import org.sonarsource.analyzer.commons.checks.verifier.quickfix.TextEdit;
 import org.sonarsource.analyzer.commons.checks.verifier.quickfix.TextSpan;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.CHECK_OR_CHECKS;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.FILE_OR_FILES;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.requiresNonEmpty;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.requiresNonNull;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.requiresNull;
 
 public class JavaCheckVerifier implements CheckVerifier {
 
@@ -107,7 +106,7 @@ public class JavaCheckVerifier implements CheckVerifier {
     List<JavaFileScanner> visitors = new ArrayList<>(checks);
     CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
     visitors.add(commentLinesVisitor);
-    SonarComponents sonarComponents = sonarComponents();
+    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache);
     VisitorsBridgeForTests visitorsBridge;
     if (withoutSemantic) {
       visitorsBridge = new VisitorsBridgeForTests(visitors, sonarComponents, actualVersion);
@@ -211,59 +210,37 @@ public class JavaCheckVerifier implements CheckVerifier {
           COMMENT_SUFFIX_LENGTH)));
   }
 
-  private SonarComponents sonarComponents() {
-    SensorContext sensorContext;
-    if (isCacheEnabled) {
-      sensorContext = new CacheEnabledSensorContext(readCache, writeCache);
-    } else {
-      sensorContext = new InternalSensorContext();
-    }
-    FileSystem fileSystem = sensorContext.fileSystem();
-    Configuration config = sensorContext.config();
-
-    ClasspathForMain classpathForMain = new ClasspathForMain(config, fileSystem);
-    ClasspathForTest classpathForTest = new ClasspathForTest(config, fileSystem);
-
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null, null) {
-      @Override
-      public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
-        throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));
-      }
-
-      @Override
-      public boolean canSkipUnchangedFiles() {
-        return isCacheEnabled;
-      }
-    };
-    sonarComponents.setSensorContext(sensorContext);
-    return sonarComponents;
-  }
-
   @Override
   public CheckVerifier withCheck(JavaFileScanner check) {
+    requiresNull(checks, CHECK_OR_CHECKS);
     this.checks = Collections.singletonList(check);
     return this;
   }
 
   @Override
   public CheckVerifier withChecks(JavaFileScanner... checks) {
+    requiresNull(this.checks, CHECK_OR_CHECKS);
+    requiresNonEmpty(Arrays.asList(checks), "check");
     this.checks = Arrays.asList(checks);
     return this;
   }
 
   @Override
   public CheckVerifier withClassPath(Collection<File> classpath) {
+    requiresNull(this.classpath, "classpath");
     this.classpath = new ArrayList<>(classpath);
     return this;
   }
 
   @Override
   public CheckVerifier withJavaVersion(int javaVersionAsInt) {
+    requiresNull(javaVersion, "java version");
     return withJavaVersion(javaVersionAsInt, false);
   }
 
   @Override
   public CheckVerifier withJavaVersion(int javaVersionAsInt, boolean enablePreviewFeatures) {
+    requiresNull(javaVersion, "java version");
     if (enablePreviewFeatures && javaVersionAsInt != JavaVersionImpl.MAX_SUPPORTED) {
       var message = String.format(
         "Preview features can only be enabled when the version == latest supported Java version (%d != %d)",
@@ -283,16 +260,21 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   @Override
   public CheckVerifier onFile(String filename) {
+    requiresNull(files, FILE_OR_FILES);
     return onFiles(Collections.singletonList(filename));
   }
 
   @Override
   public CheckVerifier onFiles(String... filenames) {
-    return onFiles(Arrays.asList(filenames));
+    List<String> asList = Arrays.asList(filenames);
+    requiresNonEmpty(asList, "file");
+    return onFiles(asList);
   }
 
   @Override
   public CheckVerifier onFiles(Collection<String> filenames) {
+    requiresNull(files, FILE_OR_FILES);
+    requiresNonEmpty(filenames, "file");
     this.files = new ArrayList<>();
     return addFiles(InputFile.Status.SAME, filenames);
   }
@@ -304,6 +286,7 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   @Override
   public CheckVerifier addFiles(InputFile.Status status, Collection<String> filenames) {
+    requiresNonEmpty(filenames, "file");
     if (this.files == null) {
       this.files = new ArrayList<>(filenames.size());
     }
@@ -345,11 +328,15 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   @Override
   public void verifyIssues() {
+    requiresNonNull(checks, CHECK_OR_CHECKS);
+    requiresNonNull(files, FILE_OR_FILES);
     createVerifier().assertOneOrMoreIssues();
   }
 
   @Override
   public void verifyIssueOnFile(String expectedIssueMessage) {
+    requiresNonNull(checks, CHECK_OR_CHECKS);
+    requiresNonNull(files, FILE_OR_FILES);
     createVerifier().assertOneOrMoreIssues();
   }
 
@@ -360,6 +347,8 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   @Override
   public void verifyNoIssues() {
+    requiresNonNull(checks, CHECK_OR_CHECKS);
+    requiresNonNull(files, FILE_OR_FILES);
     createVerifier().assertNoIssuesRaised();
   }
 
