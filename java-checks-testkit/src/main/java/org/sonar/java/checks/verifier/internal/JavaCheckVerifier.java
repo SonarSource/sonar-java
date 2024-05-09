@@ -36,6 +36,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.caching.DummyCache;
@@ -93,7 +94,8 @@ public class JavaCheckVerifier implements CheckVerifier {
   private boolean withoutSemantic = false;
   private boolean isCacheEnabled = false;
 
-  private CacheContext cacheContext = null;
+  @VisibleForTesting
+  CacheContext cacheContext = null;
   private ReadCache readCache;
   private WriteCache writeCache;
 
@@ -140,6 +142,9 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   private static void addIssues(JavaFileScannerContextForTests scannerContext, MultiFileVerifier verifier) {
     scannerContext.getIssues().forEach(issue -> {
+      if (!issue.getInputComponent().isFile()) {
+        return;
+      }
       Path path = ((InternalInputFile) issue.getInputComponent()).path();
       String issueMessage = issue.getMessage();
       AnalyzerMessage.TextSpan textSpan = issue.primaryLocation();
