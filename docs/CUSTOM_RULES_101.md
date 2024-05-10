@@ -682,14 +682,25 @@ See: [pom.xml#L137-L197](./java-custom-rules-example/pom_SQ_9_9_LTS.xml#L137-L19
 You can raise an issue on a given line, but you can also raise it at a specific Token. 
 Because of that, you may want to specify, in your sample code used by your Unit Tests, the exact location, i.e. in between which 2 specific Columns, where you are expecting the issue to be raised.
 
-This can be achieved using the special keywords `sc` (start-column) and `ec` (end-column) in the `// Noncompliant` comment. 
-In the following example, we are expecting to have the issue being raised between the columns 27 and 32 (i.e. exactly on the "Order" variable type):
+> **Deprecated**
+> 
+>This can be achieved using the special keywords `sc` (start-column) and `ec` (end-column) in the `// Noncompliant` comment. 
+>In the following example, we are expecting to have the issue being raised between the columns 27 and 32 (i.e. exactly on the "Order" variable type):
+> ```java
+> public String updateOrder(Order order){ // Noncompliant [[sc=27;ec=32]] {{Don't use Order here because it's an @Entity}}
+>  // ...
+> }
+> ```
 
+Assert precise primary location of an issue with the comment on a line below containing required number of `^`.
 ```java
-public String updateOrder(Order order){ // Noncompliant [[sc=27;ec=32]] {{Don't use Order here because it's an @Entity}}
+public String updateOrder(Order order){ // Noncompliant {{Don't use Order here because it's an @Entity}}
+//                        ^^^^^
   // ...
 }
 ```
+More information on how to test precise issue location can be found in: [SonarSource Analyzer Test Commons](https://github.com/SonarSource/sonar-analyzer-commons/tree/master/test-commons) library.
+
 
 ### How to test the Source Version in a rule
 
