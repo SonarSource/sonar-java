@@ -14,7 +14,7 @@ public class TextBlockTabsAndSpaces {
 		and this one also with tabs
 		""";
 
-	// Noncompliant@+1 {{Use only spaces or only tabs for indentation}}
+ // Noncompliant@+1 {{Use only spaces or only tabs for indentation}}
   public final static String nonCompliant1 = """
     this line is indented with spaces
 
@@ -23,7 +23,7 @@ public class TextBlockTabsAndSpaces {
 		this one also has tabs
     """;
 
-	// Noncompliant@+1
+ // Noncompliant@+1
   public final static String nonCompliant2 = """
   	This line is indented with two spaces and a tab
   	""";

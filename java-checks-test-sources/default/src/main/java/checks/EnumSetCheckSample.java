@@ -26,17 +26,20 @@ class EnumSetCheckSample {
   }
 
   public void doSomething(Set<COLOR> param) { // compliant, we ignore parameters.
-    Set<COLOR> warm = new HashSet<COLOR>(); // Noncompliant [[sc=23;ec=43]] {{Convert this Set to an EnumSet.}}
+    Set<COLOR> warm = new HashSet<COLOR>(); // Noncompliant {{Convert this Set to an EnumSet.}}
+//                    ^^^^^^^^^^^^^^^^^^^^
     warm.add(COLOR.RED);
     warm.add(COLOR.ORANGE);
     Set foo = new HashSet();
     SetString ss;
     ExtendedSet<COLOR> es; // Compliant, we check only initializer.
-    Set warm2 = new HashSet<COLOR>(); // Noncompliant [[sc=17;ec=37]] {{Convert this Set to an EnumSet.}}
+    Set warm2 = new HashSet<COLOR>(); // Noncompliant {{Convert this Set to an EnumSet.}}
+//              ^^^^^^^^^^^^^^^^^^^^
     EnumSet<COLOR> warm3 = EnumSet.of(COLOR.RED, COLOR.ORANGE);
     Set<COLOR> warm4 = EnumSet.of(COLOR.RED, COLOR.ORANGE);
     Set<Integer> ports2 = new HashSet<>();
-    Set<COLOR> ports = new HashSet<>(); // Noncompliant [[sc=24;ec=39]] {{Convert this Set to an EnumSet.}}
+    Set<COLOR> ports = new HashSet<>(); // Noncompliant {{Convert this Set to an EnumSet.}}
+//                     ^^^^^^^^^^^^^^^
     Set<COLOR> ports4 = Sets.immutableEnumSet(COLOR.RED); // Compliant - guava use an enum set with constraint of immutability
     Set<COLOR> ports5 = Sets.immutableEnumSet(Lists.newArrayList(COLOR.RED)); // Compliant - guava use an enum set with constraint of immutability
     Set<COLOR> ports6 = Sets.newHashSet(COLOR.RED); // Noncompliant {{Convert this Set to an EnumSet.}}

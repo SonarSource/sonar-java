@@ -26,7 +26,8 @@ class ThreadStartedInConstructor {
 
     TestClass1() {
       toString(); // Compliant
-      new Thread((Runnable) null).start(); // Noncompliant [[sc=35;ec=40]] {{Move this "start" call to another method.}}
+      new Thread((Runnable) null).start(); // Noncompliant {{Move this "start" call to another method.}}
+//                                ^^^^^
       new ExtendsThread().start(); // Noncompliant {{Move this "start" call to another method.}}
     }
 

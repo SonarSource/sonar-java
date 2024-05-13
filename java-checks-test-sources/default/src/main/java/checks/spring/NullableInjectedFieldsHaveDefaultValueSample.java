@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 
 public class NullableInjectedFieldsHaveDefaultValueSample {
   @Nullable
-  @Value("${my.property}") // Noncompliant [[sc=3;ec=27;secondary=-1]] {{Provide a default null value for this field.}}
+  @Value("${my.property}") // Noncompliant  {{Provide a default null value for this field.}} [[sc=3;ec=27;secondary=-1]]
   private String myProperty;
 
-  @Value("${my.property}") // Noncompliant [[sc=3;ec=27;secondary=+1]] {{Provide a default null value for this field.}}
+  @Value("${my.property}") // Noncompliant  {{Provide a default null value for this field.}} [[sc=3;ec=27;secondary=+1]]
   @Nullable
   private String myPropertyWithReversedAnnotations;
 
@@ -29,11 +29,11 @@ public class NullableInjectedFieldsHaveDefaultValueSample {
   // fix@argumentfix {{Set null as default value}}
   // edit@argumentfix [[sc=18;ec=34]] {{"${my.property:#{null}}"}}
 
-  public void foo(@Nullable @Value("${my.property}") String argument) { // Noncompliant [[sc=29;ec=53;secondary=+0]] {{Provide a default null value for this parameter.}}
+  public void foo(@Nullable @Value("${my.property}") String argument) { // Noncompliant  {{Provide a default null value for this parameter.}} [[sc=29;ec=53;secondary=+0]]
     /* Do something */
   }
 
-  public void bar(@Value(value = "${my.property}") @Nullable String argument) { // Noncompliant [[sc=19;ec=51;secondary=+0]] {{Provide a default null value for this parameter.}}
+  public void bar(@Value(value = "${my.property}") @Nullable String argument) { // Noncompliant  {{Provide a default null value for this parameter.}} [[sc=19;ec=51;secondary=+0]]
     /* Do something */
   }
 

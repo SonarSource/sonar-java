@@ -5,7 +5,8 @@ import com.amazonaws.auth.BasicSessionCredentials;
 
 public class AwsLongTermAccessKeysCheckSample {
   void noncompliant() {
-    BasicAWSCredentials foo = new BasicAWSCredentials("", ""); // Noncompliant [[sc=35;ec=54]] {{Make sure using a long-term access key is safe here.}}
+    BasicAWSCredentials foo = new BasicAWSCredentials("", ""); // Noncompliant {{Make sure using a long-term access key is safe here.}}
+//                                ^^^^^^^^^^^^^^^^^^^
   }
 
   void compliant() {

@@ -19,19 +19,23 @@ public class PubliclyWritableDirectories {
 
   public String noncompliant() throws IOException {
     
-    File f1 = File.createTempFile("prefix", "suffix"); // Noncompliant [[sc=15;ec=54]] {{Make sure publicly writable directories are used safely here.}}
+    File f1 = File.createTempFile("prefix", "suffix"); // Noncompliant {{Make sure publicly writable directories are used safely here.}}
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     f1.deleteOnExit();
 
-    File f2 = new File("/var/tmp"); // Noncompliant [[sc=15;ec=35]]
+    File f2 = new File("/var/tmp"); // Noncompliant
+//            ^^^^^^^^^^^^^^^^^^^^
     File f3 = File.createTempFile("prefix", "suffix", f2); // Already reported in line 25
     f3.deleteOnExit();
-    File f4 = File.createTempFile("prefix", "suffix", new File("/tmp")); // Noncompliant [[sc=55;ec=71]]
+    File f4 = File.createTempFile("prefix", "suffix", new File("/tmp")); // Noncompliant
+//                                                    ^^^^^^^^^^^^^^^^
     f4.deleteOnExit();
     File f5 = File.createTempFile("prefix", "suffix", new File(PATH_NAME)); // Noncompliant
     f5.deleteOnExit();
     // Files library: https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html
 
-    Path p1 = Files.createTempDirectory("prefix"); // Noncompliant [[sc=15;ec=50]] {{Make sure publicly writable directories are used safely here.}}
+    Path p1 = Files.createTempDirectory("prefix"); // Noncompliant {{Make sure publicly writable directories are used safely here.}}
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     p1.toFile().deleteOnExit();
     Path p2 = Files.createTempFile("prefix", "suffix"); // Noncompliant {{Make sure publicly writable directories are used safely here.}}
     p2.toFile().deleteOnExit();
@@ -61,13 +65,15 @@ public class PubliclyWritableDirectories {
 
     // Get from environment variable
     Map<String, String> env = System.getenv();
-    String env1 = env.get("TMP"); // Noncompliant [[sc=19;ec=33]] {{Make sure publicly writable directories are used safely here.}}
-    String env2 = env.get("TMPDIR"); // Noncompliant [[sc=19;ec=36]] {{Make sure publicly writable directories are used safely here.}}
+    String env1 = env.get("TMP"); // Noncompliant {{Make sure publicly writable directories are used safely here.}}
+//                ^^^^^^^^^^^^^^
+    String env2 = env.get("TMPDIR"); // Noncompliant {{Make sure publicly writable directories are used safely here.}}
+//                ^^^^^^^^^^^^^^^^^
 
     File f6 = new File(env1);
     File f7 = new File(env2);
 
-    File f8 = new File("/tmp/my.txt"); // Noncompliant 
+    File f8 = new File("/tmp/my.txt"); // Noncompliant
     File f88 = new File("/var/tmp/my.txt"); // Noncompliant
     File f888 = new File("/usr/tmp/my.txt"); // Noncompliant
     File f8888 = new File("/dev/shm/my.txt"); // Noncompliant

@@ -15,16 +15,16 @@ import static java.nio.file.StandardOpenOption.APPEND;
 class ObjectOutputStreamCheckSample {
   void noncompliant_1(String fileName) throws IOException {
     FileOutputStream fos = new FileOutputStream(fileName , true);  // fos opened in append mode
-    ObjectOutputStream out = new ObjectOutputStream(fos);  // Noncompliant {{Do not use a FileOutputStream in append mode.}}
+    ObjectOutputStream out = new ObjectOutputStream(fos); // Noncompliant {{Do not use a FileOutputStream in append mode.}}
   }
   void noncompliant_2(String fileName, boolean appendMode) throws IOException {
     if (!appendMode) return;
     FileOutputStream fos = new FileOutputStream(fileName, appendMode);  // fos opened in append mode
-    ObjectOutputStream out = new ObjectOutputStream(fos);  // Noncompliant
+    ObjectOutputStream out = new ObjectOutputStream(fos); // Noncompliant
   }
   void noncompliant_3(File file) throws IOException {
     FileOutputStream fos = new FileOutputStream(file , true);  // fos opened in append mode
-    ObjectOutputStream out = new ObjectOutputStream(fos);  // Noncompliant
+    ObjectOutputStream out = new ObjectOutputStream(fos); // Noncompliant
   }
 
   void noncompliant_10() throws IOException {

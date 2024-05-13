@@ -10,7 +10,8 @@ import org.junit.rules.Timeout;
 class UnusedTestRuleCheck {
 
   @Rule
-  public TestName testNameUnused = new TestName(); // Noncompliant [[sc=19;ec=33]] {{Remove this unused "TestName".}}
+  public TestName testNameUnused = new TestName(); // Noncompliant {{Remove this unused "TestName".}}
+//                ^^^^^^^^^^^^^^
 
   public TestName testNameObj = new TestName();
 
@@ -21,7 +22,7 @@ class UnusedTestRuleCheck {
   public TestName testNameUsed = new TestName();
 
   @Rule
-  public TemporaryFolder tempFolderUnused = new TemporaryFolder();  // Noncompliant {{Remove this unused "TemporaryFolder".}}
+  public TemporaryFolder tempFolderUnused = new TemporaryFolder(); // Noncompliant {{Remove this unused "TemporaryFolder".}}
 
   @Rule
   public TemporaryFolder tempFolderUsed = new TemporaryFolder();

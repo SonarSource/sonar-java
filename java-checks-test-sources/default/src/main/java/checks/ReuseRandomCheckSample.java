@@ -13,7 +13,8 @@ public class ReuseRandomCheckSample {
   }
 
   void func(long seed, Random param) {
-    Random localVar1 = new Random(); // Noncompliant [[sc=28;ec=34]] {{Save and re-use this "Random".}}
+    Random localVar1 = new Random(); // Noncompliant {{Save and re-use this "Random".}}
+//                         ^^^^^^
     Random localVar2 = new Random(seed); // Compliant for Random(long seed)
     Object localVar3 = new Object();
 
@@ -33,7 +34,8 @@ public class ReuseRandomCheckSample {
 
     func(12, new Random());
     func(12, localVar1 = new Random());
-    int usedDirectly = new Random().nextInt(); // Noncompliant [[sc=28;ec=34]]
+    int usedDirectly = new Random().nextInt(); // Noncompliant
+//                         ^^^^^^
     (new Random()).nextInt(); // Noncompliant
   }
 

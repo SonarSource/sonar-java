@@ -4,7 +4,7 @@ public class SingleCharacterAlternationWithTextBlocks {
 
   void nonCompliant(String str) {
     str.matches("""
-      a|b|c"""); // Noncompliant [[sc=7;ec=12]] {{Replace this alternation with a character class.}}
+      a|b|c"""); // Noncompliant {{Replace this alternation with a character class.}} [[sc=7;ec=12]]
     // Matches [ab\n]
     str.matches("""
       a|b|

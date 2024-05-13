@@ -8,7 +8,8 @@ import java.util.concurrent.Executor;
 public class AndroidExactAlarmCheckSample {
 
   public void setExact(AlarmManager alarmManager, PendingIntent operation) {
-    alarmManager.setExact(0, 1000, operation); // Noncompliant [[sc=18;ec=26]] {{Use "set" instead of "setExact".}}
+    alarmManager.setExact(0, 1000, operation); // Noncompliant {{Use "set" instead of "setExact".}}
+//               ^^^^^^^^
     alarmManager.set(0, 1000, operation); // Compliant
 
     var noAlarmManager = new NoAlarmManager();
@@ -24,7 +25,8 @@ public class AndroidExactAlarmCheckSample {
   }
 
   public void setExactAndAllowWhileIdle(AlarmManager alarmManager, PendingIntent operation) {
-    alarmManager.setExactAndAllowWhileIdle(0, 1000, operation); // Noncompliant [[sc=18;ec=43]] {{Use "setAndAllowWhileIdle" instead of "setExactAndAllowWhileIdle".}}
+    alarmManager.setExactAndAllowWhileIdle(0, 1000, operation); // Noncompliant {{Use "setAndAllowWhileIdle" instead of "setExactAndAllowWhileIdle".}}
+//               ^^^^^^^^^^^^^^^^^^^^^^^^^
     alarmManager.setAndAllowWhileIdle(0, 1000, operation); // Compliant
 
     var noAlarmManager = new NoAlarmManager();
@@ -32,7 +34,8 @@ public class AndroidExactAlarmCheckSample {
   }
 
   public void setWindow(AlarmManager alarmManager, long triggerTime, PendingIntent pendingIntent) {
-    alarmManager.setWindow(0, triggerTime, 300000, pendingIntent); // Noncompliant [[sc=44;ec=50]] {{Use alarm windows of 10 minutes or more instead.}}
+    alarmManager.setWindow(0, triggerTime, 300000, pendingIntent); // Noncompliant {{Use alarm windows of 10 minutes or more instead.}}
+//                                         ^^^^^^
     alarmManager.setWindow(0, triggerTime, 600000, pendingIntent); // Compliant
     alarmManager.setWindow(0, triggerTime, 900000, pendingIntent); // Compliant
     alarmManager.setWindow(0, triggerTime, 300000L, pendingIntent); // Noncompliant

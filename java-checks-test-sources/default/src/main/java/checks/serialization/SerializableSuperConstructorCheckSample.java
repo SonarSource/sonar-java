@@ -19,7 +19,8 @@ class NonSerializableWithoutAccessibleNoArgConstructor {
 
 class S2055_A extends NonSerializableWithoutConstructor implements Serializable {}
 class S2055_B extends NonSerializableWithAccessibleNoArgConstructor implements Serializable {}
-class S2055_C1 extends NonSerializableWithoutAccessibleNoArgConstructor implements Serializable { // Noncompliant [[sc=24;ec=72]] {{Add a no-arg constructor to "NonSerializableWithoutAccessibleNoArgConstructor".}}
+class S2055_C1 extends NonSerializableWithoutAccessibleNoArgConstructor implements Serializable { // Noncompliant {{Add a no-arg constructor to "NonSerializableWithoutAccessibleNoArgConstructor".}}
+//                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   S2055_C1(String arg1) { super(arg1); }
 }
 class S2055_C2 extends NonSerializableWithoutAccessibleNoArgConstructor implements Serializable { // Compliant

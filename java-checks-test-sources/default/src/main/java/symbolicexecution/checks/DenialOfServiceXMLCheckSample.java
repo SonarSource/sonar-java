@@ -39,7 +39,8 @@ public class DenialOfServiceXMLCheckSample {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
 
-    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant [[sc=5;ec=70]] {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     return factory;
   }
 
@@ -125,7 +126,8 @@ public class DenialOfServiceXMLCheckSample {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
 
-    factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", false); // Noncompliant [[sc=5;ec=89]] {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     return factory;
   }
 

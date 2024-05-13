@@ -17,8 +17,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.component.annotations.Configuration;
 import org.codehaus.plexus.component.annotations.Requirement;
 
-class WithoutConstructor { // Noncompliant [[sc=7;ec=25;secondary=+1]] {{Add a constructor to the class, or provide default values.}}
+class WithoutConstructor { // Noncompliant {{Add a constructor to the class, or provide default values.}}
+//    ^^^^^^^^^^^^^^^^^^
   private int field;
+//^^^^^^^^^^^^^^^^^^<
 }
 
 class WitConstructor {
@@ -39,9 +41,11 @@ class CreateObject {
   }
 }
 
-enum Enum { // Noncompliant [[secondary=+2]] {{Add a constructor to the enum, or provide default values.}}
+enum Enum { // Noncompliant {{Add a constructor to the enum, or provide default values.}}
+//   ^^^^
   A;
   private int field;
+//^^^^^^^^^^^^^^^^^^<
 }
 
 abstract class AbstractD {
@@ -65,10 +69,12 @@ class Inject1 {
   @Inject
   private MyService myService;
 }
-class Inject2 { // Noncompliant [[secondary=+3]]
+class Inject2 { // Noncompliant
+//    ^^^^^^^
   @Inject
   private MyService myService;
   private MyService myService2;
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
 }
 
 class ABuilder { // Compliant, Builder pattern are excluded

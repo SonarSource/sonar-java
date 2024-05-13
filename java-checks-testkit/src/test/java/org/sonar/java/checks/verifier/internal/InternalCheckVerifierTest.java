@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
@@ -42,20 +41,13 @@ import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.java.testing.JavaFileScannerContextForTests;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
-import org.sonar.plugins.java.api.internal.EndOfAnalysis;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -64,23 +56,24 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FAILING_CHECK;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FILE_ISSUE_CHECK;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FILE_ISSUE_CHECK_IN_ANDROID;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FILE_LINE_ISSUE_CHECK;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.IssueWithQuickFix;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.MultipleIssuePerLineCheck;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.NO_EFFECT_CHECK;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.NoEffectEndOfAnalysisCheck;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.PROJECT_ISSUE_CHECK;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE_NONCOMPLIANT;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE_PARSE_ERROR;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE_WITH_NO_EXPECTED;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE_WITH_QUICK_FIX;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE_WITH_QUICK_FIX_ON_MULTIPLE_LINE;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE_WITH_TWO_QUICK_FIX;
 
 class InternalCheckVerifierTest {
-
-  private static final String TEST_FILE = "src/test/files/testing/Compliant.java";
-  private static final String TEST_FILE_PARSE_ERROR = "src/test/files/testing/ParsingError.java";
-  private static final String TEST_FILE_NONCOMPLIANT = "src/test/files/testing/Noncompliant.java";
-  private static final String TEST_FILE_WITH_QUICK_FIX = "src/test/files/testing/IssueWithQuickFix.java";
-  private static final String TEST_FILE_WITH_QUICK_FIX_ON_MULTIPLE_LINE = "src/test/files/testing/IssueWithQuickFixMultipleLine.java";
-  private static final String TEST_FILE_WITH_TWO_QUICK_FIX = "src/test/files/testing/IssueWithTwoQuickFixes.java";
-  private static final String TEST_FILE_WITH_NO_EXPECTED = "src/test/files/testing/IssueWithNoQuickFixExpected.java";
-  private static final String TEST_FILE_WITH_PREVIEW_FEATURES = "src/test/files/testing/NeedJava21PreviewFeaturesEnabled.java";
-  private static final JavaFileScanner FAILING_CHECK = new FailingCheck();
-  private static final JavaFileScanner NO_EFFECT_CHECK = new NoEffectCheck();
-  private static final JavaFileScanner FILE_LINE_ISSUE_CHECK = new FileLineIssueCheck();
-  private static final JavaFileScanner PROJECT_ISSUE_CHECK = new ProjectIssueCheck();
-  private static final JavaFileScanner FILE_ISSUE_CHECK = new FileIssueCheck();
-  private static final JavaFileScanner FILE_ISSUE_CHECK_IN_ANDROID = new FileIssueCheckInAndroidContext();
 
   @Nested
   class TestingCheckVerifierInitialConfiguration {
@@ -680,7 +673,7 @@ class InternalCheckVerifierTest {
     @Test
     void wrong_order_of_expected_issue_on_same_line_should_fail() {
       MultipleIssuePerLineCheck check = new MultipleIssuePerLineCheck();
-      check.flipOrder = true;
+      check.setFlipOrder(true);
 
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .onFile("src/test/files/testing/MultipleIssuesSameLine.java")
@@ -1019,8 +1012,8 @@ class InternalCheckVerifierTest {
       .withCheck(check)
       .verifyNoIssues();
 
-    verify(check, times(1)).scanWithoutParsing(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
-    verify(check, times(1)).endOfAnalysis(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
+    verify(check, times(1)).scanWithoutParsing(argThat(context -> CheckVerifierTestUtils.equivalent(cacheContext, context.getCacheContext())));
+    verify(check, times(1)).endOfAnalysis(argThat(context -> CheckVerifierTestUtils.equivalent(cacheContext, context.getCacheContext())));
   }
 
   @Test
@@ -1044,140 +1037,6 @@ class InternalCheckVerifierTest {
     dummyReadInternalWrite.withCache(null, new InternalWriteCache());
     assertThat(dummyReadInternalWrite.cacheContext.getReadCache()).isInstanceOf(JavaReadCache.class);
     assertThat(dummyReadInternalWrite.cacheContext.getWriteCache()).isInstanceOf(JavaWriteCache.class);
-  }
-
-  boolean equivalent(CacheContext a, CacheContext b) {
-    return a.isCacheEnabled() == b.isCacheEnabled() &&
-      a.getReadCache().equals(b.getReadCache()) &&
-      a.getWriteCache().equals(b.getWriteCache());
-  }
-
-  @Rule(key = "FailingCheck")
-  private static final class FailingCheck implements JavaFileScanner {
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      throw new RuntimeException("This checks fails systemmatically with a RuntimeException");
-    }
-  }
-
-  @Rule(key = "NoEffectCheck")
-  private final static class NoEffectCheck implements JavaFileScanner {
-
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      // do nothing
-    }
-  }
-
-  @Rule(key="NoEffectEndOfAnalysisCheck")
-  private static class NoEffectEndOfAnalysisCheck implements JavaFileScanner, EndOfAnalysis {
-    @Override
-    public void endOfAnalysis(ModuleScannerContext context) {
-      // do nothing
-    }
-
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      // do nothing
-    }
-  }
-
-  @Rule(key = "FileIssueCheck")
-  private static final class FileIssueCheck implements JavaFileScanner {
-
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      context.addIssueOnFile(this, "issueOnFile");
-    }
-  }
-
-  @Rule(key = "FileLineIssueCheck")
-  private static final class FileLineIssueCheck implements JavaFileScanner {
-
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      context.addIssue(1, this, "issueOnLine");
-    }
-  }
-
-  @Rule(key = "ProjectIssueCheck")
-  private static final class ProjectIssueCheck implements JavaFileScanner {
-
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      context.addIssueOnProject(this, "issueOnProject");
-    }
-  }
-
-  @Rule(key = "MultipleIssuePerLineCheck")
-  private static final class MultipleIssuePerLineCheck implements JavaFileScanner {
-
-    private final String msg1;
-    private final String msg2;
-    private boolean flipOrder = false;
-
-    MultipleIssuePerLineCheck() {
-      this("msg 1", "msg 2");
-    }
-
-    MultipleIssuePerLineCheck(String msg1, String msg2) {
-      this.msg1 = msg1;
-      this.msg2 = msg2;
-    }
-
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      String[] msgs = {msg1, msg2};
-      report(context, 4, msgs);
-
-      if (flipOrder) {
-        msgs = new String[]{msg2, msg1};
-      }
-      report(context, 7, msgs);
-    }
-
-    private void report(JavaFileScannerContext context, int line, String... messages) {
-      Stream.of(messages).forEach(msg -> context.addIssue(line, this, msg));
-    }
-  }
-
-  @Rule(key = "IssueWithQuickFix")
-  private static final class IssueWithQuickFix extends IssuableSubscriptionVisitor {
-    Supplier<List<JavaQuickFix>> quickFixes;
-
-    IssueWithQuickFix(Supplier<List<JavaQuickFix>> quickFixes) {
-      this.quickFixes = quickFixes;
-    }
-
-    static IssueWithQuickFix of(Supplier<JavaQuickFix> quickFixes) {
-      return new IssueWithQuickFix(() -> Collections.singletonList(quickFixes.get()));
-    }
-
-    @Override
-    public List<Tree.Kind> nodesToVisit() {
-      return Collections.singletonList(Tree.Kind.CLASS);
-    }
-
-    @Override
-    public void visitNode(Tree tree) {
-      ClassTree classTree = (ClassTree) tree;
-      ((InternalJavaIssueBuilder) ((JavaFileScannerContextForTests) context).newIssue())
-        .forRule(this)
-        .onTree(classTree.declarationKeyword())
-        .withMessage("message")
-        .withQuickFixes(quickFixes)
-        .report();
-    }
-  }
-
-  @Rule(key = "FileIssueAndroidCheck")
-  private static final class FileIssueCheckInAndroidContext implements JavaFileScanner {
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      if (context.inAndroidContext()) {
-        context.addIssueOnFile(this, "issueOnFile");
-      }
-    }
   }
 
 }

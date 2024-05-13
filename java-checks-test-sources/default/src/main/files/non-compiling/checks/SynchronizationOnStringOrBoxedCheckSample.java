@@ -29,13 +29,13 @@ class A {
   void method1() {
     list3 = List.of();
 
-    synchronized(42) {  // Noncompliant
+    synchronized(42) { // Noncompliant
       // ...
     }
-    synchronized(list) {  // Noncompliant
+    synchronized(list) { // Noncompliant
       // ...
     }
-    synchronized(list1) {  // Noncompliant
+    synchronized(list1) { // Noncompliant
       // ...
     }
     synchronized(list2) {  // Compliant
@@ -47,28 +47,28 @@ class A {
     synchronized(list4) {  // Compliant
       // ...
     }
-    synchronized(set) {  // Noncompliant
+    synchronized(set) { // Noncompliant
       // ...
     }
-    synchronized(set1) {  // Noncompliant
+    synchronized(set1) { // Noncompliant
       // ...
     }
-    synchronized(map) {  // Noncompliant
+    synchronized(map) { // Noncompliant
       // ...
     }
-    synchronized(map1) {  // Noncompliant
+    synchronized(map1) { // Noncompliant
       // ...
     }
-    synchronized(entry) {  // Noncompliant
+    synchronized(entry) { // Noncompliant
       // ...
     }
-    synchronized(map2) {  // Noncompliant
+    synchronized(map2) { // Noncompliant
       // ...
     }
-    synchronized(processHandle) {  // Noncompliant
+    synchronized(processHandle) { // Noncompliant
       // ...
     }
-    synchronized(List.of("", "b","c")) {  // Noncompliant
+    synchronized(List.of("", "b","c")) { // Noncompliant
       // ...
     }
     synchronized(list5) {  // Compliant

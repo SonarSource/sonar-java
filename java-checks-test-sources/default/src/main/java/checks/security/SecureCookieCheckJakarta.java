@@ -25,7 +25,8 @@ class SecureCookieCheckJakarta {
     Cookie secondParam,
     Cookie thirdParam,
     boolean param) {
-    firstParam.setSecure(false); // Noncompliant [[sc=25;ec=32]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
+    firstParam.setSecure(false); // Noncompliant {{Make sure creating this cookie without the "secure" flag is safe here.}}
+//                      ^^^^^^^
     secondParam.setSecure(true);
 
     field5.setSecure(false); // Noncompliant
@@ -34,10 +35,11 @@ class SecureCookieCheckJakarta {
     Cookie cookie = new Cookie("name", "value");
     cookie.setSecure(true);
 
-    Cookie cookie2 = new Cookie("name", "value"); // Noncompliant [[sc=26;ec=32]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
+    Cookie cookie2 = new Cookie("name", "value"); // Noncompliant {{Make sure creating this cookie without the "secure" flag is safe here.}}
+//                       ^^^^^^
 
     Cookie cookie3 = new Cookie("name", "value");
-    cookie3.setSecure(false);  // Noncompliant {{Make sure creating this cookie without the "secure" flag is safe here.}}
+    cookie3.setSecure(false); // Noncompliant {{Make sure creating this cookie without the "secure" flag is safe here.}}
 
     Cookie cookie5 = new Cookie("name", "value");
     cookie5.setSecure(FALSE_CONSTANT); // Noncompliant
@@ -51,7 +53,7 @@ class SecureCookieCheckJakarta {
 
     Cookie c7 = new Cookie("name", "value");
     boolean b = false;
-    c7.setSecure(b); // Noncompliant [[secondary=-1]]
+    c7.setSecure(b); // Noncompliant
 
     Cookie c8 = new Cookie("name", "value");
     c8.setSecure(param);
@@ -63,7 +65,8 @@ class SecureCookieCheckJakarta {
     c10.setSecure(true);
 
     Object c12;
-    c12 = new Cookie("name", "value"); // Noncompliant [[sc=15;ec=21]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
+    c12 = new Cookie("name", "value"); // Noncompliant {{Make sure creating this cookie without the "secure" flag is safe here.}}
+//            ^^^^^^
 
     Cookie c13 = new Cookie("name", "value");
     boolean value = false;
@@ -83,12 +86,12 @@ class SecureCookieCheckJakarta {
 
     NewCookie c7 = new NewCookie("1", "2", "3", "4", "5", 6, false, true); // Noncompliant
     NewCookie c8 = new NewCookie("1", "2", "3", "4", "5", 6, true, true);
-    NewCookie c9 = new NewCookie("1", "2", "3", "4", 5, "6", 7, new Date(), false, true);  // Noncompliant
+    NewCookie c9 = new NewCookie("1", "2", "3", "4", 5, "6", 7, new Date(), false, true); // Noncompliant
     NewCookie c10 = new NewCookie("1", "2", "3", "4", 5, "6", 7, new Date(), true, false);
 
     NewCookie c11 = new NewCookie("1", "2", "3", "4", "5", 6, true);
     NewCookie c12 = new NewCookie("1", "2", "3", "4", "5", 6, false); // Noncompliant
-    NewCookie c13 = new NewCookie("1", "2", "3", "4", "5", 6, false, false);  // Noncompliant
+    NewCookie c13 = new NewCookie("1", "2", "3", "4", "5", 6, false, false); // Noncompliant
     NewCookie c14 = new NewCookie("1", "2", "3", "4", "5", 6, true, false);
 
     return new NewCookie(cookie); // Noncompliant

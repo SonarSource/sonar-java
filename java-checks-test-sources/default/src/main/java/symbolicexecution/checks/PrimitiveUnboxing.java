@@ -39,7 +39,8 @@ public class PrimitiveUnboxing {
 
   boolean unboxIdentifierOnReturn() {
     Boolean boxed = null;
-    return boxed; // Noncompliant [[sc=12;ec=17]]
+    return boxed; // Noncompliant
+//         ^^^^^
   }
 
   class VolatileFieldsAreCompliantFalseNegatives {
@@ -51,49 +52,58 @@ public class PrimitiveUnboxing {
   }
 
   int unboxExpressionOnReturn() {
-    return getANullabbleInteger(); // Noncompliant [[sc=12;ec=34]]
+    return getANullabbleInteger(); // Noncompliant
+//         ^^^^^^^^^^^^^^^^^^^^^^
   }
 
   void unboxOnExplicitYield(String key) {
     Integer boxed = null;
     int primitive = switch (key) {
       case "nullable":
-        yield getANullabbleInteger(); // Noncompliant [[sc=15;ec=37]]
+        yield getANullabbleInteger(); // Noncompliant
+//            ^^^^^^^^^^^^^^^^^^^^^^
       case "primitive":
         yield 42;
       default:
-        yield boxed; // Noncompliant [[sc=15;ec=20]]
+        yield boxed; // Noncompliant
+//            ^^^^^
     };
   }
 
   void unboxOnImplicitYield(String key) {
     Integer boxed = null;
     int primitive = switch (key) {
-      case "nullable" -> getANullabbleInteger(); // Noncompliant [[sc=26;ec=48]]
+      case "nullable" -> getANullabbleInteger(); // Noncompliant
+//                       ^^^^^^^^^^^^^^^^^^^^^^
       case "primitive" -> 42;
-      default -> boxed; // Noncompliant [[sc=18;ec=23]]
+      default -> boxed; // Noncompliant
+//               ^^^^^
     };
   }
 
   boolean shortComparison() {
     Short boxed = null;
     short primitive = 1;
-    return primitive == boxed; // Noncompliant [[sc=25;ec=30]]
+    return primitive == boxed; // Noncompliant
+//                      ^^^^^
   }
 
   void initializedWithNullableReturnValue() {
-    int primitive = getANullabbleInteger(); // Noncompliant [[sc=21;ec=43]]
+    int primitive = getANullabbleInteger(); // Noncompliant
+//                  ^^^^^^^^^^^^^^^^^^^^^^
   }
 
   void declaredThenInitializedWithNullReturnValue() {
     int primitive;
-    primitive = getANullabbleInteger(); // Noncompliant [[sc=17;ec=39]]
+    primitive = getANullabbleInteger(); // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^^^
   }
 
   void declareThenInitialize() {
     Integer boxed = null;
     int primitive;
-    primitive = boxed; // Noncompliant [[sc=17;ec=22]]
+    primitive = boxed; // Noncompliant
+//              ^^^^^
   }
 
   void declareThenOverwrite() {
@@ -105,20 +115,24 @@ public class PrimitiveUnboxing {
   void declareThenPlusAssign() {
     Integer boxed = null;
     int primitive = 42;
-    boxed += primitive; // Noncompliant [[sc=5;ec=10]]
+    boxed += primitive; // Noncompliant
+//  ^^^^^
   }
 
   void loopWithLiterals() {
     Integer i = null;
 
-    while (i < 42) { // Noncompliant [[sc=12;ec=13]]
-      i++; // Noncompliant [[sc=7;ec=8]]
+    while (i < 42) { // Noncompliant
+//         ^
+      i++; // Noncompliant
+//    ^
     }
   }
 
   void loopWhileLessThanReturnValue() {
     int primitive = 42;
-    while (primitive < getANullabbleInteger()) { // Noncompliant [[sc=24;ec=46]]
+    while (primitive < getANullabbleInteger()) { // Noncompliant
+//                     ^^^^^^^^^^^^^^^^^^^^^^
       primitive--;
     }
   }
@@ -134,7 +148,8 @@ public class PrimitiveUnboxing {
   void crashOnDecrement() {
     Integer i = null;
     do {
-      --i; // Noncompliant [[sc=9;ec=10]]
+      --i; // Noncompliant
+//      ^
     } while (0 < i);
   }
 

@@ -9,8 +9,10 @@ class ForLoopIncrementAndUpdateCheckSample {
     A a = new A(), p, h = new A();
     int[] m = new int[1000];
 
-    for (i = 0; i< 10; j++, m[0]++) { // Noncompliant [[sc=5;ec=8;secondary=13]] {{Move the update of "i" into this loop's update clause.}}
+    for (i = 0; i< 10; j++, m[0]++) { // Noncompliant {{Move the update of "i" into this loop's update clause.}}
+//  ^^^
       i++;
+//    ^^^<
     }
     for (i = 0; i< 10; j++) { // Compliant - i is updated multiple times
       if (blah()) {
@@ -25,13 +27,18 @@ class ForLoopIncrementAndUpdateCheckSample {
     for (i = 0; k< 10 && l<10 ; l++) {} // Compliant condition is using one of the incrementer
     for (i = 0; k< 10 && l<10 ; i++, j++, l++) {} // Compliant
     for (i = 0; k< 10 ; i++, j++, l++) {} // Compliant
-    for (i = 0; k< 10 && l<10; i++, j++) { // Noncompliant [[secondary=30]] {{Move the update of "k" into this loop's update clause.}}
+    for (i = 0; k< 10 && l<10; i++, j++) { // Noncompliant {{Move the update of "k" into this loop's update clause.}}
+//  ^^^
       l -= 42;
       k++;
+//    ^^^<
     }
-    for (i = 0; k< 10 && l<10; i++, j++) { // Noncompliant [[secondary=33,34]] {{Move the update of "k","l" into this loop's update clause.}}
+    for (i = 0; k< 10 && l<10; i++, j++) { // Noncompliant {{Move the update of "k","l" into this loop's update clause.}}
+//  ^^^
       l--;
+//    ^^^<
       k++;
+//    ^^^<
     }
     for (i = 0; i< 10; i+= 2) {} // Compliant
     for (i = 0; i< 10; a.myField+= 2) {} // Compliant

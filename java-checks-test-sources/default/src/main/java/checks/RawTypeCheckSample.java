@@ -5,9 +5,12 @@ import java.util.Optional;
 public class RawTypeCheckSample {
 
   void foo() {
-    GenericClass v; // Noncompliant [[sc=5;ec=17]] {{Provide the parametrized type for this generic.}}
-    v = new GenericClass(); // Noncompliant [[sc=13;ec=25]] {{Provide the parametrized type for this generic.}}
-    v = new RawTypeCheckSample.GenericClass(); // Noncompliant [[sc=32;ec=44]]
+    GenericClass v; // Noncompliant {{Provide the parametrized type for this generic.}}
+//  ^^^^^^^^^^^^
+    v = new GenericClass(); // Noncompliant {{Provide the parametrized type for this generic.}}
+//          ^^^^^^^^^^^^
+    v = new RawTypeCheckSample.GenericClass(); // Noncompliant
+//                             ^^^^^^^^^^^^
 
     v = new GenericClass<>(); // Compliant
     v = new GenericClass<String>(); // Compliant
@@ -15,7 +18,7 @@ public class RawTypeCheckSample {
     RawTypeCheckSample t;
 
     @SuppressWarnings("rawtypes")
-    Optional o2; // Noncompliant - should be handled by SONARJAVA-2410 and filtered out
+    Optional o2; // Noncompliant
     Optional<String> o1 = Optional.empty(); // Compliant
   }
 
@@ -24,7 +27,8 @@ public class RawTypeCheckSample {
   static class GenericClass<T> { }
   interface GenericInterface<T> { }
 
-  abstract static class InnerClass1 extends GenericClass { // Noncompliant [[sc=45;ec=57]] {{Provide the parametrized type for this generic.}}
+  abstract static class InnerClass1 extends GenericClass { // Noncompliant {{Provide the parametrized type for this generic.}}
+//                                          ^^^^^^^^^^^^
     abstract GenericClass bar(); // Noncompliant
     abstract void qix(GenericClass gc); // Noncompliant
   }
@@ -34,7 +38,10 @@ public class RawTypeCheckSample {
     @Override void qix(GenericClass gc) { } // Compliant - override
   }
 
-  static class InnerClass3 implements GenericInterface { } // Noncompliant [[sc=39;ec=55]] {{Provide the parametrized type for this generic.}}
-  static class InnerClass4 implements GenericInterface<GenericClass> {} // Noncompliant [[sc=56;ec=68]]
-  enum InnerEnum implements GenericInterface { } // Noncompliant [[sc=29;ec=45]]
+  static class InnerClass3 implements GenericInterface { } // Noncompliant {{Provide the parametrized type for this generic.}}
+//                                    ^^^^^^^^^^^^^^^^
+  static class InnerClass4 implements GenericInterface<GenericClass> {} // Noncompliant
+//                                                     ^^^^^^^^^^^^
+  enum InnerEnum implements GenericInterface { } // Noncompliant
+//                          ^^^^^^^^^^^^^^^^
 }

@@ -6,7 +6,8 @@ class A {
   public void finalize() { // Compliant
   }
 
-  public void finalize(int a) { // Noncompliant [[sc=15;ec=23]] {{Rename this method to avoid any possible confusion with Object.finalize().}}
+  public void finalize(int a) { // Noncompliant {{Rename this method to avoid any possible confusion with Object.finalize().}}
+//            ^^^^^^^^
   }
 
   private void finalize(int a, int b) { // Noncompliant {{Rename this method to avoid any possible confusion with Object.finalize().}}

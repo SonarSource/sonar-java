@@ -16,7 +16,8 @@ public class NonSingletonAutowiredInSingletonCheckSample {
 
   public class SingletonBean {
     @Autowired
-    private RequestBean1 requestBean1; // Noncompliant, [[sc=13;ec=25]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired field).}}
+    private RequestBean1 requestBean1; // Noncompliant {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired field).}}
+//          ^^^^^^^^^^^^
     @Autowired
     private PrototypeBean1 prototypeBean1; // Noncompliant
     @Autowired
@@ -24,8 +25,9 @@ public class NonSingletonAutowiredInSingletonCheckSample {
     @Autowired
     private PrototypeBean3 prototypeBean3; // Noncompliant
 
-    @Autowired // Noncompliant@+1
-    public SingletonBean(RequestBean1 requestBean1) { // Noncompliant, [[sc=26;ec=38]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired constructor).}}
+    @Autowired
+    public SingletonBean(RequestBean1 requestBean1) { // Noncompliant 2
+//                       ^^^^^^^^^^^^
     }
 
     @Autowired // Noncompliant@+1
@@ -40,11 +42,13 @@ public class NonSingletonAutowiredInSingletonCheckSample {
     }
 
     @Autowired
-    public void setRequestBean1(RequestBean1 requestBean1) { // Noncompliant, [[sc=33;ec=45]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired setter method).}}
+    public void setRequestBean1(RequestBean1 requestBean1) { // Noncompliant {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired setter method).}}
+//                              ^^^^^^^^^^^^
       this.requestBean1 = requestBean1;
     }
 
-    public void setPrototypeBean1(@Autowired PrototypeBean1 prototypeBean1) {  // Noncompliant, [[sc=46;ec=60]] {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired parameter).}}
+    public void setPrototypeBean1(@Autowired PrototypeBean1 prototypeBean1) { // Noncompliant {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired parameter).}}
+//                                           ^^^^^^^^^^^^^^
       this.prototypeBean1 = prototypeBean1;
     }
 
@@ -72,7 +76,7 @@ public class NonSingletonAutowiredInSingletonCheckSample {
       this.singletonBean = singletonBean;
     }
 
-    @Autowired  // Noncompliant@+1
+    @Autowired // Noncompliant@+1
     public SingletonBean2(RequestBean1 requestBean1) { // Noncompliant
       this.requestBean1 = requestBean1;
     }
@@ -87,9 +91,9 @@ public class NonSingletonAutowiredInSingletonCheckSample {
     @Autowired
     private PrototypeBean1 prototypeBean1; // Noncompliant
 
-    // Noncompliant@+2 Autowired constructor
-    @Autowired  // Noncompliant@+1 Autowired constructor parameter
-    public SingletonBean3(@Autowired RequestBean1 requestBean1) { // Noncompliant, single parameter constructor
+ // Noncompliant@+2
+    @Autowired // Noncompliant@+1
+    public SingletonBean3(@Autowired RequestBean1 requestBean1) { // Noncompliant
     }
   }
 

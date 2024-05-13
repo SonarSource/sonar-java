@@ -13,25 +13,29 @@ public class AndroidUnencryptedDatabaseCheckSample {
   RealmConfiguration.Builder builderAsField;
 
   void testSharedPreferences(Activity activity, Context context, PreferenceManager preferenceManager) {
-    activity.getPreferences(1); // Noncompliant [[sc=14;ec=28]] {{Make sure using an unencrypted database is safe here.}}
+    activity.getPreferences(1); // Noncompliant {{Make sure using an unencrypted database is safe here.}}
+//           ^^^^^^^^^^^^^^
     activity().getPreferences(2); // Noncompliant
     myActivity().getPreferences(3); // Noncompliant
     myActivity().getPreferences(3, 4); // Compliant, unrelated method
 
-    context.getSharedPreferences(new File(""), 1); // Noncompliant [[sc=13;ec=33]] {{Make sure using an unencrypted database is safe here.}}
+    context.getSharedPreferences(new File(""), 1); // Noncompliant {{Make sure using an unencrypted database is safe here.}}
+//          ^^^^^^^^^^^^^^^^^^^^
     context.getSharedPreferences("file", 1); // Noncompliant
 
     PreferenceManager.getDefaultSharedPreferences(context); // Noncompliant
   }
 
   void testSQLiteDatabase(Context context, SQLiteDatabase.CursorFactory cursorFactory, DatabaseErrorHandler databaseErrorHandler) {
-    context.openOrCreateDatabase("name", 1, cursorFactory); // Noncompliant [[sc=13;ec=33]] {{Make sure using an unencrypted database is safe here.}}
+    context.openOrCreateDatabase("name", 1, cursorFactory); // Noncompliant {{Make sure using an unencrypted database is safe here.}}
+//          ^^^^^^^^^^^^^^^^^^^^
     context.openOrCreateDatabase("name", 1, cursorFactory, databaseErrorHandler); // Noncompliant
   }
 
   void testRealm() {
     new RealmConfiguration.Builder()
-      .build(); // Noncompliant [[sc=8;ec=13]]
+      .build(); // Noncompliant
+//     ^^^^^
 
     new RealmConfiguration.Builder()
       .name("")

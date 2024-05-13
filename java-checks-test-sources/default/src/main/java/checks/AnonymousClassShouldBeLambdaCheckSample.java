@@ -256,7 +256,7 @@ class Alpha {
   };
   Lvl2 level2 = () -> {};
 
-  Function<Object, Date> a = new Function<Object, Date>() { // Noncompliant - function overrides equals from object
+  Function<Object, Date> a = new Function<Object, Date>() { // Noncompliant
     @Override
     public Date apply(Object o) {
       return new Date();
@@ -299,7 +299,7 @@ class ThisInstanceTest {
   }
 
   void testNotThisInstanceMethod() {
-    Math f = new Math() {  // Noncompliant
+    Math f = new Math() { // Noncompliant
       @Override
       public int powerOfTwo(int n) {
         return globalPowerOfTwo(n);

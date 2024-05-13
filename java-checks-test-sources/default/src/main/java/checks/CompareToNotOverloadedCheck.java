@@ -9,7 +9,7 @@ class test{
   }  
   class B extends A {
     
-    public int compareTo(B b) {   // Noncompliant {{Refactor this method so that its argument is of type 'A'.}}
+    public int compareTo(B b) { // Noncompliant {{Refactor this method so that its argument is of type 'A'.}}
       return 0;
     }
     
@@ -29,7 +29,7 @@ class test{
   }
   
   class E extends C {
-    public int compareTo(E e) {   // Noncompliant  {{Refactor this method so that its argument is of type 'Object'.}}
+    public int compareTo(E e) { // Noncompliant {{Refactor this method so that its argument is of type 'Object'.}}
       return -1;
     }
   }
@@ -41,7 +41,7 @@ class test{
   }
           
   static class FooBar extends Bar {
-      public int compareTo(FooBar rhs) {  // Noncompliant: Parameter should be of type Bar
+      public int compareTo(FooBar rhs) { // Noncompliant
         return 0;
       }
   }

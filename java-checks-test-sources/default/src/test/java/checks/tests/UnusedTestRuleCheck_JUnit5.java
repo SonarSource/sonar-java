@@ -19,11 +19,13 @@ class UnusedTestRuleCheck_Junit5 {
   @TempDir
   static Path sharedTempDir;
   @TempDir
-  static Path unusedSharedTempDir; // Noncompliant [[sc=15;ec=34]] {{Remove this unused "TempDir".}}
+  static Path unusedSharedTempDir; // Noncompliant {{Remove this unused "TempDir".}}
+//            ^^^^^^^^^^^^^^^^^^^
   @TempDir
   File tempDir;
   @TempDir
-  File unusedTempDir; // Noncompliant [[sc=8;ec=21]] {{Remove this unused "TempDir".}}
+  File unusedTempDir; // Noncompliant {{Remove this unused "TempDir".}}
+//     ^^^^^^^^^^^^^
 
   UnusedTestRuleCheck_Junit5(TestInfo testInfo) {
     assertEquals("TestInfo Demo", testInfo.getDisplayName());
@@ -61,7 +63,8 @@ class UnusedTestRuleCheck_Junit5 {
   }
 
   @Test
-  void testNotUsingTempDirParam(@TempDir Path unusedTempDirParam) throws IOException { // Noncompliant [[sc=47;ec=65]] {{Remove this unused "TempDir".}}
+  void testNotUsingTempDirParam(@TempDir Path unusedTempDirParam) throws IOException { // Noncompliant {{Remove this unused "TempDir".}}
+//                                            ^^^^^^^^^^^^^^^^^^
     assertTrue(true);
   }
 
@@ -75,11 +78,13 @@ class Test2 {
   interface ForCoverage {
   }
 
-  Test2(TestInfo testInfo) { // Noncompliant [[sc=18;ec=26]] {{Remove this unused "TestInfo".}}
+  Test2(TestInfo testInfo) { // Noncompliant {{Remove this unused "TestInfo".}}
+//               ^^^^^^^^
   }
 
   @BeforeEach
-  void init(TestInfo testInfo) { // Noncompliant [[sc=22;ec=30]] {{Remove this unused "TestInfo".}}
+  void init(TestInfo testInfo) { // Noncompliant {{Remove this unused "TestInfo".}}
+//                   ^^^^^^^^
     String displayName = "abc";
     assertTrue(displayName.equals("TEST 1") || displayName.equals("test2()"));
   }

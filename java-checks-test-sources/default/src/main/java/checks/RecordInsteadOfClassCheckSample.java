@@ -15,7 +15,8 @@ public class RecordInsteadOfClassCheckSample {
     }
   }
 
-  final class SimpleClass implements NotAClass { // Noncompliant [[sc=15;ec=26]] {{Refactor this class declaration to use 'record SimpleClass(int sum)'.}}
+  final class SimpleClass implements NotAClass { // Noncompliant {{Refactor this class declaration to use 'record SimpleClass(int sum)'.}}
+//            ^^^^^^^^^^^
     private final int sum;
     public static final int VALUE = 42;
 
@@ -25,7 +26,8 @@ public class RecordInsteadOfClassCheckSample {
     @Override public void foo() { }
   }
 
-  final class SimpleClass2 { // Noncompliant [[sc=15;ec=27]] {{Refactor this class declaration to use 'record SimpleClass2(boolean boom, int a)'.}}
+  final class SimpleClass2 { // Noncompliant {{Refactor this class declaration to use 'record SimpleClass2(boolean boom, int a)'.}}
+//            ^^^^^^^^^^^^
     private final boolean boom;
     private final int a;
 

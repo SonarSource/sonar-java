@@ -15,7 +15,8 @@ class SAXBuilderTest {
 
   // Vulnerable when nothing is made to protect against xxe
   SAXBuilder no_property() {
-    SAXBuilder builder = new SAXBuilder(); // Noncompliant [[sc=30;ec=40]]
+    SAXBuilder builder = new SAXBuilder(); // Noncompliant
+//                           ^^^^^^^^^^
     return builder;
   }
 

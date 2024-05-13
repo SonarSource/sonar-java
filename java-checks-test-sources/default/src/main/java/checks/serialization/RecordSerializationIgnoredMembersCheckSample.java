@@ -13,9 +13,11 @@ import java.io.Serializable;
 public class RecordSerializationIgnoredMembersCheckSample {
 
   record NoncompliantRecord() implements Serializable, Externalizable {
-    private static final ObjectStreamField[] serialPersistentFields = new ObjectStreamField[0]; // Noncompliant [[sc=46;ec=68]] {{Remove this field that will be ignored during record serialization.}}
+    private static final ObjectStreamField[] serialPersistentFields = new ObjectStreamField[0]; // Noncompliant {{Remove this field that will be ignored during record serialization.}}
+//                                           ^^^^^^^^^^^^^^^^^^^^^^
 
-    private void writeObject(ObjectOutputStream out) throws IOException { } // Noncompliant [[sc=18;ec=29]] {{Remove this method that will be ignored during record serialization.}}
+    private void writeObject(ObjectOutputStream out) throws IOException { } // Noncompliant {{Remove this method that will be ignored during record serialization.}}
+//               ^^^^^^^^^^^
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException { } // Noncompliant
     private void readObjectNoData() throws ObjectStreamException { } // Noncompliant
     @Override public void writeExternal(ObjectOutput out) throws IOException { } // Noncompliant

@@ -17,7 +17,8 @@ public class SpringSecurityDisableCSRFCheckSample extends WebSecurityConfigurerA
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable(); // Noncompliant [[sc=17;ec=24]] {{Make sure disabling Spring Security's CSRF protection is safe here.}}
+    http.csrf().disable(); // Noncompliant {{Make sure disabling Spring Security's CSRF protection is safe here.}}
+//              ^^^^^^^
     http.csrf().getClass();
 
     http
@@ -31,9 +32,11 @@ public class SpringSecurityDisableCSRFCheckSample extends WebSecurityConfigurerA
     LogoutConfigurer<HttpSecurity> logout = http.logout();
     logout.disable();
 
-    http.csrf().ignoringAntMatchers("/ignored/path"); // Noncompliant [[sc=17;ec=36]] {{Make sure disabling Spring Security's CSRF protection is safe here.}}
+    http.csrf().ignoringAntMatchers("/ignored/path"); // Noncompliant {{Make sure disabling Spring Security's CSRF protection is safe here.}}
+//              ^^^^^^^^^^^^^^^^^^^
     CsrfConfigurer<HttpSecurity> csrf2 = http.csrf();
-    csrf2.ignoringAntMatchers("/ignored/path"); // Noncompliant [[sc=11;ec=30]] {{Make sure disabling Spring Security's CSRF protection is safe here.}}
+    csrf2.ignoringAntMatchers("/ignored/path"); // Noncompliant {{Make sure disabling Spring Security's CSRF protection is safe here.}}
+//        ^^^^^^^^^^^^^^^^^^^
   }
 
   @Configuration
@@ -44,9 +47,9 @@ public class SpringSecurityDisableCSRFCheckSample extends WebSecurityConfigurerA
       RequestMatcher requestMatcherWhitelist = (HttpServletRequest request) -> request.getRequestURI().contains("whitelist");
       RequestMatcher requestMatcherBlacklist = (HttpServletRequest request) -> request.getRequestURI().contains("blacklist");
 
-      http.csrf(csrf -> csrf.requireCsrfProtectionMatcher(requestMatcherWhitelist));  // Noncompliant
-      http.csrf(csrf -> csrf.ignoringRequestMatchers(requestMatcherBlacklist));       // Noncompliant
-      http.csrf(csrf -> csrf.ignoringRequestMatchers("/S4502CSRFSpecial"));  // Noncompliant
+      http.csrf(csrf -> csrf.requireCsrfProtectionMatcher(requestMatcherWhitelist)); // Noncompliant
+      http.csrf(csrf -> csrf.ignoringRequestMatchers(requestMatcherBlacklist)); // Noncompliant
+      http.csrf(csrf -> csrf.ignoringRequestMatchers("/S4502CSRFSpecial")); // Noncompliant
       http.csrf(csrf -> csrf.ignoringAntMatchers("/ignored/path")); // Noncompliant
       http.csrf(AbstractHttpConfigurer::disable); // Noncompliant
       http.csrf(csrf -> csrf.disable()); // Noncompliant

@@ -5,8 +5,10 @@ import java.util.List;
 
 public class AssertOnBooleanVariableCheckSample {
   void foo(AssertOnBooleanVariableCheckSample a, boolean b, List<Object> myList) {
-    assert myList.remove(myList.get(0)); // Noncompliant [[sc=19;ec=25]] {{Move this "assert" side effect to another statement.}}
-    assert myList.remove(myList.remove(1)); // Noncompliant [[sc=19;ec=25]] {{Move this "assert" side effect to another statement.}}
+    assert myList.remove(myList.get(0)); // Noncompliant {{Move this "assert" side effect to another statement.}}
+//                ^^^^^^
+    assert myList.remove(myList.remove(1)); // Noncompliant {{Move this "assert" side effect to another statement.}}
+//                ^^^^^^
 
     assert myList.add(new Object()); // Noncompliant
     assert myList.retainAll(Collections.singleton(new Object())); // Noncompliant
@@ -15,7 +17,8 @@ public class AssertOnBooleanVariableCheckSample {
     assert updateIfValid(false); // Noncompliant
     assert setValue(); // Noncompliant
 
-    assert bar() > 1 ? doNothing() : deleteStuff(); // Noncompliant [[sc=38;ec=49]]
+    assert bar() > 1 ? doNothing() : deleteStuff(); // Noncompliant
+//                                   ^^^^^^^^^^^
 
     assert bar() == 0; // Compliant
     assert new AssertOnBooleanVariableCheckSample() { // Compliant

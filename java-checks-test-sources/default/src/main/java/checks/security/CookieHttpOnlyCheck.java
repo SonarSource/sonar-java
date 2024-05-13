@@ -23,7 +23,8 @@ class CookieHttpOnlyCheck {
 
   void servletCookie(boolean param, Cookie c0) {
 
-    c0.setHttpOnly(false); // Noncompliant [[sc=19;ec=26]] {{Make sure creating this cookie without the "HttpOnly" flag is safe.}}
+    c0.setHttpOnly(false); // Noncompliant {{Make sure creating this cookie without the "HttpOnly" flag is safe.}}
+//                ^^^^^^^
     field6.setHttpOnly(false); // Noncompliant
 
     Cookie c1 = new Cookie("name", "value");
@@ -34,7 +35,8 @@ class CookieHttpOnlyCheck {
       c1.setHttpOnly(true);
     }
 
-    Cookie c2 = new Cookie("name", "value"); // Noncompliant [[sc=21;ec=27]]
+    Cookie c2 = new Cookie("name", "value"); // Noncompliant
+//                  ^^^^^^
 
     Cookie c3 = new Cookie("name", "value");
     c3.setHttpOnly(false); // Noncompliant
@@ -56,7 +58,7 @@ class CookieHttpOnlyCheck {
     c9.setHttpOnly(false); // Noncompliant
 
     Cookie c10;
-    c10 = new Cookie("name", "value");  // Noncompliant
+    c10 = new Cookie("name", "value"); // Noncompliant
 
     Cookie c11;
     c11 = new Cookie("name", "value");
@@ -71,7 +73,8 @@ class CookieHttpOnlyCheck {
   }
 
   Cookie getC1() {
-    return new Cookie("name", "value"); // Noncompliant [[sc=16;ec=22]]
+    return new Cookie("name", "value"); // Noncompliant
+//             ^^^^^^
   }
 
   Cookie returnHttpCookie(HttpServletResponse response) {
@@ -287,7 +290,8 @@ class JakartaCookieHttpOnlyCheckCookieACookieHttpOnlyCheck {
   jakarta.ws.rs.core.Cookie field3 = new jakarta.ws.rs.core.Cookie("name", "value"); // FN
   jakarta.servlet.http.Cookie field6;
   void servletCookie(boolean param, jakarta.servlet.http.Cookie c0) {
-    c0.setHttpOnly(false); // Noncompliant [[sc=19;ec=26]] {{Make sure creating this cookie without the "HttpOnly" flag is safe.}}
+    c0.setHttpOnly(false); // Noncompliant {{Make sure creating this cookie without the "HttpOnly" flag is safe.}}
+//                ^^^^^^^
     field6.setHttpOnly(false); // Noncompliant
 
     jakarta.servlet.http.Cookie c1 = new jakarta.servlet.http.Cookie("name", "value");
@@ -297,7 +301,8 @@ class JakartaCookieHttpOnlyCheckCookieACookieHttpOnlyCheck {
       c1.setHttpOnly(true);
     }
 
-    jakarta.servlet.http.Cookie c2 = new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant [[sc=42;ec=69]]
+    jakarta.servlet.http.Cookie c2 = new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant
+//                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     c1.setHttpOnly(false); // Noncompliant
 
@@ -319,7 +324,8 @@ class JakartaCookieHttpOnlyCheckCookieACookieHttpOnlyCheck {
   }
 
   jakarta.servlet.http.Cookie getC1() {
-    return new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant [[sc=16;ec=43]]
+    return new jakarta.servlet.http.Cookie("name", "value"); // Noncompliant
+//             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   jakarta.servlet.http.Cookie returnHttpCookie(jakarta.servlet.http.HttpServletResponse response) {

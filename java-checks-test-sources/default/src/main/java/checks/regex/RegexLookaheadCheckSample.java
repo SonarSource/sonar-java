@@ -9,7 +9,8 @@ public class RegexLookaheadCheckSample {
 
   public void test(String str) {
     // Positive lookahead
-    compile("(?=a)b"); // Noncompliant [[sc=14;ec=19]] {{Remove or fix this lookahead assertion that can never be true.}}
+    compile("(?=a)b"); // Noncompliant {{Remove or fix this lookahead assertion that can never be true.}}
+//           ^^^^^
     compile("(?=ac)ab"); // Noncompliant
     compile("(?=a)bc"); // Noncompliant
     compile("(?=a)a");
@@ -20,7 +21,7 @@ public class RegexLookaheadCheckSample {
     compile("(?=abc)abcd");
 
     // Negative Lookahead
-    compile("(?!a)a"); // Noncompliant - support negative lookahead
+    compile("(?!a)a"); // Noncompliant
     compile("(?!ab)ab"); // Noncompliant
     compile("(?!a)ab").matcher(str).find(); // Noncompliant
     compile("(?!abc)abcd"); // Noncompliant

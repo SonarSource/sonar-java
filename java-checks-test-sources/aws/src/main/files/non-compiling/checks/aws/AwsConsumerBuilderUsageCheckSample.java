@@ -7,7 +7,8 @@ public class AwsConsumerBuilderUsageCheckSample {
 
   public void test() {
     AwsConsumerBuilderUsageCheckSample.builder()
-      .validDestination(Destination.builder() // Noncompliant [[sc=8;ec=24]] {{Consider using the Consumer Builder method instead of creating this nested builder.}}
+      .validDestination(Destination.builder() // Noncompliant {{Consider using the Consumer Builder method instead of creating this nested builder.}}
+//     ^^^^^^^^^^^^^^^^
         .toAddresses("to-email@domain.com")
         .bccAddresses("bcc-email@domain.com")
         .build())

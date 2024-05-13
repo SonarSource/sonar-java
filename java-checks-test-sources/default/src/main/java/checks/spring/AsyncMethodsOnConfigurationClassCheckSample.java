@@ -7,7 +7,8 @@ import org.springframework.scheduling.annotation.Async;
 @Configuration
 public class AsyncMethodsOnConfigurationClassCheckSample {
 
-  @Async // Noncompliant [[sc=3;ec=9;quickfixes=qf1]] {{Remove this "@Async" annotation from this method.}}
+  @Async // Noncompliant {{Remove this "@Async" annotation from this method.}} [[quickfixes=qf1]]
+//^^^^^^
   // fix@qf1 {{Remove "@Async"}}
   // edit@qf1 [[sc=3;ec=9]] {{}}
   public void asyncMethod() {

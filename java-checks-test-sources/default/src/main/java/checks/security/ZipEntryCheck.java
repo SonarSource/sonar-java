@@ -39,7 +39,8 @@ public class ZipEntryCheck {
   }
 
   public JarEntry noncompliant3(JarFile file) {
-    return file.entries().nextElement(); // Noncompliant [[sc=17;ec=24]]
+    return file.entries().nextElement(); // Noncompliant
+//              ^^^^^^^
   }
 
   public String compliant() throws java.lang.Exception {

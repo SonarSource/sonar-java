@@ -17,7 +17,8 @@ public class ExcessiveContentRequestCheckSample {
 
   void springCommonsMultipartResolver() {
     CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-    multipartResolver.setMaxUploadSize(8388609); // Noncompliant [[sc=5;ec=48]] {{The content length limit of 8388609 bytes is greater than the defined limit of 8388608; make sure it is safe here.}}
+    multipartResolver.setMaxUploadSize(8388609); // Noncompliant {{The content length limit of 8388609 bytes is greater than the defined limit of 8388608; make sure it is safe here.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     multipartResolver.setMaxUploadSize(8388609l); // Noncompliant
     multipartResolver.setMaxUploadSize(8388609L); // Noncompliant
     multipartResolver.setMaxUploadSize(10); // Compliant

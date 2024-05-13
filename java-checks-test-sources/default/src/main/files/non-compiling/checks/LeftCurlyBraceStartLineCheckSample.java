@@ -10,7 +10,7 @@ class NestedSwitchStatementCheck
           yield 2;
       };
 
-    int j = switch (myEnum) {             // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
+    int j = switch (myEnum) { // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
       case A:
         yield 1;
       default:

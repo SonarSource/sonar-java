@@ -6,19 +6,22 @@ import org.springframework.stereotype.Repository;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
-@Scope("prototype") // Noncompliant [[sc=1;ec=20]] {{Remove this "@Scope" annotation.}}
+  @Scope("prototype") // Noncompliant {{Remove this "@Scope" annotation.}}
+//^^^^^^^^^^^^^^^^^^^
 @Controller
 public class ControllerHelloWorld {
   public static final String PROTOTYPE = "prototype";
 }
 
-@Scope("prototype") // Noncompliant [[sc=1;ec=20]] {{Remove this "@Scope" annotation.}}
+  @Scope("prototype") // Noncompliant {{Remove this "@Scope" annotation.}}
+//^^^^^^^^^^^^^^^^^^^
 @Service
 class ServiceHelloWorld {
 
 }
 
-@Scope("prototype") // Noncompliant [[sc=1;ec=20]] {{Remove this "@Scope" annotation.}}
+  @Scope("prototype") // Noncompliant {{Remove this "@Scope" annotation.}}
+//^^^^^^^^^^^^^^^^^^^
 @Repository
 class RepositoryHelloWorld {
 

@@ -5,9 +5,10 @@ import java.util.regex.Pattern;
 public class MultipleWhitespaceCheckSample {
 
   void noncompliant() {
-    Pattern.compile("Hello,   world!");       // Noncompliant [[sc=29;ec=31]] {{Replace spaces with quantifier `{3}`.}}
-    Pattern.compile("Hello,  world!");        // Noncompliant {{Replace spaces with quantifier `{2}`.}}
-    Pattern.compile("Hello, world!      ");         // Noncompliant {{Replace spaces with quantifier `{6}`.}}
+    Pattern.compile("Hello,   world!"); // Noncompliant {{Replace spaces with quantifier `{3}`.}}
+//                          ^^
+    Pattern.compile("Hello,  world!"); // Noncompliant {{Replace spaces with quantifier `{2}`.}}
+    Pattern.compile("Hello, world!      "); // Noncompliant {{Replace spaces with quantifier `{6}`.}}
   }
 
   void compliant() {

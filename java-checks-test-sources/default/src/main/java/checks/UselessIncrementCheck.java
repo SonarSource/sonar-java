@@ -12,9 +12,11 @@ class UselessIncrementCheck {
       return UselessIncrementCheck.var++;
     }
     i = i++; // Noncompliant {{Remove this increment or correct the code not to waste it.}}
-    UselessIncrementCheck.var = UselessIncrementCheck.var++; // Noncompliant [[sc=58;ec=60]] {{Remove this increment or correct the code not to waste it.}}
+    UselessIncrementCheck.var = UselessIncrementCheck.var++; // Noncompliant {{Remove this increment or correct the code not to waste it.}}
+//                                                       ^^
     UselessIncrementCheck.var = i++;
-    return j++; // Noncompliant [[sc=13;ec=15]] {{Remove this increment or correct the code not to waste it.}}
+    return j++; // Noncompliant {{Remove this increment or correct the code not to waste it.}}
+//          ^^
   }
 
   public int pickNumber2() {

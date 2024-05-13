@@ -2,7 +2,8 @@ class A {
   void foo() {
     try {
     } catch (IOException ioe) {
-      throw ioe; // Noncompliant [[sc=7;ec=17]] {{Add logic to this catch clause or eliminate it and rethrow the exception automatically.}}
+      throw ioe; // Noncompliant {{Add logic to this catch clause or eliminate it and rethrow the exception automatically.}}
+//    ^^^^^^^^^^
     }
 
     try {

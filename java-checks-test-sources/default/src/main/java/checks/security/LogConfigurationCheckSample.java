@@ -31,11 +31,13 @@ class Log4J2 {
   Filter filter;
 
   // Questionable: creating a new custom configuration
-  abstract class CustomConfigFactory extends ConfigurationFactory { } // Noncompliant [[sc=46;ec=66]] {{Make sure that this logger's configuration is safe.}}
+  abstract class CustomConfigFactory extends ConfigurationFactory { } // Noncompliant {{Make sure that this logger's configuration is safe.}}
+//                                           ^^^^^^^^^^^^^^^^^^^^
 
   void fun() throws Exception {
     // Questionable: creating a new custom configuration
-    ConfigurationBuilderFactory.newConfigurationBuilder(); // Noncompliant [[sc=5;ec=58]] {{Make sure that this logger's configuration is safe.}}
+    ConfigurationBuilderFactory.newConfigurationBuilder(); // Noncompliant {{Make sure that this logger's configuration is safe.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     // Questionable: setting loggers level can result in writing sensitive information in production
     Configurator.setAllLevels("com.example", Level.DEBUG); // Noncompliant
@@ -44,16 +46,16 @@ class Log4J2 {
     Configurator.setRootLevel(Level.DEBUG); // Noncompliant
 
     // Questionable: this modifies the configuration
-    config.addAppender(appender);  // Noncompliant
+    config.addAppender(appender); // Noncompliant
 
-    context.setConfigLocation(uri);  // Noncompliant
+    context.setConfigLocation(uri); // Noncompliant
 
     // Questionable: Load the configuration from a stream or file
     new ConfigurationSource(stream); // Noncompliant
-    new ConfigurationSource(stream, file);// Noncompliant
-    new ConfigurationSource(stream, url);// Noncompliant
-    ConfigurationSource.fromResource("source", loader);// Noncompliant
-    ConfigurationSource.fromUri(uri);// Noncompliant
+    new ConfigurationSource(stream, file); // Noncompliant
+    new ConfigurationSource(stream, url); // Noncompliant
+    ConfigurationSource.fromResource("source", loader); // Noncompliant
+    ConfigurationSource.fromUri(uri); // Noncompliant
 
     LoggerConfig loggerConfig = config.getRootLogger();
     loggerConfig.addAppender(appender, level, filter); // Noncompliant

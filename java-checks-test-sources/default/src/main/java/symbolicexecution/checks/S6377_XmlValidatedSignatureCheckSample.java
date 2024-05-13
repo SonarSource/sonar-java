@@ -61,7 +61,8 @@ abstract class S3677_XmlValidatedSignatureCheck {
 
   void noncompliant_1(Node node, KeySelector selector) throws Exception {
     DOMValidateContext valContext = new DOMValidateContext(selector, node);
-    valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.FALSE); // Noncompliant [[sc=65;ec=78]] {{Change this to "true" to validate this XML signature securely.}}
+    valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.FALSE); // Noncompliant {{Change this to "true" to validate this XML signature securely.}}
+//                                                              ^^^^^^^^^^^^^
 
     XMLSignature signature = fac.unmarshalXMLSignature(valContext);
 
@@ -79,7 +80,8 @@ abstract class S3677_XmlValidatedSignatureCheck {
   void noncompliant_3(Node node, KeySelector selector) throws Exception {
     DOMValidateContext valContext = new DOMValidateContext(selector, node);
     valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.TRUE);
-    valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.FALSE); // Noncompliant [[sc=65;ec=78]] {{Change this to "true" to validate this XML signature securely.}}
+    valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.FALSE); // Noncompliant {{Change this to "true" to validate this XML signature securely.}}
+//                                                              ^^^^^^^^^^^^^
 
     XMLSignature signature = fac.unmarshalXMLSignature(valContext);
 
@@ -88,7 +90,8 @@ abstract class S3677_XmlValidatedSignatureCheck {
 
   DOMValidateContext noncompliant_4(Node node, KeySelector selector) throws Exception {
     DOMValidateContext valContext = new DOMValidateContext(selector, node);
-    valContext.setProperty("org.jcp.xml.dsig.secureValidation", false); // Noncompliant [[sc=65;ec=70]] {{Change this to "true" to validate this XML signature securely.}}
+    valContext.setProperty("org.jcp.xml.dsig.secureValidation", false); // Noncompliant {{Change this to "true" to validate this XML signature securely.}}
+//                                                              ^^^^^
 
     return valContext;
   }

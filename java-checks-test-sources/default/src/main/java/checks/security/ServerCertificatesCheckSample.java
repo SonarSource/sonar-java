@@ -95,22 +95,22 @@ class Main {
 }
 class EmptyX509ExtendedTrustManager extends X509ExtendedTrustManager {
   @Override
-  public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
+  public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {} // Noncompliant
 
   @Override
-  public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
+  public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {} // Noncompliant
 
   @Override
-  public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
+  public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {} // Noncompliant
 
   @Override
-  public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
+  public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {} // Noncompliant
 
   @Override
-  public void checkServerTrusted(X509Certificate[] x509Certificates, String s, SSLEngine sslEngine) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
+  public void checkServerTrusted(X509Certificate[] x509Certificates, String s, SSLEngine sslEngine) throws CertificateException {} // Noncompliant
 
   @Override
-  public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
+  public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {} // Noncompliant
 
   @Override
   public X509Certificate[] getAcceptedIssuers() {

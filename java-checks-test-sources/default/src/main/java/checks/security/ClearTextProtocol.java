@@ -14,7 +14,8 @@ import org.apache.commons.net.telnet.TelnetClient;
 public class ClearTextProtocol {
 
   void noncompliant() {
-    new FTPClient(); // Noncompliant [[sc=9;ec=18]] {{Using FTP protocol is insecure. Use SFTP, SCP or FTPS instead.}}
+    new FTPClient(); // Noncompliant {{Using FTP protocol is insecure. Use SFTP, SCP or FTPS instead.}}
+//      ^^^^^^^^^
     new TelnetClient(); // Noncompliant {{Using Telnet protocol is insecure. Use SSH instead.}}
     new SMTPClient(); // Noncompliant {{Using clear-text SMTP protocol is insecure. Use SMTP over SSL/TLS or SMTP with STARTTLS instead.}}
     new SMTPClient("UTF-8"); // Noncompliant {{Using clear-text SMTP protocol is insecure. Use SMTP over SSL/TLS or SMTP with STARTTLS instead.}}
@@ -27,14 +28,17 @@ public class ClearTextProtocol {
 
   void okHttp() {
     OkHttpClient client1 = new OkHttpClient.Builder()
-      .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.CLEARTEXT)) // Noncompliant [[sc=80;ec=89]] {{Using HTTP protocol is insecure. Use HTTPS instead.}}
+      .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.CLEARTEXT)) // Noncompliant {{Using HTTP protocol is insecure. Use HTTPS instead.}}
+//                                                                             ^^^^^^^^^
       .build();
 
     OkHttpClient client15 = new OkHttpClient.Builder()
-      .connectionSpecs(Collections.singletonList(ConnectionSpec.CLEARTEXT)) // Noncompliant [[sc=65;ec=74]] {{Using HTTP protocol is insecure. Use HTTPS instead.}}
+      .connectionSpecs(Collections.singletonList(ConnectionSpec.CLEARTEXT)) // Noncompliant {{Using HTTP protocol is insecure. Use HTTPS instead.}}
+//                                                              ^^^^^^^^^
       .build();
 
-    ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.CLEARTEXT) // Noncompliant [[sc=69;ec=78]] {{Using HTTP protocol is insecure. Use HTTPS instead.}}
+    ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.CLEARTEXT) // Noncompliant {{Using HTTP protocol is insecure. Use HTTPS instead.}}
+//                                                                  ^^^^^^^^^
       .build();
 
     OkHttpClient client2 = new OkHttpClient.Builder()
@@ -59,7 +63,8 @@ public class ClearTextProtocol {
   }
 
   void androidWebSettings(WebSettings settings, int value) {
-    settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW); // Noncompliant [[sc=34;ec=72]] {{Using a relaxed mixed content policy is security-sensitive.}}
+    settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW); // Noncompliant {{Using a relaxed mixed content policy is security-sensitive.}}
+//                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     settings.setMixedContentMode(0); // Noncompliant
     settings.setMixedContentMode(value); // Compliant
     settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW); // Compliant

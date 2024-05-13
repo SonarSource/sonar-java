@@ -16,8 +16,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 class A {
   boolean fileOp(File f) {
-    f.delete(); // Noncompliant [[sc=5;ec=16]] {{Do something with the "boolean" value returned by "delete".}}
-    boolean b1 = f.delete(); // Noncompliant [[sc=5;ec=29]] {{Do something with the "boolean" value returned by "delete".}}
+    f.delete(); // Noncompliant {{Do something with the "boolean" value returned by "delete".}}
+//  ^^^^^^^^^^^
+    boolean b1 = f.delete(); // Noncompliant {{Do something with the "boolean" value returned by "delete".}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^
     boolean b2 = f.delete(); // Compliant
     if (b2 || f.delete()) {} // Compliant
 
@@ -34,7 +36,8 @@ class A {
   }
 
   boolean lockOp(Lock l) {
-    l.tryLock(); // Noncompliant [[sc=5;ec=17]] {{Do something with the "boolean" value returned by "tryLock".}}
+    l.tryLock(); // Noncompliant {{Do something with the "boolean" value returned by "tryLock".}}
+//  ^^^^^^^^^^^^
     l.tryLock(0L, TimeUnit.DAYS); // Compliant
     return l.tryLock(); // Compliant
   }

@@ -8,7 +8,8 @@ class FinalizeFieldsSetCheckSample {
 
     @Override
     protected void finalize() {
-      myString = null; // Noncompliant [[sc=18;ec=22]] {{Remove this nullification of "myString".}}
+      myString = null; // Noncompliant {{Remove this nullification of "myString".}}
+//               ^^^^
       myInteger = null; // Noncompliant
       myObject = null; // Noncompliant
 

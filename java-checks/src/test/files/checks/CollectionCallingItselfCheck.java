@@ -8,7 +8,8 @@ class A {
     strings.addAll(strings); // Noncompliant {{Remove or correct this "addAll" call.}}
     strings.containsAll(strings); // Noncompliant {{Remove or correct this "containsAll" call.}}
     strings.removeAll(strings); // Noncompliant {{Remove or correct this "removeAll" call.}}
-    strings.retainAll(strings); // Noncompliant [[sc=5;ec=31]] {{Remove or correct this "retainAll" call.}}
+    strings.retainAll(strings); // Noncompliant {{Remove or correct this "retainAll" call.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^
     strings.wait();
     strings.foo();
   }

@@ -12,7 +12,8 @@ class HttpServletA {
 }
 
 class HttpServletB extends HttpServlet {
-  private String userName; // Noncompliant [[sc=18;ec=26]] {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
+  private String userName; // Noncompliant {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
+//               ^^^^^^^^
   private static String staticVar;
   private final String finalVar;
   private String storageType;
@@ -58,11 +59,12 @@ class HttpServletD extends HttpServlet {
 
 public class ServletInstanceFieldCheckSample extends HttpServlet {
   @org.springframework.beans.factory.annotation.Autowired
-  private javax.sql.DataSource myDB; // Noncompliant - filtered by the SpringFilter
+  private javax.sql.DataSource myDB; // Noncompliant
 }
 
 class HttpServletE extends HttpServlet {
-  private String userName; // Noncompliant [[sc=18;ec=26]] {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
+  private String userName; // Noncompliant {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
+//               ^^^^^^^^
   private final String finalVar;
   private String storageType; // Compliant, initialized in init() method
 

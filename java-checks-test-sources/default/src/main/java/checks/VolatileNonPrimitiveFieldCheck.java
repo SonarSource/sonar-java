@@ -33,11 +33,16 @@ import java.util.UUID;
 
 class VolatileNonPrimitiveFieldCheck {
   private volatile int vInts0;
-  private volatile int [] vInts;  // Noncompliant [[sc=11;ec=26]] {{Use an "AtomicIntegerArray" instead.}}
-  private volatile long [] vLongs;  // Noncompliant [[sc=11;ec=27]] {{Use an "AtomicLongArray" instead.}}
-  private volatile Object [] vObjects;  // Noncompliant [[sc=11;ec=29]] {{Use an "AtomicReferenceArray" instead.}}
-  private volatile VolatileNonPrimitiveFieldCheckObj myObj;  // Noncompliant [[sc=11;ec=53]] {{Use a thread-safe type; adding "volatile" is not enough to make this field thread-safe.}}
-  private volatile Date myDate;  // Noncompliant [[sc=11;ec=24]] {{Use a thread-safe type; adding "volatile" is not enough to make this field thread-safe.}}
+  private volatile int [] vInts; // Noncompliant {{Use an "AtomicIntegerArray" instead.}}
+//        ^^^^^^^^^^^^^^^
+  private volatile long [] vLongs; // Noncompliant {{Use an "AtomicLongArray" instead.}}
+//        ^^^^^^^^^^^^^^^^
+  private volatile Object [] vObjects; // Noncompliant {{Use an "AtomicReferenceArray" instead.}}
+//        ^^^^^^^^^^^^^^^^^^
+  private volatile VolatileNonPrimitiveFieldCheckObj myObj; // Noncompliant {{Use a thread-safe type; adding "volatile" is not enough to make this field thread-safe.}}
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  private volatile Date myDate; // Noncompliant {{Use a thread-safe type; adding "volatile" is not enough to make this field thread-safe.}}
+//        ^^^^^^^^^^^^^
   private AtomicIntegerArray vInts2;
   private VolatileNonPrimitiveFieldCheckObj myObj2;
   // enums are considered as immutable
@@ -93,8 +98,10 @@ class VolatileNonPrimitiveFieldCheck {
 enum VolatileNonPrimitiveFieldCheckEnum {
   FOO;
   private volatile int vInts0;
-  private volatile int [] vInts;  // Noncompliant [[sc=11;ec=26]] {{Use an "AtomicIntegerArray" instead.}}
-  private volatile VolatileNonPrimitiveFieldCheckObj myObj;  // Noncompliant [[sc=11;ec=53]] {{Use a thread-safe type; adding "volatile" is not enough to make this field thread-safe.}}
+  private volatile int [] vInts; // Noncompliant {{Use an "AtomicIntegerArray" instead.}}
+//        ^^^^^^^^^^^^^^^
+  private volatile VolatileNonPrimitiveFieldCheckObj myObj; // Noncompliant {{Use a thread-safe type; adding "volatile" is not enough to make this field thread-safe.}}
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   private AtomicIntegerArray vInts2;
   private VolatileNonPrimitiveFieldCheckObj myObj2;
 

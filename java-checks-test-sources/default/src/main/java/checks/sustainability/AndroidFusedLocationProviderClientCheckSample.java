@@ -7,7 +7,8 @@ import java.util.Optional;
 public class AndroidFusedLocationProviderClientCheckSample {
 
   public void getLocationService(Context context, NoContext noContext, Optional<Context> opt, PendingIntent operation) {
-    var service1 = context.getSystemService("location"); // Noncompliant [[sc=45;ec=55]] {{Use "FusedLocationProviderClient" instead of "LocationManager".}}
+    var service1 = context.getSystemService("location"); // Noncompliant {{Use "FusedLocationProviderClient" instead of "LocationManager".}}
+//                                          ^^^^^^^^^^
     context.getSystemService("location"); // Noncompliant
 
     var service2 = context.getSystemService("locale"); // Compliant

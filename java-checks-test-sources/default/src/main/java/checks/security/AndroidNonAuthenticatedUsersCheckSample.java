@@ -8,7 +8,8 @@ public class AndroidNonAuthenticatedUsersCheckSample {
   KeyGenParameterSpec.Builder builderField;
 
   void f(boolean cond) {
-    new KeyGenParameterSpec.Builder("test_secret_key_noncompliant", // Noncompliant [[sc=9;ec=36]] {{Make sure authorizing non-authenticated users to use this key is safe here.}}
+    new KeyGenParameterSpec.Builder("test_secret_key_noncompliant", // Noncompliant {{Make sure authorizing non-authenticated users to use this key is safe here.}}
+//      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
       KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
       .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
       .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
@@ -34,7 +35,7 @@ public class AndroidNonAuthenticatedUsersCheckSample {
       .setUserAuthenticationRequired(true);
     builderInProgress2.build();
 
-    // Noncompliant@+1
+ // Noncompliant@+1
     KeyGenParameterSpec.Builder builderInProgress3 = new KeyGenParameterSpec.Builder("test_secret_key", KeyProperties.PURPOSE_ENCRYPT);
     builderInProgress3
       .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
@@ -47,7 +48,7 @@ public class AndroidNonAuthenticatedUsersCheckSample {
     builderInProgress4.setBlockModes(KeyProperties.BLOCK_MODE_GCM);
     builderInProgress4.build();
 
-    // Noncompliant@+1
+ // Noncompliant@+1
     KeyGenParameterSpec.Builder builderInProgress5 = new KeyGenParameterSpec.Builder("test_secret_key", KeyProperties.PURPOSE_ENCRYPT)
       .setUserAuthenticationRequired(false);
     builderInProgress5.setBlockModes(KeyProperties.BLOCK_MODE_GCM);
@@ -60,7 +61,7 @@ public class AndroidNonAuthenticatedUsersCheckSample {
     }
     builderConditionallyAuthenticated.build();
 
-    // Noncompliant@+1
+ // Noncompliant@+1
     KeyGenParameterSpec.Builder builderNotAuthenticated = new KeyGenParameterSpec.Builder("test_secret_key", KeyProperties.PURPOSE_ENCRYPT);
     builderNotAuthenticated.build();
 
@@ -94,7 +95,7 @@ public class AndroidNonAuthenticatedUsersCheckSample {
   }
 
   void valueAsArgument(boolean arg) {
-    // Noncompliant@+1
+ // Noncompliant@+1
     new KeyGenParameterSpec.Builder("test_secret_key", KeyProperties.PURPOSE_ENCRYPT)
       // Corner case: can not guarantee that the value is always true, we still report an issue.
       .setUserAuthenticationRequired(arg)

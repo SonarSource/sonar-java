@@ -16,7 +16,8 @@ class EqualsArgumentType {
 
   public class TestClassInstanceof2 {
     @Override
-    public boolean equals(Object that) { // Noncompliant [[sc=20;ec=26]] {{Add a type test to this method.}}
+    public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
+//                 ^^^^^^
       if (this instanceof Object) {
         return ((Object) that) == null;
       }

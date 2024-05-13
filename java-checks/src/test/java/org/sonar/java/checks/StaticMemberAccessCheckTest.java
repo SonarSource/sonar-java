@@ -21,10 +21,9 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class StaticMemberAccessCheckTest {
 
@@ -40,10 +39,9 @@ class StaticMemberAccessCheckTest {
 
   @Test
   void quick_fixes() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/StaticMemberAccessQuickFixes.java"))
       .withCheck(new StaticMemberAccessCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

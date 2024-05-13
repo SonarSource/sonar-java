@@ -18,9 +18,12 @@ public class AssertJConsecutiveAssertionCheckSample {
 
   @Test
   void simple_example() {
-    assertThat(myString).hasSize(2); // Noncompliant [[sc=5;ec=15;secondary=+1,+2]] {{Join these multiple assertions subject to one assertion chain.}}
+    assertThat(myString).hasSize(2); // Noncompliant {{Join these multiple assertions subject to one assertion chain.}}
+//  ^^^^^^^^^^
     assertThat(myString).startsWith("4");
+//  ^^^^^^^^^^<
     assertThat(myString).isEqualTo("42");
+//  ^^^^^^^^^^<
   }
 
   @Test
@@ -46,10 +49,14 @@ public class AssertJConsecutiveAssertionCheckSample {
 
   @Test
   void two_assert_subject_argument_2() {
-    assertThat(myOtherString).hasSize(2); // Noncompliant [[sc=5;ec=15;secondary=+1]]
+    assertThat(myOtherString).hasSize(2); // Noncompliant
+//  ^^^^^^^^^^
     assertThat(myOtherString).startsWith("2");
-    assertThat(myString).startsWith("4"); // Noncompliant [[sc=5;ec=15;secondary=+1]]
+//  ^^^^^^^^^^<
+    assertThat(myString).startsWith("4"); // Noncompliant
+//  ^^^^^^^^^^
     assertThat(myString).isEqualTo("42");
+//  ^^^^^^^^^^<
   }
 
   @Test
@@ -293,29 +300,39 @@ class CustomAssertions {
 
   @Test
   void nonCompliantTypeTest1() {
-    assertThat(myType).isNotNull(); // Noncompliant [[secondary=+1]]
+    assertThat(myType).isNotNull(); // Noncompliant
+//  ^^^^^^^^^^
     assertThat(myType).isEqualTo(new MyType());
+//  ^^^^^^^^^^<
 
-    CustomAssert.assertThat(myType).isFoo(); // Noncompliant [[secondary=+1]]
+    CustomAssert.assertThat(myType).isFoo(); // Noncompliant
+//               ^^^^^^^^^^
     CustomAssert.assertThat(myType).isBar();
+//               ^^^^^^^^^^<
   }
 
   @Test
   void nonCompliantTypeTest2() {
-    CustomAssert.assertThat(myType).isFoo(); // Noncompliant [[secondary=+1,+3,+4]]
+    CustomAssert.assertThat(myType).isFoo(); // Noncompliant
+//               ^^^^^^^^^^
     CustomAssert.assertThat(myType).isBar();
+//               ^^^^^^^^^^<
 
     assertThat(myType).isNotNull(); // will be included
+//  ^^^^^^^^^^<
     assertThat(myType).isEqualTo(new MyType());
+//  ^^^^^^^^^^<
   }
 
   @Test
   void nonCompliantTypeTest3() {
-    CustomAssert.assertThat(myType) // Noncompliant [[secondary=+4]]
+    CustomAssert.assertThat(myType) // Noncompliant
+//               ^^^^^^^^^^
       .isFoo()
       .isBar();
 
     assertThat(myType)
+//  ^^^^^^^^^^<
       .isNotNull()
       .isEqualTo(new MyType());
   }
@@ -323,9 +340,12 @@ class CustomAssertions {
   @Test
   void nonCompliantTypeTest4() {
     assertThat(myType).isNotNull(); // Compliant - mixed, can not be chained
-    CustomAssert.assertThat(myType).isBar(); // Noncompliant [[secondary=+1,+2]]
+    CustomAssert.assertThat(myType).isBar(); // Noncompliant
+//               ^^^^^^^^^^
     assertThat(myType).isEqualTo(new MyType());
+//  ^^^^^^^^^^<
     CustomAssert.assertThat(myType).isBar();
+//               ^^^^^^^^^^<
   }
 
   @Test

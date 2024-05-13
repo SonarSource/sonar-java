@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-class S2060_A implements Externalizable { // Noncompliant [[sc=7;ec=14]] {{Add a no-arg constructor to this class.}}
+class S2060_A implements Externalizable { // Noncompliant {{Add a no-arg constructor to this class.}}
+//    ^^^^^^^
   public S2060_A(String color, int weight) {}
   @Override public void writeExternal(ObjectOutput out) throws IOException { }
   @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
@@ -37,7 +38,8 @@ class S2060_D implements S2060_I { // Compliant
   @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
 }
 
-class S2060_E implements S2060_I { // Noncompliant [[sc=7;ec=14]] {{Add a no-arg constructor to this class.}}
+class S2060_E implements S2060_I { // Noncompliant {{Add a no-arg constructor to this class.}}
+//    ^^^^^^^
   public S2060_E(String color, int weight) {}
   @Override public void writeExternal(ObjectOutput out) throws IOException { }
   @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
@@ -54,19 +56,22 @@ class CtorVisibility_A implements Externalizable {
 }
 
 class CtorVisibility_B implements Externalizable { // Compliant
-  protected CtorVisibility_B() {} // Noncompliant [[sc=13;ec=29]] {{Declare this no-arg constructor public.}}
+  protected CtorVisibility_B() {} // Noncompliant {{Declare this no-arg constructor public.}}
+//          ^^^^^^^^^^^^^^^^
   @Override public void writeExternal(ObjectOutput out) throws IOException { }
   @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
 }
 
 class CtorVisibility_C implements Externalizable { // Compliant
-  CtorVisibility_C() {} // Noncompliant [[sc=3;ec=19]]
+  CtorVisibility_C() {} // Noncompliant
+//^^^^^^^^^^^^^^^^
   @Override public void writeExternal(ObjectOutput out) throws IOException { }
   @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
 }
 
 class CtorVisibility_D implements Externalizable { // Compliant
-  private CtorVisibility_D() {} // Noncompliant [[sc=11;ec=27]]
+  private CtorVisibility_D() {} // Noncompliant
+//        ^^^^^^^^^^^^^^^^
   @Override public void writeExternal(ObjectOutput out) throws IOException { }
   @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
 }

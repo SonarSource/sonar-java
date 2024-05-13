@@ -4,7 +4,8 @@ class NonStaticClassInitializerCheckSample {
   static {
   }
 
-  { // Noncompliant [[sc=3;ec=4]] {{Move the contents of this initializer to a standard constructor or to field initializers.}}
+  { // Noncompliant {{Move the contents of this initializer to a standard constructor or to field initializers.}}
+//^
     System.out.println();
   }
 

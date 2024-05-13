@@ -10,8 +10,10 @@ public class AssertThatThrownByAloneCheckSample {
 
   @Test
   void noncompliant() {
-    assertThatThrownBy(() -> shouldThrow()); // Noncompliant [[sc=5;ec=23]] {{Test further the exception raised by this assertThatThrownBy call.}}
-    assertThatThrownBy(() -> shouldThrow(), "Don't do that"); // Noncompliant [[sc=5;ec=23]] {{Test further the exception raised by this assertThatThrownBy call.}}
+    assertThatThrownBy(() -> shouldThrow()); // Noncompliant {{Test further the exception raised by this assertThatThrownBy call.}}
+//  ^^^^^^^^^^^^^^^^^^
+    assertThatThrownBy(() -> shouldThrow(), "Don't do that"); // Noncompliant {{Test further the exception raised by this assertThatThrownBy call.}}
+//  ^^^^^^^^^^^^^^^^^^
   }
 
   @Test

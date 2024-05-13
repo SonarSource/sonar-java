@@ -30,7 +30,8 @@ import org.springframework.stereotype.Component;
 class Address {
 }
 class Person implements Serializable {
-  Address address; // Noncompliant [[sc=11;ec=18]] {{Make "address" transient or serializable.}}
+  Address address; // Noncompliant {{Make "address" transient or serializable.}}
+//        ^^^^^^^
   SerializableFieldInSerializableClassCheckSampleA a;
   static Address address2;//Compliant : static field
   transient Address address3;
@@ -234,13 +235,13 @@ class JakartaPerson777 implements Serializable {
 }
 
 class IncompleteSerializableMethods1 implements Serializable {
-  Address address; // Noncompliant - read/write methods are not exactly matching signatures (throwing wrong types)
+  Address address; // Noncompliant
   private void writeObject(java.io.ObjectOutputStream out) {}
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException {}
 }
 
 class IncompleteSerializableMethods2 implements Serializable {
-  Address address; // Noncompliant - write methods is wrongly implemented
+  Address address; // Noncompliant
   private void writeObject(java.io.ObjectOutputStream out) throws ClassCastException {} // wrong thrown type
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {}
 }
@@ -456,7 +457,7 @@ class A implements java.io.Serializable {
   private final NonSerializableInterface field1 = new SerializableImpl(); // Compliant, is final
   private NonSerializableInterface field2; // Noncompliant
   private NonSerializableInterface field3 = init(); // Noncompliant
-  private NonSerializableInterface field4 = initWithSerializable(); // Noncompliant, is not final
+  private NonSerializableInterface field4 = initWithSerializable(); // Noncompliant
   private final NonSerializableInterface field5 = initWithSerializable(); // Compliant, is final
   private final NonSerializableInterface field6 = init(); // Noncompliant
 

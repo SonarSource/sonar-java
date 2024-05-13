@@ -17,7 +17,8 @@ public class ConfigurationBeanNamesCheckSample {
     }
 
     @Bean
-    public User user(String name) { // Noncompliant [[sc=17;ec=21]] {{Rename this bean method to prevent any conflict with other beans.}}
+    public User user(String name) { // Noncompliant {{Rename this bean method to prevent any conflict with other beans.}}
+//              ^^^^
       return new User();
     }
   }

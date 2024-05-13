@@ -33,9 +33,11 @@ class NonCompliantGroup {
 
   private User owner; // Noncompliant
 
-  private List<User> members; // Noncompliant [[sc=11;ec=21]] {{Add missing "@Valid" on "members" to validate it with "Bean Validation".}}
+  private List<User> members; // Noncompliant {{Add missing "@Valid" on "members" to validate it with "Bean Validation".}}
+//        ^^^^^^^^^^
 
-  private Building.Size<User> office; // Noncompliant [[sc=11;ec=30]]
+  private Building.Size<User> office; // Noncompliant
+//        ^^^^^^^^^^^^^^^^^^^
   private Building.Size company; // Compliant - Parametrized type, non-specified
 }
 
@@ -58,7 +60,8 @@ class NonCompliantService {
   public void login(User user) { // Noncompliant {{Add missing "@Valid" on "user" to validate it with "Bean Validation".}}
   }
 
-  public List<User> list(Department department) { // Noncompliant [[sc=26;ec=36]] {{Add missing "@Valid" on "department" to validate it with "Bean Validation".}}
+  public List<User> list(Department department) { // Noncompliant {{Add missing "@Valid" on "department" to validate it with "Bean Validation".}}
+//                       ^^^^^^^^^^
   }
 }
 

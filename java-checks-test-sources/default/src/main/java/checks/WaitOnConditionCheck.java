@@ -9,10 +9,12 @@ class WaitOnConditionCheck {
     new C().wait();
     new C().wait(1);
     new C().wait(1, 3);
-    new B().wait();  // Noncompliant [[sc=13;ec=17]] {{The "Condition.await(...)" method should be used instead of "Object.wait(...)"}}
-    MyFunctionalInterface r = new B()::wait; // Noncompliant [[sc=40;ec=44]] {{The "Condition.await(...)" method should be used instead of "Object.wait(...)"}}
-    new B().wait(1);  // Noncompliant
-    new B().wait(1, 3);  // Noncompliant
+    new B().wait(); // Noncompliant {{The "Condition.await(...)" method should be used instead of "Object.wait(...)"}}
+//          ^^^^
+    MyFunctionalInterface r = new B()::wait; // Noncompliant {{The "Condition.await(...)" method should be used instead of "Object.wait(...)"}}
+//                                     ^^^^
+    new B().wait(1); // Noncompliant
+    new B().wait(1, 3); // Noncompliant
   }
 
   class B implements Condition {

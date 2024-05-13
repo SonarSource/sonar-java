@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -29,25 +29,23 @@ class CombineCatchCheckTest {
 
   @Test
   void java_version_unset() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/CombineCatchCheck_no_version.java"))
       .withCheck(new CombineCatchCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 
   @Test
   void java_version_unset_not_compiling() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/CombineCatchCheck_no_version.java"))
       .withCheck(new CombineCatchCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 
   @Test
   void java_version_set() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/CombineCatchCheck.java"))
       .withCheck(new CombineCatchCheck())
       .withJavaVersion(7)

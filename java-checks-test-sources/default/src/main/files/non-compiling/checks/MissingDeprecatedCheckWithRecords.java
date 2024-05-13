@@ -7,5 +7,5 @@ record MissingDeprecatedCheckWithRecords(@Deprecated int lo, int hi) { // Noncom
   }
 
   @Deprecated
-  void foo() {}  // Noncompliant
+  void foo() {} // Noncompliant
 }

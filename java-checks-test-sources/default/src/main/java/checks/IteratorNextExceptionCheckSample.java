@@ -9,7 +9,8 @@ import java.util.PrimitiveIterator;
 
 class IteratorNextExceptionCheckSampleA implements Iterator<String> {
 
-  public String next() { // Noncompliant [[sc=17;ec=21]] {{Add a "NoSuchElementException" for iteration beyond the end of the collection.}}
+  public String next() { // Noncompliant {{Add a "NoSuchElementException" for iteration beyond the end of the collection.}}
+//              ^^^^
     if (!hasNext()){
       return null;
     }

@@ -5,29 +5,47 @@ import java.util.regex.Pattern;
 
 public class ImpossibleBoundariesCheckSample {
 
-  @Email(regexp = "$USER") // Noncompliant [[sc=20;ec=21]] {{Remove or replace this boundary that will never match because it appears before mandatory input.}}
+  @Email(regexp = "$USER") // Noncompliant {{Remove or replace this boundary that will never match because it appears before mandatory input.}}
+//                 ^
   String email;
 
   void noncompliant(String str) {
-    // Noncompliant@+1 [[sc=18;ec=19]] {{Remove or replace this boundary that will never match because it appears before mandatory input.}}
-    str.matches("$[a-z]^"); // Noncompliant [[sc=24;ec=25]] {{Remove or replace this boundary that will never match because it appears after mandatory input.}}
-    str.matches("$[a-z]"); // Noncompliant [[sc=18;ec=19]] {{Remove or replace this boundary that will never match because it appears before mandatory input.}}
-    str.matches("$(abc)"); // Noncompliant [[sc=18;ec=19]]
-    str.matches("[a-z]^"); // Noncompliant [[sc=23;ec=24]]
-    str.matches("\\Z[a-z]"); // Noncompliant [[sc=18;ec=21]]
-    str.matches("\\z[a-z]"); // Noncompliant [[sc=18;ec=21]]
-    str.matches("[a-z]\\A"); // Noncompliant [[sc=23;ec=26]]
-    str.matches("($)a"); // Noncompliant [[sc=19;ec=20]]
-    str.matches("a$|$a"); // Noncompliant [[sc=21;ec=22]]
-    str.matches("^a|a^"); // Noncompliant [[sc=22;ec=23]]
-    str.matches("a(b|^)"); // Noncompliant [[sc=22;ec=23]]
-    str.matches("(?=abc^)"); // Noncompliant [[sc=24;ec=25]]
-    str.matches("(?!abc^)"); // Noncompliant [[sc=24;ec=25]]
-    str.matches("abc(?=^abc)"); // Noncompliant [[sc=24;ec=25]]
-    str.matches("abc(?<=$abc)"); // Noncompliant [[sc=25;ec=26]]
-    str.matches("abc(?<=abc$)def"); // Noncompliant [[sc=28;ec=29]]
-    str.matches("abc(?<!abc$)def"); // Noncompliant [[sc=28;ec=29]]
-    str.matches("(?:abc(X|^))*Y?"); // Noncompliant [[sc=27;ec=28]]
+
+    str.matches("$[a-z]^"); // Noncompliant {{Remove or replace this boundary that will never match because it appears before mandatory input.}} {{Remove or replace this boundary that will never match because it appears after mandatory input.}}
+    str.matches("$[a-z]"); // Noncompliant {{Remove or replace this boundary that will never match because it appears before mandatory input.}}
+//               ^
+    str.matches("$(abc)"); // Noncompliant
+//               ^
+    str.matches("[a-z]^"); // Noncompliant
+//                    ^
+    str.matches("\\Z[a-z]"); // Noncompliant
+//               ^^^
+    str.matches("\\z[a-z]"); // Noncompliant
+//               ^^^
+    str.matches("[a-z]\\A"); // Noncompliant
+//                    ^^^
+    str.matches("($)a"); // Noncompliant
+//                ^
+    str.matches("a$|$a"); // Noncompliant
+//                  ^
+    str.matches("^a|a^"); // Noncompliant
+//                   ^
+    str.matches("a(b|^)"); // Noncompliant
+//                   ^
+    str.matches("(?=abc^)"); // Noncompliant
+//                     ^
+    str.matches("(?!abc^)"); // Noncompliant
+//                     ^
+    str.matches("abc(?=^abc)"); // Noncompliant
+//                     ^
+    str.matches("abc(?<=$abc)"); // Noncompliant
+//                      ^
+    str.matches("abc(?<=abc$)def"); // Noncompliant
+//                         ^
+    str.matches("abc(?<!abc$)def"); // Noncompliant
+//                         ^
+    str.matches("(?:abc(X|^))*Y?"); // Noncompliant
+//                        ^
   }
 
   void probablyNonCompliant(String str) {
@@ -47,17 +65,17 @@ public class ImpossibleBoundariesCheckSample {
     str.matches("[abc]*^"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears after mandatory input.}}
     str.matches("[abc]?^"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears after mandatory input.}}
 
-    // Noncompliant@+1
+ // Noncompliant@+1
     str.matches("$.*^"); // Noncompliant
-    // Noncompliant@+1
+ // Noncompliant@+1
     str.matches("$.?^"); // Noncompliant
-    // Noncompliant@+1
+ // Noncompliant@+1
     str.matches("$a*^"); // Noncompliant
-    // Noncompliant@+1
+ // Noncompliant@+1
     str.matches("$a?^"); // Noncompliant
-    // Noncompliant@+1
+ // Noncompliant@+1
     str.matches("$[abc]*^"); // Noncompliant
-    // Noncompliant@+1
+ // Noncompliant@+1
     str.matches("$[abc]?^"); // Noncompliant
   }
 

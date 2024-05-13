@@ -70,7 +70,7 @@ class UselessPackageInfoCheckTest {
     verifier
       .onFile(mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java"))
       .withCheck(new UselessPackageInfoCheck())
-      .verifyIssueOnFile("Remove this package.");
+      .verifyIssues();
   }
 
   @Test
@@ -153,11 +153,11 @@ class UselessPackageInfoCheckTest {
     var inputStream = mock(InputStream.class);
     doThrow(new IOException()).when(inputStream).readAllBytes();
     var localReadCache = mock(ReadCache.class);
-    
+
     String filePath = mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java");
     InputFile cachedFile = HashCacheTestHelper.inputFileFromPath(filePath);
     byte[] cachedHash = FileHashingUtils.inputFileContentHash(cachedFile);
-    
+
     doReturn(inputStream).when(localReadCache).read("java:S1228;S4032:package:"+cachedFile.key());
     doReturn(true).when(localReadCache).contains(any());
     doReturn(new ByteArrayInputStream(cachedHash))

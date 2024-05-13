@@ -8,7 +8,7 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
   void conditionsShouldBeMerged(Object o) {
     switch (o) {
       case String s when s.startsWith("a") -> {
-        // Noncompliant@+1 [[sl=+1;el=+3;sc=9;ec=10;quickfixes=qf3]] {{Merge this "if" statement with the enclosing pattern match guard.}}
+        // Noncompliant@+1 [[quickfixes=qf3]]
         if (s.length() == 2) {
           System.out.println("two");
         }
@@ -17,7 +17,6 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
       }
     }
   }
-
   // fix@qf1 {{Replace this "if" statement with a pattern match guard.}}
   // edit@qf1 [[sl=+0;el=+0;sc=9;ec=32]] {{{}}}
   // edit@qf1 [[sl=-2;el=-2;sc=21;ec=21]] {{ when s.length() == 2 }}
@@ -94,7 +93,7 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
       case Integer i -> {
       }
       case String s -> {
-        if (s.length() == 2) { // Noncompliant {Replace this "if" statement with a pattern match guard.}
+        if (s.length() == 2) { // Noncompliant {{Replace this "if" statement with a pattern match guard.}}
           System.out.println("two");
         }
       }

@@ -34,7 +34,8 @@ import org.junit.runner.Runner;
 
 public class JUnit4AnnotationsCheckTest {
 
-  @Test // Noncompliant [[sc=3;ec=8]] {{Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation.}}
+  @Test // Noncompliant {{Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation.}}
+//^^^^^
   private void someTestMethod() {}
 
   @org.junit.Test // Noncompliant

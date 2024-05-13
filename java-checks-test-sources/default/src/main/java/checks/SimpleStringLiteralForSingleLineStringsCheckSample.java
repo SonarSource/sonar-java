@@ -2,7 +2,7 @@ package checks;
 
 public class SimpleStringLiteralForSingleLineStringsCheckSample {
   
-  public void str() { // Noncompliant@+1 [[sc=23;endColumn=43]]{{Use simple literal for a single-line string.}}
+  public void str() { // Noncompliant@+1 {{Use simple literal for a single-line string.}}
     String question = """
               What's the point, really?""";
 
@@ -13,7 +13,7 @@ public class SimpleStringLiteralForSingleLineStringsCheckSample {
               ?"""; // Compliant, 3 lines
 
     String question3 = """
-              What's the point, really\n?"""; // Noncompliant@-1 [[sc=24;endColumn=45]]{{Use simple literal for a single-line string.}}
+              What's the point, really\n?"""; // Noncompliant@-1 {{Use simple literal for a single-line string.}}
 
   }
 }

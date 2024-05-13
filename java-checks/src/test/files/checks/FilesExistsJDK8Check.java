@@ -13,5 +13,6 @@ class A {
     }
   }
   java.util.function.Predicate<java.nio.file.Path> p1 = f -> Files.isRegularFile(f); // Noncompliant
-  java.util.function.Predicate<java.nio.file.Path> p2 = Files::isRegularFile; // Noncompliant [[sc=64;ec=77]]
+  java.util.function.Predicate<java.nio.file.Path> p2 = Files::isRegularFile; // Noncompliant
+//                                                             ^^^^^^^^^^^^^
 }

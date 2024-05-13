@@ -12,7 +12,8 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
 // missing @RunWith or @AnalyzeClasses
-public class NoTestInTestClassCheckArchUnitTest { // Noncompliant [[sc=14;ec=48]] {{Add some tests to this class.}}
+public class NoTestInTestClassCheckArchUnitTest { // Noncompliant {{Add some tests to this class.}}
+//           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   @ArchTest
   public static final ArchRule noJodatime = GeneralCodingRules.NO_CLASSES_SHOULD_USE_JODATIME;
@@ -31,7 +32,8 @@ class NoTestInTestClassCheckArchUnit1Test {
 
 @RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = "checks")
-class NoTestInTestClassCheckArchUnit2Test { // Noncompliant [[sc=7;ec=42]] {{Add some tests to this class.}}
+class NoTestInTestClassCheckArchUnit2Test { // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   // missing @ArchTest
   public static final ArchRule noJavaUtilLogging = GeneralCodingRules.NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING;
@@ -58,7 +60,7 @@ class NoTestInTestClassCheckArchUnit4Test {
 }
 
 @AnalyzeClasses(packages = "checks")
-class NoTestInTestClassCheckArchUnit5Test { // Noncompliant [[sc=7;ec=42] {{Add some tests to this class.}}
+class NoTestInTestClassCheckArchUnit5Test { // Noncompliant {{Add some tests to this class.}}
 
   // missing @ArchTest
   public static final ArchRule noCycles = slices().matching("checks.(**)").should().beFreeOfCycles();
@@ -66,7 +68,8 @@ class NoTestInTestClassCheckArchUnit5Test { // Noncompliant [[sc=7;ec=42] {{Add 
 }
 
 @AnalyzeClasses(packages = "checks")
-class NoTestInTestClassCheckArchUnit6Test { // Noncompliant [[sc=7;ec=42]] {{Add some tests to this class.}}
+class NoTestInTestClassCheckArchUnit6Test { // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   // missing @ArchTest
   private void no_access_to_standard_streams_as_method(JavaClasses classes) {
@@ -90,7 +93,8 @@ interface NoTestInTestClassCheckInterfaceTest {
 }
 
 @AnalyzeClasses(packages = "checks")
-class NoTestInTestClassCheckArchUnit9Test implements NoTestInTestClassCheckInterfaceTest { // Noncompliant [[sc=7;ec=42]] {{Add some tests to this class.}}
+class NoTestInTestClassCheckArchUnit9Test implements NoTestInTestClassCheckInterfaceTest { // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   // does not inherit tests from interface fields
 

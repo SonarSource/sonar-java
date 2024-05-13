@@ -17,9 +17,15 @@ public abstract class AssertJAssertionsInConsumerCheckSample {
   public void testIsInstanceOfSatisfying(Consumer<String> unknownRequirements) {
     Object myObj = getSomeObject();
     Consumer<String> myPredicateAsConsumer = s -> s.equals("b");
-    assertThat(myObj).isInstanceOfSatisfying(String.class, "b"::equals); // Noncompliant [[sc=23;ec=45;secondary=20]] {{Rework this assertion to assert something inside the Consumer argument.}}
-    assertThat(myObj).isInstanceOfSatisfying(String.class, s -> s.equals("b")); // Noncompliant [[sc=23;ec=45;secondary=21]]
-    assertThat(myObj).isInstanceOfSatisfying(String.class, myPredicateAsConsumer); // Noncompliant [[sc=23;ec=45;secondary=22]]
+    assertThat(myObj).isInstanceOfSatisfying(String.class, "b"::equals); // Noncompliant {{Rework this assertion to assert something inside the Consumer argument.}}
+//                    ^^^^^^^^^^^^^^^^^^^^^^
+//                                                         ^^^^^^^^^^^@-1<
+    assertThat(myObj).isInstanceOfSatisfying(String.class, s -> s.equals("b")); // Noncompliant
+//                    ^^^^^^^^^^^^^^^^^^^^^^
+//                                                         ^^^^^^^^^^^^^^^^^^@-1<
+    assertThat(myObj).isInstanceOfSatisfying(String.class, myPredicateAsConsumer); // Noncompliant
+//                    ^^^^^^^^^^^^^^^^^^^^^^
+//                                                         ^^^^^^^^^^^^^^^^^^^^^@-1<
 
     Consumer<String> myRequirements = s -> assertThat(s).isEqualTo("b");
     assertThat(myObj).isInstanceOfSatisfying(String.class, s -> assertThat(s).isEqualTo("b"));
@@ -51,11 +57,16 @@ public abstract class AssertJAssertionsInConsumerCheckSample {
     Consumer<String> myPredicateAsConsumer = s -> s.equals("b");
     Consumer<String> myRequirements = s -> assertThat(s).isEqualTo("b");
 
-    assertThat("a").satisfiesAnyOf("b"::equals, "c"::equals); // Noncompliant [[secondary=54,54]]
-    assertThat("a").satisfiesAnyOf("b"::equals, "c"::equals, "d"::equals); // Noncompliant [[secondary=55,55,55]]
+    assertThat("a").satisfiesAnyOf("b"::equals, "c"::equals); // Noncompliant
+//                  ^^^^^^^^^^^^^^              ^^^^^^^^^^^<
+//                                 ^^^^^^^^^^^@-1<
+    assertThat("a").satisfiesAnyOf("b"::equals, "c"::equals, "d"::equals); // Noncompliant
+//                  ^^^^^^^^^^^^^^ ^^^^^^^^^^^< ^^^^^^^^^^^< ^^^^^^^^^^^<
+
     assertThat("a").satisfiesAnyOf("b"::equals, "c"::equals, "d"::equals, "e"::equals); // Noncompliant
     assertThat("a").satisfiesAnyOf("b"::equals, s -> s.equals("b"), myPredicateAsConsumer); // Noncompliant
-    assertThat("a").satisfiesAnyOf(myRequirements, myRequirements, myRequirements, "c"::equals); // Noncompliant [[secondary=58]] - only last argument is missing an assertion
+    assertThat("a").satisfiesAnyOf(myRequirements, myRequirements, myRequirements, "c"::equals); // Noncompliant
+//                  ^^^^^^^^^^^^^^                                                 ^^^^^^^^^^^<
 
     assertThat("a").satisfiesAnyOf(myRequirements, myRequirements);
     assertThat("a").satisfiesAnyOf(myRequirements, myRequirements, myRequirements);

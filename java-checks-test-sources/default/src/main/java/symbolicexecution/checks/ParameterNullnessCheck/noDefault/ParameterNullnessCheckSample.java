@@ -11,10 +11,12 @@ abstract class ParameterNullnessCheckSample {
   Object field;
 
   void foo(Object o) { // flow@foo [[order=2]] {{Method 'foo' declaration.}}
-    foo( // Noncompliant [[sc=5;ec=8;flows=foo]] {{Annotate the parameter with @javax.annotation.Nullable in method 'foo' declaration, or make sure that null can not be passed as argument.}}
+    foo( // Noncompliant [[flows=foo]] {{Annotate the parameter with @javax.annotation.Nullable in method 'foo' declaration, or make sure that null can not be passed as argument.}}
+//  ^^^
       null); // flow@foo [[order=1]] {{Argument can be null.}}
     bar(o, null); // Compliant, annotated Nullable
-    bar(null, o); // Noncompliant [[sc=5;ec=8]]
+    bar(null, o); // Noncompliant
+//  ^^^
 
     equals(null);
     B.foo(null); // Noncompliant
@@ -29,12 +31,14 @@ abstract class ParameterNullnessCheckSample {
 
   void testVarargs(Object o) {
     gul(null, o, null, o); // Compliant - ignore variadic argument
-    gul2(null, o, null, o); // Noncompliant [[sc=5;ec=9]] - first parameter is not variadic
+    gul2(null, o, null, o); // Noncompliant
+//  ^^^^
   }
 
   void testConstructors(Object o) {
     C c1 = new C(null); // Noncompliant
-    C c2 = new C(o, // Noncompliant [[sc=16;ec=17;flows=A]] {{Annotate the parameter with @javax.annotation.Nullable in constructor declaration, or make sure that null can not be passed as argument.}}
+    C c2 = new C(o, // Noncompliant [[flows=A]] {{Annotate the parameter with @javax.annotation.Nullable in constructor declaration, or make sure that null can not be passed as argument.}}
+//             ^
       null); // flow@A [[order=1]] {{Argument can be null.}}
     B b = new B();
 

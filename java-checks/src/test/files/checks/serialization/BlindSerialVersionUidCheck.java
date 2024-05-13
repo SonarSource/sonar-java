@@ -2,7 +2,8 @@ import java.io.Serializable;
 
 class A implements Cloneable {}
 class B implements Serializable {
-  private static final long serialVersionUID = 1L; // Noncompliant [[sc=29;ec=45]] {{Remove this "serialVersionUID".}}
+  private static final long serialVersionUID = 1L; // Noncompliant {{Remove this "serialVersionUID".}}
+//                          ^^^^^^^^^^^^^^^^
 }
 class C implements Serializable {}
 class D1 extends C {}

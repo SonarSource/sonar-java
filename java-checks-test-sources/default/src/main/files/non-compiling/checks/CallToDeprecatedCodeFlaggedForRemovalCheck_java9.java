@@ -20,11 +20,11 @@ class CallToDeprecatedCodeFlaggedForRemovalCheck {
     bar();
     qix();
 
-    new DeprecatedForRemoval(); // Noncompliant {{Remove this use of "DeprecatedForRemoval", it has been marked for removal.}
+    new DeprecatedForRemoval(); // Noncompliant
     new DeprecatedDefault();
 
     String s =  a
-      + b; // Noncompliant {{Remove this use of a deprecated field, it has been marked for removal.}
+      + b; // Noncompliant
   }
 
   @Deprecated(forRemoval = true)

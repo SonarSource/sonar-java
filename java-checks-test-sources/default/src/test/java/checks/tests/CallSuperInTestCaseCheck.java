@@ -19,7 +19,8 @@ class CallSuperInTestCaseCheckD extends CallSuperInTestCaseCheckB {
 }
 
 class CallSuperInTestCaseCheckE extends CallSuperInTestCaseCheckB {
-  public void setUp() { // Noncompliant [[sc=15;ec=20]] {{Add a "super.setUp()" call to this method.}}
+  public void setUp() { // Noncompliant {{Add a "super.setUp()" call to this method.}}
+//            ^^^^^
   }
   public void tearDown() { // Noncompliant {{Add a "super.tearDown()" call to this method.}}
   }

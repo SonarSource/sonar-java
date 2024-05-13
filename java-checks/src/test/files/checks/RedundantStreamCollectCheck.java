@@ -21,8 +21,8 @@ public class Streams {
     stream.collect(maxBy(comparator)); // Noncompliant {{Use "max()" instead.}}
     stream.collect(minBy(comparator)); // Noncompliant {{Use "min()" instead.}}
     stream.collect(mapping(Object::toString, Collectors.toList())); // Noncompliant {{Use "map(...).collect()" instead.}}
-    stream.collect(reducing(binaryOperator));  // Noncompliant {{Use "reduce(...).collect()" instead.}}
-    stream.collect(summingInt(Object::hashCode));  // Noncompliant {{Use "mapToInt(...).sum()" instead.}}
+    stream.collect(reducing(binaryOperator)); // Noncompliant {{Use "reduce(...).collect()" instead.}}
+    stream.collect(summingInt(Object::hashCode)); // Noncompliant {{Use "mapToInt(...).sum()" instead.}}
     stream.collect(summingLong(Object::hashCode)); // Noncompliant {{Use "mapToLong(...).sum()" instead.}}
     stream.collect(summingDouble(Object::hashCode)); // Noncompliant {{Use "mapToDouble(...).sum()" instead.}}
   }

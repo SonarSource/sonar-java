@@ -9,9 +9,10 @@ abstract class DisallowedThreadGroupCheck
 
   void foo(
     Object o,
-    ThreadGroup threadGroup) {  // Noncompliant
+    ThreadGroup threadGroup) { // Noncompliant
 
-    ThreadGroup tg = // Noncompliant [[sc=5;ec=16]] {{Remove this use of "ThreadGroup". Prefer the use of "ThreadPoolExecutor".}}
+    ThreadGroup tg = // Noncompliant {{Remove this use of "ThreadGroup". Prefer the use of "ThreadPoolExecutor".}}
+//  ^^^^^^^^^^^
       new ThreadGroup("DisallowedThreadGroupCheck"); // Compliant
 
     tg.activeCount(); // Compliant - not following method invocation, only declarations of ThreadGroup

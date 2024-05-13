@@ -14,15 +14,18 @@ class DeadStoreCheckSample {
     int x = 0;// Compliant - default value
     x = 3; // Noncompliant
     x = 4;
-    int y = x + 1; // Noncompliant {{Remove this useless assignment to local variable "y".}} [[sc=11;ec=18]]
-    x = 2; // Noncompliant {{Remove this useless assignment to local variable "x".}} [[sc=7;ec=10]]
+    int y = x + 1; // Noncompliant {{Remove this useless assignment to local variable "y".}}
+//        ^^^^^^^
+    x = 2; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//    ^^^
     x = 3;
     y = 2;
     foo(y);
     foo(x);
     Object a = new Object();
     System.out.println(a);
-    a = null; // Noncompliant [[sc=7;ec=13]]
+    a = null; // Noncompliant
+//    ^^^^^^
     return 0;
   }
 
@@ -127,7 +130,8 @@ class DeadStoreCheckSample {
   int increment_operator() {
     int i = 0;
     int b = 12;
-    ++b; // Noncompliant [[sc=5;ec=8]]
+    ++b; // Noncompliant
+//  ^^^
     int c = 0;
     foo(++c); // compliant not last element of block
     int j = -1;
@@ -144,13 +148,15 @@ class DeadStoreCheckSample {
   void parenthesis_identifier_in_assignement() {
     int i = 0;
     System.out.println(i);
-    (i) = 12; // Noncompliant [[sc=9;ec=13]]
+    (i) = 12; // Noncompliant
+//      ^^^^
   }
   int parenthesis_identifier_in_postfix_increment() {
     int j = 0;
     for (int i = 0; i < 10; ++j, ++i) ;
     int b = 0;
-    return (b)++; // Noncompliant [[sc=12;ec=17]]
+    return (b)++; // Noncompliant
+//         ^^^^^
   }
   void foo() {
     int i = 0;
@@ -234,8 +240,8 @@ class DeadStoreCheckSample {
 class DeadStoreCheckSampleStuff {
   void foo(boolean b1, boolean b2) {
     boolean x = false;  // Compliant
-    x = b1 && b2;       // Noncompliant
-    ((x)) = b1 && b2;   // Noncompliant
+    x = b1 && b2; // Noncompliant
+    ((x)) = b1 && b2; // Noncompliant
   }
 
   void assertStatement(boolean x) {
@@ -250,14 +256,14 @@ class DeadStoreCheckSampleNoIssueOnInitializers {
   // no issue if variable initializer is 'true' or 'false'
   boolean testBoolean(boolean arg0) {
     boolean b1 = true; // Compliant
-    b1 = false;        // Noncompliant
+    b1 = false; // Noncompliant
     b1 = arg0;
 
     boolean b2 = false; // Compliant
-    b2 = true;          // Noncompliant
+    b2 = true; // Noncompliant
     b2 = arg0;
 
-    boolean b3 = arg0;  // Noncompliant
+    boolean b3 = arg0; // Noncompliant
     b3 = arg0;
 
     return b1 && b2 && b3;
@@ -267,7 +273,7 @@ class DeadStoreCheckSampleNoIssueOnInitializers {
   Object testNull(boolean b, Object o) {
     Object o1 = null;  // Compliant
     o1 = new Object(); // Noncompliant
-    o1 = null;         // Noncompliant
+    o1 = null; // Noncompliant
     o1 = o;
 
     Object o2 = o; // Noncompliant
@@ -279,7 +285,7 @@ class DeadStoreCheckSampleNoIssueOnInitializers {
   //no issue if initializer is the empty String
   String testNull(String s) {
     String s1 = ""; // Compliant
-    s1 = "yolo";    // Noncompliant
+    s1 = "yolo"; // Noncompliant
     s1 = "hello";
 
     String s2 = "world"; // Noncompliant
@@ -291,20 +297,20 @@ class DeadStoreCheckSampleNoIssueOnInitializers {
   // no issue if variable initializer is '-1', '0', or '1'
   int testIntLiterals() {
 
-    int a = +42;  // Noncompliant
+    int a = +42; // Noncompliant
 
     int b = (0);  // Compliant
-    b = -1;       // Noncompliant - Only taken into consideration when used in initializer
-    b = 0;        // Noncompliant
-    b = 1;        // Noncompliant
+    b = -1; // Noncompliant
+    b = 0; // Noncompliant
+    b = 1; // Noncompliant
     int c = +1;   // Compliant
     int d = (-1); // Compliant
     int e = -1;   // Compliant
 
     // Only int literals are excluded
-    long myLong = -1L;       // Noncompliant
+    long myLong = -1L; // Noncompliant
     double myDouble = -1.0d; // Noncompliant
-    float myFloat = -1.0f;   // Noncompliant
+    float myFloat = -1.0f; // Noncompliant
 
     short myShort = -1; // Compliant
     byte myByte = 1; //Compliant

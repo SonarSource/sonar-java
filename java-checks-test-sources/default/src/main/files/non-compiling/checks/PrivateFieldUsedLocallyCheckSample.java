@@ -8,8 +8,8 @@ class Container {
   }
 
   class Class1 {
-    private int privateField1;            // Noncompliant {{Remove the "privateField1" field and declare it as a local variable in the relevant methods.}}
-    private static int staticPrivateField; // Noncompliant [[startColumn=24;endLine=+0;endColumn=42]]
+    private int privateField1; // Noncompliant {{Remove the "privateField1" field and declare it as a local variable in the relevant methods.}}
+    private static int staticPrivateField; // Noncompliant
     private int privateField2 = 42;
     public int publicField;
 

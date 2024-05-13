@@ -30,14 +30,14 @@ public class CommentedCode {
   public CommentedCode(int field) {
     this.field = field;
     // This is a comment, but next line is a commented-out code
-    // Noncompliant@+1
-    // Noncompliant@+2 {{This block of commented-out lines of code should be removed.}}
+ // Noncompliant@+1
+ // Noncompliant@+2 {{This block of commented-out lines of code should be removed.}}
 
     // for (Visitor visitor : visitors) {
     //   continue;
     // }
 
-    // Noncompliant@+3
+ // Noncompliant@+3
     /*
     This is a comment, but next line is a commented-out code
     for (Visitor visitor : visitors) {
@@ -45,46 +45,57 @@ public class CommentedCode {
     }
     */
 
-    // Noncompliant@+2
+ // Noncompliant@+2
     /* This is a comment, but next line is a commented-out code */
     /* for (Visitor visitor : visitors) { */
     /*   continue; */
     /* } */
 
-    // Noncompliant@+2 [[sc=8;ec=42]]
+
+// Noncompliant@+2
     /* Limitation: only the first line of a commented block is highlighted
      * for (Visitor visitor : visitors) {
+//     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
      *   continue;
+//       ^^^^^^^^<
      * }
      */
 
-    // Noncompliant@+2 [[sc=8;ec=44]]
-    // Only one issue is highlighted per list of consecutive comments
-    /* for (Visitor visitor : visitors) { } */     /* for (Visitor visitor : visitors) { } */
 
-    // Noncompliant@+3
-    // Noncompliant@+2
+    // Only one issue is highlighted per list of consecutive comments
+    /* for (Visitor visitor : visitors) { } */     /* for (Visitor visitor : visitors) { } */ // Noncompliant
+//     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ // Noncompliant@+3
+ // Noncompliant@+2
     // Several issues are highlighted for non consecutive comments
     if (/* for (Visitor visitor : visitors) { } */field == 0) { /* for (Visitor visitor : visitors) { } */
     }
 
-    // Noncompliant@+2 [[sc=16;ec=52]]
+// Noncompliant@+2
     // Comment prefix and suffix are not highlighted
     /*         for (Visitor visitor : visitors) { }           */
+//             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    // Noncompliant@+2 [[sc=10;ec=46]]
+
+// Noncompliant@+2
     /* Leading star is not highlighted
      *   for (Visitor visitor : visitors) { }
+//       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
      */
 
-    // Noncompliant@+2 [[sc=10;ec=46]]
+
+// Noncompliant@+2
     /* Leading spaces are not highlighted
          for (Visitor visitor : visitors) { }
+//       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
      */
 
-    // Noncompliant@+2 [[sc=16;ec=50;secondary=88]]
+
+// Noncompliant@+2
     // Leading spaces are not highlighted
     //         for (Visitor visitor : visitors) {
+//             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     //         }
 
     // TODO
@@ -114,12 +125,16 @@ public class CommentedCode {
   }
   }-*/
 
-  // Noncompliant@+3 [[sc=6;ec=40;secondary=121,122]]
+
+// Noncompliant@+3
   /*
    * This is not a documentation comment
    * for (Visitor visitor : visitors) {
+//   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    *   continue;
+//     ^^^^^^^^<
    * }
+//  ^<
    */
   public void method(String s) {
   }

@@ -7,11 +7,12 @@ class NestedSwitchStatementCheckSample {
     int myVar = 0;
     switch (myVar) {  // Compliant
       case 0:
-        switch (0) {  // Noncompliant
+        switch (0) { // Noncompliant
           case 0:
           case 1:
             System.out.println();
-            switch (1){ // Noncompliant [[sc=13;ec=19;el=+0]] {{Refactor the code to eliminate this nested "switch".}}
+            switch (1){ // Noncompliant {{Refactor the code to eliminate this nested "switch".}}
+//          ^^^^^^
               case 0:
               case 1:
                 break;
@@ -37,7 +38,7 @@ class NestedSwitchStatementCheckSample {
       case 2: 
         break;
       default:{
-        switch(4) {  // Noncompliant
+        switch(4) { // Noncompliant
           case 0:
             switch(5) { // Noncompliant
               default:
@@ -45,7 +46,7 @@ class NestedSwitchStatementCheckSample {
             } 
             break;
           case 1: {
-            switch (6) {  // Noncompliant
+            switch (6) { // Noncompliant
               case 0:
                 break;
             }

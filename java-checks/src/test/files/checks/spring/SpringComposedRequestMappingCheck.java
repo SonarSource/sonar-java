@@ -19,7 +19,8 @@ public class Controller {
   @RequestMapping("/1")
   String m1() { return ""; }
 
-  @RequestMapping(path = "/2", method = RequestMethod.GET) // Noncompliant [[sc=4;ec=18]] {{Replace "@RequestMapping(method = RequestMethod.GET)" with "@GetMapping"}}
+  @RequestMapping(path = "/2", method = RequestMethod.GET) // Noncompliant {{Replace "@RequestMapping(method = RequestMethod.GET)" with "@GetMapping"}}
+// ^^^^^^^^^^^^^^
   String m2() { return ""; }
 
   @RequestMapping(path = "/3", method = {POST}) // Noncompliant {{Replace "@RequestMapping(method = RequestMethod.POST)" with "@PostMapping"}}

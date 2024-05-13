@@ -8,10 +8,10 @@ public class LocksNotUnlockedCheckCache {
   public void thisReportsOnlyOneIssue(boolean foo) {
     Lock lock = new ReentrantLock();
     if(foo) {
-      lock.lock();// Noncompliant {{Unlock this lock along all executions paths of this method.}}
+      lock.lock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
       ifStmt();
     } else {
-      lock.lock();// Noncompliant {{Unlock this lock along all executions paths of this method.}}
+      lock.lock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
       elseStmt();
     }
     end();
@@ -21,18 +21,18 @@ public class LocksNotUnlockedCheckCache {
     Lock lock = new ReentrantLock();
     Lock lock2 = new ReentrantLock();
     if(foo) {
-      lock.lock();// Noncompliant {{Unlock this lock along all executions paths of this method.}}
+      lock.lock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
       ifStmt();
     } else {
-      lock.lock();// Noncompliant {{Unlock this lock along all executions paths of this method.}}
+      lock.lock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
       elseStmt();
     }
     end();
     if(foo) {
-      lock2.lock();// Noncompliant {{Unlock this lock along all executions paths of this method.}}
+      lock2.lock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
       ifStmt();
     } else {
-      lock2.lock();// Noncompliant  {{Unlock this lock along all executions paths of this method.}}
+      lock2.lock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
       elseStmt();
     }
     end();

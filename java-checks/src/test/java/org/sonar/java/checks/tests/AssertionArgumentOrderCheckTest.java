@@ -21,7 +21,6 @@ package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
@@ -53,11 +52,9 @@ class AssertionArgumentOrderCheckTest {
 
   @Test
   void quickfixes() {
-    InternalCheckVerifier
-      .newInstance()
+    CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath("checks/tests/AssertionArgumentOrderCheck_QuickFixes.java"))
       .withCheck(new AssertionArgumentOrderCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

@@ -6,7 +6,8 @@ public class StringConcatToTextBlockCheckSample {
   
   public static void main(String[] args) {
 
-    String s = "<html>\n" + // Noncompliant [[sc=16;ec=25]] {{Replace this String concatenation with Text block.}}
+    String s = "<html>\n" + // Noncompliant {{Replace this String concatenation with Text block.}}
+//             ^[el=+6;ec=24]
                "    <body>\n" +
                "        <tag>\n" +
                "        </tag>\n" +
@@ -20,21 +21,24 @@ public class StringConcatToTextBlockCheckSample {
                "    </body>\\n" +
                "</html>";
 
-    String s1 = "<html>\n" + // Noncompliant [[sc=17;ec=25]] {{Replace this String concatenation with Text block.}}
+    String s1 = "<html>\n" + // Noncompliant {{Replace this String concatenation with Text block.}}
+//              ^[el=+6;ec=24]
                "    <body>" +
                "        <tag>" +
                "        </tag>" +
                "    </body>\n" +
                "</html>";
 
-    String s2 = "<html>" + // Noncompliant [[sc=17;ec=25]] {{Replace this String concatenation with Text block.}}
+    String s2 = "<html>" + // Noncompliant {{Replace this String concatenation with Text block.}}
+//              ^[el=+6;ec=24]
                "    <body>\n" +  
                "        <tag>" +
                "        </tag>" +
                "    </body>\n" +
                "</html>";
 
-    String s3 = "<html>" + // Noncompliant [[sc=17;ec=25]] {{Replace this String concatenation with Text block.}}
+    String s3 = "<html>" + // Noncompliant {{Replace this String concatenation with Text block.}}
+//              ^[el=+7;ec=24]
                "    <body>\n" +  
                "        <tag>" +
                 123 +

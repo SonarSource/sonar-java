@@ -13,7 +13,8 @@ class ApacheEmail {
 
   public void foo() {
     Email email = new SimpleEmail();
-    email.setSSLOnConnect(true);   // Noncompliant [[sc=5;ec=32]] {{Enable server hostname verification on this SSL/TLS connection.}}
+    email.setSSLOnConnect(true); // Noncompliant {{Enable server hostname verification on this SSL/TLS connection.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   public void foo2() {
@@ -30,7 +31,7 @@ class ApacheEmail {
 
   public void foo4() {
     Email email = new SimpleEmail();
-    email.setSSLOnConnect(true);  // Noncompliant
+    email.setSSLOnConnect(true); // Noncompliant
     email.setSSLCheckServerIdentity(false);
   }
 
@@ -53,28 +54,28 @@ class ApacheEmail {
 
   public void foo8() {
     Email email = new SimpleEmail();
-    email.setSSL(true);   // Noncompliant
+    email.setSSL(true); // Noncompliant
   }
 
   public void foo9() {
     Email email = new SimpleEmail();
-    email.setTLS(true);   // Noncompliant
+    email.setTLS(true); // Noncompliant
   }
 
   public void foo10() {
     Email email = new SimpleEmail();
-    email.setStartTLSEnabled(true);   // Noncompliant
+    email.setStartTLSEnabled(true); // Noncompliant
   }
 
   public void foo11() {
     Email email = new SimpleEmail();
-    email.setStartTLSRequired(true);   // Noncompliant
+    email.setStartTLSRequired(true); // Noncompliant
   }
 
   public void foo12(boolean cond) {
     if (cond) {
       Email email = new SimpleEmail();
-      email.setSSLOnConnect(true);  // Noncompliant
+      email.setSSLOnConnect(true); // Noncompliant
       email.setSSLCheckServerIdentity(false);
     } else {
       Email email = new SimpleEmail();

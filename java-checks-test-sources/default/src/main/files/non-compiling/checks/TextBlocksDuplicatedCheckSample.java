@@ -43,8 +43,8 @@ class AllConstants {
       allConstant
         allConstant
        allConstant
-    """;  
-  
+    """;
+
   private static final String Constant4 = """
         allConstant
   
@@ -64,28 +64,39 @@ class ConstantAlreadyDefined {
                       blabla""";
 
   void test() {
-    System.out.println("""
-      constant"""); // Noncompliant@-1 [[secondary=+1]] {{Use already-defined constant 'A' instead of duplicating its value here.}}
+// Noncompliant@+1 {{Use already-defined constant 'A' instead of duplicating its value here.}}
+    System.out.println("""     
+      constant""");
+//                     ^[sl=68;el=69;ec=17]
+
+
     System.out.println("""
       constant""");
+//                     ^[sl=73;el=74;ec=17]<
+
+
+// Noncompliant@+1 {{Use already-defined constant 'REPORT_WITHOUT_THRESHOLD' instead of duplicating its value here.}}
     System.out.println("""
-      blabla"""); // Noncompliant@-1 [[secondary=+6,+7]] {{Use already-defined constant 'REPORT_WITHOUT_THRESHOLD' instead of duplicating its value here.}}
+      blabla""");
+//                     ^[sl=79;el=80;ec=15]
 
     System.out.println("""
       constant
       constant"""); // Noncompliant@-2 {{Use already-defined constant 'C' instead of duplicating its value here.}}
-    
-    System.out.println("blabla"); 
+
+    System.out.println("blabla");
+//                     ^^^^^^^^<
     System.out.println("""
-      blabla"""); 
+      blabla""");
+//                     ^[sl=89;el=90;ec=15]<
     System.out.println("""
-      blabla           """); 
+      blabla           """);
     System.out.println("""
       blabla           
-      """); 
+      """);
     System.out.println("""
       blabla           
-"""); 
+""");
   }
 
   public ConstantAlreadyDefined setProject(Proj project) {
@@ -97,7 +108,7 @@ class ConstantAlreadyDefined {
   }
 
   private void setFieldValue(String projectName, Object longName) {
-    
+
   }
 
   public ConstantAlreadyDefined setProject(String projectKey, String projectName) {
@@ -121,7 +132,7 @@ class ConstantAlreadyDefined {
 
 class CompleteCoverage {
   private final String notConstant = """
-    blablah""";  // Noncompliant@-1 {{Define a constant instead of duplicating this text block 3 times.}}
+    blablah"""; // Noncompliant@-1 {{Define a constant instead of duplicating this text block 3 times.}}
   private final String notConstant2 = """
     blablah""";
   static String notConstant3 = """
@@ -132,3 +143,4 @@ class CompleteCoverage {
   private static final String NOT_USED = """
     this constant is not used anywhere""";
 }
+

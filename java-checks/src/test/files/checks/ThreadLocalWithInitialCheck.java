@@ -3,7 +3,8 @@ import java.util.List;
 
 class A {
   ThreadLocal<List<String>> myThreadLocal =
-    new ThreadLocal<List<String>>() { // Noncompliant [[sc=9;ec=34]] {{Replace this anonymous class with a call to "ThreadLocal.withInitial". (sonar.java.source not set. Assuming 8 or greater.)}}
+    new ThreadLocal<List<String>>() { // Noncompliant {{Replace this anonymous class with a call to "ThreadLocal.withInitial". (sonar.java.source not set. Assuming 8 or greater.)}}
+//      ^^^^^^^^^^^^^^^^^^^^^^^^^
       @Override
       protected List<String> initialValue() {
         return new ArrayList<String>();

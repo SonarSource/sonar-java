@@ -20,7 +20,8 @@ import java.util.stream.Stream;
 
 public class SpecializedFunctionalInterfacesCheckSample {
 
-  static class A implements Supplier<Integer> { // Noncompliant [[sc=16;ec=17]] {{Refactor this code to use the more specialised Functional Interface 'IntSupplier'}}
+  static class A implements Supplier<Integer> { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntSupplier'}}
+//             ^
     @Override
     public Integer get() {
       return null;
@@ -28,12 +29,14 @@ public class SpecializedFunctionalInterfacesCheckSample {
 
     static class AA implements Consumer<Long> { // Noncompliant
 
-      Consumer<Integer> a1 = new Consumer<Integer>() { // Noncompliant [[sc=7;ec=24]] {{Refactor this code to use the more specialised Functional Interface 'IntConsumer'}}
+      Consumer<Integer> a1 = new Consumer<Integer>() { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntConsumer'}}
+//    ^^^^^^^^^^^^^^^^^
         @Override
         public void accept(Integer t) {
         }
       };
-      Consumer<Double> a2 = new Consumer<Double>() { // Noncompliant [[sc=7;ec=23]] {{Refactor this code to use the more specialised Functional Interface 'DoubleConsumer'}}
+      Consumer<Double> a2 = new Consumer<Double>() { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'DoubleConsumer'}}
+//    ^^^^^^^^^^^^^^^^
         @Override
         public void accept(Double t) {
         }
@@ -50,9 +53,11 @@ public class SpecializedFunctionalInterfacesCheckSample {
       Predicate<Double> a8 = (double1) -> true; // Noncompliant
       Predicate<Long> a9 = (long1) -> true; // Noncompliant
       UnaryOperator<Integer> a5 = (int1) -> int1; // Noncompliant
-      UnaryOperator<Double> a10 = (double1) -> double1; // Noncompliant [[sc=7;ec=28]] {{Refactor this code to use the more specialised Functional Interface 'DoubleUnaryOperator'}}
+      UnaryOperator<Double> a10 = (double1) -> double1; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'DoubleUnaryOperator'}}
+//    ^^^^^^^^^^^^^^^^^^^^^
       UnaryOperator<Long> a11 = long1 -> long1; // Noncompliant
-      BiConsumer<A, Integer> a12 = (aaa, int1) -> {}; // Noncompliant [[sc=7;ec=29]] {{Refactor this code to use the more specialised Functional Interface 'ObjIntConsumer<A>'}}
+      BiConsumer<A, Integer> a12 = (aaa, int1) -> {}; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ObjIntConsumer<A>'}}
+//    ^^^^^^^^^^^^^^^^^^^^^^
       BiConsumer<A, Long> a13 = (aaa, long1) -> {}; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ObjLongConsumer<A>'}}
       BiConsumer<A.AA, Double> a14 = (aaa, double1) -> {}; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ObjDoubleConsumer<AA>'}}
       BiConsumer<A, A> compl1 = (a, aa) -> {}; // Compliant
@@ -165,7 +170,8 @@ public class SpecializedFunctionalInterfacesCheckSample {
       };
     }
 
-    private static class A4 implements Function<Entry<String, LinkedHashMap<String, Long>>, Entry<String, LinkedHashMap<String, Long>>> { // Noncompliant [[sc=26;ec=28]]
+    private static class A4 implements Function<Entry<String, LinkedHashMap<String, Long>>, Entry<String, LinkedHashMap<String, Long>>> { // Noncompliant
+//                       ^^
       @Override
       public Entry<String, LinkedHashMap<String, Long>> apply(Entry<String, LinkedHashMap<String, Long>> t) {
         return null;
@@ -198,7 +204,9 @@ public class SpecializedFunctionalInterfacesCheckSample {
 
   }
 
-  static class MySupplier implements Supplier<Integer> { // Noncompliant [[sc=16;ec=26;secondary=201]]
+  static class MySupplier implements Supplier<Integer> { // Noncompliant
+//             ^^^^^^^^^^
+//                                   ^^^^^^^^^^^^^^^^^@-1<
     Supplier<Integer> mySupplier = new MySupplier(); // Compliant
 
     @Override
@@ -207,7 +215,9 @@ public class SpecializedFunctionalInterfacesCheckSample {
     }
   }
 
-  static class MySupplier1 implements Supplier<Integer>, Runnable { // Noncompliant [sc=16;ec=27;secondary=191] {{Refactor this code to use the more specialised Functional Interface 'IntSupplier'}}
+  static class MySupplier1 implements Supplier<Integer>, Runnable { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntSupplier'}}
+//             ^^^^^^^^^^^
+//                                    ^^^^^^^^^^^^^^^^^@-1<
     Supplier<Integer> mySupplier = new MySupplier1(); // Compliant
 
     @Override
@@ -220,7 +230,10 @@ public class SpecializedFunctionalInterfacesCheckSample {
     }
   }
 
-  static class MySupplier2 implements Supplier<Integer>, Consumer<Double> { // Noncompliant [[sc=16;ec=27;secondary=223, 223]] {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier', 'DoubleConsumer'}}
+  static class MySupplier2 implements Supplier<Integer>, Consumer<Double> { // Noncompliant {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier', 'DoubleConsumer'}}
+//             ^^^^^^^^^^^
+//                                    ^^^^^^^^^^^^^^^^^@-1<
+//                                                       ^^^^^^^^^^^^^^^^@-2<
     Supplier<Integer> mySupplier = new MySupplier2(); // Compliant
 
     @Override
@@ -233,7 +246,10 @@ public class SpecializedFunctionalInterfacesCheckSample {
     }
   }
 
-  static class MySupplier3 implements Supplier<Integer>, Runnable, Consumer<Double> { // Noncompliant [[sc=16;ec=27;secondary=236, 236]] {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier', 'DoubleConsumer'}}
+  static class MySupplier3 implements Supplier<Integer>, Runnable, Consumer<Double> { // Noncompliant {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier', 'DoubleConsumer'}}
+//             ^^^^^^^^^^^
+//                                    ^^^^^^^^^^^^^^^^^@-1<
+//                                                                 ^^^^^^^^^^^^^^^^@-2<
     Supplier<Integer> mySupplier = new MySupplier2(); // Compliant
 
     @Override

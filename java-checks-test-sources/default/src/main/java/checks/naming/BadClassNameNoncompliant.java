@@ -3,7 +3,8 @@ package checks.naming;
 import java.util.ResourceBundle;
 
 class BadClassNameNoncompliant {
-  class badClassName { } // Noncompliant [[sc=9;ec=21]] {{Rename this class name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.}}
+  class badClassName { } // Noncompliant {{Rename this class name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.}}
+//      ^^^^^^^^^^^^
   class GoodClassName { } // Compliant
 
   interface should_not_be_checked_interface { } // Compliant

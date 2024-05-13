@@ -5,7 +5,8 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-class S4349 extends OutputStream { // Noncompliant [[sc=7;ec=12]]{{Provide an override of "write(byte[],int,int)" for this class.}}
+class S4349 extends OutputStream { // Noncompliant {{Provide an override of "write(byte[],int,int)" for this class.}}
+//    ^^^^^
   private FileOutputStream fout;
 
   public S4349(File file) throws IOException {

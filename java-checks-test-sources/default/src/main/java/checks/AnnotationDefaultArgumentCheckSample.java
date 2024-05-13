@@ -17,12 +17,14 @@ class AnnotationDefaultArgumentCheckSample {
   private static final int FIELD_VALUE_INT = 0;
 
   @CustomAnnotation(field1="field1Default", field2="", field3="") // Noncompliant
-  @MyAnnotationDefaultCheck(myName="myName", myInteger=2) // Noncompliant [[sc=29;ec=44]] {{Remove this default value assigned to parameter "myName".}}
+  @MyAnnotationDefaultCheck(myName="myName", myInteger=2) // Noncompliant {{Remove this default value assigned to parameter "myName".}}
+//                          ^^^^^^^^^^^^^^^
   @MyAnnotationDefaultCheck2("defaultValue") // Noncompliant
   @MyAnnotationDefaultCheck3(myHexaInteger = 0x000) // Noncompliant {{Remove this default value assigned to parameter "myHexaInteger".}}
   void m1() { }
 
-  @MyAnnotationDefaultCheck(myName="foo", myInteger=0) // Noncompliant [[sc=43;ec=54]] {{Remove this default value assigned to parameter "myInteger".}}
+  @MyAnnotationDefaultCheck(myName="foo", myInteger=0) // Noncompliant {{Remove this default value assigned to parameter "myInteger".}}
+//                                        ^^^^^^^^^^^
   @MyAnnotationDefaultCheck2("someValue")
   @CustomAnnotation(field1="", field2="field2Default", field3="") // Noncompliant
   void m2() { }

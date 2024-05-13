@@ -14,7 +14,7 @@ public class BatchSQLStatementsCheckSample {
 
   void requestsInLoop(Statement statement, List<String> queries) throws SQLException {
     for (int i = 0; i < queries.size(); i++) {
-      statement.execute(queries.get(i)); // Noncompliant [sc=7,ec=40] {{Use "addBatch" and "executeBatch" to execute multiple SQL statements in a single call.}}
+      statement.execute(queries.get(i)); // Noncompliant {{Use "addBatch" and "executeBatch" to execute multiple SQL statements in a single call.}}
     }
 
     for (String query : queries) {

@@ -3,8 +3,10 @@ import java.util.ArrayList;
 class SunPackagesUsedCheckSample {
   private void f() {
     java.util.List a;
-    sun.Foo b; // Noncompliant [[secondary=+1]]
+    sun.Foo b; // Noncompliant
+//  ^^^^^^^
     sun.Foo.toto.asd c; // secondary
+//  ^^^^^^^^^^^^^^^^<
     
   }
 

@@ -3,13 +3,15 @@ import java.util.Observable;
 
 class A { // Compliant
   void foo() {
-    MessageDigest md = new MessageDigest() { // Noncompliant [[sc=28;ec=41]] {{Make sure using a non-standard cryptographic algorithm is safe here.}}
+    MessageDigest md = new MessageDigest() { // Noncompliant {{Make sure using a non-standard cryptographic algorithm is safe here.}}
+//                         ^^^^^^^^^^^^^
 
     };
   }
 }
 
-abstract class B extends MessageDigest { // Noncompliant [[sc=16;ec=17]] {{Make sure using a non-standard cryptographic algorithm is safe here.}}
+abstract class B extends MessageDigest { // Noncompliant {{Make sure using a non-standard cryptographic algorithm is safe here.}}
+//             ^
   protected B(String algorithm) {
     super(algorithm);
   }

@@ -16,7 +16,8 @@ public class AutowiredOnConstructorWhenMultipleConstructorsCheckSample { // Comp
   }
 
   @Component
-  class SpringComponent { // Noncompliant [[sc=9;ec=24]] {{Add @Autowired to one of the constructors.}}
+  class SpringComponent { // Noncompliant {{Add @Autowired to one of the constructors.}}
+//      ^^^^^^^^^^^^^^^
 
     public SpringComponent() {
     }

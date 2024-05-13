@@ -57,16 +57,16 @@ class LeastSpecificTypeCheckSample {
 
   static class T extends T2 implements IMB, IMA {}
 
-  public static void bla(T t) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheckSample.I1' here; it is a more general type than 'T'.}}
+  public static void bla(T t) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheckSample.I1' here; it is a more general type than 'T'.}}
     t.m();
   }
 
-  public static void foo(T t) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheckSample.T1' here; it is a more general type than 'T'.}}
+  public static void foo(T t) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheckSample.T1' here; it is a more general type than 'T'.}}
     t.m();
     t.mt1();
   }
 
-  public static void ma(T t) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheckSample.IMA' here; it is a more general type than 'T'.}}
+  public static void ma(T t) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheckSample.IMA' here; it is a more general type than 'T'.}}
     // defined in both T2 and IMA, interface is preferred
     t.ma();
   }
@@ -93,7 +93,7 @@ class LeastSpecificTypeCheckSample {
 
   }
 
-  public static void generics(GImplSub s) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheckSample.GImpl' here; it is a more general type than 'GImplSub'.}}
+  public static void generics(GImplSub s) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheckSample.GImpl' here; it is a more general type than 'GImplSub'.}}
     s.get();
   }
 
@@ -101,7 +101,7 @@ class LeastSpecificTypeCheckSample {
 
   }
 
-  public static void generics2(Generic<Object> g) { // Noncompliant  {{Use 'checks.LeastSpecificTypeCheckSample.IG' here; it is a more general type than 'Generic'.}}
+  public static void generics2(Generic<Object> g) { // Noncompliant {{Use 'checks.LeastSpecificTypeCheckSample.IG' here; it is a more general type than 'Generic'.}}
     g.get();
   }
 

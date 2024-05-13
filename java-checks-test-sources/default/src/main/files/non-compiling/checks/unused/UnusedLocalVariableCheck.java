@@ -5,7 +5,8 @@ import java.util.ArrayList;
 class UnusedLocalVariableCheck {
 
   public void f(int unusedParameter) {
-    int unusedLocalVariable; // Noncompliant [[sc=9;=ec=28]] {{Remove this unused "unusedLocalVariable" local variable.}}
+    int unusedLocalVariable; // Noncompliant {{Remove this unused "unusedLocalVariable" local variable.}}
+//      ^^^^^^^^^^^^^^^^^^^
     unknown++;
     this.unknown++;
   }

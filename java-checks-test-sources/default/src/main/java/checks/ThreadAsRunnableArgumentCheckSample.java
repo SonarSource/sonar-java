@@ -10,9 +10,11 @@ class ThreadAsRunnableArgumentCheckSample {
   public void foo() {
     Thread t = new Thread() {
     };
-    new Thread(t).start(); // Noncompliant [[sc=16;ec=17]] {{Replace this Thread instance with an instance of Runnable.}}
+    new Thread(t).start(); // Noncompliant {{Replace this Thread instance with an instance of Runnable.}}
+//             ^
 
-    new Thread(bar()).start(); // Noncompliant [[sc=16;ec=21]]
+    new Thread(bar()).start(); // Noncompliant
+//             ^^^^^
 
     MyThread myThread = new MyThread();
     new Thread(myThread).start(); // Noncompliant
@@ -29,9 +31,10 @@ class ThreadAsRunnableArgumentCheckSample {
     MyClass m = new MyClass(myThread); // Noncompliant
     m.foo(myThread); // Noncompliant
     m = new MyClass(0, new MyThread()); // Noncompliant
-    // Noncompliant@+1
-    m = new MyClass(0, myThread, r, new MyThread()); // Noncompliant because of arg1 and arg3
-    m = new MyClass(0, new Thread[] {myThread, new MyThread()}); // Noncompliant [[sc=24;ec=63]] {{Replace this Thread[] instance with an instance of Runnable[].}}
+ // Noncompliant@+1
+    m = new MyClass(0, myThread, r, new MyThread()); // Noncompliant
+    m = new MyClass(0, new Thread[] {myThread, new MyThread()}); // Noncompliant {{Replace this Thread[] instance with an instance of Runnable[].}}
+//                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     m = new MyClass(0); // Compliant
     m = new MyClass(0, new Runnable[] {}); // Compliant
     m = new MyClass(0, null, r, null); // Compliant
@@ -205,7 +208,7 @@ class ThreadAsRunnableArgumentCheckSample {
 
     Runnable result4 = switch (code) {
       case 0 -> r;
-      case 1 -> t; // Noncompliant, common supertype is Runnable
+      case 1 -> t; // Noncompliant
       default -> null;
     };
 
@@ -213,7 +216,7 @@ class ThreadAsRunnableArgumentCheckSample {
       case 0 -> r;
       case 1 -> {
         System.out.println();
-        yield t; // Noncompliant, common supertype is Runnable
+        yield t; // Noncompliant
       }
       default -> null;
     };

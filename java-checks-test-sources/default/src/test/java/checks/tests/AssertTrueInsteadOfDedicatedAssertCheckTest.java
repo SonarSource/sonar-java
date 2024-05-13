@@ -41,7 +41,9 @@ public class AssertTrueInsteadOfDedicatedAssertCheckTest {
   }
 
   void assertTrue_JUnit4_orgJunitAssert() {
-    Assert.assertTrue(null == foo); // Noncompliant [[sc=12;ec=22;secondary=44]] {{Use assertNull instead.}}
+    Assert.assertTrue(null == foo); // Noncompliant {{Use assertNull instead.}}
+//         ^^^^^^^^^^
+//                    ^^^^^^^^^^^@-1<
     assertTrue(foo == null); // Noncompliant
 
     Assert.assertTrue(foo != null); // Noncompliant {{Use assertNotNull instead.}}

@@ -4,13 +4,17 @@ class CallOuterPrivateMethodCheck {
 
   public void foo() {}
   private void bar() {}
-  private void qix() { // Noncompliant [[sc=16;ec=19]] {{Move this method into "Inner".}}
+  private void qix() { // Noncompliant {{Move this method into "Inner".}}
+//             ^^^
     bar();
   }
-  private void baz(){} // Noncompliant [[sc=16;ec=19]] {{Move this method into "Inner".}}
-  private void bax(){} // Noncompliant [[sc=16;ec=19]] {{Move this method into the anonymous class declared at line 59.}}
+  private void baz(){} // Noncompliant {{Move this method into "Inner".}}
+//             ^^^
+  private void bax(){} // Noncompliant {{Move this method into the anonymous class declared at line 63.}}
+//             ^^^
   private static void bay(){} // Compliant, can't move static method into non-static inner class
-  private static void baw() {} // Noncompliant [[sc=23;ec=26]] {{Move this method into "StaticInner".}}
+  private static void baw() {} // Noncompliant {{Move this method into "StaticInner".}}
+//                    ^^^
   private void calledOnAnotherInstance() {} // Compliant, called on another instance, cannot move it inside inner class
   private void calledOnAnotherInstance2() {} // Compliant, called on another instance, cannot move it inside inner class
   private void calledOnCurrentInstance() {} // Noncompliant

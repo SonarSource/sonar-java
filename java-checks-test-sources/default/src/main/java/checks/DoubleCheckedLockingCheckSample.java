@@ -4,8 +4,11 @@ class DoubleCheckedLockingCheckSample {
 
   public Helper classicCase() {
     if (helper == null)
-      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=6,8]] {{Remove this dangerous instance of double-checked locking.}}
+//      ^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
         if (helper == null)
+//          ^^^^^^^^^^^^^^<
           helper = new Helper();
       }
     return helper;
@@ -23,8 +26,11 @@ class DoubleCheckedLockingCheckSample {
 
   public Helper memberSelectCondition() {
     if (this.helper == null)
-      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=25,27]] {{Remove this dangerous instance of double-checked locking.}}
+//      ^^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
         if (helper == null)
+//          ^^^^^^^^^^^^^^<
           this.helper = new Helper();
       }
     return helper;
@@ -32,8 +38,11 @@ class DoubleCheckedLockingCheckSample {
 
   public Helper memberSelectCondition2() {
     if (helper == null)
-      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=34,36]] {{Remove this dangerous instance of double-checked locking.}}
+//      ^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
         if (this.helper == null)
+//          ^^^^^^^^^^^^^^^^^^^<
           this.helper = new Helper();
       }
     return helper;
@@ -41,8 +50,11 @@ class DoubleCheckedLockingCheckSample {
 
   public Helper memberSelectCondition3() {
     if (this.helper == null)
-      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=43,45]] {{Remove this dangerous instance of double-checked locking.}}
+//      ^^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
         if (this.helper == null)
+//          ^^^^^^^^^^^^^^^^^^^<
           this.helper = new Helper();
       }
     return helper;
@@ -50,8 +62,11 @@ class DoubleCheckedLockingCheckSample {
 
   public Helper invertedConditions() {
     if (null == this.helper)
-      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=52,54]] {{Remove this dangerous instance of double-checked locking.}}
+//      ^^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
         if (null == helper)
+//          ^^^^^^^^^^^^^^<
           this.helper = new Helper();
       }
     return helper;
@@ -59,8 +74,11 @@ class DoubleCheckedLockingCheckSample {
 
   public Helper intializationViaMemberSelect2() {
     if (helper == null)
-      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=61,63]] {{Remove this dangerous instance of double-checked locking.}}
+//      ^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
         if (helper == null)
+//          ^^^^^^^^^^^^^^<
           this.helper = new Helper();
       }
     return helper;
@@ -71,8 +89,11 @@ class DoubleCheckedLockingCheckSample {
 
   public HelperInterface interfaceHelper() {
     if (helperInterface == null)
-      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=73,75]] {{Remove this dangerous instance of double-checked locking.}}
+//      ^^^^^^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
         if (helperInterface == null)
+//          ^^^^^^^^^^^^^^^^^^^^^^^<
           this.helperInterface = new Helper();
       }
     return helperInterface;
@@ -80,8 +101,11 @@ class DoubleCheckedLockingCheckSample {
 
   public AbstractHelper abstractHelper() {
     if (abstractHelper == null)
-      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=82,84]] {{Remove this dangerous instance of double-checked locking.}}
+//      ^^^^^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
         if (abstractHelper == null)
+//          ^^^^^^^^^^^^^^^^^^^^^^<
           this.abstractHelper = new Helper();
       }
     return abstractHelper;
@@ -114,13 +138,16 @@ class DoubleCheckedLockingCheckSampleNestedIfs {
 
   public Helper unrelatedNestedIfs() {
     if (null == helper) {
+//      ^^^^^^^^^^^^^^>
       if (sunIsUp) {
         doSomething();
       }
-      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=116,123]] {{Remove this dangerous instance of double-checked locking.}}
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
         if (sunIsDown) {
           doSomethingElse();
           if (null == helper)
+//            ^^^^^^^^^^^^^^<
             helper = new Helper();
         }
       }

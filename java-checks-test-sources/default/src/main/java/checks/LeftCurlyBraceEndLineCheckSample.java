@@ -11,15 +11,15 @@ class LeftCurlyBraceEndLineCheckSample {
   
   private static final int MY_CONST;
   static
-  {                                    // Noncompliant {{Move this left curly brace to the end of previous line of code.}} [[sc=3;ec=4]]
+  { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+//^
     MY_CONST = 0;
   }
   
   public enum MyEnum {
     A(1)
     // Duplicated issue...
-    // Noncompliant@+1
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant 2
     },
     B(2),
     C(42) {                             // Compliant
@@ -36,24 +36,24 @@ class LeftCurlyBraceEndLineCheckSample {
   }
   
   public void bar() throws Exception
-  {                                     // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+  { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     class InnerClass
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     }
   }
   
   void doStuff(boolean test, MyEnum myEnum, List myList) throws IOException
-  {                                     // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+  { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     if (test)
       System.out.println();
     
     if (test) {                         // Compliant
     } else
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     }
     
     switch (myEnum)
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
       case A:
         break;
       default:
@@ -64,34 +64,34 @@ class LeftCurlyBraceEndLineCheckSample {
     } while(test);
     
     while (test)
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     }
     
     for (int i = 0; i < 10; i++)
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     }
     
     for (Object object : myList) {      // Compliant
     }
     
     synchronized (myList)
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     }
     
     try
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     } catch(Exception e)
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     }
     
     try (FileInputStream fis = new FileInputStream(""))
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     } finally
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     }
     
     Closeable c = new Closeable()
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
       @Override
       public void close() throws IOException {
       }
@@ -105,21 +105,21 @@ class LeftCurlyBraceEndLineCheckSample {
     };
     
     LABEL:
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
       doSomethingElse();
     }
   }
   
   public void myMethod(boolean something, boolean something3, boolean something4, boolean param1, boolean param2, boolean param3) {              // Compliant
     if(something)
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
       doSomethingElse();
     } else {                            // Compliant
       doSomethingElse();
     }
     if( param1 && param2 && param3
       && something3 && something4)
-    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
       doSomethingElse();
     }
   }
@@ -144,15 +144,15 @@ class LeftCurlyBraceEndLineCheckSampleReBar extends checks.LeftCurlyBraceEndLine
 }
 
 abstract class Dul implements Closeable
-{                                       // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+{ // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
 }
 
 class Goo<T>
-{                                       // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+{ // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
 }
 
 abstract class MyList<E> implements List<E>
-{                                       // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+{ // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
 }
 
 @Properties(

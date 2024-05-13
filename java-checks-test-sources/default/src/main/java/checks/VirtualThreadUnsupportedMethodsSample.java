@@ -23,13 +23,18 @@ public class VirtualThreadUnsupportedMethodsSample extends VirtualThreadUnsuppor
 
   void noncompliant(Thread.Builder.OfVirtual builder) {
     var vt = builder.unstarted(() -> {
+//                   ^^^^^^^^^>
     });
-    vt.setDaemon(true); // Noncompliant [[secondary=-2]]
-    vt.setPriority(1); // Noncompliant [[secondary=-3]]
-    vt.getThreadGroup(); // Noncompliant [[secondary=-4]]
-
+    vt.setDaemon(true); // Noncompliant
+//     ^^^^^^^^^
+    vt.setPriority(1); // Noncompliant
+//     ^^^^^^^^^^^
+    vt.getThreadGroup(); // Noncompliant
+//     ^^^^^^^^^^^^^^
     Thread.startVirtualThread(() -> {
-    }).setDaemon(true); // Noncompliant [[secondary=-1]]
+//         ^^^^^^^^^^^^^^^^^^>
+    }).setDaemon(true); // Noncompliant
+//     ^^^^^^^^^
 
     var newBuilder = Thread.ofVirtual();
     var vt1 = newBuilder.unstarted(() -> {

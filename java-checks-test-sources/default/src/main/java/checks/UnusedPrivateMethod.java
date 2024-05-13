@@ -23,7 +23,8 @@ class UnusedPrivateMethodCheck {
   private void initNc(@AnotherAnnotation Object object) {} // Noncompliant
 
   private UnusedPrivateMethodCheck() {}
-  private UnusedPrivateMethodCheck(int a) {} // Noncompliant [[sc=11;ec=35;quickfixes=qf_constructor]]
+  private UnusedPrivateMethodCheck(int a) {} // Noncompliant [[quickfixes=qf_constructor]]
+//        ^^^^^^^^^^^^^^^^^^^^^^^^
   // fix@qf_constructor {{Remove the unused constructor}}
   // edit@qf_constructor [[sl=-1;sc=40;el=+0;ec=45]] {{}}
 
@@ -100,14 +101,17 @@ class UnusedPrivateMethodCheck {
   }
   // This comment will be deleted by the quick fix.
 
-  private void testQuickFix1() { // Noncompliant [[sc=16;ec=29;quickfixes=qf1]]
+  private void testQuickFix1() { // Noncompliant [[quickfixes=qf1]]
+//             ^^^^^^^^^^^^^
     // fix@qf1 {{Remove the unused method}}
-    // edit@qf1 [[sl=-3;sc=4;el=+4;ec=7]] {{}}
+    // edit@qf1 [[sl=-3;sc=4;el=+5;ec=4]] {{}}
     int i = 12;
-     }
-  private void testQuickFix2() { // Noncompliant [[sc=16;ec=29;quickfixes=qf2]]
+  }
+
+  private void testQuickFix2() { // Noncompliant [[quickfixes=qf2]]
+//             ^^^^^^^^^^^^^
     // fix@qf2 {{Remove the unused method}}
-    // edit@qf2 [[sl=-1;sc=7;el=+5;ec=4]] {{}}
+    // edit@qf2 [[sl=-2;sc=4;el=+6;ec=4]] {{}}
     int i = 12;
     int j = 12;
   }
@@ -316,7 +320,7 @@ class CheckAnnotations {
 
   abstract static class Coverage1 {
 
-    private void foo6() {} // Noncompliant, text blocks are ignored
+    private void foo6() {} // Noncompliant
 
     @ProxyMethod("""
       foo6""")

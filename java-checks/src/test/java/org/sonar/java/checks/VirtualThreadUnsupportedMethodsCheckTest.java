@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -28,8 +28,7 @@ class VirtualThreadUnsupportedMethodsCheckTest {
 
   @Test
   void test() {
-    InternalCheckVerifier
-      .newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/VirtualThreadUnsupportedMethodsSample.java"))
       .withCheck(new VirtualThreadUnsupportedMethodsCheck())
       .withJavaVersion(21)
@@ -38,8 +37,7 @@ class VirtualThreadUnsupportedMethodsCheckTest {
 
   @Test
   void test_prior_java21() {
-    InternalCheckVerifier
-      .newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/VirtualThreadUnsupportedMethodsSample.java"))
       .withCheck(new VirtualThreadUnsupportedMethodsCheck())
       .withJavaVersion(20)

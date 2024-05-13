@@ -15,7 +15,8 @@ public class AuthorizationsStrongDecisionsCheckSample {
 
   class WeakNightVoter implements AccessDecisionVoter {
     @Override
-    public int vote(Authentication authentication, Object object, Collection collection) { // Noncompliant [[sc=16;ec=20]] {{"vote" method should return at least one time ACCESS_DENIED.}}
+    public int vote(Authentication authentication, Object object, Collection collection) { // Noncompliant {{"vote" method should return at least one time ACCESS_DENIED.}}
+//             ^^^^
       Calendar calendar = Calendar.getInstance();
       int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
       if(currentHour >= 8 && currentHour <= 19) {
@@ -173,7 +174,8 @@ public class AuthorizationsStrongDecisionsCheckSample {
   class MyPermissionEvaluatorNonCompliant implements PermissionEvaluator {
 
     @Override
-    public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) { // Noncompliant [[sc=20;ec=33]] {{"hasPermission" method should return at least one time false.}}
+    public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) { // Noncompliant {{"hasPermission" method should return at least one time false.}}
+//                 ^^^^^^^^^^^^^
       Object user = authentication.getPrincipal();
       if(user.equals(permission)) {
         return true;

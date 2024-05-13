@@ -3,18 +3,22 @@ package checks;
 class IdenticalOperandOnBinaryExpressionCheck {
   void foo(boolean a, boolean b, boolean c, boolean e) {
     if(a == b) { }
-    if(a == a) { } // Noncompliant [[sc=13;ec=14;secondary=+0]] {{Correct one of the identical sub-expressions on both sides of operator "=="}}
-    if(a != a) { } // Noncompliant [[sc=13;ec=14]] {{Correct one of the identical sub-expressions on both sides of operator "!="}}
+    if(a == a) { } // Noncompliant {{Correct one of the identical sub-expressions on both sides of operator "=="}}
+//     ^>   ^
+
+    if(a != a) { } // Noncompliant {{Correct one of the identical sub-expressions on both sides of operator "!="}}
+//          ^
     if(a || a) { } // Noncompliant
     if(a && a) { } // Noncompliant
-    if(a == b || a == b) {} // Noncompliant [[sc=18;ec=24]]
+    if(a == b || a == b) {} // Noncompliant
+//               ^^^^^^
     if(a || b || a) {} // Noncompliant
     if(a || a || b) {} // Noncompliant
     if(a || b || c || e && a) {}
-    if(a && b && c && e && a) {} // Noncompliant [[sc=28;ec=29]]
-    if(b
-        || a
-        || a) {} // Noncompliant [[sc=12;ec=13;secondary=-1]]
+    if(a && b && c && e && a) {} // Noncompliant
+//     ^>                  ^
+    if(b || a || a) {} // Noncompliant
+//               ^
 
     double d = 0.0d;
     float f = 0.0f;
@@ -28,7 +32,7 @@ class IdenticalOperandOnBinaryExpressionCheck {
   }
 
   void fun(Object a, Object b) {
-    a.equals(a);  // Noncompliant {{Correct one of the identical sub-expressions on both sides of equals.}}
+    a.equals(a); // Noncompliant {{Correct one of the identical sub-expressions on both sides of equals.}}
     a.equals(b);
     equals(a);
     java.util.Objects.equals(a, a); // Noncompliant {{Correct one of the identical argument sub-expressions.}}

@@ -1,3 +1,4 @@
-package org.foo.mismatchPackage; // Noncompliant [[sc=9;ec=32]]
+package org.foo.mismatchPackage; // Noncompliant
+//      ^^^^^^^^^^^^^^^^^^^^^^^
 
 class Mismatch {}

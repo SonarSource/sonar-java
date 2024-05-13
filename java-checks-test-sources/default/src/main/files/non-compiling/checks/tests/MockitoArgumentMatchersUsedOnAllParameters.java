@@ -34,7 +34,8 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
   @Test
   public void nonCompliant() {
     verify(foo).bar(
-      returnRawValue(), // Noncompliant [[sc=7;ec=23]] {{Add an "eq()" argument matcher on this parameter.}}
+      returnRawValue(), // Noncompliant {{Add an "eq()" argument matcher on this parameter.}}
+//    ^^^^^^^^^^^^^^^^
       any(), any()
     );
   }

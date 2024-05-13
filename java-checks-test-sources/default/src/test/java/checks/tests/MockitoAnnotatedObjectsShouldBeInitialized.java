@@ -160,7 +160,7 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
     @Rule
     public MockitoRule rule = foo();
 
-    @Mock // Noncompliant  {{Initialize mocks before using them.}}
+    @Mock // Noncompliant {{Initialize mocks before using them.}}
     private Bar bar;
 
     private MockitoRule foo() { return null; }

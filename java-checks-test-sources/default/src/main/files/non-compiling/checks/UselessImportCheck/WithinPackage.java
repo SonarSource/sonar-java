@@ -5,8 +5,9 @@ import a.b.c.Bar;
 import a.b.c.Baz;
 import a.b.c.Qux;
 import a.b.c.ReferencedFromJavadoc;
-import a.b.c.NonCompliant; // Noncompliant [[sc=1;ec=27]]
-import NonCompliant2;               // Noncompliant
+import a.b.c.NonCompliant; // Noncompliant
+//^[sc=1;ec=27]
+import NonCompliant2; // Noncompliant
 import static a.b.c.Foo.d;
 import a.b.c.*;
 import static a.b.c.Foo.*;
@@ -15,16 +16,16 @@ import a.b.c.MyException2;
 import a.b.c.MyAnnotation1;
 import a.b.c.MyAnnotation2;
 import a.b.c.MyAnnotation3;
-import java.lang.String;            // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
-import java.lang.*;                 // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
-import a.b.c.Foo;                   // Noncompliant {{Remove this duplicated import.}}
+import java.lang.String; // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
+import java.lang.*; // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
+import a.b.c.Foo; // Noncompliant {{Remove this duplicated import.}}
 
-import checks.UselessImportCheck.*;              // Noncompliant {{Remove this unnecessary import: same package classes are always implicitly imported.}}
+import checks.UselessImportCheck.*; // Noncompliant {{Remove this unnecessary import: same package classes are always implicitly imported.}}
 import checks.UselessImportCheckClose.*;
 import static checks.UselessImportCheck.Foo.*;
 import checks.UselessImportCheck.foo.*;
 import checks.UselessImportCheck.foo.Foo;
-import pkg.NonCompliant1;           // Noncompliant
+import pkg.NonCompliant1; // Noncompliant
 import pkg.CompliantClass1;
 import pkg.CompliantClass2;
 import pkg.CompliantClass3;

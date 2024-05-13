@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.MathClampRangeCheck.isLessThan;
@@ -30,22 +30,18 @@ class MathClampRangeCheckTest {
 
   @Test
   void test_java_21() {
-    InternalCheckVerifier
-      .newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/MathClampRangeCheckSample.java"))
       .withCheck(new MathClampRangeCheck())
-      .withQuickFixes()
       .withJavaVersion(21)
       .verifyIssues();
   }
 
   @Test
   void test_before_java_21() {
-    InternalCheckVerifier
-      .newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/MathClampRangeCheckSample.java"))
       .withCheck(new MathClampRangeCheck())
-      .withQuickFixes()
       .withJavaVersion(20)
       .verifyNoIssues();
   }
@@ -53,15 +49,15 @@ class MathClampRangeCheckTest {
   @Test
   void test_less_than() {
     // conversion to integer
-    assertThat(isLessThan(Integer.MIN_VALUE,Integer.MAX_VALUE)).isTrue();
-    assertThat(isLessThan(Integer.MAX_VALUE,Integer.MIN_VALUE)).isFalse();
-    assertThat(isLessThan(20,(byte)'A')).isTrue();
+    assertThat(isLessThan(Integer.MIN_VALUE, Integer.MAX_VALUE)).isTrue();
+    assertThat(isLessThan(Integer.MAX_VALUE, Integer.MIN_VALUE)).isFalse();
+    assertThat(isLessThan(20, (byte) 'A')).isTrue();
 
     // conversion to long
-    assertThat(isLessThan(Long.MIN_VALUE,Long.MAX_VALUE)).isTrue();
-    assertThat(isLessThan(Long.MAX_VALUE,Long.MIN_VALUE)).isFalse();
-    assertThat(isLessThan(Integer.MIN_VALUE,Long.MIN_VALUE)).isFalse();
-    assertThat(isLessThan(Long.MAX_VALUE,Integer.MAX_VALUE)).isFalse();
+    assertThat(isLessThan(Long.MIN_VALUE, Long.MAX_VALUE)).isTrue();
+    assertThat(isLessThan(Long.MAX_VALUE, Long.MIN_VALUE)).isFalse();
+    assertThat(isLessThan(Integer.MIN_VALUE, Long.MIN_VALUE)).isFalse();
+    assertThat(isLessThan(Long.MAX_VALUE, Integer.MAX_VALUE)).isFalse();
 
     // conversion to float
     assertThat(isLessThan(1.0f, 2.0f)).isTrue();
@@ -69,9 +65,9 @@ class MathClampRangeCheckTest {
     assertThat(isLessThan(9_223_372_036_854_775_806L, 9_223_372_036_854_775_805f)).isFalse();
     assertThat(isLessThan(9_223_372_036_854_775_805f, 9_223_372_036_854_775_806L)).isFalse(); // a == b because of float low precision
 
-    assertThat(isLessThan(Float.NEGATIVE_INFINITY,Float.POSITIVE_INFINITY)).isTrue();
-    assertThat(isLessThan(Float.NaN,Float.POSITIVE_INFINITY)).isFalse();
-    assertThat(isLessThan(Float.NaN,Float.NaN)).isFalse();
+    assertThat(isLessThan(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY)).isTrue();
+    assertThat(isLessThan(Float.NaN, Float.POSITIVE_INFINITY)).isFalse();
+    assertThat(isLessThan(Float.NaN, Float.NaN)).isFalse();
 
     // conversion to double
     assertThat(isLessThan(1.0d, 2.0d)).isTrue();

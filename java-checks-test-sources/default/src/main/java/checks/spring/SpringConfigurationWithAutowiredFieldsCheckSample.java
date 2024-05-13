@@ -15,8 +15,10 @@ class SpringConfigurationWithAutowiredFieldsCheckSample {
 
   @Configuration
   class A {
-    @Autowired private Bar singleUsage; // Noncompliant [[sc=28;ec=39]] {{Inject this field value directly into "method", the only method that uses it.}}
-    @Inject private Bar jsr330; // Noncompliant [[sc=25;ec=31]] {{Inject this field value directly into "jsr330", the only method that uses it.}}
+    @Autowired private Bar singleUsage; // Noncompliant {{Inject this field value directly into "method", the only method that uses it.}}
+//                         ^^^^^^^^^^^
+    @Inject private Bar jsr330; // Noncompliant {{Inject this field value directly into "jsr330", the only method that uses it.}}
+//                      ^^^^^^
     @Autowired private Bar multipleUsage;
     @Autowired private Bar notUsedInBeanMethod;
     @Autowired private Bar notUsed;

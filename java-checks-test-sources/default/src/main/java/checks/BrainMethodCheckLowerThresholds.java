@@ -11,7 +11,8 @@ abstract class BrainMethodCheckWithLowerThresholds {
 
   public static native void alert(String msg);
 
-  void foo() { // Noncompliant [[sc=8;ec=11]] {{A "Brain Method" was detected. Refactor it to reduce at least one of the following metrics: LOC from 22 to 13, Complexity from 5 to 4, Nesting Level from 3 to 2, Number of Variables from 6 to 3.}}
+  void foo() { // Noncompliant {{A "Brain Method" was detected. Refactor it to reduce at least one of the following metrics: LOC from 22 to 13, Complexity from 5 to 4, Nesting Level from 3 to 2, Number of Variables from 6 to 3.}}
+//     ^^^
     String a = "a";
     String b = "b";
     int x = 0;

@@ -65,7 +65,7 @@ class MissingPackageInfoCheckTest {
   void initVerifier() {
     this.readCache = new InternalReadCache();
     this.writeCache = new InternalWriteCache().bind(readCache);
-    this.verifier = CheckVerifier.newVerifier()
+    this.verifier = CheckVerifier.newInternalVerifier()
       .withCache(readCache, writeCache);
   }
 
@@ -73,7 +73,7 @@ class MissingPackageInfoCheckTest {
   void no_package_info() {
     MissingPackageInfoCheck check = new MissingPackageInfoCheck();
 
-    CheckVerifier.newVerifier()
+    CheckVerifier.newInternalVerifier()
       .onFiles(
         mainCodeSourcesPath("DefaultPackage.java"),
         mainCodeSourcesPath("checks/packageInfo/HelloWorld.java"),
@@ -106,7 +106,7 @@ class MissingPackageInfoCheckTest {
 
     var populatedReadCache = new InternalReadCache().putAll(writeCache);
     var writeCache2 = new InternalWriteCache().bind(populatedReadCache);
-    CheckVerifier.newVerifier()
+    CheckVerifier.newInternalVerifier()
       .withCache(populatedReadCache, writeCache2)
       .addFiles(InputFile.Status.SAME,
         mainCodeSourcesPath("checks/packageInfo/HelloWorld.java"),

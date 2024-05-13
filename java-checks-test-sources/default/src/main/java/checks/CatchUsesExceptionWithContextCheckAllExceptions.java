@@ -9,10 +9,10 @@ abstract class CatchUsesExceptionWithContextCheckAllExceptions {
   private void bar() {
     try {
       foo();
-    } catch (NumberFormatException e) {  // Noncompliant {{Either log or rethrow this exception.}}
-    } catch (InterruptedException e) {   // Noncompliant
-    } catch (ParseException e) {         // Noncompliant
-    } catch (MalformedURLException e) {  // Noncompliant
+    } catch (NumberFormatException e) { // Noncompliant {{Either log or rethrow this exception.}}
+    } catch (InterruptedException e) { // Noncompliant
+    } catch (ParseException e) { // Noncompliant
+    } catch (MalformedURLException e) { // Noncompliant
     } catch (DateTimeParseException e) { // Noncompliant
     }
   }

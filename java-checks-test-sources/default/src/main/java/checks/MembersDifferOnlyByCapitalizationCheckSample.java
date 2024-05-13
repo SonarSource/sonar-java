@@ -6,22 +6,27 @@ abstract class A implements MyInterface {
   private static final long var1 = -9215047833775013803L; // Compliant
   public long var2 = 0L;
 
-  public void equAls(Object obj) {} // Noncompliant [[sc=15;ec=21]] {{Rename method "equAls" to prevent any misunderstanding/clash with method "equals" defined in superclass "java.lang.Object".}}
+  public void equAls(Object obj) {} // Noncompliant {{Rename method "equAls" to prevent any misunderstanding/clash with method "equals" defined in superclass "java.lang.Object".}}
+
   protected void finaliZe() {} // Noncompliant {{Rename method "finaliZe" to prevent any misunderstanding/clash with method "finalize" defined in superclass "java.lang.Object".}}
 
   public void myMethod() {}
 
   public Object stuff;
-  public void stuff() {} // Noncompliant [[secondary=14]] {{Rename method "stuff" to prevent any misunderstanding/clash with field "stuff".}}
-  public void stuff(int i) {} // Noncompliant [[secondary=14]] {{Rename method "stuff" to prevent any misunderstanding/clash with field "stuff".}}
+//              ^^^^^>
+  public void stuff() {} // Noncompliant {{Rename method "stuff" to prevent any misunderstanding/clash with field "stuff".}}
+  //          ^^^^^
+  public void stuff(int i) {} // Noncompliant {{Rename method "stuff" to prevent any misunderstanding/clash with field "stuff".}}
 
   public void foo(int i) {} // Compliant
   public void foo(boolean i) {} // Compliant
 
-  public void myOtherMethoD() {} // Noncompliant [[secondary=41]] {{Rename method "myOtherMethoD" to prevent any misunderstanding/clash with method "myOtherMethod" defined in interface "checks.MembersDifferOnlyByCapitalizationCheckSample$MyInterface".}}
-
-  private static void gUl() {} // Noncompliant [[secondary=24]] {{Rename method "gUl" to prevent any misunderstanding/clash with method "gul".}}
+  public void myOtherMethoD() {} // Noncompliant {{Rename method "myOtherMethoD" to prevent any misunderstanding/clash with method "myOtherMethod" defined in interface "checks.MembersDifferOnlyByCapitalizationCheckSample$MyInterface".}}
+//            ^^^^^^^^^^^^^
+  private static void gUl() {} // Noncompliant {{Rename method "gUl" to prevent any misunderstanding/clash with method "gul".}}
+                    //^^^
   public void gul() {} // Compliant
+//            ^^^<
 
   private boolean qix;
 
@@ -45,20 +50,24 @@ interface MyInterface {
 
 abstract class B extends A {
   private static final long var1 = -9215047833775013803L; // Compliant
-  public void var2() {}; // Noncompliant [[secondary=7]]
-  public void vAr2() {}; // Noncompliant [[secondary=48]]
+  public void var2() {}; // Noncompliant
+//            ^^^^>
+  public void vAr2() {}; // Noncompliant
+            //^^^^
 
-  public void myMethoD() {} // Noncompliant [[secondary=12]] {{Rename method "myMethoD" to prevent any misunderstanding/clash with method "myMethod" defined in superclass "checks.MembersDifferOnlyByCapitalizationCheckSample$A".}}
+  public void myMethoD() {} // Noncompliant {{Rename method "myMethoD" to prevent any misunderstanding/clash with method "myMethod" defined in superclass "checks.MembersDifferOnlyByCapitalizationCheckSample$A".}}
 
   public Object qix;  // Compliant
 
-  public void fOo(int i) {} // Noncompliant [[secondary=18]]
+  public void fOo(int i) {} // Noncompliant
 }
 
 class Visibility {
   public int tmp0;
+//           ^^^^>
   private void tmp0() {}
-  public void tmp0(int i) {} // Noncompliant [[secondary=59]] {{Rename method "tmp0" to prevent any misunderstanding/clash with field "tmp0".}}
+  public void tmp0(int i) {} // Noncompliant {{Rename method "tmp0" to prevent any misunderstanding/clash with field "tmp0".}}
+  //          ^^^^
   protected void tmp0(long l) {}
   void tmp0(short s) {}
 
@@ -69,16 +78,20 @@ class Visibility {
   void tmp1(short s) {}
 
   int tmp2;
+//    ^^^^>
   private void tmp2() {}
   public void tmp2(int i) {}
   protected void tmp2(long l) {}
-  void tmp2(short s) {}  // Noncompliant [[secondary=71]] {{Rename method "tmp2" to prevent any misunderstanding/clash with field "tmp2".}}
+  void tmp2(short s) {} // Noncompliant {{Rename method "tmp2" to prevent any misunderstanding/clash with field "tmp2".}}
+  //   ^^^^
 
   protected int tmp3;
+//              ^^^^>
   private void tmp3() {}
   public void tmp3(int i) {}
-  protected void tmp3(long l) {} // Noncompliant [[secondary=77]] {{Rename method "tmp3" to prevent any misunderstanding/clash with field "tmp3".}}
-  void tmp3(short s) {} 
+  protected void tmp3(long l) {} // Noncompliant {{Rename method "tmp3" to prevent any misunderstanding/clash with field "tmp3".}}
+  //             ^^^^
+  void tmp3(short s) {}
 }
 
 public enum MyEnum {
@@ -91,6 +104,7 @@ public enum MyEnum {
 class ABuilder {
   String name;
   String wrong;
+//       ^^^^^>
   String value;
 
   ABuilder name(String name) { // Compliant - exception for builder pattern
@@ -98,7 +112,8 @@ class ABuilder {
     return this;
   }
 
-  ABuilder WRONG(String wrong) { // Noncompliant [[secondary=93]]
+  ABuilder WRONG(String wrong) { // Noncompliant
+    //     ^^^^^
     this.wrong = value;
     return this;
   }
@@ -166,7 +181,7 @@ class SameName {
 
   record MyRecord(int intComponent, boolean bool) {
 
-    public static final boolean BooL = false;  // Noncompliant {{Rename field "BooL" to prevent any misunderstanding/clash with field "bool".}}
+    public static final boolean BooL = false; // Noncompliant {{Rename field "BooL" to prevent any misunderstanding/clash with field "bool".}}
 
     @Override public boolean bool() {
       return bool;
@@ -182,10 +197,12 @@ class SameName {
 
   class NoDuplications {
     void Abcde(){ }
-    void aBcde(){ } // Noncompliant [[secondary=-1]] {{Rename method "aBcde" to prevent any misunderstanding/clash with method "Abcde".}}
-    void abCde(){ } // Noncompliant [[secondary=-2]] {{Rename method "abCde" to prevent any misunderstanding/clash with method "Abcde".}}
-    void abcDe(){ } // Noncompliant [[secondary=-3]] {{Rename method "abcDe" to prevent any misunderstanding/clash with method "Abcde".}}
-    void abcdE(){ } // Noncompliant [[secondary=-4]] {{Rename method "abcdE" to prevent any misunderstanding/clash with method "Abcde".}}
+//       ^^^^^>
+    void aBcde(){ } // Noncompliant {{Rename method "aBcde" to prevent any misunderstanding/clash with method "Abcde".}}
+    //   ^^^^^
+    void abCde(){ } // Noncompliant {{Rename method "abCde" to prevent any misunderstanding/clash with method "Abcde".}}
+    void abcDe(){ } // Noncompliant {{Rename method "abcDe" to prevent any misunderstanding/clash with method "Abcde".}}
+    void abcdE(){ } // Noncompliant {{Rename method "abcdE" to prevent any misunderstanding/clash with method "Abcde".}}
   }
 
 }

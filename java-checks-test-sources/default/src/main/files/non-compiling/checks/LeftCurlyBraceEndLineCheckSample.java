@@ -1,7 +1,7 @@
 class NestedSwitchStatementCheck {
   void switchExpressions(MyEnum myEnum) {
     int i = switch (myEnum)
-      {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+      { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
         case A:
           yield 1;
         default:

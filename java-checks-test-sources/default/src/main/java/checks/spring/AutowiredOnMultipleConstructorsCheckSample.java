@@ -18,7 +18,8 @@ public class AutowiredOnMultipleConstructorsCheckSample {
     this.myService = myService;
   }
 
-  @Autowired // Noncompliant [[sc=3;ec=13]] {{Remove this "@Autowired" annotation.}}
+  @Autowired // Noncompliant {{Remove this "@Autowired" annotation.}}
+//^^^^^^^^^^
   public AutowiredOnMultipleConstructorsCheckSample(List<Object> list, Object myService) {
     // ...
     this.myService = myService;

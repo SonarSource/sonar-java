@@ -15,12 +15,17 @@ public class WeakSSLContextCheckSample {
 
   @Autowired
   public WeakSSLContextCheckSample(SslProperties props, DefaultSslBundleRegistry registry, Set<String> propsSet) {
-    props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of("TLSv1.1", // Noncompliant [[sc=53;ec=72;secondary=18,20]] {{Change this code to use a stronger protocol.}}
+    props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of("TLSv1.1", // Noncompliant {{Change this code to use a stronger protocol.}}
+//                                                  ^^^^^^^^^^^^^^^^^^^
+//                                                                             ^^^^^^^^^@-1<
       "test",
       "TLSv1.0"));
+//    ^^^^^^^^^<
     props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of("TLSv1.0")); // Noncompliant
 
-    props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of(TLSV_1_0)); // Noncompliant [[sc=53;ec=72;secondary=23]] {{Change this code to use a stronger protocol.}}
+    props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of(TLSV_1_0)); // Noncompliant {{Change this code to use a stronger protocol.}}
+//                                                  ^^^^^^^^^^^^^^^^^^^
+//                                                                             ^^^^^^^^@-1<
     props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of(null)); // coverage
 
     props.getBundle().getJks().get("").getOptions().setEnabledProtocols(Set.of("TLSv1")); // Compliant

@@ -21,13 +21,16 @@ class ChangeMethodContractCheck_Child extends ChangeMethodContractCheck {
   String nonNullViaPackageAnnotation(Object a) { return null; } // Noncompliant {{Fix the incompatibility of the annotation @CheckForNull to honor @NonNullApi at package level of the overridden method.}}
 }
 
-@org.eclipse.jdt.annotation.NonNullByDefault
+  @org.eclipse.jdt.annotation.NonNullByDefault
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
 class ChangeMethodContractCheckAtClassLevel {
   void argAnnotatedNonNullViaClassAnnotation(Object a) { }
 }
 
 class ChangeMethodContractCheckAtClassLevel_Child extends ChangeMethodContractCheckAtClassLevel {
   @javax.annotation.Nullable
+//^^^^^^^^^^^^^^^^^^^^^^^^^^>
   @Override
-  void argAnnotatedNonNullViaClassAnnotation(Object a) { } // Noncompliant [[secondary=-2,-8]] {{Fix the incompatibility of the annotation @Nullable to honor @NonNullByDefault at class level of the overridden method.}}
+  void argAnnotatedNonNullViaClassAnnotation(Object a) { } // Noncompliant {{Fix the incompatibility of the annotation @Nullable to honor @NonNullByDefault at class level of the overridden method.}}
+//^^^^
 }

@@ -57,16 +57,16 @@ public abstract class DivisionByZeroCheckPrimitives {
   public double notZero(Double d) { return d / DOUBLE_WRAPPER_NOT_ZERO; }
   public float notZero(Float f)   { return f / FLOAT_WRAPPER_NOT_ZERO; }
 
-  public int zero(byte b)      { return b / BYTE_ZERO; }   // Noncompliant
-  public int zero(short s)     { return s / SHORT_ZERO; }  // Noncompliant
-  public int zero(int i)       { return i / INT_ZERO; }    // Noncompliant
-  public long zero(long l)     { return l / LONG_ZERO; }   // Noncompliant
+  public int zero(byte b)      { return b / BYTE_ZERO; } // Noncompliant
+  public int zero(short s)     { return s / SHORT_ZERO; } // Noncompliant
+  public int zero(int i)       { return i / INT_ZERO; } // Noncompliant
+  public long zero(long l)     { return l / LONG_ZERO; } // Noncompliant
   public double zero(double d) { return d / DOUBLE_ZERO; } // Noncompliant
-  public float zero(float f)   { return f / FLOAT_ZERO; }  // Noncompliant
-  public int zero(char c)      { return c / CHAR_ZERO; }   // Noncompliant
-  public BigInteger zero1(BigInteger bi) { return bi.divide(BigInteger.ZERO); }                 // Noncompliant
-  public BigInteger zero2(BigInteger bi) { return bi.divide(BigInteger.valueOf(LONG_ZERO)); }   // Noncompliant
-  public BigDecimal zero1(BigDecimal bd) { return bd.divide(BigDecimal.ZERO); }                 // Noncompliant
+  public float zero(float f)   { return f / FLOAT_ZERO; } // Noncompliant
+  public int zero(char c)      { return c / CHAR_ZERO; } // Noncompliant
+  public BigInteger zero1(BigInteger bi) { return bi.divide(BigInteger.ZERO); } // Noncompliant
+  public BigInteger zero2(BigInteger bi) { return bi.divide(BigInteger.valueOf(LONG_ZERO)); } // Noncompliant
+  public BigDecimal zero1(BigDecimal bd) { return bd.divide(BigDecimal.ZERO); } // Noncompliant
   public BigDecimal zero2(BigDecimal bd) { return bd.divide(BigDecimal.valueOf(DOUBLE_ZERO)); } // Noncompliant
 
   public int zero(Byte b)      { return b / BYTE_WRAPPER_ZERO; }   // FN

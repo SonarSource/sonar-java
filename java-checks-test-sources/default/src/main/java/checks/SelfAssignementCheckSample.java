@@ -4,15 +4,17 @@ class SelfAssignementCheckSample {
   static int staticField = 0;
   
   static {
-    staticField = staticField;  // Noncompliant
+    staticField = staticField; // Noncompliant
   }
   
   int a, c = 0;
   int[] b = {0};
 
-  int m = a = a; // Noncompliant [[sc=13;ec=14;quickfixes=!]]
+  int m = a = a; // Noncompliant [[quickfixes=!]]
+//          ^
 
-  int x = a = a = a; // Noncompliant [[sc=17;ec=18;quickfixes=!]]
+  int x = a = a = a; // Noncompliant [[quickfixes=!]]
+//              ^
 
   int s = getS(); // Compliant
 
@@ -21,9 +23,11 @@ class SelfAssignementCheckSample {
   }
 
   void method() {
-    a = a; // Noncompliant [[sc=7;ec=8]] {{Remove or correct this useless self-assignment.}}
+    a = a; // Noncompliant {{Remove or correct this useless self-assignment.}}
+//    ^
     this.a = this.a; // Noncompliant
-    this.a = a; // Noncompliant [[sc=12;ec=13]] {{Remove or correct this useless self-assignment.}}
+    this.a = a; // Noncompliant {{Remove or correct this useless self-assignment.}}
+//         ^
     b[0] = b[0]; // Noncompliant
     a = c = c; // Noncompliant
     b[fun()] = b[fun()]; // Noncompliant
@@ -63,7 +67,8 @@ class SelfAssignmentCheckC {
   String a;
 
   public SelfAssignmentCheckC(String a) {
-    a = a; // Noncompliant [[sc=7;ec=8;quickfixes=qf1]] {{Remove or correct this useless self-assignment.}}
+    a = a; // Noncompliant {{Remove or correct this useless self-assignment.}} [[quickfixes=qf1]]
+//    ^
     // fix@qf1 {{Disambiguate this self-assignment}}
     // edit@qf1 [[sc=5;ec=5]] {{this.}}
   }
@@ -76,19 +81,23 @@ class SelfAssignmentCheckD {
   String c;
 
   public SelfAssignmentCheckD(String a, String b, String d) {
-    a = a; // Noncompliant [[sc=7;ec=8;quickfixes=qf2]] {{Remove or correct this useless self-assignment.}}
+    a = a; // Noncompliant {{Remove or correct this useless self-assignment.}} [[quickfixes=qf2]]
+//    ^
     // fix@qf2 {{Disambiguate this self-assignment}}
     // edit@qf2 [[sc=5;ec=5]] {{this.}}
 
-    c = c; // Noncompliant [[sc=7;ec=8;quickfixes=qf3]] {{Remove or correct this useless self-assignment.}}
+    c = c; // Noncompliant {{Remove or correct this useless self-assignment.}} [[quickfixes=qf3]]
+//    ^
     // fix@qf3 {{Remove this useless self-assignment}}
     // edit@qf3 [[sc=5;ec=11]] {{}}
 
-    this.c = c; // Noncompliant [[sc=12;ec=13;quickfixes=qf4]] {{Remove or correct this useless self-assignment.}}
+    this.c = c; // Noncompliant {{Remove or correct this useless self-assignment.}} [[quickfixes=qf4]]
+//         ^
     // fix@qf4 {{Remove this useless self-assignment}}
     // edit@qf4 [[sc=5;ec=16]] {{}}
 
-    d = d; // Noncompliant [[sc=7;ec=8;quickfixes=qf5]] {{Remove or correct this useless self-assignment.}}
+    d = d; // Noncompliant {{Remove or correct this useless self-assignment.}} [[quickfixes=qf5]]
+//    ^
     // fix@qf5 {{Remove this useless self-assignment}}
     // edit@qf5 [[sc=5;ec=11]] {{}}
 

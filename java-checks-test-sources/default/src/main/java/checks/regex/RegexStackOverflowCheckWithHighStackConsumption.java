@@ -5,9 +5,12 @@ import java.util.regex.Pattern;
 class RegexStackOverflowCheckWithHighStackConsumption {
 
   Pattern[] patterns = new Pattern[] {
-    Pattern.compile("(a|b)*"), // Noncompliant [[sc=22;ec=28]] {{Refactor this repetition that can lead to a stack overflow for large inputs.}}
+    Pattern.compile("(a|b)*"), // Noncompliant {{Refactor this repetition that can lead to a stack overflow for large inputs.}}
+//                   ^^^^^^
     Pattern.compile("(.|\n)*?"), // Noncompliant
-    Pattern.compile("(.|\n)*?(.|\n)*"), // Noncompliant [[sc=22;ec=30;secondary=+0]]
+    Pattern.compile("(.|\n)*?(.|\n)*"), // Noncompliant
+//                   ^^^^^^^^
+//                           ^^^^^^^@-1<
     Pattern.compile("(.|\n)*?"), // Noncompliant
     Pattern.compile("(ab?){42,}"), // Noncompliant
     Pattern.compile("(a|hello world)*"), // Noncompliant

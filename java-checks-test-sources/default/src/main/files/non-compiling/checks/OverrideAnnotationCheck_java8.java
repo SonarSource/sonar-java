@@ -9,11 +9,13 @@ abstract class AbstractMethodFromInterface implements InterfaceWithDefault {
 }
 
 interface InterfaceExtendsDefault extends InterfaceWithDefault {
-  boolean qix(); // Noncompliant [[sc=11;ec=14]] {{Add the "@Override" annotation above this method signature}}
+  boolean qix(); // Noncompliant {{Add the "@Override" annotation above this method signature}}
+//        ^^^
   @Override
   boolean gul(); // Compliant - hide default behavior
 }
 
 class ImplemInterfaceWithDefault implements InterfaceWithDefault {
-  public boolean gul() { return false; } // Noncompliant [[sc=18;ec=21]] {{Add the "@Override" annotation above this method signature}}
+  public boolean gul() { return false; } // Noncompliant {{Add the "@Override" annotation above this method signature}}
+//               ^^^
 }

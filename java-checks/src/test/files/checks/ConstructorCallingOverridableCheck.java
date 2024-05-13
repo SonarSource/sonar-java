@@ -82,7 +82,7 @@ class D {
 public class Parent {
 
   public Parent () {
-    doSomething();  // Noncompliant
+    doSomething(); // Noncompliant
   }
 
   public void doSomething () {  // not final; can be overridden

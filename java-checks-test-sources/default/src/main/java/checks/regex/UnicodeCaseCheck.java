@@ -8,7 +8,8 @@ public class UnicodeCaseCheck {
 
   @Email(
     regexp = "söme pättern",
-    flags = Flag.CASE_INSENSITIVE // Noncompliant [[sc=13;ec=34]] {{Also use "Flag.UNICODE_CASE" to correctly handle non-ASCII letters.}}
+    flags = Flag.CASE_INSENSITIVE // Noncompliant {{Also use "Flag.UNICODE_CASE" to correctly handle non-ASCII letters.}}
+//          ^^^^^^^^^^^^^^^^^^^^^
   )
   String email1;
 
@@ -19,22 +20,30 @@ public class UnicodeCaseCheck {
   String email2;
 
   void noncompliant(String str) {
-    Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE); // Noncompliant [[sc=37;ec=61]] {{Also use "Pattern.UNICODE_CASE" to correctly handle non-ASCII letters.}}
+    Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE); // Noncompliant {{Also use "Pattern.UNICODE_CASE" to correctly handle non-ASCII letters.}}
+//                                  ^^^^^^^^^^^^^^^^^^^^^^^^
     Pattern.compile("s\u00F6me", Pattern.CASE_INSENSITIVE); // Noncompliant
     Pattern.compile("s\\u00F6me", Pattern.CASE_INSENSITIVE); // Noncompliant
     Pattern.compile("s\\xF6me", Pattern.CASE_INSENSITIVE); // Noncompliant
 
-    Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE); // Noncompliant [[sc=37;ec=81]] {{Also use "Pattern.UNICODE_CASE" to correctly handle non-ASCII letters.}}
-    str.matches("(?i)söme pättern"); // Noncompliant [[sc=20;ec=21]] {{Also use the "u" flag to correctly handle non-ASCII letters.}}
-    str.matches("(?i:söme) pättern"); // Noncompliant [[sc=20;ec=21]] {{Also use the "u" flag to correctly handle non-ASCII letters.}}
+    Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE); // Noncompliant {{Also use "Pattern.UNICODE_CASE" to correctly handle non-ASCII letters.}}
+//                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    str.matches("(?i)söme pättern"); // Noncompliant {{Also use the "u" flag to correctly handle non-ASCII letters.}}
+//                 ^
+    str.matches("(?i:söme) pättern"); // Noncompliant {{Also use the "u" flag to correctly handle non-ASCII letters.}}
+//                 ^
 
-    String regexPart1 = "(?i:söme)"; // Noncompliant [[sc=28;ec=29]] {{Also use the "u" flag to correctly handle non-ASCII letters.}}
-    String regexPart2 = "(?i:pättern)"; // Noncompliant [[sc=28;ec=29]] {{Also use the "u" flag to correctly handle non-ASCII letters.}}
+    String regexPart1 = "(?i:söme)"; // Noncompliant {{Also use the "u" flag to correctly handle non-ASCII letters.}}
+//                         ^
+    String regexPart2 = "(?i:pättern)"; // Noncompliant {{Also use the "u" flag to correctly handle non-ASCII letters.}}
+//                         ^
     str.matches(regexPart1 + regexPart2);
 
     // In these cases the location of the issue is a bit confusing, but code like this will probably not occur in the wild
-    str.matches("(?iu)söme (?-u)pättern"); // Noncompliant [[sc=20;ec=21]] {{Also use the "u" flag to correctly handle non-ASCII letters.}}
-    str.matches("(?iu)söme (?-U)pättern"); // Noncompliant [[sc=20;ec=21]] {{Also use the "u" flag to correctly handle non-ASCII letters.}}
+    str.matches("(?iu)söme (?-u)pättern"); // Noncompliant {{Also use the "u" flag to correctly handle non-ASCII letters.}}
+//                 ^
+    str.matches("(?iu)söme (?-U)pättern"); // Noncompliant {{Also use the "u" flag to correctly handle non-ASCII letters.}}
+//                 ^
   }
 
   void compliant(String str) {
@@ -52,7 +61,8 @@ public class UnicodeCaseCheck {
 
   @jakarta.validation.constraints.Email(
     regexp = "söme pättern",
-    flags = jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE // Noncompliant [[sc=13;ec=73]] {{Also use "Flag.UNICODE_CASE" to correctly handle non-ASCII letters.}}
+    flags = jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE // Noncompliant {{Also use "Flag.UNICODE_CASE" to correctly handle non-ASCII letters.}}
+//          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   )
   String jakartaEmail1;
 

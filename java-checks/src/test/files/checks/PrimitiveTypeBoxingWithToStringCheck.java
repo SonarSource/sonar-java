@@ -9,11 +9,13 @@ abstract class A {
     int myInt = 4;
     boolean myBoolean = true;
 
-    new Integer(myInt).toString(); // Noncompliant [[sc=5;ec=34]] {{Use "Integer.toString" instead.}}
+    new Integer(myInt).toString(); // Noncompliant {{Use "Integer.toString" instead.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     Integer.toString(myInt); // Compliant
     A.returnInteger(myInt).toString(); // Compliant
     Integer.valueOf(myInt).toString(); // Noncompliant {{Use "Integer.toString" instead.}}
-    bar(new Integer(myInt).toString()); // Noncompliant [[sc=9;ec=38]] {{Use "Integer.toString" instead.}}
+    bar(new Integer(myInt).toString()); // Noncompliant {{Use "Integer.toString" instead.}}
+//      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     new Boolean(myBoolean).toString(); // Noncompliant {{Use "Boolean.toString" instead.}}
     Boolean.toString(myBoolean); // Compliant

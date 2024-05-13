@@ -13,7 +13,8 @@ class AnnotationDefaultArgumentCheckSample {
 
   }
 
-  @MyAnnotationDefaultCheck(myName="myName", myInteger=2) // Noncompliant [[sc=29;ec=44]] {{Remove this default value assigned to parameter "myName".}}
+  @MyAnnotationDefaultCheck(myName="myName", myInteger=2) // Noncompliant {{Remove this default value assigned to parameter "myName".}}
+//                          ^^^^^^^^^^^^^^^
   void m1() { }
 
 }

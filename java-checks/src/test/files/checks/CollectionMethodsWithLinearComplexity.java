@@ -6,7 +6,8 @@ class A {
   final ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
 
   void foo() {
-    log.info("Queue contains " + queue.size() + " elements"); // Noncompliant [[sc=40;ec=44]] {{This call to "size()" may be a performance hot spot if the collection is large.}}
+    log.info("Queue contains " + queue.size() + " elements"); // Noncompliant {{This call to "size()" may be a performance hot spot if the collection is large.}}
+//                                     ^^^^
   }
 }
 

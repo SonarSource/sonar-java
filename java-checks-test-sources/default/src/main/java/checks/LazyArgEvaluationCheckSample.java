@@ -30,7 +30,7 @@ class LazyArgEvaluationCheckSample {
     logger.log(Level.SEVERE, "Something went wrong: " + person.name()); // false-negative getter has not the same logic than identifier
     logger.log(Level.SEVERE, person.name()); // Compliant - getters are OK
     logger.log(Level.SEVERE, person.age()); // Compliant - getters are OK
-    logger.log(Level.SEVERE, person.age("12")); // Noncompliant - not a getter
+    logger.log(Level.SEVERE, person.age("12")); // Noncompliant
   }
 
   public static void main(String[] args) {
@@ -38,17 +38,17 @@ class LazyArgEvaluationCheckSample {
 
     logger.log(Level.SEVERE, message); // Compliant
 
-    logger.log(Level.SEVERE, "Something went wrong: " + message);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.log(Level.SEVERE, "Something went wrong: " + message); // Noncompliant {{Use the built-in formatting to construct this argument.}}
 
     logger.log(Level.SEVERE, () -> "Something went wrong: " + message); // since Java 8, we can use Supplier , which will be evaluated lazily
 
-    checkState(System.currentTimeMillis() == new Date().getTime(), "Arg must be positive, but got " + System.currentTimeMillis());  // Noncompliant {{Invoke method(s) only conditionally. Use the built-in formatting to construct this argument.}}
+    checkState(System.currentTimeMillis() == new Date().getTime(), "Arg must be positive, but got " + System.currentTimeMillis()); // Noncompliant {{Invoke method(s) only conditionally. Use the built-in formatting to construct this argument.}}
 
-    Preconditions.checkState(System.currentTimeMillis() > 0, formatMessage());  // Noncompliant {{Invoke method(s) only conditionally. }}
+    Preconditions.checkState(System.currentTimeMillis() > 0, formatMessage()); // Noncompliant {{Invoke method(s) only conditionally. }}
 
-    checkState(System.currentTimeMillis() > 0, "message: %s", formatMessage());  // Noncompliant {{Invoke method(s) only conditionally. }}
+    checkState(System.currentTimeMillis() > 0, "message: %s", formatMessage()); // Noncompliant {{Invoke method(s) only conditionally. }}
 
-    checkState(System.currentTimeMillis() > 0, "message: %s", LazyArgEvaluationCheckSample.formatMessage());  // Noncompliant {{Invoke method(s) only conditionally. }}
+    checkState(System.currentTimeMillis() > 0, "message: %s", LazyArgEvaluationCheckSample.formatMessage()); // Noncompliant {{Invoke method(s) only conditionally. }}
   }
 
   public static void cachingOnDisk(File path) {
@@ -75,7 +75,7 @@ class LazyArgEvaluationCheckSample {
   }
 
   public void multiArgs() {
-    checkState(System.currentTimeMillis() > 0, "message: %s %s", formatMessage(), "Something went wrong: " + System.currentTimeMillis());  // Noncompliant
+    checkState(System.currentTimeMillis() > 0, "message: %s %s", formatMessage(), "Something went wrong: " + System.currentTimeMillis()); // Noncompliant
   }
 
   private static String formatMessage() {
@@ -92,22 +92,22 @@ class LazyArgEvaluationCheckSample {
   }
 
   void slf4j(String csvPath, boolean condition) {
-    slf4j.trace("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    slf4j.debug("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    slf4j.info("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    slf4j.warn("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.trace("Unable to open file " + csvPath, new RuntimeException()); // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.debug("Unable to open file " + csvPath, new RuntimeException()); // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.info("Unable to open file " + csvPath, new RuntimeException()); // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.warn("Unable to open file " + csvPath, new RuntimeException()); // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.error("Unable to open file " + csvPath, new RuntimeException()); // Noncompliant {{Use the built-in formatting to construct this argument.}}
 
-    slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant
-    slf4j.error("Unable to open file " + csvPath, new RuntimeException(), 1);  // Noncompliant
-    slf4j.error("Unable to open file " + csvPath, new RuntimeException(), 1, 2);  // Noncompliant
-    slf4j.error("Unable to open file " + csvPath, new RuntimeException(), 1, "vargs", "vargs", "vargs FTW!");  // Noncompliant
+    slf4j.error("Unable to open file " + csvPath, new RuntimeException()); // Noncompliant
+    slf4j.error("Unable to open file " + csvPath, new RuntimeException(), 1); // Noncompliant
+    slf4j.error("Unable to open file " + csvPath, new RuntimeException(), 1, 2); // Noncompliant
+    slf4j.error("Unable to open file " + csvPath, new RuntimeException(), 1, "vargs", "vargs", "vargs FTW!"); // Noncompliant
 
     Marker confidentialMarker = MarkerFactory.getMarker("CONFIDENTIAL");
-    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException());  // Noncompliant
-    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException(), 1);  // Noncompliant
-    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException(), 1, 2);  // Noncompliant
-    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException(), 1, "vargs", "vargs", "vargs FTW!");  // Noncompliant
+    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException()); // Noncompliant
+    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException(), 1); // Noncompliant
+    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException(), 1, 2); // Noncompliant
+    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException(), 1, "vargs", "vargs", "vargs FTW!"); // Noncompliant
 
     if (slf4j.isTraceEnabled()) {
       slf4j.trace("Unable to open file " + csvPath, new RuntimeException());  // Compliant - inside if test
@@ -125,18 +125,18 @@ class LazyArgEvaluationCheckSample {
       slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Compliant - inside if test
     }
     if (condition) {
-      slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant
+      slf4j.error("Unable to open file " + csvPath, new RuntimeException()); // Noncompliant
     }
   }
 
   void jul(String csvPath) {
-    logger.finest("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    logger.finer("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    logger.fine("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    logger.config("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    logger.info("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    logger.warning("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    logger.severe("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.finest("Unable to open file " + csvPath); // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.finer("Unable to open file " + csvPath); // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.fine("Unable to open file " + csvPath); // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.config("Unable to open file " + csvPath); // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.info("Unable to open file " + csvPath); // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.warning("Unable to open file " + csvPath); // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.severe("Unable to open file " + csvPath); // Noncompliant {{Use the built-in formatting to construct this argument.}}
 
     if (logger.isLoggable(Level.FINEST)) {
       logger.finest("Unable to open file " + csvPath);  // Compliant - inside if test

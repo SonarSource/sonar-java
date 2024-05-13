@@ -18,7 +18,8 @@ class NestedIfStatementsCheckSample {
       if (true) { // Compliant - 2
       } else {
         if (false) { // Compliant - 3
-          if (true) { // Noncompliant [[sc=11;ec=13;secondary=-1,-3,-4]] {{Refactor this code to not nest more than 3 if/for/while/switch/try statements.}}
+          if (true) { // Noncompliant {{Refactor this code to not nest more than 3 if/for/while/switch/try statements.}}
+//        ^^
             if (false) { // Compliant - 5
             }
           } else if (true) { // Compliant - 4
@@ -74,7 +75,7 @@ class NestedIfStatementsCheckSample {
           switch (foo) { // Noncompliant
           }
 
-          try {  // Noncompliant
+          try { // Noncompliant
           } catch (Exception e) {
           }
         }

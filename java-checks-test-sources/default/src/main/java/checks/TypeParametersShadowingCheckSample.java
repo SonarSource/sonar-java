@@ -5,13 +5,18 @@ import java.util.function.Function;
 
 public class TypeParametersShadowingCheckSample<T0> {
   class TypeParameterHidesAnotherType<T> {
-    public class Inner<T> { // Noncompliant [[sc=24;ec=25;secondary=-1]] {{Rename "T" which hides a type parameter from the outer scope.}}
+//                                    ^>
+    public class Inner<T> { // Noncompliant {{Rename "T" which hides a type parameter from the outer scope.}}
+//                     ^
       //...
     }
-    public class Inner2<T0> { // Noncompliant [[secondary=-5]] {{Rename "T0" which hides a type parameter from the outer scope.}}
+    public class Inner2<T0> { // Noncompliant {{Rename "T0" which hides a type parameter from the outer scope.}}
+//                      ^^
+//                                              ^^@-8<
       //...
     }
-    private <T> T method() { // Noncompliant [[sc=14;ec=15;secondary=-7]] {{Rename "T" which hides a type parameter from the outer scope.}}
+    private <T> T method() { // Noncompliant {{Rename "T" which hides a type parameter from the outer scope.}}
+//           ^
       return null;
     }
   }
@@ -29,21 +34,26 @@ public class TypeParametersShadowingCheckSample<T0> {
   }
 
   class MultipleHiding<T, Q> {
-    public class Inner<T> { // Noncompliant [[sc=24;ec=25;secondary=-1]] {{Rename "T" which hides a type parameter from the outer scope.}}
-      private <T> T method2() { // Noncompliant [[secondary=-2]] {{Rename "T" which hides a type parameter from the outer scope.}}
+    public class Inner<T> { // Noncompliant {{Rename "T" which hides a type parameter from the outer scope.}}
+//                     ^
+      private <T> T method2() { // Noncompliant {{Rename "T" which hides a type parameter from the outer scope.}}
         return null;
       }
-      private <Q> T method() { // Noncompliant [[sc=16;ec=17;secondary=-5]] {{Rename "Q" which hides a type parameter from the outer scope.}}
+      private <Q> T method() { // Noncompliant {{Rename "Q" which hides a type parameter from the outer scope.}}
+//             ^
+//                        ^@-7<
         return null;
       }
     }
-    private <T> T method2() { // Noncompliant [[secondary=-9]]
+    private <T> T method2() { // Noncompliant
       return null;
     }
   }
 
   class TypeExtend<E extends Comparable<E>, Q> {
-    public class Inner<E extends Q> { // Noncompliant [[sc=24;ec=25;secondary=-1]] {{Rename "E" which hides a type parameter from the outer scope.}}
+//                 ^>
+    public class Inner<E extends Q> { // Noncompliant {{Rename "E" which hides a type parameter from the outer scope.}}
+//                     ^
     }
     public class Inner2<P extends E> { // Compliant
     }
@@ -53,13 +63,19 @@ public class TypeParametersShadowingCheckSample<T0> {
     public class Inner<S> { // Compliant
       private <Q> T method() { // Compliant
         new Function<Integer, Integer>() {
-          class InnerAnonymousHidingT<T> { // Noncompliant [[secondary=-4]]
+          class InnerAnonymousHidingT<T> { // Noncompliant
+//                                    ^
+//                                     ^@-5<
             //...
           }
-          class InnerAnonymousHidingS<S> { // Noncompliant [[secondary=-6]]
+          class InnerAnonymousHidingS<S> { // Noncompliant
+//                                    ^
+//                     ^@-9<
             //...
           }
-          class InnerAnonymousHidingQ<Q> { // Noncompliant [[secondary=-8]]
+          class InnerAnonymousHidingQ<Q> { // Noncompliant
+//                                    ^
+//             ^@-13<
             //...
           }
           @Override
@@ -77,16 +93,18 @@ public class TypeParametersShadowingCheckSample<T0> {
     return null;
   }
   public static class Inner<T0, P, Q> { // Compliant, static member, T0 is not hiding anything
-    private <Q> Q method2() { // Noncompliant [[secondary=-1]]
+    private <Q> Q method2() { // Noncompliant
       return null;
     }
     // Actually hiding the one from the static class
-    private <T0> Q method3() { // Noncompliant [[secondary=-5]]
+    private <T0> Q method3() { // Noncompliant
       return null;
     }
     private static <P> P method1() { // Compliant, static member, not hiding anything
       new Function<Integer, Integer>() {
-        class InnerAnonymousHidingT<P> { // Noncompliant [[secondary=-2]]
+        class InnerAnonymousHidingT<P> { // Noncompliant
+//                                  ^
+//                  ^@-3<
           //...
         }
         @Override

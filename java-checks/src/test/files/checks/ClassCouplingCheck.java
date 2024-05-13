@@ -1,4 +1,5 @@
-class Foo { // Noncompliant [[sc=7;ec=10]] {{Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 21 to the maximum authorized 20 or less.}}
+class Foo { // Noncompliant {{Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 21 to the maximum authorized 20 or less.}}
+//    ^^^
   T1 a1;    // Foo is coupled to T1
   T2 a2;    // Foo is coupled to T2
   T3 a3;    // Foo is coupled to T3
@@ -30,7 +31,7 @@ class Bar {  // Compliant
   T2 a2;
 }
 
-class Baz {  // Noncompliant
+class Baz { // Noncompliant
   T1 a1;
   T2 a2;
   T3 a3;

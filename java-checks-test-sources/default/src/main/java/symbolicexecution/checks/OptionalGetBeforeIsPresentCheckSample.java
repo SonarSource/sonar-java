@@ -13,7 +13,7 @@ abstract class OptionalGetBeforeIsPresentCheckSample {
   }
 
   OptionalGetBeforeIsPresentCheckSample(Optional<String> s) {
-    s.get();  // Noncompliant {{Call "s.isPresent()" before accessing the value.}}
+    s.get(); // Noncompliant {{Call "s.isPresent()" before accessing the value.}}
     if (s.isPresent()) {
       s.get(); // Compliant
     }
@@ -99,7 +99,7 @@ abstract class OptionalGetBeforeIsPresentCheckSample {
 
   private void usingFilter3(Optional<String> op) {
     if (!op.filter(this::testSomething).isPresent()) {
-      op.get(); // Noncompliant - original optional may or may not be present, cannot know here by only testing the filtered optional
+      op.get(); // Noncompliant
       return;
     }
     op.get(); // Compliant - if op is not present, then filtered value will always be non present ->  unreachable when op not present
@@ -169,12 +169,14 @@ abstract class OptionalGetBeforeIsPresentCheckSample {
 class Location {
 
   void test() {
-    Stream.of(1,2,3).findFirst().get(); // Noncompliant [[sc=5;ec=33]]
+    Stream.of(1,2,3).findFirst().get(); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   void test2() {
     Optional<String> op = Optional.empty();
-    op.get(); // Noncompliant [[sc=5;ec=7]]
+    op.get(); // Noncompliant
+//  ^^
   }
 
 }

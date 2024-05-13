@@ -4,20 +4,29 @@ import javax.validation.constraints.Email;
 
 public class AnchorPrecedenceCheckSample {
 
-  @Email(regexp = "^a|b|c$") // Noncompliant [[sc=20;ec=27]]
+  @Email(regexp = "^a|b|c$") // Noncompliant
+//                 ^^^^^^^
   String email;
 
-  @jakarta.validation.constraints.Email(regexp = "^a|b|c$") // Noncompliant [[sc=51;ec=58]]
+  @jakarta.validation.constraints.Email(regexp = "^a|b|c$") // Noncompliant
+//                                                ^^^^^^^
   String email2;
 
   void noncompliant(String str) {
-    str.matches("^a|b|c$"); // Noncompliant [[sc=18;ec=25]] {{Group parts of the regex together to make the intended operator precedence explicit.}}
-    str.matches("^a|b|cd"); // Noncompliant [[sc=18;ec=25]]
-    str.matches("(?i)^a|b|cd"); // Noncompliant [[sc=18;ec=29]]
-    str.matches("(?i:^a|b|cd)"); // Noncompliant [[sc=22;ec=29]]
-    str.matches("a|b|c$"); // Noncompliant [[sc=18;ec=24]]
-    str.matches("\\Aa|b|c\\Z"); // Noncompliant [[sc=18;ec=29]]
-    str.matches("\\Aa|b|c\\z"); // Noncompliant [[sc=18;ec=29]]
+    str.matches("^a|b|c$"); // Noncompliant {{Group parts of the regex together to make the intended operator precedence explicit.}}
+//               ^^^^^^^
+    str.matches("^a|b|cd"); // Noncompliant
+//               ^^^^^^^
+    str.matches("(?i)^a|b|cd"); // Noncompliant
+//               ^^^^^^^^^^^
+    str.matches("(?i:^a|b|cd)"); // Noncompliant
+//                   ^^^^^^^
+    str.matches("a|b|c$"); // Noncompliant
+//               ^^^^^^
+    str.matches("\\Aa|b|c\\Z"); // Noncompliant
+//               ^^^^^^^^^^^
+    str.matches("\\Aa|b|c\\z"); // Noncompliant
+//               ^^^^^^^^^^^
   }
 
   void compliant(String str) {

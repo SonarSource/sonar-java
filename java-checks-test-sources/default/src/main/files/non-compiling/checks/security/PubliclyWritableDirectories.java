@@ -26,9 +26,9 @@ public class PubliclyWritableDirectories {
     map5.get("TMP");
     
     // Since Java 11
-    Path.of("\\Windows\\Temp\\my.txt"); // Noncompliant 
-    Path.of("\\Windows\\Temp\\", "my.txt"); // Noncompliant 
-    Path.of("\\Windows\\Temp\\", "my", "my.txt"); // Noncompliant 
+    Path.of("\\Windows\\Temp\\my.txt"); // Noncompliant
+    Path.of("\\Windows\\Temp\\", "my.txt"); // Noncompliant
+    Path.of("\\Windows\\Temp\\", "my", "my.txt"); // Noncompliant
     
   }
 }

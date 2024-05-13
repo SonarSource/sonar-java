@@ -30,7 +30,7 @@ public class UnpredictableSaltCheck {
     PBEKeySpec spec2 = new PBEKeySpec(chars, salt(), 1); // Compliant 
     PBEKeySpec spec3 = new PBEKeySpec(chars, sSalt, 1); // Compliant 
 
-    new PBEParameterSpec("notrandom".getBytes(), 10000);  // Noncompliant
+    new PBEParameterSpec("notrandom".getBytes(), 10000); // Noncompliant
     new PBEParameterSpec(sSalt, 10000);  // Compliant
   }
 

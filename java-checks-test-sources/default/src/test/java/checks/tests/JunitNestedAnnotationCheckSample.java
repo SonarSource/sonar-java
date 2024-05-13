@@ -17,7 +17,8 @@ public class JunitNestedAnnotationCheckSample { // Compliant, this class has som
     }
   }
 
-  class NotAnnotatedInnerClassWithOneTest { // Noncompliant [[sc=9;ec=42]] {{Add @Nested to this inner test class}}
+  class NotAnnotatedInnerClassWithOneTest { // Noncompliant {{Add @Nested to this inner test class}}
+//      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     @ParameterizedTest
     @ValueSource(strings = { "a", "b", "c" })
     void test(String value) {

@@ -9,7 +9,8 @@ class A {
       m3();
     } catch (MyException e) {
     } catch (MyException1 | MyException2 e) {
-    } catch (Exception e) { // Noncompliant [[sc=14;ec=23]] {{Catch a list of specific exception subtypes instead.}}
+    } catch (Exception e) { // Noncompliant {{Catch a list of specific exception subtypes instead.}}
+//           ^^^^^^^^^
     }
     try {
     } catch (MyException1 | Exception e) { // Noncompliant

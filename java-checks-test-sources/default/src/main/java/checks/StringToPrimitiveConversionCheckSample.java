@@ -4,7 +4,8 @@ import static java.lang.Integer.MAX_VALUE;
 
 class StringToPrimitiveConversionCheckSample {
   void ints(Integer integerParam) {
-    int i1 = new Integer("42").intValue(); // Noncompliant [[sc=14;ec=31]] {{Use "Integer.parseInt" for this string-to-int conversion.}}
+    int i1 = new Integer("42").intValue(); // Noncompliant {{Use "Integer.parseInt" for this string-to-int conversion.}}
+//           ^^^^^^^^^^^^^^^^^
     new Integer("42").intValue(); // Noncompliant
     int i2 = new Integer("42"); // Noncompliant
     int i3 = Integer.valueOf("42").intValue(); // Noncompliant

@@ -21,6 +21,7 @@ class AndroidMobileDatabaseEncryptionKeysCheckSample {
 
   void SQLiteDatabase_openOrCreateDatabase(String databasePath, SQLiteDatabaseHook hook, SQLiteDatabase.CursorFactory cursorFactory) {
     String password = "pwd";
+//                    ^^^^^>
     SQLiteDatabase database;
 
     database = new SQLiteDatabase("path", "pwd".toCharArray(), cursorFactory, 0); // Noncompliant
@@ -29,7 +30,8 @@ class AndroidMobileDatabaseEncryptionKeysCheckSample {
     char[] charArray = "pwd".toCharArray();
     database = new SQLiteDatabase("path", charArray, cursorFactory, 0); // Noncompliant
 
-    database = SQLiteDatabase.openOrCreateDatabase(databasePath, password, null, hook); // Noncompliant [[sc=66;ec=74;secondary=23]] {{The "password" parameter should not be hardcoded.}}
+    database = SQLiteDatabase.openOrCreateDatabase(databasePath, password, null, hook); // Noncompliant {{The "password" parameter should not be hardcoded.}}
+//                                                               ^^^^^^^^
     database = SQLiteDatabase.openOrCreateDatabase(databasePath, "test123", null); // Noncompliant
     database = SQLiteDatabase.openDatabase(databasePath, password, cursorFactory, 0); // Noncompliant
 

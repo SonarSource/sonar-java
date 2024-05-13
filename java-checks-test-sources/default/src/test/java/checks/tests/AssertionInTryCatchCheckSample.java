@@ -18,18 +18,22 @@ public class AssertionInTryCatchCheckSample {
     // Test secondary issue location
     try {
       throwAssertionError(); // This test will pass even if we comment this line!
-      org.junit.Assert.fail("Expected an AssertionError!"); // Noncompliant [[sc=24;ec=28;secondary=22]] {{Don't use fail() inside a try-catch catching an AssertionError.}}
+      org.junit.Assert.fail("Expected an AssertionError!"); // Noncompliant {{Don't use fail() inside a try-catch catching an AssertionError.}}
+//                     ^^^^
     } catch (AssertionError e) {}
+//           ^^^^^^^^^^^^^^<
   }
 
   @Test
   public void test_non_compliant2() {
     try {
       throwAssertionError(); // This test will pass even if we comment this line!
-      fail("Expected an AssertionError!"); // Noncompliant [[sc=7;ec=11;secondary=32]]
+      fail("Expected an AssertionError!"); // Noncompliant
+//    ^^^^
     } catch (IllegalStateException e) {
 
     } catch (AssertionError e) {}
+//           ^^^^^^^^^^^^^^<
   }
 
   @Test

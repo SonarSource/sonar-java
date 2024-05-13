@@ -4,7 +4,8 @@ class DynamicClassLoadCheckSample {
 
   public void method() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
     String className = System.getProperty("messageClassName");
-    Class clazz = Class.forName(className);  // Noncompliant [[sc=25;ec=32]]
+    Class clazz = Class.forName(className); // Noncompliant
+//                      ^^^^^^^
 
     ClassLoader loader = null;
     Object main = loader.loadClass(className).newInstance(); // Noncompliant

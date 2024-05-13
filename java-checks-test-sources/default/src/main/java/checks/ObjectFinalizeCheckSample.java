@@ -17,14 +17,15 @@ class ObjectFinalizeCheckSample {
 
   void foo() throws Throwable {
     Foo foo = new Foo();
-    foo.finalize();       // Noncompliant [[sc=9;ec=17]] {{Remove this call to finalize().}}
+    foo.finalize(); // Noncompliant {{Remove this call to finalize().}}
+//      ^^^^^^^^
     x = foo.finalize[0];  // Compliant
     foo.finalize(0);      // Compliant
     foo.toString();       // Compliant
     x = foo.finalize;     // Compliant
-    super.finalize();     // Noncompliant {{Remove this call to finalize().}}
-    this.finalize();      // Noncompliant {{Remove this call to finalize().}}
-    finalize();           // Noncompliant {{Remove this call to finalize().}}
+    super.finalize(); // Noncompliant {{Remove this call to finalize().}}
+    this.finalize(); // Noncompliant {{Remove this call to finalize().}}
+    finalize(); // Noncompliant {{Remove this call to finalize().}}
   }
 
   public int bar() {

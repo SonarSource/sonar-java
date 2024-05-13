@@ -49,10 +49,10 @@ class VolatileVariablesOperationsCheck {
   }
 
   public boolean toggleBooleans(){
-    boo1 = !boo1;  // Noncompliant {{Use an "AtomicBoolean" for this field; its operations are atomic.}}
-    boo1 = (!boo1);  // Noncompliant
-    boo1 = !(boo1);  // Noncompliant
-    this.boo1 = (!this.boo1);  // Noncompliant
+    boo1 = !boo1; // Noncompliant {{Use an "AtomicBoolean" for this field; its operations are atomic.}}
+    boo1 = (!boo1); // Noncompliant
+    boo1 = !(boo1); // Noncompliant
+    this.boo1 = (!this.boo1); // Noncompliant
     boo2 = !boo2;
     boo2 = !boo1;
     this.boo2 = (!this.boo1);

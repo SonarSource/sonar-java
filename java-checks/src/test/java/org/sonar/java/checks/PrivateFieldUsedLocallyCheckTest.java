@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -38,10 +37,9 @@ class PrivateFieldUsedLocallyCheckTest {
 
   @Test
   void test_quick_fixes() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/PrivateFieldUsedLocallyCheckSample.java"))
       .withCheck(new PrivateFieldUsedLocallyCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

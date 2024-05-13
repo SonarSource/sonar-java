@@ -3,7 +3,8 @@ class BadConstantName {
   static final long serialVersionUID = 42L;
 
   public static final int GOOD_CONSTANT = 0;
-  public static final int bad_constant = 0; // Noncompliant [[sc=27;ec=39]] {{Rename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.}}
+  public static final int bad_constant = 0; // Noncompliant {{Rename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.}}
+//                        ^^^^^^^^^^^^
   public static int static_field;
   public final int final_field = 0;
   public static final Object object = 0;

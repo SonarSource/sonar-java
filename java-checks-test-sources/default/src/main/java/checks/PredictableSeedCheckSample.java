@@ -9,7 +9,8 @@ class S4347 {
   private final byte[] arr4 = new byte[] {21, 12};
 
   void fun(String param) throws Exception {
-    new SecureRandom().setSeed(123456L); // Noncompliant [[sc=32;ec=39]] {{Change this seed value to something unpredictable, or remove the seed.}}
+    new SecureRandom().setSeed(123456L); // Noncompliant {{Change this seed value to something unpredictable, or remove the seed.}}
+//                             ^^^^^^^
 
     new SecureRandom("abcdefghijklmnop".getBytes("us-ascii")); // Noncompliant
     new SecureRandom(param.getBytes("us-ascii"));

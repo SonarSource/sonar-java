@@ -6,10 +6,12 @@ import java.util.List;
 class MissingCurlyBraces {
 
   void method(boolean condition) {
-    if (condition) doSomething(); // Noncompliant [[sc=5;ec=7]] {{Missing curly brace.}}
+    if (condition) doSomething(); // Noncompliant {{Missing curly brace.}}
+//  ^^
 
     if (condition) doSomething(); // Noncompliant
-    else doSomethingElse(); // Noncompliant [[sc=5;ec=9]]
+    else doSomethingElse(); // Noncompliant
+//  ^^^^
 
     if (condition) {
     } else doSomething(); // Noncompliant
@@ -25,13 +27,15 @@ class MissingCurlyBraces {
     } else if (condition) {
     }
 
-    for (int i = 0; i < 10; i++) doSomething(); // Noncompliant [[sc=5;ec=8]]
+    for (int i = 0; i < 10; i++) doSomething(); // Noncompliant
+//  ^^^
 
     for (int i = 0; i < 10; i++) {
     }
 
     List<String> list = new ArrayList<>();
-    for (String s: list) doSomething(); // Noncompliant [[sc=5;ec=8]]
+    for (String s: list) doSomething(); // Noncompliant
+//  ^^^
 
     while (condition) doSomething(); // Noncompliant
 
@@ -65,8 +69,10 @@ class MissingCurlyBraces {
 
     if (condition) return 1;something(); // Compliant, S2681 raises an issue here
 
-    if (condition) return 1; else { doSomethingElse(); }// Noncompliant [[sc=5;ec=7]]
-    if (condition) return 1; else if (condition) { doSomethingElse(); } // Noncompliant [[sc=5;ec=7]]
+    if (condition) return 1; else { doSomethingElse(); } // Noncompliant
+//  ^^
+    if (condition) return 1; else if (condition) { doSomethingElse(); } // Noncompliant
+//  ^^
 
     if (condition) return 1; // Noncompliant
     else doSomethingElse(); // Noncompliant

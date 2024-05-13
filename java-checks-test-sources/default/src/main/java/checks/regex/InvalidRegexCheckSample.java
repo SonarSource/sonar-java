@@ -5,14 +5,20 @@ import java.util.regex.Pattern;
 public class InvalidRegexCheckSample {
 
   void noncompliant(String str) {
-    Pattern.compile("("); // Noncompliant [[sc=23;ec=24;secondary=8]] {{Fix the syntax error inside this regex.}}
+    Pattern.compile("("); // Noncompliant {{Fix the syntax error inside this regex.}}
+//                    ^
+//                    ^@-1<
 
     str.matches("("); // Noncompliant
     str.replaceAll("(", "{"); // Noncompliant
 
-    str.replaceAll("x{1,2,3}|(", "x"); // Noncompliant [[sc=26;ec=27;secondary=13,13]] {{Fix the syntax errors inside this regex.}}
+    str.replaceAll("x{1,2,3}|(", "x"); // Noncompliant {{Fix the syntax errors inside this regex.}}
+//                       ^
+//                       ^@-1<^@-1<
 
-    str.matches("(\\w+-(\\d+)"); // Noncompliant [[sc=30;ec=31;secondary=15]] {{Fix the syntax error inside this regex.}}
+    str.matches("(\\w+-(\\d+)"); // Noncompliant {{Fix the syntax error inside this regex.}}
+//                           ^
+//                           ^@-1<
   }
 
   void compliant(String str) {
@@ -35,7 +41,9 @@ public class InvalidRegexCheckSample {
     str.matches("(?<name>\\w+)-\\k<name>");
   }
 
-  @javax.validation.constraints.Pattern(regexp = "(") // Noncompliant [[sc=52;ec=53;secondary=38]] {{Fix the syntax error inside this regex.}}
+  @javax.validation.constraints.Pattern(regexp = "(") // Noncompliant {{Fix the syntax error inside this regex.}}
+//                                                 ^
+//                                                 ^@-1<
   String pattern;
 
   void unicode16(String str) {

@@ -15,7 +15,8 @@ class SAXReaderTest {
 
   // Vulnerable when nothing is made to protect against xxe
   SAXReader no_property() {
-    SAXReader xmlReader = new SAXReader();  // Noncompliant [[sc=31;ec=40]] {{Disable access to external entities in XML parsing.}}
+    SAXReader xmlReader = new SAXReader(); // Noncompliant {{Disable access to external entities in XML parsing.}}
+//                            ^^^^^^^^^
     return xmlReader;
   }
 
@@ -55,7 +56,7 @@ class SAXReaderTest {
 
   // "universal fix" not supported
   SAXReader univeral_fix() throws SAXException, ParserConfigurationException {
-    SAXReader xmlReader = new SAXReader();  // Noncompliant
+    SAXReader xmlReader = new SAXReader(); // Noncompliant
     xmlReader.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     xmlReader.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
     return xmlReader;

@@ -32,19 +32,25 @@ import static java.lang.System.getProperty;
 
 public class HardCodedCredentialsShouldNotBeUsedCheckSample {
   static final String FINAL_SECRET_STRING = "hunter2";
+//                                          ^^^^^^^^^>
   static final byte[] FINAL_SECRET_BYTE_ARRAY = FINAL_SECRET_STRING.getBytes(StandardCharsets.UTF_8);
+//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
   private static String secretStringField = "hunter2";
   private static byte[] secretByteArrayField = new byte[]{0xC, 0xA, 0xF, 0xE};
   private static char[] secretCharArrayField = new char[]{0xC, 0xA, 0xF, 0xE};
   private static CharSequence secretCharSequenceField = "Hello, World!".subSequence(0, 12);
 
   public static void nonCompliant(byte[] message, boolean condition, Charset encoding, SignatureAlgorithm paremSignatureAlgorithm) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException, jakarta.servlet.ServletException {
-    String effectivelyConstantString = "s3cr37";
-    byte[] key = effectivelyConstantString.getBytes();
-
     // byte array based
-    SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant [[sc=20;ec=43;secondary=-11,-12]] {{Revoke and change this password, as it is compromised.}}
-    SHA256.getHMAC(key, message);  // Noncompliant [[sc=20;ec=23;secondary=-4,-5]]
+    SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant {{Revoke and change this password, as it is compromised.}}
+//                 ^^^^^^^^^^^^^^^^^^^^^^^
+
+    String effectivelyConstantString = "s3cr37";
+//                                     ^^^^^^^^>
+    byte[] key = effectivelyConstantString.getBytes();
+//               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
+    SHA256.getHMAC(key, message); // Noncompliant
+//                 ^^^
     SHA256.getHMAC(effectivelyConstantString.getBytes(), message); // Noncompliant
     SHA256.getHMAC("anotherS3cr37".getBytes(), message); // Noncompliant
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes(), message); // Noncompliant
@@ -56,18 +62,36 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
-    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=-17]]
-    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=-26]]
+    request.login("user", effectivelyConstantString); // Noncompliant
+//                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    request.login("user", FINAL_SECRET_STRING); // Noncompliant
+//                        ^^^^^^^^^^^^^^^^^^^
     String plainTextSecret = new String("BOOM");
+//                           ^^^^^^^^^^^^^^^^^^>
     request.login("user", plainTextSecret); // Noncompliant
+//                        ^^^^^^^^^^^^^^^
     request.login("user", new String("secret")); // Noncompliant
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, 0, 7)); // Noncompliant
+//                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@36<
+//                                          ^^^^^^^^^@34<
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, encoding)); // Noncompliant
+//                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@36<
+//                                          ^^^^^^^^^@34<
+
     String conditionalButPredictable = condition ? FINAL_SECRET_STRING : plainTextSecret;
-    request.login("user", conditionalButPredictable); // Noncompliant [[sc=27;ec=52;secondary=-33,-6,-1]]
-    request.login("user", Json.MEDIA_TYPE); // Noncompliant [[sc=27;ec=42]]
+//                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
+    request.login("user", conditionalButPredictable); // Noncompliant
+//                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+//                                          ^^^^^^^^^@34<
+//                           ^^^^^^^^^^^^^^^^^^@69<
+    request.login("user", Json.MEDIA_TYPE); // Noncompliant
+//                        ^^^^^^^^^^^^^^^
     String concatenatedPassword = "abc" + true + ":" + 12 + ":" + 43L + ":" + 'a' + ":" + 0.2f + ":" + 0.2d;
-    request.login("user", concatenatedPassword); // Noncompliant [[sc=27;ec=47;secondary=-1]]
+//                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
+    request.login("user", concatenatedPassword); // Noncompliant
+//                        ^^^^^^^^^^^^^^^^^^^^
 
     jakarta.servlet.http.HttpServletRequest requestJakarta = new jakarta.servlet.http.HttpServletRequestWrapper(null);
     requestJakarta.login("user", "password"); // Noncompliant
@@ -76,17 +100,23 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
     store.getKey("", new char[]{0xC, 0xA, 0xF, 0xE}); // Noncompliant
 
     char[] password = new char[]{0xC, 0xA, 0xF, 0xE};
-    store.getKey("", password); // Noncompliant [[sc=22;ec=30;secondary=-1]]
+//                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
+    store.getKey("", password); // Noncompliant
+//                   ^^^^^^^^
 
     String passwordAsString = "hunter2";
-    store.getKey("", passwordAsString.toCharArray()); // Noncompliant [[sc=22;ec=52]]
+    store.getKey("", passwordAsString.toCharArray()); // Noncompliant
+//                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     char[] reassignedArray;
+//  ^^^^^^^^^^^^^^^^^^^^^^^>
     reassignedArray = new char[]{'a', 'b', 'c', 'd', 'e', 'f'};
     reassignedArray = new char[]{'a', 'b', 'c', 'd', 'e', 'f'};
-    store.getKey("", reassignedArray); // Noncompliant [[sc=22;ec=37;secondary=-3]]
+    store.getKey("", reassignedArray); // Noncompliant
+//                   ^^^^^^^^^^^^^^^
 
-    Encryptors.delux(effectivelyConstantString.subSequence(0, effectivelyConstantString.length()), effectivelyConstantString); // Noncompliant [[sc=22;ec=98]]
+    Encryptors.delux(effectivelyConstantString.subSequence(0, effectivelyConstantString.length()), effectivelyConstantString); // Noncompliant
+//                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     Encryptors.delux("password".subSequence(0, 0), "salt"); // Noncompliant
 
     new Pbkdf2PasswordEncoder("secret"); // Noncompliant

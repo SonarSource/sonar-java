@@ -9,7 +9,7 @@ class TrailingCommentCheckSample {
   int a = 0; //    Compliant
   int b = 0; /*    Compliant   */
   int c = 0; // Noncompliant {{Move this trailing comment on the previous empty line.}}
-  int d = 0; // Noncompliant This is also non-compliant
+  int d = 0;
 
   int e = /* Compliant */ 0;
   int f = 0; // NOSONAR
@@ -21,7 +21,7 @@ class TrailingCommentCheckSample {
 
   void foo() {
     int[] m = new int[2];
-    if (i == 0) { // Noncompliant This is non-compliant
+    if (i == 0) {
       m[0] = 1;
     }
   }

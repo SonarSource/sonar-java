@@ -32,7 +32,8 @@ public class JUnit3Test extends junit.framework.TestCase {
     assertTrue(true);
   }
 }
-class B extends junit.framework.TestCase { // Noncompliant [[sc=7;ec=8]] {{Add some tests to this class.}}
+class B extends junit.framework.TestCase { // Noncompliant {{Add some tests to this class.}}
+//    ^
   void foo() {
   }
 }
@@ -56,22 +57,26 @@ class TestJUnit4WithJUnit3 { // Compliant, even if surefire-plugin includes this
   }
 }
 
-class JUnit4WithJUnit3Test { // Noncompliant [[sc=7;ec=27]]
+class JUnit4WithJUnit3Test { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^^^
   public void test() { // Simply naming test is not enough for JUnit 4
   }
 }
 
-class JUnit4WithJUnit3Tests { // Noncompliant [[sc=7;ec=28]]
+class JUnit4WithJUnit3Tests { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^^^^
   public void test() {
   }
 }
 
-class JUnit4WithJUnit3TestCase { // Noncompliant [[sc=7;ec=31]]
+class JUnit4WithJUnit3TestCase { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^^^^^^^
   public void test() {
   }
 }
 
-class ATest { // Noncompliant [[sc=7;ec=12]] {{Add some tests to this class.}}
+class ATest { // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^
   @Deprecated
   void foo() {
     new AnonymousClass() {
@@ -111,7 +116,8 @@ public class FooTest {
 }
 
 @org.testng.annotations.Test
-public class TestNGClassTest { // Noncompliant  [[sc=14;ec=29]]
+public class TestNGClassTest { // Noncompliant
+//           ^^^^^^^^^^^^^^^
   public int field;
   private void test1() { }
   public static void foo() {}
@@ -146,16 +152,19 @@ public class MyCucumber2Test { // no issue
 }
 
 @RunWith(MyRunner.class)
-public class MyCucumber3Test { // Noncompliant [[sc=14;ec=29]] - not recognized
+public class MyCucumber3Test { // Noncompliant
+//           ^^^^^^^^^^^^^^^
 }
 @RunWith(getRunner())
-public class MyCucumber4Test { // Noncompliant [[sc=14;ec=29]] - does not compile, not a class literal
+public class MyCucumber4Test { // Noncompliant
+//           ^^^^^^^^^^^^^^^
   public Class<? extends Runner> getRunner() {
     return null;
   }
 }
 @RunWith(value1= MyRunner.class, value2= YourRunner.class)
-public class MyCucumber5Test { // Noncompliant [[sc=14;ec=29]] - does not compile, not a class literal
+public class MyCucumber5Test { // Noncompliant
+//           ^^^^^^^^^^^^^^^
 }
 
 public class CTest {
@@ -164,7 +173,8 @@ public class CTest {
     assertThat(new A().foo(null)).isEqualTo(0);
   }
 }
-public class DTest { // Noncompliant [[sc=14;ec=19]] {{Add some tests to this class.}}
+public class DTest { // Noncompliant {{Add some tests to this class.}}
+//           ^^^^^
   public void testFoo() {
     assertThat(new A().foo(null)).isEqualTo(0);
   }
@@ -257,7 +267,8 @@ class NestedTest { // Compliant
   }
 }
 
-class NoTestsInNestedTest { // Noncompliant [[sc=7;ec=26]] {{Add some tests to this class.}}
+class NoTestsInNestedTest { // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^^^^^^^^^^^^^^^
   @Nested
   class NestedClass {
     public void foo() {
@@ -266,7 +277,8 @@ class NoTestsInNestedTest { // Noncompliant [[sc=7;ec=26]] {{Add some tests to t
   }
 }
 
-class SomeTest implements SomeInterface { }// Noncompliant [[sc=7;ec=15]] {{Add some tests to this class.}}
+class SomeTest implements SomeInterface { } // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^^^^
 
 interface SomeInterface {
   class Foo implements SomeInterface { }
@@ -274,7 +286,8 @@ interface SomeInterface {
 
 
 @RunWith(ZohhakRunner.class)
-public class MyZohhakTest { // Noncompliant [[sc=14;ec=26]]
+public class MyZohhakTest { // Noncompliant
+//           ^^^^^^^^^^^^
 }
 
 @RunWith(ZohhakRunner.class)

@@ -24,7 +24,8 @@ abstract class Junit4Test {
   }
 
   @Test
-  public void contains_no_assertions() { // Noncompliant [[sc=15;ec=37]] {{Add at least one assertion to this test case.}}
+  public void contains_no_assertions() { // Noncompliant {{Add at least one assertion to this test case.}}
+//            ^^^^^^^^^^^^^^^^^^^^^^
   }
 
   @Nullable

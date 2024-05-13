@@ -10,7 +10,8 @@ class HttpServletAJakarta {
 }
 
 class HttpServletBJakarta extends HttpServlet {
-  private String userName; // Noncompliant [[sc=18;ec=26]] {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
+  private String userName; // Noncompliant {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
+//               ^^^^^^^^
   private static String staticVar;
   private final String finalVar;
   private String storageType;
@@ -56,11 +57,12 @@ class HttpServletDJakarta extends HttpServlet {
 
 public class ServletInstanceFieldCheckJakarta extends HttpServlet {
   @org.springframework.beans.factory.annotation.Autowired
-  private javax.sql.DataSource myDB; // Noncompliant - filtered by the SpringFilter
+  private javax.sql.DataSource myDB; // Noncompliant
 }
 
 class HttpServletEJakarta extends HttpServlet {
-  private String userName; // Noncompliant [[sc=18;ec=26]] {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
+  private String userName; // Noncompliant {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
+//               ^^^^^^^^
   private final String finalVar;
   private String storageType; // Compliant, initialized in init() method
 

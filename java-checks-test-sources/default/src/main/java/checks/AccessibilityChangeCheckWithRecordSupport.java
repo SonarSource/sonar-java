@@ -15,12 +15,12 @@ public class AccessibilityChangeCheckWithRecordSupport {
       this.getClass().getField("name").set(this, "B"); // Compliant because reported by S6216
 
       // Wrong getClass
-      getClass(null).getField("name").setAccessible(true); // Noncompliant because not recognized as a Record
-      getClass(null).getField("name").set(this, "B"); // Noncompliant because not recognized as a Record
+      getClass(null).getField("name").setAccessible(true); // Noncompliant
+      getClass(null).getField("name").set(this, "B"); // Noncompliant
 
       Class getClass = null;
-      getClass.getField("name").setAccessible(true); // Noncompliant because not recognized as a Record
-      getClass.getField("name").set(this, "B"); // Noncompliant because not recognized as a Record
+      getClass.getField("name").setAccessible(true); // Noncompliant
+      getClass.getField("name").set(this, "B"); // Noncompliant
     }
   }
 
@@ -47,19 +47,19 @@ public class AccessibilityChangeCheckWithRecordSupport {
     Person.class.getDeclaredFields()[0].set(person, "B"); // Compliant because reported by S6216
 
     Field someMagicField = getAField();
-    someMagicField.setAccessible(true); // Noncompliant FP Not exploring fields retrieved from non standard methods
-    someMagicField.set(person, "B"); // Noncompliant FP Not exploring fields retrieved from non standard methods
+    someMagicField.setAccessible(true); // Noncompliant
+    someMagicField.set(person, "B"); // Noncompliant
 
-    getAField().setAccessible(true); // Noncompliant FP Not exploring fields retrieved from non standard methods
-    getAField().set(person, "B"); // Noncompliant FP Not exploring fields retrieved from non standard methods
+    getAField().setAccessible(true); // Noncompliant
+    getAField().set(person, "B"); // Noncompliant
 
     Field nullInitializedField = null;
-    nullInitializedField.setAccessible(true); // Noncompliant FP Not exploring fields retrieved from non standard methods
-    nullInitializedField.set(person, "B"); // Noncompliant FP Not exploring fields retrieved from non standard methods
+    nullInitializedField.setAccessible(true); // Noncompliant
+    nullInitializedField.set(person, "B"); // Noncompliant
 
     Field fieldFromDynamicallyLoadedClass = Class.forName("org.sonar.some.package.SomeClass").getDeclaredField("");
-    fieldFromDynamicallyLoadedClass.setAccessible(true); // Noncompliant FP Not exploring fields retrieved from non standard methods
-    fieldFromDynamicallyLoadedClass.set(person, "B"); // Noncompliant FP Not exploring fields retrieved from non standard methods
+    fieldFromDynamicallyLoadedClass.setAccessible(true); // Noncompliant
+    fieldFromDynamicallyLoadedClass.set(person, "B"); // Noncompliant
 
     Class<? extends Record> someType = Person.class;
     someType.getFields()[0].setAccessible(true); // Compliant because reported by S6216

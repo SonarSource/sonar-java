@@ -3,7 +3,8 @@ abstract class A {
 
   abstract void method();
 }
-abstract class B { // Noncompliant [[sc=16;ec=17]] {{Convert the abstract class "B" into an interface.}}
+abstract class B { // Noncompliant {{Convert the abstract class "B" into an interface.}}
+//             ^
   int method(){
     return 1;
   }

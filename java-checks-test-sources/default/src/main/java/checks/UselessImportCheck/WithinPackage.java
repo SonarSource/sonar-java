@@ -14,14 +14,17 @@ import a.b.c.NonCompliant; // Noncompliant
 import a.b.c.MyAnnotation1;
 import a.b.c.MyAnnotation2;
 import a.b.c.MyAnnotation3;
-import java.lang.String;           // Noncompliant [[sc=8;ec=24]] {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
-import java.lang.*;                 // Noncompliant [[sc=8;ec=19]] {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
-import a.b.c.Foo;                   // Noncompliant [[sc=8;ec=17]] {{Remove this duplicated import.}}
+import java.lang.String; // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
+//     ^^^^^^^^^^^^^^^^
+import java.lang.*; // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
+//     ^^^^^^^^^^^
+import a.b.c.Foo; // Noncompliant {{Remove this duplicated import.}}
+//     ^^^^^^^^^
 
-import checks.UselessImportCheck.*;              // Noncompliant {{Remove this unnecessary import: same package classes are always implicitly imported.}}
+import checks.UselessImportCheck.*; // Noncompliant {{Remove this unnecessary import: same package classes are always implicitly imported.}}
 
 import com.google.common.collect.ImmutableList;
-import pkg.NonCompliant1;           // Noncompliant
+import pkg.NonCompliant1; // Noncompliant
 import javax.annotation.ParametersAreNonnullByDefault; // Noncompliant
 import pkg.CompliantClass1;
 import pkg.CompliantClass2;

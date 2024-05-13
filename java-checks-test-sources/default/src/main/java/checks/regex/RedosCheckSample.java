@@ -5,10 +5,12 @@ import javax.validation.constraints.Email;
 
 public class RedosCheckSample {
 
-  @Email(regexp = "(.*-)*@.*") // Noncompliant [[sc=4;ec=9]] {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
+  @Email(regexp = "(.*-)*@.*") // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
+// ^^^^^
   String email;
 
-  @jakarta.validation.constraints.Email(regexp = "(.*-)*@.*") // Noncompliant [[sc=4;ec=40]] {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
+  @jakarta.validation.constraints.Email(regexp = "(.*-)*@.*") // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   String email2;
 
   void realWorldExamples(String str) {
@@ -27,7 +29,8 @@ public class RedosCheckSample {
   }
 
   void alwaysExponential(String str) {
-    str.matches("(.*,)*?"); // Noncompliant [[sc=9;ec=16]] {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("(.*,)*?"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
+//      ^^^^^^^
     str.matches("(.?,)*?"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
     str.matches("(a|.a)*?"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
     str.matches("(?:.*,)*(X)\\1"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}

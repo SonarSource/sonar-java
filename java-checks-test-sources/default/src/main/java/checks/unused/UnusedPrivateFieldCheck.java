@@ -6,11 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Optional;
 
-import javax.validation.constraints.NotNull;
-
 class UnusedPrivateFieldCheck {
 
-  private int unusedField; // Noncompliant [[sc=15;ec=26]] {{Remove this unused "unusedField" private field.}}
+  private int unusedField; // Noncompliant {{Remove this unused "unusedField" private field.}}
+//            ^^^^^^^^^^^
 
   int usedField; // Compliant
 
@@ -97,41 +96,63 @@ class UnusedPrivateFieldCheckTestSonar {
 
 class UnusedPrivateFieldCheckQuickfix {
 
-  private String unusedField; // Noncompliant [[sc=18;ec=29;quickfixes=qf0]]
+  private String unusedField; // Noncompliant [[quickfixes=qf0]]
+//               ^^^^^^^^^^^
   //  fix@qf0 {{Remove this unused private field}}
   // edit@qf0 [[sc=3;ec=30]]{{}}
 
   private String usedField;
 
-  private String unusedFirst, usedSecond; // Noncompliant [[sc=18;ec=29;quickfixes=qf1]]
+  private String unusedFirst, usedSecond; // Noncompliant [[quickfixes=qf1]]
+//               ^^^^^^^^^^^
   //  fix@qf1 {{Remove this unused private field}}
   // edit@qf1 [[sc=18;ec=31]]{{}}
 
-  private String usedFirst, unusedSecond; // Noncompliant [[sc=29;ec=41;quickfixes=qf2]]
+  void split(){
+    // The CommentLinesVisitor has a bug when scanning more fields declared on the same line like the following 2 fields
+    // To fix it a non-comment block of code is needed between them and the comments above
+  }
+
+  private String usedFirst, unusedSecond; // Noncompliant [[quickfixes=qf2]]
+//                          ^^^^^^^^^^^^
   //  fix@qf2 {{Remove this unused private field}}
   // edit@qf2 [[sc=27;ec=41]]{{}}
 
-  private static int unusedStatic; // Noncompliant [[sc=22;ec=34;quickfixes=qf3]]
+  void split2(){}
+
+  private static int unusedStatic; // Noncompliant [[quickfixes=qf3]]
+//                   ^^^^^^^^^^^^
   //  fix@qf3 {{Remove this unused private field}}
   // edit@qf3 [[sc=3;ec=35]]{{}}
 
-  private final int unusedFinal = 0; // Noncompliant [[sc=21;ec=32;quickfixes=qf4]]
+  private final int unusedFinal = 0; // Noncompliant [[quickfixes=qf4]]
+//                  ^^^^^^^^^^^
   //  fix@qf4 {{Remove this unused private field}}
   // edit@qf4 [[sc=3;ec=37]]{{}}
 
-  private static final int unusedStaticFinal = 0; // Noncompliant [[sc=28;ec=45;quickfixes=qf5]]
+  private static final int unusedStaticFinal = 0; // Noncompliant [[quickfixes=qf5]]
+//                         ^^^^^^^^^^^^^^^^^
   //  fix@qf5 {{Remove this unused private field}}
   // edit@qf5 [[sc=3;ec=50]]{{}}
 
-  private static int unusedStaticFirst, usedStaticSecond; // Noncompliant [[sc=22;ec=39;quickfixes=qf6]]
+  void split3(){}
+
+  private static int unusedStaticFirst, usedStaticSecond; // Noncompliant [[quickfixes=qf6]]
+//                   ^^^^^^^^^^^^^^^^^
   //  fix@qf6 {{Remove this unused private field}}
   // edit@qf6 [[sc=22;ec=41]]{{}}
 
-  private final int unusedFinalFirst = 0, usedFinalSecond = 0; // Noncompliant [[sc=21;ec=37;quickfixes=qf7]]
+  void split4(){}
+
+  private final int unusedFinalFirst = 0, usedFinalSecond = 0; // Noncompliant [[quickfixes=qf7]]
+//                  ^^^^^^^^^^^^^^^^
   //  fix@qf7 {{Remove this unused private field}}
   // edit@qf7 [[sc=21;ec=43]]{{}}
 
-  private static final int unusedStaticFinalFirst = 0, usedStaticFinalSecond = 0; // Noncompliant [[sc=28;ec=50;quickfixes=qf8]]
+  void split5(){}
+
+  private static final int unusedStaticFinalFirst = 0, usedStaticFinalSecond = 0; // Noncompliant [[quickfixes=qf8]]
+//                         ^^^^^^^^^^^^^^^^^^^^^^
   //  fix@qf8 {{Remove this unused private field}}
   // edit@qf8 [[sc=28;ec=56]]{{}}
 
@@ -141,7 +162,8 @@ class UnusedPrivateFieldCheckQuickfix {
   /**
    * This documentation should be removed as part of the quickfix
    */
-  private static final int FIELD_WITH_JAVADOC = 42; // Noncompliant [[sc=28;ec=46;quickfixes=qf9]]
+  private static final int FIELD_WITH_JAVADOC = 42; // Noncompliant [[quickfixes=qf9]]
+//                         ^^^^^^^^^^^^^^^^^^
   //  fix@qf9 {{Remove this unused private field}}
   // edit@qf9 [[sl=-3;sc=3;el=+0;ec=52]]{{}}
 

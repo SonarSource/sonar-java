@@ -126,11 +126,13 @@ class MutableMembersUsageCheckSample {
   }
 
   public String [] getStrings() {
-    return strings; // Noncompliant [[sc=12;ec=19]] {{Return a copy of "strings".}}
+    return strings; // Noncompliant {{Return a copy of "strings".}}
+//         ^^^^^^^
   }
 
   public void setStringsFromGiven(String [] given) {
-    strings = given; // Noncompliant [[sc=15;ec=20]] {{Store a copy of "given".}}
+    strings = given; // Noncompliant {{Store a copy of "given".}}
+//            ^^^^^
   }
 
   public List<String> getMutableList() {
@@ -449,7 +451,7 @@ class MutableMembersUsageCheckSampleEmptyArrayExample {
     return EMPTY_SEVERAL_DIMS;
   }
   public int[] getValues3() {
-    return NOT_EMPTY;// Noncompliant
+    return NOT_EMPTY; // Noncompliant
   }
   public int[][][] getValues4() {
     return NOT_EMPTY_SEVERAL_DIMS; // Noncompliant

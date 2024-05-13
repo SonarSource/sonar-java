@@ -19,7 +19,7 @@ public class DebugFeatureEnabledCheckSample {
   }
 
   private void androidWebView(WebViewFactoryProvider.Statics statics) {
-    WebView.setWebContentsDebuggingEnabled(true); // Noncompliant [[sc=13;ec=43] {{Make sure this debug feature is deactivated before delivering the code in production.}}
+    WebView.setWebContentsDebuggingEnabled(true); // Noncompliant {{Make sure this debug feature is deactivated before delivering the code in production.}}
     WebView.setWebContentsDebuggingEnabled(false);
     statics.setWebContentsDebuggingEnabled(true); // Noncompliant
     statics.setWebContentsDebuggingEnabled(false);
@@ -64,13 +64,13 @@ public class DebugFeatureEnabledCheckSample {
   }
 
   void foo(WebSecurity web, boolean cond){
-    web.debug(true);   // Noncompliant [sc=9;ec=14] {{Make sure this debug feature is deactivated before delivering the code in production.}}
+    web.debug(true); // Noncompliant {{Make sure this debug feature is deactivated before delivering the code in production.}}
     web.debug(false);
     web.debug(cond);
   }
 
   public WebSecurityCustomizer debugCustomizer() {
-    return (web) -> web.debug(true); // Noncompliant [sc=25;ec=30] {{Make sure this debug feature is deactivated before delivering the code in production.}}
+    return (web) -> web.debug(true); // Noncompliant {{Make sure this debug feature is deactivated before delivering the code in production.}}
   }
 
   public WebSecurityCustomizer nonDebugCustomizer() {

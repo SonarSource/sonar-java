@@ -21,28 +21,25 @@ package org.sonar.java.checks.unused;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class UnusedMethodParameterCheckTest {
 
   @Test
   void test() {
-    ((InternalCheckVerifier) CheckVerifier.newVerifier())
+    CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/unused/UnusedMethodParameterCheck.java"))
       .withCheck(new UnusedMethodParameterCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 
   @Test
   void test_non_compiling() {
-    ((InternalCheckVerifier) CheckVerifier.newVerifier())
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/unused/UnusedMethodParameterCheck.java"))
       .withCheck(new UnusedMethodParameterCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 }

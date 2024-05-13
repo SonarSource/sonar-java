@@ -13,7 +13,8 @@ interface K extends J {
   public boolean equals(Object obj); // Compliant - from Object
 }
 class B extends A implements I {
-  void foo() {} // Noncompliant [[sc=8;ec=11]] {{Add the "@Override" annotation above this method signature}}
+  void foo() {} // Noncompliant {{Add the "@Override" annotation above this method signature}}
+//     ^^^
   void bar() {} // Compliant - from interface
 
   protected void finalize() { // Compliant - from Object
@@ -40,7 +41,8 @@ class ExtendsAbstractClass extends AbstractClass {
 
 abstract class ImplementsFromJDK8 implements java.lang.reflect.AnnotatedElement {
 
-  public <A extends java.lang.annotation.Annotation> A[] getAnnotationsByType(Class<A> annotationClass) { // Noncompliant [[sc=58;ec=78]] {{Add the "@Override" annotation above this method signature}}
+  public <A extends java.lang.annotation.Annotation> A[] getAnnotationsByType(Class<A> annotationClass) { // Noncompliant {{Add the "@Override" annotation above this method signature}}
+//                                                       ^^^^^^^^^^^^^^^^^^^^
     return null;
   }
 }

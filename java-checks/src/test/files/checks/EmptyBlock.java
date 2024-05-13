@@ -1,6 +1,8 @@
 class EmptyBlock {
-  // Noncompliant@+1 [[sc=10;ec=11]] {{Either remove or fill this block of code.}}
+
+// Noncompliant@+1
   static {
+
   }
 
   static {
@@ -11,7 +13,7 @@ class EmptyBlock {
     // comment
   }
 
-  // Noncompliant@+1
+ // Noncompliant@+1
   {
   }
 
@@ -25,7 +27,7 @@ class EmptyBlock {
 
   void method() {
     for (int i = 0; i < 10; i++)
-    // Noncompliant@+1
+ // Noncompliant@+1
     {
     }
     for (int i = 0; i < 10; i++);
@@ -39,17 +41,18 @@ class EmptyBlock {
         break;
     }
 
-    // Noncompliant@+1 [[sc=16;ec=17]] {{Either remove or fill this block of code.}}
-    switch (1) {
+
+    switch (1) { // Noncompliant {{Either remove or fill this block of code.}}
+//             ^
     }
 
-    // Noncompliant@+1
+ // Noncompliant@+1
     try {
     } catch (Exception e)
-    // Noncompliant@+1
+ // Noncompliant@+1
     {
     } finally
-    // Noncompliant@+1
+ // Noncompliant@+1
     {
     }
 
@@ -70,7 +73,7 @@ class EmptyBlock {
     }
 
     synchronized (this)
-    // Noncompliant@+1
+ // Noncompliant@+1
     {
     }
 
@@ -78,7 +81,7 @@ class EmptyBlock {
       doSomething();
     }
 
-    // Noncompliant@+1
+ // Noncompliant@+1
     synchronized (this) {
       // comment
     }
@@ -93,7 +96,7 @@ class EmptyBlock {
         public void write(int b) {}
       });
     }
-    // Noncompliant@+1
+ // Noncompliant@+1
     catch (IOException cannotHappen) {
     }
   }

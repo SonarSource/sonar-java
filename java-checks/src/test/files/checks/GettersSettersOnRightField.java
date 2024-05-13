@@ -9,11 +9,11 @@ abstract class A {
     this.y = val;
   }
 
-  public int getY() { // Noncompliant  {{Refactor this getter so that it actually refers to the field "y".}}
+  public int getY() { // Noncompliant {{Refactor this getter so that it actually refers to the field "y".}}
     return this.x;
   }
 
-  public String getLastName() {  // Noncompliant  {{Refactor this getter so that it actually refers to the field "lastName".}}
+  public String getLastName() { // Noncompliant {{Refactor this getter so that it actually refers to the field "lastName".}}
     return name;
   }
 

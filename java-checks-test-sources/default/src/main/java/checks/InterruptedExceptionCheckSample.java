@@ -24,7 +24,8 @@ public class InterruptedExceptionCheckSample {
       }
     }catch (java.io.IOException e) {
       LOGGER.log(Level.WARN, "Interrupted!", e);
-    }catch (InterruptedException e) { // Noncompliant [[sc=13;ec=35]] {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
+    }catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
+//          ^^^^^^^^^^^^^^^^^^^^^^
       LOGGER.log(Level.WARN, "Interrupted!", e);
     }
   }
@@ -48,7 +49,8 @@ public class InterruptedExceptionCheckSample {
         if (LOGGER != null) throw new IOException("");
         throw new InterruptedException("");
       }
-    } catch (InterruptedException | java.io.IOException e) { // Noncompliant [[sc=14;ec=58]] {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
+    } catch (InterruptedException | java.io.IOException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
+//           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       LOGGER.log(Level.WARN, "Interrupted!", e);
     }
   }
@@ -117,7 +119,7 @@ class Interruptable {
   private static void waitForNextExecution1(Set<Runnable> running, LongSupplier waitTimeoutMillis) {
     try {
       Thread.sleep(waitTimeoutMillis.getAsLong());
-    } catch (InterruptedException e) { // Noncompliant, too many levels
+    } catch (InterruptedException e) { // Noncompliant
       cancelAllSubTasksAndInterrupt1(running);
     }
   }
@@ -145,14 +147,18 @@ class Interruptable {
   public void catchGenericException() throws InterruptedException {
     try {
       throwsInterruptedException();
-    } catch (Exception e) { // Noncompliant [[sc=14;ec=25;secondary=-1]] {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^>
+    } catch (Exception e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
+//           ^^^^^^^^^^^
       LOGGER.log(Level.WARN, "Interrupted!", e);
     }
 
     try {
       throwsInterruptedException();
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^>
       throwsException();
-    } catch (Exception e) { // Noncompliant [[sc=14;ec=25;secondary=-2]]
+    } catch (Exception e) { // Noncompliant
+//           ^^^^^^^^^^^
       LOGGER.log(Level.WARN, "Interrupted!", e);
     }
 
@@ -222,7 +228,7 @@ class Interruptable {
 
     try {
       throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, RuntimeException is not an InterruptedException
+    } catch (InterruptedException e) { // Noncompliant
       throw new RuntimeException();
     }
   }
@@ -242,7 +248,7 @@ class Interruptable {
 
     try {
       throwsInterruptedException();
-    } catch (CustomizedInterruptedException e) { // Noncompliant, RuntimeException is not an InterruptedException
+    } catch (CustomizedInterruptedException e) { // Noncompliant
       throw new RuntimeException();
     }
   }
@@ -269,7 +275,7 @@ class Interruptable {
 
     try {
       throwsInterruptedException();
-    } catch (CustomizedInterruptedException e) { // Noncompliant, too many levels
+    } catch (CustomizedInterruptedException e) { // Noncompliant
       interruptByThrowingInterruptedExceptionL1();
     }
   }
@@ -295,7 +301,7 @@ class Interruptable {
 
     try {
       throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, too many levels
+    } catch (InterruptedException e) { // Noncompliant
       interruptByThrowingCustomizedInterruptedExceptionL1();
     }
   }
@@ -311,7 +317,7 @@ class Interruptable {
     RuntimeException re = new RuntimeException();
     try {
       throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, re is not e
+    } catch (InterruptedException e) { // Noncompliant
       doSomething();
       throw re;
     }
@@ -325,7 +331,7 @@ class Interruptable {
 
     try {
       throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, a RuntimeException is thrown.
+    } catch (InterruptedException e) { // Noncompliant
       doSomething();
       throw getRuntimeException();
     }
@@ -340,7 +346,7 @@ class Interruptable {
   public void cutControlFlow() throws InterruptedException {
     try {
       throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, because neither foo nor bar belong to the control flow of this catch block.
+    } catch (InterruptedException e) { // Noncompliant
 
       Object instance = new Object() {
         void foo() {
@@ -355,7 +361,7 @@ class Interruptable {
 
     try {
       throwsInterruptedException();
-    } catch (InterruptedException e) { // Noncompliant, because neither foo, nor bar belong to the control flow of this catch block.
+    } catch (InterruptedException e) { // Noncompliant
       Runnable foo = () -> Thread.currentThread().interrupt();
       Action bar = () -> {
         throw new InterruptedException();
@@ -390,7 +396,7 @@ class Interruptable {
     try {
       try {
         throwsInterruptedException();
-      } catch (InterruptedException ie) { // Noncompliant, because interruption state is lost.
+      } catch (InterruptedException ie) { // Noncompliant
       }
     } catch (Exception e) { // Compliant, because inner try does not throw an InterruptedException
     }
@@ -410,7 +416,7 @@ class Interruptable {
       } catch (InterruptedException ie) { // Compliant
         throw new InterruptedException();
       }
-    } catch (Exception e) { // Noncompliant, because inner try throws an InterruptedException
+    } catch (Exception e) { // Noncompliant
     }
 
     try {
@@ -419,7 +425,7 @@ class Interruptable {
       } catch (InterruptedException ie) { // Compliant
         throw new InterruptedException();
       }
-    } catch (InterruptedException e) { // Noncompliant, because explicitly catch InterruptedException
+    } catch (InterruptedException e) { // Noncompliant
     }
 
     try {
@@ -427,7 +433,7 @@ class Interruptable {
         throwsInterruptedException();
       } catch (RuntimeException ie) { // Compliant
       }
-    } catch (Exception e) { // Noncompliant, because inner try may throw an InterruptedException
+    } catch (Exception e) { // Noncompliant
     }
 
   }

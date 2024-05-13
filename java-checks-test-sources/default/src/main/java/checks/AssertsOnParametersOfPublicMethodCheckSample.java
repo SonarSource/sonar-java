@@ -3,7 +3,8 @@ package checks;
 class S4274_A {
 
   public void setPrice(int price1) {
-    assert price1 >= 0 && price1 <= 10000; // Noncompliant [[sc=5;ec=43]] {{Replace this assert with a proper check.}}
+    assert price1 >= 0 && price1 <= 10000; // Noncompliant {{Replace this assert with a proper check.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   public int getPrice(int a) {

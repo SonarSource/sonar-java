@@ -4,7 +4,8 @@ class A {
     boolean[] tests = {
     getTrue() || getFalse(),
     getTrue() && getFalse(),
-    getTrue() | getFalse(), // Noncompliant [[sc=15;ec=16]] {{Correct this "|" to "||" and extract the right operand to a variable if it should always be evaluated.}}
+    getTrue() | getFalse(), // Noncompliant {{Correct this "|" to "||" and extract the right operand to a variable if it should always be evaluated.}}
+//            ^
     getTrue() & getFalse(), // Noncompliant {{Correct this "&" to "&&" and extract the right operand to a variable if it should always be evaluated.}}
     Boolean.TRUE | Boolean.FALSE, // Noncompliant {{Correct this "|" to "||".}}
     Boolean.TRUE & Boolean.FALSE, // Noncompliant {{Correct this "&" to "&&".}}

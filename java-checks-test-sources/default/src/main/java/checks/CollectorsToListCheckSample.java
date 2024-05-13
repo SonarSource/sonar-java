@@ -18,19 +18,23 @@ public class CollectorsToListCheckSample {
 
   void noncompliant() {
     List<String> list1 = Stream.of("A", "B", "C")
-      .collect(Collectors.toList()); // Noncompliant [[sc=16;ec=35]] {{Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.}}
+      .collect(Collectors.toList()); // Noncompliant {{Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.}}
+//             ^^^^^^^^^^^^^^^^^^^
 
     // Not modifying the list
     list1.contains("B");
 
     List<String> list2 = Stream.of("A", "B", "C")
-      .collect(Collectors.toUnmodifiableList()); // Noncompliant [[sc=16;ec=47]] {{Replace this usage of 'Stream.collect(Collectors.toUnmodifiableList())' with 'Stream.toList()'.}}
+      .collect(Collectors.toUnmodifiableList()); // Noncompliant {{Replace this usage of 'Stream.collect(Collectors.toUnmodifiableList())' with 'Stream.toList()'.}}
+//             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     Stream.of("A", "B", "C")
-      .collect(Collectors.toList()); // Noncompliant [[sc=16;ec=35]] {{Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.}}
+      .collect(Collectors.toList()); // Noncompliant {{Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.}}
+//             ^^^^^^^^^^^^^^^^^^^
 
     Stream.of("A", "B", "C")
-      .collect(Collectors.toUnmodifiableList()); // Noncompliant [[sc=16;ec=47]] {{Replace this usage of 'Stream.collect(Collectors.toUnmodifiableList())' with 'Stream.toList()'.}}
+      .collect(Collectors.toUnmodifiableList()); // Noncompliant {{Replace this usage of 'Stream.collect(Collectors.toUnmodifiableList())' with 'Stream.toList()'.}}
+//             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     List<List<String>> listOfLists = new ArrayList<>();
     // list1 appears in a call to List.add, but it is not the receiver, so it should not be interpreted as mutable:
@@ -65,7 +69,7 @@ public class CollectorsToListCheckSample {
 
   void noncompliant_collections_methods() {
     var myMutableList = Stream.of("A", "B", "C")
-      .collect(Collectors.toList()); // Noncompliant, below methods do not modify the list
+      .collect(Collectors.toList()); // Noncompliant
     Collections.max(myMutableList);
     Collections.frequency(myMutableList, "A");
     Collections.synchronizedList(myMutableList);
@@ -126,14 +130,14 @@ public class CollectorsToListCheckSample {
 
   List<String> FPs() {
     List<String> list1 = Stream.of("A", "B", "C")
-      .collect(Collectors.toList()); // Noncompliant - FP because we don't track lists across methods
+      .collect(Collectors.toList()); // Noncompliant
     addX(list1);
 
-    addX(Stream.of("A", "B", "C").collect(Collectors.toList())); // Noncompliant - same reason
+    addX(Stream.of("A", "B", "C").collect(Collectors.toList())); // Noncompliant
 
-    memberList2 = Stream.of("A", "B", "C").collect(Collectors.toList()); // Noncompliant - FP, see addX2
+    memberList2 = Stream.of("A", "B", "C").collect(Collectors.toList()); // Noncompliant
 
-    return Stream.of("A", "B", "C").collect(Collectors.toList()); // Noncompliant - FP because we don't check how the return value is used
+    return Stream.of("A", "B", "C").collect(Collectors.toList()); // Noncompliant
   }
 
   void useFPs() {

@@ -5,12 +5,15 @@ import java.io.Serial;
 // TODO: check code snippet license
 public class SingletonUsageCheckSample {
 
-  public static class EagerInitializedSingleton { // Noncompliant [[sc=23;ec=48;secondary=+2,+5]] {{A Singleton implementation was detected. Make sure the use of the Singleton pattern is required and the implementation is the right one for the context.}}
+  public static class EagerInitializedSingleton { // Noncompliant {{A Singleton implementation was detected. Make sure the use of the Singleton pattern is required and the implementation is the right one for the context.}}
+//                    ^^^^^^^^^^^^^^^^^^^^^^^^^
 
     private static final EagerInitializedSingleton instance = new EagerInitializedSingleton();
+//                                                 ^^^^^^^^<
 
     // private constructor to avoid client applications using the constructor
     private EagerInitializedSingleton(){}
+//          ^^^^^^^^^^^^^^^^^^^^^^^^^<
 
     public static EagerInitializedSingleton getInstance() {
       return instance;
@@ -21,16 +24,20 @@ public class SingletonUsageCheckSample {
     }
   }
 
-  public static class StaticBlockSingleton { // Noncompliant [[sc=23;ec=43;secondary=+2,+4,+9]]
+  public static class StaticBlockSingleton { // Noncompliant
+//                    ^^^^^^^^^^^^^^^^^^^^
 
     private static StaticBlockSingleton instance;
+//                                      ^^^^^^^^<
 
     private StaticBlockSingleton(){}
+//          ^^^^^^^^^^^^^^^^^^^^<
 
     // static block initialization for exception handling
     static {
       try {
         instance = new StaticBlockSingleton();
+//      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       } catch (Exception e) {
         throw new RuntimeException("Exception occurred in creating singleton instance");
       }
@@ -99,7 +106,8 @@ public class SingletonUsageCheckSample {
     }
   }
 
-  public enum EnumSingleton { // Noncompliant [[sc=15;ec=28]] {{An Enum-based Singleton implementation was detected. Make sure the use of the Singleton pattern is required and an Enum-based implementation is the right one for the context.}}
+  public enum EnumSingleton { // Noncompliant {{An Enum-based Singleton implementation was detected. Make sure the use of the Singleton pattern is required and an Enum-based implementation is the right one for the context.}}
+//            ^^^^^^^^^^^^^
 
     INSTANCE;
 

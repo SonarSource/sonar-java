@@ -6,7 +6,8 @@ class BadMethodName extends Bad {
   public BadMethodName() {
   }
 
-  void Bad() { // Noncompliant [[sc=8;ec=11]] {{Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
+  void Bad() { // Noncompliant {{Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
+//     ^^^
   }
 
   void good() {

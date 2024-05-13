@@ -7,7 +7,7 @@ class ArrayForVarArgCheckSample {
   public void callTheThing(String s) {
     ArrayForVarArgCheckFoo foo = new ArrayForVarArgCheckFoo();
 
-    doTheThing2(new ArrayForVarArgCheckFoo[] {foo, foo});  // Noncompliant {{Remove this array creation and simply pass the elements.}}
+    doTheThing2(new ArrayForVarArgCheckFoo[] {foo, foo}); // Noncompliant {{Remove this array creation and simply pass the elements.}}
 
     unknown(new ArrayForVarArgCheckFoo[0]); // Compliant
     doTheThing2(new Unknown[0]); // Compliant

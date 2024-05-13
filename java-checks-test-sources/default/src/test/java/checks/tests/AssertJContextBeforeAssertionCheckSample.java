@@ -15,14 +15,17 @@ public class AssertJContextBeforeAssertionCheckSample {
 
   void foo() {
     assertThat("").isEqualTo("").as("Description1").isEqualTo(""); // Compliant
-    assertThat("").isEqualTo("").as("Description"); // Noncompliant [[sc=34;ec=36]] {{Add an assertion predicate after calling this method.}}
+    assertThat("").isEqualTo("").as("Description"); // Noncompliant {{Add an assertion predicate after calling this method.}}
+//                               ^^
     assertThat("").isEqualTo("").as(new TextDescription("Description")); // Noncompliant
     assertThat("").isEqualTo("").as("Description", new Object()); // Noncompliant
-    assertThat("").as("Description1").isEqualTo("").as("Description2"); // Noncompliant [[sc=53;ec=55]]
+    assertThat("").as("Description1").isEqualTo("").as("Description2"); // Noncompliant
+//                                                  ^^
     assertThat("").as("Description").isEqualTo(""); // Compliant
     assertThat("").isEqualTo("").as("Description1").isEqualTo(""); // Compliant
 
-    assertThat("").isEqualTo("").describedAs("Description"); // Noncompliant [[sc=34;ec=45]]
+    assertThat("").isEqualTo("").describedAs("Description"); // Noncompliant
+//                               ^^^^^^^^^^^
     assertThat("").isEqualTo("").describedAs(new TextDescription("Description")); // Noncompliant
     assertThat("").isEqualTo("").describedAs("Description", new Object()); // Noncompliant
     assertThat("").describedAs("Description").isEqualTo(""); // Compliant
@@ -75,7 +78,8 @@ public class AssertJContextBeforeAssertionCheckSample {
     assertThat(getList()).isEqualTo(new ArrayList<>()).filteredOnAssertions(o -> {}); // Noncompliant
 
     // Only one issue when multiple missplaced calls.
-    assertThat("").isEqualTo("").as("message").withFailMessage("fail message"); // Noncompliant [[sc=48;ec=63]]
+    assertThat("").isEqualTo("").as("message").withFailMessage("fail message"); // Noncompliant
+//                                             ^^^^^^^^^^^^^^^
 
     // assertThatObject
     assertThatObject("").isEqualTo("").as("Description1"); // Noncompliant

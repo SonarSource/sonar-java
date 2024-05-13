@@ -5,7 +5,8 @@ import java.io.File;
 
 public class ArchitectureConstraint {
   int a = 1;
-  Pattern pattern = Pattern.compile("*.java"); // Noncompliant [[sc=3;ec=10]] {{org.sonar.java.checks.targets.ArchitectureConstraint must not use java.util.regex.Pattern}}
+  Pattern pattern = Pattern.compile("*.java"); // Noncompliant {{org.sonar.java.checks.targets.ArchitectureConstraint must not use java.util.regex.Pattern}}
+//^^^^^^^
   public ArchitectureConstraint() {
     Pattern.compile("*.java");
     Pattern.compile("*");

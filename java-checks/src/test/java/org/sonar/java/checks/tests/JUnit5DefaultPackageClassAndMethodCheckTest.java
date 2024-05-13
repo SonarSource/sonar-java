@@ -21,7 +21,6 @@ package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
@@ -31,10 +30,9 @@ class JUnit5DefaultPackageClassAndMethodCheckTest {
 
   @Test
   void test() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile(testSourcePath)
       .withCheck(new JUnit5DefaultPackageClassAndMethodCheck())
-      .withQuickFixes()
       .verifyIssues();
   }
 

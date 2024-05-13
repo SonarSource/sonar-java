@@ -12,7 +12,8 @@ class NullCheckWithInstanceofCheckSample {
   }
 
   void foo1(Object x) {
-    if (x != null && x instanceof A) { // Noncompliant [[sc=9;ec=18]] {{Remove this unnecessary null check; "instanceof" returns false for nulls.}}
+    if (x != null && x instanceof A) { // Noncompliant {{Remove this unnecessary null check; "instanceof" returns false for nulls.}}
+//      ^^^^^^^^^
     }
     if (x instanceof A) { // Compliant
     }
@@ -20,7 +21,8 @@ class NullCheckWithInstanceofCheckSample {
     }
     if (x instanceof A || x == null) { // Compliant
     }
-    if (!(x instanceof A) || x == null) { // Noncompliant [[sc=30;ec=39]] {{Remove this unnecessary null check; "instanceof" returns false for nulls.}}
+    if (!(x instanceof A) || x == null) { // Noncompliant {{Remove this unnecessary null check; "instanceof" returns false for nulls.}}
+//                           ^^^^^^^^^
     }
     if (getObject((A) c) instanceof A) { // Compliant
     }
@@ -42,7 +44,8 @@ class NullCheckWithInstanceofCheckSample {
     } else if (a.c != null) { // Compliant
     } else if (a != null && a.c instanceof NullCheckWithInstanceofCheckSample) { // Compliant
     } else if (null != a && a instanceof NullCheckWithInstanceofCheckSample) { // Noncompliant
-    } else if (null == a || !(a instanceof NullCheckWithInstanceofCheckSample)) { // Noncompliant [[sc=16;ec=25]] {{Remove this unnecessary null check; "instanceof" returns false for nulls.}}
+    } else if (null == a || !(a instanceof NullCheckWithInstanceofCheckSample)) { // Noncompliant {{Remove this unnecessary null check; "instanceof" returns false for nulls.}}
+//             ^^^^^^^^^
     } else if (a.c != null && a.c instanceof NullCheckWithInstanceofCheckSample) { // Noncompliant
     }
     while (a != null && a instanceof NullCheckWithInstanceofCheckSample) { // Noncompliant

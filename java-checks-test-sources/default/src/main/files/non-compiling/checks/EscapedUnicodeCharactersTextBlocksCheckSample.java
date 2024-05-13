@@ -1,8 +1,9 @@
 package checks;
 
 class EscapedUnicodeCharactersCheck {
+// Noncompliant@+2 {{Remove this Unicode escape sequence and use the character instead.}}
   void method() {
-    String prefix0 = """
+    String prefix0 = """           
       
       
       
@@ -12,11 +13,13 @@ class EscapedUnicodeCharactersCheck {
       
       
       
-      """; // Noncompliant@-10 [[sc=22;ec=10]] {{Remove this Unicode escape sequence and use the character instead.}}
-    String prefix = """
-      n\uuuu00E9e"""; // Noncompliant@-1 [[sc=21;ec=21]] {{Remove this Unicode escape sequence and use the character instead.}}
+      """;
+// Noncompliant@+1 {{Remove this Unicode escape sequence and use the character instead.}}
+    String prefix = """               
+      n\uuuu00E9e""";
+// Noncompliant@+1 {{Remove this Unicode escape sequence and use the character instead.}}
     String prefix2= """
-      n\\\uuuu00E9e"""; // Noncompliant@-1 [[sc=21;ec=23]] {{Remove this Unicode escape sequence and use the character instead.}}
+      n\\\uuuu00E9e""";
     prefix = """
       n\u00E9e\u0001v"""; // Noncompliant@-1
     // compliant, only escaped
@@ -27,8 +30,9 @@ class EscapedUnicodeCharactersCheck {
       a\u0001b\u0002c\u00A0""";
     prefix = """
       \u007f""";
+// Noncompliant@+1
     prefix = """
-      a\u0080b\u0002c\u00A0\u0083\u0164"""; // Noncompliant@-1 [[sc=14;ec=43]]
+      a\u0080b\u0002c\u00A0\u0083\u0164""";
     prefix = """
       n\\u00E9e""";
     prefix = """

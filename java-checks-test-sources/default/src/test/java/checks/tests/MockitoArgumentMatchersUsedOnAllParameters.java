@@ -34,27 +34,36 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
     Integer i1 = null, i2 = null, val1 = null, val2 = null;
     given(foo.bar(
       anyInt(),
-      i1, // Noncompliant [[sc=7;ec=9;secondary=+1]] {{Add an "eq()" argument matcher on these parameters.}}
+      i1, // Noncompliant {{Add an "eq()" argument matcher on these parameters.}}
+//    ^^
       i2))
+//    ^^<
       .willReturn(null);
-    when(foo.baz(eq(val1), val2)).thenReturn("hi");// Noncompliant [[sc=28;ec=32]] {{Add an "eq()" argument matcher on this parameter.}}
-    doThrow(new RuntimeException()).when(foo).quux(intThat(x -> x >= 42), -1); // Noncompliant [[sc=75;ec=77]] {{Add an "eq()" argument matcher on this parameter.}}
+    when(foo.baz(eq(val1), val2)).thenReturn("hi"); // Noncompliant {{Add an "eq()" argument matcher on this parameter.}}
+//                         ^^^^
+    doThrow(new RuntimeException()).when(foo).quux(intThat(x -> x >= 42), -1); // Noncompliant {{Add an "eq()" argument matcher on this parameter.}}
+//                                                                        ^^
     verify(foo).bar(
-      i1, // Noncompliant [[sc=7;ec=9;secondary=+2]] {{Add an "eq()" argument matcher on these parameters.}}
+      i1, // Noncompliant {{Add an "eq()" argument matcher on these parameters.}}
+//    ^^
       anyInt(),
       i2);
+//    ^^<
 
     ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
     verify(foo).bar(captor.capture(),
-      i1, // Noncompliant [[sc=7;ec=9]] {{Add an "eq()" argument matcher on this parameter.}}
+      i1, // Noncompliant {{Add an "eq()" argument matcher on this parameter.}}
+//    ^^
       any());
 
     verify(foo).bar(anyInt(),
-      i1.toString(), // Noncompliant [[sc=7;ec=20]] {{Add an "eq()" argument matcher on this parameter.}}
+      i1.toString(), // Noncompliant {{Add an "eq()" argument matcher on this parameter.}}
+//    ^^^^^^^^^^^^^
       any());
 
     verify(foo).bar(
-      returnRawValue(), // Noncompliant [[sc=7;ec=23]] {{Add an "eq()" argument matcher on this parameter.}}
+      returnRawValue(), // Noncompliant {{Add an "eq()" argument matcher on this parameter.}}
+//    ^^^^^^^^^^^^^^^^
       any(), any()
     );
 

@@ -69,15 +69,15 @@ public abstract class AbstractRegexCheckSample {
     // org.apache.commons.lang3.RegExUtils
     Pattern pattern = Pattern.compile(regex);
     f(RegExUtils.removeAll("text", pattern));
-    f(RegExUtils.removeAll("text", "regex"));  // Noncompliant {{regex}}
+    f(RegExUtils.removeAll("text", "regex")); // Noncompliant {{regex}}
     f(RegExUtils.removeFirst("text", pattern));
-    f(RegExUtils.removeFirst("text", "regex"));  // Noncompliant {{regex}}
+    f(RegExUtils.removeFirst("text", "regex")); // Noncompliant {{regex}}
     f(RegExUtils.replaceAll("text", pattern, "text"));
-    f(RegExUtils.replaceAll("text", "regex", "text"));  // Noncompliant {{regex}}
+    f(RegExUtils.replaceAll("text", "regex", "text")); // Noncompliant {{regex}}
     f(RegExUtils.replaceFirst("text", pattern, "text"));
-    f(RegExUtils.replaceFirst("text", "regex", "text"));  // Noncompliant {{regex}}
-    f(RegExUtils.removePattern("text", "regex"));  // Noncompliant {{regex,initialFlags=32}}
-    f(RegExUtils.replacePattern("text", "regex", "text"));  // Noncompliant {{regex,initialFlags=32}}
+    f(RegExUtils.replaceFirst("text", "regex", "text")); // Noncompliant {{regex}}
+    f(RegExUtils.removePattern("text", "regex")); // Noncompliant {{regex,initialFlags=32}}
+    f(RegExUtils.replacePattern("text", "regex", "text")); // Noncompliant {{regex,initialFlags=32}}
   }
 
   abstract void f(boolean x);

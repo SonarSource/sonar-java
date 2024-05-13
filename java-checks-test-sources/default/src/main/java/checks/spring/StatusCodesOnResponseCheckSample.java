@@ -75,9 +75,11 @@ public class StatusCodesOnResponseCheckSample {
     public ResponseEntity<User> getUserNoncompliant() {
 
       try {
-        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new User()); // Noncompliant [[sc=16;ec=60]] {{Set a HttpStatus code reflective of the operation.}}
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new User()); // Noncompliant {{Set a HttpStatus code reflective of the operation.}}
+//             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       } catch (NotFoundException e) {
-        return ResponseEntity.status(OK).build(); // Noncompliant [[sc=16;ec=41]] {{Set a HttpStatus code reflective of the operation.}}
+        return ResponseEntity.status(OK).build(); // Noncompliant {{Set a HttpStatus code reflective of the operation.}}
+//             ^^^^^^^^^^^^^^^^^^^^^^^^^
       } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Compliant
       }
@@ -85,7 +87,8 @@ public class StatusCodesOnResponseCheckSample {
 
     public ResponseEntity<User> getUserNoncompliant2() {
       try {
-        return ResponseEntity.badRequest().build(); // Noncompliant [[sc=16;ec=43]] {{Set a HttpStatus code reflective of the operation.}}
+        return ResponseEntity.badRequest().build(); // Noncompliant {{Set a HttpStatus code reflective of the operation.}}
+//             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
       } catch (NotFoundException e) {
         return ResponseEntity.ok().build(); // Noncompliant
       } catch (Exception e) {

@@ -5,22 +5,23 @@ import java.util.regex.Pattern;
 public class VerboseRegexCheck {
   void nonCompliant() {
     Pattern.compile("[0-9]"); // Noncompliant {{Use concise character class syntax '\\d' instead of '[0-9]'.}}
-    Pattern.compile("[^0-9]"); // Noncompliant  {{Use concise character class syntax '\\D' instead of '[^0-9]'.}}
-    Pattern.compile("something[0-9]somethingElse"); // Noncompliant [[sc=31;ec=36]] {{Use concise character class syntax '\\d' instead of '[0-9]'.}}
+    Pattern.compile("[^0-9]"); // Noncompliant {{Use concise character class syntax '\\D' instead of '[^0-9]'.}}
+    Pattern.compile("something[0-9]somethingElse"); // Noncompliant {{Use concise character class syntax '\\d' instead of '[0-9]'.}}
+//                            ^^^^^
 
-    Pattern.compile("[A-Za-z0-9_]");    // Noncompliant  {{Use concise character class syntax '\\w' instead of '[A-Za-z0-9_]'.}}
-    Pattern.compile("[0-9_A-Za-z]");    // Noncompliant
-    Pattern.compile("[^A-Za-z0-9_]");   // Noncompliant  {{Use concise character class syntax '\\W' instead of '[^A-Za-z0-9_]'.}}
-    Pattern.compile("[^0-9_A-Za-z]");   // Noncompliant
+    Pattern.compile("[A-Za-z0-9_]"); // Noncompliant {{Use concise character class syntax '\\w' instead of '[A-Za-z0-9_]'.}}
+    Pattern.compile("[0-9_A-Za-z]"); // Noncompliant
+    Pattern.compile("[^A-Za-z0-9_]"); // Noncompliant {{Use concise character class syntax '\\W' instead of '[^A-Za-z0-9_]'.}}
+    Pattern.compile("[^0-9_A-Za-z]"); // Noncompliant
 
-    Pattern.compile("x{0,1}");          // Noncompliant {{Use concise quantifier syntax '?' instead of '{0,1}'.}}
-    Pattern.compile("x{0,1}?");         // Noncompliant {{Use concise quantifier syntax '?' instead of '{0,1}'.}}
-    Pattern.compile("x{0,}");           // Noncompliant {{Use concise quantifier syntax '*' instead of '{0,}'.}}
-    Pattern.compile("x{0,}?");          // Noncompliant {{Use concise quantifier syntax '*' instead of '{0,}'.}}
-    Pattern.compile("x{1,}");           // Noncompliant {{Use concise quantifier syntax '+' instead of '{1,}'.}}
-    Pattern.compile("x{1,}?");          // Noncompliant {{Use concise quantifier syntax '+' instead of '{1,}'.}}
-    Pattern.compile("x{2,2}");          // Noncompliant {{Use concise quantifier syntax '{2}' instead of '{2,2}'.}}
-    Pattern.compile("x{2,2}?");         // Noncompliant {{Use concise quantifier syntax '{2}' instead of '{2,2}'.}}
+    Pattern.compile("x{0,1}"); // Noncompliant {{Use concise quantifier syntax '?' instead of '{0,1}'.}}
+    Pattern.compile("x{0,1}?"); // Noncompliant {{Use concise quantifier syntax '?' instead of '{0,1}'.}}
+    Pattern.compile("x{0,}"); // Noncompliant {{Use concise quantifier syntax '*' instead of '{0,}'.}}
+    Pattern.compile("x{0,}?"); // Noncompliant {{Use concise quantifier syntax '*' instead of '{0,}'.}}
+    Pattern.compile("x{1,}"); // Noncompliant {{Use concise quantifier syntax '+' instead of '{1,}'.}}
+    Pattern.compile("x{1,}?"); // Noncompliant {{Use concise quantifier syntax '+' instead of '{1,}'.}}
+    Pattern.compile("x{2,2}"); // Noncompliant {{Use concise quantifier syntax '{2}' instead of '{2,2}'.}}
+    Pattern.compile("x{2,2}?"); // Noncompliant {{Use concise quantifier syntax '{2}' instead of '{2,2}'.}}
 
     Pattern.compile("[\\W\\w]"); // Noncompliant {{Use concise character class syntax '.' instead of '[\\W\\w]'.}}
     Pattern.compile("[\\d\\D]"); // Noncompliant {{Use concise character class syntax '.' instead of '[\\d\\D]'.}}

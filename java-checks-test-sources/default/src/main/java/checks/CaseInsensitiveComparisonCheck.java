@@ -8,15 +8,16 @@ abstract class CaseInsensitiveComparisonCheck {
   private static final String BAR = "BAR";
 
   private void f(String arg, String arg2) {
-    boolean result = arg.toUpperCase().equals(arg2.toLowerCase()); // Noncompliant [[sc=22;ec=66]] {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
-    result = arg.toLowerCase().equals(BAR);                        // Noncompliant
-    result = arg.toUpperCase().equals(BAR);                        // Noncompliant
-    result = "foo".toUpperCase().equals(BAR);                      // Noncompliant
-    result = FOO.equals(arg.toLowerCase());                        // Noncompliant
-    result = BAR.equals(arg.toUpperCase());                        // Noncompliant
-    result = "FOO".equals(arg.toUpperCase());                      // Noncompliant
+    boolean result = arg.toUpperCase().equals(arg2.toLowerCase()); // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+//                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    result = arg.toLowerCase().equals(BAR); // Noncompliant
+    result = arg.toUpperCase().equals(BAR); // Noncompliant
+    result = "foo".toUpperCase().equals(BAR); // Noncompliant
+    result = FOO.equals(arg.toLowerCase()); // Noncompliant
+    result = BAR.equals(arg.toUpperCase()); // Noncompliant
+    result = "FOO".equals(arg.toUpperCase()); // Noncompliant
     // This one can't actually return true, but it's most likely *intended* to be a case-insensitive comparison:
-    result = "foo".equals(arg.toUpperCase());                      // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    result = "foo".equals(arg.toUpperCase()); // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
 
     result = "foo".equals("foo");                                  // Compliant - no use of toUpperCase or toLowerCase
     result = arg.equals(arg2);                                     // Compliant - ditto
@@ -28,10 +29,10 @@ abstract class CaseInsensitiveComparisonCheck {
     result = arg.toUpperCase(trLocale).equals(BAR);                // Compliant when locale is specified because it does not behave like equalsIgnoreCase
     result = FOO.equals(arg.toLowerCase(trLocale));                // Compliant
 
-    FOO.equals(arg2.toLowerCase());                                // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    FOO.equals(arg2.toLowerCase()); // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
     FOO.equals(toLowerCase());                                     // Compliant
-    BAR.equals(something().somethingElse().toUpperCase());         // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
-    FOO.equals("bar".toLowerCase());                               // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    BAR.equals(something().somethingElse().toUpperCase()); // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    FOO.equals("bar".toLowerCase()); // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
 
     result = arg.equalsIgnoreCase(arg2);                           // Compliant
 
@@ -40,8 +41,8 @@ abstract class CaseInsensitiveComparisonCheck {
 
     StringUtils.equals("foo", "bar".toLowerCase());                // Compliant
 
-    arg.toLowerCase().toLowerCase().equals(FOO);                   // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
-    arg.toLowerCase().toUpperCase().equals(BAR);                   // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    arg.toLowerCase().toLowerCase().equals(FOO); // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    arg.toLowerCase().toUpperCase().equals(BAR); // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
 
     result = equals(arg.toLowerCase());                            // Compliant (for coverage)
   }

@@ -2,7 +2,8 @@ class Foo {
   public void myMethod() {
     if(something) {
       executeTask();
-    } else if (somethingElse) {          // Noncompliant [[sc=7;ec=11]] {{Move this "else" keyword to a new dedicated line.}}
+    } else if (somethingElse) { // Noncompliant {{Move this "else" keyword to a new dedicated line.}}
+//    ^^^^
       doSomethingElse();
     }
     else {                               // Compliant
@@ -17,7 +18,7 @@ class Foo {
 
     try {
       generateOrder();
-    } catch (Exception e) {              // Noncompliant {{Move this "catch" keyword to a new dedicated line.}}
+    } catch (Exception e) { // Noncompliant {{Move this "catch" keyword to a new dedicated line.}}
       log(e);
     }
     finally {                            // Compliant

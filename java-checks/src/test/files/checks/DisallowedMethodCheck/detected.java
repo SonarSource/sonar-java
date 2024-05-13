@@ -4,7 +4,8 @@ class A {
   void bar(){}
 
   void plop() {
-   foo(1,2,new String[]{"1"}); // Noncompliant [[sc=4;ec=7]] {{Remove this forbidden call}}
+   foo(1,2,new String[]{"1"}); // Noncompliant {{Remove this forbidden call}}
+// ^^^
    bar();
   }
 }

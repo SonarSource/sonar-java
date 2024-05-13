@@ -2,7 +2,8 @@ package checks;
 
 public class RawExceptionCheckSample {
 
-  public void throws_Throwable() throws Throwable { // Noncompliant [[sc=41;ec=50]]
+  public void throws_Throwable() throws Throwable { // Noncompliant
+//                                      ^^^^^^^^^
     throw new Throwable(); // Noncompliant
   }
 
@@ -10,14 +11,17 @@ public class RawExceptionCheckSample {
     throwingExceptionMethod1();
   }
 
-  private void throwingExceptionMethod1() throws Throwable { // Noncompliant [[sc=50;ec=59]]
+  private void throwingExceptionMethod1() throws Throwable { // Noncompliant
+//                                               ^^^^^^^^^
   }
 
-  private void throwingExceptionMethod2() throws java.lang.Throwable { // Noncompliant [[sc=50;ec=69]]
+  private void throwingExceptionMethod2() throws java.lang.Throwable { // Noncompliant
+//                                               ^^^^^^^^^^^^^^^^^^^
   }
 
   public void throws_Error() {
-    throw new Error(); // Noncompliant [[sc=15;ec=20]]
+    throw new Error(); // Noncompliant
+//            ^^^^^
   }
 
   public void throws_Exception() throws Exception { // Noncompliant {{Define and throw a dedicated exception instead of using a generic one.}}
@@ -57,11 +61,11 @@ public class RawExceptionCheckSample {
   }
 
   public RawExceptionCheckSample() throws
-     Throwable,               // Noncompliant
-     Error,                   // Noncompliant
-     Exception {              // Noncompliant {{Define and throw a dedicated exception instead of using a generic one.}}
+     Throwable, // Noncompliant
+     Error, // Noncompliant
+     Exception { // Noncompliant {{Define and throw a dedicated exception instead of using a generic one.}}
      throw new
-         Throwable();         // Noncompliant
+         Throwable(); // Noncompliant
 
      }
 

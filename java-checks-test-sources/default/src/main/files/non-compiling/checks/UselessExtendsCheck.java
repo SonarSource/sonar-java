@@ -9,7 +9,8 @@ class E extends D implements I1, I2 {} // Noncompliant {{"I1" is implemented by 
 
 class N extends UnknownClass1 implements UnknownInterface1, UnknownInterface2 {} // Compliant
 
-class C5 implements I1, I1 {} // Noncompliant [[sc=25;ec=27]] {{"I1" is listed multiple times.}}
+class C5 implements I1, I1 {} // Noncompliant {{"I1" is listed multiple times.}}
+//                      ^^
 
 class Class5 extends UnknownClass1 implements 
   UnknownInterface,

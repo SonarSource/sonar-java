@@ -21,8 +21,10 @@ public class SpringAssertionsSimplificationCheckSample {
   void couldBeSimplified() {
     ModelAndView mav = getMyModelAndView();
 
-    assertEquals("register", mav.getViewName()); // Noncompliant [[sc=5;ec=17]] {{Replace this assertion by "ModelAndViewAssert.assertViewName".}}
-    assertTrue((Boolean) mav.getModelMap().get("myAttribute")); // Noncompliant [[sc=5;ec=15]] {{Replace this assertion by "ModelAndViewAssert.assertModelAttributeValue".}}
+    assertEquals("register", mav.getViewName()); // Noncompliant {{Replace this assertion by "ModelAndViewAssert.assertViewName".}}
+//  ^^^^^^^^^^^^
+    assertTrue((Boolean) mav.getModelMap().get("myAttribute")); // Noncompliant {{Replace this assertion by "ModelAndViewAssert.assertModelAttributeValue".}}
+//  ^^^^^^^^^^
     assertFalse((Boolean) mav.getModelMap().get("myAttribute")); // Noncompliant {{Replace this assertion by "ModelAndViewAssert.assertModelAttributeValue".}}
     assertEquals(myObject, mav.getModelMap().get("myAttribute")); // Noncompliant {{Replace this assertion by "ModelAndViewAssert.assertModelAttributeValue".}}
 
@@ -39,7 +41,8 @@ public class SpringAssertionsSimplificationCheckSample {
     Object o = modelMap.get("myAttribute");
 
     // AssertJ
-    assertThat(mav.getViewName()).isEqualTo("register"); // Noncompliant [[sc=5;ec=15]] {{Replace this assertion by "ModelAndViewAssert.assertViewName".}}
+    assertThat(mav.getViewName()).isEqualTo("register"); // Noncompliant {{Replace this assertion by "ModelAndViewAssert.assertViewName".}}
+//  ^^^^^^^^^^
     assertThat((Boolean) mav.getModelMap().get("myAttribute")).isTrue(); // Noncompliant {{Replace this assertion by "ModelAndViewAssert.assertModelAttributeValue".}}
     assertThat((Boolean) mav.getModelMap().get("myAttribute")).isFalse(); // Noncompliant {{Replace this assertion by "ModelAndViewAssert.assertModelAttributeValue".}}
     assertThat(mav.getModelMap().get("myAttribute")).isEqualTo(myObject); // Noncompliant {{Replace this assertion by "ModelAndViewAssert.assertModelAttributeValue".}}

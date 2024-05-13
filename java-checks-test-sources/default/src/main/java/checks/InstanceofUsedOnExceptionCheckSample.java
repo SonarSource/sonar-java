@@ -26,7 +26,8 @@ class InstanceofUsedOnExceptionCheckSample {
   private void f(MyException foo) {
     try {
     } catch (Exception e) {
-      if (e instanceof IOException) {} // Noncompliant [[sc=13;ec=23]] {{Replace the usage of the "instanceof" operator by a catch block.}}
+      if (e instanceof IOException) {} // Noncompliant {{Replace the usage of the "instanceof" operator by a catch block.}}
+//          ^^^^^^^^^^
     }
     try {
     } catch (Exception e) {
@@ -140,7 +141,7 @@ class InstanceofUsedOnExceptionCheckSample {
   private void withThrow() throws IllegalAccessException {
     try {
     } catch (Exception e) {
-      if (e instanceof IOException) {// Noncompliant
+      if (e instanceof IOException) { // Noncompliant
         throw new IllegalAccessException("");
       }
       throw e;
@@ -166,7 +167,7 @@ class InstanceofUsedOnExceptionCheckSample {
   private int withReturn() {
     try {
     } catch (Exception e) {
-      if (e instanceof IOException) {// Noncompliant
+      if (e instanceof IOException) { // Noncompliant
         return 1;
       }
       return 2;

@@ -6,7 +6,8 @@ public class TextBlockToString {
               
   hello
   
-  """.toString(); // Noncompliant@-4 [[sc=19;ec=6;el=9;quickfixes=qf1]] {{there's no need to call "toString()" on a text block.}}
+  """.toString(); // Noncompliant@-4 {{there's no need to call "toString()" on a text block.}} [[quickfixes=qf1]]
+//^[sc=19;ec=5;sl=5;el=9]
   // fix@qf1 {{Remove "toString()"}}
   // edit@qf1 [[sl=9;sc=6;el=9;ec=17]] {{}}
 

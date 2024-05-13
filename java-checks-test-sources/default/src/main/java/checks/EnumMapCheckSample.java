@@ -13,14 +13,16 @@ class EnumMapCheckSample {
   Map<COLOR, String> moodMapWithNullKey = new HashMap<COLOR, String>();  // compliant because using null literal as a key.
   Map<COLOR, String> moodMapWithNullKey2 = new HashMap<COLOR, String>();  // compliant because using null literal as a key.
   public void noncompliant() {
-    Map<COLOR, String> moodMap = new HashMap<COLOR, String>(); // Noncompliant [[sc=34;ec=62]]
+    Map<COLOR, String> moodMap = new HashMap<COLOR, String>(); // Noncompliant
+//                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     new HashMap<COLOR, String>(); // Noncompliant
     Map<COLOR, String> moodMap2 = new HashMap<>(); // Noncompliant
     Map<EnumMapCheckSample.COLOR, String> moodMap3 = new HashMap(); // Noncompliant
     Map moodMap4 = (new HashMap<COLOR, String>()); // Noncompliant
 
     Map<COLOR, String> map;
-    map = new HashMap<>(); // Noncompliant [[sc=11;ec=26]]
+    map = new HashMap<>(); // Noncompliant
+//        ^^^^^^^^^^^^^^^
   }
 
   public void compliant() {

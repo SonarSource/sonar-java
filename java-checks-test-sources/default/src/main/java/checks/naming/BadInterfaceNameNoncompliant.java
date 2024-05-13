@@ -1,6 +1,7 @@
 package checks.naming;
 
-interface badInterfaceName { // Noncompliant [[sc=11;ec=27]] {{Rename this interface name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.}}
+interface badInterfaceName { // Noncompliant {{Rename this interface name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.}}
+//        ^^^^^^^^^^^^^^^^
 }
 
 interface GoodInterfaceName {

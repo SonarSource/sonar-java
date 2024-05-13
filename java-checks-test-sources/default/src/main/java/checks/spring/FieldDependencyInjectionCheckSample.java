@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FieldDependencyInjectionCheckSample {
-  @Autowired // Noncompliant [[sc=3;ec=13]] {{Remove this field injection and use constructor injection instead.}}
+  @Autowired // Noncompliant {{Remove this field injection and use constructor injection instead.}}
+//^^^^^^^^^^
   private String autowired;
 
   @Inject // Noncompliant

@@ -13,7 +13,8 @@ class ThreadRunCheckSample {
     Runnable runnable = null;
 
     Thread myThread = new Thread(runnable);
-    myThread.run(); // Noncompliant [[sc=14;ec=17]] {{Call the method Thread.start() to execute the content of the run() method in a dedicated thread.}}
+    myThread.run(); // Noncompliant {{Call the method Thread.start() to execute the content of the run() method in a dedicated thread.}}
+//           ^^^
 
     Thread myThread2 = new Thread(runnable);
     myThread2.start();
@@ -76,7 +77,8 @@ class ThreadRunCheckSample {
   void quickFix() {
     Runnable runnable = null;
     Thread myThread = new Thread(runnable);
-    myThread.run(); // Noncompliant [[sc=14;ec=17;quickfixes=qf1]]
+    myThread.run(); // Noncompliant [[quickfixes=qf1]]
+//           ^^^
     // fix@qf1 {{Replace run() with start()}}
     // edit@qf1 [[sc=14;ec=17]] {{start}}
   }

@@ -6,7 +6,7 @@ public class ConditionAlwaysTrueOrFalseCheckParentLoop {
 
   public void run() {
     active = true;
-    while (active) { // Noncompliant FP
+    while (active) { // Noncompliant
       try {
         foo.method();
       } catch (CustomException se) {

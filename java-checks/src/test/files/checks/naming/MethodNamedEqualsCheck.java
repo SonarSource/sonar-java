@@ -1,5 +1,6 @@
 class C {
-  public boolean equals(Boolean b) {  // Noncompliant [[sc=18;ec=24]] {{Either override Object.equals(Object), or rename the method to prevent any confusion.}}
+  public boolean equals(Boolean b) { // Noncompliant {{Either override Object.equals(Object), or rename the method to prevent any confusion.}}
+//               ^^^^^^
     return b;
   }
 }

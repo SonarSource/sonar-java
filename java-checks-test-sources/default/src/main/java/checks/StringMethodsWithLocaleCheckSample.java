@@ -8,7 +8,8 @@ class StringMethodsWithLocaleCheckSample {
 
   void foo(java.util.Date date) {
     String myString ="";
-    myString.toLowerCase(); // Noncompliant [[sc=14;ec=25]]
+    myString.toLowerCase(); // Noncompliant
+//           ^^^^^^^^^^^
     myString.toUpperCase(); // Noncompliant
     myString.toLowerCase(java.util.Locale.US);
     myString.toUpperCase(java.util.Locale.US);
@@ -19,9 +20,11 @@ class StringMethodsWithLocaleCheckSample {
     format("foo"); // Compliant
 
     // dates
-    myString.format("%t", date); // Noncompliant [[sc=14;ec=20]]
+    myString.format("%t", date); // Noncompliant
+//           ^^^^^^
     myString.format(java.util.Locale.US, "%T", date); // Compliant
-    format("%t" + 42, date); // Noncompliant [[sc=5;ec=11]]
+    format("%t" + 42, date); // Noncompliant
+//  ^^^^^^
     format("%1$tDc", date); // Noncompliant
 
     // integer values : only when comma is used

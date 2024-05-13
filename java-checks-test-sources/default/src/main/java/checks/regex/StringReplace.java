@@ -11,8 +11,10 @@ public class StringReplace {
 
   public void foo(String r) {
     String init = "Bob is a Bird... Bob is a Plane... Bob is Superman!";
-    String changed = init.replaceAll("Bob is", "It's"); // Noncompliant [[sc=27;ec=37]] {{Replace this call to "replaceAll()" by a call to the "replace()" method.}}
-    changed = init.replaceAll(PLANE, "UFO"); // Noncompliant [[sc=20;ec=30]]
+    String changed = init.replaceAll("Bob is", "It's"); // Noncompliant {{Replace this call to "replaceAll()" by a call to the "replace()" method.}}
+//                        ^^^^^^^^^^
+    changed = init.replaceAll(PLANE, "UFO"); // Noncompliant
+//                 ^^^^^^^^^^
     changed = init.replaceAll("\\.\\.\\.", ";"); // Noncompliant
     changed = init.replaceAll("\\Q...\\E", ";"); // Noncompliant
     changed = init.replaceAll("\\\\", "It's"); // Noncompliant

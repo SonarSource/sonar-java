@@ -12,7 +12,8 @@ public class ExcessiveContentRequestCheck_spring_2_4 {
   void springMultipartConfigFactory() {
     MultipartConfigFactory factory = new MultipartConfigFactory();
 
-    factory.setMaxRequestSize(DataSize.ofBytes(8388609)); // Noncompliant [[sc=5;ec=57]] {{The content length limit of 8388609 bytes is greater than the defined limit of 8388608; make sure it is safe here.}}
+    factory.setMaxRequestSize(DataSize.ofBytes(8388609)); // Noncompliant {{The content length limit of 8388609 bytes is greater than the defined limit of 8388608; make sure it is safe here.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     factory.setMaxRequestSize(DataSize.ofBytes(8388608)); // Compliant
     factory.setMaxRequestSize(DataSize.ofBytes(8000000)); // Compliant
 
@@ -37,7 +38,8 @@ public class ExcessiveContentRequestCheck_spring_2_4 {
     factory.setMaxRequestSize(DataSize.of(1, DataUnit.GIGABYTES)); // Noncompliant
     factory.setMaxRequestSize(DataSize.of(1, DataUnit.TERABYTES)); // Noncompliant
 
-    factory.setMaxFileSize(DataSize.parse("8388609")); // Noncompliant [[sc=5;ec=54]] {{The content length limit of 8388609 bytes is greater than the defined limit of 8388608; make sure it is safe here.}}
+    factory.setMaxFileSize(DataSize.parse("8388609")); // Noncompliant {{The content length limit of 8388609 bytes is greater than the defined limit of 8388608; make sure it is safe here.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     factory.setMaxFileSize(DataSize.parse("8388609B")); // Noncompliant
     factory.setMaxFileSize(DataSize.parse("9000KB")); // Noncompliant
     factory.setMaxFileSize(DataSize.parse("8193KB")); // Noncompliant {{The content length limit of 8389632 bytes is greater than the defined limit of 8388608; make sure it is safe here.}}

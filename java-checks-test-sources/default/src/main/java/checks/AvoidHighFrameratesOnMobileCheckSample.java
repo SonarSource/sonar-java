@@ -9,7 +9,8 @@ public class AvoidHighFrameratesOnMobileCheckSample {
   private int HIGH_THRESHOLD_NON_FINAL = 120;
 
   void noncompliant(Surface surface, SurfaceControl surfaceControl) {
-    surface.setFrameRate(120, 0, 0); // Noncompliant [[sc=26;ec=29]] {{Avoid setting high frame rates higher than 60 on mobile devices.}}
+    surface.setFrameRate(120, 0, 0); // Noncompliant {{Avoid setting high frame rates higher than 60 on mobile devices.}}
+//                       ^^^
     surface.setFrameRate(120, 0); // Noncompliant
     surfaceControl.setFrameRate(surfaceControl, 120, 0, 0); // Noncompliant
     surfaceControl.setFrameRate(surfaceControl, 120, 0); // Noncompliant

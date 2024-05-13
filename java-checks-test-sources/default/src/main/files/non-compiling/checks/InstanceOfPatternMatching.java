@@ -5,8 +5,10 @@ import java.util.Map;
 public class InstanceOfPatternMatching {
 
   int if1(Object o) {
-    if (o instanceof String) {  // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}} [[secondary=+1]]
+    if (o instanceof String) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
+//      ^^^^^^^^^^^^^^^^^^^
       String str = (String) o;
+//                 ^^^^^^^^^^<
       return str.length();
     }
     return 0;

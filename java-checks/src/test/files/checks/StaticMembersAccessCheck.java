@@ -32,7 +32,8 @@ class B {
   }
 
   public void noncompliant() {
-    first.counter ++; // Noncompliant [[sc=5;ec=18]] {{Change this instance-reference to a static reference.}}
+    first.counter ++; // Noncompliant {{Change this instance-reference to a static reference.}}
+//  ^^^^^^^^^^^^^
     second.counter ++; // Noncompliant
     second.method(); // Noncompliant
     third.counter ++; // Noncompliant
@@ -40,7 +41,8 @@ class B {
     first.c.d.counter++; // Noncompliant
     first.d().counter++; // Noncompliant
     d().counter++; // Noncompliant
-    ((A.D) d()).counter++; // Noncompliant [[sc=5;ec=24]]
+    ((A.D) d()).counter++; // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^
     (d()).counter++; // Noncompliant
     A.D[] darray = new A.D[1];
     darray[0].counter++; // Noncompliant

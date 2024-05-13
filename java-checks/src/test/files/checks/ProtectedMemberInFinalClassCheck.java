@@ -10,7 +10,8 @@ final class A {
   
   void method1() {}
   private void method2() {}
-  protected void // Noncompliant [[sc=3;ec=12]] {{Remove this "protected" modifier.}}
+  protected void // Noncompliant {{Remove this "protected" modifier.}}
+//^^^^^^^^^
       method3() {}
   public void method4() {}
 }

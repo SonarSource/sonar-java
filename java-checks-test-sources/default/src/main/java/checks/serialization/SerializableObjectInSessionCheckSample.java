@@ -30,7 +30,8 @@ class SerializableObjectInSessionCheckSample {
 
   void foo(HttpServletRequest request) {
     HttpSession session = request.getSession();
-    session.setAttribute("address", new Address()); // Noncompliant [[sc=37;ec=50]] {{Make "Address" serializable or don't store it in the session.}}
+    session.setAttribute("address", new Address()); // Noncompliant {{Make "Address" serializable or don't store it in the session.}}
+//                                  ^^^^^^^^^^^^^
     session.setAttribute("person", new Person()); // Noncompliant {{Make "Person" serializable or don't store it in the session.}}
     session.setAttribute("person", 1);
     session.setAttribute("person", new Integer(1));

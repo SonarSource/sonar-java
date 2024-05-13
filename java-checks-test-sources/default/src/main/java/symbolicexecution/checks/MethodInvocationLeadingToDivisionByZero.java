@@ -18,6 +18,7 @@ class MethodInvocationLeadingToDivisionByZero {
     int i = 42; // flow@foo3 [[order=1]] {{Implies 'i' is non-zero.}}
     if (j == 0) { // flow@foo3 [[order=2]] {{Implies 'j' is zero.}}
       divByZeroIfArg1Zero(i, j); // Noncompliant [[flows=foo3]] {{A division by zero will occur when invoking method "divByZeroIfArg1Zero()".}} flow@foo3 [[order=3;sc=30;ec=31]] {{'j' is passed to 'divByZeroIfArg1Zero()'.}}
+//                           ^
     }
   }
 

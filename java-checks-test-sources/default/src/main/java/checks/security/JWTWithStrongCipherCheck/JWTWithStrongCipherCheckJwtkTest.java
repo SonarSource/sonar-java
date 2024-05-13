@@ -31,11 +31,13 @@ public class JWTWithStrongCipherCheckJwtkTest {
     String tokenSigned = getTokenSigned();
 
     // PARSE WITHOUT SIGNATURE TESTCASES
-    Object body1 = Jwts.parser().parse(tokenNotSigned).getBody(); // Noncompliant [[sc=34;ec=39]] {{The JWT signature (JWS) should be verified before using this token.}}
+    Object body1 = Jwts.parser().parse(tokenNotSigned).getBody(); // Noncompliant {{The JWT signature (JWS) should be verified before using this token.}}
+//                               ^^^^^
     Object body2 = Jwts.parser().parse(tokenSigned).getBody(); // Noncompliant
 
     // Despite the fact that we set a signing key, parse is subject to the none algorithm. See rule description.
-    Object body3 = Jwts.parser().setSigningKey(SECRET_KEY).parse(tokenNotSigned).getBody(); // Noncompliant [[sc=60;ec=65]] {{The JWT signature (JWS) should be verified before using this token.}}
+    Object body3 = Jwts.parser().setSigningKey(SECRET_KEY).parse(tokenNotSigned).getBody(); // Noncompliant {{The JWT signature (JWS) should be verified before using this token.}}
+//                                                         ^^^^^
     Object body4 = Jwts.parser().setSigningKey(SECRET_KEY).parse(tokenSigned).getBody(); // Noncompliant
 
     // parseClaimsJws WITH SIGNATURE TESTCASES
@@ -74,7 +76,8 @@ public class JWTWithStrongCipherCheckJwtkTest {
       .setSubject(LOGIN)
       .setIssuedAt(new Date())
       .setExpiration(addMinutes(new Date(), 20))
-      .compact(); // Noncompliant [[sc=8;ec=15]] {{Sign this token using a strong cipher algorithm.}}
+      .compact(); // Noncompliant {{Sign this token using a strong cipher algorithm.}}
+//     ^^^^^^^
   }
 
   private String getTokenSignedWithNone() throws NoSuchAlgorithmException, InvalidKeyException, InvalidKeySpecException {

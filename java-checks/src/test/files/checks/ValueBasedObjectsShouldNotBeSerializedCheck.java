@@ -26,11 +26,13 @@ public class SerializableClass extends SerializableBaseClass {
   
   OptionalLong attr2b;             // Compliant, as Optional is not serializable (another rule accounts for non serializable fields)
 
-  HijrahDate attr3;                // Noncompliant [[sc=14;ec=19]] {{Make this value-based field transient so it is not included in the serialization of this class.}}
+  HijrahDate attr3; // Noncompliant {{Make this value-based field transient so it is not included in the serialization of this class.}}
+//           ^^^^^
 
   Clock attr4;                     // Compliant, as Clock is not a value-based class
 
-  LocalDateTime attr5;             // Noncompliant [[sc=17;ec=22]] {{Make this value-based field transient so it is not included in the serialization of this class.}}
+  LocalDateTime attr5; // Noncompliant {{Make this value-based field transient so it is not included in the serialization of this class.}}
+//              ^^^^^
 
   transient Optional<String> attr6;
 
@@ -38,13 +40,17 @@ public class SerializableClass extends SerializableBaseClass {
   
   transient HijrahDate attr8; 
   
-  HijrahDate[][] attr9;              // Noncompliant [[sc=18;ec=23]] {{Make this value-based field transient so it is not included in the serialization of this class.}}
+  HijrahDate[][] attr9; // Noncompliant {{Make this value-based field transient so it is not included in the serialization of this class.}}
+//               ^^^^^
   
-  List<LocalDateTime> attr10;        // Noncompliant [[sc=23;ec=29]] {{Make this value-based field transient so it is not included in the serialization of this class.}}
+  List<LocalDateTime> attr10; // Noncompliant {{Make this value-based field transient so it is not included in the serialization of this class.}}
+//                    ^^^^^^
 
-  List<LocalDateTime[]> attr11;      // Noncompliant [[sc=25;ec=31]] {{Make this value-based field transient so it is not included in the serialization of this class.}}
+  List<LocalDateTime[]> attr11; // Noncompliant {{Make this value-based field transient so it is not included in the serialization of this class.}}
+//                      ^^^^^^
   
-  Map<String, LocalDateTime> attr12; // Noncompliant [[sc=30;ec=36]] {{Make this value-based field transient so it is not included in the serialization of this class.}}
+  Map<String, LocalDateTime> attr12; // Noncompliant {{Make this value-based field transient so it is not included in the serialization of this class.}}
+//                           ^^^^^^
   
   List<String> attr13;
   
@@ -65,7 +71,8 @@ public class SerializableClass extends SerializableBaseClass {
       
       Optional<String> attr3;    // Compliant, as Optional is not serializable 
       
-      LocalDateTime attr4;       // Noncompliant [[sc=21;ec=26]] {{Make this value-based field transient so it is not included in the serialization of this class.}}
+      LocalDateTime attr4; // Noncompliant {{Make this value-based field transient so it is not included in the serialization of this class.}}
+//                  ^^^^^
     };
   }
 
@@ -99,7 +106,8 @@ enum MyEnum implements Serializable {
   
   String attr1;
   
-  HijrahDate attr2;         // Noncompliant [[sc=14;ec=19]] {{Make this value-based field transient so it is not included in the serialization of this class.}}
+  HijrahDate attr2; // Noncompliant {{Make this value-based field transient so it is not included in the serialization of this class.}}
+//           ^^^^^
   
 }
 
@@ -109,6 +117,7 @@ public @interface MyAnnotation {
 
   String elem1();
 
-  HijrahDate elem2();       // Noncompliant [[sc=14;ec=19]] {{Make this value-based field transient so it is not included in the serialization of this class.}}
+  HijrahDate elem2(); // Noncompliant {{Make this value-based field transient so it is not included in the serialization of this class.}}
+//           ^^^^^
 
 }

@@ -9,6 +9,7 @@ abstract class EncryptionAlgorithmCheckSample {
   static final String RSA = "RSA";
   static final String NO_PADDING = "/NONE/NoPadding";
   static final String RSA_NO_PADDING = RSA + NO_PADDING;
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
 
   public void foo(java.util.Properties props) {
     /*
@@ -20,8 +21,13 @@ abstract class EncryptionAlgorithmCheckSample {
     */
 
     try {
+
+      Cipher.getInstance(RSA_NO_PADDING); // Noncompliant
+//                       ^^^^^^^^^^^^^^
+
       // First case
-      Cipher.getInstance("AES"); // Noncompliant [[sc=26;ec=31]] {{Use a secure padding scheme.}}
+      Cipher.getInstance("AES"); // Noncompliant {{Use a secure padding scheme.}}
+//                       ^^^^^
 
       Cipher.getInstance("AES/ECB/NoPadding"); // Noncompliant {{Use a secure cipher mode.}}
       Cipher.getInstance("AES" + "/ECB/NoPadding"); // Noncompliant
@@ -60,14 +66,19 @@ abstract class EncryptionAlgorithmCheckSample {
       Cipher.getInstance(null); // Compliant
       Cipher.getInstance(""); // Noncompliant
       String algo = props.getProperty("myAlgo", "AES/ECB/PKCS5Padding");
-      Cipher.getInstance(algo); // Noncompliant [[sc=26;ec=30;secondary=62]]
+//                                              ^^^^^^^^^^^^^^^^^^^^^^>
+      Cipher.getInstance(algo); // Noncompliant
+//                       ^^^^
       String s = "RSA/NONE/NoPadding"; // Compliant
-      Cipher.getInstance(s); // Noncompliant [[sc=26;ec=27;secondary=64]]
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
+      Cipher.getInstance(s); // Noncompliant
+//                       ^
 
       String sPlus = "RSA" + "/NONE/NoPadding"; // Compliant
-      Cipher.getInstance(sPlus); // Noncompliant [[sc=26;ec=31;secondary=67]]
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
+      Cipher.getInstance(sPlus); // Noncompliant
+//                       ^^^^^
 
-      Cipher.getInstance(RSA_NO_PADDING); // Noncompliant [[sc=26;ec=40;secondary=11]]
 
       Cipher.getInstance(separator); // Compliant, can not resolve the declaration, for coverage
 
@@ -78,7 +89,9 @@ abstract class EncryptionAlgorithmCheckSample {
       Cipher.getInstance("DES/CBC/NOPADDING"); // Compliant
       Cipher.getInstance("RSA/NONE/OAEPWITHSHA-1AndMGF1Padding"); // Compliant
       String algoUpperCase = props.getProperty("myAlgo", "AES/ECB/PKCS5PADDING");
-      Cipher.getInstance(algoUpperCase); // Noncompliant [[sc=26;ec=39;secondary=80]]
+//                                                       ^^^^^^^^^^^^^^^^^^^^^^>
+      Cipher.getInstance(algoUpperCase); // Noncompliant
+//                       ^^^^^^^^^^^^^
 
     } catch (Exception  e) {
     }

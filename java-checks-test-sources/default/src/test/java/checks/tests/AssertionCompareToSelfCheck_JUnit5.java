@@ -17,7 +17,8 @@ public class AssertionCompareToSelfCheck_JUnit5 {
     Object expected = new Object();
     assertEquals(expected, actual); // Compliant
     assertEquals(expected, actual, "message"); // Compliant
-    assertEquals(actual, actual); // Noncompliant [[sc=18;ec=24]] {{Replace this assertion to not have the same actual and expected expression.}}
+    assertEquals(actual, actual); // Noncompliant {{Replace this assertion to not have the same actual and expected expression.}}
+//               ^^^^^^
     assertEquals(actual, actual, "message"); // Noncompliant
     assertEquals(actual, actual, () -> "message"); // Noncompliant
   }

@@ -19,9 +19,13 @@
  */
 package org.sonar.java.ast.visitors;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -33,6 +37,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
 
   private Set<Integer> comments = new HashSet<>();
   private Set<Integer> noSonarLines = new HashSet<>();
+  private Map<Path, Set<SyntaxTrivia>> syntaxTrivia = new HashMap<>();
   private boolean seenFirstToken;
 
   @Override
@@ -43,6 +48,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
   public void analyzeCommentLines(CompilationUnitTree tree) {
     comments.clear();
     noSonarLines.clear();
+    syntaxTrivia.clear();
     seenFirstToken = false;
     scanTree(tree);
   }
@@ -63,13 +69,22 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
     String[] commentLines = getContents(trivia.comment()).split("(\r)?\n|\r", -1);
     int line = LineUtils.startLine(trivia);
     for (String commentLine : commentLines) {
-      if(commentLine.contains("NOSONAR")) {
+      if (commentLine.contains("NOSONAR")) {
         noSonarLines.add(line);
       } else if (!isBlank(commentLine)) {
+        Path path = Path.of("");
+        if (context != null) {
+          path = Paths.get(context.getInputFile().uri());
+        }
+        syntaxTrivia.computeIfAbsent(path, k -> new HashSet<>()).add(trivia);
         comments.add(line);
       }
       line++;
     }
+  }
+
+  public Map<Path, Set<SyntaxTrivia>> getSyntaxTrivia() {
+    return syntaxTrivia;
   }
 
   public Set<Integer> noSonarLines() {
@@ -90,7 +105,6 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
     }
     return true;
   }
-
 
   private static String getContents(String comment) {
     return comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);

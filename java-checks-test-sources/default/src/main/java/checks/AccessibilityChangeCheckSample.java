@@ -21,38 +21,38 @@ class AccessibilityChangeCheckSample {
     Person person = new Person("A", 26);
 
     Field field = Person.class.getDeclaredField("name");
-    field.setAccessible(true); // Noncompliant before Java 16
-    field.set(person, "B"); // Noncompliant before Java 16
+    field.setAccessible(true); // Noncompliant
+    field.set(person, "B"); // Noncompliant
 
-    Person.class.getField("name").setAccessible(true); // Noncompliant before Java 16
-    Person.class.getField("name").set(person, "B"); // Noncompliant before Java 16
+    Person.class.getField("name").setAccessible(true); // Noncompliant
+    Person.class.getField("name").set(person, "B"); // Noncompliant
 
 
     Field[] fields = Person.class.getDeclaredFields();
-    fields[0].setAccessible(true); // Noncompliant before Java 16
-    fields[0].set(person, "B"); // Noncompliant before Java 16
-    fields[0].setAccessible(true); // Noncompliant before Java 16
-    fields[0].set(person, "B"); // Noncompliant before Java 16
+    fields[0].setAccessible(true); // Noncompliant
+    fields[0].set(person, "B"); // Noncompliant
+    fields[0].setAccessible(true); // Noncompliant
+    fields[0].set(person, "B"); // Noncompliant
 
-    Person.class.getFields()[0].setAccessible(true); // Noncompliant before Java 16
-    Person.class.getFields()[0].set(person, "B"); // Noncompliant before Java 16
-    Person.class.getDeclaredFields()[0].setAccessible(true); // Noncompliant before Java 16
-    Person.class.getDeclaredFields()[0].set(person, "B"); // Noncompliant before Java 16
+    Person.class.getFields()[0].setAccessible(true); // Noncompliant
+    Person.class.getFields()[0].set(person, "B"); // Noncompliant
+    Person.class.getDeclaredFields()[0].setAccessible(true); // Noncompliant
+    Person.class.getDeclaredFields()[0].set(person, "B"); // Noncompliant
 
     Field someMagicField = getAField();
-    someMagicField.setAccessible(true); // Noncompliant FP Not exploring fields retrieved from non standard methods
-    someMagicField.set(person, "B"); // Noncompliant FP Not exploring fields retrieved from non standard methods
+    someMagicField.setAccessible(true); // Noncompliant
+    someMagicField.set(person, "B"); // Noncompliant
 
-    getAField().setAccessible(true); // Noncompliant FP Not exploring fields retrieved from non standard methods
-    getAField().set(person, "B"); // Noncompliant FP Not exploring fields retrieved from non standard methods
+    getAField().setAccessible(true); // Noncompliant
+    getAField().set(person, "B"); // Noncompliant
 
     Field nullInitializedField = null;
-    nullInitializedField.setAccessible(true); // Noncompliant FP Not exploring fields retrieved from non standard methods
-    nullInitializedField.set(person, "B"); // Noncompliant FP Not exploring fields retrieved from non standard methods
+    nullInitializedField.setAccessible(true); // Noncompliant
+    nullInitializedField.set(person, "B"); // Noncompliant
 
     Field fieldFromDynamicallyLoadedClass = Class.forName("org.sonar.some.package.SomeClass").getDeclaredField("");
-    fieldFromDynamicallyLoadedClass.setAccessible(true); // Noncompliant FP Not exploring fields retrieved from non standard methods
-    fieldFromDynamicallyLoadedClass.set(person, "B"); // Noncompliant FP Not exploring fields retrieved from non standard methods
+    fieldFromDynamicallyLoadedClass.setAccessible(true); // Noncompliant
+    fieldFromDynamicallyLoadedClass.set(person, "B"); // Noncompliant
   }
 
   Field getAField() {

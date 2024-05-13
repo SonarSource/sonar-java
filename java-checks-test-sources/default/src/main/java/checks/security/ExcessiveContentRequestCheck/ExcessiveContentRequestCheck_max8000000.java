@@ -36,7 +36,8 @@ public class ExcessiveContentRequestCheck_max8000000 {
 
   void springCommonsMultipartResolver() {
     CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-    multipartResolver.setMaxUploadSize(8000001); // Noncompliant [[sc=5;ec=48]] {{The content length limit of 8000001 bytes is greater than the defined limit of 8000000; make sure it is safe here.}}
+    multipartResolver.setMaxUploadSize(8000001); // Noncompliant {{The content length limit of 8000001 bytes is greater than the defined limit of 8000000; make sure it is safe here.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     multipartResolver.setMaxUploadSize(8000000); // Compliant
   }
 
@@ -47,7 +48,8 @@ public class ExcessiveContentRequestCheck_max8000000 {
     factory.setMaxFileSize(8000000); // Compliant
 
     // The prefix used is the binary prefix (power of two).
-    factory.setMaxFileSize("8MB"); // Noncompliant [[sc=5;ec=34]] {{The content length limit of 8388608 bytes is greater than the defined limit of 8000000; make sure it is safe here.}}
+    factory.setMaxFileSize("8MB"); // Noncompliant {{The content length limit of 8388608 bytes is greater than the defined limit of 8000000; make sure it is safe here.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     factory.setMaxFileSize("8000KB"); // Noncompliant
     // 7900KB = 8089600 bytes
     factory.setMaxFileSize("7900KB"); // Noncompliant

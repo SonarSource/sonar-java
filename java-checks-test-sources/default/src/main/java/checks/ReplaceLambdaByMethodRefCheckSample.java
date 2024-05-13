@@ -17,7 +17,8 @@ class LambdaA {
     run.run();
     IntStream.range(1, 5)
         .map((x) -> x * x)
-        .map(x -> square(x)) // Noncompliant [[sc=16;ec=18]] {{Replace this lambda with method reference 'this::square'.}}
+        .map(x -> square(x)) // Noncompliant {{Replace this lambda with method reference 'this::square'.}}
+//             ^^
         .map(x -> { // Noncompliant
           return square(x);
         })
@@ -288,58 +289,73 @@ class CastCheck {
 
   void quickFixes(List<String> strings) {
     IntStream.range(1, 5).forEach(x -> staticMethod(x)); // Compliant, shorter
-    IntStream.range(1, 5).forEach(x -> CastCheck.staticMethod(x)); // Noncompliant [[sc=37;ec=39;quickfixes=qf1]] {{Replace this lambda with method reference 'CastCheck::staticMethod'.}}
+    IntStream.range(1, 5).forEach(x -> CastCheck.staticMethod(x)); // Noncompliant {{Replace this lambda with method reference 'CastCheck::staticMethod'.}} [[quickfixes=qf1]]
+//                                  ^^
     // fix@qf1 {{Replace with "CastCheck::staticMethod"}}
     // edit@qf1 [[sc=35;ec=65]] {{CastCheck::staticMethod}}
-    IntStream.range(1, 5).forEach(param -> staticMethod(param)); // Noncompliant [[sc=41;ec=43;quickfixes=qf2]] {{Replace this lambda with method reference 'CastCheck::staticMethod'.}}
+    IntStream.range(1, 5).forEach(param -> staticMethod(param)); // Noncompliant {{Replace this lambda with method reference 'CastCheck::staticMethod'.}} [[quickfixes=qf2]]
+//                                      ^^
     // fix@qf2 {{Replace with "CastCheck::staticMethod"}}
     // edit@qf2 [[sc=35;ec=63]] {{CastCheck::staticMethod}}
-    IntStream.range(1, 5).forEach(x -> notStatic(x)); // Noncompliant [[sc=37;ec=39;quickfixes=qf3]] {{Replace this lambda with method reference 'this::notStatic'.}}
+    IntStream.range(1, 5).forEach(x -> notStatic(x)); // Noncompliant {{Replace this lambda with method reference 'this::notStatic'.}} [[quickfixes=qf3]]
+//                                  ^^
     // fix@qf3 {{Replace with "this::notStatic"}}
     // edit@qf3 [[sc=35;ec=52]] {{this::notStatic}}
     Nested n = new Nested(1);
-    IntStream.range(1, 5).forEach(x -> n.takeInt(x)); // Noncompliant [[sc=37;ec=39;quickfixes=qf4]] {{Replace this lambda with method reference 'n::takeInt'.}}
+    IntStream.range(1, 5).forEach(x -> n.takeInt(x)); // Noncompliant {{Replace this lambda with method reference 'n::takeInt'.}} [[quickfixes=qf4]]
+//                                  ^^
     // fix@qf4 {{Replace with "n::takeInt"}}
     // edit@qf4 [[sc=35;ec=52]] {{n::takeInt}}
     IntStream.range(1, 5).forEach(x -> NestedStatic.takeIntStatic(x)); // FN, do not report an issue because NestedStatic is not final
 
-    IntStream.range(1, 5).forEach(x -> new Nested(x)); // Noncompliant [[sc=37;ec=39;quickfixes=qf_new_class]] {{Replace this lambda with method reference 'Nested::new'.}}
+    IntStream.range(1, 5).forEach(x -> new Nested(x)); // Noncompliant {{Replace this lambda with method reference 'Nested::new'.}} [[quickfixes=qf_new_class]]
+//                                  ^^
     // fix@qf_new_class {{Replace with "Nested::new"}}
     // edit@qf_new_class [[sc=35;ec=53]] {{Nested::new}}
-    IntStream.range(1, 5).forEach(x -> new CastCheck.Nested(x)); // Noncompliant [[sc=37;ec=39;quickfixes=qf_new_class2]] {{Replace this lambda with method reference 'CastCheck.Nested::new'.}}
+    IntStream.range(1, 5).forEach(x -> new CastCheck.Nested(x)); // Noncompliant {{Replace this lambda with method reference 'CastCheck.Nested::new'.}} [[quickfixes=qf_new_class2]]
+//                                  ^^
     // fix@qf_new_class2 {{Replace with "CastCheck.Nested::new"}}
     // edit@qf_new_class2 [[sc=35;ec=63]] {{CastCheck.Nested::new}}
 
-    IntStream.range(1, 5).forEach(x -> new NestedStatic.NestedInNested(x)); // Noncompliant [[sc=37;ec=39;quickfixes=qf_new_class3]] {{Replace this lambda with method reference 'NestedStatic.NestedInNested::new'.}}
+    IntStream.range(1, 5).forEach(x -> new NestedStatic.NestedInNested(x)); // Noncompliant {{Replace this lambda with method reference 'NestedStatic.NestedInNested::new'.}} [[quickfixes=qf_new_class3]]
+//                                  ^^
     // fix@qf_new_class3 {{Replace with "NestedStatic.NestedInNested::new"}}
     // edit@qf_new_class3 [[sc=35;ec=74]] {{NestedStatic.NestedInNested::new}}
 
     strings.stream()
-      .map(s -> s.toLowerCase()) // Noncompliant [[sc=14;ec=16;quickfixes=qf5]] {{Replace this lambda with method reference 'String::toLowerCase'.}}
+      .map(s -> s.toLowerCase()) // Noncompliant {{Replace this lambda with method reference 'String::toLowerCase'.}} [[quickfixes=qf5]]
+//           ^^
       // fix@qf5 {{Replace with "String::toLowerCase"}}
       // edit@qf5 [[sc=12;ec=32]] {{String::toLowerCase}}
-      .map(s -> { // Noncompliant [[sc=14;ec=16;quickfixes=qf6]]
+      .map(s -> { // Noncompliant [[quickfixes=qf6]]
+//           ^^
         return s.toLowerCase();
       })
       // fix@qf6 {{Replace with "String::toLowerCase"}}
-      // edit@qf6 [[sc=12;el=+2;ec=8]] {{String::toLowerCase}}
-      .forEach(x -> System.out.println(x)); // Noncompliant [[sc=18;ec=20;quickfixes=qf7]] {{Replace this lambda with method reference 'System.out::println'.}}
+      // edit@qf6 [[sc=12;el=+3;ec=8]] {{String::toLowerCase}}
+      .forEach(x -> System.out.println(x)); // Noncompliant {{Replace this lambda with method reference 'System.out::println'.}} [[quickfixes=qf7]]
+//               ^^
     // fix@qf7 {{Replace with "System.out::println"}}
     // edit@qf7 [[sc=16;ec=42]] {{System.out::println}}
 
-    strings.stream().filter(string -> string != null); // Noncompliant  [[sc=36;ec=38;quickfixes=qf_null1]]
+    strings.stream().filter(string -> string != null); // Noncompliant [[quickfixes=qf_null1]]
+//                                 ^^
     // fix@qf_null1 {{Replace with "Objects::nonNull"}}
     // edit@qf_null1 [[sc=29;ec=53]] {{Objects::nonNull}}
-    strings.stream().filter(s -> (s) == null);// Noncompliant  [[sc=31;ec=33;quickfixes=qf_null2]]
+    strings.stream().filter(s -> (s) == null); // Noncompliant [[quickfixes=qf_null2]]
+//                            ^^
     // fix@qf_null2 {{Replace with "Objects::isNull"}}
     // edit@qf_null2 [[sc=29;ec=45]] {{Objects::isNull}}
-    barbar((o) -> o instanceof String); // Noncompliant  [[sc=16;ec=18;quickfixes=qf_instance_of]]
+    barbar((o) -> o instanceof String); // Noncompliant [[quickfixes=qf_instance_of]]
+//             ^^
     // fix@qf_instance_of {{Replace with "String.class::isInstance"}}
     // edit@qf_instance_of [[sc=12;ec=38]] {{String.class::isInstance}}
-    bar((object) -> (String) object); // Noncompliant [[sc=18;ec=20;quickfixes=qf_cast1]]
+    bar((object) -> (String) object); // Noncompliant [[quickfixes=qf_cast1]]
+//               ^^
     // fix@qf_cast1 {{Replace with "String.class::cast"}}
     // edit@qf_cast1 [[sc=9;ec=36]] {{String.class::cast}}
-    bar6((object) -> (TestA[][]) object); // Noncompliant [[sc=19;ec=21;quickfixes=qf_cast2]]
+    bar6((object) -> (TestA[][]) object); // Noncompliant [[quickfixes=qf_cast2]]
+//                ^^
     // fix@qf_cast2 {{Replace with "TestA[][].class::cast"}}
     // edit@qf_cast2 [[sc=10;ec=40]] {{TestA[][].class::cast}}
   }
@@ -354,12 +370,14 @@ class CastCheck {
 
   class Nested {
     {
-      IntStream.range(1, 5).forEach(parameter -> takeInt(parameter)); // Noncompliant [[sc=47;ec=49;quickfixes=qf_init]] {{Replace this lambda with method reference 'Nested.this::takeInt'.}}
+      IntStream.range(1, 5).forEach(parameter -> takeInt(parameter)); // Noncompliant {{Replace this lambda with method reference 'Nested.this::takeInt'.}} [[quickfixes=qf_init]]
+//                                            ^^
       // Could be simpler: "this::takeInt", but add the class name since we can not get the enclosing method
       // fix@qf_init {{Replace with "Nested.this::takeInt"}}
       // edit@qf_init [[sc=37;ec=68]] {{Nested.this::takeInt}}
 
-      IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant [[sc=47;ec=49;quickfixes=qf_init2]] {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}}
+      IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}} [[quickfixes=qf_init2]]
+//                                            ^^
       // fix@qf_init2 {{Replace with "CastCheck.this::notStatic"}}
       // edit@qf_init2 [[sc=37;ec=70]] {{CastCheck.this::notStatic}}
     }
@@ -369,18 +387,21 @@ class CastCheck {
     }
 
     void quickFixInNestedClass() {
-      IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant [[sc=47;ec=49;quickfixes=qf_this]] {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}}
+      IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}} [[quickfixes=qf_this]]
+//                                            ^^
       // fix@qf_this {{Replace with "CastCheck.this::notStatic"}}
       // edit@qf_this [[sc=37;ec=70]] {{CastCheck.this::notStatic}}
 
-      IntStream.range(1, 5).forEach(parameter -> staticMethod(parameter)); // Noncompliant [[sc=47;ec=49;quickfixes=qf_this2]] {{Replace this lambda with method reference 'CastCheck::staticMethod'.}}
+      IntStream.range(1, 5).forEach(parameter -> staticMethod(parameter)); // Noncompliant {{Replace this lambda with method reference 'CastCheck::staticMethod'.}} [[quickfixes=qf_this2]]
+//                                            ^^
       // fix@qf_this2 {{Replace with "CastCheck::staticMethod"}}
       // edit@qf_this2 [[sc=37;ec=73]] {{CastCheck::staticMethod}}
     }
 
     class NestedDeeper {
       void quickFixInNestedClass() {
-        IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant [[sc=49;ec=51;quickfixes=qf_this3]] {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}}
+        IntStream.range(1, 5).forEach(parameter -> notStatic(parameter)); // Noncompliant {{Replace this lambda with method reference 'CastCheck.this::notStatic'.}} [[quickfixes=qf_this3]]
+//                                              ^^
         // fix@qf_this3 {{Replace with "CastCheck.this::notStatic"}}
         // edit@qf_this3 [[sc=39;ec=72]] {{CastCheck.this::notStatic}}
       }
@@ -396,14 +417,17 @@ class CastCheck {
   }
 
   void quickFixInNestedClass() {
-    Stream.of(new NestedExtend()).forEach(x -> x.doSomething()); // Noncompliant [[sc=45;ec=47;quickfixes=qf_method_override]]
+    Stream.of(new NestedExtend()).forEach(x -> x.doSomething()); // Noncompliant [[quickfixes=qf_method_override]]
+//                                          ^^
     // fix@qf_method_override {{Replace with "Nested::doSomething"}}
     // edit@qf_method_override [[sc=43;ec=63]] {{Nested::doSomething}}
 
-    Stream.of(new NestedExtendOverrideTakeInt()).forEach(x -> x.doSomething()); // Noncompliant [[sc=60;ec=62;quickfixes=qf_method_override3]]
+    Stream.of(new NestedExtendOverrideTakeInt()).forEach(x -> x.doSomething()); // Noncompliant [[quickfixes=qf_method_override3]]
+//                                                         ^^
     // fix@qf_method_override3 {{Replace with "Nested::doSomething"}}
     // edit@qf_method_override3 [[sc=58;ec=78]] {{Nested::doSomething}}
-    Stream.of(new NestedExtendOverrideTakeInt()).forEach(parameterWithLongName -> parameterWithLongName.doSomething()); // Noncompliant [[sc=80;ec=82;quickfixes=qf_method_override2]]
+    Stream.of(new NestedExtendOverrideTakeInt()).forEach(parameterWithLongName -> parameterWithLongName.doSomething()); // Noncompliant [[quickfixes=qf_method_override2]]
+//                                                                             ^^
     // fix@qf_method_override2 {{Replace with "Nested::doSomething"}}
     // edit@qf_method_override2 [[sc=58;ec=118]] {{Nested::doSomething}}
   }
@@ -439,7 +463,8 @@ class CastCheck {
 
 class LambdaB {
   void intToString() {
-    apply((i, r) -> Integer.toString(i, r)); // Noncompliant [[sc=18;ec=20;quickfixes=qf_int_to_str2]]
+    apply((i, r) -> Integer.toString(i, r)); // Noncompliant [[quickfixes=qf_int_to_str2]]
+//               ^^
     // fix@qf_int_to_str2 {{Replace with "Integer::toString"}}
     // edit@qf_int_to_str2 [[sc=11;ec=43]] {{Integer::toString}}
   }
@@ -484,7 +509,8 @@ class TestNumber extends TestObject {
   }
 
   void test() {
-    Optional.of(new TestNumber()).map(testNumber -> testNumber.foo()); // Noncompliant [[sc=50;ec=52;quickfixes=qf_supertype]]
+    Optional.of(new TestNumber()).map(testNumber -> testNumber.foo()); // Noncompliant [[quickfixes=qf_supertype]]
+//                                               ^^
     // fix@qf_supertype {{Replace with "TestObject::foo"}}
     // edit@qf_supertype [[sc=39;ec=69]] {{TestObject::foo}}
   }
@@ -515,14 +541,16 @@ class TestInteger extends TestNumber {
   }
 
   void test() {
-    Optional.of(new TestInteger()).map(testInteger -> testInteger.foo()); // Noncompliant [[sc=52;ec=54;quickfixes=qf_supertype2]]
+    Optional.of(new TestInteger()).map(testInteger -> testInteger.foo()); // Noncompliant [[quickfixes=qf_supertype2]]
+//                                                 ^^
     // fix@qf_supertype2 {{Replace with "TestObject::foo"}}
     // edit@qf_supertype2 [[sc=40;ec=72]] {{TestObject::foo}}
     Optional.of(new TestInteger()).map(testInteger -> TestNumber.foo(testInteger)); // Compliant, method reference is ambiguous
     Optional.of(new TestInteger()).map(testInteger -> testInteger.spam()); // Compliant, method reference is ambiguous
     Optional.of(new TestInteger()).map(testInteger -> (foo().length() % 23 == 0 ? testInteger : null).spam(testInteger)); // Compliant, method reference is ambiguous
     Optional.of(new TestInteger()).map(testInteger -> testInteger.eggs()); // Compliant, method reference is ambiguous
-    consumeBoth((testInteger, s) -> testInteger.bar(s)); // Noncompliant [[sc=34;ec=36;quickfixes=qf_2args]]
+    consumeBoth((testInteger, s) -> testInteger.bar(s)); // Noncompliant [[quickfixes=qf_2args]]
+//                               ^^
     // fix@qf_2args {{Replace with "TestInteger::bar"}}
     // edit@qf_2args [[sc=17;ec=55]] {{TestInteger::bar}}
     consumeBoth((testInteger, s) -> testInteger.bar("test")); // Compliant

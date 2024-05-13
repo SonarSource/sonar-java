@@ -5,15 +5,18 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
 @RunWith(Enclosed.class)
-class MyNewTest { // Noncompliant [[sc=7;ec=16]] {{Add some tests to this class.}}
+class MyNewTest { // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^^^^^
 }
 
 @RunWith(Enclosed.class)
-class MyNew2Test { // Noncompliant [[sc=7;ec=17]] {{Add some tests to this class.}}
+class MyNew2Test { // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^^^^^^
 }
 
 @RunWith(Enclosed.class)
-class EnclosedNoInnerClassesTest { // Noncompliant [[sc=7;ec=33]] {{Add some tests to this class.}}
+class EnclosedNoInnerClassesTest { // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^
   @Test
   public void something() {
   }
@@ -23,7 +26,8 @@ class EnclosedNoInnerClassesTest { // Noncompliant [[sc=7;ec=33]] {{Add some tes
 }
 
 @RunWith(Enclosed.class)
-class EnclosedIgnoreAbstractInnerClassTest { // Noncompliant [[sc=7;ec=43]] {{Add some tests to this class.}}
+class EnclosedIgnoreAbstractInnerClassTest { // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   abstract public static class IgnoredTest {
     @Test
     public void ignored() {
@@ -41,7 +45,8 @@ class EnclosedWithPublicStaticInnerClassTest { // no issue
 }
 
 @RunWith(Enclosed.class)
-class EnclosedWithPublicInnerClassTest { // Noncompliant [[sc=7;ec=39]] {{Add some tests to this class.}}
+class EnclosedWithPublicInnerClassTest { // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   public class PublicInner {
     @Test
     public void publicInner() {
@@ -51,7 +56,8 @@ class EnclosedWithPublicInnerClassTest { // Noncompliant [[sc=7;ec=39]] {{Add so
 
 
 @RunWith(Enclosed.class)
-class EnclosedWithStaticInnerClassTest { // Noncompliant [[sc=7;ec=39]] {{Add some tests to this class.}}
+class EnclosedWithStaticInnerClassTest { // Noncompliant {{Add some tests to this class.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   static class StaticInner {
     @Test
     public void staticInner() {
@@ -60,7 +66,8 @@ class EnclosedWithStaticInnerClassTest { // Noncompliant [[sc=7;ec=39]] {{Add so
 }
 
 @RunWith(Enclosed.class)
-class EnclosedExtendsTestClassTest extends SimpleTest { // Noncompliant [[sc=7;ec=35]]
+class EnclosedExtendsTestClassTest extends SimpleTest { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 }
 
 @RunWith(Enclosed.class)
@@ -70,7 +77,8 @@ class EnclosedWithInnerStaticClassExtendsTestClass { // no issue
 }
 
 @RunWith(Enclosed.class)
-class EnclosedWithInnerClassExtendsTest { // Noncompliant [[sc=7;ec=40]]
+class EnclosedWithInnerClassExtendsTest { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   class InnerClass extends SimpleTest {
   }
 }
@@ -80,7 +88,8 @@ class EnclosedExtendsWithInnerPublicClassTest extends TestsWithInnerPublicTest {
 }
 
 @RunWith(Enclosed.class)
-class EnclosedExtendsWithInnerClassTest extends TestsWithInnerTest { // Noncompliant [[sc=7;ec=40]]
+class EnclosedExtendsWithInnerClassTest extends TestsWithInnerTest { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 }
 
 
@@ -98,7 +107,8 @@ class TestsWithInnerPublicTest {
   }
 }
 
-class TestsWithInnerTest { // Noncompliant [[sc=7;ec=25]]
+class TestsWithInnerTest { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^
   static class InnerClass {
     @Test
     public void test() {

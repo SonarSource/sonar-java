@@ -1,7 +1,8 @@
 class A {
   public void method() {
     IntStream.range(1, 5).map(x -> x * x - 1).forEach(x -> System.out.println(x));
-    IntStream.range(1, 5).map(x -> {return x * x - 1;}) // Noncompliant [[sc=36;ec=37]] {{Remove useless curly braces around statement and then remove useless return keyword (sonar.java.source not set. Assuming 8 or greater.)}}
+    IntStream.range(1, 5).map(x -> {return x * x - 1;}) // Noncompliant {{Remove useless curly braces around statement and then remove useless return keyword (sonar.java.source not set. Assuming 8 or greater.)}}
+//                                 ^
         .forEach(x -> { // Noncompliant {{Remove useless curly braces around statement (sonar.java.source not set. Assuming 8 or greater.)}}
           System.out.println(x + 11);
         });

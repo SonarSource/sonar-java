@@ -4,15 +4,16 @@ import java.util.function.Supplier;
 
 class ExpressionComplexityCheckSample {
   int a = false ? (true ? (false ? 1 : 0) : 0) : 1;
-  int b = false ? (true ? (false ? (true ? 1 : 0) : 0) : 0) : 1;      // Noncompliant [[sc=11;ec=64;effortToFix=1]] {{Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).}}
+  int b = false ? (true ? (false ? (true ? 1 : 0) : 0) : 0) : 1; // Noncompliant {{Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).}}
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  boolean c = true || false || true || false || false;                    // Noncompliant [[effortToFix=1]]
-  boolean d = true && false && true && false && true && true;             // Noncompliant [[effortToFix=2]] {{Reduce the number of conditional operators (5) used in the expression (maximum allowed 3).}}
+  boolean c = true || false || true || false || false; // Noncompliant
+  boolean d = true && false && true && false && true && true; // Noncompliant {{Reduce the number of conditional operators (5) used in the expression (maximum allowed 3).}}
 
   boolean e = true | false | true | false;
 
   void f() {
-    if ((true ? 0 : 1) == 0 || false || true && false && true || false) {  // Noncompliant [[effortToFix=3]] {{Reduce the number of conditional operators (6) used in the expression (maximum allowed 3).}}
+    if ((true ? 0 : 1) == 0 || false || true && false && true || false) { // Noncompliant {{Reduce the number of conditional operators (6) used in the expression (maximum allowed 3).}}
     }
   }
 
@@ -27,9 +28,10 @@ class ExpressionComplexityCheckSample {
   }
 
   void h() {
-    boolean foo = true && true && true &&                             // Noncompliant [[sc=19;ec=11;effortToFix=1]]
+    boolean foo = true && true && true && // Noncompliant
+//                
       new ExpressionComplexityCheckSample() {
-        boolean a = true && true && true && false && false; // Noncompliant [[effortToFix=1]]
+        boolean a = true && true && true && false && false; // Noncompliant
         boolean a2 = true && true && true;
       }.someThing() &&
       true;
@@ -41,7 +43,7 @@ class ExpressionComplexityCheckSample {
 
   boolean[] foo = new boolean[] {
     true && true && true && true,
-    true && true && true && true && true                              // Noncompliant
+    true && true && true && true && true // Noncompliant
   };
 
   record SD(String applicationName, String serverName, String serverClassPath, String serverArgs, String serverVmArgs) { }
@@ -85,14 +87,14 @@ class ExpressionComplexityCheckSample {
     return true && true && true && false && false; // Compliant, the expression is inside equals method
   }
 
-  boolean afterEquals = true || false || true || false || false; // Noncompliant [[effortToFix=1]]
+  boolean afterEquals = true || false || true || false || false; // Noncompliant
 }
 
 class ExpressionComplexity2 {
   @Override
   public boolean equals(Object o) {
     class Local {
-      boolean insideLocal = true || false || true || false || false; // Noncompliant [[effortToFix=1]]
+      boolean insideLocal = true || false || true || false || false; // Noncompliant
       @Override
       public boolean equals(Object o) {
         return true && true && true && false && false; // Compliant, the expression is inside equals method
@@ -105,10 +107,10 @@ class ExpressionComplexity2 {
 enum AbbreviationOfDays{
   VALUE;
   public boolean foo()  {
-    return true || false || true || false || false; // Noncompliant [[effortToFix=1]]
+    return true || false || true || false || false; // Noncompliant
   }
 }
 
 record ExpressionComplexityRecord() {
-  static boolean b = true || false || true || false || false; // Noncompliant [[effortToFix=1]] {{Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).}}
+  static boolean b = true || false || true || false || false; // Noncompliant {{Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).}}
 }

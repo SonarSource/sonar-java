@@ -12,7 +12,8 @@ abstract class RedundantCloseCheckSample {
       // java 9
       mc2; this.mc3) {
 
-      mc1.close(); // Noncompliant [[sc=11;ec=18]] {{Remove this "close" call; closing the resource is handled automatically by the try-with-resources.}}
+      mc1.close(); // Noncompliant {{Remove this "close" call; closing the resource is handled automatically by the try-with-resources.}}
+//        ^^^^^^^
       mc2.close(); // Noncompliant
       mc3.close(); // Noncompliant
 

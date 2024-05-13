@@ -1,4 +1,5 @@
-class TooManyFields { // Noncompliant [[sc=7;ec=20]] {{Refactor this class so it has no more than 20 public fields, rather than the 26 it currently has.}}
+class TooManyFields { // Noncompliant {{Refactor this class so it has no more than 20 public fields, rather than the 26 it currently has.}}
+//    ^^^^^^^^^^^^^
   int nonPublicField1;
   int nonPublicField2;
   int nonPublicField3;

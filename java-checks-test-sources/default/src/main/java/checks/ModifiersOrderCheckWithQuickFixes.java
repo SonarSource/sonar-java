@@ -2,29 +2,33 @@ package checks;
 
 class ModifiersOrderCheckWithQuickFixes {
 
-  private final static int A = 0, B = 1; // Noncompliant [[sc=17;ec=23;quickfixes=qf1]]
+  private final static int A = 0, B = 1; // Noncompliant [[quickfixes=qf1]]
+//              ^^^^^^
                                          // fix@qf1 {{Reorder modifiers}}
                                          // edit@qf1 [[sc=3;ec=23]] {{}}
                                          // edit@qf1 [[sc=3;ec=3]] {{private static final}}
 
-  static public void otherMain(String[] args) { } // Noncompliant [[sc=10;ec=16;quickfixes=qf2]]
+  static public void otherMain(String[] args) { } // Noncompliant [[quickfixes=qf2]]
+//       ^^^^^^
                                                   // fix@qf2 {{Reorder modifiers}}
                                                   // edit@qf2 [[sc=3;ec=16]] {{}}
                                                   // edit@qf2 [[sc=3;ec=3]] {{public static}}
 
-  // Noncompliant@+3 [[sc=3;ec=15;quickfixes=qf3]]
+
   @Annotation0(p1 = "foo", p2 = false)
   final
-  @Annotation2
+  @Annotation2 // Noncompliant [[quickfixes=qf3]]
+//^^^^^^^^^^^^
   static
   void foo() {}
   // fix@qf3 {{Reorder modifiers}}
-  // edit@qf3 [[sl=17;sc=3;el=18;ec=3]] {{}} - "final\n  "
-  // edit@qf3 [[sl=19;sc=3;el=20;ec=3]] {{}} - "static\n  "
-  // edit@qf3 [[sl=20;sc=3;el=20;ec=3]] {{static final }}
+  // edit@qf3 [[sl=19;sc=3;el=20;ec=3]] {{}}
+  // edit@qf3 [[sl=22;sc=3;el=23;ec=3]] {{}}
+  // edit@qf3 [[sl=23;sc=3;el=23;ec=3]] {{static final }}
 
-  // Noncompliant@+1 [[sc=9;ec=15;quickfixes=qf4]]
-  final public native @Annotation2 synchronized static void bar();
+
+  final public native @Annotation2 synchronized static void bar(); // Noncompliant [[quickfixes=qf4]]
+//      ^^^^^^
   // fix@qf4 {{Reorder modifiers}}
   // edit@qf4 [[sc=3;ec=9]]   {{}} - final
   // edit@qf4 [[sc=9;ec=16]]  {{}} - public
@@ -41,14 +45,16 @@ class ModifiersOrderCheckWithQuickFixes {
   @interface Annotation2 {}
   @interface Annotation3 {}
 
-  final static @Annotation2 class Inner {} // Noncompliant [[sc=9;ec=15;quickfixes=qf5]]
+  final static @Annotation2 class Inner {} // Noncompliant [[quickfixes=qf5]]
+//      ^^^^^^
   // fix@qf5 {{Reorder modifiers}}
   // edit@qf5 [[sc=3;ec=9]]  {{}} - final
   // edit@qf5 [[sc=9;ec=16]] {{}} - static
   // edit@qf5 [[sc=29;ec=29]] {{static final }}
 
   @Annotation2
-  final static class Inner2 {} // Noncompliant [[sc=9;ec=15;quickfixes=qf6]]
+  final static class Inner2 {} // Noncompliant [[quickfixes=qf6]]
+//      ^^^^^^
   // fix@qf6 {{Reorder modifiers}}
   // edit@qf6 [[sc=3;ec=9]]  {{}} - final
   // edit@qf6 [[sc=9;ec=16]] {{}} - static

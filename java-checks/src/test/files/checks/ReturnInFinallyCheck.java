@@ -5,7 +5,8 @@ class B {
     } catch (Exception e) {
       return; // Compliant
     } finally {
-      return; // Noncompliant [[sc=7;ec=13]] {{Remove this return statement from this finally block.}}
+      return; // Noncompliant {{Remove this return statement from this finally block.}}
+//    ^^^^^^
     }
 
     try {
@@ -36,14 +37,16 @@ class B {
       } catch (Exception e) {
         return; // Compliant
       } finally {
-        continue; // Noncompliant [[sc=9;ec=17]] {{Remove this continue statement from this finally block.}}
+        continue; // Noncompliant {{Remove this continue statement from this finally block.}}
+//      ^^^^^^^^
       }
       try {
         return; // Compliant
       } catch (Exception e) {
         return; // Compliant
       } finally {
-        break; // Noncompliant [[sc=9;ec=14]] {{Remove this break statement from this finally block.}}
+        break; // Noncompliant {{Remove this break statement from this finally block.}}
+//      ^^^^^
       }
     }
 
@@ -52,7 +55,8 @@ class B {
     } catch (Exception e) {
       return; // Compliant
     } finally {
-      throw new Exception(); // Noncompliant [[sc=7;ec=12]] {{Remove this throw statement from this finally block.}}
+      throw new Exception(); // Noncompliant {{Remove this throw statement from this finally block.}}
+//    ^^^^^
     }
   }
 }

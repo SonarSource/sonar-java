@@ -8,20 +8,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 class OptionalRestParametersShouldBeObjects {
 
   @GetMapping(value = {"/article", "/article/{id}"})
-  public Article getArticle(@PathVariable(required = false) int articleId, int unused) { // Noncompliant [[sc=29;ec=75]] {{Convert this optional parameter to an Object type.}}
+  public Article getArticle(@PathVariable(required = false) int articleId, int unused) { // Noncompliant {{Convert this optional parameter to an Object type.}}
+//                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     return new Article(articleId);
   }
 
   @GetMapping(value = {"/article", "/article/{id}"})
-  public Article getArticleWithRequestParam(@RequestParam(required = false) int articleId, int unused) { // Noncompliant [[sc=45;ec=91]] {{Convert this optional parameter to an Object type.}}
+  public Article getArticleWithRequestParam(@RequestParam(required = false) int articleId, int unused) { // Noncompliant {{Convert this optional parameter to an Object type.}}
+//                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     return new Article(articleId);
   }
 
   @GetMapping(value = {"/article", "/article/{id}"})
   public Article getArticle(
-    @PathVariable(required = false) float articleId, // Noncompliant [[sc=5;ec=53]]
-    @RequestParam(required = false) int someIssue, // Noncompliant [[sc=5;ec=51]]
-    @PathVariable(required = false) boolean anotherIssue // Noncompliant [[sc=5;ec=57]]
+    @PathVariable(required = false) float articleId, // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    @RequestParam(required = false) int someIssue, // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    @PathVariable(required = false) boolean anotherIssue // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   ) {
     return new Article((int) (Math.floor(articleId)));
   }

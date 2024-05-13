@@ -1,5 +1,6 @@
 class A {
-  public Object clone(){  // Noncompliant [[sc=17;ec=22]] {{Remove this "clone" implementation; use a copy constructor or copy factory instead.}}
+  public Object clone(){ // Noncompliant {{Remove this "clone" implementation; use a copy constructor or copy factory instead.}}
+//              ^^^^^
     return super.clone();
   }
   public Object clonerMethod() {  // Compliant
@@ -15,17 +16,17 @@ class B {
 }
 class C {
   @Override
-  protected Object clone() throws CloneNotSupportedException { // Noncompliant, not a one statement method
+  protected Object clone() throws CloneNotSupportedException { // Noncompliant
     System.out.println("");
     throw new CloneNotSupportedException("Clone not supported for a Singleton");
   }
 }
 class D {
-  protected abstract Object clone() throws CloneNotSupportedException; // Noncompliant (theoritical case, cannot happen in real life).
+  protected abstract Object clone() throws CloneNotSupportedException; // Noncompliant
 }
 class E {
   @Override
-  protected Object clone() throws CloneNotSupportedException { // Noncompliant, incorrect type of exception
+  protected Object clone() throws CloneNotSupportedException { // Noncompliant
     throw new UnsupportedOperationException("Clone not supported for a Singleton");
   }
 }

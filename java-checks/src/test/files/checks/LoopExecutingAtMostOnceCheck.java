@@ -2,7 +2,7 @@ class A {
   void m1() {
     for (int i = 0; i < 10; i++) {
       foo();
-      break;  // Noncompliant {{Remove this "break" statement or make it conditional.}}
+      break; // Noncompliant {{Remove this "break" statement or make it conditional.}}
     }
   }
 
@@ -10,7 +10,7 @@ class A {
     int i = 0;
     while (i++ < 10) {
       foo();
-      throw new Exception("BOUM!");  // Noncompliant {{Remove this "throw" statement or make it conditional.}}
+      throw new Exception("BOUM!"); // Noncompliant {{Remove this "throw" statement or make it conditional.}}
     }
   }
 
@@ -18,7 +18,7 @@ class A {
     int i = 0;
     do {
       foo();
-      break;  // Noncompliant {{Remove this "break" statement or make it conditional.}}
+      break; // Noncompliant {{Remove this "break" statement or make it conditional.}}
     } while (i++ < 10);
   }
 
@@ -32,7 +32,7 @@ class A {
   void m6() {
     for (int i = 0; i < 10; ++i) {
       foo();
-      return;  // Noncompliant {{Remove this "return" statement or make it conditional.}}
+      return; // Noncompliant {{Remove this "return" statement or make it conditional.}}
     }
   }
 
@@ -59,7 +59,7 @@ class A {
     if (b)
       while (i++ < 10) {
         foo();
-        return;  // Noncompliant {{Remove this "return" statement or make it conditional.}}
+        return; // Noncompliant {{Remove this "return" statement or make it conditional.}}
       }
   }
 
@@ -67,7 +67,7 @@ class A {
     int i = 0;
     while (i++ < 10) {
       foo(i);
-      throw new Exception("BOUM!");  // Noncompliant {{Remove this "throw" statement or make it conditional.}}
+      throw new Exception("BOUM!"); // Noncompliant {{Remove this "throw" statement or make it conditional.}}
     }
   }
 

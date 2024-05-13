@@ -21,9 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Controller
 public class S3749_DefaultAnnotations {
 
-  private String name = null; // Noncompliant [[sc=18;ec=22]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
-  public String address = null; // Noncompliant [[sc=17;ec=24]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
-  String phone = null; // Noncompliant [[sc=10;ec=15]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+  private String name = null; // Noncompliant {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+//               ^^^^
+  public String address = null; // Noncompliant {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+//              ^^^^^^^
+  String phone = null; // Noncompliant {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+//       ^^^^^
 
   @Autowired
   String email = null; // Compliant
@@ -43,12 +46,14 @@ public class S3749_DefaultAnnotations {
 
 @Service
 class ServiceHelloWorld {
-  protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+  protected String name = null; // Noncompliant {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+//                 ^^^^
 }
 
 @Repository
 class RepositoryHelloWorld {
-  protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+  protected String name = null; // Noncompliant {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+//                 ^^^^
 }
 
 @RestController
@@ -64,7 +69,8 @@ class RepositoryHelloWorld_Scoped {
 
 @Component
 class ComponentHelloWorld {
-  protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+  protected String name = null; // Noncompliant {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+//                 ^^^^
 }
 
 @Scope("singleton")
@@ -143,7 +149,7 @@ class DualConstructor {
 class ConstructorInjection1 {
   private String env;  // Compliant
   private String yyyAdaptor; // Compliant
-  private String jaxbContext; // Noncompliant - not used in @Autowired constructor
+  private String jaxbContext; // Noncompliant
 
   public ConstructorInjection1(String env, String yyyAdaptor, String jaxbContext) {
     this.env = env;

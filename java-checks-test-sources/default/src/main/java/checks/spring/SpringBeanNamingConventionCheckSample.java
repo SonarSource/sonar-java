@@ -21,7 +21,8 @@ class SomeTestClass {
 
 public class SpringBeanNamingConventionCheckSample {
 
-  @Bean("my_bean") // Noncompliant [[sc=9;ec=18]] {{Rename this bean to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
+  @Bean("my_bean") // Noncompliant {{Rename this bean to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
+//      ^^^^^^^^^
   SomeTestClass myBean1() {
     return null;
   }
@@ -31,7 +32,8 @@ public class SpringBeanNamingConventionCheckSample {
     return null;
   }
 
-  @Bean(autowire = Autowire.NO, initMethod = "toString", name = "my_bean", destroyMethod = "toString") // Noncompliant [[sc=58;ec=74]]
+  @Bean(autowire = Autowire.NO, initMethod = "toString", name = "my_bean", destroyMethod = "toString") // Noncompliant
+//                                                       ^^^^^^^^^^^^^^^^
   SomeTestClass myBean3() {
     return null;
   }

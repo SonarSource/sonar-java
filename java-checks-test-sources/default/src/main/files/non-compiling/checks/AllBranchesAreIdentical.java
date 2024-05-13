@@ -3,7 +3,8 @@ package checks;
 class AllBranchesAreIdentical {
 
   void switchStatement(WeekendDay weekendDay) {
-    int i = switch (1) {  // Noncompliant [[sc=13;ec=19]] {{Remove this conditional structure or edit its code blocks so that they're not all the same.}}
+    int i = switch (1) { // Noncompliant {{Remove this conditional structure or edit its code blocks so that they're not all the same.}}
+//          ^^^^^^
       case 1:
         doSomething();
         yield 1;

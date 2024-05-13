@@ -7,10 +7,12 @@ class SunPackagesUsedCheckCustom {
     com.sun.imageio.plugins.bmp d =  // Compliant
       new com.sun.imageio.plugins.bmp(); // Compliant
     java.util.List a;
-    sun.Foo b; // Noncompliant [[sc=5;ec=12;secondary=13]]  {{Use classes from the Java API instead of Sun classes.}}
+    sun.Foo b; // Noncompliant {{Use classes from the Java API instead of Sun classes.}}
+//  ^^^^^^^
     db.setErrorHandler(new com.sun.org.apache.xml.internal.security.utils
         .IgnoreAllErrorHandler());
     sun       // secondary
+//  ^[el=+3;ec=12]<
         .Foo.toto
         .asd c;
 

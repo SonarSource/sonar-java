@@ -10,7 +10,8 @@ class TransientFieldInNonSerializableCheckSample {
   }
 
   class B {
-    transient String x; // Noncompliant [[sc=5;ec=14]] {{Remove the "transient" modifier from this field.}}
+    transient String x; // Noncompliant {{Remove the "transient" modifier from this field.}}
+//  ^^^^^^^^^
     String y;
     void myMethod() {}
   }

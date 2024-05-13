@@ -8,7 +8,8 @@ public class SwitchInsteadOfIfSequenceCheckSample {
     return "";
   }
   void foo() {
-    if ("red".equals(choice)) {  // Noncompliant [[sc=9;ec=29]] {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
+    if ("red".equals(choice)) { // Noncompliant {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
+//      ^^^^^^^^^^^^^^^^^^^^
       dispenseRed();
     } else if ("blue".equals(choice)) {
       dispenseBlue();
@@ -32,7 +33,8 @@ public class SwitchInsteadOfIfSequenceCheckSample {
   }
 
   void foobis() {
-    if ("red" == choice) {  // Noncompliant [[sc=9;ec=24]] {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
+    if ("red" == choice) { // Noncompliant {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
+//      ^^^^^^^^^^^^^^^
       dispenseRed();
     } else if ("blue" == choice) {
       dispenseBlue();
@@ -55,7 +57,7 @@ public class SwitchInsteadOfIfSequenceCheckSample {
   }
 
   void foo3() {
-    if ("red".equals(choice)) {  // Noncompliant {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
+    if ("red".equals(choice)) { // Noncompliant {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
       dispenseRed();
     } else if (choice.equals("blue")) {
       dispenseBlue();
@@ -122,7 +124,7 @@ public class SwitchInsteadOfIfSequenceCheckSample {
   }
 
   void no_else_statement() {
-    if ("red".equals(choice)) {  // Noncompliant
+    if ("red".equals(choice)) { // Noncompliant
       dispenseRed();
     } else if ("blue".equals(choice)) {
       dispenseBlue();

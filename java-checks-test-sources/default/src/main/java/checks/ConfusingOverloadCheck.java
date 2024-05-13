@@ -18,7 +18,8 @@ public class ConfusingOverloadCheck {
 
   public class Child extends Parent {
 
-    public void doSomething(Fruit.Pear p) {  // Noncompliant [[sc=17;ec=28]] {{Rename this method or correct the type of the argument(s) to override the parent class method.}}
+    public void doSomething(Fruit.Pear p) { // Noncompliant {{Rename this method or correct the type of the argument(s) to override the parent class method.}}
+//              ^^^^^^^^^^^
     }
 
     public void doSomething(Fruit.Apple a) {

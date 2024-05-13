@@ -9,7 +9,8 @@ abstract class AbstractClassNoFieldShouldBeInterfaceCheckA {
 
   abstract void method();
 }
-abstract class AbstractClassNoFieldShouldBeInterfaceCheckB { // Noncompliant [[sc=16;ec=59]] {{Convert the abstract class "AbstractClassNoFieldShouldBeInterfaceCheckB" into an interface.}}
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckB { // Noncompliant {{Convert the abstract class "AbstractClassNoFieldShouldBeInterfaceCheckB" into an interface.}}
+//             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   int method(){
     return 1;
   }

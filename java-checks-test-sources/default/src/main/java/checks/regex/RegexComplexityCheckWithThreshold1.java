@@ -14,15 +14,15 @@ public class RegexComplexityCheckWithThreshold1 {
   }
 
   void nonCompliant(String str) {
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
     str.matches(
       "x*y+"
     );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
     String pattern1 =
       "x*" +
         "y+";
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
+ // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
     String pattern2 =
       "a*" +
         "b+";
@@ -67,15 +67,15 @@ public class RegexComplexityCheckWithThreshold1 {
   }
 
   void noncompliantDespiteComments(String str) {
-    // Noncompliant@+3 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
-    // Noncompliant@+3 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
+ // Noncompliant@+3 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
+ // Noncompliant@+3 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
     str.matches(
       "x*y+" + // lots of xs and ys
         "a*b+" // lots of as and bs
     );
 
-    // Noncompliant@+3 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
-    // Noncompliant@+3 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
+ // Noncompliant@+3 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
+ // Noncompliant@+3 {{Simplify this regular expression to reduce its complexity from 2 to the 1 allowed.}}
     String pattern =
       "x*y+ # lots of xs and ys" +
         "a*b+ # lots of as and bs";

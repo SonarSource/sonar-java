@@ -5,12 +5,12 @@ class ExpressionComplexityCheckCustom {
   int b = false ? (true ? (false ? (true ? 1 : 0) : 0) : 0) : 1;
 
   boolean c = true || false || true || false || false;
-  boolean d = true && false && true && false && true && true; // Noncompliant [[effortToFix=1]] {{Reduce the number of conditional operators (5) used in the expression (maximum allowed 4).}}
+  boolean d = true && false && true && false && true && true; // Noncompliant {{Reduce the number of conditional operators (5) used in the expression (maximum allowed 4).}}
 
   boolean e = true | false | true | false;
 
   void f() {
-    if ((true ? 0 : 1) == 0 || false || true && false && true || false) {  // Noncompliant [[effortToFix=2]] {{Reduce the number of conditional operators (6) used in the expression (maximum allowed 4).}}
+    if ((true ? 0 : 1) == 0 || false || true && false && true || false) { // Noncompliant {{Reduce the number of conditional operators (6) used in the expression (maximum allowed 4).}}
     }
   }
 

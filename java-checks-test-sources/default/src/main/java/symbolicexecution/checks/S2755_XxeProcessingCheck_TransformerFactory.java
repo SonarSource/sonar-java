@@ -135,7 +135,7 @@ class TransformerFactoryCrossProceduralSideEffect2 {
 
   TransformerFactory cross_procedural() throws TransformerConfigurationException {
     // FP, SE limiation, we can not know the runtime type of enableSecureProcessing if it's not final, static, ...
-    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant FP
+    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant
     enableSecureProcessing(factory);
     return factory;
   }

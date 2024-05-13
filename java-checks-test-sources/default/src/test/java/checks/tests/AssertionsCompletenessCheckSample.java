@@ -26,8 +26,8 @@ public class AssertionsCompletenessCheckSample {
   public void fest_assertions() {
     org.fest.assertions.Assertions.assertThat(true); // Noncompliant {{Complete the assertion.}}
     org.fest.assertions.Assertions.assertThat(true).as("foo"); // Noncompliant
-    org.fest.assertions.Assertions.assertThat(true).describedAs("foo");  // Noncompliant
-    org.fest.assertions.Assertions.assertThat(true).overridingErrorMessage("foo");  // Noncompliant
+    org.fest.assertions.Assertions.assertThat(true).describedAs("foo"); // Noncompliant
+    org.fest.assertions.Assertions.assertThat(true).overridingErrorMessage("foo"); // Noncompliant
 
     org.fest.assertions.Assertions.assertThat(true).isTrue(); // Compliant
     org.fest.assertions.Assertions.assertThat(AssertionsCompletenessCheckSample.class.toString()).hasSize(0); // Compliant
@@ -258,7 +258,8 @@ public class AssertionsCompletenessCheckSample {
 
   @Test
   public void assertj_junit_soft_assertions_cross_methods_6() throws Exception {
-    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=284,289]] {{Add one or more 'assertThat' before 'assertAll'.}}
+    doIncompleteSoftAssertions2(); // Noncompliant {{Add one or more 'assertThat' before 'assertAll'.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   private void doSomething(org.assertj.core.api.SoftAssertions softly) {
@@ -282,11 +283,13 @@ public class AssertionsCompletenessCheckSample {
 
   private void doIncompleteSoftAssertions2() {
     doIncompleteSoftAssertions3();
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^<
   }
 
   private void doIncompleteSoftAssertions3() {
     org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
     softly.assertAll();
+//  ^^^^^^^^^^^^^^^^<
   }
 
   private void doBoth(org.assertj.core.api.SoftAssertions softly, boolean doItAgain) {

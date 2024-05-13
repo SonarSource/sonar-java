@@ -11,7 +11,8 @@ class RedundantAssignmentsCheckSample {
   void foo() {
     a = b; // flow@foo {{Implies 'a' has the same value as 'b'.}}
     c = a; // flow@foo {{Implies 'c' has the same value as 'a'.}}
-    b = c; // Noncompliant [[sc=5;ec=10;flows=foo]] {{Remove this useless assignment; "b" already holds the assigned value along all execution paths.}}
+    b = c; // Noncompliant  [[flows=foo]]  {{Remove this useless assignment; "b" already holds the assigned value along all execution paths.}}
+//  ^^^^^
   }
 
   void bar(boolean test) {
@@ -28,22 +29,25 @@ class RedundantAssignmentsCheckSample {
     } else {
       d = c; // flow@xmi2 {{Implies 'd' has the same value as 'c'.}}
     }
-    b = d; // Noncompliant [[sc=5;ec=10;flows=xmi1,xmi2]] {{Remove this useless assignment; "b" already holds the assigned value along all execution paths.}}
+    b = d; // Noncompliant [[flows=xmi1,xmi2]] {{Remove this useless assignment; "b" already holds the assigned value along all execution paths.}}
+//  ^^^^^
   }
 
   void gul(boolean test) {
     a = b;
     c = a;
-    b = test ? a : c; // Noncompliant [[sc=5;ec=21]] {{Remove this useless assignment; "b" already holds the assigned value along all execution paths.}}
+    b = test ? a : c; // Noncompliant {{Remove this useless assignment; "b" already holds the assigned value along all execution paths.}}
+//  ^^^^^^^^^^^^^^^^
   }
 
   void moc(Object param) {
-    param = Objects.requireNonNull(param, "should not be null"); // Noncompliant [[sc=5;ec=64]] - param is reassigned with its own value
+    param = Objects.requireNonNull(param, "should not be null"); // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   Object p;
   void mad() {
-    p = Objects.requireNonNull(p); // Noncompliant - p is reassigned with its own value
+    p = Objects.requireNonNull(p); // Noncompliant
   }
 
   Object[] arr;

@@ -1,7 +1,8 @@
 package checks;
 
 class MethodTooBigCheckCustom4 {
-  public MethodTooBigCheckCustom4() { // Noncompliant [[sc=10;ec=34]] {{This method has 6 lines, which is greater than the 4 lines authorized. Split it into smaller methods.}}
+  public MethodTooBigCheckCustom4() { // Noncompliant {{This method has 6 lines, which is greater than the 4 lines authorized. Split it into smaller methods.}}
+//       ^^^^^^^^^^^^^^^^^^^^^^^^
     System.out.println("");
     // This does not count as a line
     // This does not count as a line

@@ -3,7 +3,8 @@ package checks.unused;
 import com.google.common.collect.MapDifference;
 import java.util.Map;
 
-class UnusedTypeParameterCheck<T, S> { // Noncompliant [[sc=35;ec=36]] {{S is not used in the class.}}
+class UnusedTypeParameterCheck<T, S> { // Noncompliant {{S is not used in the class.}}
+//                                ^
   T field;
   <W,X> void fun(X x) {} // Noncompliant {{W is not used in the method.}}
 }
@@ -20,6 +21,7 @@ class UnusedTypeParameterCheckC {
   }
 }
 
-record UnusedRecordTypeParameter<T, U> (T t, String s) { // Noncompliant [[sc=37;ec=38]] {{U is not used in the record.}}
+record UnusedRecordTypeParameter<T, U> (T t, String s) { // Noncompliant {{U is not used in the record.}}
+//                                  ^
   void foo() { }
 }

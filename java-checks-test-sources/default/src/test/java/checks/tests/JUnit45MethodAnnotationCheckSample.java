@@ -3,8 +3,9 @@ package checks.tests;
 class JUnit45MethodAnnotationCheckSample_JUnit4 {
   @org.junit.Test void test() { }
 
-  public void setUp() { } // Noncompliant [[sc=15;ec=20]] {{Annotate this method with JUnit4 '@org.junit.Before' or rename it to avoid confusion.}}
-  public void tearDown() { }  // Noncompliant {{Annotate this method with JUnit4 '@org.junit.After' or rename it to avoid confusion.}}
+  public void setUp() { } // Noncompliant {{Annotate this method with JUnit4 '@org.junit.Before' or rename it to avoid confusion.}}
+//            ^^^^^
+  public void tearDown() { } // Noncompliant {{Annotate this method with JUnit4 '@org.junit.After' or rename it to avoid confusion.}}
 }
 
 class JUnit45MethodAnnotationCheckSample_JUnit4_compliant {
@@ -44,7 +45,7 @@ class JUnit45MethodAnnotationCheckSample_JUnit5 {
   @org.junit.jupiter.api.Test void test() { }
 
   public void setUp() { } // Noncompliant {{Annotate this method with JUnit5 '@org.junit.jupiter.api.BeforeEach' or rename it to avoid confusion.}}
-  public void tearDown() { }  // Noncompliant {{Annotate this method with JUnit5 '@org.junit.jupiter.api.AfterEach' or rename it to avoid confusion.}}
+  public void tearDown() { } // Noncompliant {{Annotate this method with JUnit5 '@org.junit.jupiter.api.AfterEach' or rename it to avoid confusion.}}
 }
 
 class JUnit45MethodAnnotationCheckSample_JUnit5_compliant {

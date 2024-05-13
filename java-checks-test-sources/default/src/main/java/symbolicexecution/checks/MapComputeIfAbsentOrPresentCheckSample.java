@@ -74,7 +74,7 @@ abstract class MapComputeIfAbsentOrPresentCheckSample {
   }
 
   void gro(Map<String, Object> map, String key) {
-    Object value = map.get(key); // Noncompliant - reassigning everything
+    Object value = map.get(key); // Noncompliant
     Object value2 = value;
     if (value2 == null) {
       String key2 = key;
@@ -288,10 +288,10 @@ abstract class MapComputeIfAbsentOrPresentCheckSample {
 
   void multipleChecks(Map<String, Object> map, String key1, String key2, String key3, boolean b1, boolean b2) {
     if (b1) {
-      if (!map.containsKey(key1))  // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
+      if (!map.containsKey(key1)) // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
         map.put(key1, new Object());
       if (b2) {
-        if (!map.containsKey(key2))  // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
+        if (!map.containsKey(key2)) // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
           map.put(key2, new Object());
 
         if (!map.containsKey(key3)) // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}

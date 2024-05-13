@@ -6,7 +6,8 @@ import javax.persistence.Entity;
 public class HelloController {
 
   @RequestMapping("/updateOrder")
-  public String updateOrder(Order order, Client client) { // Noncompliant [[sc=29;ec=34]] {{Don't use Order here because it's an @Entity}}
+  public String updateOrder(Order order, Client client) { // Noncompliant {{Don't use Order here because it's an @Entity}}
+//                          ^^^^^
     return null;
   }
 

@@ -22,7 +22,8 @@ public class JWTWithStrongCipherCheckAuth0Test {
   private static final String LOGIN = "login";
 
   public void auth0JWT() {
-    JWTVerifier nonCompliantVerifier = JWT.require(Algorithm.none()) // Noncompliant [[sc=52;ec=68]] {{Use only strong cipher algorithms when verifying the signature of this JWT.}}
+    JWTVerifier nonCompliantVerifier = JWT.require(Algorithm.none()) // Noncompliant {{Use only strong cipher algorithms when verifying the signature of this JWT.}}
+//                                                 ^^^^^^^^^^^^^^^^
       .withSubject(LOGIN)
       .build();
 
@@ -46,7 +47,8 @@ public class JWTWithStrongCipherCheckAuth0Test {
       .withSubject(LOGIN)
       .withExpiresAt(addMinutes(new Date(), 20))
       .withIssuedAt(new Date())
-      .sign(Algorithm.none()); // Noncompliant [[sc=13;ec=29]] {{Use only strong cipher algorithms when signing this JWT.}}
+      .sign(Algorithm.none()); // Noncompliant {{Use only strong cipher algorithms when signing this JWT.}}
+//          ^^^^^^^^^^^^^^^^
 
     String tokenSigned = JWT.create()
       .withSubject(LOGIN)

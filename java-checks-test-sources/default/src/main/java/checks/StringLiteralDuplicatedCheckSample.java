@@ -37,8 +37,10 @@ class ConstantAlreadyDefined {
   private static final String REPORT_WITHOUT_THRESHOLD = "blabla";
 
   void test() {
-    System.out.println("constant"); // Noncompliant [[secondary=+1]] {{Use already-defined constant 'A' instead of duplicating its value here.}}
+    System.out.println("constant"); // Noncompliant {{Use already-defined constant 'A' instead of duplicating its value here.}}
+//                     ^^^^^^^^^^
     System.out.println("constant");
+//                     ^^^^^^^^^^<
     System.out.println("blabla"); // Noncompliant {{Use already-defined constant 'REPORT_WITHOUT_THRESHOLD' instead of duplicating its value here.}}
   }
 
@@ -70,7 +72,7 @@ class ConstantAlreadyDefined {
 }
 
 class CompleteCoverage {
-  private final String notConstant = "blablah";  // Noncompliant {{Define a constant instead of duplicating this literal "blablah" 3 times.}}
+  private final String notConstant = "blablah"; // Noncompliant {{Define a constant instead of duplicating this literal "blablah" 3 times.}}
   private final String notConstant2 = "blablah";
   static String notConstant3 = "blablah";
   String notConstant4;

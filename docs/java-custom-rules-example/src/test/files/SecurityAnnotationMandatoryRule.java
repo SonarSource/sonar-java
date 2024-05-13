@@ -12,10 +12,12 @@ class BusinessClassDelegate implements MySecurityInterface, SecondInterface {
   public void aMethod() { }
 
   @org.foo.MyOtherSecurityAnnotation
-  public void anotherMethod() { } // Noncompliant [[sc=15;ec=28]]  {{Mandatory Annotation not set @MySecurityAnnotation}}
+  public void anotherMethod() { } // Noncompliant {{Mandatory Annotation not set @MySecurityAnnotation}}
+//            ^^^^^^^^^^^^^
 
   @VariousAnnotation
-  public void differentMethod() { } // Noncompliant [[startColumn=15;endColumn=30]] {{Mandatory Annotation not set @MySecurityAnnotation}}
+  public void differentMethod() { } // Noncompliant {{Mandatory Annotation not set @MySecurityAnnotation}}
+//            ^^^^^^^^^^^^^^^
 }
 
 class OtherClass implements FirstInterface, SecondInterface {

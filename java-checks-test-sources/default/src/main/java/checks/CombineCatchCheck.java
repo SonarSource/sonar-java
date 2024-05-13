@@ -10,10 +10,12 @@ class CombineCatchCheckWithVersion {
     try {
       canThrow();
     } catch (IOException e) {
+//    ^[el=+4;ec=5]>
       doCleanup();
       logger.log(e);
     }
-    catch (SQLException e) {  // Noncompliant [[sc=12;ec=26;secondary=12]] {{Combine this catch with the one at line 12, which has the same body.}}
+    catch (SQLException e) { // Noncompliant {{Combine this catch with the one at line 12, which has the same body.}}
+//         ^^^^^^^^^^^^^^
       doCleanup();
       logger.log(e);
     }
@@ -21,7 +23,8 @@ class CombineCatchCheckWithVersion {
       doCleanup();
       throw e;
     }
-   catch (ArrayStoreException e) {  // Noncompliant [[sc=11;ec=32;secondary=16]] {{Combine this catch with the one at line 16, which has the same body.}}
+   catch (ArrayStoreException e) { // Noncompliant {{Combine this catch with the one at line 17, which has the same body.}}
+//        ^^^^^^^^^^^^^^^^^^^^^
     doCleanup();
     logger.log(e);
   }
@@ -29,10 +32,12 @@ class CombineCatchCheckWithVersion {
     try {
       canThrow();
     } catch (IOException | java.lang.IllegalArgumentException e) {
+//    ^[el=+4;ec=5]>
       doCleanup();
       logger.log(e);
     }
-    catch (SQLException e) {  // Noncompliant [[sc=12;ec=26;secondary=31]] {{Combine this catch with the one at line 31, which has the same body.}}
+    catch (SQLException e) { // Noncompliant {{Combine this catch with the one at line 34, which has the same body.}}
+//         ^^^^^^^^^^^^^^
       doCleanup();
       logger.log(e);
     }

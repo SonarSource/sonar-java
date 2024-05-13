@@ -682,7 +682,7 @@ class Class extends SuperClass {
 
   public void relational_ne(boolean parameter1, boolean parameter2) {
     if (parameter1 != parameter2) {
-     if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
       if (parameter1 != parameter2) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
       }
@@ -1271,8 +1271,8 @@ class SuperClass {
 
   protected boolean shouldGzip() {
     return env.gzip()
-        && env.prodMode()
-        && request.header(ACCEPT_ENCODING, "").contains(GZIP);
+      && env.prodMode()
+      && request.header(ACCEPT_ENCODING, "").contains(GZIP);
   }
 
   private Object mutex;
@@ -1331,7 +1331,7 @@ class SuperClass {
     Entry entry = new Object();
     printState();
     boolean reusable = entry instanceof ImmutableMapEntry
-        && entry.isReusable();
+      && entry.isReusable();
     printState();
     Object o = reusable ? entry : new Object(); // compliant both path are explored.
     return;
@@ -1982,19 +1982,19 @@ class MyConstantsTestClass {
 }
 
 class Squid2583 {
-    private final transient java.io.ByteArrayOutputStream trasientBaos = new java.io.ByteArrayOutputStream();
+  private final transient java.io.ByteArrayOutputStream trasientBaos = new java.io.ByteArrayOutputStream();
 
-    private final java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+  private final java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 
-    public void raiseIssue() {
-        if (trasientBaos != null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
-            trasientBaos.reset();
-        }
-
-        if (baos != null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
-            baos.reset();
-        }
+  public void raiseIssue() {
+    if (trasientBaos != null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
+      trasientBaos.reset();
     }
+
+    if (baos != null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
+      baos.reset();
+    }
+  }
 }
 
 class NestedMax {

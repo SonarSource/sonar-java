@@ -26,13 +26,14 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.internal.JavaCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
 /**
- * This interface defines how to use checks (rules) verifiers. It's goal is to provide all the required information
- * to the analyzer to verify checks' expected behavior.
+ * This interface defines how to use checks (rules) verifiers. Its goal is to provide all the required information
+ * to the analyzer to verify the checks' expected behavior.
  * <p>
- * The starting point to define a verifier is {@link #newVerifier()}. Then, configuration can be specified.
+ * The starting point to define a verifier is {@link #newVerifier()}. Then, a configuration can be specified.
  * <p>
  * It is required to provide to the verifier at least the following:
  * <ul>
@@ -40,36 +41,17 @@ import org.sonar.plugins.java.api.JavaFileScanner;
  *   <li>A test file, by calling {@link #onFile(String)}, {@link #onFiles(String...)}, or {@link #onFiles(Collection)}</li>
  * </ul>
  * Methods starting with "verify..." (e.g {@link #verifyIssues()} ) are the methods which effectively validate the rule.
- * It is required to call any of them at the end of the verifier's configuration in order to trigger the verification.
+ * Any of them must be called at the end of the verifier's configuration to trigger the verification.
  * <strong>Nothing will happen if one of these method is not called.</strong>
- * <p>
- * In the test file(s), lines on which it is expected to have issues being raised have to be flagged with a comment
- * prefixed by the "Noncompliant" string, followed by some optional details/specificity of the expected issue.
- * <p>
- * It is possible to specify the absolute line number on which the issue should appear by appending {@literal "@<line>"} to "Noncompliant".
- * But it is usually better to use line number relative to the current, this is possible to do by prefixing the number with either '+' or '-'.
- * <p>
- * For example, the following comment says that an issue is going to be raised on the next line (@+1), with the given message:
- * <pre>
- *   // Noncompliant@+1 {{do not import "java.util.List"}}
- *   import java.util.List;
- * </pre>
- * Full syntax:
- * <pre>
- *   // Noncompliant@+1 [[startColumn=1;endLine=+1;endColumn=2;effortToFix=4;secondary=3,4]] {{issue message}}
- * </pre>
- * Some attributes can also be written using a simplified form, for instance:
- * <pre>
- *   // Noncompliant [[sc=14;ec=42]] {{issue message}}
- * </pre>
- * Finally, note that attributes between {@literal [[...]]} are all optional:
- * <ul>
- *   <li>startColumn (sc): column where the highlight starts</li>
- *   <li>endLine (el): relative endLine where the highlight ends (i.e. +1), same line if omitted</li>
- *   <li>endColumn (ec): column where the highlight ends</li>
- *   <li>effortToFix: the cost to fix as integer</li>
- *   <li>secondary: a comma separated list of integers identifying the lines of secondary locations if any</li>
- * </ul>
+ * It uses
+ * <a href="https://github.com/SonarSource/sonar-analyzer-commons/blob/master/test-commons/src/main/java/org/sonarsource/analyzer/commons/checks/verifier/MultiFileVerifier.java">
+ *   MultiFileVerifier
+ * </a>
+ * from <a href="https://github.com/SonarSource/sonar-analyzer-commons/tree/master">
+ * sonar-analyzer-commons - test-commons
+ * </a>
+ * library
+ * to verify issues on file.
  */
 public interface CheckVerifier {
 
@@ -79,6 +61,43 @@ public interface CheckVerifier {
    * @return the newly instantiated verifier
    */
   static CheckVerifier newVerifier() {
+    return JavaCheckVerifier.newInstance();
+  }
+
+  /**
+   * <p>
+   * In the test file(s), lines on which it is expected to have issues being raised have to be flagged with a comment
+   * prefixed by the "Noncompliant" string, followed by some optional details/specificity of the expected issue.
+   * <p>
+   * It is possible to specify the absolute line number on which the issue should appear by appending {@literal "@<line>"} to "Noncompliant".
+   * But it is usually better to use the line number relative to the current; this is possible by prefixing the number with either '+' or '-'.
+   * <p>
+   * For example, the following comment says that an issue is going to be raised on the following line (@+1) with the given message:
+   * <pre>
+   *   // Noncompliant@+1 {{do not import "java.util.List"}}
+   *   import java.util.List;
+   * </pre>
+   * Full syntax:
+   * <pre>
+   *   // Noncompliant@+1 [[startColumn=1;endLine=+1;endColumn=2;effortToFix=4;secondary=3,4]] {{issue message}}
+   * </pre>
+   * Some attributes can also be written using a simplified form, for instance:
+   * <pre>
+   *   // Noncompliant [[sc=14;ec=42]] {{issue message}}
+   * </pre>
+   * Finally, note that attributes between {@literal [[...]]} are all optional:
+   * <ul>
+   *  <li>startColumn (sc): column where the highlight starts</li>
+   *  <li>endLine (el): relative endLine where the highlight ends (i.e. +1), same line if omitted</li>
+   *  <li>endColumn (ec): column where the highlight ends</li>
+   *  <li>effortToFix: the cost to fix as integer</li>
+   *  <li>secondary: a comma-separated list of integers identifying the lines of secondary locations if any</li>
+   * </ul>
+   *
+   * @deprecated in favor of {@link #newVerifier()}, which uses the analyzer-commons-test-commons library to verify issues on checks.
+   */
+  @Deprecated(since = "7.35", forRemoval = true)
+  static CheckVerifier newInternalVerifier() {
     return InternalCheckVerifier.newInstance();
   }
 
@@ -87,7 +106,7 @@ public interface CheckVerifier {
    *
    * @param check the rule to be verified
    *
-   * @return the verifier configured to use the check provided as argument
+   * @return the verifier configured to use the check provided as an argument
    */
   CheckVerifier withCheck(JavaFileScanner check);
 
@@ -102,10 +121,10 @@ public interface CheckVerifier {
 
   /**
    * Defines the classpath to be used for the verification. Usually used when the code of the
-   * test files requires the knowledge of a particular set of libraries or java compiled classes.
+   * test files require the knowledge of a particular set of libraries or java compiled classes.
    *
-   * @param classpath a collection of file which defines the classes/jars/zips which contains 
-   * the bytecode to be used as classpath when executing the rule
+   * @param classpath a collection of files which defines the classes/jars/zips which contains
+   * the bytecode to be used as a classpath when executing the rule
    *
    * @return the verifier configured to use the files provided as argument as classpath
    */
@@ -113,8 +132,8 @@ public interface CheckVerifier {
 
   /**
    * Defines the java version syntax to be used for the verification. Usually used when the code of the
-   * test files target explicitly a given version (eg. java 7), where a particular syntax/API has been introduced.
-   * Preview features for the specified java version will be disabled by default, use {@link CheckVerifier#withJavaVersion(int, boolean)} 
+   * test files explicitly target a given version (e.g. java 7) where a particular syntax/API has been introduced.
+   * Preview features for the specified java version will be disabled by default; use {@link CheckVerifier#withJavaVersion(int, boolean)}
    * to enable or disable preview features associated with the specified java version.
    *
    * @param javaVersionAsInt defines the java language syntax version to be considered during verification, provided as an integer.
@@ -123,14 +142,14 @@ public interface CheckVerifier {
    * @return the verifier configured to consider the provided test file(s) as following the syntax of the given java version
    */
   CheckVerifier withJavaVersion(int javaVersionAsInt);
-  
+
   /**
    * Defines the java version syntax to be used for the verification. Usually used when the code of the
-   * test files target explicitly a given version (eg. java 7), where a particular syntax/API has been introduced.
+   * test files explicitly target a given version (e.g. java 7) where a particular syntax/API has been introduced.
    *
    * @param javaVersionAsInt defines the java language syntax version to be considered during verification, provided as an integer.
    * For instance, for Java 1.7, use '7'. For Java 12, simply '12'.
-   * 
+   *
    * @param enablePreviewFeatures defines if preview features from the specified java version should be enabled or not
    *
    * @return the verifier configured to consider the provided test file(s) as following the syntax of the given java version
@@ -140,7 +159,7 @@ public interface CheckVerifier {
   CheckVerifier withJavaVersion(int javaVersionAsInt, boolean enablePreviewFeatures);
 
   /**
-   * Defines the whether the current file is analyzer in an android context.
+   * Defines whether the current file is an analyzer in an Android context.
    *
    * @return the verifier currently configured
    */
@@ -152,7 +171,7 @@ public interface CheckVerifier {
    *
    * @param filename the file to be analyzed
    *
-   * @return the verifier configured to consider the provided test file as source for the rule(s)
+   * @return the verifier configured to consider the provided test file as the source for the rule(s)
    */
   CheckVerifier onFile(String filename);
 
@@ -178,21 +197,21 @@ public interface CheckVerifier {
 
   /**
    * Adds a collection of files with an expected status to be verified by the given rule(s).
-   * If a file by the same filename is already listed to be analyzed, an exception is thrown.
+   * An exception is thrown if a file by the same filename is already listed to be analyzed.
    * @param status The status of the files to be analyzed
    * @param filenames a collection of files to be analyzed
    * @return the verifier configured
-   * @throws IllegalArgumentException if a file by the same filename had already been added
+   * @throws IllegalArgumentException if a file by the same filename has already been added
    */
   CheckVerifier addFiles(InputFile.Status status, String... filenames);
 
   /**
    * Adds a collection of files with an expected status.
-   * If a file by the same filename is already listed to be analyzed, an exception is thrown.
+   * An exception is thrown if a file with the same filename is already listed to be analyzed.
    * @param status The status of the files to be analyzed
    * @param filenames a collection of files to be analyzed
    * @return the verifier configured
-   * @throws IllegalArgumentException if a file by the same filename had already been added
+   * @throws IllegalArgumentException if a file by the same filename has already been added
    */
   CheckVerifier addFiles(InputFile.Status status, Collection<String> filenames);
 
@@ -220,7 +239,7 @@ public interface CheckVerifier {
   void verifyIssues();
 
   /**
-   * Verifies that an issue (only one) is raised directly on the file, and not
+   * Verifies that an issue (only one) is raised directly on the file and not
    * within the content of the file.
    *
    * @param expectedIssueMessage the message to be expected with the issue.
@@ -228,7 +247,7 @@ public interface CheckVerifier {
   void verifyIssueOnFile(String expectedIssueMessage);
 
   /**
-   * Verifies that an issue (only one) is raised directly on the project which would include this file,
+   * Verifies that an issue (only one) is raised directly on the project, which would include this file,
    * and not within the content of the file.
    *
    * @param expectedIssueMessage

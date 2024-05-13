@@ -3,9 +3,12 @@ package checks;
 interface InterfaceAsConstantContainerCheckSample {
 }
 
-interface InterfaceAsConstantContainerCheckSampleA { // Noncompliant [[sc=11;ec=51;secondary=7,8]] {{Move constants defined in this interfaces to another class or enum.}}
+interface InterfaceAsConstantContainerCheckSampleA { // Noncompliant {{Move constants defined in this interfaces to another class or enum.}}
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   int a = 0;
+//    ^<
   int b = 0;
+//    ^<
 }
 
 interface InterfaceAsConstantContainerCheckSampleB {

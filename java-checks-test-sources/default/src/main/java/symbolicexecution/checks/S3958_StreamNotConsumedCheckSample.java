@@ -18,7 +18,7 @@ abstract class S3958_StreamNotConsumedCheckSample {
 
   void test3() {
     Stream<Integer> stream = Stream.of(1, 2, 3);
-    stream = stream.filter(e -> true);  // Noncompliant
+    stream = stream.filter(e -> true); // Noncompliant
     stream = stream.skip(2);
     stream = stream.limit(1);
   }
@@ -79,7 +79,7 @@ abstract class S3958_StreamNotConsumedCheckSample {
 
   void exceptionalPath2() {
     try {
-      Stream.of(1,2,3).filter(e -> true);  // Noncompliant
+      Stream.of(1,2,3).filter(e -> true); // Noncompliant
 
       Stream.of(1,2,3)
         .filter(e -> true)

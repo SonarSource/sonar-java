@@ -31,7 +31,8 @@ class MethodOnlyCallsSuperCheckSample{
       return 0;
     }
 
-    public void f3() { // Noncompliant [[sc=17;ec=19]] {{Remove this method to simply inherit it.}}
+    public void f3() { // Noncompliant {{Remove this method to simply inherit it.}}
+//              ^^
       super.f3();
     }
 
