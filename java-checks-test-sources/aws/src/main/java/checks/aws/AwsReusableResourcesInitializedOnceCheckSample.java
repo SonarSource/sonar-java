@@ -31,15 +31,15 @@ public class AwsReusableResourcesInitializedOnceCheckSample {
     @SneakyThrows
     @Override
     public Void handleRequest(Object o, Context context) {
-      S3Client s3Client = S3Client.builder().region(Region.EU_CENTRAL_1).build(); // Noncompliant
+      S3Client s3Client = S3Client.builder().region(Region.EU_CENTRAL_1).build(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
 //                                                                       ^^^^^
-      S3Client.builder().build(); // Noncompliant
+      S3Client.builder().build(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
 //                       ^^^^^
-      MachineLearningClient.builder().build(); // Noncompliant
+      MachineLearningClient.builder().build(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
 //                                    ^^^^^
-      DriverManager.getConnection("foo"); // Noncompliant
+      DriverManager.getConnection("foo"); // Noncompliant {{Instantiate this database connection outside the Lambda function.}}
 //                  ^^^^^^^^^^^^^
-      var customClient = new FooClient(); // Noncompliant
+      var customClient = new FooClient(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
 //                           ^^^^^^^^^
       var compliant = new Object();
       build();
