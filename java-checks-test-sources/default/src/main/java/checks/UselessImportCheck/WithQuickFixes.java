@@ -3,21 +3,21 @@ package checks.UselessImportCheck;
 import java.util.Map;
 // fix@qf1 {{Remove the import}}
 // edit@qf1 [[sl=6;sc=1;el=8;ec=1]] ̣{{}}
-import a.b.c.NotReferencedFromJavadoc; // Noncompliant [[quickfixes=qf1]]
+import a.b.c.NotReferencedFromJavadoc; // Noncompliant {{Remove this unused import 'a.b.c.NotReferencedFromJavadoc'.}} [[quickfixes=qf1]]
 //     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 import java.util.List;
 import javax.annotation.Nonnull;
 //fix@qf2 {{Remove the import}}
 //edit@qf2 [[sl=12;sc=1;el=14;ec=1]] ̣{{}}
-import java.lang.String;            // Noncompliant [[quickfixes=qf2]]
+import java.lang.String;            // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}} [[quickfixes=qf2]]
 //     ^^^^^^^^^^^^^^^^
-import java.lang.*;                 // Noncompliant [[quickfixes=qf3]]
+import java.lang.*;                 // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}} [[quickfixes=qf3]]
 //     ^^^^^^^^^^^
 //fix@qf3 {{Remove the import}}
 //edit@qf3 [[sl=14;sc=1;el=18;ec=1]] ̣{{}}
 import javax.annotation.Nullable;
 import a.b.c.Foo;
-import a.b.c.Foo;                   // Noncompliant [[quickfixes=qf4]]
+import a.b.c.Foo;                   // Noncompliant {{Remove this duplicated import.}} [[quickfixes=qf4]]
 //     ^^^^^^^^^
 //fix@qf4 {{Remove the import}}
 //edit@qf4 [[sl=20;sc=1;el=25;ec=1]] ̣{{}}
