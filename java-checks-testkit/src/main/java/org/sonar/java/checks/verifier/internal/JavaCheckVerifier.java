@@ -160,7 +160,7 @@ public class JavaCheckVerifier implements CheckVerifier {
       var quickfixes = scannerContext.getQuickFixes().get(textSpan);
       if (quickfixes != null) {
         for (var qf : quickfixes) {
-          verifierIssue = (MultiFileVerifier.Issue) verifierIssue.addQuickFix(convertQuickFix(qf));
+          verifierIssue = verifierIssue.addQuickFix(convertQuickFix(qf));
         }
       }
 
