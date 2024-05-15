@@ -17,28 +17,44 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api.tree;
 
-import org.sonar.java.annotations.Beta;
-import java.util.Optional;
-import org.sonar.plugins.java.api.precedence.Precedence;
-import org.sonar.plugins.java.api.semantic.Type;
+package org.sonar.java.checks.prettyprint;
 
-/**
- * Common interface for all types of expressions.
- *
- * JLS 15
- */
-@Beta
-public interface ExpressionTree extends Tree {
-  Type symbolType();
+public record FileConfig(IndentMode indentMode, String endOfLine) {
 
-  Optional<Object> asConstant();
+  public static final FileConfig DEFAULT_FILE_CONFIG = new FileConfig(new FileConfig.IndentMode.Spaces(2), "\n");
 
-  <T> Optional<T> asConstant(Class<T> type);
+  public String indent() {
+    return indentMode.indent();
+  }
 
-  default boolean hasPrecedenceOver(ExpressionTree other){
-    return Precedence.precedence(this).bindsStrongerThan(Precedence.precedence(other));
+  public sealed interface IndentMode {
+    char indentChar();
+
+    int nRep();
+
+    default String indentCharAsStr(){
+      return Character.toString(indentChar());
+    }
+
+    default String indent() {
+      return indentCharAsStr().repeat(nRep());
+    }
+
+    record Spaces(int nRep) implements IndentMode {
+      @Override
+      public char indentChar() {
+        return ' ';
+      }
+    }
+
+    record Tabs(int nRep) implements IndentMode {
+      @Override
+      public char indentChar() {
+        return '\t';
+      }
+    }
+
   }
 
 }
