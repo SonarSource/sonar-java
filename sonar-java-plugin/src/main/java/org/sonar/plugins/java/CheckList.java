@@ -669,29 +669,6 @@ import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
 import org.sonar.java.checks.unused.UnusedTestRuleCheck;
 import org.sonar.java.checks.unused.UnusedThrowableCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
-import org.sonar.java.se.checks.AllowXMLInclusionCheck;
-import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
-import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
-import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
-import org.sonar.java.se.checks.DenialOfServiceXMLCheck;
-import org.sonar.java.se.checks.DivisionByZeroCheck;
-import org.sonar.java.se.checks.InvariantReturnCheck;
-import org.sonar.java.se.checks.LocksNotUnlockedCheck;
-import org.sonar.java.se.checks.MapComputeIfAbsentOrPresentCheck;
-import org.sonar.java.se.checks.MinMaxRangeCheck;
-import org.sonar.java.se.checks.NoWayOutLoopCheck;
-import org.sonar.java.se.checks.NonNullSetToNullCheck;
-import org.sonar.java.se.checks.NullDereferenceCheck;
-import org.sonar.java.se.checks.ObjectOutputStreamCheck;
-import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
-import org.sonar.java.se.checks.ParameterNullnessCheck;
-import org.sonar.java.se.checks.RedundantAssignmentsCheck;
-import org.sonar.java.se.checks.StreamConsumedCheck;
-import org.sonar.java.se.checks.StreamNotConsumedCheck;
-import org.sonar.java.se.checks.UnclosedResourcesCheck;
-import org.sonar.java.se.checks.XmlParserLoadsExternalSchemasCheck;
-import org.sonar.java.se.checks.XmlValidatedSignatureCheck;
-import org.sonar.java.se.checks.XxeProcessingCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
 public final class CheckList {
@@ -1283,35 +1260,8 @@ public final class CheckList {
     EnumMapCheck.class,
     LeftCurlyBraceStartLineCheck.class,
     DisallowedClassCheck.class,
-    ParameterReassignedToCheck.class,
-
-    // SEChecks ordered by ExplodedGraphWalker need
-    NullDereferenceCheck.class,
-    DivisionByZeroCheck.class,
-    UnclosedResourcesCheck.class,
-    LocksNotUnlockedCheck.class,
-    NonNullSetToNullCheck.class,
-    NoWayOutLoopCheck.class,
-    OptionalGetBeforeIsPresentCheck.class,
-    StreamConsumedCheck.class,
-    RedundantAssignmentsCheck.class,
-    XxeProcessingCheck.class,
-    // SEChecks Depending on XxeProcessingCheck
-    DenialOfServiceXMLCheck.class,
-    AllowXMLInclusionCheck.class,
-    XmlParserLoadsExternalSchemasCheck.class,
-
-    // SEChecks not require by ExplodedGraphWalker, from the fastest to the slowest
-    ParameterNullnessCheck.class,
-    BooleanGratuitousExpressionsCheck.class,
-    ConditionalUnreachableCodeCheck.class,
-    XmlValidatedSignatureCheck.class,
-    CustomUnclosedResourcesCheck.class,
-    MapComputeIfAbsentOrPresentCheck.class,
-    InvariantReturnCheck.class,
-    StreamNotConsumedCheck.class,
-    ObjectOutputStreamCheck.class,
-    MinMaxRangeCheck.class);
+    ParameterReassignedToCheck.class
+  );
 
   private static final List<Class<? extends JavaCheck>> JAVA_TEST_CHECKS = Arrays.asList(
     // Rule classes are listed alphabetically

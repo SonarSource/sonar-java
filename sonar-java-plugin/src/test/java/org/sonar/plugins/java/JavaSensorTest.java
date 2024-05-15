@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -114,7 +113,7 @@ class JavaSensorTest {
   @Test
   void test_issues_creation_on_main_file() throws IOException {
     // Expected issues : the number of methods violating BadMethodName rule. Currently, 18 tests.
-    testIssueCreation(InputFile.Type.MAIN, 18);
+    testIssueCreation(InputFile.Type.MAIN, 15);
   }
 
   @Test
@@ -134,7 +133,7 @@ class JavaSensorTest {
 
     jss.execute(context);
     // argument 121 refers to the comment on line #121 in this file, each time this file changes, this argument should be updated
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(121));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(120));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
@@ -248,43 +247,43 @@ class JavaSensorTest {
     verify(jspCodeVisitor, never()).scanFile(any());
   }
 
-  @Test
-  void insert_SymbolicExecutionVisitor_before_first_SECheck() throws IOException {
-    List<JavaCheck> javaChecks = Arrays.asList(
-      new org.sonar.java.checks.MagicNumberCheck(),
-      new org.sonar.java.se.checks.NullDereferenceCheck(),
-      new org.sonar.java.se.checks.DivisionByZeroCheck()
-    );
-    JavaCheck[] ordered = JavaSensor.insertSymbolicExecutionVisitor(javaChecks);
-    assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
-      .containsExactly(
-        "MagicNumberCheck",
-        "SymbolicExecutionVisitor",
-        "NullDereferenceCheck",
-        "DivisionByZeroCheck"
-      );
-  }
+//  @Test
+//  void insert_SymbolicExecutionVisitor_before_first_SECheck() throws IOException {
+//    List<JavaCheck> javaChecks = Arrays.asList(
+//      new org.sonar.java.checks.MagicNumberCheck(),
+//      new org.sonar.java.se.checks.NullDereferenceCheck(),
+//      new org.sonar.java.se.checks.DivisionByZeroCheck()
+//    );
+//    JavaCheck[] ordered = JavaSensor.insertSymbolicExecutionVisitor(javaChecks);
+//    assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
+//      .containsExactly(
+//        "MagicNumberCheck",
+//        "SymbolicExecutionVisitor",
+//        "NullDereferenceCheck",
+//        "DivisionByZeroCheck"
+//      );
+//  }
+//
+//  @Test
+//  void does_not_insert_SymbolicExecutionVisitor() throws IOException {
+//    List<JavaCheck> javaChecks = Arrays.asList(
+//      new org.sonar.java.checks.MagicNumberCheck(),
+//    new org.sonar.java.checks.ParameterReassignedToCheck()
+//    );
+//    JavaCheck[] ordered = JavaSensor.insertSymbolicExecutionVisitor(javaChecks);
+//    assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
+//      .containsExactly(
+//        "MagicNumberCheck",
+//        "ParameterReassignedToCheck"
+//      );
+//  }
 
-  @Test
-  void does_not_insert_SymbolicExecutionVisitor() throws IOException {
-    List<JavaCheck> javaChecks = Arrays.asList(
-      new org.sonar.java.checks.MagicNumberCheck(),
-    new org.sonar.java.checks.ParameterReassignedToCheck()
-    );
-    JavaCheck[] ordered = JavaSensor.insertSymbolicExecutionVisitor(javaChecks);
-    assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
-      .containsExactly(
-        "MagicNumberCheck",
-        "ParameterReassignedToCheck"
-      );
-  }
-
-  @Test
-  void info_log_when_no_SE_rules_enabled() throws IOException {
-    assertJasperIsInvoked(new MapSettings());
-    assertThat(logTester.logs(Level.INFO)).contains("No rules with 'symbolic-execution' tag were enabled,"
-      + " the Symbolic Execution Engine will not run during the analysis.");
-  }
+//  @Test
+//  void info_log_when_no_SE_rules_enabled() throws IOException {
+//    assertJasperIsInvoked(new MapSettings());
+//    assertThat(logTester.logs(Level.INFO)).contains("No rules with 'symbolic-execution' tag were enabled,"
+//      + " the Symbolic Execution Engine will not run during the analysis.");
+//  }
 
   @Test
   void performance_measure_should_not_be_activated_by_default() throws IOException {
@@ -387,7 +386,7 @@ class JavaSensorTest {
     List<String> infoLogs = logTester.logs(Level.INFO);
     assertThat(infoLogs).noneMatch(log -> log.startsWith("Configured Java source version (sonar.java.source):"));
   }
-  
+
   @Test
   void do_not_filter_checks_when_no_autoscan() throws IOException {
     MapSettings settings = new MapSettings();
@@ -406,9 +405,7 @@ class JavaSensorTest {
         // main check in SonarWay, not supported by autoscan (CombineCatchCheck)
         "java:S2147",
         // test check in SonarWay (NoTestInTestClassCheck)
-        "java:S2187",
-        // SE check (BooleanGratuitousExpressionsCheck)
-        "java:S2589"
+        "java:S2187"
       );
   }
 
@@ -530,7 +527,7 @@ class JavaSensorTest {
   public static class CustomRegistrar implements CheckRegistrar {
     @Override
     public void register(RegistrarContext registrarContext) {
-      registrarContext.registerClassesForRepository("CustomRepository", 
+      registrarContext.registerClassesForRepository("CustomRepository",
         List.of(CustomMainCheck.class, CustomJspCheck.class),
         List.of(CustomTestCheck.class));
     }

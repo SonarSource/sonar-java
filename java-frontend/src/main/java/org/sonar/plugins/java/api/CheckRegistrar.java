@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
 import org.sonarsource.api.sonarlint.SonarLintSide;
@@ -52,6 +53,10 @@ public interface CheckRegistrar {
    * @param registrarContext the context that will be used by the java-plugin to retrieve the classes for checks.
    */
   void register(RegistrarContext registrarContext);
+
+  default void customRulesDefinition(RulesDefinition.Context context, RulesDefinition.NewRepository javaRepository) {
+
+  }
 
   /**
    * Context for checks registration.

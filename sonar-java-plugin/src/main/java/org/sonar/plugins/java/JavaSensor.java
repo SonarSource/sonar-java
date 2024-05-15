@@ -48,8 +48,6 @@ import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.java.se.SymbolicExecutionVisitor;
-import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -109,7 +107,7 @@ public class JavaSensor implements Sensor {
     Measurer measurer = new Measurer(context, noSonarFilter);
 
     JavaFrontend frontend = new JavaFrontend(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
-      insertSymbolicExecutionVisitor(sonarComponents.mainChecks()));
+      sonarComponents.mainChecks().toArray(new JavaCheck[0]));
     frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
     sensorDuration.stop();
@@ -146,22 +144,22 @@ public class JavaSensor implements Sensor {
       .start("JavaSensor");
   }
 
-  @VisibleForTesting
-  static JavaCheck[] insertSymbolicExecutionVisitor(List<JavaCheck> checks) {
-    List<SECheck> seChecks = checks.stream()
-      .filter(SECheck.class::isInstance)
-      .map(SECheck.class::cast)
-      .toList();
-    if (seChecks.isEmpty()) {
-      LOG.info("No rules with 'symbolic-execution' tag were enabled,"
-        + " the Symbolic Execution Engine will not run during the analysis.");
-      return checks.toArray(new JavaCheck[0]);
-    }
-    List<JavaCheck> newList = new ArrayList<>(checks);
-    // insert an instance of SymbolicExecutionVisitor before the first SECheck
-    newList.add(newList.indexOf(seChecks.get(0)), new SymbolicExecutionVisitor(seChecks));
-    return newList.toArray(new JavaCheck[0]);
-  }
+//  @VisibleForTesting
+//  static JavaCheck[] insertSymbolicExecutionVisitor(List<JavaCheck> checks) {
+//    List<SECheck> seChecks = checks.stream()
+//      .filter(SECheck.class::isInstance)
+//      .map(SECheck.class::cast)
+//      .toList();
+//    if (seChecks.isEmpty()) {
+//      LOG.info("No rules with 'symbolic-execution' tag were enabled,"
+//        + " the Symbolic Execution Engine will not run during the analysis.");
+//      return checks.toArray(new JavaCheck[0]);
+//    }
+//    List<JavaCheck> newList = new ArrayList<>(checks);
+//    // insert an instance of SymbolicExecutionVisitor before the first SECheck
+//    newList.add(newList.indexOf(seChecks.get(0)), new SymbolicExecutionVisitor(seChecks));
+//    return newList.toArray(new JavaCheck[0]);
+//  }
 
   private Collection<GeneratedFile> runJasper(SensorContext context) {
     if (sonarComponents.isAutoScan()) {
