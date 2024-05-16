@@ -19,8 +19,6 @@
  */
 package org.sonar.java.se.plugin;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.ProfileRegistrar;
 import org.sonarsource.analyzer.commons.BuiltInQualityProfileJsonLoader;
 import org.sonarsource.api.sonarlint.SonarLintSide;
@@ -73,7 +70,7 @@ public class JavaSESonarWayProfile implements BuiltInQualityProfilesDefinition {
 
   static Set<RuleKey> sonarJavaSonarWayRuleKeys() {
     return BuiltInQualityProfileJsonLoader.loadActiveKeysFromJsonProfile(SONAR_WAY_PATH).stream()
-      .map(rule -> RuleKey.of(JavaSERulesDefinition.REPOSITORY_KEY, rule))
+      .map(rule -> RuleKey.of(JavaSECheckRegistrar.REPOSITORY_KEY, rule))
       .collect(Collectors.toSet());
   }
 

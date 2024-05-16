@@ -19,6 +19,11 @@
  */
 package org.sonar.java.se.checks;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
@@ -29,15 +34,15 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 public abstract class SECheck implements JavaFileScanner {
 
+  // FIXME issues are stored here on the instance of the check.
+  // but the scanFile method will be invoked on
   protected Set<SEIssue> issues = new HashSet<>();
+
+//  public SECheck() {
+//    SymbolicExecutionVisitor.getInstance().registerCheck(this);
+//  }
 
   public void init(MethodTree methodTree, CFG cfg) {
 
@@ -61,6 +66,9 @@ public abstract class SECheck implements JavaFileScanner {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    // this is invoked by the SonarJava analysis, but only the first one will actually trigger the SE analysis
+    // so after this first scanFile invocation all SEChecks will have their issues collected but only the first one will be reported
+    //SymbolicExecutionVisitor.getInstance().scanFile(context);
     for (SEIssue seIssue : issues) {
       context.reportIssueWithFlow(this, seIssue.getTree(), seIssue.getMessage(), seIssue.getFlows(), null);
     }

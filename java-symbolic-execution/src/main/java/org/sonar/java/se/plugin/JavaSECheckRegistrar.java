@@ -27,9 +27,10 @@ import org.sonar.api.SonarRuntime;
 import org.sonar.api.ce.ComputeEngineSide;
 import org.sonar.api.server.ServerSide;
 import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonarsource.analyzer.commons.RuleMetadataLoader;
-import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @ServerSide
 @ComputeEngineSide
@@ -50,7 +51,16 @@ public class JavaSECheckRegistrar implements CheckRegistrar {
 
   @Override
   public void register(RegistrarContext registrarContext) {
-    registrarContext.registerMainChecks(REPOSITORY_KEY, JavaSECheckList.getChecks());
+    List<SECheck> checks = new ArrayList<>();
+    for(Class<? extends SECheck> check : JavaSECheckList.getChecks()) {
+      try {
+        checks.add(check.newInstance());
+      } catch (InstantiationException | IllegalAccessException e) {
+        throw new IllegalStateException("Could not create instance of " + check, e);
+      }
+    }
+    registrarContext.registerMainSharedCheck(new SymbolicExecutionVisitor(checks), RulesList.getMainRuleKeys());
+    registrarContext.registerMainChecks(REPOSITORY_KEY, checks);
   }
 
   @Override

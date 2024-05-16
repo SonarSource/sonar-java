@@ -28,7 +28,6 @@ public class JavaSEPlugin implements Plugin {
   public void define(Context context) {
 
     context.addExtensions(
-      JavaSERulesDefinition.class,
       JavaSECheckRegistrar.class,
       LombokFilter.class
     );

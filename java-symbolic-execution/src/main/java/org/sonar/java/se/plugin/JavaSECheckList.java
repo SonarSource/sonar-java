@@ -37,17 +37,17 @@ import org.sonar.java.se.checks.ObjectOutputStreamCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.ParameterNullnessCheck;
 import org.sonar.java.se.checks.RedundantAssignmentsCheck;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.checks.XmlParserLoadsExternalSchemasCheck;
 import org.sonar.java.se.checks.XmlValidatedSignatureCheck;
 import org.sonar.java.se.checks.XxeProcessingCheck;
-import org.sonar.plugins.java.api.JavaCheck;
 
 public class JavaSECheckList {
 
-  public static List<Class<? extends JavaCheck>> getChecks() {
+  public static List<Class<? extends SECheck>> getChecks() {
     return List.of(
       // SEChecks ordered by ExplodedGraphWalker need
       NullDereferenceCheck.class,
