@@ -1,6 +1,9 @@
 package org.sonar.java.checks.prettyprint;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.precedence.Associativity;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -31,6 +34,7 @@ import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
@@ -81,6 +85,7 @@ import org.sonar.plugins.java.api.tree.YieldStatementTree;
 import static org.sonar.java.checks.prettyprint.KindsPrinter.printExprKind;
 
 public final class Prettyprinter implements TreeVisitor {
+
   private final PrettyPrintStringBuilder ppsb;
 
   public Prettyprinter(PrettyPrintStringBuilder ppsb) {
@@ -89,7 +94,28 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    unsupported();
+    var packageDecl = tree.packageDeclaration();
+    if (packageDecl != null) {
+      packageDecl.accept(this);
+      ppsb.newLine().newLine();
+      // TODO maybe configure the number of newLines in config
+    }
+    var imports = tree.imports();
+    if (imports != null) {
+      for (ImportClauseTree anImport : imports) {
+        anImport.accept(this);
+        ppsb.newLine();
+      }
+    }
+    for (Tree type : tree.types()) {
+      type.accept(this);
+      ppsb.newLine().newLine();
+      // TODO maybe configure the number of newLines in config
+    }
+    var module = tree.moduleDeclaration();
+    if (module != null) {
+      module.accept(this);
+    }
   }
 
   @Override
@@ -99,20 +125,69 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitClass(ClassTree tree) {
-    unsupported();
+    switch (tree.kind()) {
+      case CLASS -> {
+        tree.modifiers().accept(this);
+        ppsb.add("class ");
+        tree.simpleName().accept(this);
+        printTypeParamsListIfAny(tree.typeParameters());
+        var superClass = tree.superClass();
+        if (superClass != null) {
+          ppsb.add("extends ");
+          superClass.accept(this);
+          ppsb.addSpace();
+        }
+        var superInterfaces = tree.superInterfaces();
+        if (!superInterfaces.isEmpty()) {
+          ppsb.add("implements ");
+          join(superInterfaces.iterator(), () -> ppsb.add(", "));
+          ppsb.addSpace();
+        }
+        ppsb.addSpace().blockStart();
+        // TODO maybe parametrize the number of newLines in config
+        for (Tree member : tree.members()) {
+          ppsb.newLine();
+          member.accept(this);
+          ppsb.newLine();
+        }
+        ppsb.blockEnd();
+      }
+      default -> unsupported(); // TODO other cases
+    }
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
-    unsupported();
+    switch (tree.kind()) {
+      case METHOD -> {
+        tree.modifiers().accept(this);
+        printTypeParamsListIfAny(tree.typeParameters());
+        tree.returnType().accept(this);
+        ppsb.addSpace();
+        tree.simpleName().accept(this);
+        printArgsList(tree.parameters().iterator());
+        var throwsClauses = tree.throwsClauses();
+        if (!throwsClauses.isEmpty()) {
+          ppsb.add("throws ");
+          join(throwsClauses.iterator(), () -> ppsb.add(", "));
+        }
+        var bodyBlock = tree.block();
+        if (bodyBlock == null) {
+          ppsb.addSemicolon();
+        } else {
+          ppsb.addSpace();
+          bodyBlock.accept(this);
+        }
+      }
+      default -> unsupported(); // TODO constructor and annotation parameter
+    }
   }
 
   @Override
   public void visitBlock(BlockTree tree) {
     ppsb.blockStart();
-    join(tree.body().iterator(), ppsb::newLine);
-    ppsb.addSemicolon();
-    ppsb.decIndent();
+    join(tree.body().iterator(), () -> ppsb.forceSemicolon().newLine(), null, ppsb::forceSemicolon);
+    ppsb.blockEnd();
   }
 
   @Override
@@ -178,17 +253,34 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitCaseGroup(CaseGroupTree tree) {
-    for (CaseLabelTree label : tree.labels()) {
-      label.accept(this);
-      ppsb.newLine();
+    // TODO should be subject to configuration in config
+    if (tree.labels().get(0).colonOrArrowToken().text().equals(":")) {
+      for (CaseLabelTree label : tree.labels()) {
+        label.accept(this);
+        ppsb.newLine();
+      }
+      join(tree.body().iterator(), ppsb::newLine);
+    } else {
+      if (tree.labels().size() > 1){
+        throw new IllegalArgumentException();
+      }
+      tree.labels().get(0).accept(this);
+      if (tree.body().size() == 1) {
+        ppsb.addSpace();
+        tree.body().get(0).accept(this);
+        ppsb.forceSemicolon();
+      } else {
+        ppsb.blockStart();
+        join(tree.body().iterator(), ppsb::newLine);
+        ppsb.blockEnd();
+      }
     }
-    join(tree.body().iterator(), ppsb::newLine);
   }
 
   @Override
   public void visitCaseLabel(CaseLabelTree tree) {
     var isDefault = tree.expressions().isEmpty();
-    if (isDefault){
+    if (isDefault) {
       ppsb.add("default");
     } else {
       ppsb.add("case ");
@@ -229,7 +321,11 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitYieldStatement(YieldStatementTree tree) {
-    unsupported();  // TODO
+    var yieldToken = tree.yieldKeyword();
+    if (yieldToken != null) {
+      ppsb.add("yield ");
+    }
+    tree.expression().accept(this);
   }
 
   @Override
@@ -279,7 +375,7 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitUnaryExpression(UnaryExpressionTree tree) {
-    if (tree.is(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT)){
+    if (tree.is(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT)) {
       tree.expression().accept(this);
       ppsb.add(printExprKind(tree.kind()));
     } else {
@@ -296,8 +392,8 @@ public final class Prettyprinter implements TreeVisitor {
     var parenthesizeLhs = tree.hasPrecedenceOver(lhs);
     printMaybeWithParentheses(lhs, parenthesizeLhs);
     ppsb.addSpace().add(printExprKind(tree.kind())).addSpace();
-    var parenthesizeRhs = rhs.hasPrecedenceOver(tree)
-      && !Associativity.isKnownAssociativeOperator(lhs.symbolType(), tree.kind(), rhs.symbolType());
+    var parenthesizeRhs = !rhs.hasPrecedenceOver(tree)
+      && !(tree.kind() == rhs.kind() && Associativity.isKnownAssociativeOperator(lhs.symbolType(), tree.kind(), rhs.symbolType()));
     printMaybeWithParentheses(rhs, parenthesizeRhs);
   }
 
@@ -331,19 +427,16 @@ public final class Prettyprinter implements TreeVisitor {
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
     var typeArgs = tree.typeArguments();
-    if (typeArgs != null && !typeArgs.isEmpty()){
+    if (typeArgs != null && !typeArgs.isEmpty()) {
       var methodSelect = (MemberSelectExpressionTree) tree.methodSelect();
       methodSelect.expression().accept(this);
-      ppsb.add(".<");
-      join(typeArgs.iterator(), () -> ppsb.add(", "));
-      ppsb.add(">");
+      ppsb.add(".");
+      printTypeParamsListIfAny(tree.typeArguments());
       methodSelect.identifier().accept(this);
     } else {
       tree.methodSelect().accept(this);
     }
-    ppsb.add("(");
-    join(tree.typeArguments().iterator(), () -> ppsb.add(", "));
-    ppsb.add(")");
+    printArgsList(tree.arguments().iterator());
   }
 
   @Override
@@ -370,7 +463,7 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitParenthesized(ParenthesizedTree tree) {
-    printMaybeWithParentheses(tree, true);
+    printMaybeWithParentheses(tree.expression(), true);
   }
 
   @Override
@@ -382,10 +475,8 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitLiteral(LiteralTree tree) {
-    switch (tree.kind()){
-      case INT_LITERAL, LONG_LITERAL, FLOAT_LITERAL, DOUBLE_LITERAL, BOOLEAN_LITERAL -> ppsb.add(tree.value());
-      case CHAR_LITERAL -> ppsb.add("'" + tree.value() + "'");
-      case STRING_LITERAL -> ppsb.add("\"" + tree.value() + "\"");
+    switch (tree.kind()) {
+      case INT_LITERAL, LONG_LITERAL, FLOAT_LITERAL, DOUBLE_LITERAL, BOOLEAN_LITERAL, CHAR_LITERAL, STRING_LITERAL -> ppsb.add(tree.value());
       case NULL_LITERAL -> ppsb.add("null");
       case TEXT_BLOCK -> {
         ppsb.incIndent();
@@ -416,12 +507,12 @@ public final class Prettyprinter implements TreeVisitor {
     ppsb.addSpace();
     tree.simpleName().accept(this);
     var initializer = tree.initializer();
-    if (initializer != null){
+    if (initializer != null) {
       ppsb.add(" = ");
       initializer.accept(this);
     }
     var endToken = tree.endToken();
-    if (endToken != null){
+    if (endToken != null) {
       ppsb.add(endToken.text());
     }
   }
@@ -438,127 +529,164 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitArrayType(ArrayTypeTree tree) {
-
+    tree.type().accept(this);
+    ppsb.add(tree.ellipsisToken() == null ? "[]" : "...");
   }
 
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
-
+    tree.type().accept(this);
+    ppsb.add("<");
+    join(tree.typeArguments().iterator(), () -> ppsb.add(", "));
+    ppsb.add(">");
   }
 
   @Override
   public void visitWildcard(WildcardTree tree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitUnionType(UnionTypeTree tree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitModifier(ModifiersTree modifiersTree) {
-
+    for (AnnotationTree annotation : modifiersTree.annotations()) {
+      annotation.accept(this);
+      ppsb.addSpace();
+    }
+    join(modifiersTree.modifiers().iterator(), ppsb::addSpace, null, ppsb::addSpace);
   }
 
   @Override
   public void visitAnnotation(AnnotationTree annotationTree) {
-
+    ppsb.add("@");
+    annotationTree.annotationType().accept(this);
+    var args = annotationTree.arguments();
+    if (!args.isEmpty()) {
+      ppsb.add("(");
+      join(args.iterator(), () -> ppsb.add(", "));
+      ppsb.add(")");
+    }
   }
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitTypeParameter(TypeParameterTree typeParameter) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitTypeArguments(TypeArguments trees) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitTypeParameters(TypeParameters trees) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitOther(Tree tree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitPackage(PackageDeclarationTree tree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitModule(ModuleDeclarationTree module) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitRequiresDirectiveTree(RequiresDirectiveTree tree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitExportsDirectiveTree(ExportsDirectiveTree tree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitOpensDirective(OpensDirectiveTree tree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitUsesDirective(UsesDirectiveTree tree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitProvidesDirective(ProvidesDirectiveTree tree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitArrayDimension(ArrayDimensionTree tree) {
-
+    unsupported();  // TODO
   }
 
   @Override
   public void visitTypePattern(TypePatternTree tree) {
-
+    tree.patternVariable().accept(this);
+    // TODO  '->' or ':', if not included in patternVariable
   }
 
   @Override
   public void visitNullPattern(NullPatternTree tree) {
-
+    ppsb.add("null");
   }
 
   @Override
   public void visitDefaultPattern(DefaultPatternTree tree) {
-
+    ppsb.add("default");
+    // TODO  '->' or ':' ?
   }
 
   @Override
   public void visitGuardedPattern(GuardedPatternTree tree) {
-
+    tree.pattern().accept(this);
+    ppsb.add(" when ");
+    tree.expression().accept(this);
+    // TODO  '->' or ':' ?
   }
 
   @Override
   public void visitRecordPattern(RecordPatternTree tree) {
+    tree.type().accept(this);
+    ppsb.add("(");
+    join(tree.patterns().iterator(), () -> ppsb.add(", "));
+    ppsb.add(")");
+  }
 
+  private void printArgsList(Iterator<? extends Tree> iterator) {
+    ppsb.add("(");
+    join(iterator, () -> ppsb.add(", "));
+    ppsb.add(")");
+  }
+
+  private void printTypeParamsListIfAny(@Nullable List<? extends Tree> typeParams) {
+    if (typeParams != null && !typeParams.isEmpty()) {
+      ppsb.add("<");
+      join(typeParams.iterator(), () -> ppsb.add(", "));
+      ppsb.add("> ");
+    }
   }
 
   private void join(Iterator<? extends Tree> iterator, Runnable makeSep) {
@@ -571,13 +699,25 @@ public final class Prettyprinter implements TreeVisitor {
     }
   }
 
-  private void printMaybeWithParentheses(ExpressionTree expr, boolean parenthesize){
-    parenthesize &= !expr.is(Tree.Kind.PARENTHESIZED_EXPRESSION);
-    if (parenthesize){
+  private void join(Iterator<? extends Tree> iterator, Runnable makeSep, @Nullable Runnable beginningIfNonEmpty,
+                    @Nullable Runnable terminationIfNonEmpty) {
+    if (iterator.hasNext()) {
+      if (beginningIfNonEmpty != null) {
+        beginningIfNonEmpty.run();
+      }
+      join(iterator, makeSep);
+      if (terminationIfNonEmpty != null) {
+        terminationIfNonEmpty.run();
+      }
+    }
+  }
+
+  private void printMaybeWithParentheses(ExpressionTree expr, boolean parenthesize) {
+    if (parenthesize) {
       ppsb.add("(");
     }
     expr.accept(this);
-    if (parenthesize){
+    if (parenthesize) {
       ppsb.add(")");
     }
   }

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 public final class ASTUtils {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ASTUtils.class);
+//  private static final Logger LOG = LoggerFactory.getLogger(ASTUtils.class);
 
   private static final IAnnotationBinding[] NO_ANNOTATIONS = new IAnnotationBinding[0];
 
@@ -61,7 +61,7 @@ public final class ASTUtils {
       return bindingResolver.getTypeBinding(referenceBinding);
     } catch (Exception e) {
       // exception on ECJ side when trying to resolve a Type, recover on null type
-      LOG.error(String.format("ECJ Unable to resolve type %s", name), e);
+//      LOG.error(String.format("ECJ Unable to resolve type %s", name), e);
       return null;
     }
   }

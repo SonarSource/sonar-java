@@ -21,6 +21,7 @@
 package org.sonar.java.checks.prettyprint;
 
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 
 import static org.sonar.plugins.java.api.precedence.Precedence.precedence;
@@ -32,8 +33,8 @@ public final class PrettyPrintStringBuilder {
   private final StringBuilder sb = new StringBuilder();
   private int indentLevel = 0;
 
-  public PrettyPrintStringBuilder(FileConfig fileConfig, SyntaxToken indentReferenceToken, boolean indentFirstLine) {
-    var baseIndentLevel = indentReferenceToken.firstToken().range().start().column() - 1;
+  public PrettyPrintStringBuilder(FileConfig fileConfig, @Nullable SyntaxToken indentReferenceToken, boolean indentFirstLine) {
+    var baseIndentLevel = indentReferenceToken == null ? 0 : (indentReferenceToken.firstToken().range().start().column() - 1);
     this.fileConfig = fileConfig;
     this.baseIndent = fileConfig.indentMode().indentCharAsStr().repeat(baseIndentLevel);
     if (indentFirstLine) {
@@ -63,6 +64,13 @@ public final class PrettyPrintStringBuilder {
 
   public PrettyPrintStringBuilder addSemicolon(){
     return add(";");
+  }
+
+  public PrettyPrintStringBuilder forceSemicolon(){
+    if (!(endsWith(";") || endsWith("}"))){
+      addSemicolon();
+    }
+    return this;
   }
 
   public PrettyPrintStringBuilder newLine() {
