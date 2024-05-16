@@ -83,7 +83,9 @@ public class JspTest {
       "org.apache.jsp.views.greeting_jsp extends org.apache.jasper.runtime.HttpJspBase",
       "org.apache.jsp.index_jsp extends org.apache.jasper.runtime.HttpJspBase",
       "org.apache.jsp.views.include_jsp extends org.apache.jasper.runtime.HttpJspBase",
-      "org.apache.jsp.views.test_005finclude_jsp extends org.apache.jasper.runtime.HttpJspBase"
+      "org.apache.jsp.views.test_005finclude_jsp extends org.apache.jasper.runtime.HttpJspBase",
+      "org.apache.jsp.views.sonar_jsp extends org.apache.jasper.runtime.HttpJspBase",
+      "org.apache.jsp.views.sonar_jsp$Helper extends org.apache.jasper.runtime.JspFragmentHelper"
     );
     List<String> actual = Files.readAllLines(sourceMapTest);
     assertThat(actual).containsExactlyInAnyOrder("index.jsp 1:6",
