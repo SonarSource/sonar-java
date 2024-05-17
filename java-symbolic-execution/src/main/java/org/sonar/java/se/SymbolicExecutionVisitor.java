@@ -38,7 +38,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
-//  private static SymbolicExecutionVisitor instance;
   private static final Logger LOG = LoggerFactory.getLogger(SymbolicExecutionVisitor.class);
 
   @VisibleForTesting
@@ -106,29 +105,5 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
     return !methodSymbol.isAbstract() &&
       (methodSymbol.isPrivate() || methodSymbol.isFinal() || methodSymbol.isStatic() || methodSymbol.owner().isFinal());
   }
-
-//  protected static String getFileId(InputFile inputFile) {
-//    URI uri = inputFile.uri();
-//    if (uri == null) {
-//      if (LOG.isWarnEnabled()) {
-//        LOG.warn("Unexpected: {} has null uri", inputFile.filename());
-//      }
-//      return "Unknown[" + inputFile.filename() + "]";
-//    }
-//    return getPath(uri);
-//  }
-//
-//  /**
-//   * On Windows leading slashes are removed from paths like "/C:/some/path".
-//   */
-//  private static String getPath(URI uri) {
-//    boolean isWindows = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows");
-//    String path = uri.getPath();
-//    int firstColonIndex = path.indexOf(':');
-//    if (isWindows && firstColonIndex >= 2) {
-//      path = path.substring(firstColonIndex - 1);
-//    }
-//    return path;
-//  }
 
 }

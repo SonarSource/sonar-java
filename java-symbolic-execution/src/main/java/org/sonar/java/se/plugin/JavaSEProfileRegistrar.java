@@ -19,20 +19,16 @@
  */
 package org.sonar.java.se.plugin;
 
-import org.sonar.api.Plugin;
-import org.sonar.java.se.filters.LombokFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.plugins.java.api.ProfileRegistrar;
 
-public class JavaSEPlugin implements Plugin {
+public class JavaSEProfileRegistrar implements ProfileRegistrar {
+
+  private static final Logger LOG = LoggerFactory.getLogger(JavaSEProfileRegistrar.class);
 
   @Override
-  public void define(Context context) {
-
-    context.addExtensions(
-      JavaSEProfileRegistrar.class,
-      JavaSECheckRegistrar.class,
-      LombokFilter.class
-    );
-
+  public void register(RegistrarContext registrarContext) {
+    registrarContext.registerDefaultQualityProfileRules(RulesList.getSonarWayRuleKeys());
   }
-
 }
