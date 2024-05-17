@@ -81,7 +81,7 @@ public final class TemplateParsing {
   public static void main(String[] args) {
     var ast = expressionTemplate("foo(1, $t())");
     var repl = expressionTemplate("bar(42)");
-    ast.accept(new SubstitutionVisitor(Map.of("$t", repl)));
+    ast = (ExpressionTree) new SubstitutionVisitor(Map.of("$t", repl)).copy(ast);
     var ppsb = new PrettyPrintStringBuilder(FileConfig.DEFAULT_FILE_CONFIG, null, false);
     ast.accept(new Prettyprinter(ppsb));
     System.out.println(ppsb);

@@ -182,8 +182,20 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Nullable
   @Override
+  public SyntaxToken extendsKeyword() {
+    return extendsKeyword;
+  }
+
+  @Nullable
+  @Override
   public TypeTree superClass() {
     return superClass;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken implementsKeyword() {
+    return implementsKeyword;
   }
 
   @Override
