@@ -133,6 +133,8 @@ public interface TreeVisitor {
 
   void visitTypeParameter(TypeParameterTree typeParameter);
 
+  void visitArguments(Arguments arguments);
+
   void visitTypeArguments(TypeArguments trees);
 
   void visitTypeParameters(TypeParameters trees);

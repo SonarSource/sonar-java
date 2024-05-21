@@ -376,6 +376,11 @@ public class BaseTreeVisitor implements TreeVisitor {
   }
 
   @Override
+  public void visitArguments(Arguments arguments) {
+    scan((List<ExpressionTree>) arguments);
+  }
+
+  @Override
   public void visitTypeArguments(TypeArguments trees) {
     scan((List<TypeTree>)trees);
   }

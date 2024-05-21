@@ -37,7 +37,7 @@ public final class SubstitutionVisitor extends DeepCopyVisitor {
     if (name == null) {
       super.visitMethodInvocation(tree);
     } else {
-      result = substitutions.get(name);
+      pushResult(substitutions.get(name));
     }
   }
 

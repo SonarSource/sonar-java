@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.precedence.Associativity;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -579,6 +580,11 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitTypeParameter(TypeParameterTree typeParameter) {
+    unsupported();  // TODO
+  }
+
+  @Override
+  public void visitArguments(Arguments arguments) {
     unsupported();  // TODO
   }
 

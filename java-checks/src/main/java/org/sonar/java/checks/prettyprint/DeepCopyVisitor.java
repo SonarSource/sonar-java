@@ -1,7 +1,10 @@
 package org.sonar.java.checks.prettyprint;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.StatementListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
@@ -62,6 +65,7 @@ import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.java.model.statement.YieldStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -83,11 +87,13 @@ import org.sonar.plugins.java.api.tree.EmptyStatementTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ExportsDirectiveTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
@@ -114,6 +120,7 @@ import org.sonar.plugins.java.api.tree.ProvidesDirectiveTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.RequiresDirectiveTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
@@ -139,8 +146,24 @@ import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 public class DeepCopyVisitor implements TreeVisitor {
 
-  // TODO use a list instead, does not work for list nodes
-  protected Tree result;
+  private final Queue<Tree> results = new LinkedList<>();
+
+  protected void pushResult(Tree result){
+    results.add(result);
+  }
+
+  protected Tree popUniqueResult(){
+    if (results.size() != 1){
+      throw new IllegalStateException("size was " + results.size());
+    }
+    return results.remove();
+  }
+
+  protected List<Tree> getResults(){
+    var ls = new ArrayList<>(results);
+    results.clear();
+    return ls;
+  }
 
   public Tree copy(Tree tree) {
     return convert(tree);
@@ -154,127 +177,123 @@ public class DeepCopyVisitor implements TreeVisitor {
       return (T) token;
     } else {
       tree.accept(this);
-      return (T) result;
+      return (T) popUniqueResult();
     }
   }
 
-  private <T extends Tree> List<T> convert(List<T> ls) {
-    return ls.stream().map(this::<T>convert).toList();
-  }
-
   private <T extends Tree> List<T> convert(List<? extends Tree> ls, Class<T> clazz) {
-    return ls.stream()
-      .map(this::<T>convert)
-      .map(clazz::cast)
-      .toList();
+    for (var tree : ls) {
+      tree.accept(this);
+    }
+    return getResults().stream().map(clazz::cast).toList();
   }
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    result = new JavaTree.CompilationUnitTreeImpl(
+    results.add(new JavaTree.CompilationUnitTreeImpl(
       convert(tree.packageDeclaration()),
-      convert(tree.imports()),
-      convert(tree.types()),
+      convert(tree.imports(), ImportClauseTree.class),
+      convert(tree.types(), Tree.class),
       convert(tree.moduleDeclaration()),
       convert(tree.eofToken())
-    );
+    ));
   }
 
   @Override
   public void visitImport(ImportTree tree) {
-    result = new JavaTree.ImportTreeImpl(
+    results.add(new JavaTree.ImportTreeImpl(
       convert(tree.importKeyword()),
       convert(tree.staticKeyword()),
       convert(tree.qualifiedIdentifier()),
       convert(tree.semicolonToken())
-    );
+    ));
   }
 
   @Override
   public void visitClass(ClassTree tree) {
-    result = new ClassTreeImpl(
+    results.add(new ClassTreeImpl(
       tree.kind(),
       convert(tree.openBraceToken()),
-      convert(tree.members()),
+      convert(tree.members(), Tree.class),
       convert(tree.closeBraceToken())
     ).complete(
-      convert((Tree) tree.modifiers()),
+      convert(tree.modifiers()),
       convert(tree.declarationKeyword()),
       convert(tree.simpleName())
     ).completeTypeParameters(
-      convert((Tree) tree.typeParameters())
+      convert(tree.typeParameters())
     ).completeRecordComponents(
       convert(tree.recordOpenParenToken()),
-      convert(tree.recordComponents()),
+      convert(tree.recordComponents(), VariableTree.class),
       convert(tree.recordCloseParenToken())
     ).completeSuperclass(
       convert(tree.extendsKeyword()),
       convert(tree.superClass())
     ).completeInterfaces(
       convert(tree.implementsKeyword()),
-      convert((Tree) tree.superInterfaces())
+      convert(tree.superInterfaces())
     ).completePermittedTypes(
       convert(tree.permitsKeyword()),
-      convert((Tree) tree.permittedTypes())
-    );
+      convert(tree.permittedTypes())
+    ));
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
     var params = new FormalParametersListTreeImpl(convert(tree.openParenToken()), convert(tree.closeParenToken()));
     params.addAll(convert(params, VariableTreeImpl.class));
-    result = new MethodTreeImpl(
+    results.add(new MethodTreeImpl(
       convert(tree.returnType()),
       convert(tree.simpleName()),
       params,
       convert(tree.throwsToken()),
-      convert((Tree) tree.throwsClauses()),
+      convert(tree.throwsClauses()),
       convert(tree.block()),
       convert(tree.semicolonToken())
     ).completeWithModifiers(
-      convert((Tree) tree.modifiers())
+      convert(tree.modifiers())
     ).completeWithTypeParameters(
-      convert((Tree) tree.typeParameters())
-    );
+      convert(tree.typeParameters())
+    ));
   }
 
   @Override
   public void visitBlock(BlockTree tree) {
-    result = new BlockTreeImpl(
+    results.add(new BlockTreeImpl(
       tree.kind(),
       convert(tree.openBraceToken()),
-      convert(tree.body()),
+      convert(tree.body(), StatementTree.class),
       convert(tree.closeBraceToken())
-    );
+    ));
   }
 
   @Override
   public void visitEmptyStatement(EmptyStatementTree tree) {
-    result = new EmptyStatementTreeImpl(
+    results.add(new EmptyStatementTreeImpl(
       convert(tree.semicolonToken())
-    );
+    ));
   }
 
   @Override
   public void visitLabeledStatement(LabeledStatementTree tree) {
-    result = new LabeledStatementTreeImpl(
+    results.add(new LabeledStatementTreeImpl(
       convert(tree.label()),
       convert(tree.colonToken()),
       convert(tree.statement())
-    );
+    ));
   }
 
   @Override
   public void visitExpressionStatement(ExpressionStatementTree tree) {
-    result = new ExpressionStatementTreeImpl(
+    results.add(new ExpressionStatementTreeImpl(
       convert(tree.expression()),
       convert(tree.semicolonToken())
-    );
+    ));
   }
 
   @Override
   public void visitIfStatement(IfStatementTree tree) {
-    result = new IfStatementTreeImpl(
+    results.add(new IfStatementTreeImpl(
       convert(tree.ifKeyword()),
       convert(tree.openParenToken()),
       convert(tree.condition()),
@@ -282,24 +301,24 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(tree.thenStatement()),
       convert(tree.elseKeyword()),
       convert(tree.elseStatement())
-    );
+    ));
   }
 
   @Override
   public void visitAssertStatement(AssertStatementTree tree) {
-    result = new AssertStatementTreeImpl(
+    results.add(new AssertStatementTreeImpl(
       convert(tree.assertKeyword()),
       convert(tree.condition()),
       convert(tree.semicolonToken())
     ).complete(
       convert(tree.colonToken()),
       convert(tree.detail())
-    );
+    ));
   }
 
   @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
-    result = new SwitchStatementTreeImpl(
+    results.add(new SwitchStatementTreeImpl(
       convert(tree.switchKeyword()),
       convert(tree.openParenToken()),
       convert(tree.expression()),
@@ -307,12 +326,12 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(tree.openBraceToken()),
       convert(tree.cases(), CaseGroupTreeImpl.class),
       convert(tree.closeBraceToken())
-    );
+    ));
   }
 
   @Override
   public void visitSwitchExpression(SwitchExpressionTree tree) {
-    result = new SwitchExpressionTreeImpl(
+    results.add(new SwitchExpressionTreeImpl(
       convert(tree.switchKeyword()),
       convert(tree.openParenToken()),
       convert(tree.expression()),
@@ -320,42 +339,42 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(tree.openBraceToken()),
       convert(tree.cases(), CaseGroupTreeImpl.class),
       convert(tree.closeBraceToken())
-    );
+    ));
   }
 
   @Override
   public void visitCaseGroup(CaseGroupTree tree) {
     var statsList = StatementListTreeImpl.emptyList();
     statsList.addAll(tree.body());
-    result = new CaseGroupTreeImpl(
+    results.add(new CaseGroupTreeImpl(
       convert(tree.labels(), CaseLabelTreeImpl.class),
       statsList
-    );
+    ));
   }
 
   @Override
   public void visitCaseLabel(CaseLabelTree tree) {
-    result = new CaseLabelTreeImpl(
+    results.add(new CaseLabelTreeImpl(
       convert(tree.caseOrDefaultKeyword()),
-      convert(tree.expressions()),
+      convert(tree.expressions(), ExpressionTree.class),
       convert(tree.colonOrArrowToken())
-    );
+    ));
   }
 
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
-    result = new WhileStatementTreeImpl(
+    results.add(new WhileStatementTreeImpl(
       convert(tree.whileKeyword()),
       convert(tree.openParenToken()),
       convert(tree.condition()),
       convert(tree.closeParenToken()),
       convert(tree.statement())
-    );
+    ));
   }
 
   @Override
   public void visitDoWhileStatement(DoWhileStatementTree tree) {
-    result = new DoWhileStatementTreeImpl(
+    results.add(new DoWhileStatementTreeImpl(
       convert(tree.doKeyword()),
       convert(tree.statement()),
       convert(tree.whileKeyword()),
@@ -363,27 +382,27 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(tree.condition()),
       convert(tree.closeParenToken()),
       convert(tree.semicolonToken())
-    );
+    ));
   }
 
   @Override
   public void visitForStatement(ForStatementTree tree) {
-    result = new ForStatementTreeImpl(
+    results.add(new ForStatementTreeImpl(
       convert(tree.forKeyword()),
       convert(tree.openParenToken()),
-      convert((Tree) tree.initializer()),
+      convert(tree.initializer()),
       convert(tree.firstSemicolonToken()),
       convert(tree.condition()),
       convert(tree.secondSemicolonToken()),
-      convert((Tree) tree.update()),
+      convert(tree.update()),
       convert(tree.closeParenToken()),
       convert(tree.statement())
-    );
+    ));
   }
 
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
-    result = new ForEachStatementImpl(
+    results.add(new ForEachStatementImpl(
       convert(tree.forKeyword()),
       convert(tree.openParenToken()),
       convert(tree.variable()),
@@ -391,93 +410,93 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(tree.expression()),
       convert(tree.closeParenToken()),
       convert(tree.statement())
-    );
+    ));
   }
 
   @Override
   public void visitBreakStatement(BreakStatementTree tree) {
-    result = new BreakStatementTreeImpl(
+    results.add(new BreakStatementTreeImpl(
       convert(tree.breakKeyword()),
       convert(tree.label()),
       convert(tree.semicolonToken())
-    );
+    ));
   }
 
   @Override
   public void visitYieldStatement(YieldStatementTree tree) {
-    result = new YieldStatementTreeImpl(
+    results.add(new YieldStatementTreeImpl(
       convert(tree.yieldKeyword()),
       convert(tree.expression()),
       convert(tree.semicolonToken())
-    );
+    ));
   }
 
   @Override
   public void visitContinueStatement(ContinueStatementTree tree) {
-    result = new ContinueStatementTreeImpl(
+    results.add(new ContinueStatementTreeImpl(
       convert(tree.continueKeyword()),
       convert(tree.label()),
       convert(tree.semicolonToken())
-    );
+    ));
   }
 
   @Override
   public void visitReturnStatement(ReturnStatementTree tree) {
-    result = new ReturnStatementTreeImpl(
+    results.add(new ReturnStatementTreeImpl(
       convert(tree.returnKeyword()),
       convert(tree.expression()),
       convert(tree.semicolonToken())
-    );
+    ));
   }
 
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
-    result = new ThrowStatementTreeImpl(
+    results.add(new ThrowStatementTreeImpl(
       convert(tree.throwKeyword()),
       convert(tree.expression()),
       convert(tree.semicolonToken())
-    );
+    ));
   }
 
   @Override
   public void visitSynchronizedStatement(SynchronizedStatementTree tree) {
-    result = new SynchronizedStatementTreeImpl(
+    results.add(new SynchronizedStatementTreeImpl(
       convert(tree.synchronizedKeyword()),
       convert(tree.openParenToken()),
       convert(tree.expression()),
       convert(tree.closeParenToken()),
       convert(tree.block())
-    );
+    ));
   }
 
   @Override
   public void visitTryStatement(TryStatementTree tree) {
-    result = new TryStatementTreeImpl(
+    results.add(new TryStatementTreeImpl(
       convert(tree.tryKeyword()),
       convert(tree.openParenToken()),
-      convert((Tree) tree.resourceList()),
+      convert(tree.resourceList()),
       convert(tree.closeParenToken()),
       convert(tree.block()),
-      convert(tree.catches()),
+      convert(tree.catches(), CatchTree.class),
       convert(tree.finallyKeyword()),
       convert(tree.finallyBlock())
-    );
+    ));
   }
 
   @Override
   public void visitCatch(CatchTree tree) {
-    result = new CatchTreeImpl(
+    results.add(new CatchTreeImpl(
       convert(tree.catchKeyword()),
       convert(tree.openParenToken()),
       convert(tree.parameter()),
       convert(tree.closeParenToken()),
       convert(tree.block())
-    );
+    ));
   }
 
   @Override
   public void visitUnaryExpression(UnaryExpressionTree tree) {
-    result = switch (tree.kind()) {
+    results.add(switch (tree.kind()) {
       case POSTFIX_INCREMENT, POSTFIX_DECREMENT -> new InternalPostfixUnaryExpression(
         tree.kind(),
         convert(tree.expression()),
@@ -488,153 +507,153 @@ public class DeepCopyVisitor implements TreeVisitor {
         convert(tree.operatorToken()),
         convert(tree.expression())
       );
-    };
+    });
   }
 
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
-    result = new BinaryExpressionTreeImpl(
+    results.add(new BinaryExpressionTreeImpl(
       tree.kind(),
       convert(tree.leftOperand()),
       convert(tree.operatorToken()),
       convert(tree.rightOperand())
-    );
+    ));
   }
 
   @Override
   public void visitConditionalExpression(ConditionalExpressionTree tree) {
-    result = new ConditionalExpressionTreeImpl(
+    results.add(new ConditionalExpressionTreeImpl(
       convert(tree.condition()),
       convert(tree.questionToken()),
       convert(tree.trueExpression()),
       convert(tree.colonToken()),
       convert(tree.falseExpression())
-    );
+    ));
   }
 
   @Override
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
-    result = new ArrayAccessExpressionTreeImpl(
+    results.add(new ArrayAccessExpressionTreeImpl(
       convert(tree.expression()),
       convert(tree.dimension())
-    );
+    ));
   }
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-    result = new MemberSelectExpressionTreeImpl(
+    results.add(new MemberSelectExpressionTreeImpl(
       convert(tree.expression()),
       convert(tree.operatorToken()),
       convert(tree.identifier())
-    );
+    ));
   }
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    result = new NewClassTreeImpl(
+    results.add(new NewClassTreeImpl(
       convert(tree.identifier()),
-      convert((Tree) tree.arguments()),
+      convert(tree.arguments()),
       convert(tree.classBody())
     ).completeWithNewKeyword(
       convert(tree.newKeyword())
     ).completeWithEnclosingExpression(
       convert(tree.enclosingExpression())
     ).completeWithTypeArguments(
-      convert((Tree) tree.typeArguments())
-    );
+      convert(tree.typeArguments())
+    ));
   }
 
   @Override
   public void visitNewArray(NewArrayTree tree) {
-    result = new NewArrayTreeImpl(
-      convert(tree.dimensions()),
-      convert((Tree) tree.initializers())
-    );
+    results.add(new NewArrayTreeImpl(
+      convert(tree.dimensions(), ArrayDimensionTree.class),
+      convert(tree.initializers())
+    ));
   }
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    result = new MethodInvocationTreeImpl(
+    results.add(new MethodInvocationTreeImpl(
       convert(tree.methodSelect()),
-      convert((Tree) tree.typeArguments()),
-      convert((Tree) tree.arguments())
-    );
+      convert(tree.typeArguments()),
+      convert(tree.arguments())
+    ));
   }
 
   @Override
   public void visitTypeCast(TypeCastTree tree) {
-    result = new TypeCastExpressionTreeImpl(
+    results.add(new TypeCastExpressionTreeImpl(
       convert(tree.openParenToken()),
       convert(tree.type()),
       convert(tree.andToken()),
-      convert((Tree) tree.bounds()),
+      convert(tree.bounds()),
       convert(tree.closeParenToken()),
       convert(tree.expression())
-    );
+    ));
   }
 
   @Override
   public void visitInstanceOf(InstanceOfTree tree) {
-    result = new InstanceOfTreeImpl(
+    results.add(new InstanceOfTreeImpl(
       convert(tree.expression()),
       convert(tree.instanceofKeyword()),
       (TypeTree) convert(tree.type())
-    );
+    ));
   }
 
   @Override
   public void visitPatternInstanceOf(PatternInstanceOfTree tree) {
-    result = new InstanceOfTreeImpl(
+    results.add(new InstanceOfTreeImpl(
       convert(tree.expression()),
       convert(tree.instanceofKeyword()),
       (PatternTree) convert(tree.pattern())
-    );
+    ));
   }
 
   @Override
   public void visitParenthesized(ParenthesizedTree tree) {
-    result = new ParenthesizedTreeImpl(
+    results.add(new ParenthesizedTreeImpl(
       convert(tree.openParenToken()),
       convert(tree.expression()),
       convert(tree.closeParenToken())
-    );
+    ));
   }
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    result = new AssignmentExpressionTreeImpl(
+    results.add(new AssignmentExpressionTreeImpl(
       tree.kind(),
       convert(tree.variable()),
       convert(tree.operatorToken()),
       convert(tree.expression())
-    );
+    ));
   }
 
   @Override
   public void visitLiteral(LiteralTree tree) {
-    result = new LiteralTreeImpl(
+    results.add(new LiteralTreeImpl(
       tree.kind(),
       convert(tree.token())
-    );
+    ));
   }
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
-    result = new IdentifierTreeImpl(
+    results.add(new IdentifierTreeImpl(
       convert(tree.identifierToken())
-    );
+    ));
   }
 
   @Override
   public void visitVarType(VarTypeTree tree) {
-    result = new VarTypeTreeImpl(
+    results.add(new VarTypeTreeImpl(
       convert(tree.varToken())
-    );
+    ));
   }
 
   @Override
   public void visitVariable(VariableTree tree) {
-    result = new VariableTreeImpl(
+    results.add(new VariableTreeImpl(
       convert((Tree) tree.modifiers()),
       (TypeTree) null,
       convert(tree.simpleName())
@@ -642,17 +661,17 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(tree.type()),
       convert(tree.equalToken()),
       convert(tree.initializer())
-    );
+    ));
   }
 
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
-    result = new EnumConstantTreeImpl(
+    results.add(new EnumConstantTreeImpl(
       convert((Tree) tree.modifiers()),
       convert(tree.simpleName()),
       convert(tree.initializer()),
       convert(tree.separatorToken())
-    );
+    ));
   }
 
   @Override
@@ -661,31 +680,31 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(tree.keyword())
     );
     typeTree.complete(
-      convert(tree.annotations())
+      convert(tree.annotations(), AnnotationTree.class)
     );
-    result = typeTree;
+    results.add(typeTree);
   }
 
   @Override
   public void visitArrayType(ArrayTypeTree tree) {
-    result = new JavaTree.ArrayTypeTreeImpl(
+    results.add(new JavaTree.ArrayTypeTreeImpl(
       convert(tree.type()),
       convert(tree.annotations(), AnnotationTreeImpl.class),
       convert(tree.openBracketToken()),
       convert(tree.closeBracketToken())
-    );
+    ));
   }
 
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
     var typeTree = new JavaTree.ParameterizedTypeTreeImpl(
       convert(tree.type()),
-      convert((Tree) tree.typeArguments())
+      convert(tree.typeArguments())
     );
     typeTree.complete(
-      convert(tree.annotations())
+      convert(tree.annotations(), AnnotationTree.class)
     );
-    result = typeTree;
+    results.add(typeTree);
   }
 
   @Override
@@ -699,16 +718,16 @@ public class DeepCopyVisitor implements TreeVisitor {
       (InternalSyntaxToken) convert(tree.queryToken())
     );
     wildcard.complete(
-      convert(tree.annotations())
+      convert(tree.annotations(), AnnotationTree.class)
     );
-    result = wildcard;
+    results.add(wildcard);
   }
 
   @Override
   public void visitUnionType(UnionTypeTree tree) {
-    result = new JavaTree.UnionTypeTreeImpl(
-      convert((Tree) tree.typeAlternatives())
-    );
+    results.add(new JavaTree.UnionTypeTreeImpl(
+      convert(tree.typeAlternatives())
+    ));
   }
 
   @Override
@@ -716,36 +735,47 @@ public class DeepCopyVisitor implements TreeVisitor {
     var modifiersList = new ArrayList<ModifierTree>();
     modifiersList.addAll(convert(modifiersTree.modifiers(), ModifierTree.class));
     modifiersList.addAll(convert(modifiersTree.annotations(), ModifierTree.class));
-    result = new ModifiersTreeImpl(modifiersList);
+    results.add(new ModifiersTreeImpl(modifiersList));
   }
 
   @Override
   public void visitAnnotation(AnnotationTree annotationTree) {
-    result = new AnnotationTreeImpl(
+    results.add(new AnnotationTreeImpl(
       convert(annotationTree.atToken()),
       convert(annotationTree.annotationType()),
-      convert((Tree) annotationTree.arguments())
-    );
+      convert(annotationTree.arguments())
+    ));
   }
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    result = new LambdaExpressionTreeImpl(
+    results.add(new LambdaExpressionTreeImpl(
       convert(lambdaExpressionTree.openParenToken()),
-      convert(lambdaExpressionTree.parameters()),
+      convert(lambdaExpressionTree.parameters(), VariableTree.class),
       convert(lambdaExpressionTree.closeParenToken()),
       convert(lambdaExpressionTree.arrowToken()),
       convert(lambdaExpressionTree.body())
-    );
+    ));
   }
 
   @Override
   public void visitTypeParameter(TypeParameterTree typeParameter) {
-    result = new TypeParameterTreeImpl(
+    results.add(new TypeParameterTreeImpl(
       convert(typeParameter.identifier()),
       convert(typeParameter.extendToken()),
-      convert((Tree) typeParameter.bounds())
+      convert(typeParameter.bounds())
+    ));
+  }
+
+  @Override
+  public void visitArguments(Arguments arguments) {
+    var args = ArgumentListTreeImpl.emptyList();
+    args.complete(
+      convert(arguments.openParenToken()),
+      convert(arguments.closeParenToken())
     );
+    args.addAll(convert(arguments, ExpressionTree.class));
+    results.add(args);
   }
 
   @Override
@@ -755,7 +785,7 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(trees.closeBracketToken())
     );
     typeArgs.addAll(trees);
-    result = typeArgs;
+    results.add(typeArgs);
   }
 
   @Override
@@ -765,7 +795,7 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(trees.closeBracketToken())
     );
     typeParams.addAll(trees);
-    result = typeParams;
+    results.add(typeParams);
   }
 
   @Override
@@ -780,20 +810,20 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(methodReferenceTree.doubleColon())
     );
     methodRef.complete(
-      convert((Tree) methodReferenceTree.typeArguments()),
+      convert(methodReferenceTree.typeArguments()),
       convert(methodReferenceTree.method())
     );
-    result = methodRef;
+    results.add(methodRef);
   }
 
   @Override
   public void visitPackage(PackageDeclarationTree tree) {
-    result = new JavaTree.PackageDeclarationTreeImpl(
-      convert(tree.annotations()),
+    results.add(new JavaTree.PackageDeclarationTreeImpl(
+      convert(tree.annotations(), AnnotationTree.class),
       convert(tree.packageKeyword()),
       convert(tree.packageName()),
       convert(tree.semicolonToken())
-    );
+    ));
   }
 
   @Override
@@ -828,51 +858,51 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitArrayDimension(ArrayDimensionTree tree) {
-    result = new ArrayDimensionTreeImpl(
+    results.add(new ArrayDimensionTreeImpl(
       convert(tree.openBracketToken()),
       convert(tree.expression()),
       convert(tree.closeBracketToken())
-    );
+    ));
   }
 
   @Override
   public void visitTypePattern(TypePatternTree tree) {
-    result = new TypePatternTreeImpl(
+    results.add(new TypePatternTreeImpl(
       convert(tree.patternVariable())
-    );
+    ));
   }
 
   @Override
   public void visitNullPattern(NullPatternTree tree) {
-    result = new NullPatternTreeImpl(
+    results.add(new NullPatternTreeImpl(
       convert(tree.nullLiteral())
-    );
+    ));
   }
 
   @Override
   public void visitDefaultPattern(DefaultPatternTree tree) {
-    result = new DefaultPatternTreeImpl(
+    results.add(new DefaultPatternTreeImpl(
       convert(tree.defaultToken())
-    );
+    ));
   }
 
   @Override
   public void visitGuardedPattern(GuardedPatternTree tree) {
-    result = new GuardedPatternTreeImpl(
+    results.add(new GuardedPatternTreeImpl(
       convert(tree.pattern()),
       convert(tree.whenOperator()),
       convert(tree.expression())
-    );
+    ));
   }
 
   @Override
   public void visitRecordPattern(RecordPatternTree tree) {
-    result = new RecordPatternTreeImpl(
+    results.add(new RecordPatternTreeImpl(
       convert(tree.type()),
       convert(tree.openParenToken()),
-      convert(tree.patterns()),
+      convert(tree.patterns(), PatternTree.class),
       convert(tree.closeParenToken())
-    );
+    ));
   }
 
 }
