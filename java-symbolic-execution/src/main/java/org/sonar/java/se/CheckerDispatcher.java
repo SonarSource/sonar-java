@@ -24,13 +24,14 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -111,7 +112,7 @@ public class CheckerDispatcher implements CheckerContext {
     if (currentCheckerIndex < checks.size()) {
       explodedGraphWalker.programState = checks.get(currentCheckerIndex).checkPostStatement(this, syntaxNode);
     } else {
-      CFG.Block block = (CFG.Block) explodedGraphWalker.programPosition.block;
+      Block block = explodedGraphWalker.programPosition.block;
       if (explodedGraphWalker.programPosition.i < block.elements().size()) {
         explodedGraphWalker.cleanupStack(block.elements().get(explodedGraphWalker.programPosition.i));
       }
@@ -152,7 +153,7 @@ public class CheckerDispatcher implements CheckerContext {
     }
   }
 
-  public void init(MethodTree methodTree, CFG cfg) {
+  public void init(MethodTree methodTree, ControlFlowGraph cfg) {
     for (SECheck checker : checks) {
       PerformanceMeasure.Duration checkerDuration = PerformanceMeasure.start(checker);
       checker.init(methodTree, cfg);

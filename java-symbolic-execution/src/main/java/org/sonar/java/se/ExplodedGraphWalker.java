@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,11 +38,9 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.LiveVariables;
+import org.sonar.java.model.CFGUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LineUtils;
-import org.sonar.java.model.Sema;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
@@ -61,6 +60,9 @@ import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
+import org.sonar.plugins.java.api.cfg.LiveVariables;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -142,9 +144,9 @@ public class ExplodedGraphWalker {
   private LiveVariables liveVariables;
   @VisibleForTesting
   CheckerDispatcher checkerDispatcher;
-  private CFG.Block exitBlock;
+  private Block exitBlock;
 
-  private final Sema semanticModel;
+  private final Object semanticModel;
   private final BehaviorCache behaviorCache;
   @VisibleForTesting
   int steps;
@@ -189,7 +191,7 @@ public class ExplodedGraphWalker {
     this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
     this.checkerDispatcher = new CheckerDispatcher(this, checks, context);
     this.behaviorCache = behaviorCache;
-    this.semanticModel = (Sema) context.getSemanticModel();
+    this.semanticModel = context.getSemanticModel();
   }
 
   @VisibleForTesting
@@ -203,7 +205,7 @@ public class ExplodedGraphWalker {
     this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
     this.checkerDispatcher = new CheckerDispatcher(this, seChecks, context);
     this.behaviorCache = behaviorCache;
-    this.semanticModel = (Sema) context.getSemanticModel();
+    this.semanticModel = context.getSemanticModel();
   }
 
   public MethodBehavior visitMethod(MethodTree tree) {
@@ -222,7 +224,7 @@ public class ExplodedGraphWalker {
 
   private void execute(MethodTree tree) {
     PerformanceMeasure.Duration cfgDuration = PerformanceMeasure.start("cfg");
-    CFG cfg = (CFG) tree.cfg();
+    ControlFlowGraph cfg = tree.cfg();
     exitBlock = cfg.exitBlock();
     cfgDuration.stop();
     if (!cfg.hasCompleteSemantic()) {
@@ -249,7 +251,7 @@ public class ExplodedGraphWalker {
       throwExceptionIfMaxStepsHasBeenReached(tree);
       // LIFO:
       setNode(workList.removeFirst());
-      CFG.Block block = (CFG.Block) programPosition.block;
+      Block block = programPosition.block;
       if (block.successors().isEmpty()) {
         endOfExecutionPath.add(node);
         continue;
@@ -299,7 +301,7 @@ public class ExplodedGraphWalker {
     }
   }
 
-  private void enqueueStartingStates(MethodTree tree, CFG cfg) {
+  private void enqueueStartingStates(MethodTree tree, ControlFlowGraph cfg) {
     for (ProgramState startingState : startingStates(tree, programState)) {
       enqueue(new ProgramPoint(cfg.entryBlock()), startingState);
     }
@@ -357,7 +359,16 @@ public class ExplodedGraphWalker {
   public void addExceptionalYield(SymbolicValue target, ProgramState exceptionalState, String exceptionFullyQualifiedName, SECheck check) {
     // in order to create such Exceptional Yield, a parameter of the method has to be the cause of the exception
     if (methodBehavior != null && methodBehavior.parameters().contains(target)) {
-      Type exceptionType = semanticModel.getClassType(exceptionFullyQualifiedName);
+      Type exceptionType = null;
+      try {
+        exceptionType = (Type) semanticModel.getClass().getDeclaredMethod("getClassType", String.class).invoke(semanticModel, exceptionFullyQualifiedName);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException(e);
+      } catch (InvocationTargetException e) {
+        throw new RuntimeException(e);
+      } catch (NoSuchMethodException e) {
+        throw new RuntimeException(e);
+      }
       ProgramState newExceptionalState = exceptionalState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(exceptionType));
       ExplodedGraph.Node exitNode = explodedGraph.node(node.programPoint, newExceptionalState);
       methodBehavior.createExceptionalCheckBasedYield(target, exitNode, exceptionFullyQualifiedName, check);
@@ -417,7 +428,7 @@ public class ExplodedGraphWalker {
     return variableSymbol.metadata().nullabilityData().isNullable(PACKAGE, false, false);
   }
 
-  private void cleanUpProgramState(CFG.Block block) {
+  private void cleanUpProgramState(Block block) {
     if (cleanup) {
       Collection<SymbolicValue> protectedSVs = methodBehavior == null ? Collections.emptyList() : methodBehavior.parameters();
       programState = programState.cleanupDeadSymbols(liveVariables.getOut(block), protectedSVs);
@@ -426,7 +437,7 @@ public class ExplodedGraphWalker {
   }
 
   private void handleBlockExit(ProgramPoint programPosition) {
-    CFG.Block block = (CFG.Block) programPosition.block;
+    Block block = programPosition.block;
     Tree terminator = block.terminator();
     cleanUpProgramState(block);
     boolean exitPath = node.exitPath;
@@ -495,13 +506,13 @@ public class ExplodedGraphWalker {
       if (block.exitBlock() != null) {
         enqueue(new ProgramPoint(block.exitBlock()), programState, true);
       } else {
-        for (CFG.Block successor : block.successors()) {
+        for (Block successor : block.successors()) {
           enqueue(new ProgramPoint(successor), programState, true);
         }
       }
 
     } else {
-      for (CFG.Block successor : block.successors()) {
+      for (Block successor : block.successors()) {
         if (!block.isFinallyBlock() || isDirectFlowSuccessorOf(successor, block)) {
           enqueue(new ProgramPoint(successor), programState, successor == block.exitBlock());
         }
@@ -520,8 +531,8 @@ public class ExplodedGraphWalker {
     return !condition.is(Tree.Kind.BOOLEAN_LITERAL);
   }
 
-  private static boolean isDirectFlowSuccessorOf(CFG.Block successor, CFG.Block block) {
-    return successor != block.exitBlock() || (block.successors().size() == 1 && successor.isMethodExitBlock());
+  private static boolean isDirectFlowSuccessorOf(Block successor, Block block) {
+    return successor != block.exitBlock() || (block.successors().size() == 1 && CFGUtils.isMethodExitBlock(successor));
   }
 
   /**
@@ -536,7 +547,7 @@ public class ExplodedGraphWalker {
     return cleanedUpCondition;
   }
 
-  private void handleSwitch(CFG.Block programPosition, List<CaseGroupTree> caseGroups) {
+  private void handleSwitch(Block programPosition, List<CaseGroupTree> caseGroups) {
     ProgramState state = programState;
 
     Map<CaseGroupTree, List<ProgramState.SymbolicValueSymbol>> caseValues = new HashMap<>();
@@ -560,8 +571,8 @@ public class ExplodedGraphWalker {
     ProgramState elseState = poppedSwitchValue.state;
     // The block that will be taken when all case-conditions are false. This will either be the default-block or, if no
     // default block exists, the block after the switch statement.
-    CFG.Block elseBlock = null;
-    for (CFG.Block successor : programPosition.successors()) {
+    Block elseBlock = null;
+    for (Block successor : programPosition.successors()) {
       CaseGroupTree caseGroup = successor.caseGroup();
       if (caseGroup == null || !caseValues.containsKey(caseGroup)) {
         Preconditions.checkState(elseBlock == null);
@@ -595,11 +606,11 @@ public class ExplodedGraphWalker {
     return states.get(0);
   }
 
-  private void handleBranch(CFG.Block programPosition, Tree condition) {
+  private void handleBranch(Block programPosition, Tree condition) {
     handleBranch(programPosition, condition, true);
   }
 
-  private void handleBranch(CFG.Block programPosition, Tree condition, boolean checkPath) {
+  private void handleBranch(Block programPosition, Tree condition, boolean checkPath) {
     Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
     ProgramPoint falseBlockProgramPoint = new ProgramPoint(programPosition.falseBlock());
     for (ProgramState state : pair.a) {
@@ -673,7 +684,7 @@ public class ExplodedGraphWalker {
       case SWITCH_STATEMENT:
       case EXPRESSION_STATEMENT:
       case PARENTHESIZED_EXPRESSION:
-        throw new IllegalStateException("Cannot appear in CFG: " + tree.kind().name());
+        throw new IllegalStateException("Cannot appear in ControlFlowGraph: " + tree.kind().name());
       case VARIABLE:
         executeVariable((VariableTree) tree, terminator);
         break;
@@ -888,14 +899,14 @@ public class ExplodedGraphWalker {
   }
 
   private void enqueueExceptionalPaths(ProgramState ps, Symbol methodSymbol, @Nullable MethodYield methodYield) {
-    Set<CFG.Block> exceptionBlocks = ((CFG.Block) node.programPoint.block).exceptions();
-    List<CFG.Block> catchBlocks = exceptionBlocks.stream().filter(CFG.Block.IS_CATCH_BLOCK).toList();
+    Set<Block> exceptionBlocks = (Set<Block>) node.programPoint.block.exceptions();
+    List<Block> catchBlocks = exceptionBlocks.stream().filter(Block::isCatchBlock).toList();
     SymbolicValue peekValue = ps.peekValue();
 
     Preconditions.checkState(peekValue instanceof SymbolicValue.ExceptionalSymbolicValue, "Top of stack should always contains exceptional SV");
     SymbolicValue.ExceptionalSymbolicValue exceptionSV = (SymbolicValue.ExceptionalSymbolicValue) peekValue;
     // only consider the first match, as order of catch block is important
-    List<CFG.Block> caughtBlocks = catchBlocks.stream()
+    List<Block> caughtBlocks = catchBlocks.stream()
       .filter(b -> isCaughtByBlock(exceptionSV.exceptionType(), b))
       .sorted((b1, b2) -> Integer.compare(b2.id(), b1.id()))
       .toList();
@@ -913,15 +924,15 @@ public class ExplodedGraphWalker {
     ps.storeExitValue();
 
     // use other exceptional blocks, i.e. finally block and exit blocks
-    List<CFG.Block> otherBlocks = exceptionBlocks.stream()
-      .filter(CFG.Block.IS_CATCH_BLOCK.negate().or(b -> methodSymbol.isUnknown()))
+    List<Block> otherBlocks = exceptionBlocks.stream()
+      .filter(CFGUtils.IS_CATCH_BLOCK.negate().or(b -> methodSymbol.isUnknown()))
       .toList();
     if (otherBlocks.isEmpty()) {
       // explicitly add the exception branching to method exit
-      CFG.Block methodExit = node.programPoint.block.successors()
+      Block methodExit = node.programPoint.block.successors()
         .stream()
-        .map(b -> (CFG.Block) b)
-        .filter(CFG.Block::isMethodExitBlock)
+        .map(b -> (Block) b)
+        .filter(CFGUtils::isMethodExitBlock)
         .findFirst()
         .orElse(exitBlock);
       enqueue(new ProgramPoint(methodExit), ps, true, methodYield);
@@ -931,7 +942,7 @@ public class ExplodedGraphWalker {
     }
   }
 
-  private static boolean isCaughtByBlock(@Nullable Type thrownType, CFG.Block catchBlock) {
+  private static boolean isCaughtByBlock(@Nullable Type thrownType, Block catchBlock) {
     if (thrownType != null) {
       Type caughtType = ((VariableTree) catchBlock.elements().get(0)).symbol().type();
       return thrownType.isSubtypeOf(caughtType) || caughtType.isSubtypeOf(thrownType);
@@ -939,7 +950,7 @@ public class ExplodedGraphWalker {
     return false;
   }
 
-  private static boolean isCatchingUncheckedException(CFG.Block catchBlock) {
+  private static boolean isCatchingUncheckedException(Block catchBlock) {
     Type caughtType = ((VariableTree) catchBlock.elements().get(0)).symbol().type();
     return ExceptionUtils.isUncheckedException(caughtType);
   }
@@ -1086,7 +1097,7 @@ public class ExplodedGraphWalker {
     programState = programState.unstackValue(newClassTree.arguments().size()).state;
     // Enqueue exceptional paths
     Symbol.MethodSymbol symbol = newClassTree.methodSymbol();
-    if (((CFG.Block) node.programPoint.block).exceptions().stream().anyMatch(CFG.Block.IS_CATCH_BLOCK)) {
+    if (((Block) node.programPoint.block).exceptions().stream().anyMatch(Block::isCatchBlock)) {
       // To avoid noise, we only add unchecked exceptional paths (includingUnknownException) when we are in a try-catch block.
       enqueueUncheckedExceptionalPaths(symbol);
     }
@@ -1263,7 +1274,7 @@ public class ExplodedGraphWalker {
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
       if (isRestartingForEachLoop(programPoint)) {
         // reached the max number of visit by program point, so take the false branch with current program state
-        programPoint = new ProgramPoint(((CFG.Block) programPoint.block).falseBlock());
+        programPoint = new ProgramPoint(((Block) programPoint.block).falseBlock());
       } else {
         return;
       }
@@ -1282,7 +1293,7 @@ public class ExplodedGraphWalker {
   }
 
   private static boolean isRestartingForEachLoop(ProgramPoint programPoint) {
-    Tree terminator = ((CFG.Block) programPoint.block).terminator();
+    Tree terminator = ((Block) programPoint.block).terminator();
     return terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT);
   }
 

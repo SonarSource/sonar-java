@@ -34,6 +34,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.cfg.CFG;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.cfg.Block;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -51,9 +52,9 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
     Set<CaseGroupTree> caseGroupTrees = new HashSet<>(switchStatementTree.cases());
     CFG cfg = CFG.buildCFG(Collections.singletonList(tree), true);
-    Set<CFG.Block> switchSuccessors = cfg.entryBlock().successors();
+    Set<Block> switchSuccessors = cfg.entryBlock().successors();
 
-    Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap = createMapping(switchSuccessors, caseGroupTrees);
+    Map<Block, CaseGroupTree> cfgBlockToCaseGroupMap = createMapping(switchSuccessors, caseGroupTrees);
     switchSuccessors.stream()
       .filter(cfgBlockToCaseGroupMap.keySet()::contains)
       .flatMap(cfgBlock -> getForbiddenCaseGroupPredecessors(cfgBlock, cfgBlockToCaseGroupMap))
@@ -62,16 +63,16 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
       .forEach(label -> reportIssue(label, "End this switch case with an unconditional break, return or throw statement."));
   }
 
-  private static Map<CFG.Block, CaseGroupTree> createMapping(Set<CFG.Block> switchSuccessors, Set<CaseGroupTree> caseGroupTrees) {
+  private static Map<Block, CaseGroupTree> createMapping(Set<Block> switchSuccessors, Set<CaseGroupTree> caseGroupTrees) {
     return switchSuccessors.stream()
       .filter(cfgBlock -> cfgBlock.caseGroup() != null && caseGroupTrees.contains(cfgBlock.caseGroup()))
       .collect(
         Collectors.toMap(
           Function.identity(),
-          CFG.Block::caseGroup));
+          Block::caseGroup));
   }
 
-  private static Stream<CaseGroupTree> getForbiddenCaseGroupPredecessors(CFG.Block cfgBlock, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap) {
+  private static Stream<CaseGroupTree> getForbiddenCaseGroupPredecessors(Block cfgBlock, Map<Block, CaseGroupTree> cfgBlockToCaseGroupMap) {
     CaseGroupTree caseGroup = cfgBlockToCaseGroupMap.get(cfgBlock);
     return cfgBlock.predecessors().stream()
       .map(predecessor -> getForbiddenCaseGroupPredecessor(predecessor, cfgBlockToCaseGroupMap, new HashSet<>()))
@@ -81,7 +82,7 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
   }
 
   @Nullable
-  private static CaseGroupTree getForbiddenCaseGroupPredecessor(CFG.Block predecessor, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap, Set<CFG.Block> seen) {
+  private static CaseGroupTree getForbiddenCaseGroupPredecessor(Block predecessor, Map<Block, CaseGroupTree> cfgBlockToCaseGroupMap, Set<Block> seen) {
     if (cfgBlockToCaseGroupMap.get(predecessor) != null) {
       return cfgBlockToCaseGroupMap.get(predecessor);
     }

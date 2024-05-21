@@ -27,6 +27,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.cfg.Block;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
@@ -143,20 +144,20 @@ public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
 
   private static boolean executeUnconditionnally(Tree loopTree) {
     CFG cfg = getCFG(loopTree);
-    CFG.Block loopBlock = getLoopBlock(cfg, loopTree);
+    Block loopBlock = getLoopBlock(cfg, loopTree);
     // we cannot find a path in the CFG that goes twice through this instruction.
     return !hasPredecessorInBlock(loopBlock, loopTree);
   }
 
-  private static CFG.Block getLoopBlock(CFG cfg, Tree loopTree) {
+  private static Block getLoopBlock(CFG cfg, Tree loopTree) {
     return cfg.blocks().stream()
       .filter(block -> loopTree.equals(block.terminator()))
       .findFirst()
       .orElseThrow(() -> new IllegalStateException("CFG necessarily contains the loop block."));
   }
 
-  private static boolean hasPredecessorInBlock(CFG.Block block, Tree loop) {
-    for (CFG.Block predecessor : block.predecessors()) {
+  private static boolean hasPredecessorInBlock(Block block, Tree loop) {
+    for (Block predecessor : block.predecessors()) {
       List<Tree> predecessorElements = predecessor.elements();
       if (predecessorElements.isEmpty()) {
         return hasPredecessorInBlock(predecessor, loop);

@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.constraint.Constraint;
@@ -40,6 +39,7 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -88,7 +88,7 @@ public class InvariantReturnCheck extends SECheck {
   private Deque<MethodInvariantContext> methodInvariantContexts = new LinkedList<>();
 
   @Override
-  public void init(MethodTree methodTree, CFG cfg) {
+  public void init(MethodTree methodTree, ControlFlowGraph cfg) {
     methodInvariantContexts.push(new MethodInvariantContext(methodTree));
   }
 

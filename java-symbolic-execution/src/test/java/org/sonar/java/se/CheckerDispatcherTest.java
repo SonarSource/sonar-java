@@ -20,13 +20,12 @@
 package org.sonar.java.se;
 
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -47,7 +46,7 @@ class CheckerDispatcherTest {
 
   private static ExplodedGraphWalker mockExplodedGraphWalker() {
     ExplodedGraphWalker explodedGraphWalker = mock(ExplodedGraphWalker.class);
-    explodedGraphWalker.programPosition = new ProgramPoint(new CFG.Block(1));
+    explodedGraphWalker.programPosition = new ProgramPoint(new Block(1));
     explodedGraphWalker.programState = mock(ProgramState.class);
     explodedGraphWalker.node = new ExplodedGraph().node(explodedGraphWalker.programPosition, explodedGraphWalker.programState);
     return explodedGraphWalker;

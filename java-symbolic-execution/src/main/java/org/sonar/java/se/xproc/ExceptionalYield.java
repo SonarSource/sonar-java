@@ -19,13 +19,13 @@
  */
 package org.sonar.java.se.xproc;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.sonar.java.model.Sema;
 import org.sonar.java.model.Symbols;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
@@ -65,11 +65,20 @@ public class ExceptionalYield extends MethodYield {
     return exceptionType;
   }
 
-  public Type exceptionType(Sema semanticModel) {
+  public Type exceptionType(Object semanticModel) {
     if (exceptionType == null) {
       return Symbols.unknownType;
     }
-    Type type = semanticModel.getClassType(this.exceptionType);
+    Type type = null;
+    try {
+      type = (Type) semanticModel.getClass().getDeclaredMethod("getClassType", String.class).invoke(semanticModel, this.exceptionType);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    } catch (InvocationTargetException e) {
+      throw new RuntimeException(e);
+    } catch (NoSuchMethodException e) {
+      throw new RuntimeException(e);
+    }
     return type == null ? Symbols.unknownType : type;
   }
 

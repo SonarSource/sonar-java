@@ -26,17 +26,17 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class SymbolicExecutionVisitor extends SubscriptionVisitor {
+public class SymbolicExecutionVisitor extends IssuableSubscriptionVisitor {
 
   private static final Logger LOG = LoggerFactory.getLogger(SymbolicExecutionVisitor.class);
 
@@ -50,10 +50,10 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     behaviorCache.cleanup();
     behaviorCache.setFileContext(this);
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override
@@ -79,8 +79,8 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
         walker.visitMethod(methodTree);
       }
     } catch (ExplodedGraphWalker.MaximumStepsReachedException
-      | ExplodedGraphWalker.ExplodedGraphTooBigException
-      | ExplodedGraphWalker.MaximumStartingStatesException exception) {
+             | ExplodedGraphWalker.ExplodedGraphTooBigException
+             | ExplodedGraphWalker.MaximumStartingStatesException exception) {
       LOG.debug("Could not complete symbolic execution: {}", exception.getMessage());
       if (LOG.isTraceEnabled()) {
         StringWriter sw = new StringWriter();

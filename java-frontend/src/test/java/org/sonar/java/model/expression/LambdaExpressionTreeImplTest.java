@@ -25,8 +25,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.plugins.java.api.cfg.Block;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
-import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -91,7 +91,7 @@ class LambdaExpressionTreeImplTest {
 
     List<Symbol.MethodSymbol> methodInvocations = cfg.blocks()
       .stream()
-      .map(ControlFlowGraph.Block::elements)
+      .map(Block::elements)
       .flatMap(List::stream)
       .filter(t -> t.is(Tree.Kind.METHOD_INVOCATION))
       .map(MethodInvocationTree.class::cast)

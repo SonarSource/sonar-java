@@ -31,9 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.collections.CollectionUtils;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
@@ -42,10 +40,12 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.ProgramState.SymbolicValueSymbol;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S4165")
 public class RedundantAssignmentsCheck extends SECheck {
@@ -64,7 +64,7 @@ public class RedundantAssignmentsCheck extends SECheck {
   }
 
   @Override
-  public void init(MethodTree methodTree, CFG cfg) {
+  public void init(MethodTree methodTree, ControlFlowGraph cfg) {
     assignmentsByMethod.push(new HashMap<>());
   }
 
@@ -90,7 +90,7 @@ public class RedundantAssignmentsCheck extends SECheck {
     SymbolicValue oldValue = previousState.getValue(assignedSymbol);
     SymbolicValue newValue = assignedVariable.symbolicValue();
     Symbol fromSymbol = previousState.peekValueSymbol().symbol();
-    assignmentsByMethod.peek().computeIfAbsent(assignmentExpressionTree, 
+    assignmentsByMethod.peek().computeIfAbsent(assignmentExpressionTree,
       k -> new ArrayList<>()).add(new AssignmentDataHolder(assignedSymbol, oldValue, newValue, fromSymbol, node));
   }
 

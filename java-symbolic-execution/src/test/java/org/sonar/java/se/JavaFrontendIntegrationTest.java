@@ -50,7 +50,6 @@ import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
@@ -61,6 +60,7 @@ import org.sonar.java.se.utils.JParserTestUtils;
 import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
@@ -212,7 +212,7 @@ class JavaFrontendIntegrationTest {
   @Rule(key = "SE3")
   private static class SE3_ThrowingNPEInit extends SECheck {
     @Override
-    public void init(MethodTree methodTree, CFG cfg) {
+    public void init(MethodTree methodTree, ControlFlowGraph cfg) {
       throw NPE;
     }
   }

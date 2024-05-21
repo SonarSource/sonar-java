@@ -27,12 +27,13 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.cfg.Block;
+import org.sonar.plugins.java.api.cfg.LiveVariables;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -79,12 +80,12 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     CFG cfg = (CFG) methodTree.cfg();
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     // Liveness analysis provides information only for block boundaries, so we should do analysis between elements within blocks
-    for (CFG.Block block : cfg.blocks()) {
+    for (Block block : cfg.blocks()) {
       checkElements(block, liveVariables.getOut(block), methodSymbol);
     }
   }
 
-  private void checkElements(CFG.Block block, Set<Symbol> blockOut, Symbol.MethodSymbol methodSymbol) {
+  private void checkElements(Block block, Set<Symbol> blockOut, Symbol.MethodSymbol methodSymbol) {
     Set<Symbol> out = new HashSet<>(blockOut);
     Set<Tree> assignmentLHS = new HashSet<>();
     new ArrayDeque<>(block.elements()).descendingIterator().forEachRemaining(

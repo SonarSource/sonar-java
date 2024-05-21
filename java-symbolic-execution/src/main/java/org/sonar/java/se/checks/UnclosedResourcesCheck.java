@@ -32,8 +32,6 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.cfg.CFG;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -46,6 +44,7 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -62,6 +61,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 import static org.sonar.java.se.checks.UnclosedResourcesCheck.ResourceConstraint.CLOSED;
 import static org.sonar.java.se.checks.UnclosedResourcesCheck.ResourceConstraint.OPEN;
@@ -171,7 +171,7 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   @Override
-  public void init(MethodTree methodTree, CFG cfg) {
+  public void init(MethodTree methodTree, ControlFlowGraph cfg) {
     this.visitedMethodOwnerType = methodTree.symbol().owner().type();
   }
 

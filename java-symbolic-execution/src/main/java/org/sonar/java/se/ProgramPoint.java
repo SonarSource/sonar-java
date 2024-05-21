@@ -19,19 +19,18 @@
  */
 package org.sonar.java.se;
 
-import org.sonar.java.Preconditions;
-import org.sonar.java.cfg.CFG;
-import org.sonar.java.model.LineUtils;
-import org.sonar.plugins.java.api.tree.Tree;
-
 import java.util.List;
+import org.sonar.java.Preconditions;
+import org.sonar.java.model.LineUtils;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
+import org.sonar.plugins.java.api.tree.Tree;
 
 public class ProgramPoint {
   private final int hashcode;
-  public final CFG.IBlock<?> block;
+  public final Block block;
   public final int i;
 
-  public ProgramPoint(CFG.IBlock<?> block) {
+  public ProgramPoint(Block block) {
     this(block, 0);
   }
 
@@ -39,7 +38,7 @@ public class ProgramPoint {
    * {@code i == blockSize} means we are pointing to terminator block, {@code i == blockSize + 1} is valid if terminator block is branching
    * @see ExplodedGraphWalker#execute
    */
-  private ProgramPoint(CFG.IBlock<?> block, int i) {
+  private ProgramPoint(Block block, int i) {
     int blockSize = block.elements().size();
     Preconditions.checkState(i < blockSize + 2, "CFG Block has %s elements but PP at %s was requested", blockSize, i);
     this.block = block;
@@ -69,23 +68,18 @@ public class ProgramPoint {
   @Override
   public String toString() {
     String tree = "";
-    if (block instanceof CFG.Block cfgBlock) {
-      List<Tree> elements = cfgBlock.elements();
-      if (i < elements.size()) {
-        tree = "" + elements.get(i).kind() + LineUtils.startLine(elements.get(i));
-      }
+    List<Tree> elements = block.elements();
+    if (i < elements.size()) {
+      tree = "" + elements.get(i).kind() + LineUtils.startLine(elements.get(i));
     }
     return "B" + block.id() + "." + i + "  " + tree;
   }
 
   public Tree syntaxTree() {
-    if (block instanceof CFG.Block) {
-      CFG.Block syntaxCFGblock = (CFG.Block) this.block;
-      if (block.elements().isEmpty()) {
-        return syntaxCFGblock.terminator();
-      }
-      return syntaxCFGblock.elements().get(Math.min(i, syntaxCFGblock.elements().size() - 1));
+    Block syntaxCFGblock = this.block;
+    if (block.elements().isEmpty()) {
+      return syntaxCFGblock.terminator();
     }
-    return null;
+    return syntaxCFGblock.elements().get(Math.min(i, syntaxCFGblock.elements().size() - 1));
   }
 }

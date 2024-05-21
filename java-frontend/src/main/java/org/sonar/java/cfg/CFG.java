@@ -264,14 +264,17 @@ public class CFG implements ControlFlowGraph {
       return ListUtils.reverse(elements);
     }
 
+    @Override
     public Block trueBlock() {
       return trueBlock;
     }
 
+    @Override
     public Block falseBlock() {
       return falseBlock;
     }
 
+    @Override
     public Block exitBlock() {
       return exitBlock;
     }
@@ -280,10 +283,12 @@ public class CFG implements ControlFlowGraph {
       return isFinallyBlock;
     }
 
+    @Override
     public boolean isCatchBlock() {
       return isCatchBlock;
     }
 
+    @Override
     public boolean isDefaultBlock() {
       return isDefaultBlock;
     }
@@ -322,6 +327,7 @@ public class CFG implements ControlFlowGraph {
       return successors;
     }
 
+    @Override
     public Set<Block> exceptions() {
       return exceptions;
     }
@@ -362,6 +368,7 @@ public class CFG implements ControlFlowGraph {
       }
     }
 
+    @Override
     public boolean isMethodExitBlock() {
       return successors().isEmpty();
     }
@@ -380,6 +387,7 @@ public class CFG implements ControlFlowGraph {
      * Used for simplifying implementation of RSPEC-128.
      */
     @CheckForNull
+    @Override
     public CaseGroupTree caseGroup() {
       return caseGroup;
     }

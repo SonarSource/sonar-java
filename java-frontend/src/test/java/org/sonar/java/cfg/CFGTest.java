@@ -30,9 +30,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
-import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.cfg.Block;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -507,10 +507,10 @@ class CFGTest {
         element(IDENTIFIER, "bar"),
         element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
-    CFG.Block entry = cfg.entryBlock();
+    Block entry = cfg.entryBlock();
     assertThat(entry.isMethodExitBlock()).as("1st block is not an exit").isFalse();
     assertThat(entry.successors()).as("number of successors").hasSize(1);
-    CFG.Block exit = entry.successors().iterator().next();
+    Block exit = entry.successors().iterator().next();
     assertThat(exit.isMethodExitBlock()).as("2nd block is an exit").isTrue();
   }
 
@@ -523,10 +523,10 @@ class CFGTest {
         element(IDENTIFIER, "bar"),
         element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
-    CFG.Block entry = cfg.entryBlock();
+    Block entry = cfg.entryBlock();
     assertThat(entry.isMethodExitBlock()).as("1st block is not an exit").isFalse();
     assertThat(entry.successors()).as("number of successors").hasSize(1);
-    CFG.Block exit = entry.successors().iterator().next();
+    Block exit = entry.successors().iterator().next();
     assertThat(exit.isMethodExitBlock()).as("2nd block is an exit").isTrue();
   }
 

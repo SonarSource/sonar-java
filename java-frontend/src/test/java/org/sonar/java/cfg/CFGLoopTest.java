@@ -19,15 +19,14 @@
  */
 package org.sonar.java.cfg;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.java.cfg.CFG.Block;
-import org.sonar.plugins.java.api.tree.Tree;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.sonar.plugins.java.api.cfg.Block;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,8 +34,8 @@ class CFGLoopTest {
 
   private static final CFGTestLoader loader = new CFGTestLoader("src/test/files/cfg/CFGLoopTest.java");
 
-  private static List<CFG.Block> sorted(Collection<CFG.Block> collection) {
-    List<CFG.Block> answer = new ArrayList<>(collection);
+  private static List<Block> sorted(Collection<Block> collection) {
+    List<Block> answer = new ArrayList<>(collection);
     Collections.sort(answer, (o1, o2) -> {
       // Use order of IDs
       return Integer.compare(o1.id(), o2.id());

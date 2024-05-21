@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.se.checks.AllowXMLInclusionCheck;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
@@ -59,6 +58,7 @@ import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -717,7 +717,7 @@ class ExplodedGraphWalkerTest {
     List<String> visitedMethods = new ArrayList<>();
     SECheck check = new SECheck() {
       @Override
-      public void init(MethodTree methodTree, CFG cfg) {
+      public void init(MethodTree methodTree, ControlFlowGraph cfg) {
         visitedMethods.add(methodTree.symbol().name());
       }
     };

@@ -27,12 +27,12 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.CFGLoop;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraphLoop;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -67,7 +67,7 @@ public class NoWayOutLoopCheck extends SECheck {
   }
 
   @Override
-  public void init(MethodTree tree, CFG cfg) {
+  public void init(MethodTree tree, ControlFlowGraph cfg) {
     MethodContext context = new MethodContext(tree, cfg);
     contexts.push(context);
   }
@@ -95,7 +95,7 @@ public class NoWayOutLoopCheck extends SECheck {
   }
 
   private void checkLoopWithAlwaysTrueCondition(CheckerContext context, Tree statementParent) {
-    CFGLoop loopBlocks = contexts.peek().getLoop(statementParent);
+    ControlFlowGraphLoop loopBlocks = contexts.peek().getLoop(statementParent);
     if (loopBlocks != null && loopBlocks.hasNoWayOut()) {
       context.reportIssue(statementParent, NoWayOutLoopCheck.this, "Add an end condition to this loop.");
     }
@@ -277,11 +277,11 @@ public class NoWayOutLoopCheck extends SECheck {
 
   private static class MethodContext {
 
-    private final Map<Tree, CFGLoop> loopStarts;
+    private final Map<Tree, ControlFlowGraphLoop> loopStarts;
     private final boolean threadRunMethod;
 
-    MethodContext(MethodTree tree, CFG cfg) {
-      loopStarts = CFGLoop.getCFGLoops(cfg);
+    MethodContext(MethodTree tree, ControlFlowGraph cfg) {
+      loopStarts = ControlFlowGraphLoop.getControlFlowGraphLoops(cfg);
       threadRunMethod = THREAD_RUN_MATCHER.matches(tree);
     }
 
@@ -289,7 +289,7 @@ public class NoWayOutLoopCheck extends SECheck {
       return threadRunMethod;
     }
 
-    CFGLoop getLoop(Tree tree) {
+    ControlFlowGraphLoop getLoop(Tree tree) {
       return loopStarts.get(tree);
     }
   }

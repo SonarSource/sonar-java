@@ -41,7 +41,6 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.Preconditions;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
@@ -376,7 +375,7 @@ public class FlowComputation {
 
     private Optional<JavaFileScannerContext.Location> flowFromCaughtException(ExplodedGraph.Edge edge) {
       ProgramPoint programPoint = edge.parent.programPoint;
-      if (((CFG.Block) programPoint.block).isCatchBlock() && programPoint.i == 0) {
+      if (programPoint.block.isCatchBlock() && programPoint.i == 0) {
         VariableTree catchVariable = ((VariableTree) programPoint.syntaxTree());
         SymbolicValue.CaughtExceptionSymbolicValue caughtSv = ((SymbolicValue.CaughtExceptionSymbolicValue) edge.child.programState.getValue(catchVariable.symbol()));
         Objects.requireNonNull(caughtSv, "Caught exception not found in program state");
@@ -766,7 +765,7 @@ public class FlowComputation {
       // ProgramPoint#syntaxTree will not always return the correct tree, so we need to go to ProgramPoint#block directly
       ProgramPoint pp = node.programPoint;
       if (pp.i < pp.block.elements().size()) {
-        Tree tree = ((CFG.Block) pp.block).elements().get(pp.i);
+        Tree tree = pp.block.elements().get(pp.i);
         return tree.is(Tree.Kind.METHOD_INVOCATION);
       }
       return false;

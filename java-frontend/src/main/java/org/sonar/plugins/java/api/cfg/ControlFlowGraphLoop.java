@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.cfg;
+package org.sonar.plugins.java.api.cfg;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,20 +27,19 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.plugins.java.api.cfg.Block;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class CFGLoop {
+public class ControlFlowGraphLoop {
 
   private final Block startingBlock;
   private final Set<Block> blocks = new HashSet<>();
   private final Set<Block> successors = new HashSet<>();
 
-  private CFGLoop(Block block) {
+  private ControlFlowGraphLoop(Block block) {
     startingBlock = block;
   }
 
-  private void initialize(Block block, Map<Tree, CFGLoop> container) {
+  private void initialize(Block block, Map<Tree, ControlFlowGraphLoop> container) {
     Block loopFirstBlock = block.trueBlock();
     if (loopFirstBlock == null) {
       // Special case where no condition is given in FOR loop: only one successor specified
@@ -71,11 +70,11 @@ public class CFGLoop {
     return successors.isEmpty();
   }
 
-  private void collectBlocks(Block block, Map<Tree, CFGLoop> container) {
+  private void collectBlocks(Block block, Map<Tree, ControlFlowGraphLoop> container) {
     collectBlocks(block, container, new HashSet<>());
   }
 
-  private boolean collectBlocks(Block block, Map<Tree, CFGLoop> container, Set<Block> visitedBlocks) {
+  private boolean collectBlocks(Block block, Map<Tree, ControlFlowGraphLoop> container, Set<Block> visitedBlocks) {
     if (blocks.contains(block)) {
       return true;
     }
@@ -89,8 +88,8 @@ public class CFGLoop {
     return answer;
   }
 
-  private boolean returnsToStart(Block block, Map<Tree, CFGLoop> container, Set<Block> visitedBlocks) {
-    Set<Block> localSuccessors = localSuccessors(block, container);
+  private boolean returnsToStart(Block block, Map<Tree, ControlFlowGraphLoop> container, Set<Block> visitedBlocks) {
+    Set<? extends Block> localSuccessors = localSuccessors(block, container);
     if (localSuccessors == null) {
       return true;
     }
@@ -106,9 +105,9 @@ public class CFGLoop {
   }
 
   @CheckForNull
-  private static Set<Block> localSuccessors(Block block, Map<Tree, CFGLoop> container) {
+  private static Set<? extends Block> localSuccessors(Block block, Map<Tree, ControlFlowGraphLoop> container) {
     if (isStarting(block)) {
-      CFGLoop loop = container.get(block.terminator());
+      ControlFlowGraphLoop loop = container.get(block.terminator());
       if (loop == null) {
         loop = create(block, container);
       }
@@ -129,10 +128,10 @@ public class CFGLoop {
     return terminator != null && terminator.is(Tree.Kind.BREAK_STATEMENT);
   }
 
-  private void collectWaysOut(Map<Tree, CFGLoop> container) {
+  private void collectWaysOut(Map<Tree, ControlFlowGraphLoop> container) {
     for (Block block : blocks) {
       if (isStarting(block)) {
-        CFGLoop innerLoop = container.get(block.terminator());
+        ControlFlowGraphLoop innerLoop = container.get(block.terminator());
         successors.addAll(innerLoop.successors());
       } else {
         successors.addAll(block.successors());
@@ -147,10 +146,10 @@ public class CFGLoop {
     return terminator != null && terminator.is(Tree.Kind.FOR_STATEMENT, Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT);
   }
 
-  public static Map<Tree, CFGLoop> getCFGLoops(CFG cfg) {
-    Map<Tree, CFGLoop> cfgLoops = new HashMap<>();
+  public static Map<Tree, ControlFlowGraphLoop> getControlFlowGraphLoops(ControlFlowGraph cfg) {
+    Map<Tree, ControlFlowGraphLoop> cfgLoops = new HashMap<>();
     for (Block block : cfg.blocks()) {
-      if (CFGLoop.isStarting(block)) {
+      if (ControlFlowGraphLoop.isStarting(block)) {
         Tree terminator = block.terminator();
         if (!cfgLoops.containsKey(terminator)) {
           create(block, cfgLoops);
@@ -160,10 +159,11 @@ public class CFGLoop {
     return cfgLoops;
   }
 
-  private static CFGLoop create(Block block, Map<Tree, CFGLoop> container) {
-    CFGLoop loop = new CFGLoop(block);
+  private static ControlFlowGraphLoop create(Block block, Map<Tree, ControlFlowGraphLoop> container) {
+    ControlFlowGraphLoop loop = new ControlFlowGraphLoop(block);
     container.put(block.terminator(), loop);
     loop.initialize(block, container);
     return loop;
   }
+
 }
