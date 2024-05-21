@@ -26,7 +26,7 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.cfg.Block;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;

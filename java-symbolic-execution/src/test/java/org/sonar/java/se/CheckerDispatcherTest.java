@@ -46,7 +46,8 @@ class CheckerDispatcherTest {
 
   private static ExplodedGraphWalker mockExplodedGraphWalker() {
     ExplodedGraphWalker explodedGraphWalker = mock(ExplodedGraphWalker.class);
-    explodedGraphWalker.programPosition = new ProgramPoint(new Block(1));
+    var block = mock(Block.class);
+    explodedGraphWalker.programPosition = new ProgramPoint(block);
     explodedGraphWalker.programState = mock(ProgramState.class);
     explodedGraphWalker.node = new ExplodedGraph().node(explodedGraphWalker.programPosition, explodedGraphWalker.programState);
     return explodedGraphWalker;

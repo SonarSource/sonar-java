@@ -20,8 +20,8 @@
 package org.sonar.java.se.constraint;
 
 import java.util.Objects;
-import org.sonar.java.model.Sema;
 import org.sonar.java.model.Symbols;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Type;
 
 public class TypedConstraint implements Constraint {

@@ -23,7 +23,7 @@ import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
 import org.sonar.java.model.SyntaxTreeDebug;
-import org.sonar.plugins.java.api.cfg.Block;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 

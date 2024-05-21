@@ -20,7 +20,6 @@
 package org.sonar.java.se.xproc;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.model.Sema;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
@@ -31,6 +30,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 

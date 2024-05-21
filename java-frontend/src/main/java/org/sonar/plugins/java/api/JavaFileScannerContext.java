@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -44,7 +45,7 @@ public interface JavaFileScannerContext extends InputFileScannerContext {
    * @return SemanticModel if semantic analysis was successful, null otherwise.
    */
   @Nullable
-  Object getSemanticModel();
+  Sema getSemanticModel();
 
   /**
    * Checks if file has been parsed correctly.

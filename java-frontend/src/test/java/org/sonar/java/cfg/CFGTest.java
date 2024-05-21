@@ -32,7 +32,6 @@ import org.slf4j.event.Level;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.plugins.java.api.cfg.Block;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -143,9 +142,9 @@ class CFGTest {
       try {
         assertThat(cfg.blocks()).as("Expected number of blocks").hasSize(checkers.size() + 1);
         final Iterator<BlockChecker> checkerIterator = checkers.iterator();
-        final List<Block> blocks = new ArrayList<>(cfg.blocks());
-        final Block exitBlock = blocks.remove(blocks.size() - 1);
-        for (final Block block : blocks) {
+        final List<CFG.Block> blocks = new ArrayList<>(cfg.blocks());
+        final CFG.Block exitBlock = blocks.remove(blocks.size() - 1);
+        for (final CFG.Block block : blocks) {
           checkerIterator.next().check(block);
           checkLinkedBlocks(block.id(), "Successor", cfg.blocks(), block.successors());
           checkLinkedBlocks(block.id(), "Predecessors", cfg.blocks(), block.predecessors());

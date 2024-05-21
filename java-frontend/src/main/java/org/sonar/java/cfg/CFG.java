@@ -279,6 +279,7 @@ public class CFG implements ControlFlowGraph {
       return exitBlock;
     }
 
+    @Override
     public boolean isFinallyBlock() {
       return isFinallyBlock;
     }
@@ -368,7 +369,6 @@ public class CFG implements ControlFlowGraph {
       }
     }
 
-    @Override
     public boolean isMethodExitBlock() {
       return successors().isEmpty();
     }

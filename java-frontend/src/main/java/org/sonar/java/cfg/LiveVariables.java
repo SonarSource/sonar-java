@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api.cfg;
+package org.sonar.java.cfg;
 
 import java.util.Collections;
 import java.util.Deque;
@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonar.java.cfg.VariableReadExtractor;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -48,7 +48,7 @@ public class LiveVariables {
 
   private final ControlFlowGraph cfg;
   private final Map<ControlFlowGraph.Block, Set<Symbol>> out = new HashMap<>();
-  private final Map<Block, Set<Symbol>> in = new HashMap<>();
+  private final Map<ControlFlowGraph.Block, Set<Symbol>> in = new HashMap<>();
   private final boolean includeFields;
 
   private LiveVariables(ControlFlowGraph cfg, boolean includeFields) {
@@ -56,11 +56,11 @@ public class LiveVariables {
     this.includeFields = includeFields;
   }
 
-  public Set<Symbol> getOut(Block block) {
+  public Set<Symbol> getOut(ControlFlowGraph.Block block) {
     return out.get(block);
   }
 
-  public Set<Symbol> getIn(Block block) {
+  public Set<Symbol> getIn(ControlFlowGraph.Block block) {
     return in.get(block);
   }
 
@@ -81,9 +81,9 @@ public class LiveVariables {
   private static LiveVariables analyze(ControlFlowGraph cfg, boolean includeFields) {
     LiveVariables liveVariables = new LiveVariables(cfg, includeFields);
     // Generate kill/gen for each block in isolation
-    Map<Block, Set<Symbol>> kill = new HashMap<>();
-    Map<Block, Set<Symbol>> gen = new HashMap<>();
-    for (Block block : liveVariables.cfg.reversedBlocks()) {
+    Map<ControlFlowGraph.Block, Set<Symbol>> kill = new HashMap<>();
+    Map<ControlFlowGraph.Block, Set<Symbol>> gen = new HashMap<>();
+    for (ControlFlowGraph.Block block : liveVariables.cfg.reversedBlocks()) {
       Set<Symbol> blockKill = new HashSet<>();
       Set<Symbol> blockGen = new HashSet<>();
       liveVariables.processBlockElements(block, blockKill, blockGen);
@@ -97,18 +97,18 @@ public class LiveVariables {
     }
 
     // Make things immutable.
-    for (Map.Entry<Block, Set<Symbol>> blockSetEntry : liveVariables.out.entrySet()) {
+    for (Map.Entry<ControlFlowGraph.Block, Set<Symbol>> blockSetEntry : liveVariables.out.entrySet()) {
       blockSetEntry.setValue(Collections.unmodifiableSet(blockSetEntry.getValue()));
     }
 
     return liveVariables;
   }
 
-  private void analyzeControlFlowGraph(Map<Block, Set<Symbol>> in, Map<Block, Set<Symbol>> kill, Map<Block, Set<Symbol>> gen) {
-    Deque<Block> workList = new LinkedList<>();
+  private void analyzeControlFlowGraph(Map<ControlFlowGraph.Block, Set<Symbol>> in, Map<ControlFlowGraph.Block, Set<Symbol>> kill, Map<ControlFlowGraph.Block, Set<Symbol>> gen) {
+    Deque<ControlFlowGraph.Block> workList = new LinkedList<>();
     workList.addAll(cfg.reversedBlocks());
     while (!workList.isEmpty()) {
-      Block block = workList.removeFirst();
+      ControlFlowGraph.Block block = workList.removeFirst();
 
       Set<Symbol> blockOut = out.computeIfAbsent(block, k -> new HashSet<>());
       block.successors().stream().map(in::get).filter(Objects::nonNull).forEach(blockOut::addAll);
@@ -125,7 +125,7 @@ public class LiveVariables {
     }
   }
 
-  private void processBlockElements(Block block, Set<Symbol> blockKill, Set<Symbol> blockGen) {
+  private void processBlockElements(ControlFlowGraph.Block block, Set<Symbol> blockKill, Set<Symbol> blockGen) {
     // process elements from bottom to top
     Set<Tree> assignmentLHS = new HashSet<>();
     for (Tree element : ListUtils.reverse(block.elements())) {

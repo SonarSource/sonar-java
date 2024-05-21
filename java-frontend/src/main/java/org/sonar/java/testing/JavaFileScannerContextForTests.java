@@ -30,7 +30,6 @@ import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
-import org.sonar.java.model.Sema;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -38,6 +37,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 

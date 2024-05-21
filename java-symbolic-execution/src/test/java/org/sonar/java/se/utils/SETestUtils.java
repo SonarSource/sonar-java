@@ -33,12 +33,12 @@ import org.sonar.java.checks.verifier.internal.InternalInputFile;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.java.model.Sema;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.test.classpath.TestClasspathUtils;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.VariableSymbol;
 

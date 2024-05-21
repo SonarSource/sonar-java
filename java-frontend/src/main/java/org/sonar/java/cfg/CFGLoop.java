@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.plugins.java.api.cfg.Block;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class CFGLoop {
@@ -90,7 +90,7 @@ public class CFGLoop {
   }
 
   private boolean returnsToStart(Block block, Map<Tree, CFGLoop> container, Set<Block> visitedBlocks) {
-    Set<Block> localSuccessors = localSuccessors(block, container);
+    Set<? extends Block> localSuccessors = localSuccessors(block, container);
     if (localSuccessors == null) {
       return true;
     }
@@ -106,7 +106,7 @@ public class CFGLoop {
   }
 
   @CheckForNull
-  private static Set<Block> localSuccessors(Block block, Map<Tree, CFGLoop> container) {
+  private static Set<? extends Block> localSuccessors(Block block, Map<Tree, CFGLoop> container) {
     if (isStarting(block)) {
       CFGLoop loop = container.get(block.terminator());
       if (loop == null) {

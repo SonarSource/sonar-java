@@ -34,7 +34,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.cfg.CFG;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.cfg.Block;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;

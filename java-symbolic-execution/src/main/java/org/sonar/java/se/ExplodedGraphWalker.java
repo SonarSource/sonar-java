@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +37,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.model.CFGUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LineUtils;
@@ -62,8 +62,8 @@ import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
-import org.sonar.plugins.java.api.cfg.LiveVariables;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -146,7 +146,7 @@ public class ExplodedGraphWalker {
   CheckerDispatcher checkerDispatcher;
   private Block exitBlock;
 
-  private final Object semanticModel;
+  private final Sema semanticModel;
   private final BehaviorCache behaviorCache;
   @VisibleForTesting
   int steps;
@@ -359,16 +359,7 @@ public class ExplodedGraphWalker {
   public void addExceptionalYield(SymbolicValue target, ProgramState exceptionalState, String exceptionFullyQualifiedName, SECheck check) {
     // in order to create such Exceptional Yield, a parameter of the method has to be the cause of the exception
     if (methodBehavior != null && methodBehavior.parameters().contains(target)) {
-      Type exceptionType = null;
-      try {
-        exceptionType = (Type) semanticModel.getClass().getDeclaredMethod("getClassType", String.class).invoke(semanticModel, exceptionFullyQualifiedName);
-      } catch (IllegalAccessException e) {
-        throw new RuntimeException(e);
-      } catch (InvocationTargetException e) {
-        throw new RuntimeException(e);
-      } catch (NoSuchMethodException e) {
-        throw new RuntimeException(e);
-      }
+      Type exceptionType = semanticModel.getClassType(exceptionFullyQualifiedName);
       ProgramState newExceptionalState = exceptionalState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(exceptionType));
       ExplodedGraph.Node exitNode = explodedGraph.node(node.programPoint, newExceptionalState);
       methodBehavior.createExceptionalCheckBasedYield(target, exitNode, exceptionFullyQualifiedName, check);

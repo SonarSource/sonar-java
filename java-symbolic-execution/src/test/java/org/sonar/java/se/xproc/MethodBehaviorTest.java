@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.model.Sema;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.NullDereferenceCheck;
@@ -31,6 +30,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.plugins.java.api.semantic.Sema;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor;

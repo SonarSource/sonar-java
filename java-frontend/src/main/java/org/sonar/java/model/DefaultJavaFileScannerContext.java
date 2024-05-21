@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -86,7 +87,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
 
   @Override
   @Nullable
-  public Object getSemanticModel() {
+  public Sema getSemanticModel() {
     if (!semanticEnabled) {
       return null;
     }

@@ -52,11 +52,15 @@ public interface ControlFlowGraph {
 
     Set<? extends Block> successors();
 
+    Set<? extends Block> predecessors();
+
     Set<? extends Block> exceptions();
 
     boolean isCatchBlock();
 
     boolean isDefaultBlock();
+
+    boolean isFinallyBlock();
 
     @CheckForNull
     CaseGroupTree caseGroup();
