@@ -26,7 +26,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
@@ -99,7 +98,7 @@ public class SymbolicExecutionVisitor extends IssuableSubscriptionVisitor {
   }
 
   public static boolean methodCanNotBeOverriden(Symbol.MethodSymbol methodSymbol) {
-    if (JUtils.isNativeMethod(methodSymbol)) {
+    if (methodSymbol.isNativeMethod()) {
       return false;
     }
     return !methodSymbol.isAbstract() &&

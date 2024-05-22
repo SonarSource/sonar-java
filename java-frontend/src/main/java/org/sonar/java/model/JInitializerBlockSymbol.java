@@ -210,4 +210,9 @@ final class JInitializerBlockSymbol implements Symbol.MethodSymbol {
   public boolean isVarArgsMethod() {
     return false;
   }
+
+  @Override
+  public boolean isNativeMethod() {
+    return false;
+  }
 }

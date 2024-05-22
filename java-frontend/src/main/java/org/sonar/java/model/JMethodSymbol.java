@@ -207,4 +207,8 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return (MethodTree) super.declaration();
   }
 
+  @Override
+  public boolean isNativeMethod() {
+    return !isUnknown() && Modifier.isNative(binding.getModifiers());
+  }
 }

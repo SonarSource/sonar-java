@@ -334,6 +334,11 @@ public class Symbols {
     public boolean isVarArgsMethod() {
       return false;
     }
+
+    @Override
+    public boolean isNativeMethod() {
+      return false;
+    }
   }
 
   private static final class UnknownType implements Type {

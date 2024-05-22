@@ -282,6 +282,11 @@ public interface Symbol {
      * @return true if the method takes a vararg argument (e.g. `String... args`).
      */
     boolean isVarArgsMethod();
+
+    /**
+     * @return true if the method is native.
+     */
+    boolean isNativeMethod();
   }
 
   /**
