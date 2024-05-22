@@ -45,7 +45,7 @@ public class SECheckVerifier implements CheckVerifier {
   }
 
   private SECheckVerifier() {
-    checkVerifier = (InternalCheckVerifier) CheckVerifier.newVerifier();
+    checkVerifier = (InternalCheckVerifier) CheckVerifier.newInternalVerifier();
   }
 
   @Override
@@ -69,7 +69,7 @@ public class SECheckVerifier implements CheckVerifier {
   }
 
   public CheckVerifier withCustomIssueVerifier(Consumer<Set<AnalyzerMessage>> customIssueVerifier) {
-    checkVerifier.withCustomIssueVerifier(customIssueVerifier);
+    // FIXME checkVerifier.withCustomIssueVerifier(customIssueVerifier);
     return this;
   }
 

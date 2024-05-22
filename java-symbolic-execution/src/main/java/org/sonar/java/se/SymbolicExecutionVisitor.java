@@ -21,7 +21,7 @@ package org.sonar.java.se;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,15 +29,17 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class SymbolicExecutionVisitor extends IssuableSubscriptionVisitor {
+public class SymbolicExecutionVisitor extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Logger LOG = LoggerFactory.getLogger(SymbolicExecutionVisitor.class);
+  protected JavaFileScannerContext context;
 
   @VisibleForTesting
   public final BehaviorCache behaviorCache;
@@ -49,20 +51,17 @@ public class SymbolicExecutionVisitor extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void setContext(JavaFileScannerContext context) {
+  public void scanFile(JavaFileScannerContext context) {
     behaviorCache.cleanup();
     behaviorCache.setFileContext(this);
-    super.setContext(context);
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
-  }
-
-  @Override
-  public void visitNode(Tree tree) {
-    execute((MethodTree) tree);
+  public void visitMethod(MethodTree tree) {
+    execute(tree);
+    super.visitMethod(tree);
   }
 
   public void execute(MethodTree methodTree) {
@@ -78,8 +77,8 @@ public class SymbolicExecutionVisitor extends IssuableSubscriptionVisitor {
         walker.visitMethod(methodTree);
       }
     } catch (ExplodedGraphWalker.MaximumStepsReachedException
-             | ExplodedGraphWalker.ExplodedGraphTooBigException
-             | ExplodedGraphWalker.MaximumStartingStatesException exception) {
+      | ExplodedGraphWalker.ExplodedGraphTooBigException
+      | ExplodedGraphWalker.MaximumStartingStatesException exception) {
       LOG.debug("Could not complete symbolic execution: {}", exception.getMessage());
       if (LOG.isTraceEnabled()) {
         StringWriter sw = new StringWriter();

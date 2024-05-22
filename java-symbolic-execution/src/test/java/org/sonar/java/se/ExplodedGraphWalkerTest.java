@@ -185,7 +185,7 @@ class ExplodedGraphWalkerTest {
       private ExplodedGraphWalker explodedGraphWalker;
 
       @Override
-      public void visitNode(Tree tree) {
+      public void visitMethod(MethodTree tree) {
         if (explodedGraphWalker == null) {
           explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context) {
 
@@ -223,7 +223,7 @@ class ExplodedGraphWalkerTest {
         if ("foo".equals(methodTree.symbol().name())) {
           explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
         } else {
-          super.visitNode(methodTree);
+          super.visitMethod(methodTree);
         }
       }
     };
@@ -246,7 +246,7 @@ class ExplodedGraphWalkerTest {
       private ExplodedGraphWalker explodedGraphWalker = null;
 
       @Override
-      public void visitNode(Tree tree) {
+      public void visitMethod(MethodTree tree) {
         if (explodedGraphWalker == null) {
           explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context) {
 
@@ -301,7 +301,7 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/SeEngineTestCase.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitNode(Tree tree) {
+        public void visitMethod(MethodTree tree) {
           try {
             MethodTree methodTree = (MethodTree) tree;
             new ExplodedGraphWalker(this.behaviorCache, context).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
@@ -320,7 +320,7 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/MaxStartingStates.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitNode(Tree tree) {
+        public void visitMethod(MethodTree tree) {
           MethodTree methodTree = (MethodTree) tree;
           ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
@@ -342,7 +342,7 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/StartingStates1024.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitNode(Tree tree) {
+        public void visitMethod(MethodTree tree) {
           MethodTree methodTree = (MethodTree) tree;
           ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
@@ -363,7 +363,7 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/MaxSteps.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitNode(Tree tree) {
+        public void visitMethod(MethodTree tree) {
           MethodTree methodTree = (MethodTree) tree;
           ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
@@ -394,7 +394,7 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/MaxNestedStates.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitNode(Tree tree) {
+        public void visitMethod(MethodTree tree) {
           MethodTree methodTree = (MethodTree) tree;
           ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
@@ -543,7 +543,7 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/YieldReporting.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitNode(Tree tree) {
+        public void visitMethod(MethodTree tree) {
           MethodTree methodTree = (MethodTree) tree;
           if ("test".equals(methodTree.symbol().name())) {
             ExplodedGraphWalker egw = new ExplodedGraphWalker(this.behaviorCache, context);
