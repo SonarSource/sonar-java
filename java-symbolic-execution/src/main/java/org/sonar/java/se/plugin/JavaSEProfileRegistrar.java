@@ -19,13 +19,9 @@
  */
 package org.sonar.java.se.plugin;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.plugins.java.api.ProfileRegistrar;
 
 public class JavaSEProfileRegistrar implements ProfileRegistrar {
-
-  private static final Logger LOG = LoggerFactory.getLogger(JavaSEProfileRegistrar.class);
 
   @Override
   public void register(RegistrarContext registrarContext) {

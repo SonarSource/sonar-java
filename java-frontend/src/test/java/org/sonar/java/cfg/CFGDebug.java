@@ -22,8 +22,8 @@ package org.sonar.java.cfg;
 import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
-import org.sonar.java.model.SyntaxTreeDebug;
 import org.sonar.java.cfg.CFG.Block;
+import org.sonar.java.model.SyntaxTreeDebug;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -117,7 +117,7 @@ public class CFGDebug {
     return buffer.toString();
   }
 
-  public static String toString(Block block) {
+  public static String toString(CFG.Block block) {
     StringBuilder buffer = new StringBuilder();
     buffer.append('B');
     buffer.append(block.id());

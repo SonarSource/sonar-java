@@ -143,23 +143,7 @@ public class JavaSensor implements Sensor {
       .appendMeasurementCost()
       .start("JavaSensor");
   }
-
-//  @VisibleForTesting
-//  static JavaCheck[] insertSymbolicExecutionVisitor(List<JavaCheck> checks) {
-//    List<SECheck> seChecks = checks.stream()
-//      .filter(SECheck.class::isInstance)
-//      .map(SECheck.class::cast)
-//      .toList();
-//    if (seChecks.isEmpty()) {
-//      LOG.info("No rules with 'symbolic-execution' tag were enabled,"
-//        + " the Symbolic Execution Engine will not run during the analysis.");
-//      return checks.toArray(new JavaCheck[0]);
-//    }
-//    List<JavaCheck> newList = new ArrayList<>(checks);
-//    // insert an instance of SymbolicExecutionVisitor before the first SECheck
-//    newList.add(newList.indexOf(seChecks.get(0)), new SymbolicExecutionVisitor(seChecks));
-//    return newList.toArray(new JavaCheck[0]);
-//  }
+  
 
   private Collection<GeneratedFile> runJasper(SensorContext context) {
     if (sonarComponents.isAutoScan()) {

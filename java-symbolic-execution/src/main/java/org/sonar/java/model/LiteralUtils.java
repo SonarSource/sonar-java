@@ -93,14 +93,6 @@ public class LiteralUtils {
     return nullableInteger == null ? null : -nullableInteger;
   }
 
-  public static boolean isEmptyString(Tree tree) {
-    return tree.is(Kind.STRING_LITERAL) && trimQuotes(((LiteralTree) tree).value()).isEmpty();
-  }
-
-  public static boolean is0xff(ExpressionTree expression) {
-    return expression.is(Kind.INT_LITERAL) && "0xff".equalsIgnoreCase(((LiteralTree) expression).value());
-  }
-
   public static String trimQuotes(String value) {
     int delimiterLength = isTextBlock(value) ? 3 : 1;
     return value.substring(delimiterLength, value.length() - delimiterLength);
@@ -123,32 +115,12 @@ public class LiteralUtils {
     return value;
   }
 
-  public static boolean hasValue(Tree tree, String expectedValue) {
-    if (!tree.is(Kind.STRING_LITERAL)) {
-      return false;
-    }
-    String actualValue = trimQuotes(((LiteralTree) tree).value());
-    return expectedValue.equals(actualValue);
-  }
-
   public static boolean isTrue(Tree tree) {
     return tree.is(Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) tree).value());
   }
 
   public static boolean isFalse(Tree tree) {
     return tree.is(Kind.BOOLEAN_LITERAL) && "false".equals(((LiteralTree) tree).value());
-  }
-
-  public static boolean isZero(ExpressionTree tree) {
-    return tree.is(Kind.INT_LITERAL) && "0".equals(((LiteralTree) tree).value());
-  }
-
-  public static boolean isOne(ExpressionTree tree) {
-    return tree.is(Kind.INT_LITERAL) && "1".equals(((LiteralTree) tree).value());
-  }
-
-  public static boolean isNegOne(ExpressionTree tree) {
-    return tree.is(Kind.UNARY_MINUS) && isOne(((UnaryExpressionTree) tree).expression());
   }
 
   public static String getAsStringValue(LiteralTree tree) {

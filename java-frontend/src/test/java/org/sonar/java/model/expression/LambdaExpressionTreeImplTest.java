@@ -91,7 +91,7 @@ class LambdaExpressionTreeImplTest {
 
     List<Symbol.MethodSymbol> methodInvocations = cfg.blocks()
       .stream()
-      .map(Block::elements)
+      .map(ControlFlowGraph.Block::elements)
       .flatMap(List::stream)
       .filter(t -> t.is(Tree.Kind.METHOD_INVOCATION))
       .map(MethodInvocationTree.class::cast)

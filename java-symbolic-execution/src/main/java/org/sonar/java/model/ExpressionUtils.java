@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -33,11 +32,9 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 public final class ExpressionUtils {
 
@@ -117,26 +114,6 @@ public final class ExpressionUtils {
     return Optional.empty();
   }
 
-  public static Optional<Symbol> extractIdentifierSymbol(ExpressionTree tree) {
-    return extractIdentifier(tree).map(IdentifierTree::symbol);
-  }
-
-  /**
-   * Return whether we are sure that the method invocation is on a given variable.
-   *
-   * If unsure (variable is null, or we can not extract an identifier from the method invocation),
-   * return a default value
-   */
-  public static boolean isInvocationOnVariable(MethodInvocationTree mit, @Nullable Symbol variable, boolean defaultReturn) {
-    ExpressionTree methodSelect = mit.methodSelect();
-    if (variable == null || !methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      return defaultReturn;
-    }
-    return extractIdentifierSymbol(((MemberSelectExpressionTree) methodSelect).expression())
-      .map(variable::equals)
-      .orElse(defaultReturn);
-  }
-
   public static ExpressionTree skipParentheses(ExpressionTree tree) {
     ExpressionTree result = tree;
     while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
@@ -147,14 +124,6 @@ public final class ExpressionUtils {
 
   public static boolean isNullLiteral(ExpressionTree tree) {
     return skipParentheses(tree).is(Tree.Kind.NULL_LITERAL);
-  }
-
-  public static boolean isSecuringByte(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.AND)) {
-      BinaryExpressionTree and = (BinaryExpressionTree) expression;
-      return LiteralUtils.is0xff(and.rightOperand()) || LiteralUtils.is0xff(and.leftOperand());
-    }
-    return false;
   }
 
   /**
@@ -169,44 +138,6 @@ public final class ExpressionUtils {
       id = ((MemberSelectExpressionTree) methodSelect).identifier();
     }
     return id;
-  }
-
-  /**
-   * Return the first enclosing method or constructor containing the given expression.
-   */
-  @CheckForNull
-  public static MethodTree getEnclosingMethod(ExpressionTree expr) {
-    return (MethodTree) getEnclosingTree(expr, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
-  }
-
-  @CheckForNull
-  public static Tree getEnclosingTree(Tree expr, Tree.Kind... kinds) {
-    Tree result = expr.parent();
-    while (result != null && !result.is(kinds)) {
-      result = result.parent();
-    }
-    return result;
-  }
-
-  @Nullable
-  public static Tree getParentOfType(Tree tree, Tree.Kind... kinds) {
-    Tree result = tree.parent();
-    while (result != null && !result.is(kinds)) {
-      result = result.parent();
-    }
-    return result;
-  }
-
-  public static Optional<Symbol> getAssignedSymbol(ExpressionTree exp) {
-    Tree parent = exp.parent();
-    if (parent != null) {
-      if (parent.is(Tree.Kind.ASSIGNMENT)) {
-        return extractIdentifierSymbol(((AssignmentExpressionTree) parent).variable());
-      } else if (parent.is(Tree.Kind.VARIABLE)) {
-        return Optional.of(((VariableTree) parent).simpleName().symbol());
-      }
-    }
-    return Optional.empty();
   }
 
   /**
@@ -265,26 +196,6 @@ public final class ExpressionUtils {
       return resolveArithmeticOperation((BinaryExpressionTree) expression, (a, b) -> a % b, (a, b) -> a % b);
     }
     return null;
-  }
-
-  public static boolean areVariablesSame(Tree tree1, Tree tree2, boolean defaultValue) {
-    Symbol symbol1 = getSymbol(tree1);
-    Symbol symbol2 = getSymbol(tree2);
-    if (symbol1 == null || symbol1.isUnknown() || symbol2 == null || symbol2.isUnknown()) {
-      return defaultValue;
-    }
-    return symbol1.name().equals(symbol2.name());
-  }
-
-  @CheckForNull
-  private static Symbol getSymbol(Tree tree) {
-    Symbol symbol = null;
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      symbol = ((IdentifierTree) tree).symbol();
-    } else if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-      symbol = ((MemberSelectExpressionTree) tree).identifier().symbol();
-    }
-    return symbol;
   }
 
   @CheckForNull

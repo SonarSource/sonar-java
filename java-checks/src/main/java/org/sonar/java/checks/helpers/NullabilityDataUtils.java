@@ -63,11 +63,9 @@ public class NullabilityDataUtils {
 
   private static String levelToString(SymbolMetadata.NullabilityLevel level) {
     switch (level) {
-      case PACKAGE:
-      case CLASS:
+      case PACKAGE, CLASS:
         return String.format(" at %s level", level.toString().toLowerCase(Locale.ROOT));
-      case METHOD:
-      case VARIABLE:
+      case METHOD, VARIABLE:
       default:
         return "";
     }

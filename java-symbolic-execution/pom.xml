@@ -91,16 +91,6 @@
       <scope>test</scope>
     </dependency>
 
-<!-- These were indirectly coming from the FE dependency, can be removed after migration -->
-<!--    <dependency>-->
-<!--      <groupId>org.sonarsource.analyzer-commons</groupId>-->
-<!--      <artifactId>sonar-analyzer-commons</artifactId>-->
-<!--    </dependency>-->
-<!--    <dependency>-->
-<!--      <groupId>org.apache.commons</groupId>-->
-<!--      <artifactId>commons-lang3</artifactId>-->
-<!--    </dependency>-->
-
   </dependencies>
 
   <build>

@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
+import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -42,7 +43,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.java.cfg.CFG.Block;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -143,9 +143,9 @@ class CFGTest {
       try {
         assertThat(cfg.blocks()).as("Expected number of blocks").hasSize(checkers.size() + 1);
         final Iterator<BlockChecker> checkerIterator = checkers.iterator();
-        final List<CFG.Block> blocks = new ArrayList<>(cfg.blocks());
-        final CFG.Block exitBlock = blocks.remove(blocks.size() - 1);
-        for (final CFG.Block block : blocks) {
+        final List<Block> blocks = new ArrayList<>(cfg.blocks());
+        final Block exitBlock = blocks.remove(blocks.size() - 1);
+        for (final Block block : blocks) {
           checkerIterator.next().check(block);
           checkLinkedBlocks(block.id(), "Successor", cfg.blocks(), block.successors());
           checkLinkedBlocks(block.id(), "Predecessors", cfg.blocks(), block.predecessors());
@@ -507,10 +507,10 @@ class CFGTest {
         element(IDENTIFIER, "bar"),
         element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
-    Block entry = cfg.entryBlock();
+    CFG.Block entry = cfg.entryBlock();
     assertThat(entry.isMethodExitBlock()).as("1st block is not an exit").isFalse();
     assertThat(entry.successors()).as("number of successors").hasSize(1);
-    Block exit = entry.successors().iterator().next();
+    CFG.Block exit = entry.successors().iterator().next();
     assertThat(exit.isMethodExitBlock()).as("2nd block is an exit").isTrue();
   }
 
@@ -523,10 +523,10 @@ class CFGTest {
         element(IDENTIFIER, "bar"),
         element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
-    Block entry = cfg.entryBlock();
+    CFG.Block entry = cfg.entryBlock();
     assertThat(entry.isMethodExitBlock()).as("1st block is not an exit").isFalse();
     assertThat(entry.successors()).as("number of successors").hasSize(1);
-    Block exit = entry.successors().iterator().next();
+    CFG.Block exit = entry.successors().iterator().next();
     assertThat(exit.isMethodExitBlock()).as("2nd block is an exit").isTrue();
   }
 

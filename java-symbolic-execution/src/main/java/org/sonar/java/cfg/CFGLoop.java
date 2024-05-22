@@ -52,14 +52,6 @@ public class CFGLoop {
     collectWaysOut(container);
   }
 
-  Block startingBlock() {
-    return startingBlock;
-  }
-
-  Collection<Block> blocks() {
-    return new ArrayList<>(blocks);
-  }
-
   Collection<Block> successors() {
     return new ArrayList<>(successors);
   }

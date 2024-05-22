@@ -60,22 +60,11 @@ public class LiveVariables {
     return out.get(block);
   }
 
-  public Set<Symbol> getIn(ControlFlowGraph.Block block) {
-    return in.get(block);
-  }
-
   /**
    * Returns LiveVariables object with information concerning local variables and parameters
    */
   public static LiveVariables analyze(ControlFlowGraph cfg) {
     return analyze(cfg, false);
-  }
-
-  /**
-   * Returns LiveVariables object with information concerning local variables, parameters and fields
-   */
-  public static LiveVariables analyzeWithFields(ControlFlowGraph cfg) {
-    return analyze(cfg, true);
   }
 
   private static LiveVariables analyze(ControlFlowGraph cfg, boolean includeFields) {

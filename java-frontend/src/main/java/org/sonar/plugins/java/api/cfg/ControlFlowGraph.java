@@ -19,10 +19,10 @@
  */
 package org.sonar.plugins.java.api.cfg;
 
+import org.sonar.java.annotations.Beta;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.CheckForNull;
-import org.sonar.java.annotations.Beta;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.Tree;

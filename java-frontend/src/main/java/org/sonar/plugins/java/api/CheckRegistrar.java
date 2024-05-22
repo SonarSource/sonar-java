@@ -54,6 +54,12 @@ public interface CheckRegistrar {
    */
   void register(RegistrarContext registrarContext);
 
+  /**
+   * This method is called during the definition of the SonarJava rules, implementing it allows to register
+   * rules in the same rule repository as SonarJava while its being defined.
+   * @param context the context that will be used by the java-plugin to define the rules in its repository.
+   * @param javaRepository the repository currently being defined
+   */
   default void customRulesDefinition(RulesDefinition.Context context, RulesDefinition.NewRepository javaRepository) {
 
   }

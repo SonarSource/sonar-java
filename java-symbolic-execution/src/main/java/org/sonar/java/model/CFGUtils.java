@@ -30,6 +30,4 @@ public class CFGUtils {
     return block.successors().isEmpty();
   }
 
-
-
 }

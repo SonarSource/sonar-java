@@ -74,7 +74,6 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     /* S1068 */ UnusedPrivateFieldCheck.class,
     /* S1128 */ UselessImportCheck.class,
     /* S1118 */ UtilityClassWithPublicConstructorCheck.class
-  //  /* S2755 */ XxeProcessingCheck.class
   );
 
   private static final String LOMBOK_BUILDER = "lombok.Builder";
@@ -168,18 +167,6 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
     super.visitClass(tree);
   }
-
-//  @Override
-//  public void visitVariable(VariableTree tree) {
-//    excludeLinesIfTrue(tree.symbol().type().is(LOMBOK_VAL) && tree.initializer() != null, tree.initializer(), XxeProcessingCheck.class);
-//    super.visitVariable(tree);
-//  }
-//
-//  @Override
-//  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-//    excludeLinesIfTrue(tree.variable().symbolType().is(LOMBOK_VAL), tree.expression(), XxeProcessingCheck.class);
-//    super.visitAssignmentExpression(tree);
-//  }
 
   private static boolean usesAnnotation(ClassTree classTree, List<String> annotations) {
     SymbolMetadata classMetadata = classTree.symbol().metadata();

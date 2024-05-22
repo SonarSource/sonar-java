@@ -52,10 +52,6 @@ public final class RulesList {
       "S6377"));
   }
 
-  public static List<RuleKey> getTestRuleKeys() {
-    return List.of();
-  }
-
   public static List<RuleKey> getSonarWayRuleKeys() {
     return toRuleKeys(List.of(
       "S2095",

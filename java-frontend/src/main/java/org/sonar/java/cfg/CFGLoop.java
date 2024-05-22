@@ -19,28 +19,30 @@
  */
 package org.sonar.java.cfg;
 
+import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.cfg.CFG.Block;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import javax.annotation.CheckForNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.CheckForNull;
-import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
-import org.sonar.plugins.java.api.tree.Tree;
 
 public class CFGLoop {
 
-  private final Block startingBlock;
-  private final Set<Block> blocks = new HashSet<>();
-  private final Set<Block> successors = new HashSet<>();
+  private final CFG.Block startingBlock;
+  private final Set<CFG.Block> blocks = new HashSet<>();
+  private final Set<CFG.Block> successors = new HashSet<>();
 
-  private CFGLoop(Block block) {
+  private CFGLoop(CFG.Block block) {
     startingBlock = block;
   }
 
-  private void initialize(Block block, Map<Tree, CFGLoop> container) {
+  private void initialize(CFG.Block block, Map<Tree, CFGLoop> container) {
     Block loopFirstBlock = block.trueBlock();
     if (loopFirstBlock == null) {
       // Special case where no condition is given in FOR loop: only one successor specified
@@ -53,17 +55,17 @@ public class CFGLoop {
   }
 
   @VisibleForTesting
-  Block startingBlock() {
+  CFG.Block startingBlock() {
     return startingBlock;
   }
 
   @VisibleForTesting
-  Collection<Block> blocks() {
+  Collection<CFG.Block> blocks() {
     return new ArrayList<>(blocks);
   }
 
   @VisibleForTesting
-  Collection<Block> successors() {
+  Collection<CFG.Block> successors() {
     return new ArrayList<>(successors);
   }
 
@@ -71,11 +73,11 @@ public class CFGLoop {
     return successors.isEmpty();
   }
 
-  private void collectBlocks(Block block, Map<Tree, CFGLoop> container) {
+  private void collectBlocks(CFG.Block block, Map<Tree, CFGLoop> container) {
     collectBlocks(block, container, new HashSet<>());
   }
 
-  private boolean collectBlocks(Block block, Map<Tree, CFGLoop> container, Set<Block> visitedBlocks) {
+  private boolean collectBlocks(CFG.Block block, Map<Tree, CFGLoop> container, Set<CFG.Block> visitedBlocks) {
     if (blocks.contains(block)) {
       return true;
     }
@@ -89,13 +91,13 @@ public class CFGLoop {
     return answer;
   }
 
-  private boolean returnsToStart(Block block, Map<Tree, CFGLoop> container, Set<Block> visitedBlocks) {
-    Set<? extends Block> localSuccessors = localSuccessors(block, container);
+  private boolean returnsToStart(CFG.Block block, Map<Tree, CFGLoop> container, Set<CFG.Block> visitedBlocks) {
+    Set<Block> localSuccessors = localSuccessors(block, container);
     if (localSuccessors == null) {
       return true;
     }
     boolean answer = false;
-    for (Block successor : localSuccessors) {
+    for (CFG.Block successor : localSuccessors) {
       if (startingBlock.id() == successor.id()) {
         answer = true;
       } else {
@@ -106,7 +108,7 @@ public class CFGLoop {
   }
 
   @CheckForNull
-  private static Set<? extends Block> localSuccessors(Block block, Map<Tree, CFGLoop> container) {
+  private static Set<Block> localSuccessors(CFG.Block block, Map<Tree, CFGLoop> container) {
     if (isStarting(block)) {
       CFGLoop loop = container.get(block.terminator());
       if (loop == null) {
@@ -124,13 +126,13 @@ public class CFGLoop {
     return block.successors();
   }
 
-  private static boolean isBreak(Block block) {
+  private static boolean isBreak(CFG.Block block) {
     Tree terminator = block.terminator();
     return terminator != null && terminator.is(Tree.Kind.BREAK_STATEMENT);
   }
 
   private void collectWaysOut(Map<Tree, CFGLoop> container) {
-    for (Block block : blocks) {
+    for (CFG.Block block : blocks) {
       if (isStarting(block)) {
         CFGLoop innerLoop = container.get(block.terminator());
         successors.addAll(innerLoop.successors());
@@ -142,14 +144,14 @@ public class CFGLoop {
     successors.remove(startingBlock);
   }
 
-  private static boolean isStarting(Block block) {
+  private static boolean isStarting(CFG.Block block) {
     Tree terminator = block.terminator();
     return terminator != null && terminator.is(Tree.Kind.FOR_STATEMENT, Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT);
   }
 
   public static Map<Tree, CFGLoop> getCFGLoops(CFG cfg) {
     Map<Tree, CFGLoop> cfgLoops = new HashMap<>();
-    for (Block block : cfg.blocks()) {
+    for (CFG.Block block : cfg.blocks()) {
       if (CFGLoop.isStarting(block)) {
         Tree terminator = block.terminator();
         if (!cfgLoops.containsKey(terminator)) {
@@ -160,7 +162,7 @@ public class CFGLoop {
     return cfgLoops;
   }
 
-  private static CFGLoop create(Block block, Map<Tree, CFGLoop> container) {
+  private static CFGLoop create(CFG.Block block, Map<Tree, CFGLoop> container) {
     CFGLoop loop = new CFGLoop(block);
     container.put(block.terminator(), loop);
     loop.initialize(block, container);

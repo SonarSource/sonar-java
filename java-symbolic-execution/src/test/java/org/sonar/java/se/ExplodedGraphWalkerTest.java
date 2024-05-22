@@ -83,38 +83,37 @@ class ExplodedGraphWalkerTest {
       .verifyIssues();
   }
 
-//  @Test
-//  void test_cleanup_state() {
-//    final int[] steps = new int[2];
-//    SECheckVerifier.newVerifier()
-//      .onFile("src/test/files/se/SeEngineTestCleanupState.java")
-//      .withChecks(new SymbolicExecutionVisitor(Collections.singletonList(NullDereferenceCheck.class)) {
-//        @Override
-//        public void visitNode(Tree tree) {
-//          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context, false);
-//          explodedGraphWalker.visitMethod((MethodTree) tree, methodBehaviorForSymbol(((MethodTree) tree).symbol()));
-//          steps[0] += explodedGraphWalker.steps;
-//        }
-//      })
-//      .withClassPath(SETestUtils.CLASS_PATH)
-//      .verifyNoIssues();
-//    SECheckVerifier.newVerifier()
-//      .onFile("src/test/files/se/SeEngineTestCleanupState.java")
-//      .withChecks(new SymbolicExecutionVisitor(Collections.emptyList()) {
-//        @Override
-//        public void visitNode(Tree tree) {
-//          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
-//          MethodTree methodTree = (MethodTree) tree;
-//          explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
-//          steps[1] += explodedGraphWalker.steps;
-//        }
-//      })
-//      .withClassPath(SETestUtils.CLASS_PATH)
-//      .verifyNoIssues();
-//      assertThat(steps[0])
-//        .isPositive()
-//        .isGreaterThan(steps[1]);
-//  }
+  @Test
+  void test_cleanup_state() {
+    final int[] steps = new int[2];
+    SECheckVerifier.newVerifier()
+      .onFile("src/test/files/se/SeEngineTestCleanupState.java")
+      .withChecks(new SymbolicExecutionVisitor(Collections.singletonList(new NullDereferenceCheck())) {
+        @Override
+        public void visitMethod(MethodTree tree) {
+          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context, false);
+          explodedGraphWalker.visitMethod(tree, methodBehaviorForSymbol((tree).symbol()));
+          steps[0] += explodedGraphWalker.steps;
+        }
+      })
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
+    SECheckVerifier.newVerifier()
+      .onFile("src/test/files/se/SeEngineTestCleanupState.java")
+      .withChecks(new SymbolicExecutionVisitor(Collections.emptyList()) {
+        @Override
+        public void visitMethod(MethodTree methodTree) {
+          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
+          explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
+          steps[1] += explodedGraphWalker.steps;
+        }
+      })
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
+      assertThat(steps[0])
+        .isPositive()
+        .isGreaterThan(steps[1]);
+  }
 
   @Test
   void reproducer() throws Exception {
@@ -185,7 +184,7 @@ class ExplodedGraphWalkerTest {
       private ExplodedGraphWalker explodedGraphWalker;
 
       @Override
-      public void visitMethod(MethodTree tree) {
+      public void visitMethod(MethodTree methodTree) {
         if (explodedGraphWalker == null) {
           explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context) {
 
@@ -219,7 +218,6 @@ class ExplodedGraphWalkerTest {
           };
         }
 
-        MethodTree methodTree = (MethodTree) tree;
         if ("foo".equals(methodTree.symbol().name())) {
           explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
         } else {
@@ -246,7 +244,7 @@ class ExplodedGraphWalkerTest {
       private ExplodedGraphWalker explodedGraphWalker = null;
 
       @Override
-      public void visitMethod(MethodTree tree) {
+      public void visitMethod(MethodTree methodTree) {
         if (explodedGraphWalker == null) {
           explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context) {
 
@@ -274,7 +272,6 @@ class ExplodedGraphWalkerTest {
           };
         }
 
-        MethodTree methodTree = (MethodTree) tree;
         explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
       }
     };
@@ -301,9 +298,8 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/SeEngineTestCase.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitMethod(MethodTree tree) {
+        public void visitMethod(MethodTree methodTree) {
           try {
-            MethodTree methodTree = (MethodTree) tree;
             new ExplodedGraphWalker(this.behaviorCache, context).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
           } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
             fail("loop execution should be limited");
@@ -320,8 +316,7 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/MaxStartingStates.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitMethod(MethodTree tree) {
-          MethodTree methodTree = (MethodTree) tree;
+        public void visitMethod(MethodTree methodTree) {
           ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
           try {
@@ -342,8 +337,7 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/StartingStates1024.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitMethod(MethodTree tree) {
-          MethodTree methodTree = (MethodTree) tree;
+        public void visitMethod(MethodTree methodTree) {
           ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
           try {
@@ -363,8 +357,7 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/MaxSteps.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitMethod(MethodTree tree) {
-          MethodTree methodTree = (MethodTree) tree;
+        public void visitMethod(MethodTree methodTree) {
           ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
           try {
@@ -394,8 +387,7 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/MaxNestedStates.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitMethod(MethodTree tree) {
-          MethodTree methodTree = (MethodTree) tree;
+        public void visitMethod(MethodTree methodTree) {
           ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
           try {
@@ -543,8 +535,7 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/YieldReporting.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
-        public void visitMethod(MethodTree tree) {
-          MethodTree methodTree = (MethodTree) tree;
+        public void visitMethod(MethodTree methodTree) {
           if ("test".equals(methodTree.symbol().name())) {
             ExplodedGraphWalker egw = new ExplodedGraphWalker(this.behaviorCache, context);
             egw.visitMethod(methodTree, null);

@@ -39,7 +39,6 @@ public class JavaSECheckRegistrar implements CheckRegistrar {
   private static final String RESOURCE_BASE_PATH = "org/sonar/l10n/java/rules/javase";
   static final String SONAR_WAY_PATH = RESOURCE_BASE_PATH + "/Sonar_way_profile.json";
   public static final String REPOSITORY_KEY = "java";
-  public static final String REPOSITORY_NAME = "SonarAnalyzer";
 
   private static final Set<String> RULE_TEMPLATES_KEY = Set.of("S3546");
   private final SonarRuntime runtime;
