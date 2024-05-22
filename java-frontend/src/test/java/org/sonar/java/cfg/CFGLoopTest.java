@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,8 +33,8 @@ class CFGLoopTest {
 
   private static final CFGTestLoader loader = new CFGTestLoader("src/test/files/cfg/CFGLoopTest.java");
 
-  private static List<Block> sorted(Collection<Block> collection) {
-    List<Block> answer = new ArrayList<>(collection);
+  private static List<CFG.Block> sorted(Collection<CFG.Block> collection) {
+    List<CFG.Block> answer = new ArrayList<>(collection);
     Collections.sort(answer, (o1, o2) -> {
       // Use order of IDs
       return Integer.compare(o1.id(), o2.id());
@@ -50,7 +49,7 @@ class CFGLoopTest {
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
     CFGLoop loop = loops.values().iterator().next();
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     assertThat(loop.startingBlock()).isSameAs(blocks.get(2));
     assertThat(loop.blocks()).containsOnly(blocks.get(1));
     assertThat(loop.hasNoWayOut()).isTrue();
@@ -66,7 +65,7 @@ class CFGLoopTest {
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
     CFGLoop loop = loops.values().iterator().next();
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     assertThat(loop.startingBlock()).isSameAs(blocks.get(3));
     assertThat(loop.blocks()).containsOnly(blocks.get(2), blocks.get(1));
     assertThat(loop.hasNoWayOut()).isFalse();
@@ -78,7 +77,7 @@ class CFGLoopTest {
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
     CFGLoop loop = loops.values().iterator().next();
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     assertThat(loop.startingBlock()).isSameAs(blocks.get(3));
     assertThat(loop.blocks()).containsOnly(blocks.get(1), blocks.get(2));
     assertThat(loop.hasNoWayOut()).isTrue();
@@ -89,7 +88,7 @@ class CFGLoopTest {
     final CFG cfg = buildCFG("embeddedMixedLoops");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(2);
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     CFGLoop loop = loops.get(blocks.get(11).terminator());
     assertThat(loop.startingBlock()).isSameAs(blocks.get(11));
     assertThat(loop.blocks()).containsOnly(blocks.get(10), blocks.get(9), blocks.get(4), blocks.get(3), blocks.get(2), blocks.get(1));
@@ -106,7 +105,7 @@ class CFGLoopTest {
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     // ForEach loops are not identified as loops!
     assertThat(loops).hasSize(1);
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     CFGLoop loop = loops.values().iterator().next();
     assertThat(loop.startingBlock()).isSameAs(blocks.get(8));
     assertThat(loop.blocks()).containsOnly(blocks.get(7), blocks.get(6));
@@ -117,7 +116,7 @@ class CFGLoopTest {
     final CFG cfg = buildCFG("doWhile");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     CFGLoop loop = loops.values().iterator().next();
     assertThat(loop.startingBlock()).isSameAs(blocks.get(1));
     assertThat(loop.blocks()).containsOnly(blocks.get(2));
@@ -128,7 +127,7 @@ class CFGLoopTest {
     final CFG cfg = buildCFG("minimalForLoop");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     CFGLoop loop = loops.values().iterator().next();
     assertThat(loop.startingBlock()).isSameAs(blocks.get(2));
     assertThat(loop.blocks()).containsOnly(blocks.get(1));
@@ -160,7 +159,7 @@ class CFGLoopTest {
     final CFG cfg = buildCFG("emptyConditionFor");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     CFGLoop loop = loops.values().iterator().next();
     assertThat(loop.blocks()).containsOnly(blocks.get(1));
     assertThat(loop.hasNoWayOut()).isTrue();
@@ -171,7 +170,7 @@ class CFGLoopTest {
     final CFG cfg = buildCFG("almostEmptyConditionFor");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     CFGLoop loop = loops.values().iterator().next();
     assertThat(loop.blocks()).containsOnly(blocks.get(1));
     assertThat(loop.hasNoWayOut()).isTrue();
@@ -182,7 +181,7 @@ class CFGLoopTest {
     final CFG cfg = buildCFG("embeddedLoops");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(2);
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     CFGLoop loop = loops.get(blocks.get(6).terminator());
     assertThat(loop.blocks()).containsOnly(blocks.get(5), blocks.get(3));
     assertThat(loop.successors()).containsOnly(blocks.get(1), blocks.get(4));
@@ -196,7 +195,7 @@ class CFGLoopTest {
     final CFG cfg = buildCFG("embeddedLoopsReturnInInnermost");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(2);
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     CFGLoop loop = loops.get(blocks.get(5).terminator());
     assertThat(loop.blocks()).containsOnly(blocks.get(4), blocks.get(3));
     assertThat(loop.successors()).containsOnly(blocks.get(1));
@@ -210,7 +209,7 @@ class CFGLoopTest {
     final CFG cfg = buildCFG("doubleReturnWhileLoop");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(2);
-    List<Block> blocks = sorted(cfg.blocks());
+    List<CFG.Block> blocks = sorted(cfg.blocks());
     CFGLoop loop = loops.get(blocks.get(6).terminator());
     assertThat(loop.blocks()).containsOnly(blocks.get(5), blocks.get(3));
     assertThat(loop.successors()).containsOnly(blocks.get(1), blocks.get(4));

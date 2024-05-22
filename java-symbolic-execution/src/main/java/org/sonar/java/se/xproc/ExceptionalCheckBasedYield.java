@@ -38,6 +38,7 @@ import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Type;
 
 public class ExceptionalCheckBasedYield extends ExceptionalYield {
@@ -125,7 +126,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
 
   @Nonnull
   @Override
-  public Type exceptionType(Object semanticModel) {
+  public Type exceptionType(Sema semanticModel) {
     Type exceptionType = super.exceptionType(semanticModel);
     Preconditions.checkArgument(!exceptionType.isUnknown(), "Exception type is required");
     return exceptionType;

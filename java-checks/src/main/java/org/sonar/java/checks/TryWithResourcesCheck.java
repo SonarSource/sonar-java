@@ -31,7 +31,6 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
-import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -102,7 +101,7 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
     return false;
   }
 
-  private static boolean newFollowedByTryStatement(Block cfgBlock) {
+  private static boolean newFollowedByTryStatement(CFG.Block cfgBlock) {
     boolean foundNewAutoCloseable = false;
     for (Tree element : cfgBlock.elements()) {
       switch (element.kind()) {
@@ -127,7 +126,7 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
           break;
       }
     }
-    // Unreachable: by construction at least one element of the Block is a NewClass of type "java.lang.AutoCloseable"
+    // Unreachable: by construction at least one element of the CFG.Block is a NewClass of type "java.lang.AutoCloseable"
     return false;
   }
 

@@ -43,9 +43,11 @@ import org.sonar.java.checks.naming.BadFieldNameCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.tests.AssertionTypesCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
+import org.sonar.java.se.checks.XxeProcessingCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -73,7 +75,8 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     /* S2325 */ StaticMethodCheck.class,
     /* S1068 */ UnusedPrivateFieldCheck.class,
     /* S1128 */ UselessImportCheck.class,
-    /* S1118 */ UtilityClassWithPublicConstructorCheck.class);
+    /* S1118 */ UtilityClassWithPublicConstructorCheck.class,
+    /* S2755 */ XxeProcessingCheck.class);
 
   private static final String LOMBOK_BUILDER = "lombok.Builder";
   private static final String LOMBOK_SUPER_BUILDER = "lombok.SuperBuilder";
@@ -165,6 +168,18 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     }
 
     super.visitClass(tree);
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    excludeLinesIfTrue(tree.symbol().type().is(LOMBOK_VAL) && tree.initializer() != null, tree.initializer(), XxeProcessingCheck.class);
+    super.visitVariable(tree);
+  }
+
+  @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    excludeLinesIfTrue(tree.variable().symbolType().is(LOMBOK_VAL), tree.expression(), XxeProcessingCheck.class);
+    super.visitAssignmentExpression(tree);
   }
 
   private static boolean usesAnnotation(ClassTree classTree, List<String> annotations) {

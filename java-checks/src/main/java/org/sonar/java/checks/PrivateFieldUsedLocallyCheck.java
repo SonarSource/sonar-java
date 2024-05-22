@@ -46,6 +46,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.checks.helpers.QuickFixHelper.contentForRange;
+import static org.sonar.java.se.ProgramState.isField;
 
 /**
  * Current implementation raises the issue only for the fields used in one method
@@ -209,10 +210,6 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
       super.visitMemberSelectExpression(tree);
     }
-  }
-
-  private static boolean isField(Symbol symbol) {
-    return symbol.isVariableSymbol() && !symbol.owner().isMethodSymbol();
   }
 
   private static class LocalVariableCollector extends BaseTreeVisitor {
