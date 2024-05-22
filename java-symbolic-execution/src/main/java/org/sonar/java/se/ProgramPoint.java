@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import java.util.List;
 import org.sonar.java.Preconditions;
 import org.sonar.java.model.LineUtils;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -76,10 +77,12 @@ public class ProgramPoint {
   }
 
   public Tree syntaxTree() {
-    Block syntaxCFGblock = this.block;
-    if (block.elements().isEmpty()) {
-      return syntaxCFGblock.terminator();
+    if (block != null) {
+      if (block.elements().isEmpty()) {
+        return block.terminator();
+      }
+      return block.elements().get(Math.min(i, block.elements().size() - 1));
     }
-    return syntaxCFGblock.elements().get(Math.min(i, syntaxCFGblock.elements().size() - 1));
+    return null;
   }
 }

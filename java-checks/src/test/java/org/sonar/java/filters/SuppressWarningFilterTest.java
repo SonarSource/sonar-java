@@ -51,10 +51,6 @@ import org.sonar.java.checks.unused.UnusedPrivateClassCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.java.checks.unused.UnusedPrivateMethodCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
-import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
-import org.sonar.java.se.checks.DivisionByZeroCheck;
-import org.sonar.java.se.checks.NullDereferenceCheck;
-import org.sonar.java.se.checks.UnclosedResourcesCheck;
 
 class SuppressWarningFilterTest {
   /**
@@ -75,7 +71,7 @@ class SuppressWarningFilterTest {
       new CallToDeprecatedMethodCheck(),
       new CallToDeprecatedCodeMarkedForRemovalCheck(),
       new MissingDeprecatedCheck(),
-      new DivisionByZeroCheck(),
+//      new DivisionByZeroCheck(),
       new EmptyBlockCheck(),
       new EmptyStatementUsageCheck(),
       new ReturnInFinallyCheck(),
@@ -93,9 +89,9 @@ class SuppressWarningFilterTest {
       new BoxedBooleanExpressionsCheck(),
       new ImmediateReverseBoxingCheck(),
       new TypeParametersShadowingCheck(),
-      new NullDereferenceCheck(),
+//      new NullDereferenceCheck(),
       new TryWithResourcesCheck(),
-      new UnclosedResourcesCheck(),
+//      new UnclosedResourcesCheck(),
       new SerialVersionUidCheck(),
       new StaticFieldUpateCheck(),
       new StaticMethodCheck(),
@@ -113,8 +109,7 @@ class SuppressWarningFilterTest {
       new UnusedPrivateClassCheck(),
       new UnusedTypeParameterCheck(),
       new UnusedPrivateMethodCheck(),
-      new DeadStoreCheck(),
-      new ConditionalUnreachableCodeCheck()
+      new DeadStoreCheck()
     );
   }
 

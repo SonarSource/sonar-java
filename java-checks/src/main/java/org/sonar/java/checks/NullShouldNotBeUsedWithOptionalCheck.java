@@ -40,7 +40,8 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
-import static org.sonar.java.se.NullabilityDataUtils.nullabilityAsString;
+import static org.sonar.java.checks.helpers.NullabilityDataUtils.nullabilityAsString;
+
 
 @Rule(key = "S2789")
 public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implements JavaFileScanner {

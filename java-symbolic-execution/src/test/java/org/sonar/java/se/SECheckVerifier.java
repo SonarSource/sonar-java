@@ -45,7 +45,7 @@ public class SECheckVerifier implements CheckVerifier {
   }
 
   private SECheckVerifier() {
-    checkVerifier = (InternalCheckVerifier) CheckVerifier.newInternalVerifier();
+    checkVerifier = (InternalCheckVerifier) CheckVerifier.newVerifier();
   }
 
   @Override

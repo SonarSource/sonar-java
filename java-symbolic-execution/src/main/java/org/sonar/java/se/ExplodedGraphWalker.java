@@ -891,7 +891,7 @@ public class ExplodedGraphWalker {
 
   private void enqueueExceptionalPaths(ProgramState ps, Symbol methodSymbol, @Nullable MethodYield methodYield) {
     Set<Block> exceptionBlocks = (Set<Block>) node.programPoint.block.exceptions();
-    List<Block> catchBlocks = exceptionBlocks.stream().filter(Block::isCatchBlock).toList();
+    List<Block> catchBlocks = exceptionBlocks.stream().filter(CFGUtils.IS_CATCH_BLOCK).toList();
     SymbolicValue peekValue = ps.peekValue();
 
     Preconditions.checkState(peekValue instanceof SymbolicValue.ExceptionalSymbolicValue, "Top of stack should always contains exceptional SV");
@@ -1088,7 +1088,7 @@ public class ExplodedGraphWalker {
     programState = programState.unstackValue(newClassTree.arguments().size()).state;
     // Enqueue exceptional paths
     Symbol.MethodSymbol symbol = newClassTree.methodSymbol();
-    if (((Block) node.programPoint.block).exceptions().stream().anyMatch(Block::isCatchBlock)) {
+    if (((Block) node.programPoint.block).exceptions().stream().anyMatch(CFGUtils.IS_CATCH_BLOCK)) {
       // To avoid noise, we only add unchecked exceptional paths (includingUnknownException) when we are in a try-catch block.
       enqueueUncheckedExceptionalPaths(symbol);
     }
