@@ -16,6 +16,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jacoco.version>0.8.10</jacoco.version>
+    <maven.deploy.skip>false</maven.deploy.skip>
   </properties>
 
   <dependencies>
