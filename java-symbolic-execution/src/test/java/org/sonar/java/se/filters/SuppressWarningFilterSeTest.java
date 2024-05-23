@@ -22,7 +22,6 @@ package org.sonar.java.se.filters;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +45,7 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.filters.SuppressWarningFilter;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -61,23 +61,24 @@ import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.java.filters.JavaIssueFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SuppressWarningFilterTest {
+public class SuppressWarningFilterSeTest {
 
   private static final String TEST_SOURCES_PATH = "src/test/files/se/filters";
 
   @Test
-  void verify() {
+  void verify_div_by_zero() {
     verify("/SuppressWarningFilter.java", new SuppressWarningFilter(),
       new DivisionByZeroCheck());
   }
 
   @Test
-  void verify_2() {
+  void verify_unclosed_Resource_and_null_dereference() {
     verify("/SuppressWarningFilter_2.java", new SuppressWarningFilter(),
       new UnclosedResourcesCheck(),
       new NullDereferenceCheck());
@@ -86,23 +87,23 @@ public class SuppressWarningFilterTest {
   @Test
   void verify_unused() {
     verify("/SuppressWarningFilter_unused.java", new SuppressWarningFilter(),
-      // activated rules
       new ConditionalUnreachableCodeCheck());
   }
 
-  public static void verify(String filename, JavaSEIssueFilter filter, JavaCheck... extraJavaChecks) {
+  // The following code is duplicated and adapted from org.sonar.java.filters.FilterVerifier because it can not be extracted to an API.
+  // Its purpose is only to verify that the filter created in SonarJava plugin is still supporting suppression of SEChecks.
+  public static void verify(String filename, JavaIssueFilter filter, SECheck... extraSEChecks) {
     IssueCollector issueCollector = new IssueCollector();
     List<JavaCheck> visitors = new ArrayList<>();
     visitors.add(filter);
     visitors.add(issueCollector);
 
     // instantiate the rules filtered by the filter
-    Set<SECheck> javaSEChecks = instantiateRules(filter.filteredRules());
-    SymbolicExecutionVisitor seVisitor = new SymbolicExecutionVisitor(javaSEChecks.stream().toList());
+    List<SECheck> seChecks = List.of(extraSEChecks);
+    SymbolicExecutionVisitor seVisitor = new SymbolicExecutionVisitor(seChecks);
     visitors.add(seVisitor);
-    visitors.addAll(javaSEChecks);
-
-    visitors.addAll(Arrays.asList(extraJavaChecks));
+    visitors.addAll(instantiateRules(filter.filteredRules()));
+    visitors.addAll(seChecks);
 
     Collection<File> classpath = TestClasspathUtils.loadFromFile(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE);
     List<File> projectClasspath = new ArrayList<>(classpath);
@@ -116,10 +117,9 @@ public class SuppressWarningFilterTest {
     Map<Integer, Set<String>> issuesByLines = new HashMap<>();
     Set<AnalyzerMessage> issues = testJavaFileScannerContext.getIssues();
 
-    //FIXME these 3 lines should be uncommented and the test fixed
-//    if(issueCollector.acceptedIssuesLines.size() > 0 && issues.isEmpty()){
-//      Fail.fail("Expected some issues to be raised, but 0 issues were found");
-//    }
+    if(issueCollector.acceptedIssuesLines.size() > 0 && issues.isEmpty()){
+      Fail.fail("Expected some issues to be raised, but 0 issues were found");
+    }
     for (AnalyzerMessage analyzerMessage : issues) {
       Integer issueLine = analyzerMessage.getLine();
       String ruleKey = AnnotationUtils.getAnnotation(analyzerMessage.getCheck().getClass(), Rule.class).key();

@@ -1,38 +1,30 @@
-class UnusedSuppression // WithIssue
-  <Unused> { // WithIssue
-  private int field = 1; // WithIssue
+class UnusedSuppression {
 
-  private void f(int p // WithIssue
-  ) { // WithIssue
-    int local = 1; // WithIssue
-
-    unused_label: for (int i = 0; i < 1; i++) { } // WithIssue
-
-    local = 2; // WithIssue
-
-
-    if (false) {
-      f(p); // WithIssue
+  // issues raises by java:S2583
+  public void assign(boolean parameter) {
+    parameter = false;
+    if (parameter) { // WithIssue
+      if (parameter) { // Compliant, unreachable
+      }
+    }
+    if (!parameter) { // WithIssue
+      if (!parameter) { // WithIssue
+      }
     }
   }
 }
 
 @SuppressWarnings("unused")
-class UnusedSuppressionSuppressed // NoIssue
-  <Unused> { // NoIssue
-  private int field = 1; // NoIssue
-
-  private void f( // NoIssue
-                  int p) { // NoIssue
-    int local = 1; // NoIssue
-
-    unused_label: for (int i = 0; i < 1; i++) { } // NoIssue
-
-    local = 2; // NoIssue
-
-
-    if (false) {
-      f(p); // WithIssue
+class UnusedSuppressionSuppressed {
+  public void assign(boolean parameter) {
+    parameter = false;
+    if (parameter) { // NoIssue
+      if (parameter) { // Compliant, unreachable
+      }
+    }
+    if (!parameter) { // NoIssue
+      if (!parameter) { // NoIssue
+      }
     }
   }
 }
