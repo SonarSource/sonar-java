@@ -24,9 +24,11 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
+import org.sonar.plugins.java.api.caching.SonarLintCache;
 
 public class CacheContextImpl implements CacheContext {
   /**
@@ -47,34 +49,67 @@ public class CacheContextImpl implements CacheContext {
     this.writeCache = writeCache;
   }
 
-  public static CacheContextImpl of(@Nullable SensorContext context) {
-
-    if (context != null) {
-      try {
-        boolean cacheEnabled =
-          (context.config() == null ? Optional.<Boolean>empty() : context.config().getBoolean(SONAR_CACHING_ENABLED_KEY))
-            .map(flag -> {
-              LOGGER.debug("Forcing caching behavior. Caching will be enabled: {}", flag);
-              return flag;
-            })
-            .orElse(context.isCacheEnabled());
-
-        LOGGER.trace("Caching is enabled: {}", cacheEnabled);
-
-        if (cacheEnabled) {
-          return new CacheContextImpl(
-            true,
-            new JavaReadCacheImpl(context.previousCache()),
-            new JavaWriteCacheImpl(context.nextCache())
-          );
-        }
-      } catch (NoSuchMethodError error) {
-        LOGGER.debug("Missing cache related method from sonar-plugin-api: {}.", error.getMessage());
-      }
+  public static CacheContextImpl of(@Nullable SonarComponents sonarComponents) {
+    if (sonarComponents == null) {
+      return dummyCache();
     }
 
-    DummyCache dummyCache = new DummyCache();
+    var sensorContext = sonarComponents.context();
+    if (sensorContext == null) {
+      return dummyCache();
+    }
+
+    try {
+      // TODO: Should we ignore the cache enabled setting if a SonarLintCache is available?
+      var shouldConstructCacheContext = shouldConstructCacheContext(sensorContext);
+      LOGGER.trace("Caching is enabled: {}", shouldConstructCacheContext);
+      if (!shouldConstructCacheContext) {
+        return dummyCache();
+      }
+
+      var sonarLintCache = sonarComponents.sonarLintCache();
+      if (sonarLintCache != null) {
+        return fromSonarLintCache(sonarLintCache);
+      }
+
+      return fromSensorContext(sensorContext);
+    } catch (NoSuchMethodError error) {
+      // TODO: Check if we really need to wrap all this in exception handling
+      LOGGER.debug("Missing cache related method from sonar-plugin-api: {}.", error.getMessage());
+      return dummyCache();
+    }
+  }
+
+  private static CacheContextImpl dummyCache() {
+    var dummyCache = new DummyCache();
     return new CacheContextImpl(false, dummyCache, dummyCache);
+  }
+
+  private static boolean shouldConstructCacheContext(SensorContext context) {
+    return
+      Optional.ofNullable(context.config())
+      .flatMap(config -> config.getBoolean(SONAR_CACHING_ENABLED_KEY))
+      .map(flag -> {
+        LOGGER.debug("Forcing caching behavior. Caching will be enabled: {}", flag);
+        return flag;
+      })
+      .orElse(context.isCacheEnabled());
+  }
+
+  private static CacheContextImpl fromSensorContext(SensorContext context) {
+    return new CacheContextImpl(
+      true,
+      new JavaReadCacheImpl(context.previousCache()),
+      new JavaWriteCacheImpl(context.nextCache())
+    );
+  }
+
+  private static CacheContextImpl fromSonarLintCache(SonarLintCache sonarLintCache) {
+    return new CacheContextImpl(
+      true,
+      new JavaReadCacheImpl(sonarLintCache),
+      new JavaWriteCacheImpl(sonarLintCache)
+    );
   }
 
   @Override

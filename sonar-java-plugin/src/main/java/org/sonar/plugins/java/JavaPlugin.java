@@ -33,6 +33,7 @@ import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConstants;
 import org.sonar.java.SonarComponents;
+import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForMainForSonarLint;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -51,6 +52,7 @@ public class JavaPlugin implements Plugin {
 
     if (context.getRuntime().getProduct() == SonarProduct.SONARLINT) {
       list.add(ClasspathForMainForSonarLint.class);
+      list.add(SonarLintCache.class);
     } else {
       list.addAll(SurefireExtensions.getExtensions());
       list.add(DroppedPropertiesSensor.class);

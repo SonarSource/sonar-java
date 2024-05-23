@@ -483,7 +483,7 @@ class JavaSensorTest {
     CheckFactory checkFactory = new CheckFactory(activeRulesBuilder.build());
 
     SonarComponents components = new SonarComponents(fileLinesContextFactory, fs,
-      javaClasspath, javaTestClasspath, checkFactory, context.activeRules(), checkRegistrars, null);
+      javaClasspath, javaTestClasspath, checkFactory, context.activeRules(), checkRegistrars, null, null);
 
     JavaSensor jss = new JavaSensor(components, fs, resourceLocator, context.config(), mock(NoSonarFilter.class), null);
     jss.execute(context);

@@ -43,7 +43,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
     if (cacheContext != null) {
       this.cacheContext = cacheContext;
     } else {
-      this.cacheContext = CacheContextImpl.of(sonarComponents != null ? sonarComponents.context() : null);
+      this.cacheContext = CacheContextImpl.of(sonarComponents);
     }
   }
 

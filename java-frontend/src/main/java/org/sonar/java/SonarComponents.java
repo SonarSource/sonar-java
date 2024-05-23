@@ -73,6 +73,7 @@ import org.sonar.java.reporting.JavaIssue;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 
@@ -117,6 +118,8 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   private final ActiveRules activeRules;
   @Nullable
   private final ProjectDefinition projectDefinition;
+  @Nullable
+  private final SonarLintCache sonarLintCache;
   private final FileSystem fs;
   private final List<JavaCheck> mainChecks;
   private final List<JavaCheck> testChecks;
@@ -131,7 +134,13 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
                          CheckFactory checkFactory, ActiveRules activeRules) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, null, null);
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, null, null, null);
+  }
+
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
+    CheckFactory checkFactory, ActiveRules activeRules, SonarLintCache sonarLintCache) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, null, null, sonarLintCache);
   }
 
   /**
@@ -140,7 +149,13 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
                          ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, checkRegistrars, null);
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, checkRegistrars, null, null);
+  }
+
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+    ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars, SonarLintCache sonarLintCache) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, checkRegistrars, null, sonarLintCache);
   }
 
   /**
@@ -149,16 +164,40 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
                          ActiveRules activeRules, @Nullable ProjectDefinition projectDefinition) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules,null, projectDefinition);
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules,null, projectDefinition, null);
+  }
+
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+    ActiveRules activeRules, @Nullable ProjectDefinition projectDefinition, SonarLintCache sonarLintCache) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules,null, projectDefinition, sonarLintCache);
   }
 
   /**
    * ProjectDefinition class is not available in SonarLint context, so this constructor will never be called when using SonarLint
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+    ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars,
+    @Nullable ProjectDefinition projectDefinition) {
+    this(
+      fileLinesContextFactory,
+      fs,
+      javaClasspath,
+      javaTestClasspath,
+      checkFactory,
+      activeRules,
+      checkRegistrars,
+      projectDefinition,
+      null
+    );
+  }
+
+
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
                          ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars,
-                         @Nullable ProjectDefinition projectDefinition) {
+                         @Nullable ProjectDefinition projectDefinition, @Nullable SonarLintCache sonarLintCache) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
@@ -166,6 +205,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     this.checkFactory = checkFactory;
     this.activeRules = activeRules;
     this.projectDefinition = projectDefinition;
+    this.sonarLintCache = sonarLintCache;
     this.mainChecks = new ArrayList<>();
     this.testChecks = new ArrayList<>();
     this.jspChecks = new ArrayList<>();
@@ -493,7 +533,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
 
   public boolean fileCanBeSkipped(InputFile inputFile) {
-    var contentHashCache = new ContentHashCache(context);
+    var contentHashCache = new ContentHashCache(this);
     if (inputFile instanceof GeneratedFile) {
       // Generated files should not be skipped as we cannot assess the change status of the source file
       return false;
@@ -605,7 +645,13 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     }
   }
 
+  @CheckForNull
   public SensorContext context() {
     return context;
+  }
+
+  @CheckForNull
+  public SonarLintCache sonarLintCache() {
+    return sonarLintCache;
   }
 }

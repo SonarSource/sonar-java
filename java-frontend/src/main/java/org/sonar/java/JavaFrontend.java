@@ -41,6 +41,7 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.caching.CacheContextImpl;
+import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
@@ -392,7 +393,7 @@ public class JavaFrontend {
   }
 
   private boolean isCacheEnabled() {
-    return sonarComponents != null && CacheContextImpl.of(sonarComponents.context()).isCacheEnabled();
+    return sonarComponents != null && CacheContextImpl.of(sonarComponents).isCacheEnabled();
   }
 
   private boolean canOptimizeScanning() {
