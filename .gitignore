@@ -1,6 +1,7 @@
 # ---- Maven
 target/
 dependency-reduced-pom.xml
+*.versionsBackup
 
 # ---- IntelliJ IDEA
 *.iws
