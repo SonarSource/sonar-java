@@ -51,6 +51,7 @@ public class SETestUtils {
   public static final List<File> CLASS_PATH = TestClasspathUtils.loadFromFile(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE);
   static {
     CLASS_PATH.add(new File("target/test-classes"));
+    Optional.of(new File(FilesUtils.DEFAULT_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(CLASS_PATH::add);
   }
 
   public static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName, SECheck... checks) {
