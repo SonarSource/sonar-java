@@ -12,6 +12,12 @@ public final class SubstitutionVisitor extends DeepCopyVisitor {
 
   private final Map<String, Tree> substitutions;
 
+  static Tree substitute(Tree tree, Map<String, Tree> substitutions){
+    var visitor = new SubstitutionVisitor(substitutions);
+    tree.accept(visitor);
+    return visitor.popUniqueResult();
+  }
+
   public SubstitutionVisitor(Map<String, Tree> substitutions) {
     for (Map.Entry<String, Tree> entry : substitutions.entrySet()) {
       if (!entry.getKey().startsWith(SUBST_TARGET_PREFIX)) {

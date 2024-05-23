@@ -1,7 +1,9 @@
 package org.sonar.java.checks.prettyprint;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JParser;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JavaVersionImpl;
@@ -13,15 +15,16 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
-public final class TemplateParsing {
+public final class Template<T extends Tree> {
 
   private static final int JAVA_VERSION = 21;
 
-  private TemplateParsing() {
-  }
+  private final T templateTree;
+  private final Class<T> clazz;
 
-  public static StatementTree statementTemplate(String code) {
+  public static Template<StatementTree> statementTemplate(String code) {
     final var WRAPPER =
       // language=java
       """
@@ -34,10 +37,11 @@ public final class TemplateParsing {
     var cu = parse(WRAPPER.replace("$$$", code));
     var clazz = (ClassTree) cu.types().get(0);
     var method = (MethodTree) clazz.members().get(0);
-    return method.block().body().get(0);
+    var templateTree = method.block().body().get(0);
+    return new Template<>(templateTree, StatementTree.class);
   }
 
-  public static ExpressionTree expressionTemplate(String code){
+  public static Template<ExpressionTree> expressionTemplate(String code){
     final var WRAPPER =
       // language=java
       """
@@ -51,17 +55,18 @@ public final class TemplateParsing {
     var clazz = (ClassTree) cu.types().get(0);
     var method = (MethodTree) clazz.members().get(0);
     var returnStat = (ReturnStatementTree) method.block().body().get(0);
-    return returnStat.expression();
+    var templateTree = returnStat.expression();
+    return new Template<>(templateTree, ExpressionTree.class);
   }
 
-  public static CaseGroupTree caseGroupTemplate(String code){
+  public static Template<CaseGroupTree> caseGroupTemplate(String code){
     final var WRAPPER =
       // language=java
       """
         class Template {
           static void template(int x){
             switch (x){
-              $$$;
+              $$$
             }
           }
         }
@@ -70,7 +75,12 @@ public final class TemplateParsing {
     var clazz = (ClassTree) cu.types().get(0);
     var method = (MethodTree) clazz.members().get(0);
     var switchStat = (SwitchTree) method.block().body().get(0);
-    return switchStat.cases().get(0);
+    var templateTree = switchStat.cases().get(0);
+    return new Template<>(templateTree, CaseGroupTree.class);
+  }
+
+  public static InternalSyntaxToken token(String s){
+    return new InternalSyntaxToken(0, 0, s, List.of(), false);
   }
 
   private static CompilationUnitTree parse(String srcCode){
@@ -78,13 +88,24 @@ public final class TemplateParsing {
     return JParser.parse(parserConfig.astParser(), Integer.toString(JAVA_VERSION), "Template.java", srcCode);
   }
 
-  public static void main(String[] args) {
-    var ast = expressionTemplate("foo(1, $t())");
-    var repl = expressionTemplate("bar(42)");
-    ast = (ExpressionTree) new SubstitutionVisitor(Map.of("$t", repl)).copy(ast);
-    var ppsb = new PrettyPrintStringBuilder(FileConfig.DEFAULT_FILE_CONFIG, null, false);
-    ast.accept(new Prettyprinter(ppsb));
-    System.out.println(ppsb);
+  private Template(T templateTree, Class<T> clazz) {
+    this.templateTree = templateTree;
+    this.clazz = clazz;
+  }
+
+  public T apply(Tree... trees){
+    var result = SubstitutionVisitor.substitute(templateTree, createSubst(trees));
+    return clazz.cast(result);
+  }
+
+  private Map<String, Tree> createSubst(Tree[] elems){
+    var subst = new HashMap<String, Tree>();
+    var idx = 0;
+    for (var e : elems) {
+      subst.put("$" + idx, e);
+      idx += 1;
+    }
+    return subst;
   }
 
 }

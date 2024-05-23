@@ -19,13 +19,23 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.parser.StatementListTreeImpl;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.prettyprint.FileConfig;
+import org.sonar.java.checks.prettyprint.PrettyPrintStringBuilder;
+import org.sonar.java.checks.prettyprint.Prettyprinter;
+import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.model.pattern.GuardedPatternTreeImpl;
+import org.sonar.java.model.statement.CaseGroupTreeImpl;
+import org.sonar.java.model.statement.CaseLabelTreeImpl;
+import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -33,6 +43,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
@@ -40,9 +51,17 @@ import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+
+import static org.sonar.java.checks.prettyprint.Template.caseGroupTemplate;
+import static org.sonar.java.checks.prettyprint.Template.expressionTemplate;
+import static org.sonar.java.checks.prettyprint.Template.statementTemplate;
+import static org.sonar.java.checks.prettyprint.Template.token;
 
 
 @Rule(key = "S6880")
@@ -199,107 +218,82 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   }
 
   private JavaQuickFix computeQuickFix(List<Case> cases, IfStatementTree topLevelIfStat) {
-    var canLiftReturn = cases.stream().allMatch(caze -> exprWhenReturnLifted(caze) != null);
-    var baseIndent = topLevelIfStat.firstToken().range().start().column() - 1;
-    var sb = new StringBuilder();
-    if (canLiftReturn) {
-      sb.append("return ");
-    }
-    sb.append("switch (").append(cases.get(0).scrutinee().name()).append(") {\n");
+    var canLiftReturn = cases.stream().allMatch(this::canLiftReturn);
+    var switchCases = new ArrayList<>();
     for (Case caze : cases) {
-      sb.append(" ".repeat(baseIndent + INDENT));
-      writeCase(caze, sb, baseIndent, canLiftReturn);
-      sb.append("\n");
+      switchCases.add(caze.toCaseGroup(canLiftReturn));
     }
-    sb.append(" ".repeat(baseIndent)).append("}");
-    if (canLiftReturn) {
-      sb.append(";");
+    var scrutinee = cases.get(0).scrutinee();
+    SwitchTree switchTree;
+    if (canLiftReturn){
+      switchTree = (SwitchExpressionTree) expressionTemplate("switch ($0()){}").apply(scrutinee);
+    } else {
+      switchTree = (SwitchStatementTree) statementTemplate("switch ($0()){}").apply(scrutinee);
     }
-    var edit = JavaTextEdit.replaceTree(topLevelIfStat, sb.toString());
+    for (Case caze : cases) {
+      switchTree.cases().add(caze.toCaseGroup(canLiftReturn));
+    }
+    var ppsb = new PrettyPrintStringBuilder(FileConfig.DEFAULT_FILE_CONFIG, topLevelIfStat.firstToken(), false);
+    switchTree.accept(new Prettyprinter(ppsb));
+    var edit = JavaTextEdit.replaceTree(topLevelIfStat, ppsb.toString());
     return JavaQuickFix.newQuickFix(ISSUE_MESSAGE).addTextEdit(edit).build();
   }
 
-  private void writeCase(Case caze, StringBuilder sb, int baseIndent, boolean canLiftReturn) {
-    if (caze instanceof PatternMatchCase patternMatchCase) {
-      sb.append("case ").append(QuickFixHelper.contentForTree(patternMatchCase.pattern, context));
-      if (!patternMatchCase.guards().isEmpty()) {
-        List<ExpressionTree> guards = patternMatchCase.guards();
-        sb.append(" when ");
-        join(guards, " && ", sb);
-      }
-    } else if (caze instanceof EqualityCase equalityCase) {
-      sb.append("case ");
-      join(equalityCase.constants, ", ", sb);
-    } else {
-      sb.append("default");
-    }
-    sb.append(" -> ");
-    if (canLiftReturn) {
-      sb.append(exprWhenReturnLifted(caze));
-    } else {
-      addIndentedExceptFirstLine(makeBlockCode(caze.body(), baseIndent), sb);
-    }
-  }
-
-  private String makeBlockCode(StatementTree stat, int baseIndent) {
-    var rawCode = QuickFixHelper.contentForTree(stat, context);
-    if (stat instanceof BlockTree) {
-      return rawCode;
-    } else {
-      return "{\n" + " ".repeat(baseIndent + INDENT) + rawCode + "\n" + " ".repeat(baseIndent) + "}";
-    }
-  }
-
-  private static void addIndentedExceptFirstLine(String s, StringBuilder sb) {
-    var lines = s.lines().iterator();
-    var indentStr = " ".repeat(INDENT);
-    sb.append(lines.next());
-    while (lines.hasNext()) {
-      sb.append("\n").append(indentStr).append(lines.next());
-    }
-  }
-
-  private void join(List<? extends Tree> elems, String sep, StringBuilder sb) {
-    var iter = elems.iterator();
-    while (iter.hasNext()) {
-      var e = iter.next();
-      sb.append(QuickFixHelper.contentForTree(e, context));
-      if (iter.hasNext()) {
-        sb.append(sep);
-      }
-    }
-  }
-
-  private @Nullable String exprWhenReturnLifted(Case caze) {
+  private boolean canLiftReturn(Case caze) {
     var stat = caze.body();
     while (stat instanceof BlockTree block && block.body().size() == 1) {
       stat = block.body().get(0);
     }
-    if (stat instanceof ReturnStatementTree returnStat && returnStat.expression() != null) {
-      return QuickFixHelper.contentForTree(returnStat.expression(), context) + ";";
-    } else if (stat instanceof ThrowStatementTree throwStatementTree) {
-      return QuickFixHelper.contentForTree(throwStatementTree, context);
+    return stat instanceof ReturnStatementTree returnStat && returnStat.expression() != null
+      || stat instanceof ThrowStatementTree;
+  }
+
+  private static StatementTree liftReturnIfRequested(StatementTree body, boolean lift){
+    if (lift && body instanceof ReturnStatementTree returnStat){
+      return new ExpressionStatementTreeImpl(returnStat.expression(), null);
+    } else {
+      return body;
     }
-    return null;
   }
 
   private sealed interface Case permits PatternMatchCase, EqualityCase, DefaultCase {
     IdentifierTree scrutinee();
 
     StatementTree body();
+
+    CaseGroupTree toCaseGroup(boolean canLiftReturn);
   }
 
   private record PatternMatchCase(IdentifierTree scrutinee, PatternTree pattern, List<ExpressionTree> guards,
                                   StatementTree body) implements Case {
+    @Override
+    public CaseGroupTree toCaseGroup(boolean canLiftReturn) {
+      var pat = guards.isEmpty() ? pattern : new GuardedPatternTreeImpl(pattern, token("when"),
+        guards.stream().reduce((x, y) -> new BinaryExpressionTreeImpl(Kind.AND, x, token("&&"), y)).get());
+      return caseGroupTemplate("case $0() -> $1();").apply(pat, liftReturnIfRequested(body, canLiftReturn));
+    }
   }
 
   private record EqualityCase(IdentifierTree scrutinee, List<ExpressionTree> constants, StatementTree body) implements Case {
+    @Override
+    public CaseGroupTree toCaseGroup(boolean canLiftReturn) {
+      var stats = StatementListTreeImpl.emptyList();
+      stats.add(liftReturnIfRequested(body, canLiftReturn));
+      return new CaseGroupTreeImpl(
+        List.of(new CaseLabelTreeImpl(token("case"), constants, token("->"))),
+        stats
+      );
+    }
   }
 
   /**
    * For simplicity the default case should have the same scrutinee as the cases before it
    */
   private record DefaultCase(IdentifierTree scrutinee, StatementTree body) implements Case {
+    @Override
+    public CaseGroupTree toCaseGroup(boolean canLiftReturn) {
+      return caseGroupTemplate("default -> $0();").apply(liftReturnIfRequested(body, canLiftReturn));
+    }
   }
 
   private record Pair<A, B>(A a, B b) {

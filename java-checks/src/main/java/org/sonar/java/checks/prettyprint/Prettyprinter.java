@@ -356,7 +356,9 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
-    unsupported();  // TODO
+    ppsb.add("throw ");
+    tree.expression().accept(this);
+    ppsb.addSemicolon();
   }
 
   @Override
@@ -417,7 +419,13 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    unsupported();  // TODO
+    if (tree.enclosingExpression() == null && (tree.typeArguments() == null || tree.typeArguments().isEmpty()) && tree.classBody() == null) {
+      ppsb.add("new ");
+      tree.identifier().accept(this);
+      tree.arguments().accept(this);
+    } else {
+      unsupported();  // TODO support complex cases
+    }
   }
 
   @Override
@@ -585,7 +593,9 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitArguments(Arguments arguments) {
-    unsupported();  // TODO
+    ppsb.add("(");
+    join(arguments.iterator(), () -> ppsb.add(", "));
+    ppsb.add(")");
   }
 
   @Override

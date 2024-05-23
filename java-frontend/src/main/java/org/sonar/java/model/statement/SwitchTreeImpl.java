@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +50,7 @@ public abstract class SwitchTreeImpl extends AssessableExpressionTree implements
     this.expression = Objects.requireNonNull(expression);
     this.closeParenToken = closeParenToken;
     this.openBraceToken = openBraceToken;
-    this.cases = Collections.unmodifiableList(Objects.requireNonNull(groups));
+    this.cases = new ArrayList<>(Objects.requireNonNull(groups));
     this.closeBraceToken = closeBraceToken;
   }
 
