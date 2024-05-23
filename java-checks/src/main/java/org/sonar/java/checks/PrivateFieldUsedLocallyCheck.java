@@ -197,7 +197,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
       Symbol symbol = tree.identifier().symbol();
-      if (isField(symbol) && !symbol.isStatic()) {
+      if (isField(symbol)) {
         if (tree.expression().is(Kind.IDENTIFIER)) {
           if (!ExpressionUtils.isThis(tree.expression())) {
             fieldsReadOnAnotherInstance.add(symbol);
@@ -221,7 +221,9 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
   }
 
   public static boolean isField(Symbol symbol) {
-    return symbol.isVariableSymbol() && !symbol.owner().isMethodSymbol();
+    return symbol.isVariableSymbol()
+      && !symbol.isStatic()
+      && !symbol.owner().isMethodSymbol();
   }
 
 }
