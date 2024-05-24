@@ -341,6 +341,12 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
       .sorted(Comparator.comparing(check -> classIndexes.getOrDefault(check.getClass(), Integer.MAX_VALUE)))
       .toList();
     destinationList.addAll(orderedChecks);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Registered check: [{}]",
+        orderedChecks.stream()
+          .map(c -> c.getClass().getSimpleName() + " (" + createdChecks.ruleKey(c) + ")")
+          .collect(Collectors.joining(", ")));
+    }
     jspChecks.addAll(orderedChecks.stream().filter(JspCodeVisitor.class::isInstance).toList());
   }
 
