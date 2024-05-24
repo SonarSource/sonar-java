@@ -260,12 +260,16 @@ public final class Prettyprinter implements TreeVisitor {
       }
       join(tree.body().iterator(), ppsb::newLine);
     } else {
-      if (tree.labels().size() > 1){
+      if (tree.labels().size() > 1) {
         throw new IllegalArgumentException();
       }
       tree.labels().get(0).accept(this);
-      if (tree.body().size() == 1) {
-        ppsb.addSpace();
+      ppsb.addSpace();
+      if (tree.body().size() == 1 && (
+        tree.body().get(0) instanceof ExpressionStatementTree
+          || tree.body().get(0) instanceof ThrowStatementTree
+          || tree.body().get(0) instanceof BlockTree
+      )) {
         tree.body().get(0).accept(this);
         ppsb.forceSemicolon();
       } else {
@@ -483,7 +487,8 @@ public final class Prettyprinter implements TreeVisitor {
   @Override
   public void visitLiteral(LiteralTree tree) {
     switch (tree.kind()) {
-      case INT_LITERAL, LONG_LITERAL, FLOAT_LITERAL, DOUBLE_LITERAL, BOOLEAN_LITERAL, CHAR_LITERAL, STRING_LITERAL -> ppsb.add(tree.value());
+      case INT_LITERAL, LONG_LITERAL, FLOAT_LITERAL, DOUBLE_LITERAL, BOOLEAN_LITERAL, CHAR_LITERAL, STRING_LITERAL ->
+        ppsb.add(tree.value());
       case NULL_LITERAL -> ppsb.add("null");
       case TEXT_BLOCK -> {
         ppsb.incIndent();

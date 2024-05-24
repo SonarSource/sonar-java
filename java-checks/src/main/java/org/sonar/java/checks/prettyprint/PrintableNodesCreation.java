@@ -9,10 +9,12 @@ import org.sonar.java.model.pattern.GuardedPatternTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.CaseGroupTreeImpl;
 import org.sonar.java.model.statement.CaseLabelTreeImpl;
+import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -41,12 +43,20 @@ public final class PrintableNodesCreation {
     return new BlockTreeImpl(null, Arrays.stream(stats).toList(), null);
   }
 
+  public static BlockTree forceBlock(StatementTree stat){
+    return (stat instanceof BlockTree blockTree) ? blockTree : block(stat);
+  }
+
   public static ReturnStatementTree returnStat(){
     return new ReturnStatementTreeImpl(null, null, null);
   }
 
   public static ReturnStatementTree returnStat(ExpressionTree expr){
     return new ReturnStatementTreeImpl(null, expr, null);
+  }
+
+  public static ExpressionStatementTree exprStat(ExpressionTree expr){
+    return new ExpressionStatementTreeImpl(expr, null);
   }
 
   // </editor-fold>

@@ -30,8 +30,6 @@ import org.sonar.java.checks.prettyprint.FileConfig;
 import org.sonar.java.checks.prettyprint.PrettyPrintStringBuilder;
 import org.sonar.java.checks.prettyprint.Prettyprinter;
 import org.sonar.java.model.statement.CaseGroupTreeImpl;
-import org.sonar.java.model.statement.CaseLabelTreeImpl;
-import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -51,10 +49,10 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.block;
+import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.exprStat;
+import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.forceBlock;
 import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.returnStat;
 import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.switchCase;
-import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.switchCaseFromLabels;
 import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.switchDefault;
 import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.switchExpr;
 import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.switchStat;
@@ -223,15 +221,13 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     return ifStat.elseStatement() instanceof IfStatementTree;
   }
 
-  private JavaQuickFix computeQuickFix(List<ScrutineeAndCase> cases, IfStatementTree topLevelIfStat) {
-    var canLiftReturn = cases.stream().allMatch(caze -> canLiftReturn(caze.caseGroupTree));
+  private static JavaQuickFix computeQuickFix(List<ScrutineeAndCase> cases, IfStatementTree topLevelIfStat) {
+    var canLiftReturn = cases.stream().allMatch(caze -> liftReturn(caze.caseGroupTree) != null);
     var scrutinee = cases.get(0).scrutinee();
     var casesAsTrees = cases.stream()
       .map(ScrutineeAndCase::caseGroupTree)
-      .map(c -> switchCaseFromLabels(
-        c.labels().stream().map(CaseLabelTreeImpl.class::cast).toList(),
-        liftReturnIfRequested(c.body().get(0), canLiftReturn))
-      ).toList();
+      .map(cgt -> canLiftReturn ? liftReturn(cgt) : cgt)
+      .toList();
     var switchTree = canLiftReturn ? returnStat(switchExpr(scrutinee, casesAsTrees)) : switchStat(scrutinee, casesAsTrees);
     var ppsb = new PrettyPrintStringBuilder(FileConfig.DEFAULT_FILE_CONFIG, topLevelIfStat.firstToken(), false);
     switchTree.accept(new Prettyprinter(ppsb));
@@ -239,19 +235,19 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
     return JavaQuickFix.newQuickFix(ISSUE_MESSAGE).addTextEdit(edit).build();
   }
 
-  private static boolean canLiftReturn(CaseGroupTree caze) {
-    if (caze.body().size() != 1) {
-      return false;
+  private static @Nullable CaseGroupTreeImpl liftReturn(CaseGroupTree caseGroupTree) {
+    var stats = caseGroupTree.body();
+    while (stats.size() == 1 && stats.get(0) instanceof BlockTree block){
+      stats = block.body();
     }
-    var stat = caze.body().get(0);
-    return (stat instanceof ReturnStatementTree returnStat && returnStat.expression() != null) || stat instanceof ThrowStatementTree;
-  }
-
-  private static StatementTree liftReturnIfRequested(StatementTree body, boolean lift) {
-    if (lift && body instanceof ReturnStatementTree returnStat) {
-      return new ExpressionStatementTreeImpl(returnStat.expression(), null);
+    if (stats.size() != 1){
+      return null;
+    } else if (stats.get(0) instanceof ReturnStatementTree retStat && retStat.expression() != null){
+      return switchCase(caseGroupTree.labels().get(0).expressions(), exprStat(retStat.expression()));
+    } else if (stats.get(0) instanceof ThrowStatementTree throwStat){
+      return switchCase(caseGroupTree.labels().get(0).expressions(), throwStat);
     } else {
-      return body;
+      return null;
     }
   }
 
