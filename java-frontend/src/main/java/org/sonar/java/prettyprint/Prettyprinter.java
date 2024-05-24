@@ -1,4 +1,4 @@
-package org.sonar.java.checks.prettyprint;
+package org.sonar.java.prettyprint;
 
 import java.util.Iterator;
 import java.util.List;
@@ -80,8 +80,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 import org.sonar.plugins.java.api.tree.YieldStatementTree;
-
-import static org.sonar.java.checks.prettyprint.KindsPrinter.printExprKind;
 
 public final class Prettyprinter implements TreeVisitor {
 
@@ -382,9 +380,9 @@ public final class Prettyprinter implements TreeVisitor {
   public void visitUnaryExpression(UnaryExpressionTree tree) {
     if (tree.is(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT)) {
       tree.expression().accept(this);
-      ppsb.add(printExprKind(tree.kind()));
+      ppsb.add(KindsPrinter.printExprKind(tree.kind()));
     } else {
-      ppsb.add(printExprKind(tree.kind()));
+      ppsb.add(KindsPrinter.printExprKind(tree.kind()));
       var parenthesize = tree.hasPrecedenceOver(tree.expression());
       printMaybeWithParentheses(tree.expression(), parenthesize);
     }
@@ -396,7 +394,7 @@ public final class Prettyprinter implements TreeVisitor {
     var rhs = tree.rightOperand();
     var parenthesizeLhs = tree.hasPrecedenceOver(lhs);
     printMaybeWithParentheses(lhs, parenthesizeLhs);
-    ppsb.addSpace().add(printExprKind(tree.kind())).addSpace();
+    ppsb.addSpace().add(KindsPrinter.printExprKind(tree.kind())).addSpace();
     var parenthesizeRhs = !rhs.hasPrecedenceOver(tree)
       && !(tree.kind() == rhs.kind() && Associativity.isKnownAssociativeOperator(lhs.symbolType(), tree.kind(), rhs.symbolType()));
     printMaybeWithParentheses(rhs, parenthesizeRhs);
@@ -480,7 +478,7 @@ public final class Prettyprinter implements TreeVisitor {
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     tree.variable().accept(this);
-    ppsb.addSpace().add(printExprKind(tree.kind())).addSpace();
+    ppsb.addSpace().add(KindsPrinter.printExprKind(tree.kind())).addSpace();
     tree.expression().accept(this);
   }
 

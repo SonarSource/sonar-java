@@ -19,6 +19,9 @@
  */
 package org.sonar.java.reporting;
 
+import org.sonar.java.prettyprint.FileConfig;
+import org.sonar.java.prettyprint.PrettyPrintStringBuilder;
+import org.sonar.java.prettyprint.Prettyprinter;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -55,6 +58,12 @@ public class JavaTextEdit {
 
   public static JavaTextEdit replaceTree(Tree tree, String replacement) {
     return replaceTextSpan(AnalyzerMessage.textSpanFor(tree), replacement);
+  }
+
+  public static JavaTextEdit replaceTree(Tree oldTree, Tree newTree, FileConfig fileConfig){
+    var ppsb = new PrettyPrintStringBuilder(fileConfig, oldTree.firstToken(), false);
+    newTree.accept(new Prettyprinter(ppsb));
+    return replaceTree(oldTree, ppsb.toString());
   }
 
   /**

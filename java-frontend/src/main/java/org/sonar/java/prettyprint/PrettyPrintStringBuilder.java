@@ -18,7 +18,7 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.sonar.java.checks.prettyprint;
+package org.sonar.java.prettyprint;
 
 import java.util.stream.Stream;
 import javax.annotation.Nullable;

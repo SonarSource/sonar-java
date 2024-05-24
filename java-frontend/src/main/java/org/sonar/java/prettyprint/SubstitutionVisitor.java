@@ -1,4 +1,4 @@
-package org.sonar.java.checks.prettyprint;
+package org.sonar.java.prettyprint;
 
 import java.util.Map;
 import javax.annotation.Nullable;

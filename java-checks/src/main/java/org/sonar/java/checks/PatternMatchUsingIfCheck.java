@@ -26,10 +26,8 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.checks.prettyprint.FileConfig;
-import org.sonar.java.checks.prettyprint.PrettyPrintStringBuilder;
-import org.sonar.java.checks.prettyprint.Prettyprinter;
 import org.sonar.java.model.statement.CaseGroupTreeImpl;
+import org.sonar.java.prettyprint.FileConfig;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -49,13 +47,12 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.exprStat;
-import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.forceBlock;
-import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.returnStat;
-import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.switchCase;
-import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.switchDefault;
-import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.switchExpr;
-import static org.sonar.java.checks.prettyprint.PrintableNodesCreation.switchStat;
+import static org.sonar.java.prettyprint.PrintableNodesCreation.exprStat;
+import static org.sonar.java.prettyprint.PrintableNodesCreation.returnStat;
+import static org.sonar.java.prettyprint.PrintableNodesCreation.switchCase;
+import static org.sonar.java.prettyprint.PrintableNodesCreation.switchDefault;
+import static org.sonar.java.prettyprint.PrintableNodesCreation.switchExpr;
+import static org.sonar.java.prettyprint.PrintableNodesCreation.switchStat;
 
 
 @Rule(key = "S6880")
@@ -229,22 +226,21 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
       .map(cgt -> canLiftReturn ? liftReturn(cgt) : cgt)
       .toList();
     var switchTree = canLiftReturn ? returnStat(switchExpr(scrutinee, casesAsTrees)) : switchStat(scrutinee, casesAsTrees);
-    var ppsb = new PrettyPrintStringBuilder(FileConfig.DEFAULT_FILE_CONFIG, topLevelIfStat.firstToken(), false);
-    switchTree.accept(new Prettyprinter(ppsb));
-    var edit = JavaTextEdit.replaceTree(topLevelIfStat, ppsb.toString());
-    return JavaQuickFix.newQuickFix(ISSUE_MESSAGE).addTextEdit(edit).build();
+    return JavaQuickFix.newQuickFix(ISSUE_MESSAGE)
+      .addTextEdit(JavaTextEdit.replaceTree(topLevelIfStat, switchTree, FileConfig.DEFAULT_FILE_CONFIG))
+      .build();
   }
 
   private static @Nullable CaseGroupTreeImpl liftReturn(CaseGroupTree caseGroupTree) {
     var stats = caseGroupTree.body();
-    while (stats.size() == 1 && stats.get(0) instanceof BlockTree block){
+    while (stats.size() == 1 && stats.get(0) instanceof BlockTree block) {
       stats = block.body();
     }
-    if (stats.size() != 1){
+    if (stats.size() != 1) {
       return null;
-    } else if (stats.get(0) instanceof ReturnStatementTree retStat && retStat.expression() != null){
+    } else if (stats.get(0) instanceof ReturnStatementTree retStat && retStat.expression() != null) {
       return switchCase(caseGroupTree.labels().get(0).expressions(), exprStat(retStat.expression()));
-    } else if (stats.get(0) instanceof ThrowStatementTree throwStat){
+    } else if (stats.get(0) instanceof ThrowStatementTree throwStat) {
       return switchCase(caseGroupTree.labels().get(0).expressions(), throwStat);
     } else {
       return null;

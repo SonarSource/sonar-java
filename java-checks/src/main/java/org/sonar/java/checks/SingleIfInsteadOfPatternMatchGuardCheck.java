@@ -22,19 +22,24 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.prettyprint.FileConfig;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.NullPatternTree;
+import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.prettyprint.PrintableNodesCreation.binop;
+import static org.sonar.java.prettyprint.PrintableNodesCreation.switchCase;
 
 
 @Rule(key = "S6916")
@@ -67,14 +72,13 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
       return;
     }
 
-    var caseExpression = caseLabel.expressions().get(0);
-    boolean isGuardedPattern = caseExpression instanceof GuardedPatternTree;
-
-    QuickFixHelper.newIssue(context).forRule(this)
-      .onTree(ifStatement)
-      .withMessage(isGuardedPattern ? ISSUE_MESSAGE_MERGE : ISSUE_MESSAGE_REPLACE)
-      .withQuickFix(() -> computeQuickFix(ifStatement, caseLabel, isGuardedPattern, context))
-      .report();
+    if (caseLabel.expressions().get(0) instanceof PatternTree pattern) {
+      QuickFixHelper.newIssue(context).forRule(this)
+        .onTree(ifStatement)
+        .withMessage(pattern instanceof GuardedPatternTree ? ISSUE_MESSAGE_MERGE : ISSUE_MESSAGE_REPLACE)
+        .withQuickFix(() -> computeQuickFix(caseGroup, pattern, ifStatement))
+        .report();
+    }
 
   }
 
@@ -93,26 +97,23 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
     return caseLabel.expressions().isEmpty() || caseLabel.expressions().get(0) instanceof NullPatternTree;
   }
 
-  private static JavaQuickFix computeQuickFix(IfStatementTree ifStatement, CaseLabelTree caseLabel, boolean shouldMergeConditions,
-    JavaFileScannerContext context) {
-    var quickFixBuilder = JavaQuickFix.newQuickFix(shouldMergeConditions ? ISSUE_MESSAGE_MERGE : ISSUE_MESSAGE_REPLACE);
-    String replacement;
-    if (ifStatement.thenStatement() instanceof BlockTree block && !block.body().isEmpty()) {
-      var firstToken = QuickFixHelper.nextToken(block.openBraceToken());
-      var lastToken = QuickFixHelper.previousToken(block.closeBraceToken());
-      replacement = QuickFixHelper.contentForRange(firstToken, lastToken, context);
+  private JavaQuickFix computeQuickFix(CaseGroupTree oldCase, PatternTree initialPattern, IfStatementTree ifStat) {
+    final PatternTree unguardedPattern;
+    final ExpressionTree guard;
+    final String msg;
+    if (initialPattern instanceof GuardedPatternTree guardedPattern) {
+      unguardedPattern = guardedPattern.pattern();
+      guard = binop(guardedPattern.expression(), Tree.Kind.CONDITIONAL_AND, ifStat.condition());
+      msg = ISSUE_MESSAGE_MERGE;
     } else {
-      replacement = QuickFixHelper.contentForTree(ifStatement.thenStatement(), context);
+      unguardedPattern = initialPattern;
+      guard = ifStat.condition();
+      msg = ISSUE_MESSAGE_REPLACE;
     }
-    quickFixBuilder.addTextEdit(
-      JavaTextEdit.replaceTree(ifStatement, replacement)
-    );
-    var replacementStringPrefix = shouldMergeConditions ? " && " : " when ";
-    quickFixBuilder.addTextEdit(
-      JavaTextEdit.insertBeforeTree(caseLabel.colonOrArrowToken(),
-        replacementStringPrefix + QuickFixHelper.contentForTree(ifStatement.condition(), context) + " ")
-    );
-    return quickFixBuilder.build();
+    var newCase = switchCase(unguardedPattern, List.of(guard), ifStat.thenStatement());
+    return JavaQuickFix.newQuickFix(msg)
+      .addTextEdit(JavaTextEdit.replaceTree(oldCase, newCase, FileConfig.DEFAULT_FILE_CONFIG))
+      .build();
   }
 
 }
