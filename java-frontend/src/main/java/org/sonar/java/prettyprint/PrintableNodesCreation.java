@@ -2,6 +2,7 @@ package org.sonar.java.prettyprint;
 
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.StatementListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
@@ -10,12 +11,14 @@ import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.CaseGroupTreeImpl;
 import org.sonar.java.model.statement.CaseLabelTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
+import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -38,6 +41,14 @@ public final class PrintableNodesCreation {
   // </editor-fold>
 
   // <editor-fold desc="Statements">
+
+  public static IfStatementTree ifStat(ExpressionTree cond, StatementTree thenBranch){
+    return ifStat(cond, thenBranch, null);
+  }
+
+  public static IfStatementTree ifStat(ExpressionTree cond, StatementTree thenBranch, @Nullable StatementTree elseBranch){
+    return new IfStatementTreeImpl(null, null, cond, null, thenBranch, null, elseBranch);
+  }
 
   public static BlockTree block(StatementTree... stats) {
     return new BlockTreeImpl(null, Arrays.stream(stats).toList(), null);

@@ -97,7 +97,7 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
     return caseLabel.expressions().isEmpty() || caseLabel.expressions().get(0) instanceof NullPatternTree;
   }
 
-  private JavaQuickFix computeQuickFix(CaseGroupTree oldCase, PatternTree initialPattern, IfStatementTree ifStat) {
+  private static JavaQuickFix computeQuickFix(CaseGroupTree oldCase, PatternTree initialPattern, IfStatementTree ifStat) {
     final PatternTree unguardedPattern;
     final ExpressionTree guard;
     final String msg;

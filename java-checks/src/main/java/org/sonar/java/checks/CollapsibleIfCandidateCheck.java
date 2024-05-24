@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.Deque;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.prettyprint.FileConfig;
+import org.sonar.java.prettyprint.PrintableNodesCreation;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -35,6 +37,9 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.prettyprint.PrintableNodesCreation.binop;
+import static org.sonar.java.prettyprint.PrintableNodesCreation.ifStat;
 
 @Rule(key = "S1066")
 public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -97,28 +102,10 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
   }
 
   private static JavaQuickFix computeQuickFix(IfStatementTree innerIf, IfStatementTree outerIf) {
-    var quickFixBuilder = JavaQuickFix.newQuickFix("Merge this if statement with the enclosing one");
-    quickFixBuilder.addTextEdit(
-      JavaTextEdit.replaceBetweenTree(outerIf.condition(), false, innerIf.condition(), false, " && "));
-    addParenthesisIfRequired(quickFixBuilder, outerIf.condition());
-    addParenthesisIfRequired(quickFixBuilder, innerIf.condition());
-
-    if (outerIf.thenStatement() instanceof BlockTree outerBlock) {
-      quickFixBuilder.addTextEdit(JavaTextEdit.removeTree(outerBlock.closeBraceToken()));
-    }
-    return quickFixBuilder.build();
+    var mergedIf = ifStat(binop(outerIf.condition(), Tree.Kind.CONDITIONAL_AND, innerIf.condition()), innerIf.thenStatement());
+    return JavaQuickFix.newQuickFix("Merge this if statement with the enclosing one")
+      .addTextEdit(JavaTextEdit.replaceTree(outerIf, mergedIf, FileConfig.DEFAULT_FILE_CONFIG))
+      .build();
   }
 
-  private static void addParenthesisIfRequired(JavaQuickFix.Builder quickFixBuilder, ExpressionTree expression) {
-    if (isLowerOperatorPrecedenceThanLogicalAnd(expression)) {
-      quickFixBuilder.addTextEdit(JavaTextEdit.insertBeforeTree(expression, "("));
-      quickFixBuilder.addTextEdit(JavaTextEdit.insertAfterTree(expression, ")"));
-    }
-  }
-
-  private static boolean isLowerOperatorPrecedenceThanLogicalAnd(ExpressionTree expression) {
-    return (expression instanceof BinaryExpressionTree binExpression)
-      ? "||".equals(binExpression.operatorToken().text())
-      : expression.is(Tree.Kind.CONDITIONAL_EXPRESSION, Tree.Kind.ASSIGNMENT);
-  }
 }

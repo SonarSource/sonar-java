@@ -212,9 +212,11 @@ public final class Prettyprinter implements TreeVisitor {
     tree.condition().accept(this);
     ppsb.add(") ");
     tree.thenStatement().accept(this);
+    ppsb.forceSemicolon();
     var elseStat = tree.elseStatement();
     if (elseStat != null) {
       elseStat.accept(this);
+      ppsb.forceSemicolon();
     }
   }
 
@@ -402,7 +404,11 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitConditionalExpression(ConditionalExpressionTree tree) {
-    unsupported();  // TODO
+    tree.condition().accept(this);
+    ppsb.add(" ? ");
+    tree.trueExpression().accept(this);
+    ppsb.add(" : ");
+    tree.falseExpression().accept(this);
   }
 
   @Override
