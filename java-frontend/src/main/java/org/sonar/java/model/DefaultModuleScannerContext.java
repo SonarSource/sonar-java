@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import java.io.File;
 import javax.annotation.Nullable;
+import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.CacheContextImpl;
@@ -31,6 +32,8 @@ import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
 public class DefaultModuleScannerContext implements ModuleScannerContext {
+  // TODO: Why is this field not treated as nullable, even though the constructor accepts a nullable argument?
+  @Nullable
   protected final SonarComponents sonarComponents;
   protected final JavaVersion javaVersion;
   protected final boolean inAndroidContext;
@@ -84,5 +87,19 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   @Override
   public String getModuleKey() {
     return sonarComponents.getModuleKey();
+  }
+
+  @Override
+  public SonarProduct sonarProduct() {
+    if (sonarComponents == null) {
+      return null;
+    }
+
+    var context = sonarComponents.context();
+    if (context == null) {
+      return null;
+    }
+
+    return context.runtime().getProduct();
   }
 }

@@ -20,6 +20,8 @@
 package org.sonar.plugins.java.api;
 
 import java.io.File;
+import javax.annotation.CheckForNull;
+import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
@@ -80,4 +82,7 @@ public interface ModuleScannerContext {
    * @return A key that uniquely identifies the current module, provided that this project consists of multiple modules.
    */
   String getModuleKey();
+
+  @CheckForNull
+  SonarProduct sonarProduct();
 }
