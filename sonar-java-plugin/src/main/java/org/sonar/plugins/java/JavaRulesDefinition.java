@@ -46,7 +46,8 @@ public class JavaRulesDefinition implements RulesDefinition {
     "S124",
     "S2253",
     "S3688",
-    "S4011");
+    "S4011",
+    "S3546");
 
   private static final Map<String, String> INTERNAL_KEYS = Collections.singletonMap("NoSonar", "S1291");
 
