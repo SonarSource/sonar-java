@@ -60,16 +60,17 @@ public class CacheContextImpl implements CacheContext {
     }
 
     try {
-      // TODO: Should we ignore the cache enabled setting if a SonarLintCache is available?
+      // TODO: Should we really ignore the cache enabled setting if a SonarLintCache is available?
+      // Apparently, by default, it is not enabled in SonarLint, but we need it to be present for DBD.
+      var sonarLintCache = sonarComponents.sonarLintCache();
+      if (sonarLintCache != null) {
+        return fromSonarLintCache(sonarLintCache);
+      }
+
       var shouldConstructCacheContext = shouldConstructCacheContext(sensorContext);
       LOGGER.trace("Caching is enabled: {}", shouldConstructCacheContext);
       if (!shouldConstructCacheContext) {
         return dummyCache();
-      }
-
-      var sonarLintCache = sonarComponents.sonarLintCache();
-      if (sonarLintCache != null) {
-        return fromSonarLintCache(sonarLintCache);
       }
 
       return fromSensorContext(sensorContext);
