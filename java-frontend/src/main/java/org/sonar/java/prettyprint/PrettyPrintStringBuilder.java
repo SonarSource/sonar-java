@@ -67,7 +67,7 @@ public final class PrettyPrintStringBuilder {
   }
 
   public PrettyPrintStringBuilder forceSemicolon(){
-    if (!(endsWith(";") || endsWith("}"))){
+    if (!(endsWithIgnoreSpaces(";") || endsWithIgnoreSpaces("}"))){
       addSemicolon();
     }
     return this;
@@ -112,9 +112,18 @@ public final class PrettyPrintStringBuilder {
     return decIndent().newLine().add("}");
   }
 
-  public boolean endsWith(String s) {
+  public boolean endsWithIgnoreSpaces(String s) {
     // TODO optimize(?)
-    return sb.toString().endsWith(s);
+    var chars = sb.toString();
+    for (var i = chars.length()-1; i >= 0; i--){
+      var c = chars.charAt(i);
+      if (c == ';' || c == '}'){
+        return true;
+      } else if (!Character.isWhitespace(c)){
+        return false;
+      }
+    }
+    return false;
   }
 
   @Override

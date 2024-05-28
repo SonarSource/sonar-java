@@ -59,6 +59,7 @@ import org.sonar.plugins.java.api.tree.ProvidesDirectiveTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.RequiresDirectiveTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchTree;
@@ -211,12 +212,14 @@ public final class Prettyprinter implements TreeVisitor {
     ppsb.add("if (");
     tree.condition().accept(this);
     ppsb.add(") ");
-    tree.thenStatement().accept(this);
-    ppsb.forceSemicolon();
+    printStatementIndentedIfNotBlockOrElseif(tree.thenStatement());
     var elseStat = tree.elseStatement();
     if (elseStat != null) {
-      elseStat.accept(this);
-      ppsb.forceSemicolon();
+      if (!(tree.thenStatement() instanceof BlockTree)){
+        ppsb.newLine();
+      }
+      ppsb.add(" else ");
+      printStatementIndentedIfNotBlockOrElseif(elseStat);
     }
   }
 
@@ -698,6 +701,19 @@ public final class Prettyprinter implements TreeVisitor {
     ppsb.add(")");
   }
 
+  private void printStatementIndentedIfNotBlockOrElseif(StatementTree stat){
+    // TODO maybe parametrize in config?
+    var indent = !(stat instanceof BlockTree || stat instanceof IfStatementTree);
+    if (indent){
+      ppsb.incIndent().newLine();
+    }
+    stat.accept(this);
+    ppsb.forceSemicolon();
+    if (indent){
+      ppsb.decIndent();
+    }
+  }
+
   private void printArgsList(Iterator<? extends Tree> iterator) {
     ppsb.add("(");
     join(iterator, () -> ppsb.add(", "));
@@ -746,7 +762,7 @@ public final class Prettyprinter implements TreeVisitor {
   }
 
   private void unsupported() {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("not yet implemented");
   }
 
 }

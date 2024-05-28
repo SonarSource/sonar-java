@@ -29,7 +29,7 @@ public class CollapsibleIfCandidateCheck {
 
   void noBraceOnInner(File file) {
     // fix@qf3 {{Merge this if statement with the enclosing one}}
-    // edit@qf3 [[sl=-1;el=+2;sc=5;ec=6]] {{if (file != null && (file.isFile() || file.isDirectory())) LOGGER.log(Level.INFO, file.getAbsolutePath());}}
+    // edit@qf3 [[sl=-1;el=+2;sc=5;ec=6]] {{if (file != null && (file.isFile() || file.isDirectory())) \n      LOGGER.log(Level.INFO, file.getAbsolutePath());}}
     if (file != null) {
       if (file.isFile() || file.isDirectory()) LOGGER.log(Level.INFO, file.getAbsolutePath()); // Noncompliant [[quickfixes=qf3]]
 //    ^^
@@ -87,7 +87,7 @@ public class CollapsibleIfCandidateCheck {
     if (a) if (c); // Noncompliant [[quickfixes=qf10]]
 //         ^^
     // fix@qf10 {{Merge this if statement with the enclosing one}}
-    // edit@qf10 [[sc=5;ec=19]] {{if (a && c) ;}}
+    // edit@qf10 [[sc=5;ec=19]] {{if (a && c) \n      ;}}
   }
 
   void operatorsWithLowerPrecedenceCoverage(boolean b, boolean c) {

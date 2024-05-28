@@ -2,10 +2,15 @@ package org.sonar.java.prettyprint;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.StatementListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
+import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.pattern.GuardedPatternTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.CaseGroupTreeImpl;
@@ -15,16 +20,23 @@ import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public final class PrintableNodesCreation {
 
@@ -34,13 +46,32 @@ public final class PrintableNodesCreation {
 
   // <editor-fold desc="Expressions">
 
+  public static LiteralTree literal(Object o){
+    if (o instanceof Boolean){
+      return new LiteralTreeImpl(Tree.Kind.BOOLEAN_LITERAL, token(o.toString()));
+    }
+    throw new UnsupportedOperationException("not yet implemented");
+  }
+
   public static BinaryExpressionTreeImpl binop(ExpressionTree lhs, Tree.Kind operator, ExpressionTree rhs) {
     return new BinaryExpressionTreeImpl(operator, lhs, token(KindsPrinter.printExprKind(operator)), rhs);
+  }
+
+  public static UnaryExpressionTree not(ExpressionTree operand){
+    return new InternalPrefixUnaryExpression(Tree.Kind.LOGICAL_COMPLEMENT, null, operand);
   }
 
   // </editor-fold>
 
   // <editor-fold desc="Statements">
+
+  public static VariableTree varDecl(ModifiersTree modifiers, TypeTree type, IdentifierTree simpleName){
+    return new VariableTreeImpl(modifiers, type, simpleName);
+  }
+
+  public static AssignmentExpressionTree assignment(ExpressionTree lhs, ExpressionTree rhs){
+    return new AssignmentExpressionTreeImpl(Tree.Kind.ASSIGNMENT, lhs, null, rhs);
+  }
 
   public static IfStatementTree ifStat(ExpressionTree cond, StatementTree thenBranch){
     return ifStat(cond, thenBranch, null);

@@ -19,11 +19,14 @@
  */
 package org.sonar.java.reporting;
 
+import java.util.List;
+import java.util.function.Consumer;
 import org.sonar.java.prettyprint.FileConfig;
 import org.sonar.java.prettyprint.PrettyPrintStringBuilder;
 import org.sonar.java.prettyprint.Prettyprinter;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.plugins.java.api.location.Position;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -64,6 +67,19 @@ public class JavaTextEdit {
     var ppsb = new PrettyPrintStringBuilder(fileConfig, oldTree.firstToken(), false);
     newTree.accept(new Prettyprinter(ppsb));
     return replaceTree(oldTree, ppsb.toString());
+  }
+
+  public static JavaTextEdit replaceTreeWithStatsSeq(Tree oldTree, List<? extends StatementTree> newStats, FileConfig fileConfig){
+    var ppsb = new PrettyPrintStringBuilder(fileConfig, oldTree.firstToken(), false);
+    var prettyprinter = new Prettyprinter(ppsb);
+    var iter = newStats.iterator();
+    while (iter.hasNext()){
+      iter.next().accept(prettyprinter);
+      if (iter.hasNext()){
+        ppsb.forceSemicolon().newLine();
+      }
+    }
+    return JavaTextEdit.replaceTree(oldTree, ppsb.toString());
   }
 
   /**
