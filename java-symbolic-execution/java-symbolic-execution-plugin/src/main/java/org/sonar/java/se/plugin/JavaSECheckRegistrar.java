@@ -67,7 +67,7 @@ public class JavaSECheckRegistrar implements CheckRegistrar {
     var ruleKeys = seChecks.stream().map(checks::ruleKey).toList();
 
     registrarContext.registerMainSharedCheck(new SymbolicExecutionVisitor(seChecks), ruleKeys);
-    registrarContext.registerMainChecks(REPOSITORY_KEY, seChecks);
+    registrarContext.registerMainChecks(checks, seChecks);
   }
 
   @Override

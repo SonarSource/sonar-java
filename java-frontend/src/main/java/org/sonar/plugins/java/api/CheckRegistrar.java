@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.java.Preconditions;
@@ -129,6 +130,16 @@ public interface CheckRegistrar {
      *        <code>JavaCheck></code> instances
      */
     public void registerMainChecks(String repositoryKey, Collection<?> javaCheckClassesAndInstances) {
+      // to be overridden
+    }
+
+    @Beta
+    public void registerMainChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
+      // to be overridden
+    }
+
+    @Beta
+    public void registerTestChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
       // to be overridden
     }
 

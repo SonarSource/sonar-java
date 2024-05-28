@@ -153,7 +153,13 @@
       <artifactId>guava</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <!-- to make sure issue filters are still workin -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>java-checks</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

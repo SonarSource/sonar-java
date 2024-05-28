@@ -46,6 +46,7 @@ import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -75,6 +76,8 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     /* S1128 */ UselessImportCheck.class,
     /* S1118 */ UtilityClassWithPublicConstructorCheck.class
   );
+
+  private static final String SE_XXE_PROCESSING_CHECK_RULEKEY = "java:S2755";
 
   private static final String LOMBOK_BUILDER = "lombok.Builder";
   private static final String LOMBOK_SUPER_BUILDER = "lombok.SuperBuilder";
@@ -166,6 +169,18 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     }
 
     super.visitClass(tree);
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    excludeLinesIfTrue(tree.symbol().type().is(LOMBOK_VAL) && tree.initializer() != null, tree.initializer(), SE_XXE_PROCESSING_CHECK_RULEKEY);
+    super.visitVariable(tree);
+  }
+
+  @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    excludeLinesIfTrue(tree.variable().symbolType().is(LOMBOK_VAL), tree.expression(), SE_XXE_PROCESSING_CHECK_RULEKEY);
+    super.visitAssignmentExpression(tree);
   }
 
   private static boolean usesAnnotation(ClassTree classTree, List<String> annotations) {
