@@ -25,6 +25,8 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.java.Preconditions;
@@ -62,6 +64,10 @@ public interface CheckRegistrar {
    */
   default void customRulesDefinition(RulesDefinition.Context context, RulesDefinition.NewRepository javaRepository) {
 
+  }
+
+  default void register(RegistrarContext registrarContext, CheckFactory checkFActory) {
+    register(registrarContext);
   }
 
   /**
@@ -127,6 +133,16 @@ public interface CheckRegistrar {
       // to be overridden
     }
 
+    @Beta
+    public void registerMainChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
+      // to be overridden
+    }
+
+    @Beta
+    public void registerTestChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
+      // to be overridden
+    }
+
     /**
      * Registers test code java checks for a given repository.
      * @param repositoryKey key of rule repository
@@ -168,9 +184,7 @@ public interface CheckRegistrar {
     }
 
     private static <T> Collection<T> asCollection(@Nullable Iterable<T> iterable) {
-      return iterable != null ?
-        StreamSupport.stream(iterable.spliterator(), false).toList() :
-        Collections.emptyList();
+      return iterable != null ? StreamSupport.stream(iterable.spliterator(), false).toList() : Collections.emptyList();
     }
   }
 

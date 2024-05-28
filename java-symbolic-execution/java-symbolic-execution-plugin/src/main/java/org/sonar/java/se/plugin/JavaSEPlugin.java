@@ -20,7 +20,6 @@
 package org.sonar.java.se.plugin;
 
 import org.sonar.api.Plugin;
-import org.sonar.java.se.filters.LombokFilter;
 
 public class JavaSEPlugin implements Plugin {
 
@@ -29,8 +28,7 @@ public class JavaSEPlugin implements Plugin {
 
     context.addExtensions(
       JavaSEProfileRegistrar.class,
-      JavaSECheckRegistrar.class,
-      LombokFilter.class
+      JavaSECheckRegistrar.class
     );
 
   }

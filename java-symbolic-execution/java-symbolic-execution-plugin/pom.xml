@@ -108,6 +108,10 @@
       <artifactId>sonar-performance-measure</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.sonarsource.analyzer-commons</groupId>
+      <artifactId>sonar-analyzer-commons</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.sonarsource.java</groupId>
       <artifactId>test-classpath-reader</artifactId>
       <version>${project.version}</version>
@@ -149,7 +153,13 @@
       <artifactId>guava</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <!-- to make sure issue filters are still workin -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>java-checks</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
