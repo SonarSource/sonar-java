@@ -96,7 +96,7 @@ public class JavaRulingTest {
   private static Orchestrator createOrchestrator() {
     OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
-      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
+      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[10.3]"))
       .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../sonar-java-plugin").toFile()))
       .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.11.0.2659"))
       .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../java-symbolic-execution/java-symbolic-execution-plugin").toFile()));

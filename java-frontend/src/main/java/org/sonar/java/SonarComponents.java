@@ -173,7 +173,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     this.additionalAutoScanCompatibleRuleKeys = new TreeSet<>();
     if (checkRegistrars != null) {
       for (CheckRegistrar registrar : checkRegistrars) {
-        registrar.register(this);
+        registrar.register(this, checkFactory);
       }
     }
   }

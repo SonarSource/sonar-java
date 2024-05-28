@@ -20,19 +20,22 @@
 package org.sonar.java.se.plugin;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import org.sonar.api.SonarRuntime;
+import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.ce.ComputeEngineSide;
+import org.sonar.api.scanner.ScannerSide;
 import org.sonar.api.server.ServerSide;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.CheckRegistrar;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonarsource.analyzer.commons.RuleMetadataLoader;
 
 @ServerSide
+@ScannerSide
 @ComputeEngineSide
 public class JavaSECheckRegistrar implements CheckRegistrar {
 
@@ -43,23 +46,28 @@ public class JavaSECheckRegistrar implements CheckRegistrar {
   private static final Set<String> RULE_TEMPLATES_KEY = Set.of("S3546");
   private final SonarRuntime runtime;
 
-
-  public JavaSECheckRegistrar(SonarRuntime runtime){
+  public JavaSECheckRegistrar(SonarRuntime runtime) {
     this.runtime = runtime;
   }
 
   @Override
   public void register(RegistrarContext registrarContext) {
-    List<SECheck> checks = new ArrayList<>();
-    for(Class<? extends SECheck> check : JavaSECheckList.getChecks()) {
-      try {
-        checks.add(check.newInstance());
-      } catch (InstantiationException | IllegalAccessException e) {
-        throw new IllegalStateException("Could not create instance of " + check, e);
-      }
-    }
-    registrarContext.registerMainSharedCheck(new SymbolicExecutionVisitor(checks), RulesList.getMainRuleKeys());
-    registrarContext.registerMainChecks(REPOSITORY_KEY, checks);
+
+  }
+
+  @Override
+  public void register(RegistrarContext registrarContext, CheckFactory checkFactory) {
+    Checks<JavaCheck> checks = checkFactory.<JavaCheck>create(REPOSITORY_KEY).addAnnotatedChecks(JavaSECheckList.getChecks());
+
+    var seChecks = checks.all().stream()
+      .filter(SECheck.class::isInstance)
+      .map(c -> (SECheck) c)
+      .toList();
+
+    var ruleKeys = seChecks.stream().map(checks::ruleKey).toList();
+
+    registrarContext.registerMainSharedCheck(new SymbolicExecutionVisitor(seChecks), ruleKeys);
+    registrarContext.registerMainChecks(REPOSITORY_KEY, seChecks);
   }
 
   @Override
