@@ -57,4 +57,5 @@ public interface InputFileScannerContext extends ModuleScannerContext {
    * @since SonarJava 5.12: Dropping support of file-related methods
    */
   InputFile getInputFile();
+
 }
