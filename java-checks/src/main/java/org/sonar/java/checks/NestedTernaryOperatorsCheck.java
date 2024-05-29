@@ -20,19 +20,16 @@
 package org.sonar.java.checks;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.prettyprint.FileConfig;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -57,32 +54,40 @@ public class NestedTernaryOperatorsCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ConditionalExpressionTree ternary = (ConditionalExpressionTree) tree;
     if ((skipParentheses(ternary.trueExpression()) instanceof ConditionalExpressionTree || skipParentheses(ternary.falseExpression()) instanceof ConditionalExpressionTree)
-      && ternary.parent() instanceof VariableTree varTree) {
+      && ternary.parent() instanceof VariableTree || ternary.parent() instanceof AssignmentExpressionTree) {
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(tree)
         .withMessage(ERROR_MESSAGE)
-        .withQuickFix(() -> computeQuickfix(varTree, ternary))
+        .withQuickFix(() -> computeQuickfix(ternary))
         .report();
     }
   }
 
-  private JavaQuickFix computeQuickfix(VariableTree varTree, ConditionalExpressionTree ternary) {
-    var uninitVarDecl = varDecl(varTree.modifiers(), varTree.type(), varTree.simpleName());
-    var ifStat = transform(ternary, varTree.simpleName(), false);
+  private JavaQuickFix computeQuickfix(ConditionalExpressionTree ternary) {
+    var parent = ternary.parent();
+    List<StatementTree> newNodes;
+    if (parent instanceof VariableTree varTree){
+      var uninitVarDecl = varDecl(varTree.modifiers(), varTree.type(), varTree.simpleName());
+      var ifStat = transform(ternary, varTree.simpleName(), false);
+      newNodes = List.of(uninitVarDecl, ifStat);
+    } else {
+      var assignment = (AssignmentExpressionTree) parent;
+      newNodes = List.of(transform(ternary, assignment.variable(), false));
+    }
     return JavaQuickFix.newQuickFix(ERROR_MESSAGE)
-      .addTextEdit(JavaTextEdit.replaceTreeWithStatsSeq(varTree, List.of(uninitVarDecl, ifStat), FileConfig.DEFAULT_FILE_CONFIG))
+      .addTextEdit(JavaTextEdit.replaceTreeWithStatsSeq(parent, newNodes, FileConfig.DEFAULT_FILE_CONFIG))
       .build();
   }
 
-  private StatementTree transform(ExpressionTree expr, ExpressionTree varName, boolean makeBlock) {
+  private StatementTree transform(ExpressionTree expr, ExpressionTree varName, boolean isThenBranch) {
     expr = skipParentheses(expr);
     if (expr instanceof ConditionalExpressionTree ternary) {
-      var raw = ifStat(ternary.condition(),
+      var raw = ifStat(skipParentheses(ternary.condition()),
         transform(ternary.trueExpression(), varName, true),
         transform(ternary.falseExpression(), varName, false)
       );
-      return makeBlock ? block(raw) : raw;
+      return isThenBranch ? block(raw) : raw;
     } else {
       return block(exprStat(assignment(varName, expr)));
     }

@@ -18,4 +18,25 @@ class NestedTernaryOperatorsCheckSample {
     String s = i == j ? (i >= 0 ? "equal, nonnegative" : "equal, negative") : (i < j ? "less" : "more");
   }
 
+  // fix@qf3 {{Extract this nested ternary operation into an independent statement.}}
+  // edit@qf3 [[sl=+0;el=+14;sc=5;ec=27]] {{if (i < -10) {\n      if (j < i) {\n        s = "j < i < -10";\n      } else if (j == i) {\n        s = "j = i < -10";\n      } else if (j < -10) {\n        s = "i < j < -10";\n      } else {\n        s = "i < -10 <= j";\n      }\n    } else if (i == -10) {\n      if (i < j) {\n        s = "-10 = i < j";\n      } else if (i == j) {\n        s = "i = j = -10";\n      } else {\n        s = "j < i = -10";\n      }\n    } else {\n      s = "something else";\n    }}}
+  void qfTest3(int i, int j, String s){
+    // Noncompliant@+1 {{Extract this nested ternary operation into an independent statement.}} [[sl=+1;el=+15;sc=9;ec=27;quickfixes=qf3]]
+    s = (i < -10) ?
+          (j < i) ?
+            "j < i < -10"
+            : (j == i) ?
+              "j = i < -10"
+              : (j < -10) ?
+                "i < j < -10"
+                : "i < -10 <= j"
+      : (i == -10) ?
+          (i < j) ?
+            "-10 = i < j"
+            : (i == j) ?
+              "i = j = -10"
+              : "j < i = -10"
+        : "something else";
+  }
+
 }
