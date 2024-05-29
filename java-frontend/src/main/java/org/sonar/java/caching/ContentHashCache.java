@@ -40,20 +40,13 @@ public class ContentHashCache {
   private final boolean enabled;
 
   public ContentHashCache(SonarComponents sonarComponents) {
-    // TODO: Double check that this works with SonarLintCache
     CacheContextImpl cacheContext = CacheContextImpl.of(sonarComponents);
     enabled = cacheContext.isCacheEnabled();
 
     var sensorContext = sonarComponents.context();
-    if (enabled && sensorContext != null) {
-      // TODO: Eliminate this duplicate logic to leverage SonarLintCache / make the read/write cache selection transparent
-      if (sonarComponents.sonarLintCache() != null) {
-        readCache = sonarComponents.sonarLintCache();
-        writeCache = sonarComponents.sonarLintCache();
-      } else {
-        readCache = sensorContext.previousCache();
-        writeCache = sensorContext.nextCache();
-      }
+    if (enabled) {
+      readCache = sensorContext.previousCache();
+      writeCache = sensorContext.nextCache();
     }
   }
 

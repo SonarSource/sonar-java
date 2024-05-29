@@ -154,6 +154,7 @@ class CacheContextImplTest {
 
     CacheContextImpl cci = CacheContextImpl.of(sonarComponents);
     verifyCacheContextUsesSonarLintCache(cci, sonarLintCache);
+    assertThat(cci.isCacheEnabled()).isFalse();
   }
 
   @Test

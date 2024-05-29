@@ -96,7 +96,12 @@ public class CacheContextImpl implements CacheContext {
 
   private static CacheContextImpl fromSonarLintCache(SonarLintCache sonarLintCache) {
     return new CacheContextImpl(
-      true,
+      // SonarLintCache is not an actual cache, but a temporary solution to transferring data between plugins in SonarLint.
+      // Hence, it should not report that caching is enabled so that no logic which is not aware of SonarLintCache tries to use it like
+      // a regular cache.
+      // (However, this means code which is aware of SonarLintCache needs to consciously ignore the `isCacheEnabled` setting where
+      // appropriate.)
+      false,
       new JavaReadCacheImpl(sonarLintCache),
       new JavaWriteCacheImpl(sonarLintCache)
     );
