@@ -24,6 +24,10 @@ import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 
 public class CFGUtils {
 
+  private CFGUtils(){
+    // utility class
+  }
+
   public static final Predicate<ControlFlowGraph.Block> IS_CATCH_BLOCK = ControlFlowGraph.Block::isCatchBlock;
 
   public static boolean isMethodExitBlock(ControlFlowGraph.Block block) {

@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.SEExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -151,7 +151,7 @@ public class NonNullSetToNullCheck extends SECheck {
       return false;
     }
     ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
-    return ExpressionUtils.isThis(methodSelect);
+    return SEExpressionUtils.isThis(methodSelect);
   }
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {
@@ -199,8 +199,8 @@ public class NonNullSetToNullCheck extends SECheck {
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (ExpressionUtils.isSimpleAssignment(tree)) {
-        IdentifierTree variable = ExpressionUtils.extractIdentifier(tree);
+      if (SEExpressionUtils.isSimpleAssignment(tree)) {
+        IdentifierTree variable = SEExpressionUtils.extractIdentifier(tree);
         Symbol symbol = variable.symbol();
         if (symbol.isParameter()) {
           // It is fine to assign a parameter to null in the body of the method.

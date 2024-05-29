@@ -28,7 +28,7 @@ import java.util.Map;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFGLoop;
-import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.model.SELiteralUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -126,7 +126,7 @@ public class NoWayOutLoopCheck extends SECheck {
     }
 
     private void visitLoopCondition(ExpressionTree condition, Tree tree) {
-      if (LiteralUtils.isTrue(condition)) {
+      if (SELiteralUtils.isTrue(condition)) {
         checkLoopWithAlwaysTrueCondition(context, tree);
       }
     }

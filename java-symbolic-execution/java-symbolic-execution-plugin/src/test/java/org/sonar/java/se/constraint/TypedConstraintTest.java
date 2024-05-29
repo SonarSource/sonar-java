@@ -20,7 +20,7 @@
 package org.sonar.java.se.constraint;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.model.Symbols;
+import org.sonar.java.model.SESymbols;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,8 +37,8 @@ class TypedConstraintTest {
       .isNotEqualTo(new Object())
       .hasSameHashCodeAs(object2);
 
-    TypedConstraint nullTC1 = new TypedConstraint(Symbols.unknownType.fullyQualifiedName());
-    TypedConstraint nullTC2 = new TypedConstraint(Symbols.unknownType.fullyQualifiedName());
+    TypedConstraint nullTC1 = new TypedConstraint(SESymbols.unknownType.fullyQualifiedName());
+    TypedConstraint nullTC2 = new TypedConstraint(SESymbols.unknownType.fullyQualifiedName());
     assertThat(nullTC1).isNotEqualTo(nullTC2);
     assertThat(object1).isNotEqualTo(nullTC1);
   }

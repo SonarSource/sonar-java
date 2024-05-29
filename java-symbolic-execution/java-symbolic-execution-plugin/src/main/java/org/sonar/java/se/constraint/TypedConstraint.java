@@ -20,7 +20,7 @@
 package org.sonar.java.se.constraint;
 
 import java.util.Objects;
-import org.sonar.java.model.Symbols;
+import org.sonar.java.model.SESymbols;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -54,7 +54,7 @@ public class TypedConstraint implements Constraint {
 
   public Type getType(Sema semanticModel) {
     if (type.charAt(0) == '!') {
-      return Symbols.unknownType;
+      return SESymbols.unknownType;
     }
     return semanticModel.getClassType(type);
   }

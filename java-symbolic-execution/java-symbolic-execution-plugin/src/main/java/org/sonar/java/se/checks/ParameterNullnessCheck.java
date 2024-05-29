@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.SEExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.ProgramState;
@@ -94,7 +94,7 @@ public class ParameterNullnessCheck extends SECheck {
 
     Tree reportTree;
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      reportTree = ExpressionUtils.methodName((MethodInvocationTree) syntaxNode);
+      reportTree = SEExpressionUtils.methodName((MethodInvocationTree) syntaxNode);
     } else {
       reportTree = ((NewClassTree) syntaxNode).identifier();
     }

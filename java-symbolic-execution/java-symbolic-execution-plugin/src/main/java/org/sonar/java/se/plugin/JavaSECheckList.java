@@ -47,6 +47,10 @@ import org.sonar.java.se.checks.XxeProcessingCheck;
 
 public class JavaSECheckList {
 
+  private JavaSECheckList(){
+    // no need to instantiate
+  }
+
   public static List<Class<? extends SECheck>> getChecks() {
     return List.of(
       // SEChecks ordered by ExplodedGraphWalker need

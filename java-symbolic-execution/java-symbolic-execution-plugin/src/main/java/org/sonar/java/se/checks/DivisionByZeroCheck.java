@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.SEExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
@@ -169,8 +169,8 @@ public class DivisionByZeroCheck extends SECheck {
       SymbolicValue variable;
       SymbolicValue expression;
       Symbol symbol;
-      if (ExpressionUtils.isSimpleAssignment(tree)) {
-        symbol = ExpressionUtils.extractIdentifier(tree).symbol();
+      if (SEExpressionUtils.isSimpleAssignment(tree)) {
+        symbol = SEExpressionUtils.extractIdentifier(tree).symbol();
         variable = programState.getValue(symbol);
         expression = programState.peekValue();
       } else {

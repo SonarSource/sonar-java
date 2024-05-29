@@ -247,44 +247,6 @@ class JavaSensorTest {
     verify(jspCodeVisitor, never()).scanFile(any());
   }
 
-//  @Test
-//  void insert_SymbolicExecutionVisitor_before_first_SECheck() throws IOException {
-//    List<JavaCheck> javaChecks = Arrays.asList(
-//      new org.sonar.java.checks.MagicNumberCheck(),
-//      new org.sonar.java.se.checks.NullDereferenceCheck(),
-//      new org.sonar.java.se.checks.DivisionByZeroCheck()
-//    );
-//    JavaCheck[] ordered = JavaSensor.insertSymbolicExecutionVisitor(javaChecks);
-//    assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
-//      .containsExactly(
-//        "MagicNumberCheck",
-//        "SymbolicExecutionVisitor",
-//        "NullDereferenceCheck",
-//        "DivisionByZeroCheck"
-//      );
-//  }
-//
-//  @Test
-//  void does_not_insert_SymbolicExecutionVisitor() throws IOException {
-//    List<JavaCheck> javaChecks = Arrays.asList(
-//      new org.sonar.java.checks.MagicNumberCheck(),
-//    new org.sonar.java.checks.ParameterReassignedToCheck()
-//    );
-//    JavaCheck[] ordered = JavaSensor.insertSymbolicExecutionVisitor(javaChecks);
-//    assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
-//      .containsExactly(
-//        "MagicNumberCheck",
-//        "ParameterReassignedToCheck"
-//      );
-//  }
-
-//  @Test
-//  void info_log_when_no_SE_rules_enabled() throws IOException {
-//    assertJasperIsInvoked(new MapSettings());
-//    assertThat(logTester.logs(Level.INFO)).contains("No rules with 'symbolic-execution' tag were enabled,"
-//      + " the Symbolic Execution Engine will not run during the analysis.");
-//  }
-
   @Test
   void performance_measure_should_not_be_activated_by_default() throws IOException {
     logTester.setLevel(Level.DEBUG);

@@ -39,8 +39,8 @@ import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.model.CFGUtils;
-import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.LineUtils;
+import org.sonar.java.model.SEExpressionUtils;
+import org.sonar.java.model.SELineUtils;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
@@ -326,7 +326,7 @@ public class ExplodedGraphWalker {
   private void throwExceptionIfMaxStepsHasBeenReached(MethodTree tree) {
     if (steps > maxSteps()) {
       String message = String.format("reached limit of %d steps for method %s#%d in class %s",
-        maxSteps(), tree.simpleName().name(), LineUtils.startLine(tree.simpleName()), tree.symbol().owner().name());
+        maxSteps(), tree.simpleName().name(), SELineUtils.startLine(tree.simpleName()), tree.symbol().owner().name());
       MaximumStepsReachedException cause = new MaximumStepsReachedException(message);
       interrupted(cause);
       throw cause;
@@ -531,7 +531,7 @@ public class ExplodedGraphWalker {
    * If condition is && or || expression, then return its right operand.
    */
   private static ExpressionTree cleanupCondition(ExpressionTree condition) {
-    ExpressionTree cleanedUpCondition = ExpressionUtils.skipParentheses(condition);
+    ExpressionTree cleanedUpCondition = SEExpressionUtils.skipParentheses(condition);
     if (cleanedUpCondition.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR)) {
       cleanedUpCondition = cleanupCondition(((BinaryExpressionTree) cleanedUpCondition).rightOperand());
     }
@@ -1037,7 +1037,7 @@ public class ExplodedGraphWalker {
     SymbolicValue value;
 
     if (tree.is(Tree.Kind.ASSIGNMENT)) {
-      unstack = ExpressionUtils.isSimpleAssignment(tree) ? programState.unstackValue(1) : programState.unstackValue(2);
+      unstack = SEExpressionUtils.isSimpleAssignment(tree) ? programState.unstackValue(1) : programState.unstackValue(2);
       value = unstack.values.get(0);
     } else {
       unstack = programState.unstackValue(2);
@@ -1046,8 +1046,8 @@ public class ExplodedGraphWalker {
 
     programState = unstack.state;
     Symbol symbol = null;
-    if (tree.variable().is(Tree.Kind.IDENTIFIER) || ExpressionUtils.isSelectOnThisOrSuper(tree)) {
-      symbol = ExpressionUtils.extractIdentifier(tree).symbol();
+    if (tree.variable().is(Tree.Kind.IDENTIFIER) || SEExpressionUtils.isSelectOnThisOrSuper(tree)) {
+      symbol = SEExpressionUtils.extractIdentifier(tree).symbol();
       programState = programState.put(symbol, value);
     }
     programState = programState.stackValue(value, symbol);
@@ -1088,7 +1088,7 @@ public class ExplodedGraphWalker {
     programState = programState.unstackValue(newClassTree.arguments().size()).state;
     // Enqueue exceptional paths
     Symbol.MethodSymbol symbol = newClassTree.methodSymbol();
-    if (((Block) node.programPoint.block).exceptions().stream().anyMatch(CFGUtils.IS_CATCH_BLOCK)) {
+    if (node.programPoint.block.exceptions().stream().anyMatch(CFGUtils.IS_CATCH_BLOCK)) {
       // To avoid noise, we only add unchecked exceptional paths (includingUnknownException) when we are in a try-catch block.
       enqueueUncheckedExceptionalPaths(symbol);
     }
@@ -1163,7 +1163,7 @@ public class ExplodedGraphWalker {
       return;
     }
     // only check final field with an initializer
-    initializer = ExpressionUtils.skipParentheses(initializer);
+    initializer = SEExpressionUtils.skipParentheses(initializer);
     if (initializer.is(Tree.Kind.NULL_LITERAL)) {
       programState = programState.addConstraint(sv, ObjectConstraint.NULL);
     } else if (initializer.is(Tree.Kind.NEW_CLASS, Tree.Kind.NEW_ARRAY, Tree.Kind.STRING_LITERAL)
@@ -1193,7 +1193,7 @@ public class ExplodedGraphWalker {
     }
 
     Symbol symbol = mse.identifier().symbol();
-    if (ExpressionUtils.isSelectOnThisOrSuper(mse) || (symbol.isStatic() && symbol.isFinal())) {
+    if (SEExpressionUtils.isSelectOnThisOrSuper(mse) || (symbol.isStatic() && symbol.isFinal())) {
       executeIdentifier(mse.identifier());
     } else {
       SymbolicValue mseValue = constraintManager.createSymbolicValue(mse);
@@ -1239,7 +1239,7 @@ public class ExplodedGraphWalker {
   }
 
   private static boolean isProvidingThisAsArgument(MethodInvocationTree tree) {
-    return tree.arguments().stream().anyMatch(ExpressionUtils::isThis);
+    return tree.arguments().stream().anyMatch(SEExpressionUtils::isThis);
   }
 
   private void resetFieldValues(boolean resetOnlyStaticFields) {
@@ -1265,7 +1265,7 @@ public class ExplodedGraphWalker {
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
       if (isRestartingForEachLoop(programPoint)) {
         // reached the max number of visit by program point, so take the false branch with current program state
-        programPoint = new ProgramPoint(((Block) programPoint.block).falseBlock());
+        programPoint = new ProgramPoint(programPoint.block.falseBlock());
       } else {
         return;
       }
@@ -1284,7 +1284,7 @@ public class ExplodedGraphWalker {
   }
 
   private static boolean isRestartingForEachLoop(ProgramPoint programPoint) {
-    Tree terminator = ((Block) programPoint.block).terminator();
+    Tree terminator = programPoint.block.terminator();
     return terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT);
   }
 

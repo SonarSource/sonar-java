@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.SEExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
@@ -304,7 +304,7 @@ public class XxeProcessingCheck extends SECheck {
       // Test initialisation of XML processing API
       for (Map.Entry<MethodMatchers, Predicate<ConstraintsByDomain>> entry : CONDITIONS_FOR_SECURED_BY_TYPE.entrySet()) {
         if (entry.getKey().matches(mit)) {
-          constraintManager.setValueFactory(() -> new XxeSymbolicValue(ExpressionUtils.methodName(mit), entry.getValue()));
+          constraintManager.setValueFactory(() -> new XxeSymbolicValue(SEExpressionUtils.methodName(mit), entry.getValue()));
           break;
         }
       }

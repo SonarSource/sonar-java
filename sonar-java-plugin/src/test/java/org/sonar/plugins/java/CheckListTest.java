@@ -47,23 +47,12 @@ class CheckListTest {
 
   private static final String ARTIFICIAL_DESCRIPTION = "-1";
 
-//  private static List<String> SE_CHEKS;
   private final Gson gson = new Gson();
 
   private static final Set<String> BLACK_LIST = SetUtils.immutableSetOf(
     "AbstractXPathBasedCheck.java",
     "AbstractWebXmlXPathBasedCheck.java",
     "AbstractRegexCheck.java");
-
-//  @BeforeAll
-//  public static void before() throws Exception {
-//    SE_CHEKS = ClassPath.from(CheckListTest.class.getClassLoader())
-//      .getTopLevelClasses("org.sonar.java.se.checks")
-//      .stream()
-//      .map(ClassPath.ClassInfo::getSimpleName)
-//      .filter(name -> name.endsWith("Check") && !name.equals(SECheck.class.getSimpleName()))
-//      .toList();
-//  }
 
   /**
    * Enforces that each check declared in list.
@@ -133,9 +122,6 @@ class CheckListTest {
       // Handle legacy keys.
       Rule ruleAnnotation = AnnotationUtils.getAnnotation(cls, Rule.class);
       keyMap.put(ruleAnnotation.key(), ruleAnnotation.key());
-//      if (SE_CHEKS.contains(simpleName)) {
-//        continue;
-//      }
       assertThat(checkModules.stream()
         .anyMatch(module -> Files.exists(Path.of("../", module, "src/test/java", testName))))
         .overridingErrorMessage("No test for " + simpleName)

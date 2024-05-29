@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.SEExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
@@ -411,7 +411,7 @@ public class UnclosedResourcesCheck extends SECheck {
       final ExpressionTree variable = syntaxNode.variable();
       if (isNonLocalStorage(variable)) {
         SymbolicValue value;
-        if (ExpressionUtils.isSimpleAssignment(syntaxNode)) {
+        if (SEExpressionUtils.isSimpleAssignment(syntaxNode)) {
           value = programState.peekValue();
         } else {
           value = programState.peekValues(2).get(0);

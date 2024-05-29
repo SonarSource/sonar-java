@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.SEExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraph.Node;
@@ -165,7 +165,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
 
   private boolean isInsideIfStatementWithNullCheckWithoutElse(MethodInvocationTree mit) {
     return getIfStatementParent(mit).map(ifStatementTree -> ifStatementTree.elseStatement() == null
-      && isNullCheck(ExpressionUtils.skipParentheses(ifStatementTree.condition())))
+      && isNullCheck(SEExpressionUtils.skipParentheses(ifStatementTree.condition())))
       .orElse(false);
   }
 
@@ -204,8 +204,8 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   private static boolean isNullCheck(ExpressionTree condition) {
     if (condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       BinaryExpressionTree bet = (BinaryExpressionTree) condition;
-      ExpressionTree rightOperand = ExpressionUtils.skipParentheses(bet.rightOperand());
-      ExpressionTree leftOperand = ExpressionUtils.skipParentheses(bet.leftOperand());
+      ExpressionTree rightOperand = SEExpressionUtils.skipParentheses(bet.rightOperand());
+      ExpressionTree leftOperand = SEExpressionUtils.skipParentheses(bet.leftOperand());
       return rightOperand.is(Tree.Kind.NULL_LITERAL) || leftOperand.is(Tree.Kind.NULL_LITERAL);
     }
     return false;

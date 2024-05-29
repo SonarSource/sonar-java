@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
-import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.SEExpressionUtils;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -52,7 +52,7 @@ public class SyntaxTreeNameFinder extends BaseTreeVisitor {
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-    ExpressionTree expression = ExpressionUtils.skipParentheses(tree.expression());
+    ExpressionTree expression = SEExpressionUtils.skipParentheses(tree.expression());
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       String identifierName = ((IdentifierTree) expression).name();
       if ("this".equals(identifierName) || "super".equals(identifierName)) {

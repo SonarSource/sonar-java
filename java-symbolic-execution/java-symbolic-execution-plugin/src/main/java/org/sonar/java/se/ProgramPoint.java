@@ -21,8 +21,7 @@ package org.sonar.java.se;
 
 import java.util.List;
 import org.sonar.java.Preconditions;
-import org.sonar.java.model.LineUtils;
-import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
+import org.sonar.java.model.SELineUtils;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -71,7 +70,7 @@ public class ProgramPoint {
     String tree = "";
     List<Tree> elements = block.elements();
     if (i < elements.size()) {
-      tree = "" + elements.get(i).kind() + LineUtils.startLine(elements.get(i));
+      tree = "" + elements.get(i).kind() + SELineUtils.startLine(elements.get(i));
     }
     return "B" + block.id() + "." + i + "  " + tree;
   }

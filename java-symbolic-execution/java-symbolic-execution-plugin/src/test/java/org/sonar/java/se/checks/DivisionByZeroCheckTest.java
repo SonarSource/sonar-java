@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SECheckVerifier;
@@ -82,20 +81,19 @@ class DivisionByZeroCheckTest {
   void test_zero_constraint_copy() throws Exception {
     SymbolicValue a = new SymbolicValue();
     SymbolicValue b = new SymbolicValue();
-    DivisionByZeroCheck.ZeroConstraint bConstraint = copyConstraint(a, b, EQUAL, ZERO);
+    DivisionByZeroCheck.ZeroConstraint bConstraint = copyConstraint(a, b, EQUAL);
     assertThat(bConstraint).isEqualTo(ZERO);
 
-    bConstraint = copyConstraint(a, b, NOT_EQUAL, NON_ZERO);
+    bConstraint = copyConstraint(a, b, NOT_EQUAL);
     assertThat(bConstraint).isEqualTo(NON_ZERO);
-    bConstraint = copyConstraint(a, b, LESS_THAN, NON_ZERO);
+    bConstraint = copyConstraint(a, b, LESS_THAN);
     assertThat(bConstraint).isEqualTo(NON_ZERO);
 
-    bConstraint = copyConstraint(a, b, GREATER_THAN_OR_EQUAL, null);
+    bConstraint = copyConstraint(a, b, GREATER_THAN_OR_EQUAL);
     assertThat(bConstraint).isNull();
   }
 
-  private DivisionByZeroCheck.ZeroConstraint copyConstraint(SymbolicValue a, SymbolicValue b, RelationalSymbolicValue.Kind relation,
-    @Nullable DivisionByZeroCheck.ZeroConstraint expected) {
+  private DivisionByZeroCheck.ZeroConstraint copyConstraint(SymbolicValue a, SymbolicValue b, RelationalSymbolicValue.Kind relation) {
     ProgramState ps = ListUtils.getOnlyElement(a.setConstraint(ProgramState.EMPTY_STATE, ZERO));
     RelationalSymbolicValue rel = new RelationalSymbolicValue(relation);
     SymbolicValueTestUtil.computedFrom(rel, b, a);

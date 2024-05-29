@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.Preconditions;
-import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.SEExpressionUtils;
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
@@ -523,10 +523,10 @@ public class FlowComputation {
       if (expressionTree == null) {
         return false;
       }
-      ExpressionTree expr = ExpressionUtils.skipParentheses(expressionTree);
+      ExpressionTree expr = SEExpressionUtils.skipParentheses(expressionTree);
       if (expr.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
         ConditionalExpressionTree cet = (ConditionalExpressionTree) expr;
-        return ExpressionUtils.isNullLiteral(cet.trueExpression()) ^ ExpressionUtils.isNullLiteral(cet.falseExpression());
+        return SEExpressionUtils.isNullLiteral(cet.trueExpression()) ^ SEExpressionUtils.isNullLiteral(cet.falseExpression());
       }
       return false;
     }
@@ -537,7 +537,7 @@ public class FlowComputation {
     }
 
     private boolean isMethodInvocation(@Nullable ExpressionTree expressionTree) {
-      return expressionTree != null && ExpressionUtils.skipParentheses(expressionTree).is(Tree.Kind.METHOD_INVOCATION);
+      return expressionTree != null && SEExpressionUtils.skipParentheses(expressionTree).is(Tree.Kind.METHOD_INVOCATION);
     }
 
     private boolean assignedFromYieldWithUncertainResult(Constraint constraint, Node node) {
@@ -660,7 +660,7 @@ public class FlowComputation {
         result = ((IdentifierTree) syntaxTree).symbol();
       } else if (syntaxTree.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mset = (MemberSelectExpressionTree) syntaxTree;
-        if (ExpressionUtils.isSelectOnThisOrSuper(mset)) {
+        if (SEExpressionUtils.isSelectOnThisOrSuper(mset)) {
           result = mset.identifier().symbol();
         }
       }
@@ -833,7 +833,7 @@ public class FlowComputation {
     if (index < 0 || index > arguments.size()) {
       throw new IllegalArgumentException("index must be within arguments range.");
     }
-    ExpressionTree expr = ExpressionUtils.skipParentheses(arguments.get(index));
+    ExpressionTree expr = SEExpressionUtils.skipParentheses(arguments.get(index));
     switch (expr.kind()) {
       case MEMBER_SELECT:
         return ((MemberSelectExpressionTree) expr).identifier();

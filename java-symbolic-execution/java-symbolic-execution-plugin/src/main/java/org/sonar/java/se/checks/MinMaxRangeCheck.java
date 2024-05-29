@@ -26,7 +26,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.model.SELiteralUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.ProgramState;
@@ -144,9 +144,9 @@ public class MinMaxRangeCheck extends SECheck {
     // TODO handle float and double
     switch (syntaxNode.kind()) {
       case INT_LITERAL:
-        return handleNumericalLiteral(context, LiteralUtils.intLiteralValue((ExpressionTree) syntaxNode));
+        return handleNumericalLiteral(context, SELiteralUtils.intLiteralValue((ExpressionTree) syntaxNode));
       case LONG_LITERAL:
-        return handleNumericalLiteral(context, LiteralUtils.longLiteralValue((ExpressionTree) syntaxNode));
+        return handleNumericalLiteral(context, SELiteralUtils.longLiteralValue((ExpressionTree) syntaxNode));
       case UNARY_MINUS:
       case UNARY_PLUS:
         return handleNumericalLiteral(context, (UnaryExpressionTree) syntaxNode);

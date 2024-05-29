@@ -125,7 +125,7 @@ public class SETestUtils {
     VariableSymbol variable = mock(Symbol.VariableSymbol.class);
     when(variable.name()).thenReturn(name);
     when(variable.toString()).thenReturn("A#" + name);
-    // return new JavaSymbol.VariableJavaSymbol(0, name, new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
+    // return new JavaSymbol.VariableJavaSymbol(0, name, new JavaSymbol(JavaSymbol.TYP, 0, "A", SESymbols.unknownSymbol));
     return variable;
   }
 }

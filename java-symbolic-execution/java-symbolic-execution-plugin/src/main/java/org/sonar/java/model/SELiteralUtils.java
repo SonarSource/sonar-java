@@ -30,9 +30,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-public class LiteralUtils {
+public class SELiteralUtils {
 
-  private LiteralUtils() {
+  private SELiteralUtils() {
     // This class only contains static methods
   }
 
@@ -144,13 +144,13 @@ public class LiteralUtils {
 
   public static int indentationOfTextBlock(String[] lines) {
     return Arrays.stream(lines).skip(1)
-      .filter(LiteralUtils::isNonEmptyLine)
-      .mapToInt(LiteralUtils::getIndentation)
+      .filter(SELiteralUtils::isNonEmptyLine)
+      .mapToInt(SELiteralUtils::getIndentation)
       .min().orElse(0);
   }
 
   private static boolean isNonEmptyLine(String line) {
-    return line.chars().anyMatch(LiteralUtils::isNotWhiteSpace);
+    return line.chars().anyMatch(SELiteralUtils::isNotWhiteSpace);
   }
 
   /**

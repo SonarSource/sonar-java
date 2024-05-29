@@ -21,6 +21,7 @@ package org.sonar.java.se.filters;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +49,7 @@ import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.filters.JavaIssueFilter;
 import org.sonar.java.filters.SuppressWarningFilter;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.java.model.LineUtils;
+import org.sonar.java.model.SELineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
@@ -159,8 +160,8 @@ public class SuppressWarningFilterSeTest {
     Set<SECheck> rules = new HashSet<>();
     for (Class<? extends JavaCheck> rule : filteredRules) {
       try {
-        rules.add((SECheck) rule.newInstance());
-      } catch (InstantiationException | IllegalAccessException e) {
+        rules.add((SECheck) rule.getConstructor().newInstance());
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
         Fail.fail("Unable to instantiate rule " + rule.getCanonicalName());
       }
     }
@@ -183,9 +184,9 @@ public class SuppressWarningFilterSeTest {
       String[] lines = comment.split("\\r\\n|\\r|\\n");
       for (int i = 0; i < lines.length; i++) {
         if (lines[i].endsWith("NoIssue")) {
-          rejectedIssuesLines.add(LineUtils.startLine(syntaxTrivia) + i);
+          rejectedIssuesLines.add(SELineUtils.startLine(syntaxTrivia) + i);
         } else if (lines[i].endsWith("WithIssue")) {
-          acceptedIssuesLines.add(LineUtils.startLine(syntaxTrivia) + i);
+          acceptedIssuesLines.add(SELineUtils.startLine(syntaxTrivia) + i);
         }
       }
     }

@@ -69,7 +69,7 @@ public class SECheckVerifier implements CheckVerifier {
   }
 
   public CheckVerifier withCustomIssueVerifier(Consumer<Set<AnalyzerMessage>> customIssueVerifier) {
-    // FIXME checkVerifier.withCustomIssueVerifier(customIssueVerifier);
+    checkVerifier.withCustomIssueVerifier(customIssueVerifier);
     return this;
   }
 

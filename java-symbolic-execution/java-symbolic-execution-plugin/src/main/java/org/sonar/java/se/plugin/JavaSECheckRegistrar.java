@@ -52,7 +52,7 @@ public class JavaSECheckRegistrar implements CheckRegistrar {
 
   @Override
   public void register(RegistrarContext registrarContext) {
-
+    // need the CheckFactory to be provided in order to register checks
   }
 
   @Override

@@ -31,24 +31,21 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 /**
  * Predefined symbols.
  */
-public class Symbols {
+public class SESymbols {
 
-  private Symbols() {
+  private SESymbols() {
     // Utility class
   }
 
   public static final Type unknownType = new UnknownType();
 
   public static final Symbol rootPackage = new RootPackageSymbol();
-  public static final Symbol unknownSymbol = new UnknownSymbol();
   public static final Symbol.TypeSymbol unknownTypeSymbol = new UnkownTypeSymbol();
-  public static final Symbol.MethodSymbol unknownMethodSymbol = new UnknownMethodSymbol();
 
   public static final SymbolMetadata EMPTY_METADATA = new SymbolMetadata() {
 
@@ -218,7 +215,7 @@ public class Symbols {
 
     @Override
     public TypeSymbol outermostClass() {
-      return Symbols.unknownTypeSymbol;
+      return SESymbols.unknownTypeSymbol;
     }
 
     @Override
@@ -261,83 +258,6 @@ public class Symbols {
     @Override
     public Symbol owner() {
       return null;
-    }
-  }
-
-  private static final class UnknownMethodSymbol extends UnknownSymbol implements Symbol.MethodSymbol {
-    @Override
-    public MethodTree declaration() {
-      return null;
-    }
-
-    @Override
-    public List<Type> parameterTypes() {
-      return Collections.emptyList();
-    }
-
-    @Override
-    public List<Symbol> declarationParameters() {
-      return Collections.emptyList();
-    }
-
-    @Override
-    public TypeSymbol returnType() {
-      return unknownTypeSymbol;
-    }
-
-    @Override
-    public List<Type> thrownTypes() {
-      return Collections.emptyList();
-    }
-
-    @Override
-    public List<MethodSymbol> overriddenSymbols() {
-      return Collections.emptyList();
-    }
-
-    @Override
-    public Symbol owner() {
-      return unknownTypeSymbol;
-    }
-
-    @Override
-    public String name() {
-      return "!unknownMethod!";
-    }
-
-    @Override
-    public String signature() {
-      return "!unknownMethod!";
-    }
-
-    @Override
-    public boolean isOverridable() {
-      return false;
-    }
-
-    @Override
-    public boolean isParametrizedMethod() {
-      return false;
-    }
-
-    @Override
-    public boolean isDefaultMethod() {
-      return false;
-    }
-
-    @Override
-    public boolean isSynchronizedMethod() {
-      return false;
-    }
-
-    @Override
-    public boolean isVarArgsMethod() {
-      return false;
-    }
-
-    @Override
-    public boolean isNativeMethod() {
-      return false;
     }
   }
 

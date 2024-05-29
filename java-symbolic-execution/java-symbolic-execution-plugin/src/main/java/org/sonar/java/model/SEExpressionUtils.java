@@ -36,11 +36,11 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-public final class ExpressionUtils {
+public final class SEExpressionUtils {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ExpressionUtils.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SEExpressionUtils.class);
 
-  private ExpressionUtils() {
+  private SEExpressionUtils() {
   }
 
   /**
@@ -58,7 +58,7 @@ public final class ExpressionUtils {
       return false;
     }
 
-    ExpressionTree variable = ExpressionUtils.skipParentheses(tree.variable());
+    ExpressionTree variable = SEExpressionUtils.skipParentheses(tree.variable());
     return variable.is(Tree.Kind.IDENTIFIER) || isSelectOnThisOrSuper(tree);
   }
 
@@ -69,7 +69,7 @@ public final class ExpressionUtils {
    * @see #isSelectOnThisOrSuper(MemberSelectExpressionTree)
    */
   public static boolean isSelectOnThisOrSuper(AssignmentExpressionTree tree) {
-    ExpressionTree variable = ExpressionUtils.skipParentheses(tree.variable());
+    ExpressionTree variable = SEExpressionUtils.skipParentheses(tree.variable());
     return variable.is(Tree.Kind.MEMBER_SELECT) && isSelectOnThisOrSuper((MemberSelectExpressionTree) variable);
   }
 
@@ -102,7 +102,7 @@ public final class ExpressionUtils {
   }
 
   private static Optional<IdentifierTree> extractIdentifier(ExpressionTree tree) {
-    ExpressionTree cleanedExpression = ExpressionUtils.skipParentheses(tree);
+    ExpressionTree cleanedExpression = SEExpressionUtils.skipParentheses(tree);
     if (cleanedExpression.is(Tree.Kind.IDENTIFIER)) {
       return Optional.of(((IdentifierTree) cleanedExpression));
     } else if (cleanedExpression.is(Tree.Kind.MEMBER_SELECT)) {
@@ -146,7 +146,7 @@ public final class ExpressionUtils {
    * @return true if this expression refers to "this"
    */
   public static boolean isThis(ExpressionTree expression) {
-    ExpressionTree newExpression = ExpressionUtils.skipParentheses(expression);
+    ExpressionTree newExpression = SEExpressionUtils.skipParentheses(expression);
     return newExpression.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) newExpression).name());
   }
 
@@ -166,16 +166,16 @@ public final class ExpressionUtils {
       return Boolean.parseBoolean(((LiteralTree) expression).value());
     }
     if (expression.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
-      return LiteralUtils.getAsStringValue((LiteralTree) expression);
+      return SELiteralUtils.getAsStringValue((LiteralTree) expression);
     }
     if (expression instanceof UnaryExpressionTree unaryExpressionTree) {
       return resolveUnaryExpression(unaryExpressionTree);
     }
     if (expression.is(Tree.Kind.INT_LITERAL)) {
-      return LiteralUtils.intLiteralValue(expression);
+      return SELiteralUtils.intLiteralValue(expression);
     }
     if (expression.is(Tree.Kind.LONG_LITERAL)) {
-      return LiteralUtils.longLiteralValue(expression);
+      return SELiteralUtils.longLiteralValue(expression);
     }
     if (expression.is(Tree.Kind.PLUS)) {
       return resolvePlus((BinaryExpressionTree) expression);
