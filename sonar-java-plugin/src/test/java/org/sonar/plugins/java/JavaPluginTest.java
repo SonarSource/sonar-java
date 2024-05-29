@@ -27,6 +27,7 @@ import org.sonar.api.SonarRuntime;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
 import org.sonar.java.jsp.Jasper;
+import org.sonar.plugins.java.api.caching.SonarLintCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,7 +42,9 @@ class JavaPluginTest {
     SonarRuntime runtime = SonarRuntimeImpl.forSonarLint(VERSION_9_9);
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
-    assertThat(context.getExtensions()).hasSize(18);
+    assertThat(context.getExtensions())
+      .hasSize(18)
+      .contains(SonarLintCache.class);
   }
 
 

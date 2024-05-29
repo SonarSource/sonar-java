@@ -52,6 +52,8 @@ public class JavaPlugin implements Plugin {
 
     if (context.getRuntime().getProduct() == SonarProduct.SONARLINT) {
       list.add(ClasspathForMainForSonarLint.class);
+      // Some custom rules (i.e. DBD) depend on the presence of SonarLintCache when executing in a SonarLint context.
+      // Hence, we must provide it here.
       list.add(SonarLintCache.class);
     } else {
       list.addAll(SurefireExtensions.getExtensions());
