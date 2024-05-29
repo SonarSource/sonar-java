@@ -28,6 +28,7 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.pattern.GuardedPatternTreeImpl;
@@ -39,6 +40,7 @@ import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -55,6 +57,7 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.plugins.java.api.tree.VarTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 public final class PrintableNodesCreation {
@@ -154,6 +157,18 @@ public final class PrintableNodesCreation {
       : new GuardedPatternTreeImpl(unguardedPattern, null, guards.stream().reduce((x, y) -> binop(x, Tree.Kind.CONDITIONAL_AND, y)).get()
     );
   }
+
+  // <editor-fold desc="Types">
+
+  public static TypeTree forceNotVar(TypeTree typeTree){
+    if (typeTree instanceof VarTypeTree){
+      return new IdentifierTreeImpl(token(typeTree.symbolType().name()));
+    } else {
+      return typeTree;
+    }
+  }
+
+  // </editor-fold>
 
   // </editor-fold>
 
