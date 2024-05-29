@@ -21,6 +21,10 @@ package org.sonar.java.model;
 
 import java.io.File;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.sonar.api.SonarProduct;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.java.SonarComponents;
@@ -195,5 +199,57 @@ class DefaultModuleScannerContextTest {
       null
     );
     assertThat(context.getRootProjectWorkingDirectory()).isSameAs(projectLevelWorkDirFile);
+  }
+
+  @ParameterizedTest
+  @EnumSource(SonarProduct.class)
+  void should_properly_report_sonar_product(SonarProduct product) {
+    var runtime = mock(SonarRuntime.class);
+    doReturn(product).when(runtime).getProduct();
+
+    var sensorContext = mock(SensorContext.class);
+    doReturn(runtime).when(sensorContext).runtime();
+
+    var sonarComponents = mock(SonarComponents.class);
+    doReturn(sensorContext).when(sonarComponents).context();
+
+    var context = new DefaultModuleScannerContext(
+      sonarComponents,
+      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      false,
+      null
+    );
+
+    assertThat(context.sonarProduct())
+      .isEqualTo(product);
+  }
+
+  @Test
+  void should_not_report_product_if_sonarcomponents_is_not_available() {
+    var context = new DefaultModuleScannerContext(
+      null,
+      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      false,
+      null
+    );
+
+    assertThat(context.sonarProduct())
+      .isNull();
+  }
+
+  @Test
+  void should_not_report_product_if_no_sensor_context_is_available() {
+    var sonarComponents = mock(SonarComponents.class);
+    doReturn(null).when(sonarComponents).context();
+
+    var context = new DefaultModuleScannerContext(
+      sonarComponents,
+      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      false,
+      null
+    );
+
+    assertThat(context.sonarProduct())
+      .isNull();
   }
 }

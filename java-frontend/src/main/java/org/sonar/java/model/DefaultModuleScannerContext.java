@@ -32,14 +32,13 @@ import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
 public class DefaultModuleScannerContext implements ModuleScannerContext {
-  // TODO: Why is this field not treated as nullable, even though the constructor accepts a nullable argument?
-  @Nullable
   protected final SonarComponents sonarComponents;
   protected final JavaVersion javaVersion;
   protected final boolean inAndroidContext;
   protected final CacheContext cacheContext;
 
-  public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
+  public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext,
+    @Nullable CacheContext cacheContext) {
     this.sonarComponents = sonarComponents;
     this.javaVersion = javaVersion;
     this.inAndroidContext = inAndroidContext;
@@ -91,6 +90,8 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
 
   @Override
   public SonarProduct sonarProduct() {
+    // In production, sonarComponents and sonarComponents.context() should never be null.
+    // However, in testing contexts, this can happen and calling this method should not cause tests to fail.
     if (sonarComponents == null) {
       return null;
     }
