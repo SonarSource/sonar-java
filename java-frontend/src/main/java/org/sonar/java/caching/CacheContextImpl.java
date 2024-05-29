@@ -54,28 +54,28 @@ public class CacheContextImpl implements CacheContext {
       return dummyCache();
     }
 
+    // If a SonarLintCache is available, it means we must be running in a SonarLint context, and we should use it,
+    // regardless of whether settings for caching are enabled or not.
+    // This is because custom rules (i.e. DBD rules) are depending on SonarLintCache in a SonarLint context.
+    var sonarLintCache = sonarComponents.sonarLintCache();
+    if (sonarLintCache != null) {
+      return fromSonarLintCache(sonarLintCache);
+    }
+
     var sensorContext = sonarComponents.context();
     if (sensorContext == null) {
       return dummyCache();
     }
 
     try {
-      // TODO: Should we really ignore the cache enabled setting if a SonarLintCache is available?
-      // Apparently, by default, it is not enabled in SonarLint, but we need it to be present for DBD.
-      var sonarLintCache = sonarComponents.sonarLintCache();
-      if (sonarLintCache != null) {
-        return fromSonarLintCache(sonarLintCache);
-      }
-
-      var shouldConstructCacheContext = shouldConstructCacheContext(sensorContext);
-      LOGGER.trace("Caching is enabled: {}", shouldConstructCacheContext);
-      if (!shouldConstructCacheContext) {
+      var isCachingEnabled = isCachingEnabled(sensorContext);
+      LOGGER.trace("Caching is enabled: {}", isCachingEnabled);
+      if (!isCachingEnabled) {
         return dummyCache();
       }
 
       return fromSensorContext(sensorContext);
     } catch (NoSuchMethodError error) {
-      // TODO: Check if we really need to wrap all this in exception handling
       LOGGER.debug("Missing cache related method from sonar-plugin-api: {}.", error.getMessage());
       return dummyCache();
     }
@@ -84,17 +84,6 @@ public class CacheContextImpl implements CacheContext {
   private static CacheContextImpl dummyCache() {
     var dummyCache = new DummyCache();
     return new CacheContextImpl(false, dummyCache, dummyCache);
-  }
-
-  private static boolean shouldConstructCacheContext(SensorContext context) {
-    return
-      Optional.ofNullable(context.config())
-      .flatMap(config -> config.getBoolean(SONAR_CACHING_ENABLED_KEY))
-      .map(flag -> {
-        LOGGER.debug("Forcing caching behavior. Caching will be enabled: {}", flag);
-        return flag;
-      })
-      .orElse(context.isCacheEnabled());
   }
 
   private static CacheContextImpl fromSensorContext(SensorContext context) {
@@ -111,6 +100,17 @@ public class CacheContextImpl implements CacheContext {
       new JavaReadCacheImpl(sonarLintCache),
       new JavaWriteCacheImpl(sonarLintCache)
     );
+  }
+
+  private static boolean isCachingEnabled(SensorContext context) {
+    return
+      Optional.ofNullable(context.config())
+        .flatMap(config -> config.getBoolean(SONAR_CACHING_ENABLED_KEY))
+        .map(flag -> {
+          LOGGER.debug("Forcing caching behavior. Caching will be enabled: {}", flag);
+          return flag;
+        })
+        .orElse(context.isCacheEnabled());
   }
 
   @Override
