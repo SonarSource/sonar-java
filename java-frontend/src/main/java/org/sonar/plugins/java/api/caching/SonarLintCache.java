@@ -32,6 +32,10 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 /**
  * Component used in SonarLint to transfer data in memory between plugins.
  * At the time of writing, this is used only by the DBD plugin, to consume IRs produced by DBD custom rules in SonarLint context.
+ * This component is just an intermediate solution until a dedicated mechanism to communicate between plugins with sufficient capabilities
+ * is available.
+ * <p>
+ * By default, this component has {@code SINGLE_ANALYSIS} lifetime, meaning that it does not need to be manually cleared after analysis.
  */
 @SonarLintSide()
 @Beta
