@@ -56,8 +56,25 @@ public class SELiveVariables {
     this.includeFields = includeFields;
   }
 
-  public Set<Symbol> getOut(ControlFlowGraph.Block block) {
-    return out.get(block);
+  private void analyzeControlFlowGraph(Map<ControlFlowGraph.Block, Set<Symbol>> in, Map<ControlFlowGraph.Block, Set<Symbol>> kill, Map<ControlFlowGraph.Block, Set<Symbol>> gen) {
+    Deque<ControlFlowGraph.Block> workList = new LinkedList<>();
+    workList.addAll(cfg.reversedBlocks());
+    while (!workList.isEmpty()) {
+      ControlFlowGraph.Block block = workList.removeFirst();
+
+      Set<Symbol> blockOut = out.computeIfAbsent(block, k -> new HashSet<>());
+      block.successors().stream().map(in::get).filter(Objects::nonNull).forEach(blockOut::addAll);
+      block.exceptions().stream().map(in::get).filter(Objects::nonNull).forEach(blockOut::addAll);
+      // in = gen and (out - kill)
+      Set<Symbol> newIn = new HashSet<>(gen.get(block));
+      newIn.addAll(SetUtils.difference(blockOut, kill.get(block)));
+
+      if (newIn.equals(in.get(block))) {
+        continue;
+      }
+      in.put(block, newIn);
+      block.predecessors().forEach(workList::addLast);
+    }
   }
 
   /**
@@ -93,24 +110,34 @@ public class SELiveVariables {
     return liveVariables;
   }
 
-  private void analyzeControlFlowGraph(Map<ControlFlowGraph.Block, Set<Symbol>> in, Map<ControlFlowGraph.Block, Set<Symbol>> kill, Map<ControlFlowGraph.Block, Set<Symbol>> gen) {
-    Deque<ControlFlowGraph.Block> workList = new LinkedList<>();
-    workList.addAll(cfg.reversedBlocks());
-    while (!workList.isEmpty()) {
-      ControlFlowGraph.Block block = workList.removeFirst();
+  public Set<Symbol> getOut(ControlFlowGraph.Block block) {
+    return out.get(block);
+  }
 
-      Set<Symbol> blockOut = out.computeIfAbsent(block, k -> new HashSet<>());
-      block.successors().stream().map(in::get).filter(Objects::nonNull).forEach(blockOut::addAll);
-      block.exceptions().stream().map(in::get).filter(Objects::nonNull).forEach(blockOut::addAll);
-      // in = gen and (out - kill)
-      Set<Symbol> newIn = new HashSet<>(gen.get(block));
-      newIn.addAll(SetUtils.difference(blockOut, kill.get(block)));
-
-      if (newIn.equals(in.get(block))) {
-        continue;
+  private void processMemberSelect(MemberSelectExpressionTree element, Set<Tree> assignmentLHS, Set<Symbol> blockGen) {
+    Symbol symbol;
+    if (!assignmentLHS.contains(element) && includeFields) {
+      symbol = getField(element);
+      if (symbol != null) {
+        blockGen.add(symbol);
       }
-      in.put(block, newIn);
-      block.predecessors().forEach(workList::addLast);
+    }
+  }
+
+  private void processAssignment(AssignmentExpressionTree element, Set<Symbol> blockKill, Set<Symbol> blockGen, Set<Tree> assignmentLHS) {
+    Symbol symbol = null;
+    ExpressionTree lhs = element.variable();
+    if (lhs.is(Kind.IDENTIFIER)) {
+      symbol = ((IdentifierTree) lhs).symbol();
+
+    } else if (includeFields && lhs.is(Kind.MEMBER_SELECT)) {
+      symbol = getField((MemberSelectExpressionTree) lhs);
+    }
+
+    if (symbol != null && includeSymbol(symbol)) {
+      assignmentLHS.add(lhs);
+      blockGen.remove(symbol);
+      blockKill.add(symbol);
     }
   }
 
@@ -151,33 +178,6 @@ public class SELiveVariables {
     Symbol symbol = element.symbol();
     if (!assignmentLHS.contains(element) && includeSymbol(symbol)) {
       blockGen.add(symbol);
-    }
-  }
-
-  private void processMemberSelect(MemberSelectExpressionTree element, Set<Tree> assignmentLHS, Set<Symbol> blockGen) {
-    Symbol symbol;
-    if (!assignmentLHS.contains(element) && includeFields) {
-      symbol = getField(element);
-      if (symbol != null) {
-        blockGen.add(symbol);
-      }
-    }
-  }
-
-  private void processAssignment(AssignmentExpressionTree element, Set<Symbol> blockKill, Set<Symbol> blockGen, Set<Tree> assignmentLHS) {
-    Symbol symbol = null;
-    ExpressionTree lhs = element.variable();
-    if (lhs.is(Kind.IDENTIFIER)) {
-      symbol = ((IdentifierTree) lhs).symbol();
-
-    } else if (includeFields && lhs.is(Kind.MEMBER_SELECT)) {
-      symbol = getField((MemberSelectExpressionTree) lhs);
-    }
-
-    if (symbol != null && includeSymbol(symbol)) {
-      assignmentLHS.add(lhs);
-      blockGen.remove(symbol);
-      blockKill.add(symbol);
     }
   }
 

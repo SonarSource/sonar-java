@@ -28,6 +28,15 @@ public final class CollectionUtils {
   private CollectionUtils() {
   }
   
+  private static int size(Iterator<?> iterator) {
+    int count;
+    for(count = 0; iterator.hasNext(); ++count) {
+      iterator.next();
+    }
+
+    return count;
+  }
+
   @Nullable
   public static <T> T getFirst(Iterable<T> iterable, @Nullable T defaultValue) {
     Iterator<T> iterator = iterable.iterator();
@@ -36,15 +45,6 @@ public final class CollectionUtils {
 
   public static int size(Iterable<?> iterable) {
     return iterable instanceof Collection<?> collection ? collection.size() : size(iterable.iterator());
-  }
-
-  private static int size(Iterator<?> iterator) {
-    int count;
-    for(count = 0; iterator.hasNext(); ++count) {
-      iterator.next();
-    }
-
-    return count;
   }
 
 }

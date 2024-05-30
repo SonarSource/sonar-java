@@ -52,16 +52,12 @@ public class CFGLoop {
     collectWaysOut(container);
   }
 
-  Collection<Block> successors() {
-    return new ArrayList<>(successors);
-  }
-
   public boolean hasNoWayOut() {
     return successors.isEmpty();
   }
 
-  private void collectBlocks(Block block, Map<Tree, CFGLoop> container) {
-    collectBlocks(block, container, new HashSet<>());
+  Collection<Block> successors() {
+    return new ArrayList<>(successors);
   }
 
   private boolean collectBlocks(Block block, Map<Tree, CFGLoop> container, Set<Block> visitedBlocks) {
@@ -78,20 +74,8 @@ public class CFGLoop {
     return answer;
   }
 
-  private boolean returnsToStart(Block block, Map<Tree, CFGLoop> container, Set<Block> visitedBlocks) {
-    Set<? extends Block> localSuccessors = localSuccessors(block, container);
-    if (localSuccessors == null) {
-      return true;
-    }
-    boolean answer = false;
-    for (Block successor : localSuccessors) {
-      if (startingBlock.id() == successor.id()) {
-        answer = true;
-      } else {
-        answer |= collectBlocks(successor, container, visitedBlocks);
-      }
-    }
-    return answer;
+  private void collectBlocks(Block block, Map<Tree, CFGLoop> container) {
+    collectBlocks(block, container, new HashSet<>());
   }
 
   @CheckForNull
@@ -113,9 +97,20 @@ public class CFGLoop {
     return block.successors();
   }
 
-  private static boolean isBreak(Block block) {
-    Tree terminator = block.terminator();
-    return terminator != null && terminator.is(Tree.Kind.BREAK_STATEMENT);
+  private boolean returnsToStart(Block block, Map<Tree, CFGLoop> container, Set<Block> visitedBlocks) {
+    Set<? extends Block> localSuccessors = localSuccessors(block, container);
+    if (localSuccessors == null) {
+      return true;
+    }
+    boolean answer = false;
+    for (Block successor : localSuccessors) {
+      if (startingBlock.id() == successor.id()) {
+        answer = true;
+      } else {
+        answer |= collectBlocks(successor, container, visitedBlocks);
+      }
+    }
+    return answer;
   }
 
   private void collectWaysOut(Map<Tree, CFGLoop> container) {
@@ -131,9 +126,9 @@ public class CFGLoop {
     successors.remove(startingBlock);
   }
 
-  private static boolean isStarting(Block block) {
+  private static boolean isBreak(Block block) {
     Tree terminator = block.terminator();
-    return terminator != null && terminator.is(Tree.Kind.FOR_STATEMENT, Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT);
+    return terminator != null && terminator.is(Tree.Kind.BREAK_STATEMENT);
   }
 
   public static Map<Tree, CFGLoop> getCFGLoops(ControlFlowGraph cfg) {
@@ -154,5 +149,10 @@ public class CFGLoop {
     container.put(block.terminator(), loop);
     loop.initialize(block, container);
     return loop;
+  }
+
+  private static boolean isStarting(Block block) {
+    Tree terminator = block.terminator();
+    return terminator != null && terminator.is(Tree.Kind.FOR_STATEMENT, Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT);
   }
 }

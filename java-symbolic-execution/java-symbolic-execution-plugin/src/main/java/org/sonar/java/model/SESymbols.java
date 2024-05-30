@@ -47,41 +47,6 @@ public class SESymbols {
   public static final Symbol rootPackage = new RootPackageSymbol();
   public static final Symbol.TypeSymbol unknownTypeSymbol = new UnkownTypeSymbol();
 
-  public static final SymbolMetadata EMPTY_METADATA = new SymbolMetadata() {
-
-    @Override
-    public boolean isAnnotatedWith(String fullyQualifiedName) {
-      return false;
-    }
-
-    @Override
-    @CheckForNull
-    public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
-      return null;
-    }
-
-    @Override
-    public List<AnnotationInstance> annotations() {
-      return Collections.emptyList();
-    }
-
-    @Override
-    public NullabilityData nullabilityData() {
-      return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
-    }
-
-    @Override
-    public NullabilityData nullabilityData(NullabilityTarget level) {
-      return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
-    }
-
-    @Nullable
-    @Override
-    public AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance) {
-      return null;
-    }
-  };
-
   public abstract static class DefaultSymbol implements Symbol {
 
     @Override
@@ -165,6 +130,41 @@ public class SESymbols {
     }
   }
 
+  public static final SymbolMetadata EMPTY_METADATA = new SymbolMetadata() {
+
+    @Override
+    public boolean isAnnotatedWith(String fullyQualifiedName) {
+      return false;
+    }
+
+    @Override
+    @CheckForNull
+    public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
+      return null;
+    }
+
+    @Override
+    public List<AnnotationInstance> annotations() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public NullabilityData nullabilityData() {
+      return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
+    }
+
+    @Override
+    public NullabilityData nullabilityData(NullabilityTarget level) {
+      return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
+    }
+
+    @Nullable
+    @Override
+    public AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance) {
+      return null;
+    }
+  };
+
   private static class UnknownSymbol extends DefaultSymbol {
     @Override
     public boolean isUnknown() {
@@ -172,23 +172,13 @@ public class SESymbols {
     }
 
     @Override
-    public String name() {
-      return "!unknown!";
-    }
-
-    @Override
-    public Symbol owner() {
-      return rootPackage;
-    }
-
-    @Override
-    public final Type type() {
-      return unknownType;
-    }
-
-    @Override
     public final TypeSymbol enclosingClass() {
       return unknownTypeSymbol;
+    }
+
+    @Override
+    public String name() {
+      return "!unknown!";
     }
 
     @Override
@@ -199,6 +189,16 @@ public class SESymbols {
     @Override
     public final List<IdentifierTree> usages() {
       return Collections.emptyList();
+    }
+
+    @Override
+    public final Type type() {
+      return unknownType;
+    }
+
+    @Override
+    public Symbol owner() {
+      return rootPackage;
     }
   }
 
@@ -313,14 +313,13 @@ public class SESymbols {
       return null;
     }
 
-    @Nullable
     @Override
-    public Type primitiveType() {
-      return null;
+    public boolean isUnknown() {
+      return true;
     }
 
     @Override
-    public boolean isNullType() {
+    public boolean isNumerical() {
       return false;
     }
 
@@ -339,29 +338,15 @@ public class SESymbols {
       return this;
     }
 
+    @Nullable
     @Override
-    public boolean isUnknown() {
-      return true;
+    public Type primitiveType() {
+      return null;
     }
 
     @Override
-    public boolean isNumerical() {
+    public boolean isNullType() {
       return false;
-    }
-
-    @Override
-    public String fullyQualifiedName() {
-      return "!Unknown!";
-    }
-
-    @Override
-    public String name() {
-      return "!Unknown!";
-    }
-
-    @Override
-    public Symbol.TypeSymbol symbol() {
-      return unknownTypeSymbol;
     }
 
     @Override
@@ -377,6 +362,21 @@ public class SESymbols {
     @Override
     public List<Type> typeArguments() {
       return Collections.emptyList();
+    }
+
+    @Override
+    public String fullyQualifiedName() {
+      return "!Unknown!";
+    }
+
+    @Override
+    public String name() {
+      return "!Unknown!";
+    }
+
+    @Override
+    public Symbol.TypeSymbol symbol() {
+      return unknownTypeSymbol;
     }
   }
 }

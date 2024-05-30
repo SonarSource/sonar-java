@@ -23,6 +23,7 @@ import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -54,7 +55,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 
-import static org.sonar.java.se.NullabilityDataUtils.nullabilityAsString;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.VARIABLE;
 
@@ -320,6 +320,48 @@ public class NonNullSetToNullCheck extends SECheck {
       return nullabilityAsString(nullabilityData);
     }
     return Optional.empty();
+  }
+
+  private static Optional<String> nullabilityAsString(SymbolMetadata.NullabilityData nullabilityData) {
+    SymbolMetadata.AnnotationInstance annotation = nullabilityData.annotation();
+    if (annotation == null) {
+      return Optional.empty();
+    }
+    String name = getAnnotationName(annotation);
+    if (nullabilityData.metaAnnotation()) {
+      name += " via meta-annotation";
+    }
+    String level = levelToString(nullabilityData.level());
+    return Optional.of(String.format("@%s%s", name, level));
+  }
+
+  private static String getAnnotationName(SymbolMetadata.AnnotationInstance annotation) {
+    String name = annotation.symbol().name();
+    if ("Nonnull".equals(name)) {
+      return name + annotationArguments(annotation.values());
+    }
+    return name;
+  }
+
+  private static String annotationArguments(List<SymbolMetadata.AnnotationValue> valuesForAnnotation) {
+    return valuesForAnnotation.stream()
+      .filter(annotationValue -> "when".equals(annotationValue.name()))
+      .map(SymbolMetadata.AnnotationValue::value)
+      .filter(Symbol.class::isInstance)
+      .map(symbol -> String.format("(when=%s)", ((Symbol) symbol).name()))
+      .findFirst().orElse("");
+  }
+
+  private static String levelToString(SymbolMetadata.NullabilityLevel level) {
+    switch (level) {
+      case PACKAGE:
+      case CLASS:
+        return String.format(" at %s level", level.toString().toLowerCase(Locale.ROOT));
+      case METHOD:
+      case VARIABLE:
+      default:
+        return "";
+    }
   }
 
 }

@@ -28,10 +28,10 @@ public class CFGUtils {
     // utility class
   }
 
-  public static final Predicate<ControlFlowGraph.Block> IS_CATCH_BLOCK = ControlFlowGraph.Block::isCatchBlock;
-
   public static boolean isMethodExitBlock(ControlFlowGraph.Block block) {
     return block.successors().isEmpty();
   }
+
+  public static final Predicate<ControlFlowGraph.Block> IS_CATCH_BLOCK = ControlFlowGraph.Block::isCatchBlock;
 
 }

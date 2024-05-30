@@ -37,28 +37,6 @@ public class SELiteralUtils {
   }
 
   @CheckForNull
-  public static Integer intLiteralValue(ExpressionTree expression) {
-    if (expression.is(Kind.INT_LITERAL)) {
-      return intLiteralValue((LiteralTree) expression);
-    }
-    if (expression.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
-      UnaryExpressionTree unaryExp = (UnaryExpressionTree) expression;
-      Integer subExpressionIntValue = intLiteralValue(unaryExp.expression());
-      return expression.is(Kind.UNARY_MINUS) ? minus(subExpressionIntValue) : subExpressionIntValue;
-    }
-    return null;
-  }
-
-  private static Integer intLiteralValue(LiteralTree literal) {
-    String literalValue = literal.value().replace("_", "");
-    if (literalValue.startsWith("0b") || literalValue.startsWith("0B")) {
-      // assume it is used as bit mask
-      return Integer.parseUnsignedInt(literalValue.substring(2), 2);
-    }
-    return Long.decode(literalValue).intValue();
-  }
-
-  @CheckForNull
   public static Long longLiteralValue(ExpressionTree tree) {
     ExpressionTree expression = tree;
 
@@ -88,9 +66,39 @@ public class SELiteralUtils {
     return null;
   }
 
+  private static Integer intLiteralValue(LiteralTree literal) {
+    String literalValue = literal.value().replace("_", "");
+    if (literalValue.startsWith("0b") || literalValue.startsWith("0B")) {
+      // assume it is used as bit mask
+      return Integer.parseUnsignedInt(literalValue.substring(2), 2);
+    }
+    return Long.decode(literalValue).intValue();
+  }
+
+  @CheckForNull
+  public static Integer intLiteralValue(ExpressionTree expression) {
+    if (expression.is(Kind.INT_LITERAL)) {
+      return intLiteralValue((LiteralTree) expression);
+    }
+    if (expression.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
+      UnaryExpressionTree unaryExp = (UnaryExpressionTree) expression;
+      Integer subExpressionIntValue = intLiteralValue(unaryExp.expression());
+      return expression.is(Kind.UNARY_MINUS) ? minus(subExpressionIntValue) : subExpressionIntValue;
+    }
+    return null;
+  }
+
   @CheckForNull
   private static Integer minus(@Nullable Integer nullableInteger) {
     return nullableInteger == null ? null : -nullableInteger;
+  }
+
+  public static boolean isTrue(Tree tree) {
+    return tree.is(Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) tree).value());
+  }
+
+  public static boolean isFalse(Tree tree) {
+    return tree.is(Kind.BOOLEAN_LITERAL) && "false".equals(((LiteralTree) tree).value());
   }
 
   public static String trimQuotes(String value) {
@@ -115,12 +123,15 @@ public class SELiteralUtils {
     return value;
   }
 
-  public static boolean isTrue(Tree tree) {
-    return tree.is(Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) tree).value());
+  public static int indentationOfTextBlock(String[] lines) {
+    return Arrays.stream(lines).skip(1)
+      .filter(SELiteralUtils::isNonEmptyLine)
+      .mapToInt(SELiteralUtils::getIndentation)
+      .min().orElse(0);
   }
 
-  public static boolean isFalse(Tree tree) {
-    return tree.is(Kind.BOOLEAN_LITERAL) && "false".equals(((LiteralTree) tree).value());
+  private static String stripIndent(int indent, String s) {
+    return s.isEmpty() ? s : s.substring(indent);
   }
 
   public static String getAsStringValue(LiteralTree tree) {
@@ -138,19 +149,13 @@ public class SELiteralUtils {
       .replaceAll("\"\"\"$", "");
   }
 
-  private static String stripIndent(int indent, String s) {
-    return s.isEmpty() ? s : s.substring(indent);
-  }
-
-  public static int indentationOfTextBlock(String[] lines) {
-    return Arrays.stream(lines).skip(1)
-      .filter(SELiteralUtils::isNonEmptyLine)
-      .mapToInt(SELiteralUtils::getIndentation)
-      .min().orElse(0);
-  }
-
-  private static boolean isNonEmptyLine(String line) {
-    return line.chars().anyMatch(SELiteralUtils::isNotWhiteSpace);
+  private static int getIndentation(String line) {
+    for (int i = 0; i < line.length(); ++i) {
+      if (isNotWhiteSpace(line.charAt(i))) {
+        return i;
+      }
+    }
+    return line.length();
   }
 
   /**
@@ -161,12 +166,7 @@ public class SELiteralUtils {
     return c != ' ' && c != '\t' && c != '\f';
   }
 
-  private static int getIndentation(String line) {
-    for (int i = 0; i < line.length(); ++i) {
-      if (isNotWhiteSpace(line.charAt(i))) {
-        return i;
-      }
-    }
-    return line.length();
+  private static boolean isNonEmptyLine(String line) {
+    return line.chars().anyMatch(SELiteralUtils::isNotWhiteSpace);
   }
 }
