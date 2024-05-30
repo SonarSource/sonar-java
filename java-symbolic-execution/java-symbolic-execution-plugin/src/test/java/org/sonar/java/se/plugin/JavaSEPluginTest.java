@@ -17,36 +17,28 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.constraint;
+package org.sonar.java.se.plugin;
 
-import java.util.Objects;
 
-public class TypedConstraint implements Constraint {
+import org.junit.jupiter.api.Test;
+import org.sonar.api.Plugin;
+import org.sonar.api.SonarEdition;
+import org.sonar.api.SonarQubeSide;
+import org.sonar.api.SonarRuntime;
+import org.sonar.api.internal.SonarRuntimeImpl;
+import org.sonar.api.utils.Version;
 
-  public final String type;
+import static org.assertj.core.api.Assertions.assertThat;
 
-  public TypedConstraint(String type) {
-    this.type = type;
-  }
+class JavaSEPluginTest {
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    if (type.charAt(0) == '!') {
-      return false;
-    }
-    TypedConstraint that = (TypedConstraint) o;
-    return type.equals(that.type);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(type);
+  @Test
+  void plugin() {
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(10, 2), SonarQubeSide.SERVER, SonarEdition.DEVELOPER);
+    Plugin.Context context = new Plugin.Context(runtime);
+    JavaSEPlugin plugin = new JavaSEPlugin();
+    plugin.define(context);
+    assertThat(context.getExtensions()).hasSize(2);
   }
 
 }

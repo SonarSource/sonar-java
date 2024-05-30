@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
@@ -50,6 +51,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.model.JUtilsTest.firstClass;
+import static org.sonar.java.model.JUtilsTest.firstMethod;
+import static org.sonar.java.model.JUtilsTest.nthMethod;
 
 class JMethodSymbolTest {
 
@@ -462,6 +466,34 @@ class JMethodSymbolTest {
 
   private static CompilationUnitTreeImpl test(String source) {
     return (CompilationUnitTreeImpl) JParserTestUtils.parse(source);
+  }
+
+  @Nested
+  class IsNativeMethod {
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+        class A {
+          native void foo();
+          void bar() { }
+        }
+        """);
+    private final ClassTreeImpl a = firstClass(cu);
+
+    @Test
+    void isNativeMethod() {
+      MethodTreeImpl nativeMethod = firstMethod(a);
+      assertThat(nativeMethod.symbol().isNativeMethod()).isTrue();
+    }
+
+    @Test
+    void not_native() {
+      MethodTreeImpl nonNativeMethod = nthMethod(a, 1);
+      assertThat(nonNativeMethod.symbol().isNativeMethod()).isFalse();
+    }
+
+    @Test
+    void unknown_method_is_not_native() {
+      assertThat(Symbols.unknownMethodSymbol.isNativeMethod()).isFalse();
+    }
   }
 
 }

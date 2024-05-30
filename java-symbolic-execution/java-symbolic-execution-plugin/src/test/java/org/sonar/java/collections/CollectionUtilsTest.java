@@ -28,8 +28,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-final class CollectionUtilsTest {
-  
+class CollectionUtilsTest {
+
   @Test
   void test_get_first_String() {
     List<String> list = Arrays.asList("A", "B", "Z");
@@ -45,18 +45,19 @@ final class CollectionUtilsTest {
   void test_get_collection_size() {
     assertThat(CollectionUtils.size(Arrays.asList("a", "b", "c"))).isEqualTo(3);
   }
-  
+
   @Test
   void test_get_iterable_size() {
     assertThat(CollectionUtils.size(new SomeIterable<String>())).isEqualTo(3);
   }
-  
+
   private static class SomeIterable<T> implements Iterable<T> {
-    
+
     @Override
     public Iterator<T> iterator() {
       return new Iterator<T>() {
         private int count = 3;
+
         @Override
         public boolean hasNext() {
           return count > 0;
@@ -71,4 +72,5 @@ final class CollectionUtilsTest {
       };
     }
   }
+
 }

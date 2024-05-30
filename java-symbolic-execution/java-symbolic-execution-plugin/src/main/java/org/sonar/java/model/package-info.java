@@ -17,36 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.constraint;
+@javax.annotation.ParametersAreNonnullByDefault
+@MethodsAreNonnullByDefault
+package org.sonar.java.model;
 
-import java.util.Objects;
-
-public class TypedConstraint implements Constraint {
-
-  public final String type;
-
-  public TypedConstraint(String type) {
-    this.type = type;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    if (type.charAt(0) == '!') {
-      return false;
-    }
-    TypedConstraint that = (TypedConstraint) o;
-    return type.equals(that.type);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(type);
-  }
-
-}
+import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;

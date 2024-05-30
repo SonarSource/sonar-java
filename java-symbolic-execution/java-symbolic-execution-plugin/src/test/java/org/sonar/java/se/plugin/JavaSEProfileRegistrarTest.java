@@ -17,36 +17,21 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.constraint;
+package org.sonar.java.se.plugin;
 
-import java.util.Objects;
+import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.TestProfileRegistrarContext;
 
-public class TypedConstraint implements Constraint {
+import static org.assertj.core.api.Assertions.assertThat;
 
-  public final String type;
+class JavaSEProfileRegistrarTest {
 
-  public TypedConstraint(String type) {
-    this.type = type;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    if (type.charAt(0) == '!') {
-      return false;
-    }
-    TypedConstraint that = (TypedConstraint) o;
-    return type.equals(that.type);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(type);
+  @Test
+  void constructor() {
+    JavaSEProfileRegistrar registrar = new JavaSEProfileRegistrar();
+    TestProfileRegistrarContext context = new TestProfileRegistrarContext();
+    registrar.register(context);
+    assertThat(context.defaultQualityProfileRules).hasSize(21); // 2 are not in the default profile
   }
 
 }

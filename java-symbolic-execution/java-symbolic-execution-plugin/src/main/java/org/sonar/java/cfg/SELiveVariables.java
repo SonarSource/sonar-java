@@ -44,14 +44,14 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
-public class LiveVariables {
+public class SELiveVariables {
 
   private final ControlFlowGraph cfg;
   private final Map<ControlFlowGraph.Block, Set<Symbol>> out = new HashMap<>();
   private final Map<ControlFlowGraph.Block, Set<Symbol>> in = new HashMap<>();
   private final boolean includeFields;
 
-  private LiveVariables(ControlFlowGraph cfg, boolean includeFields) {
+  private SELiveVariables(ControlFlowGraph cfg, boolean includeFields) {
     this.cfg = cfg;
     this.includeFields = includeFields;
   }
@@ -61,14 +61,14 @@ public class LiveVariables {
   }
 
   /**
-   * Returns LiveVariables object with information concerning local variables and parameters
+   * Returns SELiveVariables object with information concerning local variables and parameters
    */
-  public static LiveVariables analyze(ControlFlowGraph cfg) {
+  public static SELiveVariables analyze(ControlFlowGraph cfg) {
     return analyze(cfg, false);
   }
 
-  private static LiveVariables analyze(ControlFlowGraph cfg, boolean includeFields) {
-    LiveVariables liveVariables = new LiveVariables(cfg, includeFields);
+  private static SELiveVariables analyze(ControlFlowGraph cfg, boolean includeFields) {
+    SELiveVariables liveVariables = new SELiveVariables(cfg, includeFields);
     // Generate kill/gen for each block in isolation
     Map<ControlFlowGraph.Block, Set<Symbol>> kill = new HashMap<>();
     Map<ControlFlowGraph.Block, Set<Symbol>> gen = new HashMap<>();

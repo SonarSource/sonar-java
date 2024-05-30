@@ -66,7 +66,7 @@ public interface CheckRegistrar {
 
   }
 
-  default void register(RegistrarContext registrarContext, CheckFactory checkFActory) {
+  default void register(RegistrarContext registrarContext, CheckFactory checkFactory) {
     register(registrarContext);
   }
 
@@ -133,11 +133,17 @@ public interface CheckRegistrar {
       // to be overridden
     }
 
+    /**
+     * Register main code java checks which have already been initialized by a CheckFactory.
+     */
     @Beta
     public void registerMainChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
       // to be overridden
     }
 
+    /**
+     * Register test code java checks which have already been initialized by a CheckFactory.
+     */
     @Beta
     public void registerTestChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
       // to be overridden

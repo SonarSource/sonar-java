@@ -37,7 +37,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.cfg.LiveVariables;
+import org.sonar.java.cfg.SELiveVariables;
 import org.sonar.java.model.CFGUtils;
 import org.sonar.java.model.SEExpressionUtils;
 import org.sonar.java.model.SELineUtils;
@@ -141,7 +141,7 @@ public class ExplodedGraphWalker {
   ExplodedGraph.Node node;
   ProgramPoint programPosition;
   ProgramState programState;
-  private LiveVariables liveVariables;
+  private SELiveVariables liveVariables;
   @VisibleForTesting
   CheckerDispatcher checkerDispatcher;
   private Block exitBlock;
@@ -233,8 +233,8 @@ public class ExplodedGraphWalker {
 
     checkerDispatcher.init(tree, cfg);
 
-    PerformanceMeasure.Duration liveVariablesDuration = PerformanceMeasure.start("LiveVariables.analyze");
-    liveVariables = LiveVariables.analyze(cfg);
+    PerformanceMeasure.Duration liveVariablesDuration = PerformanceMeasure.start("SELiveVariables.analyze");
+    liveVariables = SELiveVariables.analyze(cfg);
     liveVariablesDuration.stop();
 
     explodedGraph = new ExplodedGraph();
