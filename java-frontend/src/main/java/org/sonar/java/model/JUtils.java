@@ -26,7 +26,6 @@ import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.Modifier;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -87,10 +86,6 @@ public final class JUtils {
       symbol = symbol.owner();
     }
     return symbol;
-  }
-
-  public static boolean isNativeMethod(Symbol.MethodSymbol method) {
-    return !method.isUnknown() && Modifier.isNative(((JMethodSymbol) method).binding.getModifiers());
   }
 
   @Nullable

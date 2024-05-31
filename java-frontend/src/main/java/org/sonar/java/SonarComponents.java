@@ -218,7 +218,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     this.additionalAutoScanCompatibleRuleKeys = new TreeSet<>();
     if (checkRegistrars != null) {
       for (CheckRegistrar registrar : checkRegistrars) {
-        registrar.register(this);
+        registrar.register(this, checkFactory);
       }
     }
   }
@@ -281,12 +281,17 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   @Override
   public void registerMainChecks(String repositoryKey, Collection<?> javaCheckClassesAndInstances) {
-    registerCheckClasses(mainChecks, repositoryKey, javaCheckClassesAndInstances);
+    registerCheckClasses(mainChecks, getCreatedCheckFromFactory(repositoryKey, javaCheckClassesAndInstances), javaCheckClassesAndInstances);
+  }
+
+  @Override
+  public void registerMainChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
+    registerCheckClasses(mainChecks, checks, javaCheckClassesAndInstances);
   }
 
   @Override
   public void registerTestChecks(String repositoryKey, Collection<?> javaCheckClassesAndInstances) {
-    registerCheckClasses(testChecks, repositoryKey, javaCheckClassesAndInstances);
+    registerCheckClasses(testChecks, getCreatedCheckFromFactory(repositoryKey, javaCheckClassesAndInstances), javaCheckClassesAndInstances);
   }
 
   @Override
@@ -316,9 +321,11 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     return ruleKeys.stream().anyMatch(ruleKey -> activeRules.find(ruleKey) != null);
   }
 
+  private Checks<JavaCheck> getCreatedCheckFromFactory(String repositoryKey, Collection<?> javaCheckClassesAndInstances){
+    return checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(javaCheckClassesAndInstances);
+  }
 
-  private void registerCheckClasses(List<JavaCheck> destinationList, String repositoryKey, Collection<?> javaCheckClassesAndInstances) {
-    Checks<JavaCheck> createdChecks = checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(javaCheckClassesAndInstances);
+  private void registerCheckClasses(List<JavaCheck> destinationList, Checks<JavaCheck> createdChecks, Collection<?> javaCheckClassesAndInstances) {
     allChecks.add(createdChecks);
     Map<Class<? extends JavaCheck>, Integer> classIndexes = new HashMap<>();
     int i = 0;

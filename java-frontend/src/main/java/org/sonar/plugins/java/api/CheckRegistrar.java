@@ -25,7 +25,10 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
 import org.sonarsource.api.sonarlint.SonarLintSide;
@@ -52,6 +55,20 @@ public interface CheckRegistrar {
    * @param registrarContext the context that will be used by the java-plugin to retrieve the classes for checks.
    */
   void register(RegistrarContext registrarContext);
+
+  /**
+   * This method is called during the definition of the SonarJava rules, implementing it allows to register
+   * rules in the same rule repository as SonarJava while its being defined.
+   * @param context the context that will be used by the java-plugin to define the rules in its repository.
+   * @param javaRepository the repository currently being defined
+   */
+  default void customRulesDefinition(RulesDefinition.Context context, RulesDefinition.NewRepository javaRepository) {
+
+  }
+
+  default void register(RegistrarContext registrarContext, CheckFactory checkFactory) {
+    register(registrarContext);
+  }
 
   /**
    * Context for checks registration.
@@ -113,6 +130,22 @@ public interface CheckRegistrar {
      *        <code>JavaCheck></code> instances
      */
     public void registerMainChecks(String repositoryKey, Collection<?> javaCheckClassesAndInstances) {
+      // to be overridden
+    }
+
+    /**
+     * Register main code java checks which have already been initialized by a CheckFactory.
+     */
+    @Beta
+    public void registerMainChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
+      // to be overridden
+    }
+
+    /**
+     * Register test code java checks which have already been initialized by a CheckFactory.
+     */
+    @Beta
+    public void registerTestChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
       // to be overridden
     }
 

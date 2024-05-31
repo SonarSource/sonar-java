@@ -27,7 +27,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.java.model.Sema;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaCheck;

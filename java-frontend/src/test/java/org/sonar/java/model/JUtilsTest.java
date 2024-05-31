@@ -571,32 +571,6 @@ class JUtilsTest {
   }
 
   @Nested
-  class IsNativeMethod {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("class A {\n"
-      + "  native void foo();\n"
-      + "  void bar() { }\n"
-      + "}");
-    private final ClassTreeImpl a = firstClass(cu);
-
-    @Test
-    void isNativeMethod() {
-      MethodTreeImpl nativeMethod = firstMethod(a);
-      assertThat(JUtils.isNativeMethod(nativeMethod.symbol())).isTrue();
-    }
-
-    @Test
-    void not_native() {
-      MethodTreeImpl nonNativeMethod = nthMethod(a, 1);
-      assertThat(JUtils.isNativeMethod(nonNativeMethod.symbol())).isFalse();
-    }
-
-    @Test
-    void unknown_method_is_not_native() {
-      assertThat(JUtils.isNativeMethod(Symbols.unknownMethodSymbol)).isFalse();
-    }
-  }
-
-  @Nested
   class IsDefaultMethod {
     private final JavaTree.CompilationUnitTreeImpl cu = test("interface A {\n"
       + "  default void foo() {}\n"
@@ -913,7 +887,7 @@ class JUtilsTest {
     return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }
 
-  private static ClassTreeImpl firstClass(JavaTree.CompilationUnitTreeImpl cu) {
+  static ClassTreeImpl firstClass(JavaTree.CompilationUnitTreeImpl cu) {
     return nthClass(cu, 0);
   }
 
@@ -929,11 +903,11 @@ class JUtilsTest {
     return (ClassTreeImpl) classTree.members().get(n);
   }
 
-  private static MethodTreeImpl firstMethod(ClassTreeImpl classTree) {
+  static MethodTreeImpl firstMethod(ClassTreeImpl classTree) {
     return nthMethod(classTree, 0);
   }
 
-  private static MethodTreeImpl nthMethod(ClassTreeImpl classTree, int n) {
+  static MethodTreeImpl nthMethod(ClassTreeImpl classTree, int n) {
     return (MethodTreeImpl) classTree.members().get(n);
   }
 

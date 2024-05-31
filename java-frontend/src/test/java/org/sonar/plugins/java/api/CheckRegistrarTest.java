@@ -24,11 +24,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.rule.RuleKey;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CheckRegistrarTest {
 
@@ -73,6 +76,11 @@ class CheckRegistrarTest {
       RuleKey.of("repo", "S123"),
       RuleKey.of("repo", "S456")));
 
+    Checks<JavaCheck> checks = mock(Checks.class);
+    when(checks.all()).thenReturn(List.of(new MainCheckA(), new MainCheckB(), new MainCheckC()));
+    registrarContext.registerMainChecks(checks, List.of());
+    registrarContext.registerTestChecks(checks, List.of());
+
     assertThat(registrarContext.repositoryKey()).isEqualTo("my-repo");
     assertThat(registrarContext.checkClasses()).hasSize(2);
     assertThat(registrarContext.testCheckClasses()).hasSize(1);
@@ -86,7 +94,9 @@ class CheckRegistrarTest {
       "register {TestCheckE} test checks in repository my-repo",
       "register Scanner for 1 main rules.",
       "register Scanner for 1 test rules.",
-      "register 2 autoscan rules.");
+      "register 2 autoscan rules.",
+      "register 3 instantiated main checks.",
+      "register 3 instantiated test checks.");
   }
 
   private static class TestInternalRegistration extends CheckRegistrar.RegistrarContext {
@@ -125,5 +135,16 @@ class CheckRegistrarTest {
       events.add("register " + ruleKeys.size() + " autoscan rules.");
     }
 
+    @Override
+    public void registerMainChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances) {
+      super.registerMainChecks(checks, javaCheckClassesAndInstances);
+      events.add("register " + checks.all().size() + " instantiated main checks.");
+    }
+
+    @Override
+    public void registerTestChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances) {
+      super.registerTestChecks(checks, javaCheckClassesAndInstances);
+      events.add("register " + checks.all().size() + " instantiated test checks.");
+    }
   }
 }

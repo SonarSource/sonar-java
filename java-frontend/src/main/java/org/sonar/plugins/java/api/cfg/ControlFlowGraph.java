@@ -23,6 +23,8 @@ import org.sonar.java.annotations.Beta;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.CheckForNull;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Beta
@@ -36,6 +38,10 @@ public interface ControlFlowGraph {
 
   boolean hasCompleteSemantic();
 
+  List<? extends Block> reversedBlocks();
+
+  Symbol.MethodSymbol methodSymbol();
+
   interface Block {
     int id();
 
@@ -45,6 +51,25 @@ public interface ControlFlowGraph {
     Tree terminator();
 
     Set<? extends Block> successors();
+
+    Set<? extends Block> predecessors();
+
+    Set<? extends Block> exceptions();
+
+    boolean isCatchBlock();
+
+    boolean isDefaultBlock();
+
+    boolean isFinallyBlock();
+
+    @CheckForNull
+    CaseGroupTree caseGroup();
+
+    Block trueBlock();
+
+    Block falseBlock();
+
+    Block exitBlock();
   }
 
 }
