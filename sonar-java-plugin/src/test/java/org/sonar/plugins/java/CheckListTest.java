@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.reflect.ClassPath;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileReader;
@@ -33,13 +32,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
@@ -50,23 +47,12 @@ class CheckListTest {
 
   private static final String ARTIFICIAL_DESCRIPTION = "-1";
 
-  private static List<String> SE_CHEKS;
   private final Gson gson = new Gson();
 
   private static final Set<String> BLACK_LIST = SetUtils.immutableSetOf(
     "AbstractXPathBasedCheck.java",
     "AbstractWebXmlXPathBasedCheck.java",
     "AbstractRegexCheck.java");
-
-  @BeforeAll
-  public static void before() throws Exception {
-    SE_CHEKS = ClassPath.from(CheckListTest.class.getClassLoader())
-      .getTopLevelClasses("org.sonar.java.se.checks")
-      .stream()
-      .map(ClassPath.ClassInfo::getSimpleName)
-      .filter(name -> name.endsWith("Check") && !name.equals(SECheck.class.getSimpleName()))
-      .toList();
-  }
 
   /**
    * Enforces that each check declared in list.
@@ -80,7 +66,7 @@ class CheckListTest {
         count++;
       }
     }
-    assertThat(CheckList.getChecks()).hasSize(count + SE_CHEKS.size());
+    assertThat(CheckList.getChecks()).hasSize(count );
   }
 
   private static List<File> getCheckFiles() {
@@ -136,9 +122,6 @@ class CheckListTest {
       // Handle legacy keys.
       Rule ruleAnnotation = AnnotationUtils.getAnnotation(cls, Rule.class);
       keyMap.put(ruleAnnotation.key(), ruleAnnotation.key());
-      if (SE_CHEKS.contains(simpleName)) {
-        continue;
-      }
       assertThat(checkModules.stream()
         .anyMatch(module -> Files.exists(Path.of("../", module, "src/test/java", testName))))
         .overridingErrorMessage("No test for " + simpleName)

@@ -47,7 +47,8 @@ class JavaSonarWayProfileTest {
   void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
 
-    ProfileRegistrar fooCustomRules = registrarContext -> registrarContext.registerDefaultQualityProfileRules(List.of(
+    ProfileRegistrar fooCustomRules =
+      registrarContext -> registrarContext.registerDefaultQualityProfileRules(List.of(
       RuleKey.of("javasecurity", "S6549"),
       RuleKey.of("javasecurity", "S6287")));
     ProfileRegistrar barCustomRules = registrarContext -> registrarContext.registerDefaultQualityProfileRules(List.of(

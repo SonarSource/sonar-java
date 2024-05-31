@@ -58,9 +58,9 @@ class JavaRulesDefinitionTest {
     assertThat(unusedLabelRule.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(unusedLabelRule.internalKey()).isNull();
     assertThat(unusedLabelRule.name()).isEqualTo("Unused labels should be removed");
-    assertThat(repository.rule("S2095").type()).isEqualTo(RuleType.BUG);
-    assertThat(repository.rule("S2095").deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S2095"));
-    assertThat(repository.rule("S2095").activatedByDefault()).isTrue();
+    assertThat(repository.rule("S1217").type()).isEqualTo(RuleType.BUG);
+    assertThat(repository.rule("S1217").deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S1217"));
+    assertThat(repository.rule("S1217").activatedByDefault()).isTrue();
     RulesDefinition.Rule magicNumber = repository.rule("S109");
     assertThat(magicNumber.params()).isNotEmpty();
     assertThat(magicNumber.activatedByDefault()).isFalse();
@@ -68,7 +68,7 @@ class JavaRulesDefinitionTest {
     // rule templates are manually defined
     assertThat(repository.rules().stream()
       .filter(RulesDefinition.Rule::template)
-      .map(RulesDefinition.Rule::key)).containsOnly("S124", "S2253", "S3688", "S3546", "S4011");
+      .map(RulesDefinition.Rule::key)).containsOnly("S124", "S2253", "S3688", "S4011");
 
     // Calling definition multiple time should not lead to failure: thanks C# plugin !
     definition.define(new RulesDefinition.Context());
