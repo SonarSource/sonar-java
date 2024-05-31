@@ -1,0 +1,34 @@
+{
+  "title": "XML parsers should not be vulnerable to Denial of Service attacks",
+  "type": "VULNERABILITY",
+  "code": {
+    "impacts": {
+      "SECURITY": "MEDIUM"
+    },
+    "attribute": "COMPLETE"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "symbolic-execution"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6376",
+  "sqKey": "S6376",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      776
+    ],
+    "OWASP": [
+      "A4"
+    ],
+    "OWASP Top 10 2021": [
+      "A5"
+    ]
+  },
+  "quickfix": "infeasible"
+}

@@ -1,0 +1,46 @@
+<h2>Why is this an issue?</h2>
+<p>An infinite loop will never end while the program runs, meaning you have to kill the program to get out of the loop. Every loop should have an end
+condition, whether by meeting the loop’s termination condition or via a <code>break</code> statement.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+for (;;) {  // Noncompliant; end condition omitted
+  // ...
+}
+</pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+int j;
+while (true) { // Noncompliant; end condition omitted
+  j++;
+}
+</pre>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+int k;
+boolean b = true;
+while (b) { // Noncompliant; b never written to in loop
+  k++;
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="2" data-diff-type="compliant">
+int j;
+while (true) { // reachable end condition added
+  j++;
+  if (j  == Integer.MIN_VALUE) {  // true at Integer.MAX_VALUE +1
+    break;
+  }
+}
+</pre>
+<pre data-diff-id="3" data-diff-type="compliant">
+int k;
+boolean b = true;
+while (b) {
+  k++;
+  b = k &lt; Integer.MAX_VALUE;
+}
+</pre>
+<h2>Resources</h2>
+<h3>Standards</h3>
+<ul>
+  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/lzZGBQ">CERT, MSC01-J.</a> - Do not use an empty infinite loop </li>
+</ul>
+

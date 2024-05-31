@@ -1,0 +1,59 @@
+<p>If the denominator to an integer division or remainder operation is zero, a <code>ArithmeticException</code> is thrown.</p>
+<p>This error will crash your program in most cases. To fix it, you need to ensure that the denominator value in all division operations is always
+non-zero, or check the value against zero before performing the division.</p>
+<h2>Why is this an issue?</h2>
+<p>A division (<code>/</code>) or remainder operation (<code>%</code>) by zero indicates a bug or logical error. This is because in Java, a division
+or remainder operation where the denominator is zero and not a floating point value always results in an <code>ArithmeticException</code> being
+thrown.</p>
+<p>When working with <code>double</code> or <code>float</code> values, no exception will be thrown, but the operation will result in special floating
+point values representing either positive infinity, negative infinity, or <code>NaN</code>. Unless these special values are explicitly handled by a
+program, zero denominators should be avoided in floating point operations, too. Otherwise, the application might produce unexpected results.</p>
+<h3>What is the potential impact?</h3>
+<p>Issues of this type interrupt the normal execution of a program, causing it to crash or putting it into an inconsistent state. Therefore, this
+issue might impact the availability and reliability of your application, or even result in data loss.</p>
+<p>If the computation of the denominator is tied to user input data, this issue can potentially even be exploited by attackers to disrupt your
+application.</p>
+<h3>Noncompliant code example</h3>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+void test_divide() {
+  int z = 0;
+  if (unknown()) {
+    // ..
+    z = 3;
+  } else {
+    // ..
+  }
+  z = 1 / z; // Noncompliant, possible division by zero
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+void test_divide() {
+  int z = 0;
+  if (unknown()) {
+    // ..
+    z = 3;
+  } else {
+    // ..
+    z = 1;
+  }
+  z = 1 / z;
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ArithmeticException.html">ArithmeticException</a> </li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/369">CWE-369 - Divide by zero</a> </li>
+  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/CTZGBQ">CERT, NUM02-J.</a> - Ensure that division and remainder operations do not result in
+  divide-by-zero errors </li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.17.2">The Division Operator in the JLS</a> </li>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.17.3">The Remainder Operator in the JLS</a> </li>
+</ul>
+

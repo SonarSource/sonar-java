@@ -1,0 +1,34 @@
+{
+  "title": "\"@NonNull\" values should not be set to null",
+  "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "LOGICAL"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "cwe",
+    "cert",
+    "symbolic-execution"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-2637",
+  "sqKey": "S2637",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      476
+    ],
+    "CERT": [
+      "EXP34-C.",
+      "EXP01-J."
+    ]
+  },
+  "quickfix": "infeasible"
+}

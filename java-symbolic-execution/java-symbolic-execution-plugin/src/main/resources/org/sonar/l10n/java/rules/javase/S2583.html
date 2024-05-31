@@ -1,0 +1,45 @@
+<h2>Why is this an issue?</h2>
+<p>Conditional expressions which are always <code>true</code> or <code>false</code> can lead to <a
+href="https://en.wikipedia.org/wiki/Unreachable_code">unreachable code</a>.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+a = false;
+if (a) { // Noncompliant
+  doSomething(); // never executed
+}
+
+if (!a || b) { // Noncompliant; "!a" is always "true", "b" is never evaluated
+  doSomething();
+} else {
+  doSomethingElse(); // never executed
+}
+</pre>
+<h3>Exceptions</h3>
+<p>This rule will not raise an issue in either of these cases:</p>
+<ul>
+  <li> When the condition is a single <code>final boolean</code> </li>
+</ul>
+<pre>
+final boolean debug = false;
+//...
+if (debug) {
+  // Print something
+}
+</pre>
+<ul>
+  <li> When the condition is literally <code>true</code> or <code>false</code>. </li>
+</ul>
+<pre>
+if (true) {
+  // do something
+}
+</pre>
+<p>In these cases it is obvious the code is as intended.</p>
+<h2>Resources</h2>
+<ul>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/570">CWE-570 - Expression is Always False</a> </li>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/571">CWE-571 - Expression is Always True</a> </li>
+  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/5dUxBQ">CERT, MSC12-C.</a> - Detect and remove code that has no effect or is never executed
+  </li>
+</ul>
+

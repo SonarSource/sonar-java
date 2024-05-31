@@ -1,0 +1,24 @@
+{
+  "title": "Custom resources should be closed",
+  "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "0min"
+  },
+  "tags": [
+    "denial-of-service",
+    "symbolic-execution"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-3546",
+  "sqKey": "S3546",
+  "scope": "Main",
+  "quickfix": "unknown"
+}

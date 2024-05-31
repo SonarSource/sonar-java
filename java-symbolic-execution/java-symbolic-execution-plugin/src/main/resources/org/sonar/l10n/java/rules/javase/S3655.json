@@ -1,0 +1,29 @@
+{
+  "title": "Optional value should only be accessed after calling isPresent()",
+  "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "COMPLETE"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "cwe",
+    "symbolic-execution"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3655",
+  "sqKey": "S3655",
+  "scope": "All",
+  "securityStandards": {
+    "CWE": [
+      476
+    ]
+  },
+  "quickfix": "unknown"
+}

@@ -1,0 +1,24 @@
+{
+  "title": "Assignments should not be redundant",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "redundant",
+    "symbolic-execution"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4165",
+  "sqKey": "S4165",
+  "scope": "All",
+  "quickfix": "unknown"
+}

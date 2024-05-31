@@ -1,0 +1,15 @@
+<h2>Why is this an issue?</h2>
+<p>When a method is designed to return an invariant value, it may be poor design, but it shouldn’t adversely affect the outcome of your program.
+However, when it happens on all paths through the logic, it is surely a bug.</p>
+<p>This rule raises an issue when a method contains several <code>return</code> statements that all return the same value.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+int foo(int a) {
+  int b = 12;
+  if (a == 1) {
+    return b;
+  }
+  return b;  // Noncompliant
+}
+</pre>
+
