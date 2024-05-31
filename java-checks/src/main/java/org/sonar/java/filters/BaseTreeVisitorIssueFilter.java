@@ -19,6 +19,7 @@
  */
 package org.sonar.java.filters;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -84,28 +85,30 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
   }
 
   final void excludeLines(@Nullable Tree tree, Class<? extends JavaCheck> rule) {
-    computeFilteredLinesForRule(tree, rule, true);
+    excludeLinesIfTrue(true, tree, rule);
   }
 
   @SafeVarargs
   final void excludeLines(@Nullable Tree tree, Class<? extends JavaCheck>... rules) {
     for (Class<? extends JavaCheck> rule : rules) {
-      computeFilteredLinesForRule(tree, rule, true);
+      excludeLinesIfTrue(true, tree, rules);
     }
   }
 
   @SafeVarargs
-  final void excludeLinesIfTrue(boolean condition, Tree tree, Class<? extends JavaCheck>... rules) {
-    for (Class<? extends JavaCheck> rule : rules) {
-      computeFilteredLinesForRule(tree, rule, condition);
-    }
+  final void excludeLinesIfTrue(boolean condition, @Nullable Tree tree, Class<? extends JavaCheck>... rules) {
+    Arrays.stream(rules).forEach(rule -> excludeLinesIfTrue(condition, tree, rule));
   }
 
-  final void excludeLinesIfTrue(boolean condition, Tree tree, Class<? extends JavaCheck> rule) {
-    computeFilteredLinesForRule(tree, rule, condition);
+  final void excludeLinesIfTrue(boolean condition, @Nullable Tree tree, String ruleKey) {
+    computeFilteredLinesForRule(tree, ruleKey, condition);
   }
 
-  private void computeFilteredLinesForRule(@Nullable Tree tree, Class<? extends JavaCheck> filteredRule, boolean excludeLine) {
+  final void excludeLinesIfTrue(boolean condition, @Nullable Tree tree, Class<? extends JavaCheck> rule) {
+    computeFilteredLinesForRule(tree, rulesKeysByRulesClass.get(rule), condition);
+  }
+
+  private void computeFilteredLinesForRule(@Nullable Tree tree, String ruleKey, boolean excludeLine) {
     if (tree == null) {
       return;
     }
@@ -115,7 +118,7 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
       Set<Integer> filteredLines = IntStream.rangeClosed(LineUtils.startLine(firstSyntaxToken), LineUtils.startLine(lastSyntaxToken))
         .boxed()
         .collect(Collectors.toSet());
-      computeFilteredLinesForRule(filteredLines, rulesKeysByRulesClass.get(filteredRule), excludeLine);
+      computeFilteredLinesForRule(filteredLines, ruleKey, excludeLine);
     }
   }
 
