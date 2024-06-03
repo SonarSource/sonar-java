@@ -122,6 +122,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
@@ -163,7 +164,10 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
-public class DeepCopyVisitor implements TreeVisitor {
+// TODO a less experimental implementation of this should use avoid using a queue to transfer results
+// to the caller, and use accept methods with a return value (to be defined in AST nodes)
+
+public abstract class DeepCopyVisitorBase implements TreeVisitor {
 
   private final Queue<Tree> results = new LinkedList<>();
 
@@ -188,19 +192,19 @@ public class DeepCopyVisitor implements TreeVisitor {
     return convert(tree);
   }
 
-  private <T extends Tree> T convert(Tree tree) {
+  private <T extends Tree, U extends T> U convert(T tree) {
     if (tree == null) {
       return null;
     } else if (tree instanceof SyntaxToken token) {
       // tokens are not covered by the visitor system
-      return (T) token;
+      return (U) token;
     } else {
       tree.accept(this);
-      return (T) popUniqueResult();
+      return (U) popUniqueResult();
     }
   }
 
-  private <T extends Tree> List<T> convert(List<? extends Tree> ls, Class<T> clazz) {
+  private <T extends Tree, U extends T> List<U> convert(List<T> ls, Class<U> clazz) {
     for (var tree : ls) {
       tree.accept(this);
     }
@@ -209,7 +213,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    results.add(new JavaTree.CompilationUnitTreeImpl(
+    pushResult(new JavaTree.CompilationUnitTreeImpl(
       convert(tree.packageDeclaration()),
       convert(tree.imports(), ImportClauseTree.class),
       convert(tree.types(), Tree.class),
@@ -220,7 +224,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitImport(ImportTree tree) {
-    results.add(new JavaTree.ImportTreeImpl(
+    pushResult(new JavaTree.ImportTreeImpl(
       convert(tree.importKeyword()),
       convert(tree.staticKeyword()),
       convert(tree.qualifiedIdentifier()),
@@ -230,7 +234,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitClass(ClassTree tree) {
-    results.add(new ClassTreeImpl(
+    pushResult(new ClassTreeImpl(
       tree.kind(),
       convert(tree.openBraceToken()),
       convert(tree.members(), Tree.class),
@@ -260,8 +264,8 @@ public class DeepCopyVisitor implements TreeVisitor {
   @Override
   public void visitMethod(MethodTree tree) {
     var params = new FormalParametersListTreeImpl(convert(tree.openParenToken()), convert(tree.closeParenToken()));
-    params.addAll(convert(params, VariableTreeImpl.class));
-    results.add(new MethodTreeImpl(
+    params.addAll(convert(tree.parameters(), VariableTreeImpl.class));
+    pushResult(new MethodTreeImpl(
       convert(tree.returnType()),
       convert(tree.simpleName()),
       params,
@@ -278,7 +282,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitBlock(BlockTree tree) {
-    results.add(new BlockTreeImpl(
+    pushResult(new BlockTreeImpl(
       tree.kind(),
       convert(tree.openBraceToken()),
       convert(tree.body(), StatementTree.class),
@@ -288,14 +292,14 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitEmptyStatement(EmptyStatementTree tree) {
-    results.add(new EmptyStatementTreeImpl(
+    pushResult(new EmptyStatementTreeImpl(
       convert(tree.semicolonToken())
     ));
   }
 
   @Override
   public void visitLabeledStatement(LabeledStatementTree tree) {
-    results.add(new LabeledStatementTreeImpl(
+    pushResult(new LabeledStatementTreeImpl(
       convert(tree.label()),
       convert(tree.colonToken()),
       convert(tree.statement())
@@ -304,7 +308,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitExpressionStatement(ExpressionStatementTree tree) {
-    results.add(new ExpressionStatementTreeImpl(
+    pushResult(new ExpressionStatementTreeImpl(
       convert(tree.expression()),
       convert(tree.semicolonToken())
     ));
@@ -312,7 +316,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitIfStatement(IfStatementTree tree) {
-    results.add(new IfStatementTreeImpl(
+    pushResult(new IfStatementTreeImpl(
       convert(tree.ifKeyword()),
       convert(tree.openParenToken()),
       convert(tree.condition()),
@@ -325,7 +329,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitAssertStatement(AssertStatementTree tree) {
-    results.add(new AssertStatementTreeImpl(
+    pushResult(new AssertStatementTreeImpl(
       convert(tree.assertKeyword()),
       convert(tree.condition()),
       convert(tree.semicolonToken())
@@ -337,7 +341,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
-    results.add(new SwitchStatementTreeImpl(
+    pushResult(new SwitchStatementTreeImpl(
       convert(tree.switchKeyword()),
       convert(tree.openParenToken()),
       convert(tree.expression()),
@@ -350,7 +354,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitSwitchExpression(SwitchExpressionTree tree) {
-    results.add(new SwitchExpressionTreeImpl(
+    pushResult(new SwitchExpressionTreeImpl(
       convert(tree.switchKeyword()),
       convert(tree.openParenToken()),
       convert(tree.expression()),
@@ -365,7 +369,7 @@ public class DeepCopyVisitor implements TreeVisitor {
   public void visitCaseGroup(CaseGroupTree tree) {
     var statsList = StatementListTreeImpl.emptyList();
     statsList.addAll(tree.body());
-    results.add(new CaseGroupTreeImpl(
+    pushResult(new CaseGroupTreeImpl(
       convert(tree.labels(), CaseLabelTreeImpl.class),
       statsList
     ));
@@ -373,7 +377,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitCaseLabel(CaseLabelTree tree) {
-    results.add(new CaseLabelTreeImpl(
+    pushResult(new CaseLabelTreeImpl(
       convert(tree.caseOrDefaultKeyword()),
       convert(tree.expressions(), ExpressionTree.class),
       convert(tree.colonOrArrowToken())
@@ -382,7 +386,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
-    results.add(new WhileStatementTreeImpl(
+    pushResult(new WhileStatementTreeImpl(
       convert(tree.whileKeyword()),
       convert(tree.openParenToken()),
       convert(tree.condition()),
@@ -393,7 +397,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitDoWhileStatement(DoWhileStatementTree tree) {
-    results.add(new DoWhileStatementTreeImpl(
+    pushResult(new DoWhileStatementTreeImpl(
       convert(tree.doKeyword()),
       convert(tree.statement()),
       convert(tree.whileKeyword()),
@@ -406,7 +410,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitForStatement(ForStatementTree tree) {
-    results.add(new ForStatementTreeImpl(
+    pushResult(new ForStatementTreeImpl(
       convert(tree.forKeyword()),
       convert(tree.openParenToken()),
       convert(tree.initializer()),
@@ -421,7 +425,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
-    results.add(new ForEachStatementImpl(
+    pushResult(new ForEachStatementImpl(
       convert(tree.forKeyword()),
       convert(tree.openParenToken()),
       convert(tree.variable()),
@@ -434,7 +438,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitBreakStatement(BreakStatementTree tree) {
-    results.add(new BreakStatementTreeImpl(
+    pushResult(new BreakStatementTreeImpl(
       convert(tree.breakKeyword()),
       convert(tree.label()),
       convert(tree.semicolonToken())
@@ -443,7 +447,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitYieldStatement(YieldStatementTree tree) {
-    results.add(new YieldStatementTreeImpl(
+    pushResult(new YieldStatementTreeImpl(
       convert(tree.yieldKeyword()),
       convert(tree.expression()),
       convert(tree.semicolonToken())
@@ -452,7 +456,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitContinueStatement(ContinueStatementTree tree) {
-    results.add(new ContinueStatementTreeImpl(
+    pushResult(new ContinueStatementTreeImpl(
       convert(tree.continueKeyword()),
       convert(tree.label()),
       convert(tree.semicolonToken())
@@ -461,7 +465,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitReturnStatement(ReturnStatementTree tree) {
-    results.add(new ReturnStatementTreeImpl(
+    pushResult(new ReturnStatementTreeImpl(
       convert(tree.returnKeyword()),
       convert(tree.expression()),
       convert(tree.semicolonToken())
@@ -470,7 +474,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
-    results.add(new ThrowStatementTreeImpl(
+    pushResult(new ThrowStatementTreeImpl(
       convert(tree.throwKeyword()),
       convert(tree.expression()),
       convert(tree.semicolonToken())
@@ -479,7 +483,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitSynchronizedStatement(SynchronizedStatementTree tree) {
-    results.add(new SynchronizedStatementTreeImpl(
+    pushResult(new SynchronizedStatementTreeImpl(
       convert(tree.synchronizedKeyword()),
       convert(tree.openParenToken()),
       convert(tree.expression()),
@@ -490,7 +494,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitTryStatement(TryStatementTree tree) {
-    results.add(new TryStatementTreeImpl(
+    pushResult(new TryStatementTreeImpl(
       convert(tree.tryKeyword()),
       convert(tree.openParenToken()),
       convert(tree.resourceList()),
@@ -504,7 +508,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitCatch(CatchTree tree) {
-    results.add(new CatchTreeImpl(
+    pushResult(new CatchTreeImpl(
       convert(tree.catchKeyword()),
       convert(tree.openParenToken()),
       convert(tree.parameter()),
@@ -515,7 +519,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitUnaryExpression(UnaryExpressionTree tree) {
-    results.add(switch (tree.kind()) {
+    pushResult(switch (tree.kind()) {
       case POSTFIX_INCREMENT, POSTFIX_DECREMENT -> new InternalPostfixUnaryExpression(
         tree.kind(),
         convert(tree.expression()),
@@ -531,7 +535,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
-    results.add(new BinaryExpressionTreeImpl(
+    pushResult(new BinaryExpressionTreeImpl(
       tree.kind(),
       convert(tree.leftOperand()),
       convert(tree.operatorToken()),
@@ -541,7 +545,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitConditionalExpression(ConditionalExpressionTree tree) {
-    results.add(new ConditionalExpressionTreeImpl(
+    pushResult(new ConditionalExpressionTreeImpl(
       convert(tree.condition()),
       convert(tree.questionToken()),
       convert(tree.trueExpression()),
@@ -552,7 +556,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
-    results.add(new ArrayAccessExpressionTreeImpl(
+    pushResult(new ArrayAccessExpressionTreeImpl(
       convert(tree.expression()),
       convert(tree.dimension())
     ));
@@ -560,7 +564,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-    results.add(new MemberSelectExpressionTreeImpl(
+    pushResult(new MemberSelectExpressionTreeImpl(
       convert(tree.expression()),
       convert(tree.operatorToken()),
       convert(tree.identifier())
@@ -569,7 +573,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    results.add(new NewClassTreeImpl(
+    pushResult(new NewClassTreeImpl(
       convert(tree.identifier()),
       convert(tree.arguments()),
       convert(tree.classBody())
@@ -584,7 +588,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitNewArray(NewArrayTree tree) {
-    results.add(new NewArrayTreeImpl(
+    pushResult(new NewArrayTreeImpl(
       convert(tree.dimensions(), ArrayDimensionTree.class),
       convert(tree.initializers())
     ));
@@ -592,7 +596,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    results.add(new MethodInvocationTreeImpl(
+    pushResult(new MethodInvocationTreeImpl(
       convert(tree.methodSelect()),
       convert(tree.typeArguments()),
       convert(tree.arguments())
@@ -601,7 +605,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitTypeCast(TypeCastTree tree) {
-    results.add(new TypeCastExpressionTreeImpl(
+    pushResult(new TypeCastExpressionTreeImpl(
       convert(tree.openParenToken()),
       convert(tree.type()),
       convert(tree.andToken()),
@@ -613,7 +617,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitInstanceOf(InstanceOfTree tree) {
-    results.add(new InstanceOfTreeImpl(
+    pushResult(new InstanceOfTreeImpl(
       convert(tree.expression()),
       convert(tree.instanceofKeyword()),
       (TypeTree) convert(tree.type())
@@ -622,7 +626,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitPatternInstanceOf(PatternInstanceOfTree tree) {
-    results.add(new InstanceOfTreeImpl(
+    pushResult(new InstanceOfTreeImpl(
       convert(tree.expression()),
       convert(tree.instanceofKeyword()),
       (PatternTree) convert(tree.pattern())
@@ -631,7 +635,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitParenthesized(ParenthesizedTree tree) {
-    results.add(new ParenthesizedTreeImpl(
+    pushResult(new ParenthesizedTreeImpl(
       convert(tree.openParenToken()),
       convert(tree.expression()),
       convert(tree.closeParenToken())
@@ -640,7 +644,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    results.add(new AssignmentExpressionTreeImpl(
+    pushResult(new AssignmentExpressionTreeImpl(
       tree.kind(),
       convert(tree.variable()),
       convert(tree.operatorToken()),
@@ -650,7 +654,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitLiteral(LiteralTree tree) {
-    results.add(new LiteralTreeImpl(
+    pushResult(new LiteralTreeImpl(
       tree.kind(),
       convert(tree.token())
     ));
@@ -658,21 +662,21 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
-    results.add(new IdentifierTreeImpl(
+    pushResult(new IdentifierTreeImpl(
       convert(tree.identifierToken())
     ));
   }
 
   @Override
   public void visitVarType(VarTypeTree tree) {
-    results.add(new VarTypeTreeImpl(
+    pushResult(new VarTypeTreeImpl(
       convert(tree.varToken())
     ));
   }
 
   @Override
   public void visitVariable(VariableTree tree) {
-    results.add(new VariableTreeImpl(
+    pushResult(new VariableTreeImpl(
       convert((Tree) tree.modifiers()),
       (TypeTree) null,
       convert(tree.simpleName())
@@ -685,7 +689,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
-    results.add(new EnumConstantTreeImpl(
+    pushResult(new EnumConstantTreeImpl(
       convert((Tree) tree.modifiers()),
       convert(tree.simpleName()),
       convert(tree.initializer()),
@@ -701,12 +705,12 @@ public class DeepCopyVisitor implements TreeVisitor {
     typeTree.complete(
       convert(tree.annotations(), AnnotationTree.class)
     );
-    results.add(typeTree);
+    pushResult(typeTree);
   }
 
   @Override
   public void visitArrayType(ArrayTypeTree tree) {
-    results.add(new JavaTree.ArrayTypeTreeImpl(
+    pushResult(new JavaTree.ArrayTypeTreeImpl(
       convert(tree.type()),
       convert(tree.annotations(), AnnotationTreeImpl.class),
       convert(tree.openBracketToken()),
@@ -723,7 +727,7 @@ public class DeepCopyVisitor implements TreeVisitor {
     typeTree.complete(
       convert(tree.annotations(), AnnotationTree.class)
     );
-    results.add(typeTree);
+    pushResult(typeTree);
   }
 
   @Override
@@ -739,12 +743,12 @@ public class DeepCopyVisitor implements TreeVisitor {
     wildcard.complete(
       convert(tree.annotations(), AnnotationTree.class)
     );
-    results.add(wildcard);
+    pushResult(wildcard);
   }
 
   @Override
   public void visitUnionType(UnionTypeTree tree) {
-    results.add(new JavaTree.UnionTypeTreeImpl(
+    pushResult(new JavaTree.UnionTypeTreeImpl(
       convert(tree.typeAlternatives())
     ));
   }
@@ -752,14 +756,14 @@ public class DeepCopyVisitor implements TreeVisitor {
   @Override
   public void visitModifier(ModifiersTree modifiersTree) {
     var modifiersList = new ArrayList<ModifierTree>();
-    modifiersList.addAll(convert(modifiersTree.modifiers(), ModifierTree.class));
-    modifiersList.addAll(convert(modifiersTree.annotations(), ModifierTree.class));
-    results.add(new ModifiersTreeImpl(modifiersList));
+    modifiersList.addAll(convert(modifiersTree.modifiers(), ModifierKeywordTree.class));
+    modifiersList.addAll(convert(modifiersTree.annotations(), AnnotationTree.class));
+    pushResult(new ModifiersTreeImpl(modifiersList));
   }
 
   @Override
   public void visitAnnotation(AnnotationTree annotationTree) {
-    results.add(new AnnotationTreeImpl(
+    pushResult(new AnnotationTreeImpl(
       convert(annotationTree.atToken()),
       convert(annotationTree.annotationType()),
       convert(annotationTree.arguments())
@@ -768,7 +772,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    results.add(new LambdaExpressionTreeImpl(
+    pushResult(new LambdaExpressionTreeImpl(
       convert(lambdaExpressionTree.openParenToken()),
       convert(lambdaExpressionTree.parameters(), VariableTree.class),
       convert(lambdaExpressionTree.closeParenToken()),
@@ -779,7 +783,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitTypeParameter(TypeParameterTree typeParameter) {
-    results.add(new TypeParameterTreeImpl(
+    pushResult(new TypeParameterTreeImpl(
       convert(typeParameter.identifier()),
       convert(typeParameter.extendToken()),
       convert(typeParameter.bounds())
@@ -794,7 +798,7 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(arguments.closeParenToken())
     );
     args.addAll(convert(arguments, ExpressionTree.class));
-    results.add(args);
+    pushResult(args);
   }
 
   @Override
@@ -804,7 +808,7 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(trees.closeBracketToken())
     );
     typeArgs.addAll(trees);
-    results.add(typeArgs);
+    pushResult(typeArgs);
   }
 
   @Override
@@ -814,7 +818,7 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(trees.closeBracketToken())
     );
     typeParams.addAll(trees);
-    results.add(typeParams);
+    pushResult(typeParams);
   }
 
   @Override
@@ -832,12 +836,12 @@ public class DeepCopyVisitor implements TreeVisitor {
       convert(methodReferenceTree.typeArguments()),
       convert(methodReferenceTree.method())
     );
-    results.add(methodRef);
+    pushResult(methodRef);
   }
 
   @Override
   public void visitPackage(PackageDeclarationTree tree) {
-    results.add(new JavaTree.PackageDeclarationTreeImpl(
+    pushResult(new JavaTree.PackageDeclarationTreeImpl(
       convert(tree.annotations(), AnnotationTree.class),
       convert(tree.packageKeyword()),
       convert(tree.packageName()),
@@ -877,7 +881,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitArrayDimension(ArrayDimensionTree tree) {
-    results.add(new ArrayDimensionTreeImpl(
+    pushResult(new ArrayDimensionTreeImpl(
       convert(tree.openBracketToken()),
       convert(tree.expression()),
       convert(tree.closeBracketToken())
@@ -886,28 +890,28 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitTypePattern(TypePatternTree tree) {
-    results.add(new TypePatternTreeImpl(
+    pushResult(new TypePatternTreeImpl(
       convert(tree.patternVariable())
     ));
   }
 
   @Override
   public void visitNullPattern(NullPatternTree tree) {
-    results.add(new NullPatternTreeImpl(
+    pushResult(new NullPatternTreeImpl(
       convert(tree.nullLiteral())
     ));
   }
 
   @Override
   public void visitDefaultPattern(DefaultPatternTree tree) {
-    results.add(new DefaultPatternTreeImpl(
+    pushResult(new DefaultPatternTreeImpl(
       convert(tree.defaultToken())
     ));
   }
 
   @Override
   public void visitGuardedPattern(GuardedPatternTree tree) {
-    results.add(new GuardedPatternTreeImpl(
+    pushResult(new GuardedPatternTreeImpl(
       convert(tree.pattern()),
       convert(tree.whenOperator()),
       convert(tree.expression())
@@ -916,7 +920,7 @@ public class DeepCopyVisitor implements TreeVisitor {
 
   @Override
   public void visitRecordPattern(RecordPatternTree tree) {
-    results.add(new RecordPatternTreeImpl(
+    pushResult(new RecordPatternTreeImpl(
       convert(tree.type()),
       convert(tree.openParenToken()),
       convert(tree.patterns(), PatternTree.class),
