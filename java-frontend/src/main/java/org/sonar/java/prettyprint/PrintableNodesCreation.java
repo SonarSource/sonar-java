@@ -21,8 +21,8 @@ package org.sonar.java.prettyprint;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nullable;
+import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.StatementListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -31,6 +31,8 @@ import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.pattern.GuardedPatternTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.CaseGroupTreeImpl;
@@ -40,7 +42,7 @@ import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
-import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -48,6 +50,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -59,6 +62,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VarTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 public final class PrintableNodesCreation {
 
@@ -83,6 +87,14 @@ public final class PrintableNodesCreation {
     return new InternalPrefixUnaryExpression(Tree.Kind.LOGICAL_COMPLEMENT, null, operand);
   }
 
+  public static MethodInvocationTree methodInvocation(@Nullable ExpressionTree receiver, String methodName, ExpressionTree... args){
+    var methodSelect = receiver == null ? new IdentifierTreeImpl(token(methodName))
+      : new MemberSelectExpressionTreeImpl(receiver, null, new IdentifierTreeImpl(token(methodName)));
+    var argsTreeList = ArgumentListTreeImpl.emptyList();
+    argsTreeList.addAll(Arrays.asList(args));
+    return new MethodInvocationTreeImpl(methodSelect, null, argsTreeList);
+  }
+
   // </editor-fold>
 
   // <editor-fold desc="Statements">
@@ -101,6 +113,10 @@ public final class PrintableNodesCreation {
 
   public static IfStatementTree ifStat(ExpressionTree cond, StatementTree thenBranch, @Nullable StatementTree elseBranch){
     return new IfStatementTreeImpl(null, null, cond, null, thenBranch, null, elseBranch);
+  }
+
+  public static WhileStatementTree whileLoop(ExpressionTree condition, StatementTree body){
+    return new WhileStatementTreeImpl(null, null, condition, null, body);
   }
 
   public static BlockTree block(StatementTree... stats) {

@@ -435,7 +435,8 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
-    unsupported();  // TODO
+    tree.expression().accept(this);
+    tree.dimension().accept(this);
   }
 
   @Override
@@ -684,7 +685,10 @@ public final class Prettyprinter implements TreeVisitor {
 
   @Override
   public void visitArrayDimension(ArrayDimensionTree tree) {
-    unsupported();  // TODO
+    // TODO currently no support for annotations on the dimension (is this even possible?)
+    ppsb.add("[");
+    tree.expression().accept(this);
+    ppsb.add("]");
   }
 
   @Override
