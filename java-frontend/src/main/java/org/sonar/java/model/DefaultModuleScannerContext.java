@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import java.io.File;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.fs.InputComponent;
@@ -88,6 +89,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
     return sonarComponents.getModuleKey();
   }
 
+  @CheckForNull
   @Override
   public SonarProduct sonarProduct() {
     // In production, sonarComponents and sonarComponents.context() should never be null.

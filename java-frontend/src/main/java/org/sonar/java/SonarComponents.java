@@ -163,7 +163,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   /**
    * Will be called in SonarScanner context when no custom rules are present.
-   * Can not be called in a SonarLint context, since ProjectDefinition is not available in SonarLint.
+   * May be called in some SonarLint contexts, but not others, since ProjectDefinition might not be available.
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
     ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
@@ -172,7 +172,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
   /**
-   * ProjectDefinition class is not available in SonarLint context, so this constructor will never be called when using SonarLint
+   * May be called in some SonarLint contexts, but not others, since ProjectDefinition might not be available.
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
     ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
@@ -192,6 +192,13 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
 
+  /**
+   * All other constructors delegate to this one.
+   * <p>
+   * It will also be called directly when constructing a SonarComponents instance for injection if all parameters are available.
+   * This is for example the case for SonarLint in IntelliJ when DBD is present
+   * (because ProjectDefinition can be available in recent SonarLint versions, and DBD provides a CheckRegistrar.)
+   */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
     ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
     ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars,
