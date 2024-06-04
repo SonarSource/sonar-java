@@ -35,6 +35,9 @@
     ],
     "PCI DSS 4.0": [
       "6.2.4"
+    ],
+    "STIG ASD 2023-06-08": [
+      "V-222542"
     ]
   },
   "quickfix": "unknown"
