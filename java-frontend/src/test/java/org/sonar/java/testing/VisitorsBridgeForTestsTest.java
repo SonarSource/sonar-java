@@ -95,7 +95,7 @@ class VisitorsBridgeForTestsTest {
     var inputFile = mock(InputFile.class);
 
     var expectedTestContext =
-      visitorsBridgeForTests.createScannerContext(sonarComponents, inputFile, new JavaVersionImpl(), false, CacheContextImpl.of(context));
+      visitorsBridgeForTests.createScannerContext(sonarComponents, inputFile, new JavaVersionImpl(), false, CacheContextImpl.of(sonarComponents));
 
     assertThat(visitorsBridgeForTests.lastCreatedTestContext()).isSameAs(expectedTestContext);
   }

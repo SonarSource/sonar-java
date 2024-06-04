@@ -29,14 +29,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.testfixtures.log.LogAndArguments;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
+import org.sonar.plugins.java.api.caching.SonarLintCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,7 +56,7 @@ class ContentHashCacheTest {
   @Test
   void hasSameHashCached_returns_true_when_content_hash_file_is_in_read_cache() throws IOException, NoSuchAlgorithmException {
     logTester.setLevel(Level.TRACE);
-    ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTester());
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSonarComponentsTester()));
     Assertions.assertTrue(contentHashCache.hasSameHashCached(inputFile));
 
     List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
@@ -74,7 +78,7 @@ class ContentHashCacheTest {
 
   private List<String> hasSameHashCached_returns_false_when_content_hash_file_is_not_in_read_cache(Level level) {
     logTester.setLevel(level);
-    ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTesterWithEmptyCache(true));
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSensorContextTesterWithEmptyCache(true)));
     Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile));
     return logTester.getLogs(level).stream().map(LogAndArguments::getFormattedMsg).toList();
   }
@@ -85,7 +89,7 @@ class ContentHashCacheTest {
     InputFile inputFile1 = mock(InputFile.class);
     when(inputFile1.status()).thenReturn(InputFile.Status.SAME);
     when(inputFile1.key()).thenReturn("key");
-    ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTesterWithEmptyCache(false));
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSensorContextTesterWithEmptyCache(false)));
     Assertions.assertTrue(contentHashCache.hasSameHashCached(inputFile1));
 
     List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
@@ -98,7 +102,7 @@ class ContentHashCacheTest {
     logTester.setLevel(Level.TRACE);
     InputFile inputFile1 = mock(InputFile.class);
     when(inputFile1.status()).thenReturn(InputFile.Status.CHANGED);
-    ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTesterWithEmptyCache(false));
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSensorContextTesterWithEmptyCache(false)));
     Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile1));
 
     List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
@@ -109,7 +113,7 @@ class ContentHashCacheTest {
   @Test
   void hasSameHashCached_writesToCache_when_key_is_not_present() {
     logTester.setLevel(Level.TRACE);
-    ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTesterWithEmptyCache(true));
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSensorContextTesterWithEmptyCache(true)));
     contentHashCache.hasSameHashCached(inputFile);
     Assertions.assertTrue(contentHashCache.writeToCache(inputFile));
 
@@ -129,7 +133,7 @@ class ContentHashCacheTest {
     WriteCache writeCache = mock(WriteCache.class);
     sensorContext.setPreviousCache(readCache);
     sensorContext.setNextCache(writeCache);
-    ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(sensorContext));
     Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile));
 
     List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
@@ -154,7 +158,7 @@ class ContentHashCacheTest {
     sensorContext.setPreviousCache(readCache);
     sensorContext.setNextCache(writeCache);
     when(inputFile1.contents()).thenThrow(new IOException());
-    ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(sensorContext));
     Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile1));
 
     List<String> logs = logTester.getLogs(Level.WARN).stream().map(LogAndArguments::getFormattedMsg).toList();
@@ -164,19 +168,19 @@ class ContentHashCacheTest {
 
   @Test
   void contains_returns_true_when_file_is_in_cache() throws IOException, NoSuchAlgorithmException {
-    ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTester());
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSonarComponentsTester()));
     Assertions.assertTrue(contentHashCache.contains(inputFile));
   }
 
   @Test
   void contains_returns_false_when_file_is_not_in_cache() {
-    ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTesterWithEmptyCache(true));
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSensorContextTesterWithEmptyCache(true)));
     Assertions.assertFalse(contentHashCache.contains(inputFile));
   }
 
   @Test
   void contains_returns_false_when_cache_is_disabled() {
-    ContentHashCache contentHashCache = new ContentHashCache(getSensorContextTesterWithEmptyCache(false));
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSensorContextTesterWithEmptyCache(false)));
     Assertions.assertFalse(contentHashCache.contains(inputFile));
   }
 
@@ -198,7 +202,7 @@ class ContentHashCacheTest {
     sensorContext.setNextCache(writeCache);
     doThrow(new IllegalArgumentException()).when(writeCache).write("java:contentHash:MD5:" + inputFile.key(),
       FileHashingUtils.inputFileContentHash(file.getPath()));
-    ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(sensorContext));
     Assertions.assertFalse(contentHashCache.writeToCache(inputFile));
     return logTester.getLogs(level).stream().map(LogAndArguments::getFormattedMsg).toList();
   }
@@ -215,12 +219,32 @@ class ContentHashCacheTest {
     InputFile inputFile1 = mock(InputFile.class);
     when(inputFile1.key()).thenReturn("key");
     when(inputFile1.contents()).thenThrow(new IOException());
-    ContentHashCache contentHashCache = new ContentHashCache(sensorContext);
+    ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(sensorContext));
     Assertions.assertFalse(contentHashCache.writeToCache(inputFile1));
 
     List<String> logs = logTester.getLogs(Level.WARN).stream().map(LogAndArguments::getFormattedMsg).toList();
     assertThat(logs).
       contains("Failed to compute content hash for file " + inputFile1.key());
+  }
+
+  @Test
+  void should_not_enable_content_hash_cache_when_using_sonarlint_cache() {
+    logTester.setLevel(Level.TRACE);
+
+    var sensorContext = getSensorContextTesterWithEmptyCache(true);
+    var sonarLintCache = mock(SonarLintCache.class);
+
+    var sonarComponents = mockSonarComponents(sensorContext);
+    doReturn(sonarLintCache).when(sonarComponents).sonarLintCache();
+
+    var contentHashCache = new ContentHashCache(sonarComponents);
+
+    InputFile inputFile1 = mock(InputFile.class);
+    assertThat(contentHashCache.contains(inputFile1)).isFalse();
+
+    List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
+    assertThat(logs).
+      contains("Cannot lookup cached hashes when the cache is disabled (null).");
   }
 
   private SensorContextTester getSensorContextTesterWithEmptyCache(boolean isCacheEnabled) {
@@ -235,7 +259,7 @@ class ContentHashCacheTest {
     return sensorContext;
   }
 
-  private SensorContextTester getSensorContextTester() throws IOException, NoSuchAlgorithmException {
+  private SensorContextTester getSonarComponentsTester() throws IOException, NoSuchAlgorithmException {
     SensorContextTester sensorContext = SensorContextTester.create(file.getAbsoluteFile());
     sensorContext.setCacheEnabled(true);
     ReadCache readCache = mock(ReadCache.class);
@@ -248,4 +272,10 @@ class ContentHashCacheTest {
     return sensorContext;
   }
 
+  private static SonarComponents mockSonarComponents(SensorContext sensorContext) {
+    var sonarComponents = mock(SonarComponents.class);
+    doReturn(sensorContext).when(sonarComponents).context();
+
+    return sonarComponents;
+  }
 }

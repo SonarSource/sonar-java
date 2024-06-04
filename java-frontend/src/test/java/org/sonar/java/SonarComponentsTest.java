@@ -85,6 +85,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonarsource.sonarlint.core.plugin.commons.sonarapi.SonarLintRuntimeImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -115,10 +116,14 @@ class SonarComponentsTest {
 
   private static final String REPOSITORY_NAME = "custom";
 
-  private static final String LOG_MESSAGE_FILES_CAN_BE_SKIPPED = "The Java analyzer is running in a context where unchanged files can be skipped. Full analysis is performed " +
-    "for changed files, optimized analysis for unchanged files.";
-  private static final String LOG_MESSAGE_FILES_CANNOT_BE_SKIPPED = "The Java analyzer cannot skip unchanged files in this context. A full analysis is performed for all files.";
-  private static final String LOG_MESSAGE_CANNOT_DETERMINE_IF_FILES_CAN_BE_SKIPPED = "Cannot determine whether the context allows skipping unchanged files: canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}";
+  private static final String LOG_MESSAGE_FILES_CAN_BE_SKIPPED =
+    "The Java analyzer is running in a context where unchanged files can be skipped. " +
+      "Full analysis is performed for changed files, optimized analysis for unchanged files.";
+  private static final String LOG_MESSAGE_FILES_CANNOT_BE_SKIPPED =
+    "The Java analyzer cannot skip unchanged files in this context. A full analysis is performed for all files.";
+  private static final String LOG_MESSAGE_CANNOT_DETERMINE_IF_FILES_CAN_BE_SKIPPED =
+    "Cannot determine whether the context allows skipping unchanged files: " +
+      "canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}";
 
   private static final String DEFAULT_PATH = Path.of("src", "main", "java", "com", "acme", "Source.java").toString();
 
@@ -160,7 +165,8 @@ class SonarComponentsTest {
     DefaultFileSystem fs = context.fileSystem();
     fs.setWorkDir(workDir.toPath());
 
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(ClasspathForTest.class), checkFactory, context.activeRules());
+    SonarComponents sonarComponents = new SonarComponents(
+      fileLinesContextFactory, fs, null, mock(ClasspathForTest.class), checkFactory, context.activeRules());
 
     assertThat(sonarComponents.projectLevelWorkDir()).isEqualTo(workDir);
   }
@@ -358,14 +364,14 @@ class SonarComponentsTest {
     }
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, activeRules, new CheckRegistrar[] {
-        ctx -> ctx.registerMainSharedCheck(new RuleA(), ruleKeys("java:S404", "java:S102")),
-        ctx -> ctx.registerMainSharedCheck(new RuleB(), ruleKeys("java:S404", "java:S500")),
-        ctx -> ctx.registerMainSharedCheck(new RuleC(), ruleKeys("java:S101", "java:S102")),
-        ctx -> ctx.registerTestSharedCheck(new RuleD(), ruleKeys("java:S404", "java:S405", "java:S406")),
-        ctx -> ctx.registerTestSharedCheck(new RuleE(), ruleKeys("java:S102")),
-        ctx -> ctx.registerTestSharedCheck(new RuleF(), List.of())
-      });
+      null, checkFactory, activeRules, new CheckRegistrar[]{
+      ctx -> ctx.registerMainSharedCheck(new RuleA(), ruleKeys("java:S404", "java:S102")),
+      ctx -> ctx.registerMainSharedCheck(new RuleB(), ruleKeys("java:S404", "java:S500")),
+      ctx -> ctx.registerMainSharedCheck(new RuleC(), ruleKeys("java:S101", "java:S102")),
+      ctx -> ctx.registerTestSharedCheck(new RuleD(), ruleKeys("java:S404", "java:S405", "java:S406")),
+      ctx -> ctx.registerTestSharedCheck(new RuleE(), ruleKeys("java:S102")),
+      ctx -> ctx.registerTestSharedCheck(new RuleF(), List.of())
+    });
     sonarComponents.setSensorContext(context);
 
     assertThat(sonarComponents.mainChecks())
@@ -391,13 +397,13 @@ class SonarComponentsTest {
     class RuleC implements JavaCheck {
     }
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, activeRules, new CheckRegistrar[] {
-        ctx -> ctx.registerMainChecks("java", List.of(
-          new RuleA(),
-          new RuleC())),
-        ctx -> ctx.registerTestChecks("java", List.of(
-          new RuleB()))
-      });
+      null, checkFactory, activeRules, new CheckRegistrar[]{
+      ctx -> ctx.registerMainChecks("java", List.of(
+        new RuleA(),
+        new RuleC())),
+      ctx -> ctx.registerTestChecks("java", List.of(
+        new RuleB()))
+    });
     sonarComponents.setSensorContext(context);
 
     assertThat(sonarComponents.mainChecks())
@@ -415,7 +421,7 @@ class SonarComponentsTest {
     SensorContextTester context = SensorContextTester.create(new File(".")).setActiveRules(activeRules);
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, activeRules, new CheckRegistrar[] {
+      null, checkFactory, activeRules, new CheckRegistrar[]{
       ctx -> ctx.registerAutoScanCompatibleRules(ruleKeys("java:S101", "java:S102")),
       ctx -> ctx.registerAutoScanCompatibleRules(ruleKeys("javabugs:S200"))
     });
@@ -705,7 +711,8 @@ class SonarComponentsTest {
     assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(1000L);
 
     // Deprecated autoscan key returns default value
-    // Note: it means that if someone used this key outside an autoscan context, the project will be analyzed in a single batch (unless batch size is specified)
+    // Note: it means that if someone used this key outside an autoscan context, the project will be analyzed in a single batch
+    // (unless batch size is specified)
     settings.clear();
     settings.setProperty("sonar.java.internal.batchMode", "true");
     assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(-1L);
@@ -921,7 +928,8 @@ class SonarComponentsTest {
 
   @ParameterizedTest
   @MethodSource("provideInputsFor_canSkipUnchangedFiles")
-  void canSkipUnchangedFiles(@CheckForNull Boolean overrideFlagVal, @CheckForNull Boolean apiResponseVal, @CheckForNull Boolean expectedResult) throws ApiMismatchException {
+  void canSkipUnchangedFiles(@CheckForNull Boolean overrideFlagVal, @CheckForNull Boolean apiResponseVal,
+    @CheckForNull Boolean expectedResult) throws ApiMismatchException {
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     SonarComponents sonarComponents = new SonarComponents(
       fileLinesContextFactory,
@@ -999,12 +1007,14 @@ class SonarComponentsTest {
       String source = generateSource(26);
 
       // artificially populated the semantic errors with 26 unknown types and 52 errors
-      sonarComponents.collectUndefinedTypes(DEFAULT_PATH, ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
+        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
 
       // triggers log
       sonarComponents.logUndefinedTypes();
 
-      assertThat(logTester.logs(Level.WARN)).containsExactly("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
+      assertThat(logTester.logs(Level.WARN)).containsExactly(
+        "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
 
       List<String> debugLogs = logTester.logs(Level.DEBUG);
       assertThat(debugLogs).hasSize(1);
@@ -1028,7 +1038,8 @@ class SonarComponentsTest {
     void remove_info_and_warning_from_log_related_to_undefined_types() {
       logTester.setLevel(Level.ERROR);
       String source = generateSource(26);
-      sonarComponents.collectUndefinedTypes(DEFAULT_PATH, ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
+        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
       sonarComponents.logUndefinedTypes();
 
       assertThat(logTester.logs(Level.WARN)).isEmpty();
@@ -1040,12 +1051,14 @@ class SonarComponentsTest {
       String source = generateSource(1);
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
-      sonarComponents.collectUndefinedTypes(DEFAULT_PATH, ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
+        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
 
       // triggers log
       sonarComponents.logUndefinedTypes();
 
-      assertThat(logTester.logs(Level.WARN)).containsExactly("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
+      assertThat(logTester.logs(Level.WARN)).containsExactly(
+        "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
 
       List<String> debugLogs = logTester.logs(Level.DEBUG);
       assertThat(debugLogs).hasSize(1);
@@ -1062,8 +1075,10 @@ class SonarComponentsTest {
       logUndefinedTypesWithOneMainAndOneTest();
 
       assertThat(logTester.logs(Level.WARN))
-        .contains("Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. Verify your configuration, as you might end up with less precise results.")
-        .contains("Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. Verify your configuration, as you might end up with less precise results.");
+        .contains("Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. " +
+          "Verify your configuration, as you might end up with less precise results.")
+        .contains("Dependencies/libraries were not provided for analysis of TEST files. " +
+          "The 'sonar.java.test.libraries' property is empty. Verify your configuration, as you might end up with less precise results.");
     }
 
     @Test
@@ -1074,8 +1089,10 @@ class SonarComponentsTest {
       logUndefinedTypesWithOneMainAndOneTest();
 
       assertThat(logTester.logs(Level.WARN))
-        .contains("Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. Verify your configuration, as you might end up with less precise results.")
-        .doesNotContain("Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. Verify your configuration, as you might end up with less precise results.");
+        .contains("Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. " +
+          "Verify your configuration, as you might end up with less precise results.")
+        .doesNotContain("Dependencies/libraries were not provided for analysis of TEST files. " +
+          "The 'sonar.java.test.libraries' property is empty. Verify your configuration, as you might end up with less precise results.");
     }
 
     @Test
@@ -1089,8 +1106,10 @@ class SonarComponentsTest {
       fs.add(testFile);
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
-      sonarComponents.collectUndefinedTypes(mainFile.toString(), ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
-      sonarComponents.collectUndefinedTypes(testFile.toString(), ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.collectUndefinedTypes(mainFile.toString(),
+        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.collectUndefinedTypes(testFile.toString(),
+        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
       sonarComponents.logUndefinedTypes();
 
       List<String> debugMessage = logTester.logs(Level.DEBUG);
@@ -1122,7 +1141,8 @@ class SonarComponentsTest {
       fs.add(TestUtils.emptyInputFile("fooTest.java", InputFile.Type.TEST));
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
-      sonarComponents.collectUndefinedTypes(DEFAULT_PATH, ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+      sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
+        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
 
       // Call these methods to initiate Main and Test ClassPath
       sonarComponents.getJavaClasspath();
@@ -1167,7 +1187,7 @@ class SonarComponentsTest {
 
     JspCodeCheck check = new JspCodeCheck();
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null,
-      checkFactory, context.activeRules(), new CheckRegistrar[] {getRegistrar(check)});
+      checkFactory, context.activeRules(), new CheckRegistrar[]{getRegistrar(check)});
     List<JavaCheck> checks = sonarComponents.jspChecks();
     assertThat(checks)
       .isNotEmpty()
@@ -1222,5 +1242,51 @@ class SonarComponentsTest {
         .build());
     }
     return activeRules.build();
+  }
+
+  @Test
+  void should_return_sonarlint_cache_if_initialized_with_a_sonarlint_cache() {
+    var sonarLintCache = mock(SonarLintCache.class);
+
+    var sonarComponentsWithoutSonarLintCache = new SonarComponents(
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    );
+
+    assertThat(sonarComponentsWithoutSonarLintCache.sonarLintCache()).isNull();
+
+    var sonarComponentsWithSonarLintCache01 = new SonarComponents(
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      sonarLintCache
+    );
+
+    assertThat(sonarComponentsWithSonarLintCache01.sonarLintCache()).isSameAs(sonarLintCache);
+
+    var sonarComponentsWithSonarLintCache02 = new SonarComponents(
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      sonarLintCache
+    );
+
+    assertThat(sonarComponentsWithSonarLintCache02.sonarLintCache()).isSameAs(sonarLintCache);
   }
 }

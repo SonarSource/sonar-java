@@ -31,6 +31,7 @@ import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
@@ -58,6 +59,7 @@ import org.sonarsource.performance.measure.PerformanceMeasure;
 import static org.sonar.api.rules.RuleAnnotationUtils.getRuleKey;
 
 @Phase(name = Phase.Name.PRE)
+@DependedUpon("org.sonar.plugins.java.JavaSensor")
 public class JavaSensor implements Sensor {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaSensor.class);

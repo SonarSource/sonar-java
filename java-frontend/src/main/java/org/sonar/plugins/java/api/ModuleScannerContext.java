@@ -20,6 +20,9 @@
 package org.sonar.plugins.java.api;
 
 import java.io.File;
+import javax.annotation.CheckForNull;
+import org.sonar.api.SonarProduct;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
@@ -43,8 +46,8 @@ public interface ModuleScannerContext {
 
   /**
    * The working directory used by the analysis.
-   * @return the current working directory.
    *
+   * @return the current working directory.
    * @deprecated use {@link #getRootProjectWorkingDirectory()} instead
    */
   @Deprecated(since = "7.12")
@@ -80,4 +83,12 @@ public interface ModuleScannerContext {
    * @return A key that uniquely identifies the current module, provided that this project consists of multiple modules.
    */
   String getModuleKey();
+
+  /**
+   * @return The Sonar product (SONARQUBE/SONARLINT) which forms the current execution context of the scan.
+   * See also {@link SonarRuntime#getProduct()}.
+   * In a production environment, this method never returns null but in testing contexts, it may happen.
+   */
+  @CheckForNull
+  SonarProduct sonarProduct();
 }

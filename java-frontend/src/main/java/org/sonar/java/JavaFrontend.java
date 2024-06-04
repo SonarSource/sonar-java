@@ -392,7 +392,7 @@ public class JavaFrontend {
   }
 
   private boolean isCacheEnabled() {
-    return sonarComponents != null && CacheContextImpl.of(sonarComponents.context()).isCacheEnabled();
+    return sonarComponents != null && CacheContextImpl.of(sonarComponents).isCacheEnabled();
   }
 
   private boolean canOptimizeScanning() {

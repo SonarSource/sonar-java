@@ -41,7 +41,6 @@ import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.IllegalRuleParameterException;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
@@ -55,6 +54,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
@@ -97,7 +97,8 @@ public class VisitorsBridge {
     this.scannersThatCannotBeSkipped = new ArrayList<>();
     this.classpath = projectClasspath;
     this.sonarComponents = sonarComponents;
-    this.cacheContext = CacheContextImpl.of(sonarComponents != null ? sonarComponents.context() : null);
+    this.cacheContext = CacheContextImpl.of(sonarComponents);
+
     this.javaVersion = javaVersion;
     updateScanners();
   }

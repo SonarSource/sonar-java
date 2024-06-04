@@ -24,9 +24,11 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
+import org.sonar.plugins.java.api.caching.SonarLintCache;
 
 public class CacheContextImpl implements CacheContext {
   /**
@@ -47,34 +49,73 @@ public class CacheContextImpl implements CacheContext {
     this.writeCache = writeCache;
   }
 
-  public static CacheContextImpl of(@Nullable SensorContext context) {
-
-    if (context != null) {
-      try {
-        boolean cacheEnabled =
-          (context.config() == null ? Optional.<Boolean>empty() : context.config().getBoolean(SONAR_CACHING_ENABLED_KEY))
-            .map(flag -> {
-              LOGGER.debug("Forcing caching behavior. Caching will be enabled: {}", flag);
-              return flag;
-            })
-            .orElse(context.isCacheEnabled());
-
-        LOGGER.trace("Caching is enabled: {}", cacheEnabled);
-
-        if (cacheEnabled) {
-          return new CacheContextImpl(
-            true,
-            new JavaReadCacheImpl(context.previousCache()),
-            new JavaWriteCacheImpl(context.nextCache())
-          );
-        }
-      } catch (NoSuchMethodError error) {
-        LOGGER.debug("Missing cache related method from sonar-plugin-api: {}.", error.getMessage());
-      }
+  public static CacheContextImpl of(@Nullable SonarComponents sonarComponents) {
+    if (sonarComponents == null) {
+      return dummyCache();
     }
 
-    DummyCache dummyCache = new DummyCache();
+    // If a SonarLintCache is available, it means we must be running in a SonarLint context, and we should use it,
+    // regardless of whether settings for caching are enabled or not.
+    // This is because custom rules (i.e. DBD rules) are depending on SonarLintCache in a SonarLint context.
+    var sonarLintCache = sonarComponents.sonarLintCache();
+    if (sonarLintCache != null) {
+      return fromSonarLintCache(sonarLintCache);
+    }
+
+    var sensorContext = sonarComponents.context();
+    if (sensorContext == null) {
+      return dummyCache();
+    }
+
+    try {
+      var isCachingEnabled = isCachingEnabled(sensorContext);
+      LOGGER.trace("Caching is enabled: {}", isCachingEnabled);
+      if (!isCachingEnabled) {
+        return dummyCache();
+      }
+
+      return fromSensorContext(sensorContext);
+    } catch (NoSuchMethodError error) {
+      LOGGER.debug("Missing cache related method from sonar-plugin-api: {}.", error.getMessage());
+      return dummyCache();
+    }
+  }
+
+  private static CacheContextImpl dummyCache() {
+    var dummyCache = new DummyCache();
     return new CacheContextImpl(false, dummyCache, dummyCache);
+  }
+
+  private static CacheContextImpl fromSensorContext(SensorContext context) {
+    return new CacheContextImpl(
+      true,
+      new JavaReadCacheImpl(context.previousCache()),
+      new JavaWriteCacheImpl(context.nextCache())
+    );
+  }
+
+  private static CacheContextImpl fromSonarLintCache(SonarLintCache sonarLintCache) {
+    return new CacheContextImpl(
+      // SonarLintCache is not an actual cache, but a temporary solution to transferring data between plugins in SonarLint.
+      // Hence, it should not report that caching is enabled so that no logic which is not aware of SonarLintCache tries to use it like
+      // a regular cache.
+      // (However, this means code which is aware of SonarLintCache needs to consciously ignore the `isCacheEnabled` setting where
+      // appropriate.)
+      false,
+      new JavaReadCacheImpl(sonarLintCache),
+      new JavaWriteCacheImpl(sonarLintCache)
+    );
+  }
+
+  private static boolean isCachingEnabled(SensorContext context) {
+    return
+      Optional.ofNullable(context.config())
+        .flatMap(config -> config.getBoolean(SONAR_CACHING_ENABLED_KEY))
+        .map(flag -> {
+          LOGGER.debug("Forcing caching behavior. Caching will be enabled: {}", flag);
+          return flag;
+        })
+        .orElse(context.isCacheEnabled());
   }
 
   @Override

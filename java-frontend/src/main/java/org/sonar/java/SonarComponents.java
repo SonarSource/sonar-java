@@ -73,6 +73,7 @@ import org.sonar.java.reporting.JavaIssue;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 
@@ -117,6 +118,8 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   private final ActiveRules activeRules;
   @Nullable
   private final ProjectDefinition projectDefinition;
+  @Nullable
+  private final SonarLintCache sonarLintCache;
   private final FileSystem fs;
   private final List<JavaCheck> mainChecks;
   private final List<JavaCheck> testChecks;
@@ -129,36 +132,77 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   private boolean alreadyLoggedSkipStatus = false;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
-                         CheckFactory checkFactory, ActiveRules activeRules) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, null, null);
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
+    CheckFactory checkFactory, ActiveRules activeRules) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, null, null, null);
   }
 
   /**
-   * Will be called in SonarLint context when custom rules are present
+   * Can be called in SonarLint context when custom rules are present.
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
-                         ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, checkRegistrars, null);
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+    ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, checkRegistrars, null, null);
   }
 
   /**
-   * Will be called in SonarScanner context when no custom rules is present
+   * Will *only* be called in SonarLint context and when custom rules are present.
+   * <p>
+   * This is because {@link SonarLintCache} is only added as an extension in a SonarLint context.
+   * See also {@code JavaPlugin#define} in the {@code sonar-java-plugin} module.
+   * <p>
+   * {@code SonarLintCache} is used only by newer custom rules, e.g. DBD.
+   * Thus, for this constructor, we can also assume the presence of {@code CheckRegistrar} instances.
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
-                         ActiveRules activeRules, @Nullable ProjectDefinition projectDefinition) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules,null, projectDefinition);
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+    ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars, SonarLintCache sonarLintCache) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, checkRegistrars, null, sonarLintCache);
   }
 
   /**
-   * ProjectDefinition class is not available in SonarLint context, so this constructor will never be called when using SonarLint
+   * Will be called in SonarScanner context when no custom rules are present.
+   * May be called in some SonarLint contexts, but not others, since ProjectDefinition might not be available.
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
-                         ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars,
-                         @Nullable ProjectDefinition projectDefinition) {
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+    ActiveRules activeRules, @Nullable ProjectDefinition projectDefinition) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, null, projectDefinition, null);
+  }
+
+  /**
+   * May be called in some SonarLint contexts, but not others, since ProjectDefinition might not be available.
+   */
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+    ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars,
+    @Nullable ProjectDefinition projectDefinition) {
+    this(
+      fileLinesContextFactory,
+      fs,
+      javaClasspath,
+      javaTestClasspath,
+      checkFactory,
+      activeRules,
+      checkRegistrars,
+      projectDefinition,
+      null
+    );
+  }
+
+
+  /**
+   * All other constructors delegate to this one.
+   * <p>
+   * It will also be called directly when constructing a SonarComponents instance for injection if all parameters are available.
+   * This is for example the case for SonarLint in IntelliJ when DBD is present
+   * (because ProjectDefinition can be available in recent SonarLint versions, and DBD provides a CheckRegistrar.)
+   */
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
+    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+    ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars,
+    @Nullable ProjectDefinition projectDefinition, @Nullable SonarLintCache sonarLintCache) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
@@ -166,6 +210,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     this.checkFactory = checkFactory;
     this.activeRules = activeRules;
     this.projectDefinition = projectDefinition;
+    this.sonarLintCache = sonarLintCache;
     this.mainChecks = new ArrayList<>();
     this.testChecks = new ArrayList<>();
     this.jspChecks = new ArrayList<>();
@@ -341,7 +386,8 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
       if (!textSpan.onLine()) {
         Preconditions.checkState(!textSpan.isEmpty(), "Issue location should not be empty");
       }
-      issue.setPrimaryLocation((InputFile) fileOrProject, analyzerMessage.getMessage(), textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
+      issue.setPrimaryLocation((InputFile) fileOrProject, analyzerMessage.getMessage(), textSpan.startLine, textSpan.startCharacter,
+        textSpan.endLine, textSpan.endCharacter);
     }
     if (!analyzerMessage.flows.isEmpty()) {
       issue.addFlow((InputFile) analyzerMessage.getInputComponent(), analyzerMessage.flows);
@@ -493,7 +539,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
 
   public boolean fileCanBeSkipped(InputFile inputFile) {
-    var contentHashCache = new ContentHashCache(context);
+    var contentHashCache = new ContentHashCache(this);
     if (inputFile instanceof GeneratedFile) {
       // Generated files should not be skipped as we cannot assess the change status of the source file
       return false;
@@ -513,7 +559,8 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     } catch (ApiMismatchException e) {
       if (!alreadyLoggedSkipStatus) {
         LOG.info(
-          "Cannot determine whether the context allows skipping unchanged files: canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}",
+          "Cannot determine whether the context allows skipping unchanged files: canSkipUnchangedFiles not part of sonar-plugin-api. " +
+            "Not skipping. {}",
           e.getCause().getMessage()
         );
         alreadyLoggedSkipStatus = true;
@@ -572,7 +619,8 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     );
   }
 
-  private static void logParserMessages(Stream<Map.Entry<JProblem, List<String>>> messages, int maxProblems, String warningMessage, String debugMessage) {
+  private static void logParserMessages(Stream<Map.Entry<JProblem, List<String>>> messages, int maxProblems, String warningMessage,
+    String debugMessage) {
     String problemDelimiter = System.lineSeparator() + "- ";
     List<List<String>> messagesList = messages
       .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
@@ -607,5 +655,10 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   public SensorContext context() {
     return context;
+  }
+
+  @CheckForNull
+  public SonarLintCache sonarLintCache() {
+    return sonarLintCache;
   }
 }

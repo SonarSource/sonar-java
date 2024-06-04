@@ -25,9 +25,9 @@ import java.security.NoSuchAlgorithmException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
+import org.sonar.java.SonarComponents;
 
 public class ContentHashCache {
 
@@ -39,13 +39,14 @@ public class ContentHashCache {
   private WriteCache writeCache;
   private final boolean enabled;
 
-  public ContentHashCache(SensorContext context) {
-    CacheContextImpl cacheContext = CacheContextImpl.of(context);
+  public ContentHashCache(SonarComponents sonarComponents) {
+    CacheContextImpl cacheContext = CacheContextImpl.of(sonarComponents);
     enabled = cacheContext.isCacheEnabled();
 
+    var sensorContext = sonarComponents.context();
     if (enabled) {
-      readCache = context.previousCache();
-      writeCache = context.nextCache();
+      readCache = sensorContext.previousCache();
+      writeCache = sensorContext.nextCache();
     }
   }
 

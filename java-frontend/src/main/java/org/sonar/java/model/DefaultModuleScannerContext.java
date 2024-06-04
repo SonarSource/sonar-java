@@ -20,7 +20,9 @@
 package org.sonar.java.model;
 
 import java.io.File;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.CacheContextImpl;
@@ -36,14 +38,15 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   protected final boolean inAndroidContext;
   protected final CacheContext cacheContext;
 
-  public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
+  public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext,
+    @Nullable CacheContext cacheContext) {
     this.sonarComponents = sonarComponents;
     this.javaVersion = javaVersion;
     this.inAndroidContext = inAndroidContext;
     if (cacheContext != null) {
       this.cacheContext = cacheContext;
     } else {
-      this.cacheContext = CacheContextImpl.of(sonarComponents != null ? sonarComponents.context() : null);
+      this.cacheContext = CacheContextImpl.of(sonarComponents);
     }
   }
 
@@ -84,5 +87,22 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   @Override
   public String getModuleKey() {
     return sonarComponents.getModuleKey();
+  }
+
+  @CheckForNull
+  @Override
+  public SonarProduct sonarProduct() {
+    // In production, sonarComponents and sonarComponents.context() should never be null.
+    // However, in testing contexts, this can happen and calling this method should not cause tests to fail.
+    if (sonarComponents == null) {
+      return null;
+    }
+
+    var context = sonarComponents.context();
+    if (context == null) {
+      return null;
+    }
+
+    return context.runtime().getProduct();
   }
 }
