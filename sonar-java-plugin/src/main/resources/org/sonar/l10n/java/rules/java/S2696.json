@@ -19,5 +19,10 @@
   "ruleSpecification": "RSPEC-2696",
   "sqKey": "S2696",
   "scope": "Main",
+  "securityStandards": {
+    "STIG ASD 2023-06-08": [
+      "V-222567"
+    ]
+  },
   "quickfix": "unknown"
 }
