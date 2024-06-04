@@ -66,6 +66,11 @@ public interface CheckRegistrar {
 
   }
 
+  /**
+   * This method is called during an analysis to register instantiated checks using the CheckFactory
+   * @param registrarContext the context that will be used by the java-plugin to retrieve the classes for checks.
+   * @param checkFactory the factory to be used to instantiate checks
+   */
   default void register(RegistrarContext registrarContext, CheckFactory checkFactory) {
     register(registrarContext);
   }

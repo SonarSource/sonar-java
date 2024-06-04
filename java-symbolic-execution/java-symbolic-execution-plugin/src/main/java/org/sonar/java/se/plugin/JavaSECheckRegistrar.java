@@ -80,8 +80,6 @@ public class JavaSECheckRegistrar implements CheckRegistrar {
   }
 
   private static void setTemplates(RulesDefinition.NewRepository repository) {
-    RULE_TEMPLATES_KEY.stream()
-      .map(repository::rule)
-      .forEach(rule -> rule.setTemplate(true));
+    RULE_TEMPLATES_KEY.forEach(ruleKey -> repository.rule(ruleKey).setTemplate(true));
   }
 }

@@ -66,7 +66,7 @@ class CheckListTest {
         count++;
       }
     }
-    assertThat(CheckList.getChecks()).hasSize(count );
+    assertThat(CheckList.getChecks()).hasSize(count);
   }
 
   private static List<File> getCheckFiles() {

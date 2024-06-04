@@ -11,6 +11,13 @@ class NullDereferenceCheck {
     }
   }
 
+  @SuppressWarnings("java:S2259")
+  void S2259_2(String s) {
+    if (s == null) {
+      s.toString(); // NoIssue
+    }
+  }
+
   void S2259NotSuppressed(String s) {
     if (s == null) {
       s.toString(); // WithIssue
@@ -22,6 +29,22 @@ class UnclosedResources {
 
   @SuppressWarnings("resource")
   void S2093(String fileName) {
+    FileReader fr = null;
+    try { // NoIssue
+      fr = new FileReader(fileName);
+    } catch (Exception e) {
+    } finally {
+      if (fr != null) {
+        try {
+          fr.close();
+        } catch (IOException e) {
+        }
+      }
+    }
+  }
+
+  @SuppressWarnings("java:S2093")
+  void S2093_2(String fileName) {
     FileReader fr = null;
     try { // NoIssue
       fr = new FileReader(fileName);

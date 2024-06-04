@@ -28,3 +28,18 @@ class UnusedSuppressionSuppressed {
     }
   }
 }
+
+@SuppressWarnings("java:S2583")
+class UnusedSuppressionSuppressed2 {
+  public void assign(boolean parameter) {
+    parameter = false;
+    if (parameter) { // NoIssue
+      if (parameter) { // Compliant, unreachable
+      }
+    }
+    if (!parameter) { // NoIssue
+      if (!parameter) { // NoIssue
+      }
+    }
+  }
+}

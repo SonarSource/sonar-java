@@ -10,3 +10,10 @@ class Divzero {
   }
 }
 
+@SuppressWarnings("java:S3518") // WithIssue
+class Divzero2 {
+  void f() {
+    int j = 1 / 0; // NoIssue
+  }
+}
+

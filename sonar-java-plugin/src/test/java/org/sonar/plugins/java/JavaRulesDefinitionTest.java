@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
@@ -31,10 +32,14 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.Version;
+import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKeys;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class JavaRulesDefinitionTest {
 
@@ -197,6 +202,16 @@ class JavaRulesDefinitionTest {
         assertThat(r.internalKey()).isEqualTo("S1291");
       }
     });
+  }
+
+  @Test
+  void test_custom_rules_definition() {
+    CheckRegistrar customCheckRegistrar = mock(CheckRegistrar.class);
+
+    JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_8, new CheckRegistrar[] {customCheckRegistrar});
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    verify(customCheckRegistrar, times(1)).customRulesDefinition(Mockito.any(), Mockito.any());
   }
 
 }

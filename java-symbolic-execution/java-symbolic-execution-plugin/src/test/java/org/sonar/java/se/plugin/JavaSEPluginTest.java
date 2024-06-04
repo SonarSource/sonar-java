@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.plugin;
 
-
 import org.junit.jupiter.api.Test;
 import org.sonar.api.Plugin;
 import org.sonar.api.SonarEdition;
@@ -34,7 +33,7 @@ class JavaSEPluginTest {
 
   @Test
   void plugin() {
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(10, 2), SonarQubeSide.SERVER, SonarEdition.DEVELOPER);
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(10, 2), SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
     Plugin.Context context = new Plugin.Context(runtime);
     JavaSEPlugin plugin = new JavaSEPlugin();
     plugin.define(context);
