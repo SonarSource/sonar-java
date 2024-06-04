@@ -29,6 +29,9 @@
     ],
     "CWE": [
       369
+    ],
+    "STIG ASD 2023-06-08": [
+      "V-222612"
     ]
   },
   "quickfix": "infeasible"

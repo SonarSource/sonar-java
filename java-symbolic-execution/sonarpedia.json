@@ -1,0 +1,11 @@
+{
+  "rules-metadata-path": "./java-symbolic-execution-plugin/src/main/resources/org/sonar/l10n/java/rules/javase",
+  "languages": [
+    "JAVA"
+  ],
+  "latest-update": "2024-06-04T16:13:16.680708700Z",
+  "options": {
+    "no-language-in-filenames": true,
+    "preserve-filenames": false
+  }
+}

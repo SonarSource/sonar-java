@@ -39,6 +39,9 @@
     ],
     "ASVS 4.0": [
       "5.5.2"
+    ],
+    "STIG ASD 2023-06-08": [
+      "V-222608"
     ]
   },
   "quickfix": "infeasible"
