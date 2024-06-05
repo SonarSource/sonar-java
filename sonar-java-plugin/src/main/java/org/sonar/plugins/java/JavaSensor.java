@@ -20,7 +20,6 @@
 package org.sonar.plugins.java;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,7 +43,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
@@ -145,7 +143,7 @@ public class JavaSensor implements Sensor {
       .appendMeasurementCost()
       .start("JavaSensor");
   }
-  
+
 
   private Collection<GeneratedFile> runJasper(SensorContext context) {
     if (sonarComponents.isAutoScan()) {
