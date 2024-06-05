@@ -90,9 +90,7 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
 
   @SafeVarargs
   final void excludeLines(@Nullable Tree tree, Class<? extends JavaCheck>... rules) {
-    for (Class<? extends JavaCheck> rule : rules) {
       excludeLinesIfTrue(true, tree, rules);
-    }
   }
 
   @SafeVarargs
