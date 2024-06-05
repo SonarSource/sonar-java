@@ -1,0 +1,38 @@
+{
+  "title": "Zero should not be a possible denominator",
+  "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "cwe",
+    "denial-of-service",
+    "cert",
+    "symbolic-execution"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-3518",
+  "sqKey": "S3518",
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "NUM02-J.",
+      "INT33-C."
+    ],
+    "CWE": [
+      369
+    ],
+    "STIG ASD 2023-06-08": [
+      "V-222612"
+    ]
+  },
+  "quickfix": "infeasible"
+}

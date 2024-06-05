@@ -290,6 +290,7 @@ class JSymbolTest {
     assertThat(initializerBlock.isDefaultMethod()).isFalse();
     assertThat(initializerBlock.isSynchronizedMethod()).isFalse();
     assertThat(initializerBlock.isVarArgsMethod()).isFalse();
+    assertThat(initializerBlock.isNativeMethod()).isFalse();
   }
 
   @Test

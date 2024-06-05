@@ -26,6 +26,7 @@ import org.sonar.api.SonarRuntime;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonarsource.analyzer.commons.RuleMetadataLoader;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKeys;
@@ -45,15 +46,20 @@ public class JavaRulesDefinition implements RulesDefinition {
     "S124",
     "S2253",
     "S3688",
-    "S3546",
     "S4011");
 
   private static final Map<String, String> INTERNAL_KEYS = Collections.singletonMap("NoSonar", "S1291");
 
   private final SonarRuntime sonarRuntime;
+  private final CheckRegistrar[] checkRegistrars;
 
   public JavaRulesDefinition(SonarRuntime sonarRuntime) {
+    this(sonarRuntime, new CheckRegistrar[0]);
+  }
+
+  public JavaRulesDefinition(SonarRuntime sonarRuntime, CheckRegistrar[] checkRegistrars) {
     this.sonarRuntime = sonarRuntime;
+    this.checkRegistrars = checkRegistrars;
   }
 
   @Override
@@ -77,6 +83,10 @@ public class JavaRulesDefinition implements RulesDefinition {
       .map(JavaRulesDefinition::ruleKey)
       .map(repository::rule)
       .forEach(rule -> rule.addDeprecatedRuleKey("squid", rule.key()));
+
+    for(CheckRegistrar registrar : checkRegistrars){
+      registrar.customRulesDefinition(context, repository);
+    }
 
     repository.done();
   }

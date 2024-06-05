@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
@@ -31,10 +32,14 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.Version;
+import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKeys;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class JavaRulesDefinitionTest {
 
@@ -58,9 +63,9 @@ class JavaRulesDefinitionTest {
     assertThat(unusedLabelRule.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(unusedLabelRule.internalKey()).isNull();
     assertThat(unusedLabelRule.name()).isEqualTo("Unused labels should be removed");
-    assertThat(repository.rule("S2095").type()).isEqualTo(RuleType.BUG);
-    assertThat(repository.rule("S2095").deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S2095"));
-    assertThat(repository.rule("S2095").activatedByDefault()).isTrue();
+    assertThat(repository.rule("S1217").type()).isEqualTo(RuleType.BUG);
+    assertThat(repository.rule("S1217").deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S1217"));
+    assertThat(repository.rule("S1217").activatedByDefault()).isTrue();
     RulesDefinition.Rule magicNumber = repository.rule("S109");
     assertThat(magicNumber.params()).isNotEmpty();
     assertThat(magicNumber.activatedByDefault()).isFalse();
@@ -68,7 +73,7 @@ class JavaRulesDefinitionTest {
     // rule templates are manually defined
     assertThat(repository.rules().stream()
       .filter(RulesDefinition.Rule::template)
-      .map(RulesDefinition.Rule::key)).containsOnly("S124", "S2253", "S3688", "S3546", "S4011");
+      .map(RulesDefinition.Rule::key)).containsOnly("S124", "S2253", "S3688", "S4011");
 
     // Calling definition multiple time should not lead to failure: thanks C# plugin !
     definition.define(new RulesDefinition.Context());
@@ -197,6 +202,16 @@ class JavaRulesDefinitionTest {
         assertThat(r.internalKey()).isEqualTo("S1291");
       }
     });
+  }
+
+  @Test
+  void test_custom_rules_definition() {
+    CheckRegistrar customCheckRegistrar = mock(CheckRegistrar.class);
+
+    JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_8, new CheckRegistrar[] {customCheckRegistrar});
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    verify(customCheckRegistrar, times(1)).customRulesDefinition(Mockito.any(), Mockito.any());
   }
 
 }

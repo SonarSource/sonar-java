@@ -96,7 +96,8 @@ test_analyze_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
     - source cirrus-env BUILD
-    - PULL_REQUEST_SHA=$GIT_SHA1 regular_mvn_build_deploy_analyze -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true
+    # ignore duplications in the SE engine plugin, as it will be moved away from sonar-java at some point
+    - PULL_REQUEST_SHA=$GIT_SHA1 regular_mvn_build_deploy_analyze -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true -Dsonar.cpd.exclusions=java-symbolic-execution/**
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
 

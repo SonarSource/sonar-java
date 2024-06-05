@@ -32,6 +32,7 @@ import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Sema;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,7 +52,7 @@ class PostAnalysisIssueFilterTest {
 
     context = mock(JavaFileScannerContext.class);
     when(context.getInputFile()).thenReturn(INPUT_FILE);
-    when(context.getSemanticModel()).thenReturn(new Object());
+    when(context.getSemanticModel()).thenReturn(mock(Sema.class));
 
     fakeIssue = mock(FilterableIssue.class);
     when(fakeIssue.componentKey()).thenReturn("component");
