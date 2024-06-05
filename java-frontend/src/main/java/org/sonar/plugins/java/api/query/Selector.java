@@ -35,6 +35,11 @@ public class Selector<C, T> {
   private final Selector<C, ?> parent;
   protected final List<BiConsumer<C, T>> visitors = new ArrayList<>();
 
+  // TODO: normally, this belongs into class CommonTreeQuery, but it is generated ...
+  public Query<C> trees() {
+    throw new UnsupportedOperationException();
+  }
+
   public Selector(Class<T> selectorType, Selector<C, ?> parent) {
     this.selectorType = selectorType;
     this.root = parent != null ? parent.root : this;
