@@ -40,6 +40,18 @@ public class Selector<C, T> {
     throw new UnsupportedOperationException();
   }
 
+  public Query<C> subtrees() {
+    throw new UnsupportedOperationException();
+  }
+
+  public Query<C> sequence(CommonTreeQuery<C, ? extends Tree> ... queries) {
+    throw new UnsupportedOperationException();
+  }
+
+  public Query<C> endVisit(BiConsumer<C, Iterable<Tree>> visitor) {
+    throw new UnsupportedOperationException();
+  }
+
   public Selector(Class<T> selectorType, Selector<C, ?> parent) {
     this.selectorType = selectorType;
     this.root = parent != null ? parent.root : this;
