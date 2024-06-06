@@ -167,6 +167,12 @@ import org.sonar.plugins.java.api.tree.YieldStatementTree;
 // TODO a less experimental implementation of this should use avoid using a queue to transfer results
 // to the caller, and use accept methods with a return value (to be defined in AST nodes)
 
+/**
+ * Base class for deep copy visitors and substitution visitors. A substitution visitor should
+ * subclass this class and override the method(s) corresponding to the nodes that need to be
+ * substituted. If the substitution is conditional, the default behaviour (cloning) can be
+ * obtained by invoking the corresponding method on super.
+ */
 public abstract class DeepCopyVisitorBase implements TreeVisitor {
 
   private final Queue<Tree> results = new LinkedList<>();
