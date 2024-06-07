@@ -10,7 +10,7 @@
 
   <groupId>org.sonarsource.java</groupId>
   <artifactId>java</artifactId>
-  <version>8.0.0-SNAPSHOT</version>
+  <version>8.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>SonarJava</name>
   <description>Code Analyzer for Java</description>
