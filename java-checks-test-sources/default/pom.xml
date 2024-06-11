@@ -907,7 +907,7 @@
     <dependency>
       <groupId>com.azure</groupId>
       <artifactId>azure-identity</artifactId>
-      <version>1.5.2</version>
+      <version>1.12.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
