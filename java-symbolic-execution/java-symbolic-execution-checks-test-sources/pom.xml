@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>java-se</artifactId>
-    <version>8.0.1-SNAPSHOT</version>
+    <version>8.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>java-symbolic-execution-checks-test-sources</artifactId>
