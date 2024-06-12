@@ -83,7 +83,7 @@
     </dependency>
     <dependency>
       <groupId>org.sonarsource.java</groupId>
-      <artifactId>java-symbolic-execution-plugin</artifactId>
+      <artifactId>sonar-java-symbolic-execution-plugin</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
