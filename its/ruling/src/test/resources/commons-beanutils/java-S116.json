@@ -1,0 +1,12 @@
+{
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PrimitiveBean.java": [
+26,
+27,
+28,
+29,
+30
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java": [
+46
+]
+}
