@@ -8,7 +8,7 @@
     <version>8.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>java-symbolic-execution-plugin</artifactId>
+  <artifactId>sonar-java-symbolic-execution-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
   <name>SonarQube Java :: Symbolic Execution Plugin</name>
