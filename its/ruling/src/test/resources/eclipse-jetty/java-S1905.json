@@ -8,9 +8,6 @@
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java": [
 498
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java": [
-597
-],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java": [
 305,
 360,
@@ -32,22 +29,6 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java": [
 175
-],
-"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/PathWatcherTest.java": [
-221
-],
-"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/TrieTest.java": [
-216,
-237
-],
-"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/TypeUtilTest.java": [
-50,
-51,
-52,
-53,
-54,
-55,
-64
 ],
 "org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
 269,

@@ -11,49 +11,5 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/AbstractChangeTagsAction.java": [
 58
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounterTest.java": [
-324
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/BestValueOptimizationTest.java": [
-149,
-151
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureTest.java": [
-45,
-242,
-244,
-287,
-289
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureToMeasureDtoTest.java": [
-87,
-182
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadCrossProjectDuplicationsRepositoryStepTest.java": [
-221
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateEventsStepTest.java": [
-103
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/favorite/FavoriteUpdaterTest.java": [
-84,
-91
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/CreateActionTest.java": [
-651,
-652
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java": [
-242
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/EnableSupportActionTest.java": [
-197
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileFactoryImplTest.java": [
-295
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java": [
-510
 ]
 }
