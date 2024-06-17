@@ -4,8 +4,5 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/RegisterQualityProfiles.java": [
 137
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/RegisterQualityProfilesTest.java": [
-118
 ]
 }

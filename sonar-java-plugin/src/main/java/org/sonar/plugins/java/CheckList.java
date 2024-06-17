@@ -787,6 +787,7 @@ public final class CheckList {
     ConstantsShouldBeStaticFinalCheck.class,
     ConstructorCallingOverridableCheck.class,
     ConstructorInjectionCheck.class,
+    ControlCharacterInLiteralCheck.class,
     ControllerWithRestControllerReplacementCheck.class,
     ControllerWithSessionAttributesCheck.class,
     CookieHttpOnlyCheck.class,
@@ -1148,7 +1149,6 @@ public final class CheckList {
     URLHashCodeAndEqualsCheck.class,
     UselessExtendsCheck.class,
     UselessIncrementCheck.class,
-    UselessParenthesesCheck.class,
     UseMotionSensorWithoutGyroscopeCheck.class,
     UserEnumerationCheck.class,
     UseSwitchExpressionCheck.class,
@@ -1302,7 +1302,6 @@ public final class CheckList {
     CollapsibleIfCandidateCheck.class,
     CollectorsToListCheck.class,
     CommentedOutCodeLineCheck.class,
-    ControlCharacterInLiteralCheck.class,
     DeadStoreCheck.class,
     DefaultPackageCheck.class,
     EmptyBlockCheck.class,
@@ -1330,7 +1329,8 @@ public final class CheckList {
     UnusedMethodParameterCheck.class,
     UnusedPrivateFieldCheck.class,
     UnusedPrivateMethodCheck.class,
-    UselessImportCheck.class);
+    UselessImportCheck.class,
+    UselessParenthesesCheck.class);
 
   private static final List<Class<?>> ALL_CHECKS = Stream.of(JAVA_MAIN_CHECKS, JAVA_MAIN_AND_TEST_CHECKS, JAVA_TEST_CHECKS)
     .flatMap(List::stream)
