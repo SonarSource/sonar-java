@@ -1,0 +1,42 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/OAuth2CallbackFilterTest.java": [
+209
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ws/ComponentsWsTest.java": [
+37
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/queue/ReportSubmitterTest.java": [
+132,
+164
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/notification/NotificationChannelTest.java": [
+39
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/web/MasterServletFilterTest.java": [
+153,
+164
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/web/WebPagesFilterTest.java": [
+166
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/plugins/TestPluginA.java": [
+26
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/root/ws/RootsWsTest.java": [
+49
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/tester/AttributeHolderServletContextTest.java": [
+220,
+230,
+240,
+277,
+282,
+287
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/SecurityRealmFactoryTest.java": [
+148
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/util/AbstractStoppableExecutorServiceTest.java": [
+46
+]
+}

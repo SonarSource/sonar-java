@@ -5,6 +5,9 @@
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
 50
 ],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/SslConnectionTest.java": [
+67
+],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
 69
 ],
@@ -25,6 +28,56 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java": [
 46
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncStressTest.java": [
+329
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorCloseTestBase.java": [
+40,
+53
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java": [
+57,
+64,
+71,
+78,
+85,
+92,
+99
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/StressTest.java": [
+59,
+60,
+61
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/BufferedResponseHandlerTest.java": [
+46,
+47,
+48,
+49,
+50,
+51
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerGetResourceTest.java": [
+51
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/InetAccessHandlerTest.java": [
+49,
+50,
+51,
+52
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerTest.java": [
+69,
+70,
+71,
+72,
+73,
+74,
+75
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslSelectChannelTimeoutTest.java": [
+35
 ],
 "org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggingServiceProvider.java": [
 35
@@ -73,5 +126,14 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java": [
 51
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java": [
+50,
+51,
+52,
+53
+],
+"org.eclipse.jetty:jetty-project:jetty-xml/src/test/java/org/eclipse/jetty/xml/TestConfiguration.java": [
+35
 ]
 }

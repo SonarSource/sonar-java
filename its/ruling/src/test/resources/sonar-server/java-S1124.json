@@ -1,0 +1,15 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/batch/IssuesActionTest.java": [
+63
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/counter/IntSumCounterTest.java": [
+35
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/language/ws/LanguageWsTest.java": [
+122
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/source/ws/HashActionTest.java": [
+43,
+44
+]
+}

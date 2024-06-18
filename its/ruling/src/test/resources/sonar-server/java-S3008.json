@@ -2,4 +2,82 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java": [
 44
 ],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/IdentityProviderRepositoryTest.java": [
+36,
+41,
+46
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/UserIdentityAuthenticatorTest.java": [
+59,
+61,
+68
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/batch/IssuesActionTest.java": [
+77
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java": [
+36
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/duplication/CrossProjectDuplicationStatusHolderImplTest.java": [
+33
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/TrackerRawInputFactoryTest.java": [
+52,
+54,
+55
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommentDensityRuleTest.java": [
+46,
+48
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CoverageRuleTest.java": [
+45
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/DuplicatedBlockRuleTest.java": [
+45,
+47
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/SkippedTestRuleTest.java": [
+45,
+47
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/TestErrorRuleTest.java": [
+45,
+47
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ValidateProjectStepTest.java": [
+45
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/EsServerHolder.java": [
+39
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/ws/BulkChangeActionTest.java": [
+90
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/notification/NotificationDaemonTest.java": [
+48,
+49,
+50
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/BillingValidationsProxyImplTest.java": [
+34,
+35
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/SearchActionTest.java": [
+69,
+70,
+71
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java": [
+61,
+62,
+63
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/ws/ValuesActionTest.java": [
+74
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/ws/IdentityProvidersActionTest.java": [
+37,
+46
+]
 }

@@ -9,4 +9,24 @@
 528,
 570
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java": [
+986
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanMapTestCase.java": [
+181,
+208,
+226
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
+1237
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
+2614
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java": [
+150
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
+528
+]
 }

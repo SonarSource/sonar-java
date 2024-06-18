@@ -5,4 +5,68 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/expression/DefaultResolver.java": [
 67
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/AlphaBean.java": [
+44
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanWithInnerBean.java": [
+29
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ExtendMapBean.java": [
+32
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedTestBean.java": [
+39
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java": [
+82,
+89
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestBean.java": [
+90
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestCase.java": [
+53,
+67
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MethodUtilsTestCase.java": [
+56,
+71
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java": [
+433
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira359TestCase.java": [
+151
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira381TestCase.java": [
+69,
+75
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ArrayConverterTestCase.java": [
+52,
+57
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/CharacterConverterTestCase.java": [
+51,
+56
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassConverterTestCase.java": [
+51,
+56
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DateConverterTestCase.java": [
+50,
+55
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/expression/DefaultResolverTestCase.java": [
+70,
+77
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsTestCase.java": [
+52,
+69
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/BaseLocaleConverterTestCase.java": [
+268
+]
 }

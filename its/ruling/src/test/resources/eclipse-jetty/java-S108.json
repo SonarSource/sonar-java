@@ -3,6 +3,20 @@
 85,
 101
 ],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/IOTest.java": [
+311
+],
+"org.eclipse.jetty:jetty-project:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/MBeanContainerLifeCycleTest.java": [
+95
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/StatisticsHandlerTest.java": [
+272,
+332,
+573,
+622,
+688,
+742
+],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/MemoryUtils.java": [
 47
 ],
@@ -16,5 +30,13 @@
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
 719,
 745
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/SharedBlockingCallbackTest.java": [
+238
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/thread/QueuedThreadPoolTest.java": [
+662,
+681,
+699
 ]
 }

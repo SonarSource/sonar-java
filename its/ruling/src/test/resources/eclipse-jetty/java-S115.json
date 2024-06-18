@@ -41,6 +41,10 @@
 115,
 123
 ],
+"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/Color.java": [
+23,
+23
+],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java": [
 56
 ],

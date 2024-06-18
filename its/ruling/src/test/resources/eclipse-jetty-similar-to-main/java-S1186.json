@@ -2,6 +2,10 @@
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java": [
 290
 ],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerHTTPTest.java": [
+229,
+253
+],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferOutputStream.java": [
 40,
 44
@@ -12,6 +16,13 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
 795
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/SelectorManagerTest.java": [
+105
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/WriteFlusherTest.java": [
+394,
+430
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java": [
 545
@@ -84,4 +95,45 @@
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/NullSessionCache.java": [
 49
 ],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncStressTest.java": [
+332,
+344,
+350
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/DetectorConnectionTest.java": [
+528,
+589
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HalfCloseTest.java": [
+147,
+171
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpChannelEventTest.java": [
+283
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java": [
+82,
+785,
+996
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/LocalAsyncContextTest.java": [
+69,
+270,
+476,
+481
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartCaptureTest.java": [
+347,
+352,
+357,
+362,
+367
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartFormInputStreamTest.java": [
+246
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/NotAcceptingTest.java": [
+272,
+427
+]
 }

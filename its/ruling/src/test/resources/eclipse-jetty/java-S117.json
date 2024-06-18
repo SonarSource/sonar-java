@@ -4,6 +4,13 @@
 155,
 171
 ],
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java": [
+393,
+404
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/SslConnectionTest.java": [
+533
+],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
 472
 ],

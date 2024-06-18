@@ -8,4 +8,26 @@
 147,
 149
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPropertyValueChangeClosureTestCase.java": [
+29,
+30,
+31,
+32,
+33
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicateTestCase.java": [
+29,
+30,
+31,
+32,
+33
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanToPropertyValueTransformerTestCase.java": [
+29,
+30,
+31,
+32,
+33,
+34
+]
 }
