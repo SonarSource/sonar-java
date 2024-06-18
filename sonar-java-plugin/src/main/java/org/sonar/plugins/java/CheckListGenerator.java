@@ -37,13 +37,9 @@ import org.sonar.check.Rule;
 
 public class CheckListGenerator {
 
-  private static class Metadata {
-    String scope;
-  }
-
   private static final String CLASS_NAME = "GeneratedCheckList";
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
 
     var filter = FileFilterUtils.suffixFileFilter("Check.java");
     var files = FileUtils.listFiles(new File("java-checks/src/main/java/org/sonar/java/checks"), filter, FileFilterUtils.trueFileFilter());
@@ -94,25 +90,27 @@ public class CheckListGenerator {
       }
     });
 
-    String importChecks = filteredClasses.stream()
+    var importChecks = filteredClasses.stream()
       .map(c -> c.getPackageName() + "." + c.getSimpleName())
       .map(c -> "import " + c + ";")
       .collect(Collectors.joining("\n"));
 
-    String collectMainChecks = mainClasses.stream()
-      .map(c -> c.getSimpleName() + ".class")
-      .collect(Collectors.joining(", \n    "));
-
-    String collectTestChecks = testClasses.stream()
-      .map(c -> c.getSimpleName() + ".class")
-      .collect(Collectors.joining(", \n    "));
-
-    String collectAllChecks = allClasses.stream()
-      .map(c -> c.getSimpleName() + ".class")
-      .collect(Collectors.joining(", \n    "));
-
     try {
-      Path path = Path.of("sonar-java-plugin/target/generated-sources/" + CLASS_NAME + ".java");
+      writeToFile(importChecks, collectChecks(mainClasses), collectChecks(testClasses), collectChecks(allClasses));
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  private static String collectChecks(List<Class<?>> allClasses) {
+    return allClasses.stream()
+      .map(c -> c.getSimpleName() + ".class")
+      .collect(Collectors.joining(", \n    "));
+  }
+
+  private static void writeToFile(String importChecks, String collectMainChecks, String collectTestChecks, String collectAllChecks) throws IOException {
+    try {
+      var path = Path.of("sonar-java-plugin/target/generated-sources/" + CLASS_NAME + ".java");
       Files.writeString(path, """
         package org.sonar.plugins.java;
 
@@ -183,6 +181,10 @@ public class CheckListGenerator {
     } catch (IOException e) {
       throw new IOException("Failed to generate class", e);
     }
+  }
+
+  private static class Metadata {
+    String scope;
   }
 
 }
