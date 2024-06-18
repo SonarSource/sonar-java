@@ -21,10 +21,6 @@
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
 183
 ],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java": [
-381,
-395
-],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Utf8HttpWriter.java": [
 81
 ]
