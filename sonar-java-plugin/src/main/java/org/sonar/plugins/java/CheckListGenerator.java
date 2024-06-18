@@ -41,30 +41,7 @@ public class CheckListGenerator {
 
   public static void main(String[] args) {
 
-    var filter = FileFilterUtils.suffixFileFilter("Check.java");
-    var files = FileUtils.listFiles(new File("java-checks/src/main/java/org/sonar/java/checks"), filter, FileFilterUtils.trueFileFilter());
-
-    var modifiedFiles = files.stream()
-      .map(File::toString)
-      .map(file -> file.replace("java-checks/src/main/java/", ""))
-      .map(file -> file.replace(".java", ""))
-      .map(file -> file.replace("/", "."))
-      .toList();
-
-    var classes = modifiedFiles.stream()
-      .map(file -> {
-        try {
-          return Class.forName(file);
-        } catch (ClassNotFoundException e) {
-          throw new IllegalStateException("Can not find the class for name " + file, e);
-        }
-      })
-      .toList();
-
-    var filteredClasses = classes.stream()
-      .filter(c -> !Modifier.isAbstract(c.getModifiers()))
-      .filter(c -> c.getAnnotationsByType(Rule.class).length != 0)
-      .toList();
+    var filteredClasses = getCheckClasses();
 
     List<Class<?>> mainClasses = new ArrayList<>();
     List<Class<?>> testClasses = new ArrayList<>();
@@ -100,6 +77,33 @@ public class CheckListGenerator {
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  private static List<? extends Class<?>> getCheckClasses() {
+    var filter = FileFilterUtils.suffixFileFilter("Check.java");
+    var files = FileUtils.listFiles(new File("java-checks/src/main/java/org/sonar/java/checks"), filter, FileFilterUtils.trueFileFilter());
+
+    var modifiedFiles = files.stream()
+      .map(File::toString)
+      .map(file -> file.replace("java-checks/src/main/java/", ""))
+      .map(file -> file.replace(".java", ""))
+      .map(file -> file.replace("/", "."))
+      .toList();
+
+    var classes = modifiedFiles.stream()
+      .map(file -> {
+        try {
+          return Class.forName(file);
+        } catch (ClassNotFoundException e) {
+          throw new IllegalStateException("Can not find the class for name " + file, e);
+        }
+      })
+      .toList();
+
+    return classes.stream()
+      .filter(c -> !Modifier.isAbstract(c.getModifiers()))
+      .filter(c -> c.getAnnotationsByType(Rule.class).length != 0)
+      .toList();
   }
 
   private static String collectChecks(List<Class<?>> allClasses) {
