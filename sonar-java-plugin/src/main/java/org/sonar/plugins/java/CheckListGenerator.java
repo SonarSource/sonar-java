@@ -21,6 +21,7 @@ package org.sonar.plugins.java;
 
 import com.google.gson.Gson;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -78,12 +79,12 @@ public class CheckListGenerator {
 
   private static List<? extends Class<?>> getCheckClasses() {
     List<String> modifiedFiles;
-    try (var stream = Files.walk(Path.of("java-checks/src/main/java/org/sonar/java/checks"))) {
-      modifiedFiles = stream.map(Path::toString)
+    var relativePath = Path.of("java-checks/src/main/java");
+    try (var stream = Files.walk(relativePath.resolve("org/sonar/java/checks"))) {
+      modifiedFiles = stream.map(p -> relativePath.relativize(p).toString())
         .filter(file -> file.endsWith("Check.java"))
-        .map(file -> file.replace("java-checks/src/main/java/", ""))
         .map(file -> file.replace(".java", ""))
-        .map(file -> file.replace("/", "."))
+        .map(file -> file.replace(File.separator, "."))
         .toList();
     } catch (IOException e) {
       throw new IllegalStateException(e);
