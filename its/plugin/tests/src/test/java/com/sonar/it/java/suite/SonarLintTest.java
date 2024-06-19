@@ -126,7 +126,9 @@ public class SonarLintTest {
     // Issues reported by S1607 are no longer expected here as the check requires complete semantic to run properly.
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
       // tuple("squid:S2970", 6, inputFile.getPath(), "BLOCKER"),
-      tuple("java:S2925", 7, inputFile.getPath(), IssueSeverity.MAJOR));
+      tuple("java:S2925", 7, inputFile.getPath(), IssueSeverity.MAJOR),
+      // expected issue
+      tuple("java:S1220", null, inputFile.getPath(), IssueSeverity.MINOR));
   }
 
   @Test
