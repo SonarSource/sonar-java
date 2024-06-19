@@ -16,6 +16,6 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2110",
   "sqKey": "S2110",
-  "scope": "All",
+  "scope": "Main",
   "quickfix": "unknown"
 }

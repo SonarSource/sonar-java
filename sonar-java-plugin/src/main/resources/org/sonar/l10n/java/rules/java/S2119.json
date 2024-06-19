@@ -16,7 +16,7 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2119",
   "sqKey": "S2119",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
     "OWASP": [
       "A6"

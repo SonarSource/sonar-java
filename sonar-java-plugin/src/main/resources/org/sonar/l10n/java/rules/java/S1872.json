@@ -19,7 +19,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1872",
   "sqKey": "S1872",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
     "CERT": [
       "OBJ09-J."

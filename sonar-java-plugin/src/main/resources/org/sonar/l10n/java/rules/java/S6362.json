@@ -19,7 +19,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6362",
   "sqKey": "S6362",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
     "CWE": [
       79

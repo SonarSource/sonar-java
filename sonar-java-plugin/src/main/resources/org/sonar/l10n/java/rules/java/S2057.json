@@ -20,7 +20,7 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2057",
   "sqKey": "S2057",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
     "CERT": [
       "SER00-J."

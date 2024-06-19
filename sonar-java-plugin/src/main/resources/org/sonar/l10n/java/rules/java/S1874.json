@@ -20,7 +20,7 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1874",
   "sqKey": "S1874",
-  "scope": "Main",
+  "scope": "All",
   "securityStandards": {
     "CERT": [
       "MET02-J."
