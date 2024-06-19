@@ -38,34 +38,32 @@ public class CheckListGenerator {
   private static final String CLASS_NAME = "GeneratedCheckList";
 
   public static void main(String[] args) {
-
-    var filteredClasses = getCheckClasses();
+    var checks = getCheckClasses();
 
     List<Class<?>> mainClasses = new ArrayList<>();
     List<Class<?>> testClasses = new ArrayList<>();
     List<Class<?>> allClasses = new ArrayList<>();
 
-    filteredClasses.forEach(c -> {
-      Rule ruleAnnotation = c.getAnnotationsByType(Rule.class)[0];
-      String key = ruleAnnotation.key();
-      String fileName = "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/" + key + ".json";
+    checks.forEach(check -> {
+      var ruleKey = check.getAnnotation(Rule.class).key();
+      var fileName = "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/" + ruleKey + ".json";
       BufferedReader br = null;
       try {
         br = new BufferedReader(new FileReader(fileName, StandardCharsets.UTF_8));
       } catch (IOException e) {
         throw new IllegalStateException("Could not find rule file " + fileName, e);
       }
-      Metadata metadata = new Gson().fromJson(br, Metadata.class);
+      var metadata = new Gson().fromJson(br, Metadata.class);
 
       switch (metadata.scope) {
-        case "All" -> allClasses.add(c);
-        case "Main" -> mainClasses.add(c);
-        case "Tests" -> testClasses.add(c);
-        default -> throw new IllegalStateException("Unknown scope " + metadata.scope + " for class " + c.getName());
+        case "All" -> allClasses.add(check);
+        case "Main" -> mainClasses.add(check);
+        case "Tests" -> testClasses.add(check);
+        default -> throw new IllegalStateException("Unknown scope " + metadata.scope + " for class " + check.getName());
       }
     });
 
-    var importChecks = filteredClasses.stream()
+    var importChecks = checks.stream()
       .map(c -> c.getPackageName() + "." + c.getSimpleName())
       .map(c -> "import " + c + ";")
       .collect(Collectors.joining("\n"));
@@ -73,7 +71,7 @@ public class CheckListGenerator {
     try {
       writeToFile(importChecks, collectChecks(mainClasses), collectChecks(testClasses), collectChecks(allClasses));
     } catch (IOException e) {
-      throw new IllegalStateException(e);
+      throw new IllegalStateException("Unable to write checks to the file.", e);
     }
   }
 
