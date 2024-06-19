@@ -822,9 +822,7 @@ public final class CheckList {
     EmptyClassCheck.class,
     EmptyDatabasePasswordCheck.class,
     EmptyLineRegexCheck.class,
-    EmptyMethodsCheck.class,
     EmptyRegexGroupCheck.class,
-    EmptyStatementUsageCheck.class,
     EmptyStringRepetitionCheck.class,
     EncryptionAlgorithmCheck.class,
     EnumEqualCheck.class,
@@ -929,7 +927,6 @@ public final class CheckList {
     MissingDeprecatedCheck.class,
     MissingOverridesInRecordWithArrayComponentCheck.class,
     ModelAttributeNamingConventionForSpELCheck.class,
-    ModifiersOrderCheck.class,
     ModulusEqualityCheck.class,
     MultipleWhitespaceCheck.class,
     NPEThrowCheck.class,
@@ -962,7 +959,6 @@ public final class CheckList {
     OptionalAsParameterCheck.class,
     OptionalRestParametersShouldBeObjectsCheck.class,
     OutputStreamOverrideWriteCheck.class,
-    OverrideAnnotationCheck.class,
     OverwrittenKeyCheck.class,
     PasswordEncoderCheck.class,
     MissingPathVariableAnnotationCheck.class,
@@ -1090,7 +1086,6 @@ public final class CheckList {
     SwitchCaseTooBigCheck.class,
     SwitchDefaultLastCaseCheck.class,
     SwitchInsteadOfIfSequenceCheck.class,
-    SwitchLastCaseIsDefaultCheck.class,
     SwitchRedundantKeywordCheck.class,
     SwitchWithLabelsCheck.class,
     SwitchWithTooManyCasesCheck.class,
@@ -1148,7 +1143,6 @@ public final class CheckList {
     UnusedGroupNamesCheck.class,
     UnusedLabelCheck.class,
     UnusedPrivateClassCheck.class,
-    UnusedPrivateFieldCheck.class,
     UnusedReturnedDataCheck.class,
     UnusedThrowableCheck.class,
     UnusedTypeParameterCheck.class,
@@ -1157,7 +1151,6 @@ public final class CheckList {
     UseSwitchExpressionCheck.class,
     UselessExtendsCheck.class,
     UselessIncrementCheck.class,
-    UselessParenthesesCheck.class,
     UserEnumerationCheck.class,
     UtilityClassWithPublicConstructorCheck.class,
     ValueAnnotationShouldInjectPropertyOrSpELCheck.class,
@@ -1247,8 +1240,7 @@ public final class CheckList {
     EnumMapCheck.class,
     LeftCurlyBraceStartLineCheck.class,
     DisallowedClassCheck.class,
-    ParameterReassignedToCheck.class
-  );
+    ParameterReassignedToCheck.class);
 
   private static final List<Class<? extends JavaCheck>> JAVA_TEST_CHECKS = Arrays.asList(
     // Rule classes are listed alphabetically
@@ -1313,6 +1305,8 @@ public final class CheckList {
     DeadStoreCheck.class,
     DefaultPackageCheck.class,
     EmptyBlockCheck.class,
+    EmptyMethodsCheck.class,
+    EmptyStatementUsageCheck.class,
     FixmeTagPresenceCheck.class,
     HiddenFieldCheck.class,
     ImmediatelyReturnedVariableCheck.class,
@@ -1320,6 +1314,8 @@ public final class CheckList {
     MethodIdenticalImplementationsCheck.class,
     MethodNameSameAsClassCheck.class,
     MismatchPackageDirectoryCheck.class,
+    ModifiersOrderCheck.class,
+    OverrideAnnotationCheck.class,
     PrintfMisuseCheck.class,
     RedundantThrowsDeclarationCheck.class,
     ReplaceGuavaWithJavaCheck.class,
@@ -1330,8 +1326,11 @@ public final class CheckList {
     TodoTagPresenceCheck.class,
     UnusedLocalVariableCheck.class,
     UnusedMethodParameterCheck.class,
+    UnusedPrivateFieldCheck.class,
     UnusedPrivateMethodCheck.class,
-    UselessImportCheck.class);
+    UselessParenthesesCheck.class,
+    UselessImportCheck.class,
+    SwitchLastCaseIsDefaultCheck.class);
 
   private static final List<Class<?>> ALL_CHECKS = Stream.of(JAVA_MAIN_CHECKS, JAVA_MAIN_AND_TEST_CHECKS, JAVA_TEST_CHECKS)
     .flatMap(List::stream)
