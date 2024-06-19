@@ -21,7 +21,6 @@ package org.sonar.plugins.java;
 
 import com.google.gson.Gson;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -31,8 +30,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.sonar.check.Rule;
 
 public class CheckListGenerator {
@@ -80,15 +77,17 @@ public class CheckListGenerator {
   }
 
   private static List<? extends Class<?>> getCheckClasses() {
-    var filter = FileFilterUtils.suffixFileFilter("Check.java");
-    var files = FileUtils.listFiles(new File("java-checks/src/main/java/org/sonar/java/checks"), filter, FileFilterUtils.trueFileFilter());
-
-    var modifiedFiles = files.stream()
-      .map(File::toString)
-      .map(file -> file.replace("java-checks/src/main/java/", ""))
-      .map(file -> file.replace(".java", ""))
-      .map(file -> file.replace("/", "."))
-      .toList();
+    List<String> modifiedFiles;
+    try (var stream = Files.walk(Path.of("java-checks/src/main/java/org/sonar/java/checks"))) {
+      modifiedFiles = stream.map(Path::toString)
+        .filter(file -> file.endsWith("Check.java"))
+        .map(file -> file.replace("java-checks/src/main/java/", ""))
+        .map(file -> file.replace(".java", ""))
+        .map(file -> file.replace("/", "."))
+        .toList();
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
 
     var classes = modifiedFiles.stream()
       .map(file -> {
