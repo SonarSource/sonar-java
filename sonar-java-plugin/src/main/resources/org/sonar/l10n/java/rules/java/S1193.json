@@ -20,7 +20,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1193",
   "sqKey": "S1193",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
     "CERT": [
       "ERR51-J."

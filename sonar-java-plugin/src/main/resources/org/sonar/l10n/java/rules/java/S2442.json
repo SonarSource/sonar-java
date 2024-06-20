@@ -20,7 +20,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2442",
   "sqKey": "S2442",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
     "CERT": [
       "LCK03-J."

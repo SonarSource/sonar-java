@@ -18,6 +18,6 @@
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2437",
   "sqKey": "S2437",
-  "scope": "All",
+  "scope": "Main",
   "quickfix": "unknown"
 }

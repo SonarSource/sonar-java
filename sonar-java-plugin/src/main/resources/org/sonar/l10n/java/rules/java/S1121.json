@@ -20,7 +20,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1121",
   "sqKey": "S1121",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
     "CERT": [
       "EXP45-C.",

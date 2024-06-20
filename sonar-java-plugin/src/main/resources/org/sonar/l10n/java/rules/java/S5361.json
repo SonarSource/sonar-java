@@ -18,7 +18,7 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5361",
   "sqKey": "S5361",
-  "scope": "All",
+  "scope": "Main",
   "quickfix": "unknown",
   "title": "\"String#replace\" should be preferred to \"String#replaceAll\""
 }

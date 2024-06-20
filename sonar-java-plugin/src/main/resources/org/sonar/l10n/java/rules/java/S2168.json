@@ -22,7 +22,7 @@
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2168",
   "sqKey": "S2168",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
     "CWE": [
       609

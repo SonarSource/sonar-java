@@ -12,7 +12,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6876",
   "sqKey": "S6876",
-  "scope": "All",
+  "scope": "Main",
   "quickfix": "unknown",
   "code": {
     "impacts": {

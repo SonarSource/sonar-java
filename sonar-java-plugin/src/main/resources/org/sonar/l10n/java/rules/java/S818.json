@@ -20,7 +20,7 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-818",
   "sqKey": "S818",
-  "scope": "All",
+  "scope": "Main",
   "quickfix": "unknown",
   "securityStandards": {
     "CERT": [

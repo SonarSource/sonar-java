@@ -12,7 +12,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6832",
   "sqKey": "S6832",
-  "scope": "All",
+  "scope": "Main",
   "quickfix": "infeasible",
   "code": {
     "impacts": {
