@@ -22,8 +22,8 @@ package org.sonar.java;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -35,211 +35,215 @@ import java.util.stream.Stream;
 import org.sonar.check.Rule;
 
 public class CheckListGenerator {
-
   private static final String CLASS_NAME = "GeneratedCheckList";
+  private static final String RULES_PATH = "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/";
+  private final Gson gson;
 
-  public static void main(String[] args) {
-    var checks = getCheckClasses();
-
-    List<Class<?>> mainClasses = new ArrayList<>();
-    List<Class<?>> testClasses = new ArrayList<>();
-    List<Class<?>> allClasses = new ArrayList<>();
-
-    checks.forEach(check -> {
-      var ruleKey = check.getAnnotation(Rule.class).key();
-      var fileName = "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/" + ruleKey + ".json";
-      BufferedReader br;
-      try {
-        br = new BufferedReader(new FileReader(fileName, StandardCharsets.UTF_8));
-      } catch (IOException e) {
-        throw new IllegalStateException("Could not find rule file " + fileName, e);
-      }
-      var metadata = new Gson().fromJson(br, Metadata.class);
-
-      switch (metadata.scope) {
-        case "All" -> allClasses.add(check);
-        case "Main" -> mainClasses.add(check);
-        case "Tests" -> testClasses.add(check);
-        default -> throw new IllegalStateException("Unknown scope " + metadata.scope + " for class " + check.getName());
-      }
-    });
-
-    var importChecks = checks.stream()
-      .map(c -> c.getPackageName() + "." + c.getSimpleName())
-      .map(c -> "import " + c + ";")
-      .collect(Collectors.joining("\n"));
-
-    try {
-      writeToFile(importChecks, collectChecks(mainClasses), collectChecks(testClasses), collectChecks(allClasses));
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to write checks to the file.", e);
-    }
+  public CheckListGenerator(Gson gson) {
+    this.gson = gson;
   }
 
-  private static List<? extends Class<?>> getCheckClasses() {
-    List<String> modifiedFiles;
+  public static void main(String[] args) {
+    var generator = new CheckListGenerator(new Gson());
     var relativePath = Path.of("java-checks/src/main/java");
     var awsRelativePath = Path.of("java-checks-aws/src/main/java");
-    try (var stream = Stream.concat(Files.walk(relativePath.resolve("org/sonar/java/checks")), Files.walk(awsRelativePath.resolve("org/sonar/java/checks")))) {
-      modifiedFiles = stream.map(p -> {
-        if (p.startsWith(awsRelativePath)) {
-          return awsRelativePath.relativize(p).toString();
-        } else {
-          return relativePath.relativize(p).toString();
-        }
-      })
-        .filter(file -> file.endsWith("Check.java"))
-        .map(file -> file.replace(".java", ""))
-        .map(file -> file.replace(File.separator, "."))
-        .toList();
-    } catch (IOException e) {
-      throw new IllegalStateException(e);
-    }
+    var checks = generator.getCheckClasses(relativePath, awsRelativePath);
+    var path = Path.of("check-list/target/generated-sources/" + CLASS_NAME + ".java");
+    generator.generateCheckListFile(checks, path, RULES_PATH);
+  }
 
-    var classes = modifiedFiles.stream()
-      .map(file -> {
-        try {
-          return Class.forName(file);
-        } catch (ClassNotFoundException e) {
-          throw new IllegalStateException("Can not find the class for name " + file, e);
-        }
-      })
-      .toList();
-
-    return classes.stream()
+  public List<? extends Class<?>> getCheckClasses(Path directory, Path awsDirectory) {
+    var modifiedFiles = getModifiedFiles(directory, awsDirectory);
+    return modifiedFiles.stream()
+      .map(CheckListGenerator::getClassByName)
       .filter(c -> !Modifier.isAbstract(c.getModifiers()))
       .filter(c -> c.getAnnotationsByType(Rule.class).length != 0)
       .toList();
   }
 
-  private static String collectChecks(List<Class<?>> allClasses) {
-    return allClasses.stream()
+  private static List<String> getModifiedFiles(Path relativePath, Path awsRelativePath) {
+    try (Stream<Path> stream = Stream.concat(Files.walk(relativePath.resolve("org/sonar/java/checks")), Files.walk(awsRelativePath.resolve("org/sonar/java/checks")))) {
+      return stream
+        .map(p -> p.startsWith(awsRelativePath) ? awsRelativePath.relativize(p).toString() : relativePath.relativize(p).toString())
+        .filter(file -> file.endsWith("Check.java"))
+        .map(file -> file.replace(".java", "").replace(File.separator, "."))
+        .toList();
+    } catch (IOException e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
+
+  private static Class<?> getClassByName(String className) {
+    try {
+      return Class.forName(className);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalStateException("Cannot find the class for name " + className, e);
+    }
+  }
+
+  public String getRuleKey(Class<?> check) {
+    return check.getAnnotation(Rule.class).key();
+  }
+
+  public Metadata getMetadata(Reader reader) {
+    return gson.fromJson(reader, Metadata.class);
+  }
+
+  public String generateImportStatements(List<? extends Class<?>> checks) {
+    return checks.stream()
+      .map(c -> "import " + c.getPackageName() + "." + c.getSimpleName() + ";")
+      .collect(Collectors.joining("\n"));
+  }
+
+  public String collectChecks(List<Class<?>> classes) {
+    return classes.stream()
       .map(c -> c.getSimpleName() + ".class")
       .collect(Collectors.joining(", \n    "));
   }
 
-  private static void writeToFile(String importChecks, String collectMainChecks, String collectTestChecks, String collectAllChecks) throws IOException {
-    try {
-      var path = Path.of("check-list/target/generated-sources/" + CLASS_NAME + ".java");
-      Files.writeString(path, """
-        package org.sonar.java;
-
-        import java.util.Arrays;
-        import java.util.Comparator;
-        import java.util.List;
-        import java.util.Set;
-        import java.util.stream.Collectors;
-        import java.util.stream.Stream;
-        import org.sonar.plugins.java.api.JavaCheck;
-
-        ${importChecks}
-
-        public final class ${className} {
-
-          public static final String REPOSITORY_KEY = "java";
-
-          private static final List<Class<? extends JavaCheck>> JAVA_MAIN_CHECKS = Arrays.asList(
-            ${mainClasses});
-
-          private static final List<Class<? extends JavaCheck>> JAVA_TEST_CHECKS = Arrays.asList(
-            ${testClasses});
-
-          private static final List<Class<? extends JavaCheck>> JAVA_MAIN_AND_TEST_CHECKS = Arrays.asList(
-            ${allClasses});
-
-          private static final List<Class<?>> ALL_CHECKS = Stream.of(JAVA_MAIN_CHECKS, JAVA_MAIN_AND_TEST_CHECKS, JAVA_TEST_CHECKS)
-            .flatMap(List::stream)
-            .sorted(Comparator.comparing(Class::getSimpleName))
-            .collect(Collectors.toList());
-
-            private static final Set<Class<? extends JavaCheck>> JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN = Set.of(
-              // Symbolic executions rules are not in this list because they are dynamically excluded
-              // Rules relying on correct setup of jdk.home
-              CallToDeprecatedCodeMarkedForRemovalCheck.class,
-              CallToDeprecatedMethodCheck.class,
-              // Rules relying on correct setup of java version
-              AbstractClassNoFieldShouldBeInterfaceCheck.class,
-              AnonymousClassShouldBeLambdaCheck.class,
-              CombineCatchCheck.class,
-              DateAndTimesCheck.class,
-              DateUtilsTruncateCheck.class,
-              DiamondOperatorCheck.class,
-              InsecureCreateTempFileCheck.class,
-              JdbcDriverExplicitLoadingCheck.class,
-              LambdaOptionalParenthesisCheck.class,
-              LambdaSingleExpressionCheck.class,
-              RepeatAnnotationCheck.class,
-              ReplaceGuavaWithJavaCheck.class,
-              ReplaceLambdaByMethodRefCheck.class,
-              SwitchInsteadOfIfSequenceCheck.class,
-              ThreadLocalWithInitialCheck.class,
-              TryWithResourcesCheck.class,
-              ValueBasedObjectUsedForLockCheck.class,
-              // Rules with a high deviation (>3%)
-              AccessibilityChangeCheck.class,
-              CipherBlockChainingCheck.class,
-              ClassNamedLikeExceptionCheck.class,
-              ClassWithOnlyStaticMethodsInstantiationCheck.class,
-              CollectionInappropriateCallsCheck.class,
-              DeadStoreCheck.class,
-              EqualsArgumentTypeCheck.class,
-              EqualsNotOverridenWithCompareToCheck.class,
-              EqualsOverridenWithHashCodeCheck.class,
-              ForLoopVariableTypeCheck.class,
-              JWTWithStrongCipherCheck.class,
-              MethodNamedEqualsCheck.class,
-              NioFileDeleteCheck.class,
-              PrivateFieldUsedLocallyCheck.class,
-              SillyEqualsCheck.class,
-              StandardCharsetsConstantsCheck.class,
-              ThreadLocalCleanupCheck.class,
-              ThreadOverridesRunCheck.class,
-              UnusedPrivateClassCheck.class,
-              UnusedPrivateFieldCheck.class,
-              VerifiedServerHostnamesCheck.class,
-              VolatileNonPrimitiveFieldCheck.class,
-              WeakSSLContextCheck.class);
-
-          private GeneratedCheckList() {
-          }
-
-          public static List<Class<?>> getChecks() {
-            return ALL_CHECKS;
-          }
-
-          public static List<Class<? extends JavaCheck>> getJavaChecks() {
-            return sortedJoin(JAVA_MAIN_CHECKS, JAVA_MAIN_AND_TEST_CHECKS);
-          }
-
-          public static List<Class<? extends JavaCheck>> getJavaTestChecks() {
-            return sortedJoin(JAVA_MAIN_AND_TEST_CHECKS, JAVA_TEST_CHECKS);
-          }
-
-          public static Set<Class<? extends JavaCheck>> getJavaChecksNotWorkingForAutoScan() {
-            return JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN;
-          }
-
-          @SafeVarargs
-          private static List<Class<? extends JavaCheck>> sortedJoin(List<Class<? extends JavaCheck>>... lists) {
-            return Arrays.stream(lists)
-              .flatMap(List::stream)
-              .sorted(Comparator.comparing(Class::getSimpleName))
-              .toList();
-          }
+  public void generateCheckListFile(List<? extends Class<?>> checks, Path path, String rulesPath) {
+    List<Class<?>> mainClasses = new ArrayList<>();
+    List<Class<?>> testClasses = new ArrayList<>();
+    List<Class<?>> allClasses = new ArrayList<>();
+    checks.forEach(check -> {
+      String ruleKey = getRuleKey(check);
+      String fileName = rulesPath + ruleKey + ".json";
+      try (BufferedReader reader = Files.newBufferedReader(Path.of(fileName), StandardCharsets.UTF_8)) {
+        Metadata metadata = getMetadata(reader);
+        switch (metadata.scope) {
+          case "All" -> allClasses.add(check);
+          case "Main" -> mainClasses.add(check);
+          case "Tests" -> testClasses.add(check);
+          default -> throw new IllegalStateException("Unknown scope " + metadata.scope + " for class " + check.getName());
         }
-        """
-        .replace("${importChecks}", importChecks)
-        .replace("${className}", CLASS_NAME)
-        .replace("${mainClasses}", collectMainChecks)
-        .replace("${testClasses}", collectTestChecks)
-        .replace("${allClasses}", collectAllChecks));
-
+      } catch (IOException e) {
+        throw new IllegalStateException("Could not find rule file " + fileName, e);
+      }
+    });
+    String importChecks = generateImportStatements(checks);
+    try {
+      writeToFile(importChecks, collectChecks(mainClasses), collectChecks(testClasses), collectChecks(allClasses), path);
     } catch (IOException e) {
-      throw new IOException("Failed to generate class", e);
+      throw new IllegalStateException("Unable to write checks to the file.", e);
     }
   }
 
-  private record Metadata(String scope) {
+  public void writeToFile(String importChecks, String collectMainChecks, String collectTestChecks, String collectAllChecks, Path path) throws IOException {
+    String content = """
+      package org.sonar.java;
+
+      import java.util.Arrays;
+      import java.util.Comparator;
+      import java.util.List;
+      import java.util.Set;
+      import java.util.stream.Collectors;
+      import java.util.stream.Stream;
+      import org.sonar.plugins.java.api.JavaCheck;
+
+      ${importChecks}
+
+      public final class ${className} {
+
+        public static final String REPOSITORY_KEY = "java";
+
+        private static final List<Class<? extends JavaCheck>> JAVA_MAIN_CHECKS = Arrays.asList(
+          ${mainClasses});
+
+        private static final List<Class<? extends JavaCheck>> JAVA_TEST_CHECKS = Arrays.asList(
+          ${testClasses});
+
+        private static final List<Class<? extends JavaCheck>> JAVA_MAIN_AND_TEST_CHECKS = Arrays.asList(
+          ${allClasses});
+
+        private static final List<Class<?>> ALL_CHECKS = Stream.of(JAVA_MAIN_CHECKS, JAVA_MAIN_AND_TEST_CHECKS, JAVA_TEST_CHECKS)
+          .flatMap(List::stream)
+          .sorted(Comparator.comparing(Class::getSimpleName))
+          .collect(Collectors.toList());
+
+          private static final Set<Class<? extends JavaCheck>> JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN = Set.of(
+            // Symbolic executions rules are not in this list because they are dynamically excluded
+            // Rules relying on correct setup of jdk.home
+            CallToDeprecatedCodeMarkedForRemovalCheck.class,
+            CallToDeprecatedMethodCheck.class,
+            // Rules relying on correct setup of java version
+            AbstractClassNoFieldShouldBeInterfaceCheck.class,
+            AnonymousClassShouldBeLambdaCheck.class,
+            CombineCatchCheck.class,
+            DateAndTimesCheck.class,
+            DateUtilsTruncateCheck.class,
+            DiamondOperatorCheck.class,
+            InsecureCreateTempFileCheck.class,
+            JdbcDriverExplicitLoadingCheck.class,
+            LambdaOptionalParenthesisCheck.class,
+            LambdaSingleExpressionCheck.class,
+            RepeatAnnotationCheck.class,
+            ReplaceGuavaWithJavaCheck.class,
+            ReplaceLambdaByMethodRefCheck.class,
+            SwitchInsteadOfIfSequenceCheck.class,
+            ThreadLocalWithInitialCheck.class,
+            TryWithResourcesCheck.class,
+            ValueBasedObjectUsedForLockCheck.class,
+            // Rules with a high deviation (>3%)
+            AccessibilityChangeCheck.class,
+            CipherBlockChainingCheck.class,
+            ClassNamedLikeExceptionCheck.class,
+            ClassWithOnlyStaticMethodsInstantiationCheck.class,
+            CollectionInappropriateCallsCheck.class,
+            DeadStoreCheck.class,
+            EqualsArgumentTypeCheck.class,
+            EqualsNotOverridenWithCompareToCheck.class,
+            EqualsOverridenWithHashCodeCheck.class,
+            ForLoopVariableTypeCheck.class,
+            JWTWithStrongCipherCheck.class,
+            MethodNamedEqualsCheck.class,
+            NioFileDeleteCheck.class,
+            PrivateFieldUsedLocallyCheck.class,
+            SillyEqualsCheck.class,
+            StandardCharsetsConstantsCheck.class,
+            ThreadLocalCleanupCheck.class,
+            ThreadOverridesRunCheck.class,
+            UnusedPrivateClassCheck.class,
+            UnusedPrivateFieldCheck.class,
+            VerifiedServerHostnamesCheck.class,
+            VolatileNonPrimitiveFieldCheck.class,
+            WeakSSLContextCheck.class);
+
+        private GeneratedCheckList() {
+        }
+
+        public static List<Class<?>> getChecks() {
+          return ALL_CHECKS;
+        }
+
+        public static List<Class<? extends JavaCheck>> getJavaChecks() {
+          return sortedJoin(JAVA_MAIN_CHECKS, JAVA_MAIN_AND_TEST_CHECKS);
+        }
+
+        public static List<Class<? extends JavaCheck>> getJavaTestChecks() {
+          return sortedJoin(JAVA_MAIN_AND_TEST_CHECKS, JAVA_TEST_CHECKS);
+        }
+
+        public static Set<Class<? extends JavaCheck>> getJavaChecksNotWorkingForAutoScan() {
+          return JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN;
+        }
+
+        @SafeVarargs
+        private static List<Class<? extends JavaCheck>> sortedJoin(List<Class<? extends JavaCheck>>... lists) {
+          return Arrays.stream(lists)
+            .flatMap(List::stream)
+            .sorted(Comparator.comparing(Class::getSimpleName))
+            .toList();
+        }
+      }
+      """
+      .replace("${importChecks}", importChecks)
+      .replace("${className}", CLASS_NAME)
+      .replace("${mainClasses}", collectMainChecks)
+      .replace("${testClasses}", collectTestChecks)
+      .replace("${allClasses}", collectAllChecks);
+    Files.writeString(path, content);
   }
 
+  public record Metadata(String scope) {
+  }
 }

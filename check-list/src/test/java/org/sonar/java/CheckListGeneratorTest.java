@@ -1,0 +1,147 @@
+/*
+ * SonarQube Java
+ * Copyright (C) 2024-2024 SonarSource SA
+ * mailto:info AT sonarsource DOT com
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+package org.sonar.java;
+
+import com.google.gson.Gson;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaCheck;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class CheckListGeneratorTest {
+  private CheckListGenerator generator;
+  private final String directory = System.getProperty("user.dir").replace("check-list", "");
+
+  @BeforeEach
+  public void setUp() {
+    Gson gson = new Gson();
+    generator = new CheckListGenerator(gson);
+  }
+
+  @Test
+  void test_Main() {
+    assertThrows(IllegalStateException.class, () -> CheckListGenerator.main(new String[] {}));
+  }
+
+  @Test
+  void testGetCheckClasses_and_generateCheckListFile() throws IOException {
+    Path relativePath = Path.of(directory, "java-checks/src/main/java");
+    Path awsRelativePath = Path.of(directory, "java-checks-aws/src/main/java");
+    var classes = generator.getCheckClasses(relativePath, awsRelativePath);
+    assertNotNull(classes);
+    assertFalse(classes.isEmpty());
+    assertTrue(classes.stream().allMatch(c -> c.isAnnotationPresent(Rule.class)));
+
+    Path tempFile = Files.createTempFile("testGeneratedCheckList", ".java");
+    generator.generateCheckListFile(classes, tempFile, directory + "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/");
+  }
+
+  @Test
+  void testGetCheckClasses_fail() {
+    Path relativePath = Path.of("java-checks/src/main/java");
+    Path awsRelativePath = Path.of(directory, "java-checks-aws/src/main/java");
+    assertThrows(IllegalStateException.class, () -> generator.getCheckClasses(relativePath, awsRelativePath));
+  }
+
+  @Test
+  void testGetCheckClasses_fail_getClassByName() {
+    Path relativePath = Path.of(directory, "check-list/src/test/files");
+    Path awsRelativePath = Path.of(directory, "java-checks-aws/src/main/java");
+    assertThrows(IllegalStateException.class, () -> generator.getCheckClasses(relativePath, awsRelativePath), "Cannot find the class for name org.sonar.java.checks.ExampleCheck");
+  }
+
+  @Test
+  void testGetRuleKey() {
+    @Rule(key = "exampleKey")
+    class ExampleCheck implements JavaCheck {
+    }
+    String ruleKey = generator.getRuleKey(ExampleCheck.class);
+    assertEquals("exampleKey", ruleKey);
+  }
+
+  @Test
+  void testGetMetadata() {
+    String json = "{\"scope\":\"Main\"}";
+    CheckListGenerator.Metadata metadata = generator.getMetadata(new StringReader(json));
+    assertNotNull(metadata);
+    assertEquals("Main", metadata.scope());
+  }
+
+  @Test
+  void testGenerateImportStatements() {
+    @Rule(key = "exampleKey")
+    class ExampleCheck1 implements JavaCheck {
+    }
+    @Rule(key = "exampleKey2")
+    class ExampleCheck2 implements JavaCheck {
+    }
+    List<Class<?>> checks = List.of(ExampleCheck1.class, ExampleCheck2.class);
+    String importStatements = generator.generateImportStatements(checks);
+    assertTrue(importStatements.contains("import org.sonar.java.ExampleCheck1;"));
+    assertTrue(importStatements.contains("import org.sonar.java.ExampleCheck2;"));
+  }
+
+  @Test
+  void testCollectChecks() {
+    @Rule(key = "exampleKey")
+    class ExampleCheck1 implements JavaCheck {
+    }
+    @Rule(key = "exampleKey2")
+    class ExampleCheck2 implements JavaCheck {
+    }
+    List<Class<?>> classes = List.of(ExampleCheck1.class, ExampleCheck2.class);
+    String checks = generator.collectChecks(classes);
+    assertTrue(checks.contains("ExampleCheck1.class"));
+    assertTrue(checks.contains("ExampleCheck2.class"));
+  }
+
+  @Test
+  void testWriteToFile() throws IOException {
+    Path tempFile = Files.createTempFile("testGeneratedCheckList", ".java");
+    generator.writeToFile(
+      "importStatements",
+      "collectMainChecks",
+      "collectTestChecks",
+      "collectAllChecks", tempFile);
+    assertTrue(Files.exists(tempFile));
+    String content = Files.readString(tempFile);
+    assertNotNull(content);
+    assertTrue(content.contains("GeneratedCheckList"));
+    assertTrue(content.contains("importStatements"));
+    Files.deleteIfExists(tempFile);
+  }
+
+  @Test
+  void generateTest() {
+
+  }
+
+}
