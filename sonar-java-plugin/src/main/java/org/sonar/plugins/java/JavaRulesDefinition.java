@@ -25,6 +25,7 @@ import java.util.Set;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonarsource.analyzer.commons.RuleMetadataLoader;
@@ -65,11 +66,11 @@ public class JavaRulesDefinition implements RulesDefinition {
   @Override
   public void define(Context context) {
     NewRepository repository = context
-      .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
+      .createRepository(GeneratedCheckList.REPOSITORY_KEY, Java.KEY)
       .setName("SonarAnalyzer");
 
     RuleMetadataLoader ruleMetadataLoader = new RuleMetadataLoader(RESOURCE_BASE_PATH, JavaSonarWayProfile.SONAR_WAY_PATH, sonarRuntime);
-    ruleMetadataLoader.addRulesByAnnotatedClass(repository, CheckList.getChecks());
+    ruleMetadataLoader.addRulesByAnnotatedClass(repository, GeneratedCheckList.getChecks());
 
     TEMPLATE_RULE_KEY.stream()
       .map(repository::rule)
@@ -78,13 +79,13 @@ public class JavaRulesDefinition implements RulesDefinition {
     INTERNAL_KEYS.forEach((ruleKey, internalKey) -> repository.rule(ruleKey).setInternalKey(internalKey));
 
     // for all the rules without explicit deprecated key already declared, register them with "squid:key"
-    CheckList.getChecks().stream()
+    GeneratedCheckList.getChecks().stream()
       .filter(rule -> !deprecatesRules(rule))
       .map(JavaRulesDefinition::ruleKey)
       .map(repository::rule)
       .forEach(rule -> rule.addDeprecatedRuleKey("squid", rule.key()));
 
-    for(CheckRegistrar registrar : checkRegistrars){
+    for (CheckRegistrar registrar : checkRegistrars) {
       registrar.customRulesDefinition(context, repository);
     }
 

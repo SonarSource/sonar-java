@@ -40,6 +40,7 @@ import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
@@ -74,13 +75,13 @@ public class JavaSensor implements Sensor {
   private final PostAnalysisIssueFilter postAnalysisIssueFilter;
 
   public JavaSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
-                    Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
+    Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
     this(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter, null);
   }
 
   public JavaSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
-                    Configuration settings, NoSonarFilter noSonarFilter,
-                    PostAnalysisIssueFilter postAnalysisIssueFilter, @Nullable Jasper jasper) {
+    Configuration settings, NoSonarFilter noSonarFilter,
+    PostAnalysisIssueFilter postAnalysisIssueFilter, @Nullable Jasper jasper) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.fs = fs;
@@ -88,8 +89,8 @@ public class JavaSensor implements Sensor {
     this.settings = settings;
     this.postAnalysisIssueFilter = postAnalysisIssueFilter;
     this.jasper = jasper;
-    this.sonarComponents.registerMainChecks(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
-    this.sonarComponents.registerTestChecks(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
+    this.sonarComponents.registerMainChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaChecks());
+    this.sonarComponents.registerTestChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaTestChecks());
   }
 
   @Override
@@ -117,8 +118,8 @@ public class JavaSensor implements Sensor {
     if (isAutoScanCheckFiltering) {
       Set<RuleKey> autoScanCompatibleRules = new HashSet<>(JavaSonarWayProfile.sonarJavaSonarWayRuleKeys());
 
-      CheckList.getJavaChecksNotWorkingForAutoScan().stream()
-        .map(checkClass -> RuleKey.of(CheckList.REPOSITORY_KEY, getRuleKey(checkClass)))
+      GeneratedCheckList.getJavaChecksNotWorkingForAutoScan().stream()
+        .map(checkClass -> RuleKey.of(GeneratedCheckList.REPOSITORY_KEY, getRuleKey(checkClass)))
         .forEach(autoScanCompatibleRules::remove);
 
       autoScanCompatibleRules.addAll(sonarComponents.getAdditionalAutoScanCompatibleRuleKeys());
@@ -143,7 +144,6 @@ public class JavaSensor implements Sensor {
       .appendMeasurementCost()
       .start("JavaSensor");
   }
-
 
   private Collection<GeneratedFile> runJasper(SensorContext context) {
     if (sonarComponents.isAutoScan()) {

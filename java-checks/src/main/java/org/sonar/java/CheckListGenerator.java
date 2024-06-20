@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java;
+package org.sonar.java;
 
 import com.google.gson.Gson;
 import java.io.BufferedReader;
@@ -112,9 +112,9 @@ public class CheckListGenerator {
 
   private static void writeToFile(String importChecks, String collectMainChecks, String collectTestChecks, String collectAllChecks) throws IOException {
     try {
-      var path = Path.of("sonar-java-plugin/target/generated-sources/" + CLASS_NAME + ".java");
+      var path = Path.of("java-checks/target/generated-sources/" + CLASS_NAME + ".java");
       Files.writeString(path, """
-        package org.sonar.plugins.java;
+        package org.sonar.java;
 
         import java.util.Arrays;
         import java.util.Comparator;
@@ -144,7 +144,53 @@ public class CheckListGenerator {
             .sorted(Comparator.comparing(Class::getSimpleName))
             .collect(Collectors.toList());
 
-          private static final Set<Class<? extends JavaCheck>> JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN = Set.of();
+            private static final Set<Class<? extends JavaCheck>> JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN = Set.of(
+              // Symbolic executions rules are not in this list because they are dynamically excluded
+              // Rules relying on correct setup of jdk.home
+              CallToDeprecatedCodeMarkedForRemovalCheck.class,
+              CallToDeprecatedMethodCheck.class,
+              // Rules relying on correct setup of java version
+              AbstractClassNoFieldShouldBeInterfaceCheck.class,
+              AnonymousClassShouldBeLambdaCheck.class,
+              CombineCatchCheck.class,
+              DateAndTimesCheck.class,
+              DateUtilsTruncateCheck.class,
+              DiamondOperatorCheck.class,
+              InsecureCreateTempFileCheck.class,
+              JdbcDriverExplicitLoadingCheck.class,
+              LambdaOptionalParenthesisCheck.class,
+              LambdaSingleExpressionCheck.class,
+              RepeatAnnotationCheck.class,
+              ReplaceGuavaWithJavaCheck.class,
+              ReplaceLambdaByMethodRefCheck.class,
+              SwitchInsteadOfIfSequenceCheck.class,
+              ThreadLocalWithInitialCheck.class,
+              TryWithResourcesCheck.class,
+              ValueBasedObjectUsedForLockCheck.class,
+              // Rules with a high deviation (>3%)
+              AccessibilityChangeCheck.class,
+              CipherBlockChainingCheck.class,
+              ClassNamedLikeExceptionCheck.class,
+              ClassWithOnlyStaticMethodsInstantiationCheck.class,
+              CollectionInappropriateCallsCheck.class,
+              DeadStoreCheck.class,
+              EqualsArgumentTypeCheck.class,
+              EqualsNotOverridenWithCompareToCheck.class,
+              EqualsOverridenWithHashCodeCheck.class,
+              ForLoopVariableTypeCheck.class,
+              JWTWithStrongCipherCheck.class,
+              MethodNamedEqualsCheck.class,
+              NioFileDeleteCheck.class,
+              PrivateFieldUsedLocallyCheck.class,
+              SillyEqualsCheck.class,
+              StandardCharsetsConstantsCheck.class,
+              ThreadLocalCleanupCheck.class,
+              ThreadOverridesRunCheck.class,
+              UnusedPrivateClassCheck.class,
+              UnusedPrivateFieldCheck.class,
+              VerifiedServerHostnamesCheck.class,
+              VolatileNonPrimitiveFieldCheck.class,
+              WeakSSLContextCheck.class);
 
           private GeneratedCheckList() {
           }

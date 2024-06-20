@@ -50,6 +50,7 @@ import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
 import org.sonar.java.AnalysisProgress;
+import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
@@ -191,8 +192,8 @@ class SanityTest {
 
   private static List<JavaCheck> getJavaCheckInstances() {
     List<Class<? extends JavaCheck>> checkClasses = new ArrayList<>();
-    checkClasses.addAll(CheckList.getJavaChecks());
-    checkClasses.addAll(CheckList.getJavaTestChecks());
+    checkClasses.addAll(GeneratedCheckList.getJavaChecks());
+    checkClasses.addAll(GeneratedCheckList.getJavaTestChecks());
 
     List<JavaCheck> javaChecks = new ArrayList<>();
     for (Class<? extends JavaCheck> checkClass : checkClasses) {
