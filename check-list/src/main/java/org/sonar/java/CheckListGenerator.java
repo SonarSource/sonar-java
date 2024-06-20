@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2012-2024 SonarSource SA
+ * Copyright (C) 2024-2024 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ public class CheckListGenerator {
     checks.forEach(check -> {
       var ruleKey = check.getAnnotation(Rule.class).key();
       var fileName = "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/" + ruleKey + ".json";
-      BufferedReader br = null;
+      BufferedReader br;
       try {
         br = new BufferedReader(new FileReader(fileName, StandardCharsets.UTF_8));
       } catch (IOException e) {
@@ -239,8 +239,7 @@ public class CheckListGenerator {
     }
   }
 
-  private static class Metadata {
-    String scope;
+  private record Metadata(String scope) {
   }
 
 }
