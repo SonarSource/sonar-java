@@ -83,7 +83,7 @@ public class JavaRulingTest {
   );
 
   @ClassRule
-  public static TemporaryFolder TMP_DUMP_OLD_FOLDER = new TemporaryFolder();
+  public static TemporaryFolder tmpDumpOldFolder = new TemporaryFolder();
 
   private static Path effectiveDumpOldFolder;
 
@@ -159,7 +159,7 @@ public class JavaRulingTest {
     if (SUBSET_OF_ENABLED_RULES.isEmpty()) {
       effectiveDumpOldFolder = allRulesFolder.toAbsolutePath();
     } else {
-      effectiveDumpOldFolder = TMP_DUMP_OLD_FOLDER.getRoot().toPath().toAbsolutePath();
+      effectiveDumpOldFolder = tmpDumpOldFolder.getRoot().toPath().toAbsolutePath();
       Files.list(allRulesFolder)
         .filter(p -> p.toFile().isDirectory())
         .forEach(srcProjectDir -> copyDumpSubset(srcProjectDir, effectiveDumpOldFolder.resolve(srcProjectDir.getFileName())));

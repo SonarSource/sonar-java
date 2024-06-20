@@ -26,12 +26,12 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SubClassStaticReferenceCheckTest {
 
-  private static final String filename = mainCodeSourcesPath("checks/SubClassStaticReferenceCheckSample.java");
+  private static final String FILENAME = mainCodeSourcesPath("checks/SubClassStaticReferenceCheckSample.java");
 
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(filename)
+      .onFile(FILENAME)
       .withCheck(new SubClassStaticReferenceCheck())
       .verifyIssues();
   }

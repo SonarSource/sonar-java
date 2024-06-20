@@ -26,14 +26,14 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BrainMethodCheckTest {
 
-  private static final String highComplexityFilePath = mainCodeSourcesPath("checks/BrainMethodCheckSample.java");
-  private static final String lowComplexityFilePath = mainCodeSourcesPath("checks/BrainMethodCheckLowerThresholds.java");
-  private static final String subsetFilePath = mainCodeSourcesPath("checks/BrainMethodCheckSubsetOfIssues.java");
+  private static final String HIGH_COMPLEXITY_FILE_PATH = mainCodeSourcesPath("checks/BrainMethodCheckSample.java");
+  private static final String LOW_COMPLEXITY_FILE_PATH = mainCodeSourcesPath("checks/BrainMethodCheckLowerThresholds.java");
+  private static final String SUBSET_FILE_PATH = mainCodeSourcesPath("checks/BrainMethodCheckSubsetOfIssues.java");
 
   @Test
   void testHighComplexityFileWithDefaultThresholds() {
     CheckVerifier.newVerifier()
-      .onFile(highComplexityFilePath)
+      .onFile(HIGH_COMPLEXITY_FILE_PATH)
       .withChecks(new BrainMethodCheck())
       .verifyIssues();
   }
@@ -48,7 +48,7 @@ class BrainMethodCheckTest {
     check.cyclomaticThreshold = 45;
 
     CheckVerifier.newVerifier()
-      .onFile(highComplexityFilePath)
+      .onFile(HIGH_COMPLEXITY_FILE_PATH)
       .withChecks(check)
       .verifyNoIssues();
   }
@@ -56,7 +56,7 @@ class BrainMethodCheckTest {
   @Test
   void testLowComplexityFileWithDefaultThresholds() {
     CheckVerifier.newVerifier()
-      .onFile(lowComplexityFilePath)
+      .onFile(LOW_COMPLEXITY_FILE_PATH)
       .withChecks(new BrainMethodCheck())
       .verifyNoIssues();
   }
@@ -70,7 +70,7 @@ class BrainMethodCheckTest {
     check.cyclomaticThreshold = 5;
 
     CheckVerifier.newVerifier()
-      .onFile(lowComplexityFilePath)
+      .onFile(LOW_COMPLEXITY_FILE_PATH)
       .withChecks(check)
       .verifyIssues();
   }
@@ -87,7 +87,7 @@ class BrainMethodCheckTest {
     check.numberOfIssuesToReport = 1;
 
     CheckVerifier.newVerifier()
-      .onFile(subsetFilePath)
+      .onFile(SUBSET_FILE_PATH)
       .withChecks(check)
       .verifyIssues();
   }

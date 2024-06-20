@@ -39,7 +39,6 @@ import org.sonar.api.testfixtures.log.LogAndArguments;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -52,6 +51,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
@@ -236,6 +236,7 @@ class VisitorsBridgeTest {
     class RuleForAllJavaVersion implements JavaFileScanner, EndOfAnalysis {
       @Override
       public void scanFile(JavaFileScannerContext context) {
+        //empty implementation
       }
 
       @Override
@@ -251,6 +252,7 @@ class VisitorsBridgeTest {
 
       @Override
       public void scanFile(JavaFileScannerContext context) {
+        //empty implementation
       }
 
       @Override

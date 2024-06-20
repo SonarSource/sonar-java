@@ -61,16 +61,16 @@ class InternalRangeTest {
     Position p2 = Position.at(43, 17);
     Position p3 = Position.at(44, 1);
 
-    Range range_1_3 = Range.at(p1, p3);
+    Range range1to3 = Range.at(p1, p3);
 
-    assertThat(range_1_3.equals(Range.at(p1, p3))).isTrue();
-    assertThat(range_1_3).hasSameHashCodeAs(Range.at(p1, p3));
+    assertThat(range1to3.equals(Range.at(p1, p3))).isTrue();
+    assertThat(range1to3).hasSameHashCodeAs(Range.at(p1, p3));
 
-    assertThat(range_1_3.equals(range_1_3)).isTrue();
-    assertThat(range_1_3.equals(Range.at(p1, p2))).isFalse();
-    assertThat(range_1_3.equals(Range.at(p2, p3))).isFalse();
-    assertThat(range_1_3.equals(null)).isFalse();
-    assertThat(range_1_3.equals(new Object())).isFalse();
+    assertThat(range1to3.equals(range1to3)).isTrue();
+    assertThat(range1to3.equals(Range.at(p1, p2))).isFalse();
+    assertThat(range1to3.equals(Range.at(p2, p3))).isFalse();
+    assertThat(range1to3.equals(null)).isFalse();
+    assertThat(range1to3.equals(new Object())).isFalse();
 
   }
 

@@ -735,35 +735,35 @@ class JavaFrontendTest {
       sensorContext = SensorContextTester.create(baseDir);
       sensorContext.setSettings(new MapSettings());
     }
-    InputFile A = addFile("class A { public void doSomething() {} }", sensorContext);
-    InputFile B = addFile("class B extends A {}", sensorContext);
-    InputFile C = addFile("class C {}", sensorContext);
+    InputFile fileA = addFile("class A { public void doSomething() {} }", sensorContext);
+    InputFile fileB = addFile("class B extends A {}", sensorContext);
+    InputFile fileC = addFile("class C {}", sensorContext);
 
-    long sizeofA = A.file().length() + 1;
+    long sizeofA = fileA.file().length() + 1;
     JavaFrontend.BatchGenerator generator = new JavaFrontend.BatchGenerator(
-      Arrays.asList(A, B, C).iterator(), sizeofA
+      Arrays.asList(fileA, fileB, fileC).iterator(), sizeofA
     );
     assertThat(generator.hasNext()).isTrue();
-    assertThat(generator.next()).hasSize(1).contains(A);
+    assertThat(generator.next()).hasSize(1).contains(fileA);
     assertThat(generator.hasNext()).isTrue();
     List<InputFile> batchWithMultipleFiles = generator.next();
-    assertThat(batchWithMultipleFiles).hasSize(2).contains(B).contains(C);
+    assertThat(batchWithMultipleFiles).hasSize(2).contains(fileB).contains(fileC);
     long batchSize = batchWithMultipleFiles.stream().map(i -> i.file().length()).reduce(0L, Long::sum);
     assertThat(batchSize).isLessThanOrEqualTo(sizeofA);
     assertThat(generator.hasNext()).isFalse();
     assertThat(generator.next()).isEmpty();
 
-    long sizeOfAPlusB = A.file().length() + B.file().length();
+    long sizeOfAPlusB = fileA.file().length() + fileB.file().length();
     generator = new JavaFrontend.BatchGenerator(
-      Arrays.asList(A, B, C).iterator(), sizeOfAPlusB
+      Arrays.asList(fileA, fileB, fileC).iterator(), sizeOfAPlusB
     );
     assertThat(generator.hasNext()).isTrue();
     batchWithMultipleFiles = generator.next();
-    assertThat(batchWithMultipleFiles).hasSize(2).contains(A).contains(B);
+    assertThat(batchWithMultipleFiles).hasSize(2).contains(fileA).contains(fileB);
     batchSize = batchWithMultipleFiles.stream().map(i -> i.file().length()).reduce(0L, Long::sum);
     assertThat(batchSize).isLessThanOrEqualTo(sizeOfAPlusB);
     assertThat(generator.hasNext()).isTrue();
-    assertThat(generator.next()).hasSize(1).contains(C);
+    assertThat(generator.next()).hasSize(1).contains(fileC);
     assertThat(generator.hasNext()).isFalse();
     assertThat(generator.next()).isEmpty();
   }
@@ -775,18 +775,18 @@ class JavaFrontendTest {
       sensorContext = SensorContextTester.create(baseDir);
       sensorContext.setSettings(new MapSettings());
     }
-    InputFile A = addFile("class A { public void doSomething() {} }", sensorContext);
-    InputFile B = addFile("class B extends A {}", sensorContext);
-    InputFile C = addFile("class C {}", sensorContext);
+    InputFile fileA = addFile("class A { public void doSomething() {} }", sensorContext);
+    InputFile fileB = addFile("class B extends A {}", sensorContext);
+    InputFile fileC = addFile("class C {}", sensorContext);
     JavaFrontend.BatchGenerator generator = new JavaFrontend.BatchGenerator(
-      Arrays.asList(A, C, B).iterator(), C.file().length()
+      Arrays.asList(fileA, fileC, fileB).iterator(), fileC.file().length()
     );
     assertThat(generator.hasNext()).isTrue();
-    assertThat(generator.next()).hasSize(1).contains(A);
+    assertThat(generator.next()).hasSize(1).contains(fileA);
     assertThat(generator.hasNext()).isTrue();
-    assertThat(generator.next()).hasSize(1).contains(C);
+    assertThat(generator.next()).hasSize(1).contains(fileC);
     assertThat(generator.hasNext()).isTrue();
-    assertThat(generator.next()).hasSize(1).contains(B);
+    assertThat(generator.next()).hasSize(1).contains(fileB);
     assertThat(generator.hasNext()).isFalse();
     assertThat(generator.next()).isEmpty();
   }

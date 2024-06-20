@@ -114,11 +114,11 @@ class AssertionTypesCheckTest {
 
   @Test
   void wrapper_type_with_invalid_primitive() {
-    Type invalid_primitive = mock(Type.class);
-    when(invalid_primitive.isPrimitive()).thenReturn(true);
-    when(invalid_primitive.fullyQualifiedName()).thenReturn("invalid_name");
-    Type type = AssertionTypesCheck.wrapperType(invalid_primitive);
-    assertThat(type).isSameAs(invalid_primitive);
+    Type invalidPrimitive = mock(Type.class);
+    when(invalidPrimitive.isPrimitive()).thenReturn(true);
+    when(invalidPrimitive.fullyQualifiedName()).thenReturn("invalid_name");
+    Type type = AssertionTypesCheck.wrapperType(invalidPrimitive);
+    assertThat(type).isSameAs(invalidPrimitive);
   }
 
 }

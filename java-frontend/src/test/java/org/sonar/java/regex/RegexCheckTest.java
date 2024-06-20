@@ -64,34 +64,34 @@ class RegexCheckTest implements RegexCheck {
     List<RegexTree> items = ((SequenceTree) regex).getItems();
     assertThat(items).hasSize(4);
 
-    RegexTree A = items.get(0);
-    RegexTree B = items.get(1);
-    RegexTree C = items.get(2);
-    RegexTree D = items.get(3);
+    RegexTree regexTreeA = items.get(0);
+    RegexTree regexTreeB = items.get(1);
+    RegexTree regexTreeC = items.get(2);
+    RegexTree regexTreeD = items.get(3);
 
-    List<TextSpan> AB = correspondingTextSpans(Arrays.asList(A,B));
-    assertThat(AB).hasSize(1);
-    TextSpan ABTestSpan = AB.get(0);
+    List<TextSpan> textSpans = correspondingTextSpans(Arrays.asList(regexTreeA,regexTreeB));
+    assertThat(textSpans).hasSize(1);
+    TextSpan aBTextSpan = textSpans.get(0);
 
-    assertThat(ABTestSpan.startCharacter).isEqualTo(1);
-    assertThat(ABTestSpan.endCharacter).isEqualTo(3);
+    assertThat(aBTextSpan.startCharacter).isEqualTo(1);
+    assertThat(aBTextSpan.endCharacter).isEqualTo(3);
 
-    List<TextSpan> BCD = correspondingTextSpans(Arrays.asList(B, C, D));
-    assertThat(BCD).hasSize(1);
-    TextSpan BCDTestSpan = BCD.get(0);
+    List<TextSpan> textSpans2 = correspondingTextSpans(Arrays.asList(regexTreeB, regexTreeC, regexTreeD));
+    assertThat(textSpans2).hasSize(1);
+    TextSpan bCDTextSpan = textSpans2.get(0);
 
-    assertThat(BCDTestSpan.startCharacter).isEqualTo(2);
-    assertThat(BCDTestSpan.endCharacter).isEqualTo(5);
+    assertThat(bCDTextSpan.startCharacter).isEqualTo(2);
+    assertThat(bCDTextSpan.endCharacter).isEqualTo(5);
 
-    List<TextSpan> BD = correspondingTextSpans(Arrays.asList(B, D));
-    assertThat(BD).hasSize(2);
-    TextSpan BTestSpan = BD.get(0);
-    TextSpan DTestSpan = BD.get(1);
+    List<TextSpan> textSpans3 = correspondingTextSpans(Arrays.asList(regexTreeB, regexTreeD));
+    assertThat(textSpans3).hasSize(2);
+    TextSpan bTestSpan = textSpans3.get(0);
+    TextSpan dTestSpan = textSpans3.get(1);
 
-    assertThat(BTestSpan.startCharacter).isEqualTo(2);
-    assertThat(BTestSpan.endCharacter).isEqualTo(3);
-    assertThat(DTestSpan.startCharacter).isEqualTo(4);
-    assertThat(DTestSpan.endCharacter).isEqualTo(5);
+    assertThat(bTestSpan.startCharacter).isEqualTo(2);
+    assertThat(bTestSpan.endCharacter).isEqualTo(3);
+    assertThat(dTestSpan.startCharacter).isEqualTo(4);
+    assertThat(dTestSpan.endCharacter).isEqualTo(5);
 
   }
 

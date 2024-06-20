@@ -498,15 +498,17 @@ class JavaAstScannerTest {
 
     @Override
     public void processRecognitionException(RecognitionException e) {
+      // empty implementation
     }
 
     @Override
     public void processException(Exception e) {
+      // empty implementation
     }
 
     @Override
     public void scanFile(JavaFileScannerContext context) {
-
+      // empty implementation
     }
   }
 

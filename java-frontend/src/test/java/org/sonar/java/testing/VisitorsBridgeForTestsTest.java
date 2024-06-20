@@ -118,6 +118,7 @@ class VisitorsBridgeForTestsTest {
   private static class DummyVisitor implements JavaFileScanner {
     @Override
     public void scanFile(JavaFileScannerContext context) {
+      // empty implementation
     }
   }
 }

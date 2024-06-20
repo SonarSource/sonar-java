@@ -258,7 +258,6 @@ class SyntacticEquivalenceTest {
   }
 
   private AbstractBooleanAssert<?> getAssertion(List<String> statement1, List<String> statement2) {
-    ;
     CompilationUnitTree compilationUnitTree = compilationUnitTree("class A { void method1() { " + String.join(";", statement1) + ";} " +
       "void method2(){ " + String.join(";", statement2) + ";} }");
     ClassTree classTree = ((ClassTree) compilationUnitTree.types().get(0));

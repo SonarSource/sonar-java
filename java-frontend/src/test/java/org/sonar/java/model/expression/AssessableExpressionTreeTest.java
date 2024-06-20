@@ -102,7 +102,7 @@ class AssessableExpressionTreeTest {
   }
 
   private ClassTree parse() {
-    File file = new File("src/test/java/org/sonar/java/model/expression/ClassWithConstants.java");
+    File file = new File("src/test/files/model/expression/ClassWithConstants.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     return (ClassTree) tree.types().get(0);
   }
