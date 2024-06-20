@@ -737,12 +737,12 @@ class JParserSemanticTest {
     MethodTreeImpl forEach = (MethodTreeImpl) c.members().get(0);
     ExpressionStatementTreeImpl e = (ExpressionStatementTreeImpl) forEach.block().body().get(0);
     MethodInvocationTreeImpl m = (MethodInvocationTreeImpl) e.expression();
-    MemberSelectExpressionTreeImpl iterable_super_forEach = (MemberSelectExpressionTreeImpl) m.methodSelect();
-    MemberSelectExpressionTreeImpl iterable_super = (MemberSelectExpressionTreeImpl) iterable_super_forEach.expression();
-    IdentifierTreeImpl super_keyword = (IdentifierTreeImpl) iterable_super.identifier();
+    MemberSelectExpressionTreeImpl iterableSuperForeach = (MemberSelectExpressionTreeImpl) m.methodSelect();
+    MemberSelectExpressionTreeImpl iterableSuper = (MemberSelectExpressionTreeImpl) iterableSuperForeach.expression();
+    IdentifierTreeImpl superKeyword = (IdentifierTreeImpl) iterableSuper.identifier();
 
-    assertThat(super_keyword.typeBinding).isNotNull();
-    assertThat(super_keyword.symbolType().fullyQualifiedName()).isEqualTo("java.lang.Iterable");
+    assertThat(superKeyword.typeBinding).isNotNull();
+    assertThat(superKeyword.symbolType().fullyQualifiedName()).isEqualTo("java.lang.Iterable");
   }
 
   @Test

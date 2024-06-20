@@ -50,23 +50,9 @@ import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
 class ExpressionUtilsTest {
 
-  private boolean parenthesis(boolean b1, boolean b2) {
-    return (((b1 && (b2))));
-  }
-
-  private void simpleAssignment() {
-    int x;
-    x = 14;
-    (x) = 14;
-    x += 1;
-
-    int[] y = new int[5];
-    y[x] = 42;
-  }
-
   @Test
   void test_skip_parenthesis() throws Exception {
-    File file = new File("src/test/java/org/sonar/java/model/ExpressionUtilsTest.java");
+    File file = new File("src/test/files/model/ExpressionUtilsTestSample.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(0);
     ExpressionTree parenthesis = ((ReturnStatementTree) methodTree.block().body().get(0)).expression();
@@ -79,7 +65,7 @@ class ExpressionUtilsTest {
 
   @Test
   void test_simple_assignments() throws Exception {
-    File file = new File("src/test/java/org/sonar/java/model/ExpressionUtilsTest.java");
+    File file = new File("src/test/files/model/ExpressionUtilsTestSample.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
     List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);

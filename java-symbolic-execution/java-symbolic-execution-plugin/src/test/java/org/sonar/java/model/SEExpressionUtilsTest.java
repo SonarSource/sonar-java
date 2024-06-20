@@ -45,28 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SEExpressionUtilsTest {
 
-  private boolean parenthesis(boolean b1, boolean b2) {
-    return (((b1 && (b2))));
-  }
-
-  private void simpleAssignment() {
-    int x;
-    x = 14;
-    (x) = 14;
-    x += 1;
-
-    int[] y = new int[5];
-    y[x] = 42;
-  }
-
-  class MethodName {
-    public void foo() {
-      foo();
-      this.foo();
-    }
-  }
-
-  CompilationUnitTree classTree = JParserTestUtils.parse(new File("src/test/java/org/sonar/java/model/SEExpressionUtilsTest.java"));
+  CompilationUnitTree classTree = JParserTestUtils.parse(new File("src/test/files/model/SEExpressionUtilsTestSample.java"));
 
   @Test
   void test_skip_parenthesis() {

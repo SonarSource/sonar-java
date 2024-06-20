@@ -62,8 +62,6 @@ class SyntaxHighlighterVisitorTest {
 
   private SyntaxHighlighterVisitor syntaxHighlighterVisitor;
 
-  private String eol;
-
   @BeforeEach
   public void setUp() throws Exception {
     context = SensorContextTester.create(temp.getRoot());
@@ -85,7 +83,6 @@ class SyntaxHighlighterVisitorTest {
   @ParameterizedTest
   @ValueSource(strings = {"\n", "\r\n", "\r"})
   void test_different_end_of_line(String eol) throws IOException {
-    this.eol = eol;
     InputFile inputFile = generateTestFile("src/test/files/highlighter/Example.java");
     scan(inputFile);
     verifyHighlighting(inputFile);
@@ -96,7 +93,6 @@ class SyntaxHighlighterVisitorTest {
    */
   @Test
   void test_restricted_keywords_within_module() throws Exception {
-    this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/module-info.java");
     scan(inputFile);
 
@@ -137,7 +133,6 @@ class SyntaxHighlighterVisitorTest {
 
   @Test
   void test_restricted_keywords_outside_module() throws Exception {
-    this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/ExampleWithModuleKeywords.java");
     scan(inputFile);
 
@@ -168,7 +163,6 @@ class SyntaxHighlighterVisitorTest {
 
   @Test
   void test_java10_var() throws Exception {
-    this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/Java10Var.java");
     scan(inputFile);
 
@@ -184,7 +178,6 @@ class SyntaxHighlighterVisitorTest {
 
   @Test
   void text_block() throws Exception {
-    this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/TextBlock.java");
     scan(inputFile);
 
@@ -198,7 +191,6 @@ class SyntaxHighlighterVisitorTest {
    */
   @Test
   void switch_expression() throws Exception {
-    this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/SwitchExpression.java");
     scan(inputFile);
 
@@ -214,7 +206,6 @@ class SyntaxHighlighterVisitorTest {
    */
   @Test
   void switch_pattern_expression_with_when_keyword() throws Exception {
-    this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/SwitchPatternExpression.java");
     scan(inputFile);
 
@@ -233,7 +224,6 @@ class SyntaxHighlighterVisitorTest {
    */
   @Test
   void records() throws Exception {
-    this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/Records.java");
     scan(inputFile);
 
@@ -247,7 +237,6 @@ class SyntaxHighlighterVisitorTest {
    */
   @Test
   void sealed_classes() throws Exception {
-    this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/SealedClass.java");
     scan(inputFile);
 

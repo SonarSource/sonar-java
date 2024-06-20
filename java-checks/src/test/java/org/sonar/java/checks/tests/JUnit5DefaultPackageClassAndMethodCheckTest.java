@@ -26,12 +26,12 @@ import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class JUnit5DefaultPackageClassAndMethodCheckTest {
 
-  private static final String testSourcePath = testCodeSourcesPath("checks/tests/JUnit5DefaultPackageClassAndMethodCheckSample.java");
+  private static final String TEST_SOURCE_PATH = testCodeSourcesPath("checks/tests/JUnit5DefaultPackageClassAndMethodCheckSample.java");
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcePath)
+      .onFile(TEST_SOURCE_PATH)
       .withCheck(new JUnit5DefaultPackageClassAndMethodCheck())
       .verifyIssues();
   }
@@ -39,7 +39,7 @@ class JUnit5DefaultPackageClassAndMethodCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcePath)
+      .onFile(TEST_SOURCE_PATH)
       .withCheck(new JUnit5DefaultPackageClassAndMethodCheck())
       .withoutSemantic()
       .verifyNoIssues();

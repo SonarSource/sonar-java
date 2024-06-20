@@ -589,7 +589,7 @@ class JParserTest {
       }
       target.closeEntry();
     } catch (Exception ignored) {
-
+      // ignored exception
     } finally {
       if (in != null) {
         try {

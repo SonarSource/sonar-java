@@ -90,8 +90,8 @@ public class TestUtils {
       .build());
   }
 
-  public static void provisionProject(Orchestrator ORCHESTRATOR, String projectKey, String projectName, String languageKey, String profileName) {
-    Server server = ORCHESTRATOR.getServer();
+  public static void provisionProject(Orchestrator orchestrator, String projectKey, String projectName, String languageKey, String profileName) {
+    Server server = orchestrator.getServer();
     server.provisionProject(projectKey, projectName);
     server.associateProjectToQualityProfile(projectKey, languageKey, profileName);
   }

@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonarqube.ws.Components;
 import org.sonarqube.ws.Issues.Issue;
+
 import static com.sonar.it.java.suite.JavaTestSuite.getComponent;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -152,12 +153,12 @@ public class JavaTest {
 
   @Test
   public void should_execute_rule_on_test() throws Exception {
-    MavenLocation junit_4_11 = MavenLocation.of("junit", "junit", "4.11");
-    orchestrator.getConfiguration().locators().copyToDirectory(junit_4_11, tmp.getRoot());
+    MavenLocation junit411 = MavenLocation.of("junit", "junit", "4.11");
+    orchestrator.getConfiguration().locators().copyToDirectory(junit411, tmp.getRoot());
     MavenBuild build = MavenBuild.create()
       .setPom(TestUtils.projectPom("java-inner-classes"))
       .setProperty("sonar.java.test.binaries", "target/test-classes")
-      .setProperty("sonar.java.test.libraries", new File(tmp.getRoot(), junit_4_11.getFilename()).getAbsolutePath())
+      .setProperty("sonar.java.test.libraries", new File(tmp.getRoot(), junit411.getFilename()).getAbsolutePath())
       .setCleanPackageSonarGoals();
     TestUtils.provisionProject(orchestrator, "org.sonarsource.it.projects:java-inner-classes", "java-inner-classes", "java", "ignored-test-check");
     orchestrator.executeBuild(build);

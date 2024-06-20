@@ -184,9 +184,7 @@ class MethodBehaviorTest {
     addYield(sameYields, ObjectConstraint.NOT_NULL);
     addYield(sameYields, ObjectConstraint.NULL);
 
-    MethodBehavior differentType = new MethodBehavior("foo()Ljava/lang/Object;", false) {
-      private Object o = new Object();
-    };
+    MethodBehavior differentType = new MethodBehavior("foo()Ljava/lang/Object;", false) {};
     addYield(differentType, ObjectConstraint.NOT_NULL);
     addYield(differentType, ObjectConstraint.NULL);
 

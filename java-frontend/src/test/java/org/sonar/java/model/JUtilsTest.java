@@ -99,8 +99,8 @@ class JUtilsTest {
 
     @Test
     void not_a_class() {
-      Type ObjectArrayType = SEMA.type(SEMA.resolveType("java.lang.Object[]"));
-      assertThat(ObjectArrayType.isPrimitiveWrapper()).isFalse();
+      Type objectArrayType = SEMA.type(SEMA.resolveType("java.lang.Object[]"));
+      assertThat(objectArrayType.isPrimitiveWrapper()).isFalse();
     }
   }
 

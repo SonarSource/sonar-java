@@ -19,17 +19,16 @@
  */
 package org.sonar.java.checks.helpers;
 
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.cache.ReadCache;
-import org.sonar.java.caching.FileHashingUtils;
-import org.sonar.java.checks.verifier.internal.InternalInputFile;
-import org.sonar.java.checks.verifier.internal.InternalReadCache;
-
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.java.caching.FileHashingUtils;
+import org.sonar.java.checks.verifier.internal.InternalInputFile;
+import org.sonar.java.checks.verifier.internal.InternalReadCache;
 
 public class HashCacheTestHelper {
 
@@ -49,8 +48,7 @@ public class HashCacheTestHelper {
   public static ReadCache internalReadCacheFromFile(String path) throws NoSuchAlgorithmException, IOException {
     InputFile cachedFile = inputFileFromPath(path);
     byte[] cachedHash = FileHashingUtils.inputFileContentHash(cachedFile);
-    InternalReadCache localReadCache = new InternalReadCache().put(contentHashKey(cachedFile), cachedHash);
-    return localReadCache;
+    return new InternalReadCache().put(contentHashKey(cachedFile), cachedHash);
   }
 
   public static ReadCache internalReadCacheFromFiles(Collection<String> paths) throws NoSuchAlgorithmException, IOException {

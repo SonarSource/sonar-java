@@ -84,9 +84,9 @@ public class Struts139Test {
   public void complexity_metrics() {
     assertThat(getMeasureAsInteger(PROJECT_STRUTS, "complexity")).isEqualTo(5589);
 
-    int expected_statements = 12103;
-    expected_statements += 3; // empty statements in type declaration or member of classes in struts-1.3.9
-    assertThat(getMeasureAsInteger(PROJECT_STRUTS, "statements")).isEqualTo(expected_statements);
+    int expectedStatements = 12103;
+    expectedStatements += 3; // empty statements in type declaration or member of classes in struts-1.3.9
+    assertThat(getMeasureAsInteger(PROJECT_STRUTS, "statements")).isEqualTo(expectedStatements);
   }
 
   private static String componentKey(String path, String file) {

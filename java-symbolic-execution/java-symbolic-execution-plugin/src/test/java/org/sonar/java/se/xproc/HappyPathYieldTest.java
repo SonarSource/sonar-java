@@ -19,15 +19,13 @@
  */
 package org.sonar.java.se.xproc;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor;
@@ -36,7 +34,7 @@ import static org.sonar.java.se.utils.SETestUtils.mockMethodBehavior;
 
 class HappyPathYieldTest {
 
-  ConstraintsByDomain NOT_NULL_CONSTRAINT = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
+  private static final ConstraintsByDomain NOT_NULL_CONSTRAINT = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
 
   @Test
   void test_equals() {

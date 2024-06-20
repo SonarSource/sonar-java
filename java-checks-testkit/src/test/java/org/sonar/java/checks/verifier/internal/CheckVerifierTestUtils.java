@@ -68,7 +68,7 @@ public class CheckVerifierTestUtils {
   }
 
   @Rule(key = "NoEffectCheck")
-  protected final static class NoEffectCheck implements JavaFileScanner {
+  protected static final class NoEffectCheck implements JavaFileScanner {
 
     @Override
     public void scanFile(JavaFileScannerContext context) {

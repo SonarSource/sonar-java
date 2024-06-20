@@ -19,20 +19,19 @@
  */
 package org.sonar.java.model.statement;
 
+import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.ArrayList;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ContinueStatementTreeImplTest {
 
-  private static InternalSyntaxToken CONTINUE_TOKEN = createToken(JavaKeyword.CONTINUE.getValue());
-  private static InternalSyntaxToken SEMICOLON_TOKEN = createToken(":");
+  private static final InternalSyntaxToken CONTINUE_TOKEN = createToken(JavaKeyword.CONTINUE.getValue());
+  private static final InternalSyntaxToken SEMICOLON_TOKEN = createToken(":");
 
   @Test
   void test_no_label() {

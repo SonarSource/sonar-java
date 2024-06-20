@@ -448,6 +448,7 @@ class CFGTest {
         case RECORD:
         case ANNOTATION_TYPE:
           assertThat(((ClassTree) element).simpleName().name()).as("Type name").isEqualTo(name);
+          break;
         default:
           // No need to test any associated symbol for the other cases
           break;
