@@ -55,6 +55,7 @@
     <module>java-checks-testkit</module>
     <module>java-checks</module>
     <module>java-checks-aws</module>
+    <module>check-list</module>
     <module>external-reports</module>
     <module>sonar-java-plugin</module>
     <module>java-surefire</module>

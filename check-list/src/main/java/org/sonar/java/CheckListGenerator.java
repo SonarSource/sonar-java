@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 
 public class CheckListGenerator {
@@ -78,8 +79,15 @@ public class CheckListGenerator {
   private static List<? extends Class<?>> getCheckClasses() {
     List<String> modifiedFiles;
     var relativePath = Path.of("java-checks/src/main/java");
-    try (var stream = Files.walk(relativePath.resolve("org/sonar/java/checks"))) {
-      modifiedFiles = stream.map(p -> relativePath.relativize(p).toString())
+    var awsRelativePath = Path.of("java-checks-aws/src/main/java");
+    try (var stream = Stream.concat(Files.walk(relativePath.resolve("org/sonar/java/checks")), Files.walk(awsRelativePath.resolve("org/sonar/java/checks")))) {
+      modifiedFiles = stream.map(p -> {
+        if (p.startsWith(awsRelativePath)) {
+          return awsRelativePath.relativize(p).toString();
+        } else {
+          return relativePath.relativize(p).toString();
+        }
+      })
         .filter(file -> file.endsWith("Check.java"))
         .map(file -> file.replace(".java", ""))
         .map(file -> file.replace(File.separator, "."))
@@ -112,7 +120,7 @@ public class CheckListGenerator {
 
   private static void writeToFile(String importChecks, String collectMainChecks, String collectTestChecks, String collectAllChecks) throws IOException {
     try {
-      var path = Path.of("java-checks/target/generated-sources/" + CLASS_NAME + ".java");
+      var path = Path.of("check-list/target/generated-sources/" + CLASS_NAME + ".java");
       Files.writeString(path, """
         package org.sonar.java;
 
