@@ -131,7 +131,7 @@ class CheckListGeneratorTest {
     String json = "{\"scope\":\"Main\"}";
     CheckListGenerator.Metadata metadata = generator.getMetadata(new StringReader(json));
     assertNotNull(metadata);
-    assertEquals("Main", metadata.scope());
+    assertEquals("Main", metadata.scope);
   }
 
   @Test

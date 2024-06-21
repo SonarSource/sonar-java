@@ -265,6 +265,7 @@ public class CheckListGenerator {
     }
   }
 
-  public record Metadata(String scope) {
+  protected static class Metadata {
+    String scope;
   }
 }
