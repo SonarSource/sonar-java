@@ -52,7 +52,7 @@ class CheckListGeneratorTest {
   }
 
   @Test
-  void test_Main() {
+  void test_Main_throwsException_withDefaultProperties() {
     assertThrows(IllegalStateException.class, () -> CheckListGenerator.main(new String[] {}));
   }
 
