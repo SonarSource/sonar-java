@@ -36,20 +36,45 @@ import org.sonar.check.Rule;
 
 public class CheckListGenerator {
   private static final String CLASS_NAME = "GeneratedCheckList";
-  private static final String RULES_PATH = "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/";
+  public static final String RULES_PATH = "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/";
   private final Gson gson;
 
-  public CheckListGenerator(Gson gson) {
+  final Path relativePath;
+  final Path awsRelativePath;
+  Path pathToWriteList;
+  final String rulesPath;
+
+  public CheckListGenerator(Gson gson, Path relativePath, Path awsRelativePath, Path pathToWriteList, String rulesPath) {
     this.gson = gson;
+    this.relativePath = relativePath;
+    this.awsRelativePath = awsRelativePath;
+    this.pathToWriteList = pathToWriteList;
+    this.rulesPath = rulesPath;
   }
 
   public static void main(String[] args) {
-    var generator = new CheckListGenerator(new Gson());
-    var relativePath = Path.of("java-checks/src/main/java");
-    var awsRelativePath = Path.of("java-checks-aws/src/main/java");
-    var checks = generator.getCheckClasses(relativePath, awsRelativePath);
-    var path = Path.of("check-list/target/generated-sources/" + CLASS_NAME + ".java");
-    generator.generateCheckListFile(checks, path, RULES_PATH);
+    var generator = new CheckListGenerator(new Gson(),
+      Path.of("java-checks/src/main/java"),
+      Path.of("java-checks-aws/src/main/java"),
+      Path.of("check-list/target/generated-sources/" + CLASS_NAME + ".java"),
+      RULES_PATH);
+    generateCheckList(generator);
+  }
+
+  public static void generateCheckList(CheckListGenerator generator) {
+    var checks = generator.getCheckClasses(generator.relativePath, generator.awsRelativePath);
+
+    List<Class<?>> mainClasses = new ArrayList<>();
+    List<Class<?>> testClasses = new ArrayList<>();
+    List<Class<?>> allClasses = new ArrayList<>();
+    generator.generateCheckListClasses(checks, mainClasses, testClasses, allClasses, generator.rulesPath);
+    String main = generator.collectChecks(mainClasses);
+    String test = generator.collectChecks(testClasses);
+    String all = generator.collectChecks(allClasses);
+
+    String importChecks = generateImportStatements(checks);
+
+    generator.writeToFile(importChecks, main, test, all, generator.pathToWriteList);
   }
 
   public List<? extends Class<?>> getCheckClasses(Path directory, Path awsDirectory) {
@@ -89,7 +114,7 @@ public class CheckListGenerator {
     return gson.fromJson(reader, Metadata.class);
   }
 
-  public String generateImportStatements(List<? extends Class<?>> checks) {
+  public static String generateImportStatements(List<? extends Class<?>> checks) {
     return checks.stream()
       .map(c -> "import " + c.getPackageName() + "." + c.getSimpleName() + ";")
       .collect(Collectors.joining("\n"));
@@ -101,10 +126,7 @@ public class CheckListGenerator {
       .collect(Collectors.joining(", \n    "));
   }
 
-  public void generateCheckListFile(List<? extends Class<?>> checks, Path path, String rulesPath) {
-    List<Class<?>> mainClasses = new ArrayList<>();
-    List<Class<?>> testClasses = new ArrayList<>();
-    List<Class<?>> allClasses = new ArrayList<>();
+  public void generateCheckListClasses(List<? extends Class<?>> checks, List<Class<?>> mainClasses, List<Class<?>> testClasses, List<Class<?>> allClasses, String rulesPath) {
     checks.forEach(check -> {
       String ruleKey = getRuleKey(check);
       String fileName = rulesPath + ruleKey + ".json";
@@ -120,15 +142,9 @@ public class CheckListGenerator {
         throw new IllegalStateException("Could not find rule file " + fileName, e);
       }
     });
-    String importChecks = generateImportStatements(checks);
-    try {
-      writeToFile(importChecks, collectChecks(mainClasses), collectChecks(testClasses), collectChecks(allClasses), path);
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to write checks to the file.", e);
-    }
   }
 
-  public void writeToFile(String importChecks, String collectMainChecks, String collectTestChecks, String collectAllChecks, Path path) throws IOException {
+  public void writeToFile(String importChecks, String mainChecks, String testChecks, String allChecks, Path path) {
     String content = """
       package org.sonar.java;
 
@@ -147,13 +163,13 @@ public class CheckListGenerator {
         public static final String REPOSITORY_KEY = "java";
 
         private static final List<Class<? extends JavaCheck>> JAVA_MAIN_CHECKS = Arrays.asList(
-          ${mainClasses});
+          ${mainChecks});
 
         private static final List<Class<? extends JavaCheck>> JAVA_TEST_CHECKS = Arrays.asList(
-          ${testClasses});
+          ${testChecks});
 
         private static final List<Class<? extends JavaCheck>> JAVA_MAIN_AND_TEST_CHECKS = Arrays.asList(
-          ${allClasses});
+          ${allChecks});
 
         private static final List<Class<?>> ALL_CHECKS = Stream.of(JAVA_MAIN_CHECKS, JAVA_MAIN_AND_TEST_CHECKS, JAVA_TEST_CHECKS)
           .flatMap(List::stream)
@@ -238,10 +254,15 @@ public class CheckListGenerator {
       """
       .replace("${importChecks}", importChecks)
       .replace("${className}", CLASS_NAME)
-      .replace("${mainClasses}", collectMainChecks)
-      .replace("${testClasses}", collectTestChecks)
-      .replace("${allClasses}", collectAllChecks);
-    Files.writeString(path, content);
+      .replace("${mainChecks}", mainChecks)
+      .replace("${testChecks}", testChecks)
+      .replace("${allChecks}", allChecks);
+
+    try {
+      Files.writeString(path, content);
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to write checks to the file.", e);
+    }
   }
 
   public record Metadata(String scope) {

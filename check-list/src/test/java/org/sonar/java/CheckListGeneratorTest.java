@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,9 +42,13 @@ class CheckListGeneratorTest {
   private final String directory = System.getProperty("user.dir").replace("check-list", "");
 
   @BeforeEach
-  public void setUp() {
+  public void setUp() throws IOException {
     Gson gson = new Gson();
-    generator = new CheckListGenerator(gson);
+    generator = new CheckListGenerator(gson,
+      Path.of(directory, "java-checks/src/main/java"),
+      Path.of(directory, "java-checks-aws/src/main/java"),
+      Files.createTempFile("testGeneratedCheckList", ".java"),
+      directory + CheckListGenerator.RULES_PATH);
   }
 
   @Test
@@ -52,16 +57,50 @@ class CheckListGeneratorTest {
   }
 
   @Test
-  void testGetCheckClasses_and_generateCheckListFile() throws IOException {
-    Path relativePath = Path.of(directory, "java-checks/src/main/java");
-    Path awsRelativePath = Path.of(directory, "java-checks-aws/src/main/java");
-    var classes = generator.getCheckClasses(relativePath, awsRelativePath);
+  void test_generateCheckList() {
+    CheckListGenerator.generateCheckList(generator);
+    assertTrue(Files.exists(generator.pathToWriteList));
+  }
+
+  @Test
+  void test_generateCheckList_fail() {
+    generator.pathToWriteList = null;
+    assertThrows(NullPointerException.class, () -> CheckListGenerator.generateCheckList(generator));
+  }
+
+  @Test
+  void testGetCheckClasses() {
+    var classes = generator.getCheckClasses(generator.relativePath, generator.awsRelativePath);
     assertNotNull(classes);
     assertFalse(classes.isEmpty());
     assertTrue(classes.stream().allMatch(c -> c.isAnnotationPresent(Rule.class)));
+  }
 
-    Path tempFile = Files.createTempFile("testGeneratedCheckList", ".java");
-    generator.generateCheckListFile(classes, tempFile, directory + "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/");
+  @Test
+  void testGenerateCheckList() {
+    var checks = generator.getCheckClasses(generator.relativePath, generator.awsRelativePath);
+    List<Class<?>> mainClasses = new ArrayList<>();
+    List<Class<?>> testClasses = new ArrayList<>();
+    List<Class<?>> allClasses = new ArrayList<>();
+    generator.generateCheckListClasses(checks, mainClasses, testClasses, allClasses, directory + "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/");
+    assertTrue(Files.exists(generator.pathToWriteList));
+  }
+
+  @Test
+  void testGenerateCheckList_fail() {
+    @Rule(key = "exampleKey")
+    class ExampleCheck1 implements JavaCheck {
+    }
+    @Rule(key = "exampleKey2")
+    class ExampleCheck2 implements JavaCheck {
+    }
+    List<Class<?>> checks = List.of(ExampleCheck1.class, ExampleCheck2.class);
+    List<Class<?>> mainClasses = new ArrayList<>();
+    List<Class<?>> testClasses = new ArrayList<>();
+    List<Class<?>> allClasses = new ArrayList<>();
+    assertThrows(IllegalStateException.class,
+      () -> generator.generateCheckListClasses(checks, mainClasses, testClasses, allClasses, directory + "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/"),
+      "Could not find rule file /Users/irina.batinic/Projects/sonar-java/sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/exampleKey.json");
   }
 
   @Test
@@ -137,11 +176,6 @@ class CheckListGeneratorTest {
     assertTrue(content.contains("GeneratedCheckList"));
     assertTrue(content.contains("importStatements"));
     Files.deleteIfExists(tempFile);
-  }
-
-  @Test
-  void generateTest() {
-
   }
 
 }
