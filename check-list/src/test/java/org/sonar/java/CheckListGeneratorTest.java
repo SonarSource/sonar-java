@@ -104,6 +104,23 @@ class CheckListGeneratorTest {
   }
 
   @Test
+  void testGenerateCheckList_fail_wrong_metadata() {
+    @Rule(key = "exampleKey")
+    class ExampleCheck1 implements JavaCheck {
+    }
+    @Rule(key = "exampleKey2")
+    class ExampleCheck2 implements JavaCheck {
+    }
+    List<Class<?>> checks = List.of(ExampleCheck1.class, ExampleCheck2.class);
+    List<Class<?>> mainClasses = new ArrayList<>();
+    List<Class<?>> testClasses = new ArrayList<>();
+    List<Class<?>> allClasses = new ArrayList<>();
+    assertThrows(IllegalStateException.class,
+      () -> generator.generateCheckListClasses(checks, mainClasses, testClasses, allClasses, directory + "check-list/src/test/files/metadata/"),
+      "Unknown scope Something for class class org.sonar.java.CheckListGeneratorTest$2ExampleCheck1");
+  }
+
+  @Test
   void testGetCheckClasses_fail() {
     Path relativePath = Path.of("java-checks/src/main/java");
     Path awsRelativePath = Path.of(directory, "java-checks-aws/src/main/java");
@@ -143,7 +160,7 @@ class CheckListGeneratorTest {
     class ExampleCheck2 implements JavaCheck {
     }
     List<Class<?>> checks = List.of(ExampleCheck1.class, ExampleCheck2.class);
-    String importStatements = generator.generateImportStatements(checks);
+    String importStatements = CheckListGenerator.generateImportStatements(checks);
     assertTrue(importStatements.contains("import org.sonar.java.ExampleCheck1;"));
     assertTrue(importStatements.contains("import org.sonar.java.ExampleCheck2;"));
   }
