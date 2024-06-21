@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -193,6 +194,16 @@ class CheckListGeneratorTest {
     assertTrue(content.contains("GeneratedCheckList"));
     assertTrue(content.contains("importStatements"));
     Files.deleteIfExists(tempFile);
+  }
+
+  @Test
+  void test_writingToFile_ToInvalidPath_ThrowsException() {
+    Path invalidPath = Paths.get("/invalid/directory/test.txt");
+    assertThrows(IllegalStateException.class, () -> generator.writeToFile(
+      "importStatements",
+      "collectMainChecks",
+      "collectTestChecks",
+      "collectAllChecks", invalidPath));
   }
 
 }
