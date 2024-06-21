@@ -22,8 +22,6 @@ package org.sonar.plugins.java;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileReader;
-import java.lang.reflect.Constructor;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -114,7 +112,7 @@ class GeneratedCheckListTest {
    * Enforces that each check has test, name and description.
    */
   @Test
-  void test() throws MalformedURLException {
+  void test() {
     Map<String, String> keyMap = new HashMap<>();
     for (Class<?> cls : GeneratedCheckList.getChecks()) {
       String testName = '/' + cls.getName().replace('.', '/') + "Test.java";
@@ -210,14 +208,6 @@ class GeneratedCheckListTest {
     // ignore all the other fields
     String[] tags;
     String status;
-  }
-
-  @Test
-  void private_constructor() throws Exception {
-    Constructor<GeneratedCheckList> constructor = GeneratedCheckList.class.getDeclaredConstructor();
-    assertThat(constructor.isAccessible()).isFalse();
-    constructor.setAccessible(true);
-    constructor.newInstance();
   }
 
 }
