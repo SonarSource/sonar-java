@@ -182,7 +182,7 @@ class GeneratedCheckListTest {
 
     for (Class<?> cls : GeneratedCheckList.getChecks()) {
       String key = AnnotationUtils.getAnnotation(cls, Rule.class).key();
-      URL metadataURL = getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + key + ".json");
+      URL metadataURL = getClass().getResource("/org/sonar/l10n/java/rules/" + GeneratedCheckList.REPOSITORY_KEY + "/" + key + ".json");
       File metadataFile = new File(metadataURL.toURI());
       assertThat(metadataFile).exists();
       try (FileReader jsonReader = new FileReader(metadataFile)) {
