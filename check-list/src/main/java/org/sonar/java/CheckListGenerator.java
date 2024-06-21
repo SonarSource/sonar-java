@@ -58,40 +58,41 @@ public class CheckListGenerator {
       Path.of("java-checks-aws/src/main/java"),
       Path.of("check-list/target/generated-sources/" + CLASS_NAME + ".java"),
       RULES_PATH);
-    generateCheckList(generator);
+    generator.generateCheckList();
   }
 
-  public static void generateCheckList(CheckListGenerator generator) {
-    var checks = generator.getCheckClasses(generator.relativePath, generator.awsRelativePath);
+  public void generateCheckList() {
+    var checks = getCheckClasses();
 
     List<Class<?>> mainClasses = new ArrayList<>();
     List<Class<?>> testClasses = new ArrayList<>();
     List<Class<?>> allClasses = new ArrayList<>();
-    generator.generateCheckListClasses(checks, mainClasses, testClasses, allClasses, generator.rulesPath);
-    String main = generator.collectChecks(mainClasses);
-    String test = generator.collectChecks(testClasses);
-    String all = generator.collectChecks(allClasses);
+    generateCheckListClasses(checks, mainClasses, testClasses, allClasses, rulesPath);
+    String main = collectChecks(mainClasses);
+    String test = collectChecks(testClasses);
+    String all = collectChecks(allClasses);
 
     String importChecks = generateImportStatements(checks);
 
-    generator.writeToFile(importChecks, main, test, all, generator.pathToWriteList);
+    writeToFile(importChecks, main, test, all, pathToWriteList);
   }
 
-  public List<? extends Class<?>> getCheckClasses(Path directory, Path awsDirectory) {
-    var modifiedFiles = getModifiedFiles(directory, awsDirectory);
-    return modifiedFiles.stream()
+  public List<? extends Class<?>> getCheckClasses() {
+    var checkFiles = getCheckFiles();
+    return checkFiles.stream()
       .map(CheckListGenerator::getClassByName)
       .filter(c -> !Modifier.isAbstract(c.getModifiers()))
       .filter(c -> c.getAnnotationsByType(Rule.class).length != 0)
       .toList();
   }
 
-  private static List<String> getModifiedFiles(Path relativePath, Path awsRelativePath) {
+  private List<String> getCheckFiles() {
     try (Stream<Path> stream = Stream.concat(Files.walk(relativePath.resolve("org/sonar/java/checks")), Files.walk(awsRelativePath.resolve("org/sonar/java/checks")))) {
       return stream
         .map(p -> p.startsWith(awsRelativePath) ? awsRelativePath.relativize(p).toString() : relativePath.relativize(p).toString())
         .filter(file -> file.endsWith("Check.java"))
         .map(file -> file.replace(".java", "").replace(File.separator, "."))
+        .sorted()
         .toList();
     } catch (IOException e) {
       throw new IllegalStateException(e.getMessage());
@@ -110,7 +111,7 @@ public class CheckListGenerator {
     return check.getAnnotation(Rule.class).key();
   }
 
-  public Metadata getMetadata(Reader reader) {
+  protected Metadata getMetadata(Reader reader) {
     return gson.fromJson(reader, Metadata.class);
   }
 

@@ -59,19 +59,19 @@ class CheckListGeneratorTest {
 
   @Test
   void test_generateCheckList() {
-    CheckListGenerator.generateCheckList(generator);
+    generator.generateCheckList();
     assertTrue(Files.exists(generator.pathToWriteList));
   }
 
   @Test
   void test_generateCheckList_fail() {
     generator.pathToWriteList = null;
-    assertThrows(NullPointerException.class, () -> CheckListGenerator.generateCheckList(generator));
+    assertThrows(NullPointerException.class, () -> generator.generateCheckList());
   }
 
   @Test
   void testGetCheckClasses() {
-    var classes = generator.getCheckClasses(generator.relativePath, generator.awsRelativePath);
+    var classes = generator.getCheckClasses();
     assertNotNull(classes);
     assertFalse(classes.isEmpty());
     assertTrue(classes.stream().allMatch(c -> c.isAnnotationPresent(Rule.class)));
@@ -79,7 +79,7 @@ class CheckListGeneratorTest {
 
   @Test
   void testGenerateCheckList() {
-    var checks = generator.getCheckClasses(generator.relativePath, generator.awsRelativePath);
+    var checks = generator.getCheckClasses();
     List<Class<?>> mainClasses = new ArrayList<>();
     List<Class<?>> testClasses = new ArrayList<>();
     List<Class<?>> allClasses = new ArrayList<>();
@@ -122,17 +122,19 @@ class CheckListGeneratorTest {
   }
 
   @Test
-  void testGetCheckClasses_fail() {
+  void testGetCheckClasses_fail() throws IOException {
     Path relativePath = Path.of("java-checks/src/main/java");
     Path awsRelativePath = Path.of(directory, "java-checks-aws/src/main/java");
-    assertThrows(IllegalStateException.class, () -> generator.getCheckClasses(relativePath, awsRelativePath));
+    generator = new CheckListGenerator(new Gson(), relativePath, awsRelativePath, Files.createTempFile("testGeneratedCheckList", ".java"), directory + CheckListGenerator.RULES_PATH);
+    assertThrows(IllegalStateException.class, () -> generator.getCheckClasses());
   }
 
   @Test
-  void testGetCheckClasses_fail_getClassByName() {
+  void testGetCheckClasses_fail_getClassByName() throws IOException {
     Path relativePath = Path.of(directory, "check-list/src/test/files");
     Path awsRelativePath = Path.of(directory, "java-checks-aws/src/main/java");
-    assertThrows(IllegalStateException.class, () -> generator.getCheckClasses(relativePath, awsRelativePath), "Cannot find the class for name org.sonar.java.checks.ExampleCheck");
+    generator = new CheckListGenerator(new Gson(), relativePath, awsRelativePath, Files.createTempFile("testGeneratedCheckList", ".java"), directory + CheckListGenerator.RULES_PATH);
+    assertThrows(IllegalStateException.class, () -> generator.getCheckClasses(), "Cannot find the class for name org.sonar.java.checks.ExampleCheck");
   }
 
   @Test
