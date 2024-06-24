@@ -42,6 +42,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.internal.InternalSensorContext;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -53,21 +54,20 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 public class QuickFixesApplier {
 
   private static final Logger LOG = LoggerFactory.getLogger(QuickFixesApplier.class);
-  private static final String DEFAULT_CLASSPATH_LOCATION = "../../java-checks-test-sources/default/target/test-classpath.txt";
   private static final List<File> DEFAULT_CLASSPATH;
   private static final Set<Integer> EDITED_LINES = new HashSet<>();
 
   private Map<Path, List<JavaQuickFix>> pathsToQuickfixes;
 
   static {
-    Path path = Paths.get(DEFAULT_CLASSPATH_LOCATION.replace('/', File.separatorChar));
-    DEFAULT_CLASSPATH = TestClasspathUtils.loadFromFile(path.toString());
+    Path path = Paths.get("../" + FilesUtils.DEFAULT_TEST_CLASSPATH_FILE.replace('/', File.separatorChar));
+    DEFAULT_CLASSPATH = TestClasspathUtils.loadFromFile(path.toAbsolutePath().toString());
   }
 
   public void verifyAll(List<InputFile> files) throws IOException {
     List<JavaFileScanner> visitors = new ArrayList<>(ChecksListWithQuickFix.checks);
     SonarComponents sonarComponents = sonarComponents();
-    VisitorsBridgeForQuickFixTests visitorsBridge = new VisitorsBridgeForQuickFixTests(visitors, DEFAULT_CLASSPATH, sonarComponents, new JavaVersionImpl(21));
+    VisitorsBridgeForQuickFixes visitorsBridge = new VisitorsBridgeForQuickFixes(visitors, DEFAULT_CLASSPATH, sonarComponents, new JavaVersionImpl(21));
 
     JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
     astScanner.setVisitorBridge(visitorsBridge);

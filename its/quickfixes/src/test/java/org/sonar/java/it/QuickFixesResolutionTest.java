@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class QuickFixesResolutionTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(QuickFixesResolutionTest.class);
-  private static final JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
+  private static final JavaVersion VERSION = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
   private static final Path PROJECT_LOCATION = Paths.get("../../java-checks-test-sources/");
 
   @ClassRule
@@ -85,7 +85,6 @@ public class QuickFixesResolutionTest {
     cloneJavaCheckTestSources();
     var applier = new QuickFixesApplier();
     List<InputFile> files = collectJavaFiles(tmpProjectClone.getRoot().getAbsolutePath());
-    LOG.info("Starting analysis of {} files", files.size());
     applier.verifyAll(files);
     LOG.info("Analysis complete with {} quickfixes found", applier.getQuickfixesCount());
     assertThat(validateFilesStillParse(files)).isTrue();
@@ -123,7 +122,7 @@ public class QuickFixesResolutionTest {
   private static boolean validateFilesStillParse(List<InputFile> inputFiles) {
     for (InputFile inputFile : inputFiles) {
       try {
-        JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, List.of()).astParser(), version.toString(), inputFile.filename(), inputFile.contents());
+        JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(VERSION, List.of()).astParser(), VERSION.toString(), inputFile.filename(), inputFile.contents());
       } catch (IOException ioException) {
         LOG.error("Unable to read contents for file {}", inputFile.filename());
         return false;

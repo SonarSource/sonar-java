@@ -87,7 +87,7 @@ public class AnalyzerMessage {
     return cost > 0 ? (double) cost : null;
   }
 
-  public static final class TextSpan implements Comparable {
+  public static final class TextSpan implements Comparable<TextSpan> {
     public final int startLine;
     public final int startCharacter;
     public final int endLine;
@@ -144,23 +144,20 @@ public class AnalyzerMessage {
     }
 
     @Override
-    public int compareTo(Object o) {
-      if(o instanceof TextSpan other){
-        int result = startLine - other.startLine;
-        if (result != 0) {
-          return result;
-        }
-        result = startCharacter - other.startCharacter;
-        if (result != 0) {
-          return result;
-        }
-        result = endLine - other.endLine;
-        if (result != 0) {
-          return result;
-        }
-        return endCharacter - other.endCharacter;
+    public int compareTo(TextSpan other) {
+      int result = startLine - other.startLine;
+      if (result != 0) {
+        return result;
       }
-      return 0;
+      result = startCharacter - other.startCharacter;
+      if (result != 0) {
+        return result;
+      }
+      result = endLine - other.endLine;
+      if (result != 0) {
+        return result;
+      }
+      return endCharacter - other.endCharacter;
     }
   }
 
