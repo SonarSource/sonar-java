@@ -64,7 +64,9 @@ public class QuickFixesResolutionTest {
             if (content.contains("QuickFixHelper") || content.contains("JavaQuickFix")) {
               var matcher = pattern.matcher(content);
               if (matcher.find()) {
-                actualQuickfixImplementations.add(matcher.group(1));
+                String ruleKey = matcher.group(1);
+                LOG.info("Rule {} was detected to be implementing quickfixes", ruleKey);
+                actualQuickfixImplementations.add(ruleKey);
               }
             }
           } catch (IOException e) {
@@ -73,7 +75,7 @@ public class QuickFixesResolutionTest {
         }
       });
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Error reading java-checks folder", e);
     }
     assertThat(actualQuickfixImplementations).containsExactlyInAnyOrder(ChecksListWithQuickFix.QUICKFIX_KEYS.toArray(new String[0]));
   }
@@ -83,7 +85,9 @@ public class QuickFixesResolutionTest {
     cloneJavaCheckTestSources();
     var applier = new QuickFixesApplier();
     List<InputFile> files = collectJavaFiles(tmpProjectClone.getRoot().getAbsolutePath());
+    LOG.info("Starting analysis of {} files", files.size());
     applier.verifyAll(files);
+    LOG.info("Analysis complete with {} quickfixes found", applier.getQuickfixesCount());
     assertThat(validateFilesStillParse(files)).isTrue();
   }
 
@@ -125,6 +129,7 @@ public class QuickFixesResolutionTest {
         return false;
       }
     }
+    LOG.info("All analyzed files can still be parsed after quickfixes were applied.");
     return true;
   }
 
