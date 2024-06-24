@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.IntStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -49,10 +52,12 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 
 public class QuickFixesApplier {
 
-
+  private static final Logger LOG = LoggerFactory.getLogger(QuickFixesApplier.class);
   private static final String DEFAULT_CLASSPATH_LOCATION = "../../java-checks-test-sources/default/target/test-classpath.txt";
   private static final List<File> DEFAULT_CLASSPATH;
   private static final Set<Integer> EDITED_LINES = new HashSet<>();
+
+  private Map<Path, List<JavaQuickFix>> pathsToQuickfixes;
 
   static {
     Path path = Paths.get(DEFAULT_CLASSPATH_LOCATION.replace('/', File.separatorChar));
@@ -69,9 +74,9 @@ public class QuickFixesApplier {
 
     astScanner.scan(files);
 
-    var quickFixes = visitorsBridge.getQuickFixes();
+    pathsToQuickfixes = visitorsBridge.getQuickFixes();
 
-    for (var fileToQfs : quickFixes.entrySet()) {
+    for (var fileToQfs : pathsToQuickfixes.entrySet()) {
       EDITED_LINES.clear();
       var path = fileToQfs.getKey();
       var quickfixes = new ArrayList<>(fileToQfs.getValue());
@@ -118,7 +123,7 @@ public class QuickFixesApplier {
           result = result.substring(0, startOfReplacement) + edit.getReplacement() + result.substring(endOfReplacement);
           IntStream.range(sl, el + 1).forEach(EDITED_LINES::add);
         } catch (Exception e) {
-          System.out.println("ERROR  \n " + e.getMessage() + " \napplying quickfixes for: \n\n" + fileContent);
+          LOG.error("ERROR  \n {} \napplying quickfixes for: \n{}", e.getMessage(), fileContent);
         }
       }
     }
@@ -166,6 +171,10 @@ public class QuickFixesApplier {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public int getQuickfixesCount() {
+    return pathsToQuickfixes.values().stream().mapToInt(Collection::size).sum();
   }
 
 }
