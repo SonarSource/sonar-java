@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.CheckList;
+import org.sonar.java.GeneratedCheckList;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
@@ -39,7 +39,7 @@ public class ChecksListWithQuickFix {
   static {
 
     QUICKFIX_KEYS = new ArrayList<>();
-    try(Stream<Path> paths = Files.walk(Paths.get(METADATA_FOLDER))) {
+    try (Stream<Path> paths = Files.walk(Paths.get(METADATA_FOLDER))) {
       paths.filter(Files::isRegularFile)
         .forEach(path -> {
           try {
@@ -57,7 +57,7 @@ public class ChecksListWithQuickFix {
 
     checks = new ArrayList<>();
     List<Class<? extends JavaCheck>> withQuickFixes =
-      CheckList.getJavaChecks().stream()
+      GeneratedCheckList.getJavaChecks().stream()
         .filter(c -> c.isAnnotationPresent(Rule.class) && hasQuickFixCovered(c.getAnnotation(Rule.class)))
         .toList();
     for (Class c : withQuickFixes) {
@@ -69,7 +69,7 @@ public class ChecksListWithQuickFix {
     }
   }
 
-  private static boolean hasQuickFixCovered(Rule rule){
+  private static boolean hasQuickFixCovered(Rule rule) {
     return QUICKFIX_KEYS.contains(rule.key());
   }
 

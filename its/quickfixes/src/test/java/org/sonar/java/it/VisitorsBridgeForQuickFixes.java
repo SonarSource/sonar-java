@@ -30,7 +30,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.java.model.Sema;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
@@ -41,9 +40,10 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
-public class VisitorsBridgeForQuickFixTests extends VisitorsBridge {
+public class VisitorsBridgeForQuickFixes extends VisitorsBridge {
 
   private final Map<Path, List<JavaQuickFix>> quickFixes = new HashMap<>();
 
@@ -53,16 +53,16 @@ public class VisitorsBridgeForQuickFixTests extends VisitorsBridge {
 
 
   @VisibleForTesting
-  public VisitorsBridgeForQuickFixTests(JavaFileScanner visitor, SonarComponents sonarComponents) {
+  public VisitorsBridgeForQuickFixes(JavaFileScanner visitor, SonarComponents sonarComponents) {
     this(Collections.singletonList(visitor), Collections.emptyList(), sonarComponents, new JavaVersionImpl());
   }
 
-  public VisitorsBridgeForQuickFixTests(Iterable<? extends JavaCheck> visitors, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
+  public VisitorsBridgeForQuickFixes(Iterable<? extends JavaCheck> visitors, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
     super(visitors, Collections.emptyList(), sonarComponents, javaVersion);
     enableSemantic = false;
   }
 
-  public VisitorsBridgeForQuickFixTests(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
+  public VisitorsBridgeForQuickFixes(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
     super(visitors, projectClasspath, sonarComponents, javaVersion);
   }
 
