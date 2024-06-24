@@ -108,8 +108,6 @@ public class QuickFixesResolutionTest {
     try (Stream<Path> stream = Files.walk(start, maxDepth)) {
       return stream
         .filter(path -> path.toString().endsWith(".java"))
-        .limit(200)
-        //.filter(path -> path.toString().contains("InsecureCreateTempFileCheck_no_version"))//TO REMOVE
         .map(path -> TestUtils.inputFile(path.toFile()))
         .toList();
     } catch (IOException e) {
@@ -121,8 +119,7 @@ public class QuickFixesResolutionTest {
   private static boolean validateFilesStillParse(List<InputFile> inputFiles) {
     for (InputFile inputFile : inputFiles) {
       try {
-        var cut = JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, List.of()).astParser(), version.toString(), inputFile.filename(), inputFile.contents());
-        System.out.println(cut);
+        JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, List.of()).astParser(), version.toString(), inputFile.filename(), inputFile.contents());
       } catch (IOException ioException) {
         LOG.error("Unable to read contents for file {}", inputFile.filename());
         return false;

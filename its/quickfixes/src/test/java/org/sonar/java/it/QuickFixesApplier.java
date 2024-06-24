@@ -69,23 +69,19 @@ public class QuickFixesApplier {
 
     astScanner.scan(files);
 
-    var filesToQFLocations = visitorsBridge.getQuickFixesLocations();
     var quickFixes = visitorsBridge.getQuickFixes();
 
-    for (var fileToQfs : filesToQFLocations.entrySet()) {
+    for (var fileToQfs : quickFixes.entrySet()) {
       EDITED_LINES.clear();
       var path = fileToQfs.getKey();
-      var locations = fileToQfs.getValue();
-      if (locations.isEmpty()) {
+      var quickfixes = new ArrayList<>(fileToQfs.getValue());
+      if (quickfixes.isEmpty()) {
         continue;
       }
-      locations.sort(Comparator.comparingInt(l -> -l.startLine));
+      quickfixes.sort(Comparator.comparing(qf -> qf.getTextEdits().get(0).getTextSpan()));
       String content = fileContent(path);
       Map<Integer, Integer> lineOffsets = computeLineOffsets(content);
-      for (var location : locations) {
-        var qfs = quickFixes.get(location); // quick fixes for this location on file `path`
-        content = applyQuickFixes(content, lineOffsets, qfs);
-      }
+      content = applyQuickFixes(content, lineOffsets, quickfixes);
       Files.write(path, content.getBytes());
     }
   }
@@ -105,9 +101,7 @@ public class QuickFixesApplier {
 
   private String applyQuickFixes(String fileContent, Map<Integer, Integer> lineOffsets, List<JavaQuickFix> quickFixes) {
     String result = fileContent;
-    var sortedQuickfixes = new ArrayList<>(quickFixes);
-    sortedQuickfixes.sort(Comparator.comparing(qf -> qf.getTextEdits().get(0).getTextSpan()));
-    for (var quickFix : sortedQuickfixes) {
+    for (var quickFix : quickFixes) {
       if (!isQuickfixApplicable(quickFix)) {
         continue;
       }
