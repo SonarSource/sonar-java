@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
+import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.ProfileRegistrar;
 import org.sonarsource.analyzer.commons.BuiltInQualityProfileJsonLoader;
@@ -39,7 +40,6 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
  */
 @SonarLintSide
 public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
-
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaSonarWayProfile.class);
 
@@ -93,7 +93,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
 
   static Set<RuleKey> sonarJavaSonarWayRuleKeys() {
     return BuiltInQualityProfileJsonLoader.loadActiveKeysFromJsonProfile(SONAR_WAY_PATH).stream()
-      .map(rule -> RuleKey.of(CheckList.REPOSITORY_KEY, rule))
+      .map(rule -> RuleKey.of(GeneratedCheckList.REPOSITORY_KEY, rule))
       .collect(Collectors.toSet());
   }
 

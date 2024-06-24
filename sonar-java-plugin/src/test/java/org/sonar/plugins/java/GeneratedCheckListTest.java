@@ -22,7 +22,6 @@ package org.sonar.plugins.java;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileReader;
-import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,19 +30,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.sonar.api.internal.apachecommons.io.FileUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.GeneratedCheckList;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
-class CheckListTest {
+class GeneratedCheckListTest {
 
   private static final String ARTIFICIAL_DESCRIPTION = "-1";
 
@@ -66,7 +66,7 @@ class CheckListTest {
         count++;
       }
     }
-    assertThat(CheckList.getChecks()).hasSize(count);
+    assertThat(GeneratedCheckList.getChecks()).hasSize(count);
   }
 
   private static List<File> getCheckFiles() {
@@ -77,10 +77,10 @@ class CheckListTest {
 
   @Test
   void min_check_count() {
-    assertThat(CheckList.getJavaChecks()).hasSizeGreaterThan(500);
-    assertThat(CheckList.getJavaTestChecks()).hasSizeGreaterThan(40);
-    assertThat(CheckList.getJavaChecksNotWorkingForAutoScan()).hasSizeGreaterThan(40);
-    assertThat(CheckList.getChecks()).hasSizeGreaterThan(600);
+    assertThat(GeneratedCheckList.getJavaChecks()).hasSizeGreaterThan(500);
+    assertThat(GeneratedCheckList.getJavaTestChecks()).hasSizeGreaterThan(40);
+    assertThat(GeneratedCheckList.getJavaChecksNotWorkingForAutoScan()).hasSizeGreaterThan(40);
+    assertThat(GeneratedCheckList.getChecks()).hasSizeGreaterThan(600);
   }
 
   private static class CustomRulesDefinition implements RulesDefinition {
@@ -89,10 +89,10 @@ class CheckListTest {
     public void define(Context context) {
       String language = "java";
       NewRepository repository = context
-        .createRepository(CheckList.REPOSITORY_KEY, language)
+        .createRepository(GeneratedCheckList.REPOSITORY_KEY, language)
         .setName("SonarQube");
 
-      List<Class<?>> checks = CheckList.getChecks();
+      List<Class<?>> checks = GeneratedCheckList.getChecks();
       new RulesDefinitionAnnotationLoader().load(repository, checks.toArray(new Class[checks.size()]));
 
       for (NewRule rule : repository.rules()) {
@@ -114,10 +114,10 @@ class CheckListTest {
   @Test
   void test() {
     Map<String, String> keyMap = new HashMap<>();
-    for (Class<?> cls : CheckList.getChecks()) {
+    for (Class<?> cls : GeneratedCheckList.getChecks()) {
       String testName = '/' + cls.getName().replace('.', '/') + "Test.java";
       List<String> checkModules = List.of("java-checks", "java-checks-aws");
-      
+
       String simpleName = cls.getSimpleName();
       // Handle legacy keys.
       Rule ruleAnnotation = AnnotationUtils.getAnnotation(cls, Rule.class);
@@ -133,15 +133,16 @@ class CheckListTest {
     CustomRulesDefinition definition = new CustomRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
-    List<RulesDefinition.Rule> rules = context.repository(CheckList.REPOSITORY_KEY).rules();
+    List<RulesDefinition.Rule> rules = context.repository(GeneratedCheckList.REPOSITORY_KEY).rules();
+
     for (RulesDefinition.Rule rule : rules) {
       assertThat(keys).as("Duplicate key " + rule.key()).doesNotContain(rule.key());
       keys.add(rule.key());
       names.add(rule.name());
-      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + ".html"))
+      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + GeneratedCheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + ".html"))
         .overridingErrorMessage("No description for " + rule.key() + " " + keyMap.get(rule.key()))
         .isNotNull();
-      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + ".json"))
+      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + GeneratedCheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + ".json"))
         .overridingErrorMessage("No json metadata file for " + rule.key() + " " + keyMap.get(rule.key()))
         .isNotNull();
 
@@ -157,7 +158,7 @@ class CheckListTest {
   @Test
   void enforce_CheckList_registration() {
     List<File> files = getCheckFiles();
-    List<Class<?>> checks = CheckList.getChecks();
+    List<Class<?>> checks = GeneratedCheckList.getChecks();
     files.stream()
       .filter(file -> file.getName().endsWith("Check.java"))
       .filter(file -> !file.getName().startsWith("Abstract"))
@@ -176,12 +177,12 @@ class CheckListTest {
 
   @Test
   void rules_targeting_tests_should_have_tests_tag() throws Exception {
-    Set<Class<? extends JavaCheck>> testChecks = new HashSet<>(CheckList.getJavaTestChecks());
-    Set<Class<? extends JavaCheck>> mainChecks = new HashSet<>(CheckList.getJavaChecks());
+    Set<Class<? extends JavaCheck>> testChecks = new HashSet<>(GeneratedCheckList.getJavaTestChecks());
+    Set<Class<? extends JavaCheck>> mainChecks = new HashSet<>(GeneratedCheckList.getJavaChecks());
 
-    for (Class<?> cls : CheckList.getChecks()) {
+    for (Class<?> cls : GeneratedCheckList.getChecks()) {
       String key = AnnotationUtils.getAnnotation(cls, Rule.class).key();
-      URL metadataURL = getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + key + ".json");
+      URL metadataURL = getClass().getResource("/org/sonar/l10n/java/rules/" + GeneratedCheckList.REPOSITORY_KEY + "/" + key + ".json");
       File metadataFile = new File(metadataURL.toURI());
       assertThat(metadataFile).exists();
       try (FileReader jsonReader = new FileReader(metadataFile)) {
@@ -207,14 +208,6 @@ class CheckListTest {
     // ignore all the other fields
     String[] tags;
     String status;
-  }
-
-  @Test
-  void private_constructor() throws Exception {
-    Constructor<CheckList> constructor = CheckList.class.getDeclaredConstructor();
-    assertThat(constructor.isAccessible()).isFalse();
-    constructor.setAccessible(true);
-    constructor.newInstance();
   }
 
 }

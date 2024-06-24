@@ -162,10 +162,10 @@ Running this test can be broken down in 2 steps:
 
 Make sure that the `java-checks-tests-sources` module has been compiled (ie: the .class files in `java-checks-tests-sources/target/` are up to date).
 
-In doubt, go the top-level of the project and run:
+In doubt, go the [`java-checks-tests-sources`](java-checks-tests-sources) module and run:
 ```shell
 # Use java 21!
-mvn clean compile --projects java-checks-test-sources --also-make-dependents
+mvn clean compile
 ```
 
 ##### Executing the autoscan test

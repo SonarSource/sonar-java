@@ -32,6 +32,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.Version;
+import org.sonar.java.GeneratedCheckList;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKeys;
@@ -56,7 +57,7 @@ class JavaRulesDefinitionTest {
 
     assertThat(repository.name()).isEqualTo("Sonar");
     assertThat(repository.language()).isEqualTo("java");
-    assertThat(repository.rules()).hasSize(CheckList.getChecks().size());
+    assertThat(repository.rules()).hasSize(GeneratedCheckList.getChecks().size());
 
     RulesDefinition.Rule unusedLabelRule = repository.rule("S1065");
     assertThat(unusedLabelRule).isNotNull();
@@ -91,7 +92,7 @@ class JavaRulesDefinitionTest {
 
     assertThat(repository.name()).isEqualTo("Sonar");
     assertThat(repository.language()).isEqualTo("java");
-    assertThat(repository.rules()).hasSize(CheckList.getChecks().size());
+    assertThat(repository.rules()).hasSize(GeneratedCheckList.getChecks().size());
     Locale.setDefault(defaultLocale);
   }
 
