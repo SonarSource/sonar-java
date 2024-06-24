@@ -21,7 +21,6 @@ package org.sonar.java.it;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +32,6 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.Sema;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -47,8 +45,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public class VisitorsBridgeForQuickFixTests extends VisitorsBridge {
 
-  private final Map<Path, List<AnalyzerMessage.TextSpan>> quickFixesLocations = new HashMap<>();
-  private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
+  private final Map<Path, List<JavaQuickFix>> quickFixes = new HashMap<>();
 
   private JavaFileScannerContextForTests testContext;
   private JavaFileScannerContextForTests moduleContext;
@@ -95,7 +92,7 @@ public class VisitorsBridgeForQuickFixTests extends VisitorsBridge {
     return moduleContext;
   }
 
-  public Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> getQuickFixes() {
+  public Map<Path, List<JavaQuickFix>> getQuickFixes() {
     return quickFixes;
   }
 
@@ -104,18 +101,9 @@ public class VisitorsBridgeForQuickFixTests extends VisitorsBridge {
       return;
     }
     Path p = context.getInputFile().path();
-    if (!quickFixesLocations.containsKey(p)) {
-      quickFixesLocations.put(p, new ArrayList<>());
-    }
-
     for (var entry : context.getQuickFixes().entrySet()) {
-      quickFixesLocations.get(p).add(entry.getKey());
-      quickFixes.put(entry.getKey(), entry.getValue());
+      quickFixes.put(p, entry.getValue());
     }
-  }
-
-  public Map<Path, List<AnalyzerMessage.TextSpan>> getQuickFixesLocations() {
-    return quickFixesLocations;
   }
 
 }
