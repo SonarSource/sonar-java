@@ -109,13 +109,43 @@
     </dependency>
   </dependencies>
 
-    <profiles>
+  <profiles>
     <profile>
       <id>it-quickfixes</id>
       <properties>
         <skipTests>false</skipTests>
       </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-test-classpath</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+                  <overwrite>true</overwrite>
+                  <resources>
+                    <resource>
+                      <directory>${maven.multiModuleProjectDirectory}/java-checks-test-sources/default/target</directory>
+                      <includes>
+                        <include>test-classpath.txt</include>
+                      </includes>
+                      </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
-    
+
+
+
 </project>

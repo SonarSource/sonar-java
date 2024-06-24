@@ -42,7 +42,6 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.internal.InternalSensorContext;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -60,8 +59,8 @@ public class QuickFixesApplier {
   private Map<Path, List<JavaQuickFix>> pathsToQuickfixes;
 
   static {
-    Path path = Paths.get("../" + FilesUtils.DEFAULT_TEST_CLASSPATH_FILE.replace('/', File.separatorChar));
-    DEFAULT_CLASSPATH = TestClasspathUtils.loadFromFile(path.toAbsolutePath().toString());
+    Path path = Paths.get("target/test-classpath.txt".replace('/', File.separatorChar));
+    DEFAULT_CLASSPATH = TestClasspathUtils.loadFromFile(path.toString());
   }
 
   public void verifyAll(List<InputFile> files) throws IOException {
