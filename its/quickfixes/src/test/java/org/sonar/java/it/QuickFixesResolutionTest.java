@@ -27,7 +27,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.junit.ClassRule;
@@ -37,30 +36,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.model.JParser;
+import org.sonar.java.model.JParserConfig;
+import org.sonar.plugins.java.api.JavaVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuickFixesResolutionTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(QuickFixesResolutionTest.class);
-
+  private static final JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
   private static final Path PROJECT_LOCATION = Paths.get("../../java-checks-test-sources/");
-
-  private static final Path TEST_PATH = Paths.get("../../java-checks-test-sources/default/src/main/java/checks/naming/");
 
   @ClassRule
   public static TemporaryFolder tmpProjectClone = new TemporaryFolder();
 
-  private static final Set<String> PATHS_TO_INSPECT = Set.of(
-    "default/src/main/java",
-    "aws/src/main/java",
-    "java-17/src/main/java"
-  );
-
-  private static final String MVN = System.getProperty("os.name").toLowerCase().startsWith("windows") ? "mvn.cmd" : "mvn";
-
   @Test
-  public void checkRspecMapping(){
+  public void checkRspecMapping() {
     Pattern pattern = Pattern.compile("@Rule\\(key\\s*=\\s*\"(.*?)\"\\)");
     Path javaChecksPath = Paths.get("../../java-checks/src/main/java/org/sonar/java/checks/");
     List<String> actualQuickfixImplementations = new ArrayList<>();
@@ -69,9 +61,9 @@ public class QuickFixesResolutionTest {
         if (path.toString().endsWith(".java")) {
           try {
             String content = new String(Files.readAllBytes(path));
-            if(content.contains("QuickFixHelper") || content.contains("JavaQuickFix")){
+            if (content.contains("QuickFixHelper") || content.contains("JavaQuickFix")) {
               var matcher = pattern.matcher(content);
-              if(matcher.find()){
+              if (matcher.find()) {
                 actualQuickfixImplementations.add(matcher.group(1));
               }
             }
@@ -88,22 +80,11 @@ public class QuickFixesResolutionTest {
 
   @Test
   public void testCompilationAfterQuickfixes() throws Exception {
-
     cloneJavaCheckTestSources();
-
     var applier = new QuickFixesApplier();
     List<InputFile> files = collectJavaFiles(tmpProjectClone.getRoot().getAbsolutePath());
     applier.verifyAll(files);
-
-    Process process = new ProcessBuilder(MVN, "compile")
-      .directory(tmpProjectClone.getRoot().toPath().toFile())
-      .inheritIO()
-      .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-      .start();
-    int exitCode = process.waitFor();
-//
-//    // Compilation should be successful
-//    assertThat(exitCode).isEqualTo(0);
+    assertThat(validateFilesStillParse(files)).isTrue();
   }
 
   private static void cloneJavaCheckTestSources() throws Exception {
@@ -127,13 +108,27 @@ public class QuickFixesResolutionTest {
     try (Stream<Path> stream = Files.walk(start, maxDepth)) {
       return stream
         .filter(path -> path.toString().endsWith(".java"))
-        .limit(100)//TO REMOVE
+        .limit(200)
+        //.filter(path -> path.toString().contains("InsecureCreateTempFileCheck_no_version"))//TO REMOVE
         .map(path -> TestUtils.inputFile(path.toFile()))
         .toList();
     } catch (IOException e) {
-      LOG.error("Unable to read " + directory);
+      LOG.error("Unable to read {}", directory);
     }
     return Collections.emptyList();
+  }
+
+  private static boolean validateFilesStillParse(List<InputFile> inputFiles) {
+    for (InputFile inputFile : inputFiles) {
+      try {
+        var cut = JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, List.of()).astParser(), version.toString(), inputFile.filename(), inputFile.contents());
+        System.out.println(cut);
+      } catch (IOException ioException) {
+        LOG.error("Unable to read contents for file {}", inputFile.filename());
+        return false;
+      }
+    }
+    return true;
   }
 
 }

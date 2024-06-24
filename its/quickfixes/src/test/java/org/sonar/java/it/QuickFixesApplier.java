@@ -28,8 +28,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.IntStream;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -49,6 +52,7 @@ public class QuickFixesApplier {
 
   private static final String DEFAULT_CLASSPATH_LOCATION = "../../java-checks-test-sources/default/target/test-classpath.txt";
   private static final List<File> DEFAULT_CLASSPATH;
+  private static final Set<Integer> EDITED_LINES = new HashSet<>();
 
   static {
     Path path = Paths.get(DEFAULT_CLASSPATH_LOCATION.replace('/', File.separatorChar));
@@ -63,19 +67,19 @@ public class QuickFixesApplier {
     JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
     astScanner.setVisitorBridge(visitorsBridge);
 
-    List<InputFile> filesToParse = files;
-    astScanner.scan(filesToParse);
+    astScanner.scan(files);
 
     var filesToQFLocations = visitorsBridge.getQuickFixesLocations();
     var quickFixes = visitorsBridge.getQuickFixes();
 
     for (var fileToQfs : filesToQFLocations.entrySet()) {
+      EDITED_LINES.clear();
       var path = fileToQfs.getKey();
       var locations = fileToQfs.getValue();
       if (locations.isEmpty()) {
         continue;
       }
-      locations.sort(Comparator.comparingInt(l -> l.startLine));
+      locations.sort(Comparator.comparingInt(l -> -l.startLine));
       String content = fileContent(path);
       Map<Integer, Integer> lineOffsets = computeLineOffsets(content);
       for (var location : locations) {
@@ -101,18 +105,41 @@ public class QuickFixesApplier {
 
   private String applyQuickFixes(String fileContent, Map<Integer, Integer> lineOffsets, List<JavaQuickFix> quickFixes) {
     String result = fileContent;
-    for (var quickFix : quickFixes) {
-      for (var edit : quickFix.getTextEdits()) {
+    var sortedQuickfixes = new ArrayList<>(quickFixes);
+    sortedQuickfixes.sort(Comparator.comparing(qf -> qf.getTextEdits().get(0).getTextSpan()));
+    for (var quickFix : sortedQuickfixes) {
+      if (!isQuickfixApplicable(quickFix)) {
+        continue;
+      }
+      var edits = new ArrayList<>(quickFix.getTextEdits());
+      edits.sort((e1, e2) -> e2.getTextSpan().compareTo(e1.getTextSpan()));
+      for (var edit : edits) {
         int sl = edit.getTextSpan().startLine;
-        int sc = edit.getTextSpan().startCharacter;
+        int sc = edit.getTextSpan().startCharacter + 1;
         int el = edit.getTextSpan().endLine;
-        int ec = edit.getTextSpan().endCharacter;
-        int startOfReplacement = lineOffsets.get(sl) + sc;
-        int endOfReplacement = lineOffsets.get(el) + ec;
-        result = result.substring(0, startOfReplacement) + "" + edit.getReplacement() + "" +result.substring(endOfReplacement);
+        int ec = edit.getTextSpan().endCharacter + 1;
+        try {
+          int startOfReplacement = lineOffsets.get(sl) + sc;
+          int endOfReplacement = lineOffsets.get(el) + ec;
+          result = result.substring(0, startOfReplacement) + edit.getReplacement() + result.substring(endOfReplacement);
+          IntStream.range(sl, el + 1).forEach(EDITED_LINES::add);
+        } catch (Exception e) {
+          System.out.println("ERROR  \n " + e.getMessage() + " \napplying quickfixes for: \n\n" + fileContent);
+        }
       }
     }
     return result;
+  }
+
+  private static boolean isQuickfixApplicable(JavaQuickFix quickFix) {
+    for (var edit : quickFix.getTextEdits()) {
+      int sl = edit.getTextSpan().startLine;
+      int el = edit.getTextSpan().endLine;
+      if (EDITED_LINES.contains(sl) || EDITED_LINES.contains(el)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private SonarComponents sonarComponents() {
