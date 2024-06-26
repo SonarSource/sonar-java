@@ -13,8 +13,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    "convention",
-    "logging"
+    "convention"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1312",

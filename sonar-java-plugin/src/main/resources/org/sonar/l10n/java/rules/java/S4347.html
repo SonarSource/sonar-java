@@ -1,19 +1,19 @@
-<p>Cryptographic operations often rely on unpredictable random numbers to enhance security. These random numbers are created by cryptographically
-secure pseudo-random number generators (CSPRNG). It is important not to use a predictable seed with these random number generators otherwise the
-random numbers will also become predictable.</p>
+<p>When using <code>SecureRandom</code>, it is important not to use predictable seeds. This class is used to generate cryptographically strong random
+numbers. Using a predictable seed will make its output predictable as well, which counteracts the use case of <code>SecureRandom</code>.</p>
 <h2>Why is this an issue?</h2>
-<p>Random number generators are often used to generate random values for cryptographic algorithms. When a random number generator is used for
-cryptographic purposes, the generated numbers must be as random and unpredictable as possible. When the random number generator is improperly seeded
-with a constant or a predictable value, its output will also be predictable.</p>
+<p><code>java.security.SecureRandom</code> is often used to generate random values for cryptographic algorithms. When a random number generator is
+used for cryptographic purposes, the generated numbers must be as random and unpredictable as possible. When <code>SecureRandom</code> is improperly
+seeded with a constant or a predictable value, its output will also be predictable.</p>
 <p>This can have severe security implications for cryptographic operations that rely on the randomness of the generated numbers. By using a
 predictable seed, an attacker can potentially guess or deduce the generated numbers, compromising the security of whatever cryptographic algorithm
-relies on the random number generator.</p>
+relies on <code>SecureRandom</code>.</p>
 <h3>What is the potential impact?</h3>
 <p>It is crucial to understand that the strength of cryptographic algorithms heavily relies on the quality of the random numbers used. By improperly
-seeding a CSPRNG, we introduce a significant weakness that can be exploited by attackers.</p>
+seeding the <code>SecureRandom</code> class, we introduce a significant weakness that can be exploited by attackers.</p>
 <h4>Insecure cryptographic keys</h4>
-<p>One of the primary use cases for CSPRNGs is generating cryptographic keys. If an attacker can predict the seed used to initialize the random number
-generator, they may be able to derive the same keys. Depending on the use case, this can lead to multiple severe outcomes, such as:</p>
+<p>One of the primary use cases for the <code>SecureRandom</code> class is generating cryptographic keys. If an attacker can predict the seed used to
+initialize the SecureRandom instance, they may be able to derive the same keys. Depending on the use case, this can lead to multiple severe outcomes,
+such as:</p>
 <ul>
   <li> Being able to decrypt sensitive documents, leading to privacy breaches or identity theft. </li>
   <li> Gaining access to a private key used for signing, allowing an attacker to forge digital signatures and impersonate legitimate entities. </li>
@@ -63,13 +63,13 @@ strong algorithm for its number generation.</p>
 </ul>
 <h3>Standards</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
-  Misconfiguration</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/330">CWE-330 - Use of Insufficiently Random Values</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/332">CWE-332 - Insufficient Entropy in PRNG</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/336">CWE-336 - Same Seed in Pseudo-Random Number Generator (PRNG)</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/337">CWE-337 - Predictable Seed in Pseudo-Random Number Generator (PRNG)</a> </li>
+  <li> <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP Top 10 2021 Category A2</a> - Cryptographic Failures </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/330">MITRE, CWE-330</a> - Use of Insufficiently Random Values </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/332">MITRE, CWE-332</a> - Insufficient Entropy in PRNG </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/336">MITRE, CWE-336</a> - Same Seed in Pseudo-Random Number Generator (PRNG) </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/337">MITRE, CWE-337</a> - Predictable Seed in Pseudo-Random Number Generator (PRNG) </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC63-J.+Ensure+that+SecureRandom+is+properly+seeded">CERT, MSC63J.</a> - Ensure that
   SecureRandom is properly seeded </li>
 </ul>

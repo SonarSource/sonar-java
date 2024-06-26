@@ -7,8 +7,10 @@
     },
     "attribute": "CONVENTIONAL"
   },
-  "status": "deprecated",
-  "tags": [],
+  "status": "ready",
+  "tags": [
+    "cwe"
+  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4792",
   "sqKey": "S4792",

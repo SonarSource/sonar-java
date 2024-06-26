@@ -7,12 +7,14 @@
     },
     "attribute": "TRUSTWORTHY"
   },
-  "status": "deprecated",
+  "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2h"
   },
-  "tags": [],
+  "tags": [
+    "cwe"
+  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2647",
   "sqKey": "S2647",
@@ -35,9 +37,6 @@
     ],
     "ASVS 4.0": [
       "2.10.3"
-    ],
-    "STIG ASD 2023-06-08": [
-      "V-222533"
     ]
   },
   "quickfix": "unknown"

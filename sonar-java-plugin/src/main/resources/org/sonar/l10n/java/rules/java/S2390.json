@@ -18,7 +18,7 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2390",
   "sqKey": "S2390",
-  "scope": "Main",
+  "scope": "All",
   "securityStandards": {
     "CERT": [
       "DCL00-J."

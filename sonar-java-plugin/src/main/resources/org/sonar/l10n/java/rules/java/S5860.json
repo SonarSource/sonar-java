@@ -18,6 +18,6 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-5860",
   "sqKey": "S5860",
-  "scope": "Main",
+  "scope": "All",
   "quickfix": "unknown"
 }

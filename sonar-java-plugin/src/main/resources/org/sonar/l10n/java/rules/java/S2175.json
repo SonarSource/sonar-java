@@ -17,7 +17,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2175",
   "sqKey": "S2175",
-  "scope": "Main",
+  "scope": "All",
   "securityStandards": {
     "CERT": [
       "EXP04-J."

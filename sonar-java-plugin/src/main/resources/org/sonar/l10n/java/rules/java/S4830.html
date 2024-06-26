@@ -9,7 +9,7 @@ entity and intercept, manipulate, or steal the data being transmitted.</p>
 build this trust in internet communication, opening your system up to a number of potential threats.</p>
 <h4>Identity spoofing</h4>
 <p>If a system does not validate certificates, it cannot confirm the identity of the other party involved in the communication. An attacker can
-exploit this by creating a fake server and masquerading as a legitimate one. For example, they might set up a server that looks like your bank’s
+exploit this by creating a fake server and masquerading it as a legitimate one. For example, they might set up a server that looks like your bank’s
 server, tricking your system into thinking it is communicating with the bank. This scenario, called identity spoofing, allows the attacker to collect
 any data your system sends to them, potentially leading to significant data breaches.</p>
 <h4>Loss of data integrity</h4>
@@ -17,43 +17,7 @@ any data your system sends to them, potentially leading to significant data brea
 in transit, and you would have no way of knowing. This could range from subtle manipulations of the data you receive to the injection of malicious
 code or malware into your system. The consequences of such breaches of data integrity can be severe, depending on the nature of the data and the
 system.</p>
-<h2>How to fix it in Java Cryptography Extension</h2>
-<h3>Code examples</h3>
-<p>The following code contains examples of disabled certificate validation.</p>
-<p>The certificate validation gets disabled by overriding <code>X509TrustManager</code> with an empty implementation. It is highly recommended to use
-the original implementation.</p>
-<h4>Noncompliant code example</h4>
-<pre>
-class TrustAllManager implements X509TrustManager {
-
-    @Override
-    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {  // Noncompliant
-    }
-
-    @Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException { // Noncompliant
-    }
-
-    @Override
-    public X509Certificate[] getAcceptedIssuers() {
-        return null;
-    }
-}
-</pre>
-<h3>How does this work?</h3>
-<p>Addressing the vulnerability of disabled TLS certificate validation primarily involves re-enabling the default validation.</p>
-<p>To avoid running into problems with invalid certificates, consider the following sections.</p>
-<h4>Using trusted certificates</h4>
-<p>If possible, always use a certificate issued by a well-known, trusted CA for your server. Most programming environments come with a predefined list
-of trusted root CAs, and certificates issued by these authorities are validated automatically. This is the best practice, and it requires no
-additional code or configuration.</p>
-<h4>Working with self-signed certificates or non-standard CAs</h4>
-<p>In some cases, you might need to work with a server using a self-signed certificate, or a certificate issued by a CA not included in your trusted
-roots. Rather than disabling certificate validation in your code, you can add the necessary certificates to your trust store.</p>
-<p>Here is a sample command to import a certificate to the Java trust store:</p>
-<pre>
-keytool -import -alias myserver -file myserver.crt -keystore cacerts
-</pre>
+<p>Unresolved directive in rule.adoc - include::how-to-fix-it/java-cryptographic-extension.adoc[]</p>
 <h2>Resources</h2>
 <h3>Standards</h3>
 <ul>
@@ -70,8 +34,6 @@ keytool -import -alias myserver -file myserver.crt -keystore cacerts
   <li> OWASP - <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x10-v5-network_communication_requirements">Mobile AppSec
   Verification Standard - Network Communication Requirements</a> </li>
   <li> CWE - <a href="https://cwe.mitre.org/data/definitions/295">CWE-295 - Improper Certificate Validation</a> </li>
-  <li> STIG Viewer - <a href="https://stigviewer.com/stig/application_security_and_development/2023-06-08/finding/V-222550">Application Security and
-  Development: V-222550</a> - The application must validate certificates by constructing a certification path to an accepted trust anchor. </li>
   <li> <a
   href="https://wiki.sei.cmu.edu/confluence/display/java/MSC61-J.+Do+not+use+insecure+or+weak+cryptographic+algorithms">https://wiki.sei.cmu.edu/confluence/display/java/MSC61-J.+Do+not+use+insecure+or+weak+cryptographic+algorithms</a> </li>
 </ul>

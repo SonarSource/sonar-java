@@ -1,5 +1,5 @@
 {
-  "title": "Use Java 14 \"switch\" expression",
+  "title": "Use Java 12 \"switch\" expression",
   "type": "CODE_SMELL",
   "code": {
     "impacts": {
@@ -13,11 +13,11 @@
     "constantCost": "5min"
   },
   "tags": [
-    "java14"
+    "java12"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-5194",
   "sqKey": "S5194",
-  "scope": "Main",
+  "scope": "All",
   "quickfix": "unknown"
 }
