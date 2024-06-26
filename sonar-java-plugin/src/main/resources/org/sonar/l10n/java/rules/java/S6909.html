@@ -19,7 +19,7 @@ public class DatabaseExample {
     public void updateTodayOrders(Connection connection, List&lt;Order&gt; orders) {
             Date today = java.sql.Date.valueOf(LocalDate.now());
             String insertQuery = "INSERT INTO Order (id, price, executionDate) VALUES (?, ?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT);
+            PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
 
             for(Order order: orders) {
                 preparedStatement.setString(1, order.id());
@@ -39,10 +39,9 @@ public class DatabaseExample {
     public void updateTodayOrders(Connection connection, List&lt;Order&gt; orders) {
             Date today = java.sql.Date.valueOf(LocalDate.now());
             String insertQuery = "INSERT INTO Order (id, price, executionDate) VALUES (?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
+
             preparedStatement.setDate(3, today); // Compliant
-
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT);
-
             for(Order order: orders) {
                 preparedStatement.setString(1, order.id());
                 preparedStatement.setString(2, order.price());
