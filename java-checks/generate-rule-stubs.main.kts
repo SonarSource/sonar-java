@@ -127,32 +127,6 @@ samplePath.writeText(
 """.trimIndent()
 )
 
-// Add check to check list
-val checkListPath = listOf("..", "sonar-java-plugin", "src", "main", "java", "org", "sonar", "plugins", "java", "CheckList.java")
-  .fold(javaChecksModulePath) { acc, part ->
-    acc.resolve(part)
-  }
-
-val remainingLines = checkListPath.readLines().toMutableList()
-val newLines = mutableListOf<String>()
-
-while (!remainingLines.first().startsWith("import")) newLines.add(remainingLines.removeFirst())
-
-val newCheckImportLine = "import ${pckg.joinToString(".")}.${checkName};"
-while (remainingLines.first()
-    .startsWith("import") && remainingLines.first().lowercase() < newCheckImportLine.lowercase()
-) newLines.add(remainingLines.removeFirst())
-newLines.add(newCheckImportLine)
-
-while (newLines.isEmpty() || !newLines.last().contains("// IssuableSubscriptionVisitor")) newLines.add(remainingLines.removeFirst())
-
-val checkListLine = "    $checkName.class,"
-while (remainingLines.first().endsWith(".class,") && remainingLines.first().lowercase() < checkListLine.lowercase()) newLines.add(remainingLines.removeFirst())
-newLines.add(checkListLine)
-
-newLines.addAll(remainingLines)
-
-checkListPath.writeText(newLines.joinToString("\n", postfix = "\n"))
 
 // License headers using "mvn license:format"
 val mvnCmd = if (System.getProperty("os.name").lowercase().startsWith("windows")) {
