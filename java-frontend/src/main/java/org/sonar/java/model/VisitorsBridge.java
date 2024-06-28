@@ -181,12 +181,21 @@ public class VisitorsBridge {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
       PerformanceMeasure.Duration duration = PerformanceMeasure.start("ScanWithoutParsing");
       boolean allScansSucceeded = true;
+
+      List<JavaFileScanner> scannersRequiringParsing = new ArrayList<>();
+      List<JavaFileScanner> scannersNotRequiringParsing = new ArrayList<>();
+
       var fileScannerContext = createScannerContext(sonarComponents, inputFile, javaVersion, inAndroidContext, cacheContext);
       for (var scanner: scannersThatCannotBeSkipped) {
         boolean exceptionIsBlownUp = false;
         PerformanceMeasure.Duration scannerDuration = PerformanceMeasure.start(scanner);
         try {
-          allScansSucceeded &= scanner.scanWithoutParsing(fileScannerContext);
+          if (scanner.scanWithoutParsing(fileScannerContext)) {
+            scannersNotRequiringParsing.add(scanner);
+          } else {
+            scannersRequiringParsing.add(scanner);
+            allScansSucceeded = false;
+          }
         } catch (AnalysisException e) {
           // In the case where the IssuableSubscriptionVisitorsRunner throws an exception, the problem has already been
           // logged and the exception formatted.
@@ -210,6 +219,10 @@ public class VisitorsBridge {
         }
       }
       duration.stop();
+
+      LOG.trace("Scanners that do not require parsing of {}: {}", inputFile, scannersNotRequiringParsing);
+      LOG.debug("Scanners that require parsing of {}: {}", inputFile, scannersRequiringParsing);
+
       return allScansSucceeded;
     } else {
       return false;
