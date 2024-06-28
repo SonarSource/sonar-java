@@ -52,7 +52,7 @@ class ClassesLayoutTest {
   @Test
   void identifier() {
     assertAll(
-      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64)).isEqualTo(80),
+      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64)).isEqualTo(88),
       () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
     );
   }

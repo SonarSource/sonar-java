@@ -43,13 +43,19 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 public class IdentifierTreeImpl extends AssessableExpressionTree implements IdentifierTree, JavaTree.AnnotatedTypeTree {
 
   private final InternalSyntaxToken nameToken;
+  private final boolean isUnnamedVariable;
   private List<AnnotationTree> annotations;
 
   public IBinding binding;
   public JLabelSymbol labelSymbol;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
+    this(nameToken, false);
+  }
+
+  public IdentifierTreeImpl(InternalSyntaxToken nameToken, boolean isUnnamedVariable) {
     this.nameToken = Objects.requireNonNull(nameToken);
+    this.isUnnamedVariable = isUnnamedVariable;
     this.annotations = Collections.emptyList();
   }
 
@@ -71,6 +77,11 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
   @Override
   public String name() {
     return identifierToken().text();
+  }
+
+  @Override
+  public boolean isUnnamedVariable() {
+    return isUnnamedVariable;
   }
 
   @Override
