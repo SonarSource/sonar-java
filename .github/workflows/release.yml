@@ -16,4 +16,4 @@ jobs:
     with:
       publishToBinaries: true
       mavenCentralSync: true
-      slackChannel: team-lang-java-notifs
+      slackChannel: squad-jvm-notifs
