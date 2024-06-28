@@ -49,6 +49,7 @@ class JavaVersionImplTest {
     assertThat(version.isJava19Compatible()).isFalse();
     assertThat(version.isJava20Compatible()).isFalse();
     assertThat(version.isJava21Compatible()).isFalse();
+    assertThat(version.isJava22Compatible()).isFalse();
     assertThat(version.asInt()).isEqualTo(-1);
   }
 
@@ -72,6 +73,7 @@ class JavaVersionImplTest {
     assertThat(version.isJava19Compatible()).isEqualTo(javaVersionAsInt >= 19);
     assertThat(version.isJava20Compatible()).isEqualTo(javaVersionAsInt >= 20);
     assertThat(version.isJava21Compatible()).isEqualTo(javaVersionAsInt >= 21);
+    assertThat(version.isJava22Compatible()).isEqualTo(javaVersionAsInt >= 22);
 
     assertThat(version.asInt()).isEqualTo(javaVersionAsInt);
   }
@@ -92,9 +94,9 @@ class JavaVersionImplTest {
 
   @Test
   void test_effective_java_version() {
-    assertThat(new JavaVersionImpl().effectiveJavaVersionAsString()).isEqualTo("21");
+    assertThat(new JavaVersionImpl().effectiveJavaVersionAsString()).isEqualTo("22");
     assertThat(new JavaVersionImpl(10).effectiveJavaVersionAsString()).isEqualTo("10");
-    assertThat(new JavaVersionImpl(-1).effectiveJavaVersionAsString()).isEqualTo("21");
+    assertThat(new JavaVersionImpl(-1).effectiveJavaVersionAsString()).isEqualTo("22");
   }
 
   @Test
