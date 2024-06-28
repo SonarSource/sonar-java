@@ -44,6 +44,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -59,13 +60,22 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.RecordPatternTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypePatternTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -250,6 +260,238 @@ class JParserTest {
     VariableTree s1 = (VariableTree) s.body().get(0);
     VariableTree s2 = (VariableTree) s.body().get(1);
     assertSame(s1.type(), s2.type());
+    assertThat(s1.simpleName().isUnnamedVariable()).isFalse();
+    assertThat(s2.simpleName().isUnnamedVariable()).isFalse();
+  }
+
+  @Test
+  void unnamed_variable_in_a_local_variable_declaration_statement() {
+    CompilationUnitTree t = test("""
+      class C {
+        void m(java.util.List<String> list) {
+          String _ = list.remove(0);
+        }
+      }
+      """);
+    ClassTree c = (ClassTree) t.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    BlockTree s = m.block();
+    assertNotNull(s);
+    VariableTree variableTree = (VariableTree) s.body().get(0);
+    assertThat(variableTree.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+    assertThat(variableTree.simpleName().name()).isEqualTo("_");
+    assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
+  }
+
+  @Test
+  void unnamed_variable_in_the_resource_of_a_try_with_resources_statement() {
+    CompilationUnitTree t = test("""
+      import java.nio.file.Files;
+
+      class C {
+        void m() throws java.io.IOException {
+          try (var _ = new java.io.FileOutputStream("foo")) {
+          }
+        }
+      }
+      """);
+    ClassTree c = (ClassTree) t.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    BlockTree s = m.block();
+    assertNotNull(s);
+    TryStatementTree tryStatementTree = (TryStatementTree) s.body().get(0);
+    VariableTree variableTree = (VariableTree) tryStatementTree.resourceList().get(0);
+    assertThat(variableTree.type().kind()).isEqualTo(Tree.Kind.VAR_TYPE);
+    assertThat(variableTree.type().symbolType().fullyQualifiedName()).isEqualTo("java.io.FileOutputStream");
+    assertThat(variableTree.simpleName().name()).isEqualTo("_");
+    assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
+  }
+
+  @Test
+  void unnamed_variable_in_header_of_a_basic_for_loop() {
+    CompilationUnitTree t = test("""
+      class C {
+        void m() {
+          for (int i = 0, _ = sideEffect(); i < 10; i++) { }
+        }
+        int sideEffect() {
+          return -1;
+        }
+      }
+      """);
+    ClassTree c = (ClassTree) t.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    BlockTree s = m.block();
+    assertNotNull(s);
+    ForStatementTree forStatementTree = (ForStatementTree) s.body().get(0);
+
+    VariableTree variable1Tree = (VariableTree) forStatementTree.initializer().get(0);
+    assertThat(variable1Tree.type().symbolType().fullyQualifiedName()).isEqualTo("int");
+    assertThat(variable1Tree.simpleName().name()).isEqualTo("i");
+    assertThat(variable1Tree.simpleName().isUnnamedVariable()).isFalse();
+
+    VariableTree variable2Tree = (VariableTree) forStatementTree.initializer().get(1);
+    assertThat(variable2Tree.type().symbolType().fullyQualifiedName()).isEqualTo("int");
+    assertThat(variable2Tree.simpleName().name()).isEqualTo("_");
+    assertThat(variable2Tree.simpleName().isUnnamedVariable()).isTrue();
+  }
+
+  @Test
+  void unnamed_variable_in_header_of_an_enhanced_for_loop() {
+    CompilationUnitTree t = test("""
+      class C {
+        int size(List<String> names) {
+          int s = 0;
+          for (String _ : names) { s++; }
+          return s;
+        }
+      }
+      """);
+    ClassTree c = (ClassTree) t.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    BlockTree s = m.block();
+    assertNotNull(s);
+    ForEachStatement forEachStatement = (ForEachStatement) s.body().get(1);
+    VariableTree variableTree = forEachStatement.variable();
+    assertThat(variableTree.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+    assertThat(variableTree.simpleName().name()).isEqualTo("_");
+    assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
+  }
+
+  @Test
+  void unnamed_variable_in_an_exception_parameter_of_a_catch_block() {
+    CompilationUnitTree t = test("""
+      class C {
+        int parse(String s) {
+          try {
+            return Integer.parseInt(s);
+          } catch (NumberFormatException _) {
+            return -1;
+          }
+        }
+      }
+      """);
+    ClassTree c = (ClassTree) t.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    BlockTree s = m.block();
+    assertNotNull(s);
+    TryStatementTree tryStatementTree = (TryStatementTree) s.body().get(0);
+    CatchTree catchTree = tryStatementTree.catches().get(0);
+    VariableTree variableTree = catchTree.parameter();
+    assertThat(variableTree.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.NumberFormatException");
+    assertThat(variableTree.simpleName().name()).isEqualTo("_");
+    assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
+  }
+
+  @Test
+  void unnamed_variable_in_a_formal_parameter_of_a_lambda_expression() {
+    CompilationUnitTree t = test("""
+      class C {
+        java.util.function.Function<String, String> lambda() {
+          return _ -> "NODATA";
+        }
+      }
+      """);
+    ClassTree c = (ClassTree) t.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    BlockTree s = m.block();
+    assertNotNull(s);
+    ReturnStatementTree returnStatementTree = (ReturnStatementTree) s.body().get(0);
+    LambdaExpressionTree lambdaExpressionTree = (LambdaExpressionTree) returnStatementTree.expression();
+    VariableTree variableTree = lambdaExpressionTree.parameters().get(0);
+    assertThat(variableTree.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+    assertThat(variableTree.simpleName().name()).isEqualTo("_");
+    assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
+  }
+
+  @Test
+  void unnamed_pattern_variable() {
+    CompilationUnitTree t = test("""
+      class C {
+        int m(Object o) {
+          return switch (o) {
+            case Box(var _) -> 1;
+            default -> 0;
+          };
+        }
+        record Box(int value) {}
+      }
+      """);
+    ClassTree c = (ClassTree) t.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    BlockTree s = m.block();
+    assertNotNull(s);
+    ReturnStatementTree returnStatementTree = (ReturnStatementTree) s.body().get(0);
+    SwitchExpressionTree switchExpressionTree = (SwitchExpressionTree) returnStatementTree.expression();
+    CaseGroupTree caseGroupTree = switchExpressionTree.cases().get(0);
+    CaseLabelTree caseLabelTree = caseGroupTree.labels().get(0);
+    RecordPatternTree recordPatternTree = (RecordPatternTree) caseLabelTree.expressions().get(0);
+    // FIXME symbolType() should equals to "Box" instead of "!Unknown!"
+    assertThat(recordPatternTree.symbolType().fullyQualifiedName()).isEqualTo("!Unknown!");
+    TypePatternTree patternTree = (TypePatternTree) recordPatternTree.patterns().get(0);
+    VariableTree variableTree = patternTree.patternVariable();
+    assertThat(variableTree.type().symbolType().fullyQualifiedName()).isEqualTo("int");
+    assertThat(variableTree.simpleName().name()).isEqualTo("_");
+    assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
+  }
+
+
+  /**
+   * FIXME remove the "@Disabled" and fix ECJ ERROR org.sonar.java.model.JParser - ECJ: Unable to parse file
+   * java.lang.NullPointerException: Cannot invoke "org.eclipse.jdt.internal.compiler.ast.TypeReference.extraDimensions()" because "typeReference" is null
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convertToSingleVariableDeclaration(ASTConverter.java:4074)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3641)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2953)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2367)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2039)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1477)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3197)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3313)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2135)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3147)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3218)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:813)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:208)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3567)
+   * 	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1595)
+   * 	at org.eclipse.jdt.core.dom.CompilationUnitResolver.convert(CompilationUnitResolver.java:345)
+   * 	at org.eclipse.jdt.core.dom.ASTParser.internalCreateASTCached(ASTParser.java:1275)
+   * 	at org.eclipse.jdt.core.dom.ASTParser.lambda$0(ASTParser.java:1126)
+   * 	at org.eclipse.jdt.internal.core.JavaModelManager.cacheZipFiles(JavaModelManager.java:5765)
+   * 	at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:1126)
+   * 	at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:874)
+   * 	at org.sonar.java.model.JParser.parse(JParser.java:273)
+   */
+  @Test
+  @Disabled("ECJ throws an Exception in this test")
+  void unnamed_pattern() {
+    CompilationUnitTree t = test("""
+      class C {
+        int m(Object o) {
+          return switch (o) {
+            case Box(_) -> 1;
+            default -> 0;
+          };
+        }
+        record Box(int value) {}
+      }
+      """);
+    ClassTree c = (ClassTree) t.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    BlockTree s = m.block();
+    assertNotNull(s);
+    ReturnStatementTree returnStatementTree = (ReturnStatementTree) s.body().get(0);
+    SwitchExpressionTree switchExpressionTree = (SwitchExpressionTree) returnStatementTree.expression();
+    CaseGroupTree caseGroupTree = switchExpressionTree.cases().get(0);
+    CaseLabelTree caseLabelTree = caseGroupTree.labels().get(0);
+    RecordPatternTree recordPatternTree = (RecordPatternTree) caseLabelTree.expressions().get(0);
+    assertThat(recordPatternTree.symbolType().fullyQualifiedName()).isEqualTo("Box");
+    TypePatternTree patternTree = (TypePatternTree) recordPatternTree.patterns().get(0);
+    VariableTree variableTree = patternTree.patternVariable();
+    assertThat(variableTree.type().symbolType().fullyQualifiedName()).isEqualTo("int");
+    assertThat(variableTree.simpleName().name()).isEqualTo("_");
+    assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
   }
 
   @Test
@@ -328,7 +570,7 @@ class JParserTest {
   }
 
   @Test
-  void failing_batch_mode_should_continue_file_by_file() throws Exception {
+  void failing_batch_mode_should_continue_file_by_file() {
     List<InputFile> inputFiles = Arrays.asList(
       TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
@@ -376,7 +618,7 @@ class JParserTest {
   }
 
   @Test
-  void failing_batch_mode_should_stop_file_by_file_when_cancelled() throws Exception {
+  void failing_batch_mode_should_stop_file_by_file_when_cancelled() {
     List<InputFile> inputFiles = Arrays.asList(
       TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
@@ -411,7 +653,7 @@ class JParserTest {
   }
 
   @Test
-  void failing_batch_mode_with_empty_file_list_should_not_continue_file_by_file() throws Exception {
+  void failing_batch_mode_with_empty_file_list_should_not_continue_file_by_file() {
     List<InputFile> inputFiles = List.of();
     List<String> trace = new ArrayList<>();
     BiConsumer<InputFile, JParserConfig.Result> action = (inputFile, result) -> trace.add("should not be called ");
@@ -459,7 +701,7 @@ class JParserTest {
   }
 
   @Test
-  void test_is_canceled_is_called_before_each_action_file_by_file() throws Exception {
+  void test_is_canceled_is_called_before_each_action_file_by_file() {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     BiConsumer<InputFile, JParserConfig.Result> action = spy(new BiConsumer<InputFile, JParserConfig.Result>() {
