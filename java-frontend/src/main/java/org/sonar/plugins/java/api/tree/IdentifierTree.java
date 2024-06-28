@@ -40,6 +40,8 @@ public interface IdentifierTree extends ExpressionTree, TypeTree {
 
   String name();
 
+  boolean isUnnamedVariable();
+
   Symbol symbol();
 
 }

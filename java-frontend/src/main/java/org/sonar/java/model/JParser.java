@@ -438,6 +438,23 @@ public class JParser {
   }
 
   /**
+   * @param tokenTypeCandidateA {@link TerminalTokens}
+   * @param tokenTypeCandidateB {@link TerminalTokens}
+   * @return {@link TerminalTokens}
+   */
+  private int firstIndexIn(ASTNode e, int tokenTypeCandidateA, int tokenTypeCandidateB) {
+    int first = tokenManager.firstIndexIn(e, ANY_TOKEN);
+    int last = tokenManager.lastIndexIn(e, ANY_TOKEN);
+    for (int tokenIndex = first; tokenIndex <= last; tokenIndex++) {
+      Token token = tokenManager.get(tokenIndex);
+      if (token.tokenType == tokenTypeCandidateA || token.tokenType == tokenTypeCandidateB) {
+        return tokenIndex;
+      }
+    }
+    throw new IllegalStateException(ASTNode.nodeClassForType(e.getNodeType()).toString());
+  }
+
+  /**
    * @param tokenType {@link TerminalTokens}
    */
   private InternalSyntaxToken lastTokenIn(ASTNode e, int tokenType) {
@@ -1265,7 +1282,10 @@ public class JParser {
   }
 
   private IdentifierTreeImpl createSimpleName(SimpleName e) {
-    IdentifierTreeImpl t = new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNameIdentifier));
+    int tokenIndex = firstIndexIn(e, TerminalTokens.TokenNameIdentifier, TerminalTokens.TokenNameUNDERSCORE);
+    Token token = tokenManager.get(tokenIndex);
+    boolean isUnnamedVariable = token.tokenType == TerminalTokens.TokenNameUNDERSCORE;
+    IdentifierTreeImpl t = new IdentifierTreeImpl(createSyntaxToken(tokenIndex), isUnnamedVariable);
     t.typeBinding = e.resolveTypeBinding();
     t.binding = e.resolveBinding();
     return t;
