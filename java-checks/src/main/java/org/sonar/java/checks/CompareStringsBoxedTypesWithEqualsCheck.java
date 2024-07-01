@@ -23,22 +23,23 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.prettyprint.FileConfig;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.prettyprint.PrintableNodesCreation.methodInvocation;
+import static org.sonar.java.prettyprint.PrintableNodesCreation.not;
 
 @Rule(key = "S4973")
 public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVisitor {
 
   private static final String ISSUE_MESSAGE = "Strings and Boxed types should be compared using \"equals()\".";
   private static final String QUICK_FIX_MESSAGE = "Replace with boxed comparison";
-  private static final String DOT_EQUALS_AND_OPENING_PARENTHESIS = ".equals(";
 
   private QuickFixHelper.ImportSupplier importSupplier;
 
@@ -72,50 +73,35 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
   private static Optional<JavaQuickFix> computeConciseQuickFix(BinaryExpressionTree tree) {
     ExpressionTree leftOperand = tree.leftOperand();
     ExpressionTree rightOperand = tree.rightOperand();
-    if (leftOperand.is(Tree.Kind.STRING_LITERAL)) {
-      AnalyzerMessage.TextSpan interOperandSpace = AnalyzerMessage.textSpanBetween(
-        leftOperand, false,
-        rightOperand, false
-      );
-      JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
-        .addTextEdit(JavaTextEdit.insertAfterTree(rightOperand, ")"))
-        .addTextEdit(JavaTextEdit.replaceTextSpan(interOperandSpace, DOT_EQUALS_AND_OPENING_PARENTHESIS));
-      if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
-        quickFix.addTextEdit(JavaTextEdit.insertBeforeTree(leftOperand, "!"));
-      }
-      return Optional.of(quickFix.build());
-    } else if (rightOperand.is(Tree.Kind.STRING_LITERAL)) {
-      String callEqualsOnLiteral = ((LiteralTree) rightOperand).value() + DOT_EQUALS_AND_OPENING_PARENTHESIS;
-      String callToEquals = tree.is(Tree.Kind.NOT_EQUAL_TO) ? ("!" + callEqualsOnLiteral) : callEqualsOnLiteral;
-      AnalyzerMessage.TextSpan leftOfOperatorToEndOfComparison = AnalyzerMessage.textSpanBetween(
-        leftOperand, false,
-        rightOperand, true
-      );
-      return Optional.of(
-        JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
-          .addTextEdit(JavaTextEdit.replaceTextSpan(leftOfOperatorToEndOfComparison, ")"))
-          .addTextEdit(JavaTextEdit.insertBeforeTree(leftOperand, callToEquals))
-          .build()
-      );
+    var leftIsLiteral = leftOperand.is(Tree.Kind.STRING_LITERAL);
+    var rightIsLiteral = rightOperand.is(Tree.Kind.STRING_LITERAL);
+    if (!leftIsLiteral && !rightIsLiteral) {
+      return Optional.empty();
     }
-    return Optional.empty();
+    ExpressionTree newExpr = leftIsLiteral ? methodInvocation(leftOperand, "equals", rightOperand)
+      : methodInvocation(rightOperand, "equals", leftOperand);
+    if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
+      newExpr = not(newExpr);
+    }
+    return Optional.of(
+      JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
+        .addTextEdit(JavaTextEdit.replaceTree(tree, newExpr, FileConfig.DEFAULT_FILE_CONFIG))
+        .build()
+    );
   }
 
   private JavaQuickFix computeDefaultQuickFix(BinaryExpressionTree tree) {
-    String callToEquals = tree.is(Tree.Kind.NOT_EQUAL_TO) ? "!Objects.equals(" : "Objects.equals(";
-    AnalyzerMessage.TextSpan interOperandSpace = AnalyzerMessage.textSpanBetween(
-      tree.leftOperand(), false,
-      tree.rightOperand(), false
-    );
+    ExpressionTree newExpr = methodInvocation(null, "Objects.equals", tree.leftOperand(), tree.rightOperand());
+    if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
+      newExpr = not(newExpr);
+    }
+
     JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
-      .addTextEdit(JavaTextEdit.insertAfterTree(tree.rightOperand(), ")"))
-      .addTextEdit(JavaTextEdit.replaceTextSpan(interOperandSpace, ", "))
-      .addTextEdit(JavaTextEdit.insertBeforeTree(tree.leftOperand(), callToEquals));
+      .addTextEdit(JavaTextEdit.replaceTree(tree, newExpr, FileConfig.DEFAULT_FILE_CONFIG));
 
     if (importSupplier == null) {
       importSupplier = QuickFixHelper.newImportSupplier(context);
     }
-
     importSupplier.newImportEdit("java.util.Objects")
       .ifPresent(builder::addTextEdit);
 

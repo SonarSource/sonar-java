@@ -3,12 +3,11 @@ package checks;
 public class SingleIfInsteadOfPatternMatchGuardCheckSample {
 
   // fix@qf3 {{Merge this "if" statement with the enclosing pattern match guard.}}
-  // edit@qf3 [[sl=+0;el=+2;sc=9;ec=10]] {{System.out.println("two");}}
-  // edit@qf3 [[sl=-2;el=-2;sc=44;ec=44]] {{ && s.length() == 2 }}
+  // edit@qf3 [[sl=-1;el=+3;sc=7;ec=8]] {{case String s when s.startsWith("a") && s.length() == 2 -> {\n        System.out.println("two");\n      }}}
   void conditionsShouldBeMerged(Object o) {
     switch (o) {
+      // Noncompliant@+2 [[quickfixes=qf3]]
       case String s when s.startsWith("a") -> {
-        // Noncompliant@+1 [[quickfixes=qf3]]
         if (s.length() == 2) {
           System.out.println("two");
         }
@@ -18,8 +17,7 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
     }
   }
   // fix@qf1 {{Replace this "if" statement with a pattern match guard.}}
-  // edit@qf1 [[sl=+0;el=+0;sc=9;ec=32]] {{{}}}
-  // edit@qf1 [[sl=-2;el=-2;sc=21;ec=21]] {{ when s.length() == 2 }}
+  // edit@qf1 [[sl=-1;el=+1;sc=7;ec=8]] {{case String s when s.length() == 2 -> {\n        \n      }}}
   void quickFix(Object o) {
     switch (o) {
       case null -> {
@@ -27,8 +25,8 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
           System.out.println("null");
         }
       }
+      // Noncompliant@+2 [[sl=+2;el=+2;sc=9;ec=32;quickfixes=qf1]]
       case String s -> {
-        // Noncompliant@+1 [[sl=+1;el=+1;sc=9;ec=32;quickfixes=qf1]]
         if (s.length() == 2) {}
       }
       default -> {
@@ -40,12 +38,11 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
   }
 
   // fix@qf2 {{Replace this "if" statement with a pattern match guard.}}
-  // edit@qf2 [[sl=+0;el=+0;sc=9;ec=56]] {{System.out.println("two");}}
-  // edit@qf2 [[sl=-2;el=-2;sc=21;ec=21]] {{ when s.length() == 2 }}
+  // edit@qf2 [[sl=-1;el=+1;sc=7;ec=8]] {{case String s when s.length() == 2 -> System.out.println("two");}}
   void quickFix2(Object o) {
     switch (o) {
+      // Noncompliant@+2 [[sl=+2;el=+2;sc=9;ec=56;quickfixes=qf2]]
       case String s -> {
-        // Noncompliant@+1 [[sl=+1;el=+1;sc=9;ec=56;quickfixes=qf2]]
         if (s.length() == 2) System.out.println("two");
       }
       default -> System.out.println("many");

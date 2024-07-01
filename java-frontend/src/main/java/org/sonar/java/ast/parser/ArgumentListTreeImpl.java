@@ -19,6 +19,7 @@
  */
 package org.sonar.java.ast.parser;
 
+import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -50,6 +51,11 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implement
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
     return this;
+  }
+
+  @Override
+  public void accept(TreeVisitor visitor) {
+    visitor.visitArguments(this);
   }
 
   @Nullable
