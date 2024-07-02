@@ -1,8 +1,8 @@
 name: Releasability status
-'on':
-  check_suite:
-    types:
-      - completed
+
+on:
+  workflow_dispatch:
+
 jobs:
   update_releasability_status:
     runs-on: ubuntu-latest
