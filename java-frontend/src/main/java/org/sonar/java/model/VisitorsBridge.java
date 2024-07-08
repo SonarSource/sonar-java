@@ -176,6 +176,7 @@ public class VisitorsBridge {
    * @return True if all scanners successfully scan the file without contents. False otherwise.
    */
   public boolean scanWithoutParsing(InputFile inputFile) {
+    LOG.info(String.format("ScanWithoutParsing: %s", inputFile.path().toString()));
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
       PerformanceMeasure.Duration duration = PerformanceMeasure.start("ScanWithoutParsing");
       boolean allScansSucceeded = true;
@@ -184,7 +185,9 @@ public class VisitorsBridge {
         boolean exceptionIsBlownUp = false;
         PerformanceMeasure.Duration scannerDuration = PerformanceMeasure.start(scanner);
         try {
-          allScansSucceeded &= scanner.scanWithoutParsing(fileScannerContext);
+          boolean successForScanner = scanner.scanWithoutParsing(fileScannerContext);
+          LOG.info(String.format("\t%s -> %b", scanner.getClass().getCanonicalName(), successForScanner));
+          allScansSucceeded &= successForScanner;
         } catch (AnalysisException e) {
           // In the case where the IssuableSubscriptionVisitorsRunner throws an exception, the problem has already been
           // logged and the exception formatted.
