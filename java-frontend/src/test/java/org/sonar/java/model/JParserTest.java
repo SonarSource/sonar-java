@@ -43,7 +43,12 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
+import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -410,7 +415,7 @@ class JParserTest {
       class C {
         int m(Object o) {
           return switch (o) {
-            case Box(var _) -> 1;
+            case Box(var /*comment*/_) -> 1;
             default -> 0;
           };
         }
@@ -432,6 +437,7 @@ class JParserTest {
     VariableTree variableTree = patternTree.patternVariable();
     assertThat(variableTree.type().symbolType().fullyQualifiedName()).isEqualTo("int");
     assertThat(variableTree.simpleName().name()).isEqualTo("_");
+    assertThat(variableTree.simpleName().symbol()).isEqualTo(Symbols.unknownSymbol);
     assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
   }
 
@@ -492,6 +498,28 @@ class JParserTest {
     assertThat(variableTree.type().symbolType().fullyQualifiedName()).isEqualTo("int");
     assertThat(variableTree.simpleName().name()).isEqualTo("_");
     assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
+  }
+
+  @Test
+  void test_first_index_of_tokens_in_eclipse_ast() {
+    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
+    String unitName = "C.java";
+    String source = "class C { }";
+
+    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
+    JavaCore.setComplianceOptions(version, JavaCore.getOptions());
+    astParser.setResolveBindings(true);
+    astParser.setUnitName(unitName);
+    astParser.setSource(source.toCharArray());
+    CompilationUnit compilationUnit = (CompilationUnit) astParser.createAST(null);
+    TokenManager tokenManager = JParser.createTokenManager(version, unitName, source);
+
+    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNameIdentifier, TerminalTokens.TokenNameLBRACE)).isEqualTo(1);
+    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNameLBRACE, TerminalTokens.TokenNameIdentifier)).isEqualTo(1);
+    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNameRBRACE, TerminalTokens.TokenNameLBRACE)).isEqualTo(2);
+    assertThatThrownBy(() -> JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNamebreak, TerminalTokens.TokenNameconst))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Failed to find token 83 or 138 in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
   }
 
   @Test

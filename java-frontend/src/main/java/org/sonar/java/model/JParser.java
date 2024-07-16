@@ -160,6 +160,7 @@ import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.InitializerListTreeImpl;
@@ -302,7 +303,7 @@ public class JParser {
     converter.sema = new JSema(astNode.getAST());
     converter.sema.undefinedTypes.addAll(undefinedTypes);
     converter.compilationUnit = astNode;
-    converter.tokenManager = new TokenManager(lex(version, unitName, source.toCharArray()), source, new DefaultCodeFormatterOptions(new HashMap<>()));
+    converter.tokenManager = createTokenManager(version, unitName, source);
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;
@@ -312,6 +313,11 @@ public class JParser {
 
     setParents(tree);
     return tree;
+  }
+
+  @VisibleForTesting
+  static TokenManager createTokenManager(String version, String unitName, String source) {
+    return new TokenManager(lex(version, unitName, source.toCharArray()), source, new DefaultCodeFormatterOptions(new HashMap<>()));
   }
 
   private static void setParents(Tree node) {
@@ -331,7 +337,8 @@ public class JParser {
     return ((JavaTree) node).getChildren().iterator();
   }
 
-  private static List<Token> lex(String version, String unitName, char[] sourceChars) {
+  @VisibleForTesting
+  static List<Token> lex(String version, String unitName, char[] sourceChars) {
     List<Token> tokens = new ArrayList<>();
     Scanner scanner = new Scanner(
       true,
@@ -440,7 +447,8 @@ public class JParser {
    * @param tokenTypeCandidateB {@link TerminalTokens}
    * @return {@link TerminalTokens}
    */
-  private int firstIndexIn(ASTNode e, int tokenTypeCandidateA, int tokenTypeCandidateB) {
+  @VisibleForTesting
+  static int firstIndexIn(TokenManager tokenManager, ASTNode e, int tokenTypeCandidateA, int tokenTypeCandidateB) {
     int first = tokenManager.firstIndexIn(e, ANY_TOKEN);
     int last = tokenManager.lastIndexIn(e, ANY_TOKEN);
     for (int tokenIndex = first; tokenIndex <= last; tokenIndex++) {
@@ -449,7 +457,8 @@ public class JParser {
         return tokenIndex;
       }
     }
-    throw new IllegalStateException(ASTNode.nodeClassForType(e.getNodeType()).toString());
+    throw new IllegalStateException("Failed to find token " + tokenTypeCandidateA + " or " + tokenTypeCandidateB +
+      " in the tokens of a " + ASTNode.nodeClassForType(e.getNodeType()).getName());
   }
 
   /**
@@ -1287,7 +1296,7 @@ public class JParser {
   }
 
   private IdentifierTreeImpl createSimpleName(SimpleName e) {
-    int tokenIndex = firstIndexIn(e, TerminalTokens.TokenNameIdentifier, TerminalTokens.TokenNameUNDERSCORE);
+    int tokenIndex = firstIndexIn(tokenManager, e, TerminalTokens.TokenNameIdentifier, TerminalTokens.TokenNameUNDERSCORE);
     Token token = tokenManager.get(tokenIndex);
     boolean isUnnamedVariable = token.tokenType == TerminalTokens.TokenNameUNDERSCORE;
     IdentifierTreeImpl t = new IdentifierTreeImpl(createSyntaxToken(tokenIndex), isUnnamedVariable);

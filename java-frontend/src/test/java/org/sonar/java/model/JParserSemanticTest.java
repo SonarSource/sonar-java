@@ -1648,10 +1648,9 @@ class JParserSemanticTest {
 
   private CompilationUnit createAST(String source) {
     JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    ASTParser astParser = ASTParser.newParser(AST.JLS14);
-    Map<String, String> options = new HashMap<>();
-    options.put(JavaCore.COMPILER_COMPLIANCE, version.toString());
-    options.put(JavaCore.COMPILER_SOURCE, version.toString());
+    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
+    Map<String, String> options =  new HashMap<>(JavaCore.getOptions());
+    JavaCore.setComplianceOptions(version.effectiveJavaVersionAsString(), options);
     options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     astParser.setCompilerOptions(options);
     astParser.setEnvironment(
