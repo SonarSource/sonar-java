@@ -11,10 +11,6 @@ env:
   ARTIFACTORY_DEPLOY_REPO: sonarsource-public-qa
   ARTIFACTORY_ACCESS_TOKEN: VAULT[development/artifactory/token/${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-private-reader access_token]
   GITHUB_TOKEN: VAULT[development/github/token/licenses-ro token]
-  # burgr notification
-  BURGR_URL: VAULT[development/kv/data/burgr data.url]
-  BURGR_USERNAME: VAULT[development/kv/data/burgr data.cirrus_username]
-  BURGR_PASSWORD: VAULT[development/kv/data/burgr data.cirrus_password]
   GRADLE_ENTERPRISE_USERNAME: VAULT[development/team/sonarqube/kv/data/gradle-enterprise data.username]
   GRADLE_ENTERPRISE_PASSWORD: VAULT[development/team/sonarqube/kv/data/gradle-enterprise data.password]
   GRADLE_ENTERPRISE_URL: VAULT[development/team/sonarqube/kv/data/gradle-enterprise data.url]
@@ -293,8 +289,6 @@ promote_task:
     #promotion cloud function
     ARTIFACTORY_PROMOTE_ACCESS_TOKEN: VAULT[development/artifactory/token/${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-promoter access_token]
     GITHUB_TOKEN: VAULT[development/github/token/${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-promotion token]
-    #artifacts that will have downloadable links in burgr
-    ARTIFACTS: org.sonarsource.java:sonar-java-plugin:jar
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   script: cirrus_promote_maven
