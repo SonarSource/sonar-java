@@ -33,7 +33,7 @@ container_definition: &CONTAINER_DEFINITION
 
 container_with_docker_definition: &CONTAINER_WITH_DOCKER_DEFINITION
   <<: *CONTAINER_DEFINITION
-  dockerfile: .cirrus/Dockerfile.jdk17And22
+  dockerfile: .cirrus/Dockerfile.jdk17AndLatest
   builder_role: cirrus-builder
   builder_image: docker-builder-v*
   builder_instance_type: t3.small
