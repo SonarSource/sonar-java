@@ -1,7 +1,14 @@
 package checks.unused;
 
+import org.hibernate.validator.internal.engine.validationcontext.ValidatorScopedContext;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Queue;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class UnusedLocalVariableCheck {
@@ -10,6 +17,7 @@ class UnusedLocalVariableCheck {
 
   {
     int unused = 42; // Noncompliant
+    int _ = 42; // Compliant
     int used = 23; // Compliant
     System.out.println(used);
   }
@@ -38,6 +46,7 @@ class UnusedLocalVariableCheck {
     }
 
     try (Stream foo = Stream.of()) { // Compliant
+    } catch (Exception _) {
     }
 
     for (int a : new int[]{0, 1, 2}) { // Noncompliant
@@ -67,7 +76,7 @@ class UnusedLocalVariableCheck {
     int unreadLocalVariable2 = 1; // Noncompliant
     unreadLocalVariable2 = readLocalVariable2;
 
-    java.util.stream.Stream<Object> s = Stream.of();
+    Stream<Object> s = Stream.of();
     s.map(v -> "");
 
     try (Stream foo3 = Stream.of()) {
@@ -292,5 +301,59 @@ class UnusedLocalVariableCheck {
         System.out.println();
       }
     }
+  }
+
+  abstract class Ball {}
+  final class RedBall extends Ball {}
+  final class BlueBall extends Ball {}
+
+  record BallHolder<T extends  Ball>(List<T> balls) {
+    BallHolder(T... balls) {
+      this(Arrays.stream(balls).toList());
+    }
+  }
+
+  void unnamedVariablesUseCases(Queue<Ball> queue) {
+    int total = 0;
+    for(Object _ : queue) { // Compliant
+      total++;
+    }
+    System.out.println(total);
+
+    while(queue.size() > 2) {
+      var a = queue.remove();
+      var _ = queue.remove(); // Compliant
+      System.out.println(a);
+    }
+
+    try {
+      queue.remove();
+    } catch (Exception _) { // Compliant
+      System.out.println("Exception");
+    }
+
+    queue.stream()
+      .collect(Collectors.toMap(Function.identity(), _ -> 42)); // Compliant
+
+    var ball = queue.remove();
+    switch (ball) {
+      case RedBall _ -> System.out.println("Red"); // Compliant
+      case BlueBall _ -> System.out.println("Blue"); // Compliant
+      default -> throw new IllegalStateException("Unexpected value: " + ball);
+    }
+
+    BallHolder<? extends Ball> ballHolder = new BallHolder<>(queue.stream().toList());
+    switch (ballHolder) {
+//      case BallHolder(RedBall _) -> System.out.println("One Red"); // Compliant
+//      case BallHolder(RedBall _, RedBall _) -> System.out.println("Two Red"); // Compliant
+      case BallHolder(var _) -> System.out.println("Other"); // Compliant
+    }
+
+//    if(ballHolder instanceof BallHolder(RedBall _)) { // Compliant
+//      System.out.println("Red");
+//    }
+//    else if(ballHolder instanceof BallHolder(BlueBall b, _)) { // Compliant
+//      System.out.println("Blue: " + b);
+//    }
   }
 }
