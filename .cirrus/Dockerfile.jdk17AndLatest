@@ -38,7 +38,7 @@ RUN set -eux; \
         --strip-components 1 \
         --no-same-owner \
     ; \
-    rm -f /tmp/openjdk.tar.gz ${JAVA_HOME}/lib/src.zip; \
+    rm -f /tmp/openjdk.tar.gz ${JAVA_LATEST_HOME}/lib/src.zip; \
     # https://github.com/docker-library/openjdk/issues/331#issuecomment-498834472
     find "JAVA_LATEST_HOME/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
     ldconfig; \

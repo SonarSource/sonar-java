@@ -306,14 +306,13 @@ class UnusedLocalVariableCheck {
   abstract class Ball {}
   final class RedBall extends Ball {}
   final class BlueBall extends Ball {}
+  final class GreenBall extends Ball {}
 
-  record BallHolder<T extends  Ball>(List<T> balls) {
-    BallHolder(T... balls) {
-      this(Arrays.stream(balls).toList());
-    }
-  }
+  record BallHolder<T extends Ball>(T ball) { }
 
-  void unnamedVariablesUseCases(Queue<Ball> queue) {
+  record TwoBallHolders(BallHolder<? extends Ball> first, BallHolder<? extends Ball> second) { }
+
+  void unnamedVariablesUseCases(Queue<Ball> queue, BallHolder<? extends Ball> ballHolder, TwoBallHolders twoBallHolders) {
     int total = 0;
     for(Object _ : queue) { // Compliant
       total++;
@@ -342,18 +341,22 @@ class UnusedLocalVariableCheck {
       default -> throw new IllegalStateException("Unexpected value: " + ball);
     }
 
-    BallHolder<? extends Ball> ballHolder = new BallHolder<>(queue.stream().toList());
     switch (ballHolder) {
-//      case BallHolder(RedBall _) -> System.out.println("One Red"); // Compliant
-//      case BallHolder(RedBall _, RedBall _) -> System.out.println("Two Red"); // Compliant
+      case BallHolder(RedBall _) -> System.out.println("One Red"); // Compliant
+      case BallHolder(BlueBall _), BallHolder(GreenBall _) -> System.out.println("Blue or Green Ball"); // Compliant
       case BallHolder(var _) -> System.out.println("Other"); // Compliant
     }
 
-//    if(ballHolder instanceof BallHolder(RedBall _)) { // Compliant
-//      System.out.println("Red");
-//    }
-//    else if(ballHolder instanceof BallHolder(BlueBall b, _)) { // Compliant
-//      System.out.println("Blue: " + b);
-//    }
+    switch (ballHolder) {
+      case BallHolder(RedBall _), BallHolder(BlueBall _) -> System.out.println("Red or Blue Ball"); // Compliant
+      case BallHolder(_) -> System.out.println("Other Ball"); // Compliant
+    }
+
+    if(ballHolder instanceof BallHolder(RedBall _)) { // Compliant
+      System.out.println("BallHolder with RedBall");
+    }
+    else if(twoBallHolders instanceof TwoBallHolders(BallHolder h, _)) { // Compliant
+      System.out.println("TwoBallHolders with first BallHolder and second BallHolder not important");
+    }
   }
 }
