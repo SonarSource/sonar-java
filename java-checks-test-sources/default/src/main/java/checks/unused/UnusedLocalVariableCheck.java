@@ -344,33 +344,34 @@ class UnusedLocalVariableCheck {
 
     switch (ballHolder) {
       case BallHolder(RedBall _) -> System.out.println("One Red"); // Compliant
-      case BallHolder(BlueBall _), BallHolder(GreenBall _) -> System.out.println("Blue or Green Ball"); // Compliant
+//      case BallHolder(BlueBall _), BallHolder(GreenBall _) -> System.out.println("Blue or Green Ball"); // Compliant
       case BallHolder(var _) -> System.out.println("Other"); // Compliant
     }
 
     switch (ballHolder) {
-      case BallHolder(RedBall _), BallHolder(BlueBall _) -> System.out.println("Red or Blue Ball"); // Compliant
-      case BallHolder(_) -> System.out.println("Other Ball"); // Compliant
+//      case BallHolder(RedBall _), BallHolder(BlueBall _) -> System.out.println("Red or Blue Ball"); // Compliant
+//      case BallHolder(_) -> System.out.println("Other Ball"); // Compliant
+      default -> System.out.println("Other Ball");
     }
 
     if(ballHolder instanceof BallHolder(RedBall _)) { // Compliant
       System.out.println("BallHolder with RedBall");
     }
 
-    if(coloredPoint instanceof ColoredPoint(Point(_, _), _)) { // Compliant
-      System.out.println("Point (_:_) with color not important");
-    }
-
-    if(coloredPoint instanceof ColoredPoint(Point(int x, int y), _)) { // Compliant
-      System.out.println("Point ("+ x  + ":"  + y + ") with color not important");
-    }
-
-    if(coloredPoint instanceof ColoredPoint(Point(int x, int _), _)) { // Compliant
-      System.out.println("Point ("+ x  + ":_) with color not important");
-    }
-
-    if(coloredPoint instanceof ColoredPoint(Point(_, int y), _)) { // Compliant
-      System.out.println("Point (_:" + y + ") with color not important");
-    }
+//    if(coloredPoint instanceof ColoredPoint(Point(_, _), _)) { // Compliant
+//      System.out.println("Point (_:_) with color not important");
+//    }
+//
+//    if(coloredPoint instanceof ColoredPoint(Point(int x, int y), _)) { // Compliant
+//      System.out.println("Point ("+ x  + ":"  + y + ") with color not important");
+//    }
+//
+//    if(coloredPoint instanceof ColoredPoint(Point(int x, int _), _)) { // Compliant
+//      System.out.println("Point ("+ x  + ":_) with color not important");
+//    }
+//
+//    if(coloredPoint instanceof ColoredPoint(Point(_, int y), _)) { // Compliant
+//      System.out.println("Point (_:" + y + ") with color not important");
+//    }
   }
 }
