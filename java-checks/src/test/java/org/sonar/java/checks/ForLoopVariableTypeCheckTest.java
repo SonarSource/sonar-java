@@ -33,6 +33,7 @@ class ForLoopVariableTypeCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/ForLoopVariableTypeCheckSample.java"))
       .withCheck(new ForLoopVariableTypeCheck())
+      .withJavaVersion(22)
       .verifyIssues();
   }
 
