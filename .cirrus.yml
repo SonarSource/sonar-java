@@ -168,7 +168,7 @@ sanity_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j21-latest
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j22-latest
     cpu: 4
     memory: 2G
   maven_cache:
@@ -246,9 +246,9 @@ autoscan_task:
   eks_container:
     <<: *CONTAINER_WITH_DOCKER_DEFINITION
     # For now, this autoscan_task need to execute two mvn commands:
-    # * The build of java-checks-test-sources module which requires Java 21.
-    # * The tests using Orchestrator and SonarQube that, for now, fail to work using Java 21
-    # This is why we have a local Dockerfile that provide the 2 versions of Java, 17 and 21.
+    # * The build of java-checks-test-sources module which requires Java 22.
+    # * The tests using Orchestrator and SonarQube that, for now, fail to work using Java 22
+    # This is why we have a local Dockerfile that provide the 2 versions of Java, 17 and 22.
     cpu: 14
     memory: 6G
   maven_cache:

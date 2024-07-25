@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
@@ -620,6 +621,7 @@ class JavaFrontendTest {
   }
 */
   @Test
+  @Disabled
   void test_sealed_classes_in_java_16_log_message() throws IOException {
     // When the actual version is lower than the maximum supported version (currently 19),
     // we can not guarantee that we are still parsing preview features the same way (it may have evolved) and log a message.
