@@ -310,9 +310,10 @@ class UnusedLocalVariableCheck {
 
   record BallHolder<T extends Ball>(T ball) { }
 
-  record TwoBallHolders(BallHolder<? extends Ball> first, BallHolder<? extends Ball> second) { }
+  record Point(int x, int y) { }
+  record ColoredPoint(Point p, String color) { }
 
-  void unnamedVariablesUseCases(Queue<Ball> queue, BallHolder<? extends Ball> ballHolder, TwoBallHolders twoBallHolders) {
+  void unnamedVariablesUseCases(Queue<Ball> queue, BallHolder<? extends Ball> ballHolder, ColoredPoint coloredPoint) {
     int total = 0;
     for(Object _ : queue) { // Compliant
       total++;
@@ -355,8 +356,21 @@ class UnusedLocalVariableCheck {
     if(ballHolder instanceof BallHolder(RedBall _)) { // Compliant
       System.out.println("BallHolder with RedBall");
     }
-    else if(twoBallHolders instanceof TwoBallHolders(BallHolder h, _)) { // Compliant
-      System.out.println("TwoBallHolders with first BallHolder and second BallHolder not important");
+
+    if(coloredPoint instanceof ColoredPoint(Point(_, _), _)) { // Compliant
+      System.out.println("Point (_:_) with color not important");
+    }
+
+    if(coloredPoint instanceof ColoredPoint(Point(int x, int y), _)) { // Compliant
+      System.out.println("Point ("+ x  + ":"  + y + ") with color not important");
+    }
+
+    if(coloredPoint instanceof ColoredPoint(Point(int x, int _), _)) { // Compliant
+      System.out.println("Point ("+ x  + ":_) with color not important");
+    }
+
+    if(coloredPoint instanceof ColoredPoint(Point(_, int y), _)) { // Compliant
+      System.out.println("Point (_:" + y + ") with color not important");
     }
   }
 }
