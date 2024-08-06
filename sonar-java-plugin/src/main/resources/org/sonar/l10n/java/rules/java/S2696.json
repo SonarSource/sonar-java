@@ -20,7 +20,7 @@
   "sqKey": "S2696",
   "scope": "Main",
   "securityStandards": {
-    "STIG ASD 2023-06-08": [
+    "STIG ASD_V5R3": [
       "V-222567"
     ]
   },
