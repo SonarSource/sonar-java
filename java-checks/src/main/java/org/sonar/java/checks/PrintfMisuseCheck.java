@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -391,7 +392,8 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private void checkLineFeed(String formatString, MethodInvocationTree mit) {
-    if (formatString.contains("\\n")) {
+    Pattern pattern = Pattern.compile("(?<!\\\\)\\n", Pattern.CASE_INSENSITIVE);
+    if (pattern.matcher(formatString).find()) {
       reportIssue(mit, "%n should be used in place of \\n to produce the platform-specific line separator.");
     }
   }
