@@ -10,6 +10,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      statuses: write
     steps:
       - uses: SonarSource/gh-action_releasability/releasability-status@62361890d80f7bd59bdc1e43a3f9c17aa521f9cf # v2.0.1
         env:
