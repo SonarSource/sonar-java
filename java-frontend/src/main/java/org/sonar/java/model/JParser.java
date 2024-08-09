@@ -255,7 +255,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JParser {
 
-  private static final Logger LOG = LoggerFactory.getLogger(JParser.class);
+//  private static final Logger LOG = LoggerFactory.getLogger(JParser.class);
 
   private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> (error.getID() & IProblem.Syntax) != 0;
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
@@ -272,7 +272,7 @@ public class JParser {
     try {
       astNode = (CompilationUnit) astParser.createAST(null);
     } catch (Exception e) {
-      LOG.error("ECJ: Unable to parse file", e);
+//      LOG.error("ECJ: Unable to parse file", e);
       throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
     }
 

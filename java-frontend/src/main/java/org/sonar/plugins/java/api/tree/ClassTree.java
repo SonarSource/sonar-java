@@ -88,7 +88,13 @@ public interface ClassTree extends StatementTree {
   ModifiersTree modifiers();
 
   @Nullable
+  SyntaxToken extendsKeyword();
+
+  @Nullable
   TypeTree superClass();
+
+  @Nullable
+  SyntaxToken implementsKeyword();
 
   ListTree<TypeTree> superInterfaces();
 

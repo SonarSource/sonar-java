@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 final class JType implements Type, Type.ArrayType {
 
-  private static final Logger LOG = LoggerFactory.getLogger(JType.class);
+//  private static final Logger LOG = LoggerFactory.getLogger(JType.class);
 
   final JSema sema;
   final ITypeBinding typeBinding;
@@ -92,7 +92,7 @@ final class JType implements Type, Type.ArrayType {
       return left.isSubTypeCompatible(right);
     } catch (NullPointerException ex) {
       // In rare circumstances, ECJ may produce a NPE while calling isSubTypeCompatible(), see SONARJAVA-4390
-      LOG.debug("NullPointerException while resolving isSubTypeCompatible()", ex);
+//      LOG.debug("NullPointerException while resolving isSubTypeCompatible()", ex);
       return false;
     }
   }

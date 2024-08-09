@@ -54,7 +54,7 @@ public abstract class JParserConfig {
 
   public static final JavaVersion MAXIMUM_SUPPORTED_JAVA_VERSION = new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED, true);
 
-  private static final Logger LOG = LoggerFactory.getLogger(JParserConfig.class);
+//  private static final Logger LOG = LoggerFactory.getLogger(JParserConfig.class);
 
   private static final String MAXIMUM_ECJ_WARNINGS = "42000";
   private static final Set<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));
@@ -88,7 +88,7 @@ public abstract class JParserConfig {
 
     public JParserConfig create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
       if (shouldIgnoreUnnamedModuleForSplitPackage) {
-        LOG.info("The Java analyzer will ignore the unnamed module for split packages.");
+//        LOG.info("The Java analyzer will ignore the unnamed module for split packages.");
       }
       return supplier.apply(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
     }
@@ -202,7 +202,7 @@ public abstract class JParserConfig {
       } catch (OperationCanceledException e) {
         throw e;
       } catch (RuntimeException e) {
-        LOG.warn("Unexpected {}: {}", e.getClass().getSimpleName(), e.getMessage());
+//        LOG.warn("Unexpected {}: {}", e.getClass().getSimpleName(), e.getMessage());
         if (!notYetAnalyzedFiles.isEmpty()) {
           fallbackToFileByFileMode(notYetAnalyzedFiles.stream().toList(), isCanceled, action);
         }
@@ -215,7 +215,7 @@ public abstract class JParserConfig {
     }
 
     private void fallbackToFileByFileMode(List<InputFile> inputFiles, BooleanSupplier isCanceled, BiConsumer<InputFile, Result> action) {
-      LOG.warn("Fallback to file by file analysis for {} files", inputFiles.size());
+//      LOG.warn("Fallback to file by file analysis for {} files", inputFiles.size());
       for (InputFile inputFile : inputFiles) {
         if (isCanceled.getAsBoolean()) {
           break;

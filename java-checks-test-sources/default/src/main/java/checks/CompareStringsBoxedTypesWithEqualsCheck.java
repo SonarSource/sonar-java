@@ -12,70 +12,62 @@ class CompareStringsBoxedTypesWithEqualsCheck {
     int myInt2 = 2;
 
     void offerQuickFixes() {
+
       if (str1 == str2) {} // Noncompliant {{Strings and Boxed types should be compared using "equals()".}} [[quickfixes=qf0]]
 //             ^^
       // fix@qf0 {{Replace with boxed comparison}}
-      // edit@qf0 [[sc=23;ec=23]]{{)}}
-      // edit@qf0 [[sc=15;ec=19]]{{, }}
-      // edit@qf0 [[sc=11;ec=11]]{{Objects.equals(}}
+      // edit@qf0 [[sc=11;ec=23]]{{Objects.equals(str1, str2)}}
       // edit@qf0 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
+
       if (str1 == "blue") {} // Noncompliant [[quickfixes=qf1]]
 //             ^^
       // fix@qf1 {{Replace with boxed comparison}}
-      // edit@qf1 [[sc=15;ec=25]]{{)}}
-      // edit@qf1 [[sc=11;ec=11]]{{"blue".equals(}}
+      // edit@qf1 [[sc=11;ec=25]]{{"blue".equals(str1)}}
+
       if ("blue" == str1) {} // Noncompliant [[quickfixes=qf2]]
 //               ^^
       // fix@qf2 {{Replace with boxed comparison}}
-      // edit@qf2 [[sc=25;ec=25]]{{)}}
-      // edit@qf2 [[sc=17;ec=21]]{{.equals(}}
+      // edit@qf2 [[sc=11;ec=25]]{{"blue".equals(str1)}}
+
       if (str1 == "BLUE".toLowerCase(Locale.ROOT)) {} // Noncompliant [[quickfixes=qf3]]
 //             ^^
       // fix@qf3 {{Replace with boxed comparison}}
-      // edit@qf3 [[sc=50;ec=50]]{{)}}
-      // edit@qf3 [[sc=15;ec=19]]{{, }}
-      // edit@qf3 [[sc=11;ec=11]]{{Objects.equals(}}
+      // edit@qf3 [[sc=11;ec=50]]{{Objects.equals(str1, "BLUE".toLowerCase(Locale.ROOT))}}
       // edit@qf3 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
+
       if ("BLUE".toLowerCase(Locale.ROOT) == str1) {} // Noncompliant [[quickfixes=qf4]]
 //                                        ^^
       // fix@qf4 {{Replace with boxed comparison}}
-      // edit@qf4 [[sc=50;ec=50]]{{)}}
-      // edit@qf4 [[sc=42;ec=46]]{{, }}
-      // edit@qf4 [[sc=11;ec=11]]{{Objects.equals(}}
+      // edit@qf4 [[sc=11;ec=50]]{{Objects.equals("BLUE".toLowerCase(Locale.ROOT), str1)}}
       // edit@qf4 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
 
       /* -- NEGATION --  */
       if (str1 != str2) {} // Noncompliant [[quickfixes=qf100]]
 //             ^^
       // fix@qf100 {{Replace with boxed comparison}}
-      // edit@qf100 [[sc=23;ec=23]]{{)}}
-      // edit@qf100 [[sc=15;ec=19]]{{, }}
-      // edit@qf100 [[sc=11;ec=11]]{{!Objects.equals(}}
+      // edit@qf100 [[sc=11;ec=23]]{{!Objects.equals(str1, str2)}}
       // edit@qf100 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
+
       if (str1 != "blue") {} // Noncompliant [[quickfixes=qf101]]
 //             ^^
       // fix@qf101 {{Replace with boxed comparison}}
-      // edit@qf101 [[sc=15;ec=25]]{{)}}
-      // edit@qf101 [[sc=11;ec=11]]{{!"blue".equals(}}
+      // edit@qf101 [[sc=11;ec=25]]{{!"blue".equals(str1)}}
+
       if ("blue" != str1) {} // Noncompliant [[quickfixes=qf102]]
 //               ^^
       // fix@qf102 {{Replace with boxed comparison}}
-      // edit@qf102 [[sc=25;ec=25]]{{)}}
-      // edit@qf102 [[sc=17;ec=21]]{{.equals(}}
-      // edit@qf102 [[sc=11;ec=11]]{{!}}
+      // edit@qf102 [[sc=11;ec=25]]{{!"blue".equals(str1)}}
+
       if (str1 != "BLUE".toLowerCase(Locale.ROOT)) {} // Noncompliant [[quickfixes=qf103]]
 //             ^^
       // fix@qf103 {{Replace with boxed comparison}}
-      // edit@qf103 [[sc=50;ec=50]]{{)}}
-      // edit@qf103 [[sc=15;ec=19]]{{, }}
-      // edit@qf103 [[sc=11;ec=11]]{{!Objects.equals(}}
+      // edit@qf103 [[sc=11;ec=50]]{{!Objects.equals(str1, "BLUE".toLowerCase(Locale.ROOT))}}
       // edit@qf103 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
+
       if ("BLUE".toLowerCase(Locale.ROOT) != str1) {} // Noncompliant [[quickfixes=qf104]]
 //                                        ^^
       // fix@qf104 {{Replace with boxed comparison}}
-      // edit@qf104 [[sc=50;ec=50]]{{)}}
-      // edit@qf104 [[sc=42;ec=46]]{{, }}
-      // edit@qf104 [[sc=11;ec=11]]{{!Objects.equals(}}
+      // edit@qf104 [[sc=11;ec=50]]{{!Objects.equals("BLUE".toLowerCase(Locale.ROOT), str1)}}
       // edit@qf104 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
     }
 

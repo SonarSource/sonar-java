@@ -19,16 +19,23 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.prettyprint.FileConfig;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
-import java.util.List;
+import static org.sonar.java.prettyprint.PrintableNodesCreation.whileLoop;
 
 @Rule(key = "S1264")
 public class ForLoopUsedAsWhileLoopCheck extends IssuableSubscriptionVisitor {
+
+  private static final String ISSUE_MESSAGE = "Replace this \"for\" loop with a \"while\" loop.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -39,7 +46,20 @@ public class ForLoopUsedAsWhileLoopCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ForStatementTree forStatementTree = (ForStatementTree) tree;
     if (forStatementTree.initializer().isEmpty() && forStatementTree.update().isEmpty() && forStatementTree.condition() != null) {
-      context.reportIssue(this, forStatementTree.forKeyword(), "Replace this \"for\" loop with a \"while\" loop.");
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(forStatementTree.firstToken())
+        .withMessage(ISSUE_MESSAGE)
+        .withQuickFix(() -> computeQuickfix(forStatementTree))
+        .report();
     }
   }
+
+  private JavaQuickFix computeQuickfix(ForStatementTree oldForLoop){
+    var newWhileLoop = whileLoop(oldForLoop.condition(), oldForLoop.statement());
+    return JavaQuickFix.newQuickFix(ISSUE_MESSAGE)
+      .addTextEdit(JavaTextEdit.replaceTree(oldForLoop, newWhileLoop, FileConfig.DEFAULT_FILE_CONFIG))
+      .build();
+  }
+
 }

@@ -401,7 +401,7 @@ public class PatternMatchUsingIfCheckSample {
   }
 
   // fix@qf8 {{Replace the chain of if/else with a switch expression.}}
-  // edit@qf8 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (x) {\n      case 3*3 -> {\n        System.out.println("one");\n      }\n      case 2 -> {\n        System.out.println("two");\n      }\n      default -> {\n        System.out.println("??");\n      }\n    }}}
+  // edit@qf8 [[sl=+0;el=+6;sc=5;ec=6]] {{switch (x) {\n      case 3 * 3 -> {\n        System.out.println("one");\n      }\n      case 2 -> {\n        System.out.println("two");\n      }\n      default -> {\n        System.out.println("??");\n      }\n    }}}
   void compatingWithSillyMath(int x) {
     // Noncompliant@+1 [[sl=+1;el=+1;sc=5;ec=7;quickfixes=qf8]]
     if (x == 3*3) {
