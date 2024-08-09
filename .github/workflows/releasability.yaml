@@ -10,7 +10,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-      statuses: write
     steps:
       - uses: SonarSource/gh-action_releasability@v2
         id: releasability-checks
