@@ -31,12 +31,14 @@ jobs:
           ARTIFACTORY_PRIVATE_USERNAME: vault-${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_ROLE }}
           ARTIFACTORY_PRIVATE_PASSWORD: ${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_PASSWORD }}
           ARTIFACTORY_URL: ${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_URL }}
-          REPO: sonarsource-private-builds
+          REPO: sonarsource-public-builds
+          GROUP_ID: org.sonarsource.java
+          ARTIFACT_ID: sonar-java-plugin
         run: |
           if [[ -z "${{ github.event.inputs.version }}" ]]; then
             echo "version not provided, pulling latest version from $REPO."
             echo LATEST_VERSION=$(curl -s -u ${ARTIFACTORY_PRIVATE_USERNAME}:${ARTIFACTORY_PRIVATE_PASSWORD} \
-            "${ARTIFACTORY_URL}/api/search/latestVersion?g=com.sonarsource.diffval&a=diff-app&repos=${REPO}") >> "$GITHUB_OUTPUT"
+            "${ARTIFACTORY_URL}/api/search/latestVersion?g=${GROUP_ID}&a=${ARTIFACT_ID}&repos=${REPO}") >> "$GITHUB_OUTPUT"
           else
             echo "version is provided, using its value: ${{ github.event.inputs.version }}."
             echo "LATEST_VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
