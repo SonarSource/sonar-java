@@ -46,6 +46,17 @@ class JavaSECheckRegistrarTest {
 
   private static final ActiveRules activeRules = activeRules(getRuleKeysWithRepo());
 
+  private static final List<String> rulesNotActiveByDefault = List.of(
+    "S2259",
+    "S2583",
+    "S2589",
+    "S3518",
+    "S3546",
+    "S3655",
+    "S3959",
+    "S6374"
+  );
+
   @Test
   void register_rules() {
     CheckRegistrar registrar = new JavaSECheckRegistrar(null);
@@ -80,7 +91,7 @@ class JavaSECheckRegistrarTest {
     assertThat(rules).hasSize(23);
 
     var activeByDefault = rules.stream()
-      .filter(k -> !"S6374".equals(k.key()) && !"S3546".equals(k.key()))
+      .filter(k -> !rulesNotActiveByDefault.contains(k.key()))
       .toList();
     var allRules = rules.stream().map(RulesDefinition.Rule::key).toList();
 
