@@ -7,17 +7,12 @@
     },
     "attribute": "LOGICAL"
   },
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5 min"
   },
-  "tags": [
-    "cwe",
-    "denial-of-service",
-    "cert",
-    "symbolic-execution"
-  ],
+  "tags": [],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-3518",
   "sqKey": "S3518",
@@ -30,7 +25,7 @@
     "CWE": [
       369
     ],
-    "STIG ASD 2023-06-08": [
+    "STIG ASD_V5R3": [
       "V-222612"
     ]
   },
