@@ -7,15 +7,12 @@
     },
     "attribute": "COMPLETE"
   },
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
-  "tags": [
-    "cwe",
-    "symbolic-execution"
-  ],
+  "tags": [],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-3655",
   "sqKey": "S3655",
