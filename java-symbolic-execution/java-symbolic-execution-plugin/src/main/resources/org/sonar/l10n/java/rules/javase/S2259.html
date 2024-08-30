@@ -1,4 +1,6 @@
-<p>This rule is deprecated; use {rule:java:S6555} instead.</p>
+<p>This rule is deprecated, and will eventually be removed.</p>
+<p><em>We are deprecating our legacy symbolic execution engine in favor of our more advanced commercial engine. The legacy engine will remain Open
+Source for the community as a separate plugin and will receive no further updates by SonarSource.</em></p>
 <h2>Why is this an issue?</h2>
 <p>A reference to <code>null</code> should never be dereferenced/accessed. Doing so will cause a <code>NullPointerException</code> to be thrown. At
 best, such an exception will cause abrupt program termination. At worst, it could expose debugging information that would be useful to an attacker, or
