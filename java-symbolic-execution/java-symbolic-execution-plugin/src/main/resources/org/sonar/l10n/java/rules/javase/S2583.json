@@ -7,12 +7,19 @@
     },
     "attribute": "LOGICAL"
   },
-  "status": "deprecated",
+  "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "tags": [],
+  "tags": [
+    "cwe",
+    "cert",
+    "unused",
+    "suspicious",
+    "pitfall",
+    "symbolic-execution"
+  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2583",
   "sqKey": "S2583",
