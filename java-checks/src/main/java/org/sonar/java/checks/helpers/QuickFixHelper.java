@@ -229,6 +229,16 @@ public class QuickFixHelper {
     return sb.toString();
   }
 
+  public static String contentOfTreeTokens(Tree tree, JavaFileScannerContext context) {
+    StringBuilder sb = new StringBuilder();
+    JavaTree javaTree = (JavaTree) tree;
+    for (SyntaxToken st : javaTree.allTokens()) {
+      sb.append(contentForRange(st, st, context));
+    }
+    return sb.toString();
+  }
+
+
   /**
    * Check if a given type "requiredType" is available in the current "context". Imports are cached to not have to recompute order all the time.
    * A new import is required if the given type:
