@@ -107,6 +107,9 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
     if (streamType.isRawType()) {
       return true;
     }
+    if(collectMethodInvocation.symbolType().typeArguments().isEmpty()){
+      return false;
+    }
     Type collectArgType = collectMethodInvocation.symbolType().typeArguments().get(0);
     Type streamArgType = streamType.typeArguments().get(0);
     return collectArgType.is(streamArgType.fullyQualifiedName());
