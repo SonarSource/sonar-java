@@ -25,6 +25,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -66,6 +67,18 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
 
   private boolean isValidLoggerName(String name) {
     return pattern.matcher(name).matches();
+  }
+
+  @Override
+  public void visitClass(ClassTree tree) {
+    // https://sonarsource.atlassian.net/browse/SONARJAVA-5089
+    // The rule S1312 should not report on interfaces since fields cannot be private and static final is redundant.
+    if (tree.kind().equals(Tree.Kind.INTERFACE)) {
+      // if an interface, then skip this check
+      return;
+    }
+    // else continue to check for issues
+    super.visitClass(tree);
   }
 
   @Override
