@@ -32,18 +32,16 @@ public class Selector<C, T> {
 
   private final Class<T> selectorType;
   private final Selector<C, ?> root;
-  private final Selector<C, ?> parent;
   protected final List<BiConsumer<C, T>> visitors = new ArrayList<>();
 
   public Selector(Class<T> selectorType, Selector<C, ?> parent) {
     this.selectorType = selectorType;
     this.root = parent != null ? parent.root : this;
-    this.parent = parent;
   }
 
-  public Selector<C, T> apply(C ctx, Tree tree) {
+  public C apply(C ctx, Tree tree) {
     root.rootApply(ctx, tree);
-    return this;
+    return ctx;
   }
 
   private void rootApply(C ctx, Tree tree) {

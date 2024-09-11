@@ -128,6 +128,10 @@ public record APIGenerator(
           this.visitors.add(subTreeVisitor::visit);
           return query;
         }
+
+        public Query<C> subtreesExcluding(java.util.function.BiPredicate<C, Tree> visitChildren) {
+          return subtreesIf((ctx, tree) -> !visitChildren.test(ctx, tree));
+        }
       }
       """
       .replace("${srcPackageName}", srcPackageName)
