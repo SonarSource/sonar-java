@@ -35,6 +35,20 @@ class VisibleForTestingUsageCheckTest {
   }
 
   @Test
+  void test_protected() {
+    // no issues
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/VisibleForTestingProtectedUsageCheck/Service.java"))
+      .withCheck(new VisibleForTestingUsageCheck())
+      .verifyNoIssues();
+    // issues
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/VisibleForTestingProtectedUsageCheck/IssueService.java"))
+      .withCheck(new VisibleForTestingUsageCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void test_no_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
