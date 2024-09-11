@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -107,12 +108,8 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
     if (streamType.isRawType()) {
       return true;
     }
-    if(collectMethodInvocation.symbolType().typeArguments().isEmpty()){
-      return false;
-    }
-    Type collectArgType = collectMethodInvocation.symbolType().typeArguments().get(0);
-    Type streamArgType = streamType.typeArguments().get(0);
-    return collectArgType.is(streamArgType.fullyQualifiedName());
+    List<Type> typeArguments = collectMethodInvocation.symbolType().typeArguments();
+    return !typeArguments.isEmpty() && typeArguments.get(0).is(streamType.typeArguments().get(0).fullyQualifiedName());
   }
 
   private void reportIssue(MethodInvocationTree collector, boolean mutable) {
