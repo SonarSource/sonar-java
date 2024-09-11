@@ -145,7 +145,7 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
     return sb.toString();
   }
 
-  private boolean isTypeFragmented(VariableTree variableTree) {
+  private static boolean isTypeFragmented(VariableTree variableTree) {
     var typeTokens = ((JavaTree) variableTree.type()).allTokens();
     for (var token : typeTokens) {
       if (token.range().end().isAfter(variableTree.simpleName().identifierToken().range().start())) {
