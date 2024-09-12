@@ -32,11 +32,13 @@ import org.mockito.Mockito;
 import org.sonar.java.Preconditions;
 import org.sonar.java.checks.helpers.QuickFixHelper.ImportSupplier;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InferedTypeTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -197,6 +199,29 @@ class QuickFixHelperTest {
 
     // start of file
     assertThat(QuickFixHelper.previousToken(a.declarationKeyword())).isEqualTo(a.declarationKeyword());
+  }
+
+  @Test
+  void addParenthesisIfRequired(){
+    CompilationUnitTree cut = JParserTestUtils.parse("class A { void foo(boolean x, boolean y) { " +
+      "if(x && y){} " +
+      "if(x || y){} " +
+      "if(x = 0){}" +
+      "} }");
+    ClassTree a = (ClassTree) cut.types().get(0);
+    MethodTree foo = (MethodTree) a.members().get(0);
+    IfStatementTree ifWithAND = (IfStatementTree) foo.block().body().get(0);
+    var builder = JavaQuickFix.newQuickFix("");
+    QuickFixHelper.addParenthesisIfRequired(builder, ifWithAND.condition());
+    assertThat(builder.build().getTextEdits()).isEmpty();
+
+    IfStatementTree ifWithOR = (IfStatementTree) foo.block().body().get(1);
+    QuickFixHelper.addParenthesisIfRequired(builder, ifWithOR.condition());
+    assertThat(builder.build().getTextEdits()).hasSize(2);
+
+    IfStatementTree ifWithAssignment = (IfStatementTree) foo.block().body().get(2);
+    QuickFixHelper.addParenthesisIfRequired(builder, ifWithAssignment.condition());
+    assertThat(builder.build().getTextEdits()).hasSize(4);
   }
 
   @Test
