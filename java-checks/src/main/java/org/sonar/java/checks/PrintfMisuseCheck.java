@@ -406,7 +406,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     while (index >= 0 && formatString.charAt(index) == '\\') {
       index--;
     }
-    return ((lastIndex - index) & 1) != 0;
+    return (lastIndex - index) % 2 != 0;
   }
 
   private static boolean usesMessageFormat(String formatString, List<String> params) {
