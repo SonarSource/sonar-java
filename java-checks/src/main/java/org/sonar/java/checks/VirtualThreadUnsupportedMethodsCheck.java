@@ -21,6 +21,8 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
@@ -36,6 +38,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6901")
 public class VirtualThreadUnsupportedMethodsCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
+
+  private static final Logger LOG = LoggerFactory.getLogger(VirtualThreadUnsupportedMethodsCheck.class);
 
   private static final String ISSUE_MESSAGE = "Method '%s' is not supported on virtual threads.";
   private static final String SECONDARY_LOCATION_ISSUE_MESSAGE = "Virtual thread initialized here.";
@@ -69,15 +73,25 @@ public class VirtualThreadUnsupportedMethodsCheck extends AbstractMethodDetectio
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    var memberSelect = (MemberSelectExpressionTree) mit.methodSelect();
-    var expression = memberSelect.expression();
-    var virtualThreadExpression = getVirtualThreadInitializer(expression);
-    if (virtualThreadExpression.isPresent()) {
-      reportIssue(
-        memberSelect.identifier(),
-        String.format(ISSUE_MESSAGE, memberSelect.identifier().name()),
-        List.of(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, ExpressionUtils.methodName(virtualThreadExpression.get()))),
-        null);
+    // https://sonarsource.atlassian.net/browse/SONARJAVA-5059
+    // S6901: ClassCastException when certain thread-related methods are called on `this`
+    // java.lang.ClassCastException: class org.sonar.java.model.expression.IdentifierTreeImpl cannot be cast
+    if (mit.methodSelect() instanceof MemberSelectExpressionTree memberSelect) {
+      var expression = memberSelect.expression();
+      var virtualThreadExpression = getVirtualThreadInitializer(expression);
+      if (virtualThreadExpression.isPresent()) {
+        reportIssue(
+          memberSelect.identifier(),
+          String.format(ISSUE_MESSAGE, memberSelect.identifier().name()),
+          List.of(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE,
+            ExpressionUtils.methodName(virtualThreadExpression.get()))),
+          null);
+      }
+    }
+    else {
+      LOG.trace("VirtualThreadUnsupportedMethodsCheck.onMethodInvocationFound(): " +
+          "mit.methodSelect() returns unsupported class instance: {}",
+        mit.methodSelect().getClass());
     }
   }
 
