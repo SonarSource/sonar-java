@@ -403,7 +403,9 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   private static boolean isOddNumberOfEscapeChars(String formatString, int lastIndex) {
     var index = lastIndex-1;
-    while (index >= 0 && formatString.charAt(index) == '\\') index--;
+    while (index >= 0 && formatString.charAt(index) == '\\') {
+      index--;
+    }
     return ((lastIndex - index) & 1) != 0;
   }
 
