@@ -411,6 +411,42 @@ class JParserTest {
   }
 
   @Test
+  void test_line_continuation_in_text_blocks() {
+    CompilationUnitTree tree = parse(new File("src/test/files/metrics/TextBlock.java"));
+    var tokens = tokens((JavaTree) tree);
+    assertThat(tokens)
+      .extracting(token -> token.line() + "," + token.column() + ": " + token.text())
+      .containsExactly(
+        "1,0: class",
+        "1,6: TextBlock",
+        "1,16: {",
+        "2,2: String",
+        "2,9: a",
+        "2,11: =",
+        "2,13: \"\"\"\n    Hello,\\\n    world!\n    \"\"\"",
+        "5,7: ;",
+        "6,2: String",
+        "6,9: b",
+        "6,11: =",
+        "6,13: \"\"\"\n    Goodbye,\\\n    cruel \\\n    world!\n    \"\"\"",
+        "10,7: ;",
+        "11,0: }",
+        "11,1: ");
+  }
+
+  public static List<InternalSyntaxToken> tokens(JavaTree tree) {
+    var tokens = new ArrayList<InternalSyntaxToken>();
+    if (tree instanceof InternalSyntaxToken) {
+      tokens.add((InternalSyntaxToken) tree);
+    } else {
+      for (var child : tree.getChildren()) {
+        tokens.addAll(tokens((JavaTree) child));
+      }
+    }
+    return tokens;
+  }
+
+  @Test
   void failing_batch_mode_with_empty_file_list_should_not_continue_file_by_file() throws Exception {
     List<InputFile> inputFiles = List.of();
     List<String> trace = new ArrayList<>();
