@@ -20,22 +20,35 @@
 package org.sonar.java.model;
 
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LineColumnConverter {
 
-  private final int[] lineStartIndexes;
+  private static final Pattern LINE_SEPARATOR_PATTERN = Pattern.compile("\r\n?|\n");
+
+  private int[] lineStartIndexes = new int[64];
+  private int lineStartIndexesLength = 0;
 
   public LineColumnConverter(String source) {
-    String[] lines = source.split("(?<=\r\n|\r|\n)", -1);
-    lineStartIndexes = new int[lines.length + 1];
-    for (int i = 0; i < lines.length; i++) {
-      lineStartIndexes[i] = i == 0 ? 0 : (lineStartIndexes[i - 1] + lines[i - 1].length());
+    Matcher matcher = LINE_SEPARATOR_PATTERN.matcher(source);
+    addLineStartIndex(0);
+    while (matcher.find()) {
+      addLineStartIndex(matcher.end());
     }
-    lineStartIndexes[lines.length] = Integer.MAX_VALUE;
+    addLineStartIndex(Integer.MAX_VALUE);
+  }
+
+  private void addLineStartIndex(int index) {
+    if (lineStartIndexesLength == lineStartIndexes.length) {
+      lineStartIndexes = Arrays.copyOf(lineStartIndexes, lineStartIndexes.length * 2);
+    }
+    lineStartIndexes[lineStartIndexesLength] = index;
+    lineStartIndexesLength++;
   }
 
   public Pos toPos(int absolutSourcePosition) {
-    int searchResult = Arrays.binarySearch(lineStartIndexes, absolutSourcePosition);
+    int searchResult = Arrays.binarySearch(lineStartIndexes, 0, lineStartIndexesLength, absolutSourcePosition);
     if (searchResult < 0) {
       return new Pos(-searchResult - 1, absolutSourcePosition - lineStartIndexes[-searchResult - 2]);
     } else  {
@@ -45,4 +58,5 @@ public class LineColumnConverter {
 
   public record Pos(int line, int columnOffset) {
   }
+
 }
