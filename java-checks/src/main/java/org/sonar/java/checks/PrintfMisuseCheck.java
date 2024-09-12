@@ -391,9 +391,22 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private void checkLineFeed(String formatString, MethodInvocationTree mit) {
-    if (formatString.contains("\\n")) {
-      reportIssue(mit, "%n should be used in place of \\n to produce the platform-specific line separator.");
+    var index = formatString.indexOf("\\n");
+    while (index != -1) {
+      if (isOddNumberOfEscapeChars(formatString, index)) {
+        reportIssue(mit, "%n should be used in place of \\n to produce the platform-specific line separator.");
+        return;
+      }
+      index = formatString.indexOf("\\n", index+2);
     }
+  }
+
+  private static boolean isOddNumberOfEscapeChars(String formatString, int lastIndex) {
+    var index = lastIndex-1;
+    while (index >= 0 && formatString.charAt(index) == '\\') {
+      index--;
+    }
+    return (lastIndex - index) % 2 != 0;
   }
 
   private static boolean usesMessageFormat(String formatString, List<String> params) {
