@@ -71,16 +71,12 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isVisibleForTestingAnnotation(AnnotationInstance annotationInstance) {
-    return "VisibleForTesting".equals(annotationInstance.symbol().name()) && !isOtherwiseProtected(annotationInstance);
+    return "VisibleForTesting".equals(annotationInstance.symbol().name())
+      && !isOtherwiseProtected(annotationInstance);
   }
 
-  /**
-   * SONARJAVA-5115 Added for FP Check in S5803: issue should not be raised when
-   * (otherwise = androidx.annotation.VisibleForTesting.VisibleForTesting.PROTECTED) is specified
-   *
-   * @param annotationInstance instance of annotation for access to its values
-   * @return true if (otherwise = VisibleForTesting.PROTECTED) found, else false
-   */
+  // Condition added for FP Check in S5803 => issue should not be raised when
+  // (otherwise = androidx.annotation.VisibleForTesting.VisibleForTesting.PROTECTED) is specified
   private static boolean isOtherwiseProtected(AnnotationInstance annotationInstance) {
     List<SymbolMetadata.AnnotationValue> values = annotationInstance.values();
     for (SymbolMetadata.AnnotationValue value : values) {
