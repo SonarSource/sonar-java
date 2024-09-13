@@ -26,7 +26,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -146,13 +145,8 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isTypeFragmented(VariableTree variableTree) {
-    var typeTokens = ((JavaTree) variableTree.type()).allTokens();
-    for (var token : typeTokens) {
-      if (token.range().end().isAfter(variableTree.simpleName().identifierToken().range().start())) {
-        return true;
-      }
-    }
-    return false;
+    var lastToken = variableTree.type().lastToken();
+    return lastToken.range().end().isAfter(variableTree.simpleName().identifierToken().range().start());
   }
 
   private String indentationOfLine(Tree tree) {
