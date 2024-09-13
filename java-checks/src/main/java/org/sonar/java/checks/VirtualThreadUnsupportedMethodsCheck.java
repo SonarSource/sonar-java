@@ -73,9 +73,7 @@ public class VirtualThreadUnsupportedMethodsCheck extends AbstractMethodDetectio
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    // https://sonarsource.atlassian.net/browse/SONARJAVA-5059
-    // S6901: ClassCastException when certain thread-related methods are called on `this`
-    // java.lang.ClassCastException: class org.sonar.java.model.expression.IdentifierTreeImpl cannot be cast
+    // instance can be IdentifierTreeImpl, for example, so guard against class cast exception
     if (mit.methodSelect() instanceof MemberSelectExpressionTree memberSelect) {
       var expression = memberSelect.expression();
       var virtualThreadExpression = getVirtualThreadInitializer(expression);

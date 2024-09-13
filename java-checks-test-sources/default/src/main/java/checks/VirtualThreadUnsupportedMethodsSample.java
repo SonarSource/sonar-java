@@ -93,4 +93,21 @@ public class VirtualThreadUnsupportedMethodsSample extends VirtualThreadUnsuppor
     outerVirtualThread.setDaemon(true); // False negative
   }
 
+  class IdentifierTreeImplTest {
+
+    SampleThread thread = new SampleThread();
+
+    public void test() {
+      thread.start();
+    }
+
+    private class SampleThread extends Thread {
+      @Override
+      public void run() {
+        setDaemon(true); // generates => mit.methodSelect() instanceof IdentifierTreeImpl
+      }
+    }
+
+  }
+
 }
