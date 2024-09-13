@@ -71,13 +71,10 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
 
   @Override
   public void visitClass(ClassTree tree) {
-    // https://sonarsource.atlassian.net/browse/SONARJAVA-5089
-    // The rule S1312 should not report on interfaces since fields cannot be private and static final is redundant.
+    // don't report on interfaces, since fields cannot be private and static final is redundant
     if (tree.kind().equals(Tree.Kind.INTERFACE)) {
-      // if an interface, then skip this check
       return;
     }
-    // else continue to check for issues
     super.visitClass(tree);
   }
 
