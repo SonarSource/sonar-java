@@ -94,6 +94,12 @@ import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 class JavaTreeModelTest {
 
   @Test
+  void test_all_tokens() {
+    JavaTree tree = (JavaTree) JParserTestUtils.parse("class A { void m() { int i = 0; } }");
+    assertThat(tree.allTokens()).hasSize(16);
+  }
+
+  @Test
   void line_of_tree() {
     CompilationUnitTree empty = compilationUnit("");
     assertThat(((JavaTree) empty).getLine()).isEqualTo(1);
