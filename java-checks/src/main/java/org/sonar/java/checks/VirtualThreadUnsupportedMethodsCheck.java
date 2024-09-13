@@ -87,8 +87,7 @@ public class VirtualThreadUnsupportedMethodsCheck extends AbstractMethodDetectio
             ExpressionUtils.methodName(virtualThreadExpression.get()))),
           null);
       }
-    }
-    else {
+    } else {
       LOG.trace("VirtualThreadUnsupportedMethodsCheck.onMethodInvocationFound(): " +
           "mit.methodSelect() returns unsupported class instance: {}",
         mit.methodSelect().getClass());
