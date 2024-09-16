@@ -82,7 +82,11 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
     methodNames.removeAll(collector.unresolvedMethodNames);
     var filter = new MethodsUsedInAnnotationsFilter(methodNames);
     tree.accept(filter);
-    return unusedPrivateMethods.stream().filter(it -> filter.filteredNames.contains(it.simpleName().name()));
+    var methodTreeStream = unusedPrivateMethods.stream().filter(it -> filter.filteredNames.contains(it.simpleName().name()));
+    var annotatedMethodCollector = new AnnotatedMethodCollector();
+    tree.members().forEach(it -> it.accept(annotatedMethodCollector));
+    var methodSourceAnnotatedMethods = annotatedMethodCollector.methodSourceAnnotatedMethods;
+    return methodTreeStream.filter(it -> !methodSourceAnnotatedMethods.contains(it.simpleName().name()));
   }
 
   private void reportUnusedPrivateMethods(Stream<MethodTree> methods) {
@@ -99,6 +103,23 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
             .build())
           .report();
       });
+  }
+
+  private static class AnnotatedMethodCollector extends BaseTreeVisitor {
+
+    public final List<String> methodSourceAnnotatedMethods = new ArrayList<>();
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // cut visitation of inner classes
+    }
+
+    @Override
+    public void visitMethod(MethodTree methodTree) {
+      if (methodTree.modifiers().annotations().stream().anyMatch(annotation -> annotation.annotationType().symbolType().is("org.junit.jupiter.params.provider.MethodSource"))) {
+        methodSourceAnnotatedMethods.add(methodTree.simpleName().name());
+      }
+    }
   }
 
   private static class UnusedMethodCollector extends BaseTreeVisitor {

@@ -1,5 +1,7 @@
 package checks;
 
+import org.junit.jupiter.params.provider.MethodSource;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -11,11 +13,21 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
 @interface Observes {}
 
 class UnusedPrivateMethodCheck {
+
+  @MethodSource()
+  void testMessages(String message) {
+    // ...
+  }
+
+  private static Stream<String> testMessages() { // Compliant, used by @MethodSource
+    return Stream.of("Hello world!", "Carpe diem!");
+  }
 
   private void init(@Observes Object object, String test) {} // Noncompliant
   private void init(@javax.enterprise.event.Observes Object object) {} //Compliant, javax.enterprise.event.Observes is an exception to the rule
