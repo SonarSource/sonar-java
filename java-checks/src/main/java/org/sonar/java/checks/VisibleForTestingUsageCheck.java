@@ -75,13 +75,13 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
       && !isOtherwiseProtected(annotationInstance);
   }
 
-  // Condition added for FP Check in S5803 => issue should not be raised when
-  // (otherwise = androidx.annotation.VisibleForTesting.VisibleForTesting.PROTECTED) is specified
   private static boolean isOtherwiseProtected(AnnotationInstance annotationInstance) {
     List<SymbolMetadata.AnnotationValue> values = annotationInstance.values();
     for (SymbolMetadata.AnnotationValue value : values) {
-      // Note: constant is androidx.annotation.VisibleForTesting.PROTECTED=4
-      if ("otherwise".equals(value.name()) && Integer.valueOf(4).equals(value.value())) {
+      // Note: constant to support is androidx.annotation.VisibleForTesting.PROTECTED=4
+      if ("otherwise".equals(value.name()) &&
+        value.value() instanceof Integer &&
+        Integer.valueOf(4).equals(value.value())) {
         return true;
       }
     }

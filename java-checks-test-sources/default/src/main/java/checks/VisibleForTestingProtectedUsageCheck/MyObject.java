@@ -7,10 +7,10 @@ public class MyObject {
   // androidx.annotation.VisibleForTesting
   // @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
   // where VisibleForTesting.PROTECTED = 4
-  @VisibleForTesting(otherwise = 4, othertestcase=1)
+  @VisibleForTesting(otherwise = 4, othertestcase=1, othertypecase="F")
   String foo;
 
-  @VisibleForTesting(otherwise = 4, othertestcase=1)
+  @VisibleForTesting(otherwise = 4, othertestcase=1, othertypecase="F")
   int answer() {
     return 42;
   }
@@ -19,11 +19,11 @@ public class MyObject {
     return result;
   }
 
-  @VisibleForTesting(otherwise = 4, othertestcase=1)
+  @VisibleForTesting(otherwise = 4, othertestcase=1, othertypecase="F")
   class Nested {}
 }
 
-@VisibleForTesting(otherwise = 4, othertestcase=1)
+@VisibleForTesting(otherwise = 4, othertestcase=1, othertypecase="F")
 class Outer {}
 
 

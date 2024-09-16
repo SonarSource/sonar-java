@@ -13,4 +13,6 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 public @interface VisibleForTesting {
   int otherwise();
   int othertestcase();
+  String othertypecase();
+  int PROTECTED = 4;
 }
