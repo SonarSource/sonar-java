@@ -83,9 +83,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
     var filter = new MethodsUsedInAnnotationsFilter(methodNames);
     tree.accept(filter);
     var methodTreeStream = unusedPrivateMethods.stream().filter(it -> filter.filteredNames.contains(it.simpleName().name()));
-    var annotatedMethodCollector = new AnnotatedMethodCollector();
-    tree.members().forEach(it -> it.accept(annotatedMethodCollector));
-    var methodSourceAnnotatedMethods = annotatedMethodCollector.methodSourceAnnotatedMethods;
+    var methodSourceAnnotatedMethods = getMethodSourcesNames(tree);
     return methodTreeStream.filter(it -> !methodSourceAnnotatedMethods.contains(it.simpleName().name()));
   }
 
@@ -105,21 +103,17 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       });
   }
 
-  private static class AnnotatedMethodCollector extends BaseTreeVisitor {
+  private static List<String> getMethodSourcesNames(ClassTree tree) {
+    return tree.members().stream()
+      .filter(it -> it instanceof MethodTree mt && isAnnotatedWithMethodSource(mt))
+      .map(MethodTree.class::cast)
+      .map(it -> it.simpleName().name())
+      .toList();
+  }
 
-    public final List<String> methodSourceAnnotatedMethods = new ArrayList<>();
-
-    @Override
-    public void visitClass(ClassTree tree) {
-      // cut visitation of inner classes
-    }
-
-    @Override
-    public void visitMethod(MethodTree methodTree) {
-      if (methodTree.modifiers().annotations().stream().anyMatch(annotation -> annotation.annotationType().symbolType().is("org.junit.jupiter.params.provider.MethodSource"))) {
-        methodSourceAnnotatedMethods.add(methodTree.simpleName().name());
-      }
-    }
+  private static boolean isAnnotatedWithMethodSource(MethodTree methodTree) {
+    return methodTree.modifiers().annotations().stream()
+      .anyMatch(annotation -> annotation.annotationType().symbolType().is("org.junit.jupiter.params.provider.MethodSource"));
   }
 
   private static class UnusedMethodCollector extends BaseTreeVisitor {
