@@ -430,4 +430,7 @@ public class SpelExpressionCheckSample {
 
   @Value("#{(42)})") // Compliant
   String spel11;
+
+  @Value("file:${foo/bar/config}") // Compliant
+  String sonarJava5079;
 }
