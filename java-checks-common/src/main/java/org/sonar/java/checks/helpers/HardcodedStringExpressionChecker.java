@@ -27,6 +27,7 @@ import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -108,6 +109,12 @@ public class HardcodedStringExpressionChecker {
     Set<Symbol> visited) {
     ExpressionTree arg = ExpressionUtils.skipParentheses(expression);
     switch (arg.kind()) {
+      case ARRAY_ACCESS_EXPRESSION:
+        var access = (ArrayAccessExpressionTree) arg;
+        IdentifierTree arrayIdentifier = (IdentifierTree) access.expression();
+        VariableTree variable = (VariableTree) arrayIdentifier.symbol().declaration();
+        NewArrayTree initializer = (NewArrayTree) variable.initializer();
+        return isDerivedFromPlainText(initializer, secondaryLocations, visited);
       case IDENTIFIER:
         IdentifierTree identifier = (IdentifierTree) arg;
         return isDerivedFromPlainText(identifier, secondaryLocations, visited);

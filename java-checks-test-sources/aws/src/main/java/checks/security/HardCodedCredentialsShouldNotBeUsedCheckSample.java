@@ -40,6 +40,15 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
   private static char[] secretCharArrayField = new char[]{0xC, 0xA, 0xF, 0xE};
   private static CharSequence secretCharSequenceField = "Hello, World!".subSequence(0, 12);
 
+  public static final String[] SECRETS = {"secret_key"};
+  public static final String JWT_SECRET = SECRETS[0];
+
+  public String getSecretToken() {
+    return Jwts.builder()
+      .signWith(SignatureAlgorithm.HS256, JWT_SECRET)
+      .compact();
+  }
+
   public static void nonCompliant(byte[] message, boolean condition, Charset encoding, SignatureAlgorithm paremSignatureAlgorithm) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException, jakarta.servlet.ServletException {
     // byte array based
     SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant {{Revoke and change this password, as it is compromised.}}
