@@ -23,6 +23,14 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * There is a different convention in the JDT for line and column numbers.
+ * The difference is only when there are some line continuation characters in text blocks.
+ * Eclipse does not count the line continuation as a new line.
+ * So we cannot use the following methods to get the line and column number:
+ * {@link org.eclipse.jdt.core.dom.CompilationUnit#getColumnNumber(int position)}
+ * {@link org.eclipse.jdt.core.dom.CompilationUnit#getLineNumber(int position)}
+ */
 public class LineColumnConverter {
 
   private static final Pattern LINE_SEPARATOR_PATTERN = Pattern.compile("\r\n?|\n");

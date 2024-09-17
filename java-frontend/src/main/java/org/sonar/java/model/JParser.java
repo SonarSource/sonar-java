@@ -282,13 +282,13 @@ public class JParser {
   static JavaTree.CompilationUnitTreeImpl convert(String version, String unitName, String source, CompilationUnit astNode) {
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).toList();
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
+    LineColumnConverter lineColumnConverter = new LineColumnConverter(source);
     if (possibleSyntaxError.isPresent()) {
       IProblem syntaxError = possibleSyntaxError.get();
-      int line = syntaxError.getSourceLineNumber();
-      int column = astNode.getColumnNumber(syntaxError.getSourceStart());
-      String message = String.format("Parse error at line %d column %d: %s", line, column, syntaxError.getMessage());
+      LineColumnConverter.Pos pos = lineColumnConverter.toPos(syntaxError.getSourceStart());
+      String message = String.format("Parse error at line %d column %d: %s", pos.line(), pos.columnOffset() + 1, syntaxError.getMessage());
       // interrupt parsing
-      throw new RecognitionException(line, message);
+      throw new RecognitionException(pos.line(), message);
     }
 
     Set<JProblem> undefinedTypes = errors.stream()
@@ -303,7 +303,7 @@ public class JParser {
     converter.sema.undefinedTypes.addAll(undefinedTypes);
     converter.compilationUnit = astNode;
     converter.tokenManager = new TokenManager(lex(version, unitName, source.toCharArray()), source, new DefaultCodeFormatterOptions(new HashMap<>()));
-    converter.lineColumnConverter = new LineColumnConverter(source);
+    converter.lineColumnConverter = lineColumnConverter;
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;

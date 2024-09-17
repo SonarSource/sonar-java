@@ -411,8 +411,27 @@ class JParserTest {
   }
 
   @Test
-  void test_line_continuation_in_text_blocks() {
+  void test_no_line_continuation_in_text_blocks() {
     CompilationUnitTree tree = parse(new File("src/test/files/metrics/TextBlock.java"));
+    var tokens = tokens((JavaTree) tree);
+    assertThat(tokens)
+      .extracting(token -> token.line() + "," + token.column() + ": " + token.text())
+      .containsExactly(
+        "1,0: class",
+        "1,6: TextBlock",
+        "1,16: {",
+        "2,2: String",
+        "2,9: a",
+        "2,11: =",
+        "2,13: \"\"\"\n    Hello,\n    world!\n    \"\"\"",
+        "5,7: ;",
+        "6,0: }",
+        "6,1: ");
+  }
+
+  @Test
+  void test_line_continuation_in_text_blocks() {
+    CompilationUnitTree tree = parse(new File("src/test/files/metrics/TextBlockWithLineContinuation.java"));
     var tokens = tokens((JavaTree) tree);
     assertThat(tokens)
       .extracting(token -> token.line() + "," + token.column() + ": " + token.text())
