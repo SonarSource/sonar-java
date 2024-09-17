@@ -20,18 +20,28 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
+import java.util.Set;
+
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6813")
 public class FieldDependencyInjectionCheck extends IssuableSubscriptionVisitor {
-  private static final List<String> INJECTION_ANNOTATIONS = List.of(
+  private static final Set<String> INJECTION_ANNOTATIONS = Set.of(
     "org.springframework.beans.factory.annotation.Autowired",
     "javax.inject.Inject",
     "jakarta.inject.Inject");
+
+  private static final Set<String> SPRING_MANAGED_CLASS_ANNOTATIONS = Set.of(
+    "org.springframework.stereotype.Component",
+    "org.springframework.stereotype.Configuration",
+    "org.springframework.stereotype.Controller",
+    "org.springframework.stereotype.Repository",
+    "org.springframework.stereotype.Service");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -40,17 +50,35 @@ public class FieldDependencyInjectionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    var ct = (ClassTree) tree;
-    ct.members().forEach(member -> {
-      if (member.is(Tree.Kind.VARIABLE)) {
-        var vt = (VariableTree) member;
+    var classTree = (ClassTree) tree;
 
-        vt.modifiers().annotations().stream()
-          .filter(annotationTree -> INJECTION_ANNOTATIONS.stream()
-            .anyMatch(targetAnnotation -> annotationTree.symbolType().is(targetAnnotation)))
-          .findFirst()
-          .ifPresent(annotationTree -> reportIssue(annotationTree, "Remove this field injection and use constructor injection instead."));
-      }
-    });
+    if (isSpringManagedClass(classTree)) {
+      classTree.members().forEach(this::reportOnInjectedField);
+    }
+  }
+
+  private void reportOnInjectedField(Tree tree) {
+    if (tree.is(Tree.Kind.VARIABLE)) {
+      var variableTree = (VariableTree) tree;
+
+      variableTree.modifiers().annotations().stream()
+        .filter(FieldDependencyInjectionCheck::isInjectionAnnotation)
+        .findFirst()
+        .ifPresent(annotationTree -> reportIssue(annotationTree, "Remove this field injection and use constructor injection instead."));
+    }
+  }
+
+  private static boolean isSpringManagedClass(ClassTree classTree) {
+    return classTree.modifiers().annotations().stream()
+      .map(FieldDependencyInjectionCheck::getAnnotationName)
+      .anyMatch(SPRING_MANAGED_CLASS_ANNOTATIONS::contains);
+  }
+
+  private static boolean isInjectionAnnotation(AnnotationTree annotationTree) {
+    return INJECTION_ANNOTATIONS.contains(getAnnotationName(annotationTree));
+  }
+
+  private static String getAnnotationName(AnnotationTree annotationTree) {
+    return annotationTree.annotationType().symbolType().fullyQualifiedName();
   }
 }
