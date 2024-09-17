@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Component
 public class FieldDependencyInjectionCheckSample {
@@ -41,3 +42,23 @@ public class FieldDependencyInjectionCheckSample {
   @Nullable
   private String annotatedButNotInjected;
 }
+
+@Service
+class SpringServiceClass {
+  @Autowired // Noncompliant
+  private String autowired;
+
+  @Inject // Noncompliant
+  private String injected;
+}
+
+class NormalClass {
+  @Autowired // Compliant
+  private String autowired;
+
+  @Inject // Compliant
+  private String injected;
+}
+
+
+
