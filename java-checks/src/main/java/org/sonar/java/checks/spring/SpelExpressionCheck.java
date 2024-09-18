@@ -268,7 +268,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
       var endIndex = parseDelimitersAndContents(stripped, 1, startColumn + 2, contentsParser);
       return endIndex == segment.stripTrailing().length();
     }
-    return segment.indexOf(':') < 0;
+    return true;
   }
 
   private static ObjIntConsumer<String> getContentsParser(String contents) {
