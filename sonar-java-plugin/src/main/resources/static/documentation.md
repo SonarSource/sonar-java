@@ -87,17 +87,19 @@ If needed, it is possible to run the parsing file by file by setting `sonar.java
 More details can be found [here](https://github.com/SonarSource/sonar-java/wiki/Batch-mode).
 
 ## Skipping unchanged files
-Starting from April 2022, and by default, the Java analyzer optimizes the analysis of unchanged files in pull requests.
-In practice, this means that on a file that has not changed, the analyzer only runs a restricted list of rules.
+By default, the Java analyzer optimizes the analysis of unchanged files in pull requests.
+This means that during a PR analysis, on a file that has not been changed, the analyzer only runs a restricted list of rules.
 To get a better understanding of the rule exclusion mechanism, keep in mind that:
 * Rules that need to run on multiple files to decide whether they need to raise issues are always executed
 * Rules that need to run at the end of the analysis to decide whether they need to raise issues are always executed
-* Rules that are defined outside of the `sonar.java.checks` package are always executed
+* Rules that are defined outside the `sonar.java.checks` package are always executed
 
 This last criteria implies that [custom rules](https://redirect.sonarsource.com/doc/java-custom-rules-guide.html) cannot be skipped.
 
-If you wish to disable this optimization, you can set the value of the analysis parameter `sonar.java.skipUnchanged` to `false`.
-Leaving the parameter unset lets the server decide whether the optimization should be enabled.
+You can control this behavior with the analysis parameter `sonar.java.skipUnchanged`:
+* setting it to `true` will **always** make rules skip unchanged files, independently of the context being a PR analysis or not
+* setting it to `false` will **never** make rules skip unchanged files, even if the context is a PR analysis
+* not setting this parameter lets the server decide whether the optimization should be enabled, by default it will be enabled for PR analyses.
 
 ## Cache-enabled rules (experimental)
 Starting from April 2022, the Java analyzer offers rule developers a SQ cache that can be used to store and retrieve information from one analysis to the other.
