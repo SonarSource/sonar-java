@@ -20,6 +20,9 @@ import static java.util.Collections.emptySet;
 
 class UnusedPrivateMethodCheck {
 
+  @MethodSource
+  private void unusedMethodWithWrongAnnotation(){} // Compilant - FN
+
   @MethodSource()
   void testMessages(String message) {
     // ...
