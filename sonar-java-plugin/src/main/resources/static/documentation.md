@@ -88,7 +88,7 @@ More details can be found [here](https://github.com/SonarSource/sonar-java/wiki/
 
 ## Skipping unchanged files
 By default, the Java analyzer optimizes the analysis of unchanged files in pull requests.
-This means that during a PR analysis, on a file that has not changed, the analyzer only runs a restricted list of rules.
+This means that during a PR analysis, on a file that has not been changed, the analyzer only runs a restricted list of rules.
 To get a better understanding of the rule exclusion mechanism, keep in mind that:
 * Rules that need to run on multiple files to decide whether they need to raise issues are always executed
 * Rules that need to run at the end of the analysis to decide whether they need to raise issues are always executed
