@@ -34,7 +34,7 @@ public class UnusedPrivateMethodWithUknownResolution {
 
   class User {
     public User() {}
-    private String token() { // FP (used in line 14 as `userToAuthenticate.token()`)
+    private String token() { // Compliant
       return "123456";
     }
   }
