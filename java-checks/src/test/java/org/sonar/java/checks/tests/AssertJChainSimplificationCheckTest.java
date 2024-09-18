@@ -49,4 +49,13 @@ class AssertJChainSimplificationCheckTest {
       .withCheck(new AssertJChainSimplificationCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_list_quick_fixes() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertJChainSimplificationCheckTest_ListQuickFix.java"))
+      .withCheck(new AssertJChainSimplificationCheck())
+      .verifyIssues();
+  }
+
 }

@@ -232,7 +232,7 @@ public class AssertJChainSimplificationCheckTest {
 
     assertThat(getString().trim()).isNotEmpty(); // Noncompliant {{Use assertThat(actual).isNotBlank() instead.}}
     assertThat(getString().trim()).isNotEqualTo(""); // Noncompliant {{Use assertThat(actual).isNotBlank() instead.}}
-    assertThat(getString().length()).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
+    assertThat(getString().length()).isEqualTo(0); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
     assertThat(getString().length()).isEqualTo(12); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead.}}
     assertThat(getString().length()).isEqualTo(x.length()); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead.}}
     assertThat(getString().length()).isEqualTo(getArray().length); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead.}}
@@ -258,7 +258,7 @@ public class AssertJChainSimplificationCheckTest {
     int i = 12;
     MyClassWithLength myClassWithLength = new MyClassWithLength();
 
-    assertThat(getArray().length).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
+    assertThat(getArray().length).isEqualTo(0); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
     assertThat(getArray().length).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
     assertThat(getArray().length).isEqualTo(i); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead.}}
     assertThat(getArray().length).isPositive(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
@@ -380,7 +380,7 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getFile().listFiles()).isNotEmpty(); // Noncompliant {{Use assertThat(actual).isNotEmptyDirectory() instead.}}
 
     // We report only step by step, not the final transformation possible
-    assertThat(getFile().list().length).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
+    assertThat(getFile().list().length).isEqualTo(0); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
     assertThat(getFile().list().length).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
     assertThat(getFile().list()).isEmpty(); // Noncompliant {{Use assertThat(actual).isEmptyDirectory() instead.}}
     assertThat(getFile()).isEmptyDirectory(); // Compliant, 3 iterations to reach a nice assertion
