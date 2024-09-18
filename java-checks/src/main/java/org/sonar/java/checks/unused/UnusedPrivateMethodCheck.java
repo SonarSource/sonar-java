@@ -82,7 +82,9 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
     methodNames.removeAll(collector.unresolvedMethodNames);
     var filter = new MethodsUsedInAnnotationsFilter(methodNames);
     tree.accept(filter);
-    return unusedPrivateMethods.stream().filter(it -> filter.filteredNames.contains(it.simpleName().name()));
+    var methodTreeStream = unusedPrivateMethods.stream().filter(it -> filter.filteredNames.contains(it.simpleName().name()));
+    var methodSourceAnnotatedMethods = getMethodSourcesNames(tree);
+    return methodTreeStream.filter(it -> !methodSourceAnnotatedMethods.contains(it.simpleName().name()));
   }
 
   private void reportUnusedPrivateMethods(Stream<MethodTree> methods) {
@@ -99,6 +101,19 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
             .build())
           .report();
       });
+  }
+
+  private static List<String> getMethodSourcesNames(ClassTree tree) {
+    return tree.members().stream()
+      .filter(it -> it instanceof MethodTree mt && isAnnotatedWithMethodSource(mt))
+      .map(MethodTree.class::cast)
+      .map(it -> it.simpleName().name())
+      .toList();
+  }
+
+  private static boolean isAnnotatedWithMethodSource(MethodTree methodTree) {
+    return methodTree.modifiers().annotations().stream()
+      .anyMatch(annotation -> annotation.annotationType().symbolType().is("org.junit.jupiter.params.provider.MethodSource"));
   }
 
   private static class UnusedMethodCollector extends BaseTreeVisitor {
