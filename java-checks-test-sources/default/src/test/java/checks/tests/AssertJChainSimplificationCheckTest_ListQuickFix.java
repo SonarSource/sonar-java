@@ -19,6 +19,7 @@ public class AssertJChainSimplificationCheckTest_ListQuickFix {
   void contextFreeQuickFixes() {
 
     assertThat(stringsList).isEmpty(); // Compliant
+    assertThat(stringsList.hashCode()).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
 
     assertThat(stringsList.size()).isEqualTo(0); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}} [[quickfixes=qf_context1]]
 //                                 ^^^^^^^^^
@@ -27,6 +28,7 @@ public class AssertJChainSimplificationCheckTest_ListQuickFix {
     // edit@qf_context1 [[sc=36;ec=48]] {{isEmpty()}}
 
     assertThat(string).isEmpty(); // Compliant
+    assertThat(string.hashCode()).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
 
     assertThat(string.length()).isEqualTo(0); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}} [[quickfixes=qf_context2]]
 //                              ^^^^^^^^^
@@ -35,6 +37,7 @@ public class AssertJChainSimplificationCheckTest_ListQuickFix {
     // edit@qf_context2 [[sc=33;ec=45]] {{isEmpty()}}
 
     assertThat(stringArray).isEmpty(); // Compliant
+    assertThat(new String[0].hashCode()).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
 
     assertThat(stringArray.length).isEqualTo(0); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}} [[quickfixes=qf_context3]]
 //                                 ^^^^^^^^^
