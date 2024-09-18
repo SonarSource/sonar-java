@@ -827,9 +827,35 @@ public class JParser {
       return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
     }
     if (!e.bodyDeclarations().isEmpty()) {
-      return tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
+      // for records, bodyDeclarations are not in the order encountered in file, for classes they are
+      //return tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
+      //
+      // sort
+      List<MySortableASTNode> astNodes = new ArrayList<>();
+      for (Object o : e.bodyDeclarations()) {
+        if (o instanceof ASTNode astNode) {
+          astNodes.add(new MySortableASTNode(astNode));
+        }
+      }
+      Collections.sort(astNodes);
+      // return first now from ordered list
+      return tokenManager.firstIndexBefore(astNodes.get(0).astNode, TerminalTokens.TokenNameLBRACE);
     }
     return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
+  }
+
+  private class MySortableASTNode implements Comparable<MySortableASTNode> {
+    final private ASTNode astNode;
+    MySortableASTNode(ASTNode astNode) {
+      this.astNode = astNode;
+    }
+    @Override
+    public int compareTo(JParser.MySortableASTNode o) {
+      if (this.astNode.getStartPosition() < o.astNode.getStartPosition()) {
+        return -1;
+      }
+      return 1;
+    }
   }
 
   private void completeSuperInterfaces(AbstractTypeDeclaration e, ClassTreeImpl t) {

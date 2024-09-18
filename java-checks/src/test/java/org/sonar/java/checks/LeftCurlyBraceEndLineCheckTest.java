@@ -42,6 +42,14 @@ class LeftCurlyBraceEndLineCheckTest {
   }
 
   @Test
+  void test_record() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/LeftCurlyBraceEndLineCheck_record.java"))
+      .withCheck(new LeftCurlyBraceEndLineCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
   void detected_switch_expressions() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/LeftCurlyBraceEndLineCheckSample.java"))
