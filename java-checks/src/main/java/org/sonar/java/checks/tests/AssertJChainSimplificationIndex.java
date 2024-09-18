@@ -438,7 +438,9 @@ public class AssertJChainSimplificationIndex {
   private static boolean isArrayLength(ExpressionTree expression) {
     if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expression;
-      return memberSelectExpressionTree.expression().symbolType().isArray() && LENGTH.equals(memberSelectExpressionTree.identifier().name());
+      if (memberSelectExpressionTree.expression().symbolType().isArray()) {
+        return LENGTH.equals(memberSelectExpressionTree.identifier().name());
+      }
     }
     return false;
   }
@@ -446,7 +448,9 @@ public class AssertJChainSimplificationIndex {
   private static boolean isCollectionSize(ExpressionTree expression) {
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree invocation = (MethodInvocationTree) expression;
-      return Matchers.COLLECTION_SIZE.matches(invocation) && invocation.methodSelect().is(Tree.Kind.MEMBER_SELECT);
+      if (invocation.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        return Matchers.COLLECTION_SIZE.matches(invocation);
+      }
     }
     return false;
   }
@@ -454,7 +458,9 @@ public class AssertJChainSimplificationIndex {
   private static boolean isStringLength(ExpressionTree expression) {
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree invocation = (MethodInvocationTree) expression;
-      return Matchers.STRING_LENGTH.matches(invocation) && invocation.methodSelect().is(Tree.Kind.MEMBER_SELECT);
+      if (invocation.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        return Matchers.STRING_LENGTH.matches(invocation);
+      }
     }
     return false;
   }

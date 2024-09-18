@@ -37,7 +37,7 @@ public class AssertJChainSimplificationCheckTest_ListQuickFix {
     // edit@qf_context2 [[sc=33;ec=45]] {{isEmpty()}}
 
     assertThat(stringArray).isEmpty(); // Compliant
-    assertThat(new String[0].hashCode()).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
+    assertThat(stringArray.hashCode()).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
 
     assertThat(stringArray.length).isEqualTo(0); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}} [[quickfixes=qf_context3]]
 //                                 ^^^^^^^^^
