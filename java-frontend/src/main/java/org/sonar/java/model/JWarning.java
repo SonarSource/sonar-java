@@ -100,30 +100,30 @@ public final class JWarning extends JProblem {
 
     private final PriorityQueue<JWarning> warnings = new PriorityQueue<>(Comparator.comparing(JWarning::start).thenComparing(JWarning::end));
 
-    private Mapper(CompilationUnit ast) {
+    private Mapper(CompilationUnit ast, LineColumnConverter lineColumnConverter) {
       Stream.of(ast.getProblems())
-        .map(problem -> convert(problem, ast))
+        .map(problem -> convert(problem, ast, lineColumnConverter))
         .filter(Objects::nonNull)
         .forEach(warnings::add);
     }
 
     @CheckForNull
-    private static JWarning convert(IProblem problem, CompilationUnit root) {
+    private static JWarning convert(IProblem problem, CompilationUnit root, LineColumnConverter lineColumnConverter) {
       for (Type type : Type.values()) {
         if (type.matches(problem)) {
+          LineColumnConverter.Pos start = lineColumnConverter.toPos(problem.getSourceStart());
+          LineColumnConverter.Pos end = lineColumnConverter.toPos(problem.getSourceStart());
           return new JWarning(problem.getMessage(),
             type,
-            problem.getSourceLineNumber(),
-            root.getColumnNumber(problem.getSourceStart()),
-            root.getLineNumber(problem.getSourceEnd()),
-            root.getColumnNumber(problem.getSourceEnd()) + 1);
+            start.line(), start.columnOffset(),
+            end.line(), end.columnOffset());
         }
       }
       return null;
     }
 
-    public static Mapper warningsFor(CompilationUnit ast) {
-      return new Mapper(ast);
+    public static Mapper warningsFor(CompilationUnit ast, LineColumnConverter lineColumnConverter) {
+      return new Mapper(ast, lineColumnConverter);
     }
 
     public void mappedInto(JavaTree.CompilationUnitTreeImpl cut) {

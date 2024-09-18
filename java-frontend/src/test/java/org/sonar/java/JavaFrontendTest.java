@@ -137,7 +137,7 @@ class JavaFrontendTest {
     scan(SONARLINT_RUNTIME, "class A {");
 
     assertThat(sensorContext.allAnalysisErrors()).hasSize(1);
-    assertThat(sensorContext.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 8");
+    assertThat(sensorContext.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 9");
   }
 
   @Test
