@@ -833,11 +833,12 @@ public class JParser {
         e.bodyDeclarations().stream().sorted((Comparator<ASTNode>) (o1, o2) -> {
           // sort so that items are ordered by their start position
           if (o1.getStartPosition() < o2.getStartPosition()) {
+            // we want the ordered by ascending start positions
             return -1;
-          } else if (o1.getStartPosition() > o2.getStartPosition()) {
+          } else {
+            // start positions should never be the same, so just return 1 otherwise
             return 1;
           }
-          return 0;
         }).toList().get(0), TerminalTokens.TokenNameLBRACE);
     }
     return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
