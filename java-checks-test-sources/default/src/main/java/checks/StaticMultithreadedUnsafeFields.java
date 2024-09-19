@@ -33,6 +33,11 @@ public class StaticMultithreadedUnsafeFields {
 //                                          ^^^^^^^
   public static java.text.SimpleDateFormat format4; // Noncompliant {{Make "format4" an instance variable.}}
 //                                         ^^^^^^^
+  public static java.text.SimpleDateFormat format5; // Compliant used in synchronized static methods
+  public static java.text.SimpleDateFormat format6; // Noncompliant {{Make "format6" an instance variable.}}
+  //                                       ^^^^^^^
+  public static java.text.SimpleDateFormat format7; // Noncompliant {{Make "format7" an instance variable.}}
+  //                                       ^^^^^^^
   private static java.text.DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); // Noncompliant
   private static java.text.DateFormat dateFormat2 = null;
 
@@ -54,6 +59,23 @@ public class StaticMultithreadedUnsafeFields {
     synchronized (new Date()) {
       format3.format(new Date()); // format3 not synchronized
     }
+  }
+
+  synchronized static void staticMethod1() {
+    format5.format(new Date());
+    class InnerClass {
+      InnerClass() {
+        format6.format(new Date());
+      }
+    }
+  }
+
+  synchronized static void staticMethod2() {
+    format5.format(new Date());
+  }
+
+  static void staticMethod3() {
+    format7.format(new Date());
   }
 
   static SimpleDateFormat bar() { return null; }
