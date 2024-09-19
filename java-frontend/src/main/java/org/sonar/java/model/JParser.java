@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import com.sonar.sslr.api.RecognitionException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -827,35 +828,19 @@ public class JParser {
       return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
     }
     if (!e.bodyDeclarations().isEmpty()) {
-      // for records, bodyDeclarations are not in the order encountered in file, for classes they are
-      //return tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
-      //
-      // sort
-      List<MySortableASTNode> astNodes = new ArrayList<>();
-      for (Object o : e.bodyDeclarations()) {
-        if (o instanceof ASTNode astNode) {
-          astNodes.add(new MySortableASTNode(astNode));
-        }
-      }
-      Collections.sort(astNodes);
-      // return first now from ordered list
-      return tokenManager.firstIndexBefore(astNodes.get(0).astNode, TerminalTokens.TokenNameLBRACE);
+      // for records, bodyDeclarations may not be in the order encountered in file, for classes they are
+      return tokenManager.firstIndexBefore((ASTNode)
+        e.bodyDeclarations().stream().sorted((Comparator<ASTNode>) (o1, o2) -> {
+          // sort so that items are ordered by their start position
+          if (o1.getStartPosition() < o2.getStartPosition()) {
+            return -1;
+          } else if (o1.getStartPosition() > o2.getStartPosition()) {
+            return 1;
+          }
+          return 0;
+        }).toList().get(0), TerminalTokens.TokenNameLBRACE);
     }
     return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
-  }
-
-  private class MySortableASTNode implements Comparable<MySortableASTNode> {
-    final private ASTNode astNode;
-    MySortableASTNode(ASTNode astNode) {
-      this.astNode = astNode;
-    }
-    @Override
-    public int compareTo(JParser.MySortableASTNode o) {
-      if (this.astNode.getStartPosition() < o.astNode.getStartPosition()) {
-        return -1;
-      }
-      return 1;
-    }
   }
 
   private void completeSuperInterfaces(AbstractTypeDeclaration e, ClassTreeImpl t) {
