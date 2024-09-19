@@ -112,6 +112,12 @@ public class SingleIfInsteadOfPatternMatchGuardCheck extends IssuableSubscriptio
       JavaTextEdit.insertBeforeTree(caseLabel.colonOrArrowToken(),
         replacementStringPrefix + QuickFixHelper.contentForTree(ifStatement.condition(), context) + " ")
     );
+    QuickFixHelper.addParenthesisIfRequired(quickFixBuilder, ifStatement.condition());
+    for(var expr : caseLabel.expressions()) {
+      if(expr instanceof GuardedPatternTree guardedPattern) {
+        QuickFixHelper.addParenthesisIfRequired(quickFixBuilder, guardedPattern.expression());
+      }
+    }
     return quickFixBuilder.build();
   }
 
