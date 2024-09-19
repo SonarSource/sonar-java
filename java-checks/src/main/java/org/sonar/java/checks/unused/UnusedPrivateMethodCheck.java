@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.QuickFixHelper;
@@ -62,32 +61,17 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS, Tree.Kind.ENUM);
+    return List.of(Tree.Kind.COMPILATION_UNIT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    reportUnusedPrivateMethods(findUnusedPrivateMethods((ClassTree) tree));
+    var collector = new UnusedResolvedMethodCollector();
+    tree.accept(collector);
+    reportUnusedPrivateMethods(collector.getUnusedResolvedPrivateMethods());
   }
 
-  private static Stream<MethodTree> findUnusedPrivateMethods(ClassTree tree) {
-    var collector = new UnusedMethodCollector();
-    tree.members().forEach(it -> it.accept(collector));
-    var unusedPrivateMethods = collector.unusedPrivateMethods;
-    if (unusedPrivateMethods.isEmpty()) {
-      return Stream.empty();
-    }
-
-    var methodNames = unusedPrivateMethods.stream().map(it -> it.simpleName().name()).collect(Collectors.toSet());
-    methodNames.removeAll(collector.unresolvedMethodNames);
-    var filter = new MethodsUsedInAnnotationsFilter(methodNames);
-    tree.accept(filter);
-    var methodTreeStream = unusedPrivateMethods.stream().filter(it -> filter.filteredNames.contains(it.simpleName().name()));
-    var methodSourceAnnotatedMethods = getMethodSourcesNames(tree);
-    return methodTreeStream.filter(it -> !methodSourceAnnotatedMethods.contains(it.simpleName().name()));
-  }
-
-  private void reportUnusedPrivateMethods(Stream<MethodTree> methods) {
+  private void reportUnusedPrivateMethods(List<MethodTree> methods) {
     methods
       .forEach(methodTree -> {
         IdentifierTree simpleName = methodTree.simpleName();
@@ -103,28 +87,69 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       });
   }
 
-  private static List<String> getMethodSourcesNames(ClassTree tree) {
-    return tree.members().stream()
-      .filter(it -> it instanceof MethodTree mt && isAnnotatedWithMethodSource(mt))
-      .map(MethodTree.class::cast)
-      .map(it -> it.simpleName().name())
-      .toList();
-  }
+  private static class UnusedResolvedMethodCollector extends BaseTreeVisitor {
 
-  private static boolean isAnnotatedWithMethodSource(MethodTree methodTree) {
-    return methodTree.modifiers().annotations().stream()
-      .anyMatch(annotation -> annotation.annotationType().symbolType().is("org.junit.jupiter.params.provider.MethodSource"));
+    private final List<MethodTree> unusedPrivateMethods = new ArrayList<>();
+
+    private final Set<String> unresolvedMethodNames = new HashSet<>();
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      super.visitClass(tree);
+      addUnusedPrivateMethods(tree);
+    }
+
+    private void addUnusedPrivateMethods(ClassTree tree) {
+      var collector = new UnusedMethodCollector(unresolvedMethodNames);
+      tree.members().forEach(it -> it.accept(collector));
+      var unusedMethods = collector.unusedPrivateMethods;
+      if (unusedMethods.isEmpty()) {
+        return;
+      }
+
+      var methodNames = unusedMethods.stream().map(it -> it.simpleName().name()).collect(Collectors.toSet());
+      var filter = new MethodsUsedInAnnotationsFilter(methodNames);
+      tree.accept(filter);
+
+      var methodSourceAnnotatedMethods = getMethodSourcesNames(tree);
+      unusedMethods.stream()
+        .filter(it -> filter.filteredNames.contains(it.simpleName().name()))
+        .filter(it -> !methodSourceAnnotatedMethods.contains(it.simpleName().name()))
+        .collect(Collectors.toCollection(() -> unusedPrivateMethods));
+    }
+
+    public List<MethodTree> getUnusedResolvedPrivateMethods() {
+      return unusedPrivateMethods.stream().filter(it -> !unresolvedMethodNames.contains(it.simpleName().name())).toList();
+    }
+
+    private static List<String> getMethodSourcesNames(ClassTree tree) {
+      return tree.members().stream()
+        .filter(it -> it instanceof MethodTree mt && isAnnotatedWithMethodSource(mt))
+        .map(MethodTree.class::cast)
+        .map(it -> it.simpleName().name())
+        .toList();
+    }
+
+    private static boolean isAnnotatedWithMethodSource(MethodTree methodTree) {
+      return methodTree.modifiers().annotations().stream()
+        .anyMatch(annotation -> annotation.annotationType().symbolType().is("org.junit.jupiter.params.provider.MethodSource"));
+    }
   }
 
   private static class UnusedMethodCollector extends BaseTreeVisitor {
 
     public final List<MethodTree> unusedPrivateMethods = new ArrayList<>();
-    public final Set<String> unresolvedMethodNames = new HashSet<>();
+
+    public final Set<String> allUnresolvedMethodNames;
 
     private static final Set<String> PARAM_ANNOTATION_EXCEPTIONS = Set.of(
       "javax.enterprise.event.Observes",
       "jakarta.enterprise.event.Observes"
     );
+
+    private UnusedMethodCollector(Set<String> allUnresolvedMethodNames) {
+      this.allUnresolvedMethodNames = allUnresolvedMethodNames;
+    }
 
     @Override
     public void visitClass(ClassTree tree) {
@@ -166,14 +191,14 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
     private void addIfArgumentsAreUnknown(Arguments arguments, String name) {
       // In case of broken semantic, if the argument is unknown, the method call will not have the correct reference.
       if (arguments.stream().anyMatch(arg -> arg.symbolType().isUnknown())) {
-        unresolvedMethodNames.add(name);
+        allUnresolvedMethodNames.add(name);
       }
     }
 
     private void addIfUnknownOrAmbiguous(Symbol symbol, String name) {
       // In case of broken semantic (overload with unknown args), ECJ wrongly link the symbol to the good overload.
       if (symbol.isUnknown() || (symbol.isMethodSymbol() && ((Symbol.MethodSymbol) symbol).parameterTypes().stream().anyMatch(Type::isUnknown))) {
-        unresolvedMethodNames.add(name);
+        allUnresolvedMethodNames.add(name);
       }
     }
 
