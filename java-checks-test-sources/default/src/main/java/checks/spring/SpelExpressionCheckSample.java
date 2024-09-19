@@ -72,13 +72,13 @@ public class SpelExpressionCheckSample {
   @Value("${user.region:defaultRegion}") // Compliant
   private String default1;
 
-  @Value("${user.region::defaultRegion}") // Noncompliant {{Correct this malformed property placeholder.}}
+  @Value("${user.region::defaultRegion}") // Compliant (default string can contain any character, including ':')
   private String default2;
 
   @Value("${:user.region:defaultRegion}") // Noncompliant {{Correct this malformed property placeholder.}}
   private String default3;
 
-  @Value("${user.region:defaultRegion:}") // Noncompliant
+  @Value("${user.region:defaultRegion:}") // Compliant (default string can contain any character, including ':')
   private String default4;
 
   @Value("${  user.region  : defaultRegion  }") // Compliant
@@ -430,4 +430,15 @@ public class SpelExpressionCheckSample {
 
   @Value("#{(42)})") // Compliant
   String spel11;
+
+  @Value("file:${foo/bar/config}") // Compliant
+  String sonarJava5079PropertyNameContainsSlash;
+
+  @Value("${a:b:c}") // Compliant
+  private String sonarJava5079DefaultValueContainsColon1;
+
+  @Value("${demo.soap.sp.client.ssl.keystore.path:" + MOCKED_SOAP_SP_CLIENT_SSL + "}") // Compliant
+  private String sonarJava5079DefaultValueContainsColon2;
+
+  private static final String MOCKED_SOAP_SP_CLIENT_SSL = "classpath:mocked-soap-sp-client-ssl.jks";
 }
