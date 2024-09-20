@@ -19,9 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
@@ -50,6 +52,28 @@ class AssertionsInProductionCodeCheckTest {
       .withCheck(new AssertionsInProductionCodeCheck())
       .withoutSemantic()
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_package_name_regex() {
+    var productionPackageNames = List.of(
+      "org.sonar.java.checks",
+      "it.sonar.java.checks");
+    var testPackageNames = List.of(
+      "org.sonar.java.checks.test",
+      "org.sonar.test.checks",
+      "org.sonar.java.checks.junit",
+      "assert.org.sonar.java",
+      "org.sonar.java.it",
+      "assert",
+      "test",
+      "junit");
+    for (String packageName : productionPackageNames) {
+      assertThat(AssertionsInProductionCodeCheck.TEST_PACKAGE_REGEX.matcher(packageName).find()).isFalse();
+    }
+    for (String packageName : testPackageNames) {
+      assertThat(AssertionsInProductionCodeCheck.TEST_PACKAGE_REGEX.matcher(packageName).find()).isTrue();
+    }
   }
 
 }

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -37,7 +38,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S5960")
 public class AssertionsInProductionCodeCheck extends AbstractMethodDetection {
 
-  private static final Pattern TEST_PACKAGE_REGEX = Pattern.compile("test|junit|assert");
+  @VisibleForTesting
+  static final Pattern TEST_PACKAGE_REGEX = Pattern.compile("test|junit|assert|\\.it(?:\\.|$)");
   private final List<Tree> assertions = new ArrayList<>();
   private boolean packageNameNotRelatedToTests = true;
 
