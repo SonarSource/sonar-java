@@ -25,21 +25,21 @@ class AFalsePositveFromTheCommunity {
 }
 
 // https://community.sonarsource.com/t/s2629-despite-using-isinfoenabled/120810
-//class AnotherFalsePositveFromTheCommunity {
-//  void foo() {
-//    final Marker myMarker = MarkerFactory.getMarker("MY_MARKER");
-//    final Logger logger = LoggerFactory.getLogger(A.class);
-//
-//    logger.debug(myMarker, "message3: {}.", doSomething()); // Compliant - because we don't care about small performance loss in exceptional paths
-//
-//    if (!logger.isDebugEnabled(myMarker)) {
-//      return;
-//    }
-//    logger.debug(myMarker, "message4: {}.", doSomething() + "yolo"); // Compliant as method(s) invoked conditionally - IS FP
-//    logger.debug(myMarker, "message4a: {}.", doSomething()); // Compliant
-//  }
-//
-//  Object doSomething() {
-//    return null;
-//  }
-//}
+class AnotherFalsePositveFromTheCommunity {
+  void foo() {
+    final Marker myMarker = MarkerFactory.getMarker("MY_MARKER");
+    final Logger logger = LoggerFactory.getLogger(A.class);
+
+    logger.debug(myMarker, "message3: {}.", doSomething()); // Compliant - because we don't care about small performance loss in exceptional paths
+
+    if (!logger.isDebugEnabled(myMarker)) {
+      return;
+    }
+    logger.debug(myMarker, "message4: {}.", doSomething() + "yolo"); // Compliant as method(s) invoked conditionally - IS FP
+    logger.debug(myMarker, "message4a: {}.", doSomething()); // Compliant
+  }
+
+  Object doSomething() {
+    return null;
+  }
+}

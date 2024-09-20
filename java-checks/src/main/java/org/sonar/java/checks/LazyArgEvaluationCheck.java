@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
@@ -186,6 +187,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
   private JavaFileScannerContext context;
   private Deque<Tree> treeStack = new ArrayDeque<>();
+  private boolean insideLevelTestReturnStatementFound = false;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -198,7 +200,11 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    if (LAZY_ARG_METHODS.matches(tree) && !insideCatchStatement() && !insideLevelTest() && !argsUsingSuppliers(tree)) {
+    if (LAZY_ARG_METHODS.matches(tree) &&
+      !insideCatchStatement() &&
+      !insideLevelTest() &&
+      !insideLevelTestReturnStatementFound &&
+      !argsUsingSuppliers(tree)) {
       onMethodInvocationFound(tree);
     }
   }
@@ -215,6 +221,13 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
       stackAndContinue(ifTree, super::visitIfStatement);
     } else {
       super.visitIfStatement(ifTree);
+    }
+  }
+
+  @Override
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    if (insideLevelTest()) {
+      insideLevelTestReturnStatementFound = true;
     }
   }
 
