@@ -96,8 +96,7 @@ public final class SyntacticEquivalence {
     return true;
   }
 
-  @VisibleForTesting
-  static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode, BiPredicate<JavaTree, JavaTree> overwriteEquivalence, boolean equivalenceValue) {
+  public static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode, BiPredicate<JavaTree, JavaTree> overwriteEquivalence, boolean equivalenceValue) {
     return areEquivalent((JavaTree) leftNode, (JavaTree) rightNode, overwriteEquivalence, equivalenceValue);
   }
 

@@ -145,7 +145,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
   }
 
   public static ExpressionTree equivalentOperand(ExpressionTree left, ExpressionTree right, Tree.Kind binaryKind) {
-    if (SyntacticEquivalence.areEquivalent(left, right)) {
+    if (SyntacticEquivalence.areEquivalent(left, right, (t1, t2) -> t1.is(Tree.Kind.METHOD_INVOCATION), false)) {
       return left;
     }
     // Check other operands if operator is symmetric.
