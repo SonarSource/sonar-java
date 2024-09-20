@@ -147,6 +147,9 @@ public class AssertJChainSimplificationIndex {
       withSubjectArgumentCondition(LiteralUtils::isTrue, AssertJChainSimplificationIndex::isNotObject, "isTrue()"),
       withSubjectArgumentCondition(LiteralUtils::isFalse, AssertJChainSimplificationIndex::isNotObject, "isFalse()"),
       withSubjectArgumentCondition(LiteralUtils::isEmptyString, AssertJChainSimplificationIndex::isNotObject, "isEmpty()"),
+      withSubjectArgumentCondition(AssertJChainSimplificationIndex::isZeroIntOrLong, AssertJChainSimplificationIndex::isStringLength, msgWithActual(IS_EMPTY)),
+      withSubjectArgumentCondition(AssertJChainSimplificationIndex::isZeroIntOrLong, AssertJChainSimplificationIndex::isCollectionSize, msgWithActual(IS_EMPTY)),
+      withSubjectArgumentCondition(AssertJChainSimplificationIndex::isZeroIntOrLong, AssertJChainSimplificationIndex::isArrayLength, msgWithActual(IS_EMPTY)),
       withSubjectArgumentCondition(AssertJChainSimplificationIndex::isZeroIntOrLong, AssertJChainSimplificationIndex::isNotObject, "isZero()"),
       methodCallInSubject(Matchers.TO_STRING, msgWithActualCustom("hasToString", "expectedString")),
       methodCallInSubject(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.HASH_CODE), Matchers.HASH_CODE, msgWithActualExpected("hasSameHashCodeAs")),
@@ -435,7 +438,29 @@ public class AssertJChainSimplificationIndex {
   private static boolean isArrayLength(ExpressionTree expression) {
     if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expression;
-      return memberSelectExpressionTree.expression().symbolType().isArray() && LENGTH.equals(memberSelectExpressionTree.identifier().name());
+      if (memberSelectExpressionTree.expression().symbolType().isArray()) {
+        return LENGTH.equals(memberSelectExpressionTree.identifier().name());
+      }
+    }
+    return false;
+  }
+
+  private static boolean isCollectionSize(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree invocation = (MethodInvocationTree) expression;
+      if (invocation.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        return Matchers.COLLECTION_SIZE.matches(invocation);
+      }
+    }
+    return false;
+  }
+
+  private static boolean isStringLength(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree invocation = (MethodInvocationTree) expression;
+      if (invocation.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        return Matchers.STRING_LENGTH.matches(invocation);
+      }
     }
     return false;
   }
