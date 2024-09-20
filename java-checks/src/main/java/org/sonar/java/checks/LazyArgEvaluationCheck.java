@@ -81,6 +81,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
       .ofSubTypes(LOGGER)
       .names(testMethodNames(METHOD_NAMES))
       .addWithoutParametersMatcher()
+      .addParametersMatcher(MARKER)
       .build();
   }
 

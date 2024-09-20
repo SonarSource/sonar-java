@@ -36,6 +36,14 @@ class LazyArgEvaluationCheckTest {
   }
 
   @Test
+  void test_fps() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/LazyArgEvaluationCheckSampleFPs.java"))
+      .withCheck(new LazyArgEvaluationCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/LazyArgEvaluationCheckSample.java"))
