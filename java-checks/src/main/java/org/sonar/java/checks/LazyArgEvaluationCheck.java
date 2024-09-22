@@ -227,6 +227,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitReturnStatement(ReturnStatementTree tree) {
     if (insideLevelTest()) {
+      // record when a return is detected within a log test
       insideLevelTestReturnStatementFound = true;
     }
   }
@@ -240,6 +241,8 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
   public void visitMethod(MethodTree tree) {
     // we put method trees on stack to be able to detect log statements in anonymous classes
     stackAndContinue(tree, super::visitMethod);
+    // once a method is exited, then this field cannot be true (if it was set to true)
+    insideLevelTestReturnStatementFound = false;
   }
 
   private boolean insideLevelTest() {

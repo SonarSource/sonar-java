@@ -7,6 +7,7 @@ import org.slf4j.MarkerFactory;
 
 // https://community.sonarsource.com/t/false-positive-on-java-s2629/42091
 class AFalsePositveFromTheCommunity {
+
   void foo() {
     final Marker myMarker = MarkerFactory.getMarker("MY_MARKER");
     final Logger logger = LoggerFactory.getLogger(A.class);
@@ -22,16 +23,20 @@ class AFalsePositveFromTheCommunity {
   Object doSomething() {
     return null;
   }
+
 }
 
 // https://community.sonarsource.com/t/s2629-despite-using-isinfoenabled/120810
 class AnotherFalsePositveFromTheCommunity {
+
   void foo() {
     final Marker myMarker = MarkerFactory.getMarker("MY_MARKER");
     final Logger logger = LoggerFactory.getLogger(A.class);
 
     logger.debug(myMarker, "message3: {}.", doSomething()); // Compliant - because we don't care about small performance loss in exceptional paths
+    logger.debug(myMarker, "message4: {}.", doSomething() + "yolo"); // Noncompliant {{Invoke method(s) only conditionally. Use the built-in formatting to construct this argument.}}
 
+    // this return makes the later debug statements in this method compliant
     if (!logger.isDebugEnabled(myMarker)) {
       return;
     }
@@ -39,7 +44,18 @@ class AnotherFalsePositveFromTheCommunity {
     logger.debug(myMarker, "message4a: {}.", doSomething()); // Compliant
   }
 
+  void fooBar() {
+    final Marker myMarker = MarkerFactory.getMarker("MY_MARKER");
+    final Logger logger = LoggerFactory.getLogger(A.class);
+
+    // test without return statement
+    logger.debug(myMarker, "message3: {}.", doSomething()); // Compliant - because we don't care about small performance loss in exceptional paths
+    logger.debug(myMarker, "message4: {}.", doSomething() + "yolo"); // Noncompliant {{Invoke method(s) only conditionally. Use the built-in formatting to construct this argument.}}
+  }
+
+
   Object doSomething() {
     return null;
   }
+
 }

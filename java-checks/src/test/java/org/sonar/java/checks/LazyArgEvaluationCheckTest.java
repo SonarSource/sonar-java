@@ -40,7 +40,7 @@ class LazyArgEvaluationCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/LazyArgEvaluationCheckSampleFPs.java"))
       .withCheck(new LazyArgEvaluationCheck())
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
   @Test
