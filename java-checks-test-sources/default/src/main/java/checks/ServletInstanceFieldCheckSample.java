@@ -2,8 +2,20 @@ package checks;
 
 import java.util.function.Function;
 import javax.annotation.Resource;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import org.apache.struts.action.Action;
+
+class S2226FP extends HttpServlet {
+  private int first; // Compliant FP
+  private long second; // Compliant
+
+  @Override
+  public void init() throws ServletException {
+    this.first = 42;
+    second = this.first * 2;
+  }
+}
 
 @interface Inject{}
 
@@ -83,3 +95,4 @@ class HttpServletE extends HttpServlet {
     }
   }
 }
+

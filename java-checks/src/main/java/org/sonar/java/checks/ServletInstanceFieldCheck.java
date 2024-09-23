@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -107,11 +108,19 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
   private class AssignmentVisitor extends BaseTreeVisitor {
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+      // not yet sure it will satisfy conditions, so null
+      Tree declaration = null;
+      // try to set declaration
       if (tree.variable().is(Kind.IDENTIFIER)) {
-        Tree declaration = ((IdentifierTree) tree.variable()).symbol().declaration();
-        if (declaration != null && declaration.is(Kind.VARIABLE)) {
-          excludedVariables.add((VariableTree) declaration);
-        }
+        // handles e.g. "second = this.first * 2;" assignments -> no "this" prefix to member "second"
+        declaration = ((IdentifierTree) tree.variable()).symbol().declaration();
+      } else if (tree.variable().is(Kind.MEMBER_SELECT)) {
+        // handles e.g. "this.first = 42;" assignments -> member "first" is prefixed with "this."
+        declaration = ((MemberSelectExpressionTree) tree.variable()).identifier().symbol().declaration();
+      }
+      // if declaration set, and a variable, then add to excluded
+      if (declaration != null && declaration.is(Kind.VARIABLE)) {
+        excludedVariables.add((VariableTree) declaration);
       }
     }
   }
