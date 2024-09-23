@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -81,11 +80,11 @@ public class QuickFixesResolutionTest {
   }
 
   @Test
-  public void testCompilationAfterQuickfixes() throws Exception {
+  public void testParsingAfterQuickfixes() throws Exception {
     cloneJavaCheckTestSources();
     var applier = new QuickFixesApplier();
     List<InputFile> files = collectJavaFiles(tmpProjectClone.getRoot().getAbsolutePath());
-    applier.verifyAll(files);
+    applier.scanAndApplyQuickFixes(files);
     LOG.info("Analysis complete with {} quickfixes found", applier.getQuickfixesCount());
     assertThat(validateFilesStillParse(files)).isTrue();
   }
@@ -105,7 +104,7 @@ public class QuickFixesResolutionTest {
     }
   }
 
-  private static List<InputFile> collectJavaFiles(String directory) {
+  private static List<InputFile> collectJavaFiles(String directory) throws IOException {
     Path start = Paths.get(directory);
     int maxDepth = Integer.MAX_VALUE; // this is to say that it should search as deep as possible
     try (Stream<Path> stream = Files.walk(start, maxDepth)) {
@@ -113,10 +112,7 @@ public class QuickFixesResolutionTest {
         .filter(path -> path.toString().endsWith(".java"))
         .map(path -> TestUtils.inputFile(path.toFile()))
         .toList();
-    } catch (IOException e) {
-      LOG.error("Unable to read {}", directory);
     }
-    return Collections.emptyList();
   }
 
   private static boolean validateFilesStillParse(List<InputFile> inputFiles) {

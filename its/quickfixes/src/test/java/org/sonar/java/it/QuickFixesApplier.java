@@ -63,7 +63,7 @@ public class QuickFixesApplier {
     DEFAULT_CLASSPATH = TestClasspathUtils.loadFromFile(path.toString());
   }
 
-  public void verifyAll(List<InputFile> files) throws IOException {
+  public void scanAndApplyQuickFixes(List<InputFile> files) throws IOException {
     List<JavaFileScanner> visitors = new ArrayList<>(ChecksListWithQuickFix.checks);
     SonarComponents sonarComponents = sonarComponents();
     VisitorsBridgeForQuickFixes visitorsBridge = new VisitorsBridgeForQuickFixes(visitors, DEFAULT_CLASSPATH, sonarComponents, new JavaVersionImpl(21));
