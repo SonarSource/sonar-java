@@ -25,3 +25,13 @@ record TestRecordSyntaxV2(String value) {
   }
 
 }
+
+record TestRecordSyntaxV3(Integer value)
+{ // Noncompliant
+  public TestRecordSyntaxV3(String v)
+  { // Noncompliant
+    this(Integer.parseInt(v));
+  }
+  public static final String CONST_1 = "IDK";
+  public static final String CONST_2 = "IDK";
+}

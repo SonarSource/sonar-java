@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import com.sonar.sslr.api.RecognitionException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -829,17 +828,15 @@ public class JParser {
     }
     if (!e.bodyDeclarations().isEmpty()) {
       // for records, bodyDeclarations may not be in the order encountered in file, for classes they are
-      return tokenManager.firstIndexBefore((ASTNode)
-        e.bodyDeclarations().stream().sorted((Comparator<ASTNode>) (o1, o2) -> {
-          // sort so that items are ordered by their start position
-          if (o1.getStartPosition() < o2.getStartPosition()) {
-            // we want the ordered by ascending start positions
-            return -1;
-          } else {
-            // start positions should never be the same, so just return 1 otherwise
-            return 1;
-          }
-        }).toList().get(0), TerminalTokens.TokenNameLBRACE);
+      List<BodyDeclaration> bodyDeclarations = e.bodyDeclarations();
+      BodyDeclaration firstDeclaration = bodyDeclarations.get(0);
+      for (int i = 1; i < bodyDeclarations.size(); i++) {
+        BodyDeclaration declaration = bodyDeclarations.get(i);
+        if (firstDeclaration.getStartPosition() > declaration.getStartPosition()) {
+          firstDeclaration = declaration;
+        }
+      }
+      return tokenManager.firstIndexBefore(firstDeclaration, TerminalTokens.TokenNameLBRACE);
     }
     return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
   }

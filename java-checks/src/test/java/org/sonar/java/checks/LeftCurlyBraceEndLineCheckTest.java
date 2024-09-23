@@ -46,7 +46,7 @@ class LeftCurlyBraceEndLineCheckTest {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/LeftCurlyBraceEndLineCheck_record.java"))
       .withCheck(new LeftCurlyBraceEndLineCheck())
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
   @Test
