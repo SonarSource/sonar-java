@@ -3,11 +3,9 @@ package checks;
 import play.Logger;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
