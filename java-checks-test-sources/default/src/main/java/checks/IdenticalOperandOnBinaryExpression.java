@@ -1,5 +1,7 @@
 package checks;
 
+import java.util.Random;
+
 class IdenticalOperandOnBinaryExpressionCheck {
   void foo(boolean a, boolean b, boolean c, boolean e) {
     if(a == b) { }
@@ -40,5 +42,17 @@ class IdenticalOperandOnBinaryExpressionCheck {
     java.util.Objects.deepEquals(a, a); // Noncompliant {{Correct one of the identical argument sub-expressions.}}
     java.util.Objects.deepEquals(a, b);
     java.util.Objects.isNull(a);
+  }
+
+  void sonarJava5096() {
+    Random r = new Random();
+    var a = r.nextBoolean() && r.nextBoolean(); // Compliant
+    var b = foo() - foo(); // Compliant
+    var c = (foo()) - (foo()); // Compliant
+    var d = (3 + foo() * 4) - (3 + foo() * 4); // Compliant
+  }
+
+  int foo() {
+    return 42;
   }
 }
