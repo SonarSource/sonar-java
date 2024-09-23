@@ -43,6 +43,10 @@ class S1989compliantvavr extends HttpServlet {
     Try.run(() -> {
       // let's try to raise an exception
     }).onFailure(logError); // Compliant
+
+    Try.run(() -> { // Noncompliant
+      // let's try to raise an exception
+    }).isEmpty();
   }
 }
 
