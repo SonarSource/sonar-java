@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -108,16 +109,16 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
   private class AssignmentVisitor extends BaseTreeVisitor {
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      // not yet sure it will satisfy conditions, so null
-      Tree declaration = null;
-      // try to set declaration
+      // handles e.g. "second = this.first * 2;" assignments -> no "this" prefix to member "second"
       if (tree.variable().is(Kind.IDENTIFIER)) {
-        // handles e.g. "second = this.first * 2;" assignments -> no "this" prefix to member "second"
-        declaration = ((IdentifierTree) tree.variable()).symbol().declaration();
-      } else if (tree.variable().is(Kind.MEMBER_SELECT)) {
-        // handles e.g. "this.first = 42;" assignments -> member "first" is prefixed with "this."
-        declaration = ((MemberSelectExpressionTree) tree.variable()).identifier().symbol().declaration();
+        maybeAddExcluded(((IdentifierTree) tree.variable()).symbol().declaration());
       }
+      // handles e.g. "this.first = 42;" assignments -> member "first" is prefixed with "this."
+      if (tree.variable().is(Kind.MEMBER_SELECT)) {
+        maybeAddExcluded(((MemberSelectExpressionTree) tree.variable()).identifier().symbol().declaration());
+      }
+    }
+    private void maybeAddExcluded(@Nullable Tree declaration) {
       // if declaration set, and a variable, then add to excluded
       if (declaration != null && declaration.is(Kind.VARIABLE)) {
         excludedVariables.add((VariableTree) declaration);
