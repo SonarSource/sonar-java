@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
