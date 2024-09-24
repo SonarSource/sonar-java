@@ -7,6 +7,14 @@ import java.util.Set;
 
 abstract class ArrayCopyLoopCheckSample implements Collection<Integer> {
 
+  public Integer[] classToClass(Long[] arr) {
+    Integer[] result = new Integer[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto boxing */ arr[i].intValue(); // Compliant
+    }
+    return result;
+  }
+
   public Integer[] boxed(int[] arr) {
     Integer[] result = new Integer[arr.length];
     for (int i = 0; i < arr.length; i++) {
