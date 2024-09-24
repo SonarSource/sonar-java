@@ -24,10 +24,9 @@ class S1989noncompliantvavr extends HttpServlet {
       // let's try to raise an exception
     });
 
-    Try.of(() -> { // Compliant
+    Try.run(() -> { // Noncompliant
       // let's try to raise an exception
-      return null;
-    });
+    }).isEmpty();
   }
 }
 
@@ -38,13 +37,14 @@ class S1989compliantvavr extends HttpServlet {
   @Override
   protected final void doGet(HttpServletRequest request, HttpServletResponse response) {
     final Consumer<Throwable> logError = x -> Logger.error("hey"+x.getMessage(), x);
-    Try.run(() -> {
+    Try.run(() -> { // Compliant
       // let's try to raise an exception
-    }).onFailure(logError); // Compliant
+    }).onFailure(logError);
 
-    Try.run(() -> { // Noncompliant
+    Try.of(() -> { // Compliant
       // let's try to raise an exception
-    }).isEmpty();
+      return null;
+    });
   }
 }
 
