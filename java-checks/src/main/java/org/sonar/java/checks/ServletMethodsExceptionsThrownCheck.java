@@ -101,7 +101,8 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
       && memberSelect.expression() instanceof IdentifierTree identifier && "Try".equals(identifier.name())
       && "run".equals(memberSelect.identifier().name())) {
       Tree parent = ExpressionUtils.getParentOfType(memberSelect, Tree.Kind.MEMBER_SELECT);
-      if (parent == null || (parent instanceof MemberSelectExpressionTree parentMemberSelect && !"onFailure".equals(parentMemberSelect.identifier().name()))) {
+      var parentMemberSelect = (MemberSelectExpressionTree) parent;
+      if (parentMemberSelect == null || !"onFailure".equals(parentMemberSelect.identifier().name())) {
         reportIssue(memberSelect, "Handle the exception thrown by this method call.");
         return;
       }
