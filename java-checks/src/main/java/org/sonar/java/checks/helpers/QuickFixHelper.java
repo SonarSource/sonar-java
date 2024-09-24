@@ -34,9 +34,11 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Position;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -227,6 +229,28 @@ public class QuickFixHelper {
     sb.append(ListUtils.getLast(lines), 0, endIndex);
 
     return sb.toString();
+  }
+
+  public static String contentOfTreeTokens(Tree tree, JavaFileScannerContext context) {
+    StringBuilder sb = new StringBuilder();
+    JavaTree javaTree = (JavaTree) tree;
+    for (SyntaxToken st : javaTree.allTokens()) {
+      sb.append(contentForRange(st, st, context));
+    }
+    return sb.toString();
+  }
+
+  public static void addParenthesisIfRequired(JavaQuickFix.Builder quickFixBuilder, ExpressionTree expression) {
+    if (isLowerOperatorPrecedenceThanLogicalAnd(expression)) {
+      quickFixBuilder.addTextEdit(JavaTextEdit.insertBeforeTree(expression, "("));
+      quickFixBuilder.addTextEdit(JavaTextEdit.insertAfterTree(expression, ")"));
+    }
+  }
+
+  private static boolean isLowerOperatorPrecedenceThanLogicalAnd(ExpressionTree expression) {
+    return (expression instanceof BinaryExpressionTree binExpression)
+      ? "||".equals(binExpression.operatorToken().text())
+      : expression.is(Tree.Kind.CONDITIONAL_EXPRESSION, Tree.Kind.ASSIGNMENT);
   }
 
   /**

@@ -8,8 +8,15 @@ import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.val;
 
 public class CollectorsToListCheckSample {
+
+  void lombok_val() {
+    // Lombok val is not supported, in this case the symbolType of the collect method invocation is unknown
+    val unknownSymbolStream = Stream.of("A", "B", "C").collect(Collectors.toList()); // Compliant
+  }
+
   static class ListWrapper {
     List<String> strings;
   }

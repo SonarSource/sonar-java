@@ -178,7 +178,7 @@ class JavaAstScannerTest {
     scanWithJavaVersion(8, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
     assertThat(logTester.logs(Level.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-      "Parse error at line 3 column 12: Switch Expressions are supported from Java 14 onwards only"
+      "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only"
     );
   }
 
@@ -282,7 +282,7 @@ class JavaAstScannerTest {
       .contains("1/1 source file has been analyzed");
     assertThat(logTester.logs(Level.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-      "Parse error at line 3 column 12: Switch Expressions are supported from Java 14 onwards only"
+      "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only"
     );
     assertThat(logTester.logs(Level.WARN))
       // two files, only one log
@@ -305,7 +305,7 @@ class JavaAstScannerTest {
     assertThat(logTester.logs(Level.WARN)).isEmpty();
     assertThat(logTester.logs(Level.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-      "Parse error at line 3 column 12: Switch Expressions are supported from Java 14 onwards only"
+      "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only"
     );
   }
 

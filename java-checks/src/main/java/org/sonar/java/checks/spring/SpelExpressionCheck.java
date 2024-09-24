@@ -69,7 +69,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
    * </pre>
    */
   private static final Pattern PROPERTY_PLACEHOLDER_PATTERN = Pattern.compile(
-    "[a-zA-Z0-9_-]++(\\[\\d++])*+(\\.[a-zA-Z0-9_-]++(\\[\\d++])*+)*+"
+    "[a-zA-Z0-9/_-]++(\\[\\d++])*+(\\.[a-zA-Z0-9/_-]++(\\[\\d++])*+)*+"
   );
 
   public List<Tree.Kind> nodesToVisit() {
@@ -268,7 +268,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
       var endIndex = parseDelimitersAndContents(stripped, 1, startColumn + 2, contentsParser);
       return endIndex == segment.stripTrailing().length();
     }
-    return segment.indexOf(':') < 0;
+    return true;
   }
 
   private static ObjIntConsumer<String> getContentsParser(String contents) {

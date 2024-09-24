@@ -42,4 +42,14 @@ class LoggersDeclarationCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_interface() {
+    LoggersDeclarationCheck check = new LoggersDeclarationCheck();
+    check.format = ".*";
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LoggersDeclarationCheckInterface.java")
+      .withCheck(check)
+      .verifyNoIssues();
+  }
+
 }

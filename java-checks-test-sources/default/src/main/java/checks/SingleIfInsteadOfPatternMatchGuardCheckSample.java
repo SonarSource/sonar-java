@@ -2,6 +2,24 @@ package checks;
 
 public class SingleIfInsteadOfPatternMatchGuardCheckSample {
 
+  // fix@qf4 {{Merge this "if" statement with the enclosing pattern match guard.}}
+  // edit@qf4 [[sl=+0;el=+2;sc=9;ec=10]] {{System.out.println("even");}}
+  // edit@qf4 [[sl=-1;el=-1;sc=44;ec=44]] {{ && x % 2 == 0 }}
+  // edit@qf4 [[sl=-1;el=-1;sc=28;ec=28]] {{(}}
+  // edit@qf4 [[sl=-1;el=-1;sc=43;ec=43]] {{)}}
+  void test(Foo foo){
+    switch (foo){
+      case Foo(var x) when x < 0 || x > 10 -> {
+        if (x % 2 == 0) { // Noncompliant [[quickfixes=qf4]]
+          System.out.println("even");
+        }
+      }
+      default -> {}
+    }
+  }
+
+  record Foo (int x) {}
+
   // fix@qf3 {{Merge this "if" statement with the enclosing pattern match guard.}}
   // edit@qf3 [[sl=+0;el=+2;sc=9;ec=10]] {{System.out.println("two");}}
   // edit@qf3 [[sl=-2;el=-2;sc=44;ec=44]] {{ && s.length() == 2 }}

@@ -283,13 +283,13 @@ public class JParser {
   static JavaTree.CompilationUnitTreeImpl convert(String version, String unitName, String source, CompilationUnit astNode) {
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).toList();
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
+    LineColumnConverter lineColumnConverter = new LineColumnConverter(source);
     if (possibleSyntaxError.isPresent()) {
       IProblem syntaxError = possibleSyntaxError.get();
-      int line = syntaxError.getSourceLineNumber();
-      int column = astNode.getColumnNumber(syntaxError.getSourceStart());
-      String message = String.format("Parse error at line %d column %d: %s", line, column, syntaxError.getMessage());
+      LineColumnConverter.Pos pos = lineColumnConverter.toPos(syntaxError.getSourceStart());
+      String message = String.format("Parse error at line %d column %d: %s", pos.line(), pos.columnOffset() + 1, syntaxError.getMessage());
       // interrupt parsing
-      throw new RecognitionException(line, message);
+      throw new RecognitionException(pos.line(), message);
     }
 
     Set<JProblem> undefinedTypes = errors.stream()
@@ -303,11 +303,12 @@ public class JParser {
     converter.sema = new JSema(astNode.getAST());
     converter.sema.undefinedTypes.addAll(undefinedTypes);
     converter.compilationUnit = astNode;
-    converter.tokenManager = createTokenManager(version, unitName, source);
+    converter.tokenManager = new TokenManager(lex(version, unitName, source.toCharArray()), source, new DefaultCodeFormatterOptions(new HashMap<>()));
+    converter.lineColumnConverter = lineColumnConverter;
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;
-    JWarning.Mapper.warningsFor(astNode).mappedInto(tree);
+    JWarning.Mapper.warningsFor(astNode, converter.lineColumnConverter).mappedInto(tree);
 
     ASTUtils.mayTolerateMissingType(astNode.getAST());
 
@@ -369,6 +370,7 @@ public class JParser {
   private CompilationUnit compilationUnit;
 
   private TokenManager tokenManager;
+  private LineColumnConverter lineColumnConverter;
 
   private JSema sema;
 
@@ -470,29 +472,17 @@ public class JParser {
 
   private InternalSyntaxToken createSyntaxToken(int tokenIndex) {
     Token t = tokenManager.get(tokenIndex);
+    String value;
+    boolean isEOF;
     if (t.tokenType == TerminalTokens.TokenNameEOF) {
-      if (t.originalStart == 0) {
-        return new InternalSyntaxToken(1, 0, "", collectComments(tokenIndex), true);
-      }
-      final int position = t.originalStart - 1;
-      final char c = tokenManager.getSource().charAt(position);
-      int line = compilationUnit.getLineNumber(position);
-      int column = compilationUnit.getColumnNumber(position);
-      if (c == '\n' || c == '\r') {
-        line++;
-        column = 0;
-      } else {
-        column++;
-      }
-      return new InternalSyntaxToken(line, column, "", collectComments(tokenIndex), true);
+      isEOF = true;
+      value = "";
+    } else {
+      isEOF = false;
+      value = t.toString(tokenManager.getSource());
     }
-    return new InternalSyntaxToken(
-      compilationUnit.getLineNumber(t.originalStart),
-      compilationUnit.getColumnNumber(t.originalStart),
-      t.toString(tokenManager.getSource()),
-      collectComments(tokenIndex),
-      false
-    );
+    LineColumnConverter.Pos pos = lineColumnConverter.toPos(t.originalStart);
+    return new InternalSyntaxToken(pos.line(), pos.columnOffset(), value, collectComments(tokenIndex), isEOF);
   }
 
   private InternalSyntaxToken createSpecialToken(int tokenIndex) {
@@ -500,13 +490,8 @@ public class JParser {
     List<SyntaxTrivia> comments = t.tokenType == TerminalTokens.TokenNameGREATER
       ? collectComments(tokenIndex)
       : Collections.emptyList();
-    return new InternalSyntaxToken(
-      compilationUnit.getLineNumber(t.originalEnd),
-      compilationUnit.getColumnNumber(t.originalEnd),
-      ">",
-      comments,
-      false
-    );
+    LineColumnConverter.Pos pos = lineColumnConverter.toPos(t.originalEnd);
+    return new InternalSyntaxToken(pos.line(), pos.columnOffset(), ">", comments, false);
   }
 
   private List<SyntaxTrivia> collectComments(int tokenIndex) {
@@ -517,10 +502,11 @@ public class JParser {
     List<SyntaxTrivia> comments = new ArrayList<>();
     for (int i = commentIndex; i < tokenIndex; i++) {
       Token t = tokenManager.get(i);
+      LineColumnConverter.Pos pos = lineColumnConverter.toPos(t.originalStart);
       comments.add(new InternalSyntaxTrivia(
         t.toString(tokenManager.getSource()),
-        compilationUnit.getLineNumber(t.originalStart),
-        compilationUnit.getColumnNumber(t.originalStart)
+        pos.line(),
+        pos.columnOffset()
       ));
     }
     return comments;
@@ -867,7 +853,16 @@ public class JParser {
       return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
     }
     if (!e.bodyDeclarations().isEmpty()) {
-      return tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
+      // for records, bodyDeclarations may not be in the order encountered in file, for classes they are
+      List<BodyDeclaration> bodyDeclarations = e.bodyDeclarations();
+      BodyDeclaration firstDeclaration = bodyDeclarations.get(0);
+      for (int i = 1; i < bodyDeclarations.size(); i++) {
+        BodyDeclaration declaration = bodyDeclarations.get(i);
+        if (firstDeclaration.getStartPosition() > declaration.getStartPosition()) {
+          firstDeclaration = declaration;
+        }
+      }
+      return tokenManager.firstIndexBefore(firstDeclaration, TerminalTokens.TokenNameLBRACE);
     }
     return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
   }
@@ -2599,15 +2594,15 @@ public class JParser {
   }
 
   private JavaTree.ParameterizedTypeTreeImpl convertParameterizedType(ParameterizedType e) {
-    int pos = e.getStartPosition() + e.getLength() - 1;
+    LineColumnConverter.Pos pos = lineColumnConverter.toPos(e.getStartPosition() + e.getLength() - 1);
     JavaTree.ParameterizedTypeTreeImpl t = new JavaTree.ParameterizedTypeTreeImpl(
       convertType(e.getType()),
       convertTypeArguments(
         firstTokenAfter(e.getType(), TerminalTokens.TokenNameLESS),
         e.typeArguments(),
         new InternalSyntaxToken(
-          compilationUnit.getLineNumber(pos),
-          compilationUnit.getColumnNumber(pos),
+          pos.line(),
+          pos.columnOffset(),
           ">",
           /* TODO */ Collections.emptyList(),
           false

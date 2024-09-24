@@ -28,6 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -70,7 +71,21 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isVisibleForTestingAnnotation(AnnotationInstance annotationInstance) {
-    return "VisibleForTesting".equals(annotationInstance.symbol().name());
+    return "VisibleForTesting".equals(annotationInstance.symbol().name())
+      && !isOtherwiseProtected(annotationInstance);
+  }
+
+  private static boolean isOtherwiseProtected(AnnotationInstance annotationInstance) {
+    List<SymbolMetadata.AnnotationValue> values = annotationInstance.values();
+    for (SymbolMetadata.AnnotationValue value : values) {
+      // Note: constant to support is androidx.annotation.VisibleForTesting.PROTECTED=4
+      if ("otherwise".equals(value.name()) &&
+        value.value() instanceof Integer &&
+        Integer.valueOf(4).equals(value.value())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean inTheSameFile(Symbol symbol) {

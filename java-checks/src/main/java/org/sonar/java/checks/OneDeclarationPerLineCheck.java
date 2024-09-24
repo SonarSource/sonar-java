@@ -35,7 +35,6 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -120,20 +119,34 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
 
   private JavaTextEdit getEditForVariable(VariableTree variableTree, SyntaxToken previousToken, String indentationOfLine) {
     if (",".equals(previousToken.text())) {
-      return JavaTextEdit.replaceTextSpan(textSpanBetween(previousToken, true, variableTree.simpleName(), false),
-        String.format(";\n%s%s ", indentationOfLine, modifiersAndType(variableTree)));
+      boolean isTypeFragmented = isTypeFragmented(variableTree);
+      Tree endTree = isTypeFragmented ? variableTree.type().lastToken() : variableTree.simpleName();
+      return JavaTextEdit.replaceTextSpan(
+        textSpanBetween(previousToken, true, endTree, isTypeFragmented),
+        String.format(";\n%s%s ", indentationOfLine, modifiersAndType(variableTree, isTypeFragmented)));
     } else {
       return JavaTextEdit.replaceTextSpan(textSpanBetween(previousToken, false, variableTree, false),
         String.format("\n%s", indentationOfLine));
     }
   }
 
-  private String modifiersAndType(VariableTree variableTree) {
-    ModifiersTree modifiers = variableTree.modifiers();
-    if (modifiers.isEmpty()) {
-      return QuickFixHelper.contentForTree(variableTree.type(), context);
+  private String modifiersAndType(VariableTree variableTree, boolean isTypeFragmented) {
+    StringBuilder sb = new StringBuilder();
+    if (!variableTree.modifiers().isEmpty()) {
+      sb.append(QuickFixHelper.contentOfTreeTokens(variableTree.modifiers(), context));
+      sb.append(" ");
     }
-    return QuickFixHelper.contentForRange(variableTree.modifiers().firstToken(), variableTree.type().lastToken(), context);
+    sb.append(QuickFixHelper.contentOfTreeTokens(variableTree.type(), context));
+    sb.append(" ");
+    if (isTypeFragmented) {
+      sb.append(variableTree.simpleName().name());
+    }
+    return sb.toString();
+  }
+
+  private static boolean isTypeFragmented(VariableTree variableTree) {
+    var lastToken = variableTree.type().lastToken();
+    return lastToken.range().end().isAfter(variableTree.simpleName().identifierToken().range().start());
   }
 
   private String indentationOfLine(Tree tree) {

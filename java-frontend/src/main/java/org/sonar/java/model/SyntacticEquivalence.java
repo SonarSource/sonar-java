@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -96,8 +95,7 @@ public final class SyntacticEquivalence {
     return true;
   }
 
-  @VisibleForTesting
-  static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode, BiPredicate<JavaTree, JavaTree> overwriteEquivalence, boolean equivalenceValue) {
+  public static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode, BiPredicate<JavaTree, JavaTree> overwriteEquivalence, boolean equivalenceValue) {
     return areEquivalent((JavaTree) leftNode, (JavaTree) rightNode, overwriteEquivalence, equivalenceValue);
   }
 

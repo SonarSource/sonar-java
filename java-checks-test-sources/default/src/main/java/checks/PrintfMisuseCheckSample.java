@@ -454,3 +454,13 @@ class sonarjava3044 {
     log.debug("message");
   }
 }
+
+class SonarJava5098 {
+  void foo() {
+    String.format("\\newpage %n"); // Compliant
+    String.format("\\\newpage %n"); // Noncompliant {{%n should be used in place of \n to produce the platform-specific line separator.}}
+    String.format("\newpage %n"); // Noncompliant
+    String.format("aaa\\naaa\\\\naaa\\\\\na%naaa\\\\\\n"); // Noncompliant
+    String.format("aaa\\naaa\\\\naaa\\\\na%naaa\\\\\\n"); // Compliant
+  }
+}

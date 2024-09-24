@@ -2,15 +2,53 @@ name: Releasability status
 
 on:
   workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      version:
+        description: Optional; Used to specify the version to check, otherwise pulls the latest master version from artifactory.
+        required: false
 
 jobs:
-  update_releasability_status:
+  releasability-job:
+    name: Releasability check
     runs-on: ubuntu-latest
-    name: Releasability status
     permissions:
-      id-token: write
-      contents: read
+      id-token: write      # required by SonarSource/vault-action-wrapper
+      contents: read       # required by checkout
     steps:
-      - uses: SonarSource/gh-action_releasability/releasability-status@23c9ad31b2d613bade88da898dfdca0b5c65ac69 # v1.2.1
+      - name: Retrieve Vault Secrets
+        id: secrets
+        uses: SonarSource/vault-action-wrapper@v3
+        with:
+          secrets: |
+            development/artifactory/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_PASSWORD;
+            development/artifactory/token/{REPO_OWNER_NAME_DASH}-private-reader role | ARTIFACTORY_ROLE;
+            development/kv/data/repox url | ARTIFACTORY_URL;
+
+      - name: Get the latest available version number
+        id: latest-version
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ARTIFACTORY_PRIVATE_USERNAME: vault-${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_ROLE }}
+          ARTIFACTORY_PRIVATE_PASSWORD: ${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_PASSWORD }}
+          ARTIFACTORY_URL: ${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_URL }}
+          REPO: sonarsource-public-builds
+          GROUP_ID: org.sonarsource.java
+          ARTIFACT_ID: sonar-java-plugin
+        run: |
+          if [[ -z "${{ github.event.inputs.version }}" ]]; then
+            echo "version not provided, pulling latest version from $REPO."
+            echo LATEST_VERSION=$(curl -s -u ${ARTIFACTORY_PRIVATE_USERNAME}:${ARTIFACTORY_PRIVATE_PASSWORD} \
+            "${ARTIFACTORY_URL}/api/search/latestVersion?g=${GROUP_ID}&a=${ARTIFACT_ID}&repos=${REPO}") >> "$GITHUB_OUTPUT"
+          else
+            echo "version is provided, using its value: ${{ github.event.inputs.version }}."
+            echo "LATEST_VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: SonarSource/gh-action_releasability@v2
+        id: releasability
+        with:
+          branch: ${{ github.ref_name }}
+          commit-sha: ${{ github.sha }}
+          organization: ${{ github.repository_owner }}
+          repository: ${{ github.event.repository.name }}
+          version: ${{ steps.latest-version.outputs.LATEST_VERSION }}

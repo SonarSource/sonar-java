@@ -72,6 +72,17 @@ public abstract class JavaTree implements Tree {
 
   private List<Tree> children;
 
+  public List<SyntaxToken> allTokens() {
+    List<SyntaxToken> list = new ArrayList<>();
+    if (this instanceof SyntaxToken st) {
+      list.add(st);
+    } else {
+      for (Tree tree : children) {
+        list.addAll(((JavaTree) tree).allTokens());
+      }
+    }
+    return list;
+  }
 
   @Override
   @Nullable
