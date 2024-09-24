@@ -827,7 +827,16 @@ public class JParser {
       return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
     }
     if (!e.bodyDeclarations().isEmpty()) {
-      return tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
+      // for records, bodyDeclarations may not be in the order encountered in file, for classes they are
+      List<BodyDeclaration> bodyDeclarations = e.bodyDeclarations();
+      BodyDeclaration firstDeclaration = bodyDeclarations.get(0);
+      for (int i = 1; i < bodyDeclarations.size(); i++) {
+        BodyDeclaration declaration = bodyDeclarations.get(i);
+        if (firstDeclaration.getStartPosition() > declaration.getStartPosition()) {
+          firstDeclaration = declaration;
+        }
+      }
+      return tokenManager.firstIndexBefore(firstDeclaration, TerminalTokens.TokenNameLBRACE);
     }
     return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
   }
