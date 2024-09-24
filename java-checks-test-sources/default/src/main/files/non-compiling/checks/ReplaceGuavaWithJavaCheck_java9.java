@@ -60,8 +60,8 @@ class ReplaceGuavaWithJavaCheck {
   }
 
   void immutableCollections() {
-    ImmutableSet.of("A", "B", "C"); // Noncompliant {{Use "java.util.Set.of()" instead.}}
+    ImmutableSet.of("A", "B", "C"); // Compliant, because ImmutableSet.of keeps the order of the elements
     ImmutableList.of("A", "B", "C"); // Noncompliant {{Use "java.util.List.of()" instead.}}
-    ImmutableMap.of("A", "B", "C", "D"); // Noncompliant {{Use "java.util.Map.of()" or "java.util.Map.ofEntries()" instead.}}
+    ImmutableMap.of("A", "B", "C", "D"); // Compliant, because ImmutableMap.of keeps the order of the elements
   }
 }
