@@ -1,12 +1,64 @@
 package checks;
 
+import play.Logger;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.function.Consumer;
+import io.vavr.control.Try;
+
+// http://localhost:9090/securityapp/s1989/noncompliantvavr
+@WebServlet(urlPatterns = "/s1989/noncompliantvavr")
+class S1989noncompliantvavr extends HttpServlet {
+
+  @Override
+  protected final void doGet(HttpServletRequest request, HttpServletResponse response) {
+
+    Try.run(() -> { // Noncompliant
+      // let's try to raise an exception
+    });
+
+    Try.run(() -> { // Noncompliant
+      // let's try to raise an exception
+    }).isEmpty();
+
+    Try.runRunnable(() -> { // Noncompliant
+      // let's try to raise an exception
+    });
+
+    Try.runRunnable(() -> { // Noncompliant
+      // let's try to raise an exception
+    }).isEmpty();
+  }
+}
+
+// http://localhost:9090/securityapp/s1989/compliantvavr
+@WebServlet(urlPatterns = "/s1989/compliantvavr")
+class S1989compliantvavr extends HttpServlet {
+
+  @Override
+  protected final void doGet(HttpServletRequest request, HttpServletResponse response) {
+    final Consumer<Throwable> logError = x -> Logger.error("hey"+x.getMessage(), x);
+    Try.run(() -> { // Compliant
+      // let's try to raise an exception
+    }).onFailure(logError);
+
+    Try.runRunnable(() -> { // Compliant
+      // let's try to raise an exception
+    }).onFailure(logError);
+
+    Try.of(() -> { // Compliant
+      // let's try to raise an exception
+      return null;
+    });
+  }
+}
 
 class ServletMethodsExceptionsThrownCheckSample extends HttpServlet {
 

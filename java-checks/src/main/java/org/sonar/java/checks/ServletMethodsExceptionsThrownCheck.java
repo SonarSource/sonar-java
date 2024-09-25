@@ -33,6 +33,8 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
@@ -95,6 +97,15 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
   }
 
   private void checkMethodInvocation(MethodInvocationTree node) {
+    if (node.methodSelect() instanceof MemberSelectExpressionTree memberSelect && isRunMethod(memberSelect)) {
+      Tree parent = ExpressionUtils.getParentOfType(memberSelect, Tree.Kind.MEMBER_SELECT);
+      var parentMemberSelect = (MemberSelectExpressionTree) parent;
+      if (parentMemberSelect == null || !"onFailure".equals(parentMemberSelect.identifier().name())) {
+        reportIssue(memberSelect, "Handle the exception thrown by this method call.");
+        return;
+      }
+    }
+    
     Symbol.MethodSymbol symbol = node.methodSymbol();
     if (!symbol.isUnknown()) {
       List<Type> types = symbol.thrownTypes();
@@ -102,6 +113,11 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
         addIssueIfNotCaught(types, ExpressionUtils.methodName(node), symbol.name());
       }
     }
+  }
+
+  private static boolean isRunMethod(MemberSelectExpressionTree memberSelect) {
+    return memberSelect.expression() instanceof IdentifierTree identifier && "Try".equals(identifier.name())
+      && ("run".equals(memberSelect.identifier().name()) || "runRunnable".equals(memberSelect.identifier().name()));
   }
 
   private void addIssueIfNotCaught(Type thrown, Tree node) {
