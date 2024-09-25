@@ -43,6 +43,14 @@ class UnusedTestRuleCheckTest {
   }
 
   @Test
+  void test_UseProtected() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/UnusedTestRuleCheck_Protected.java"))
+      .withCheck(new UnusedTestRuleCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_no_issues_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath("checks/tests/UnusedTestRuleCheck_JUnit5.java"))
