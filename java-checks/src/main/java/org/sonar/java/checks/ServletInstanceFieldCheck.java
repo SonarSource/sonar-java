@@ -116,9 +116,12 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
       }
       // handles e.g. "this.first = 42;" assignments -> member "first" is prefixed with "this."
       if (variable.is(Kind.MEMBER_SELECT)) {
-        var memberSelectExpressionTree = (MemberSelectExpressionTree) variable;
-        if ("this".equals(memberSelectExpressionTree.expression().toString())) {
-          addVariableToExcluded(memberSelectExpressionTree.identifier().symbol().declaration());
+        var memberSelectTree = (MemberSelectExpressionTree) variable;
+        if (memberSelectTree.expression().is(Tree.Kind.IDENTIFIER)) {
+          String identifierText = ((IdentifierTree) memberSelectTree.expression()).identifierToken().text();
+          if ("this".equals(identifierText)) {
+            addVariableToExcluded(memberSelectTree.identifier().symbol().declaration());
+          }
         }
       }
     }
