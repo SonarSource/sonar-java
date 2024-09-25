@@ -56,7 +56,7 @@ public class UnusedTestRuleCheck extends IssuableSubscriptionVisitor {
         if ((isTestNameOrTemporaryFolderRule(symbol) || hasTempDirAnnotation(symbol)) && symbol.usages().isEmpty()) {
           // if class is abstract, then we need to check modifier - if not private, then it's okay
           if (isAbstract && variableTree.modifiers().modifiers().stream().noneMatch(m -> Modifier.PRIVATE == m.modifier())) {
-              continue;
+            continue;
           }
           reportIssue(variableTree.simpleName(), "Remove this unused \"" + getSymbolType(symbol) + "\".");
         }
