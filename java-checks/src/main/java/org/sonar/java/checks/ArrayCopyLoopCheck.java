@@ -234,9 +234,8 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
       if (lhs.is(Kind.ARRAY_ACCESS_EXPRESSION) && rhs.is(Kind.ARRAY_ACCESS_EXPRESSION)) {
         ArrayAccessExpressionTree src = (ArrayAccessExpressionTree) rhs;
         ArrayAccessExpressionTree dst = (ArrayAccessExpressionTree) lhs;
-        // check they are not boxing or unboxing; this can happen if src or dst is a primitive type
-        if (!src.symbolType().equals(dst.symbolType()) &&
-          (src.symbolType().isPrimitive() || dst.symbolType().isPrimitive())) {
+        // check they are not boxing or unboxing; this can happen if we have different types and one side is primitive
+        if (!src.symbolType().equals(dst.symbolType()) && (src.symbolType().isPrimitive() || dst.symbolType().isPrimitive())) {
           return false;
         }
         // otherwise determine the expressions
