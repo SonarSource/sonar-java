@@ -8,7 +8,7 @@ import org.slf4j.MarkerFactory;
 class FalsePositivesFromTheCommunity {
 
   private static final Marker myMarker = MarkerFactory.getMarker("MY_MARKER");
-  private static final Logger logger = LoggerFactory.getLogger(A.class);
+  private static final Logger logger = LoggerFactory.getLogger(FalsePositivesFromTheCommunity.class);
 
   Object doSomething() {
     return null;
