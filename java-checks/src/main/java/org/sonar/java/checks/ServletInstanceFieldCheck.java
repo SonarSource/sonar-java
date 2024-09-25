@@ -109,16 +109,20 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
   private class AssignmentVisitor extends BaseTreeVisitor {
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+      var variable = tree.variable();
       // handles e.g. "second = this.first * 2;" assignments -> no "this" prefix to member "second"
-      if (tree.variable().is(Kind.IDENTIFIER)) {
-        maybeAddExcluded(((IdentifierTree) tree.variable()).symbol().declaration());
+      if (variable.is(Kind.IDENTIFIER)) {
+        addVariableToExcluded(((IdentifierTree) variable).symbol().declaration());
       }
       // handles e.g. "this.first = 42;" assignments -> member "first" is prefixed with "this."
-      if (tree.variable().is(Kind.MEMBER_SELECT)) {
-        maybeAddExcluded(((MemberSelectExpressionTree) tree.variable()).identifier().symbol().declaration());
+      if (variable.is(Kind.MEMBER_SELECT)) {
+        var memberSelectExpressionTree = (MemberSelectExpressionTree) variable;
+        if ("this".equals(memberSelectExpressionTree.expression().toString())) {
+          addVariableToExcluded(memberSelectExpressionTree.identifier().symbol().declaration());
+        }
       }
     }
-    private void maybeAddExcluded(@Nullable Tree declaration) {
+    private void addVariableToExcluded(@Nullable Tree declaration) {
       // if declaration set, and a variable, then add to excluded
       if (declaration != null && declaration.is(Kind.VARIABLE)) {
         excludedVariables.add((VariableTree) declaration);

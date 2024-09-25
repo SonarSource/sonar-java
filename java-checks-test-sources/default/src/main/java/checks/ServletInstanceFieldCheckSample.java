@@ -7,13 +7,23 @@ import javax.servlet.http.HttpServlet;
 import org.apache.struts.action.Action;
 
 class S2226FP extends HttpServlet {
-  private int first; // Compliant FP
+  private int first; // Compliant
   private long second; // Compliant
 
   @Override
   public void init() throws ServletException {
     this.first = 42;
     second = this.first * 2;
+  }
+}
+
+class S2226FP2 extends HttpServlet {
+  private int first; // Noncompliant {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
+  private final S2226FP2 inst = null;
+
+  @Override
+  public void init() throws ServletException {
+    inst.first = 42;
   }
 }
 
