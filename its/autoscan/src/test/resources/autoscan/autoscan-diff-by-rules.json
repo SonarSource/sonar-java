@@ -1316,7 +1316,7 @@
   {
     "ruleKey": "S2629",
     "hasTruePositives": true,
-    "falseNegatives": 58,
+    "falseNegatives": 60,
     "falsePositives": 0
   },
   {

@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
@@ -81,6 +82,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
       .ofSubTypes(LOGGER)
       .names(testMethodNames(METHOD_NAMES))
       .addWithoutParametersMatcher()
+      .addParametersMatcher(MARKER)
       .build();
   }
 
@@ -185,6 +187,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
   private JavaFileScannerContext context;
   private Deque<Tree> treeStack = new ArrayDeque<>();
+  private boolean foundReturnStatementInsideLevelTest = false;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -197,7 +200,11 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    if (LAZY_ARG_METHODS.matches(tree) && !insideCatchStatement() && !insideLevelTest() && !argsUsingSuppliers(tree)) {
+    if (LAZY_ARG_METHODS.matches(tree) &&
+      !insideCatchStatement() &&
+      !insideLevelTest() &&
+      !foundReturnStatementInsideLevelTest &&
+      !argsUsingSuppliers(tree)) {
       onMethodInvocationFound(tree);
     }
   }
@@ -218,6 +225,14 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   @Override
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    if (insideLevelTest()) {
+      // record when a return is detected within a log test
+      foundReturnStatementInsideLevelTest = true;
+    }
+  }
+
+  @Override
   public void visitCatch(CatchTree tree) {
     stackAndContinue(tree, super::visitCatch);
   }
@@ -226,6 +241,8 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
   public void visitMethod(MethodTree tree) {
     // we put method trees on stack to be able to detect log statements in anonymous classes
     stackAndContinue(tree, super::visitMethod);
+    // once a method is exited, then this field cannot be true (if it was set to true)
+    foundReturnStatementInsideLevelTest = false;
   }
 
   private boolean insideLevelTest() {
