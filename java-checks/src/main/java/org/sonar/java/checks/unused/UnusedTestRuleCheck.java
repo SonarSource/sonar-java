@@ -49,7 +49,7 @@ public class UnusedTestRuleCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    boolean isAbstract = ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT);;
+    boolean isAbstract = ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT);
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) member;
