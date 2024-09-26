@@ -7,10 +7,26 @@ import java.util.Set;
 
 abstract class ArrayCopyLoopCheckSample implements Collection<Integer> {
 
-  public Integer[] classToClass(Long[] arr) {
-    Integer[] result = new Integer[arr.length];
+  // test where src and dst are not primitives but compatible
+  public void coverageEdgeCase(Long[] arrWE) {
+    Number[] result = new Number[arrWE.length];
+    for (int i = 0; i < arrWE.length; i++) {
+      result[i] = arrWE[i]; // Noncompliant {{Use "Arrays.copyOf", "Arrays.asList", "Collections.addAll" or "System.arraycopy" instead.}}
+    }
+  }
+
+  public Integer[] classToClass(Long[] arrWE) {
+    Integer[] result = new Integer[arrWE.length];
+    for (int i = 0; i < arrWE.length; i++) {
+      result[i] = /* using auto boxing */ Integer.parseInt(String.valueOf(arrWE[i])); // Compliant
+    }
+    return result;
+  }
+
+  public Long[] classToClassLong(Integer[] arr) {
+    Long[] result = new Long[arr.length];
     for (int i = 0; i < arr.length; i++) {
-      result[i] = /* using auto boxing */ arr[i].intValue(); // Compliant
+      result[i] = /* using auto boxing */ Long.parseLong(String.valueOf(arr[i])); // Compliant
     }
     return result;
   }
@@ -356,7 +372,7 @@ abstract class ArrayCopyLoopCheckSample implements Collection<Integer> {
       list.add(src[i++]);
       System.out.println(i);
     }
-  
+
     while (c < b) {
       list.add(src[from]);
       ++from;
