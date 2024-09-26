@@ -27,6 +27,17 @@ class S2226FP2 extends HttpServlet {
   }
 }
 
+abstract class S2226FP3 extends HttpServlet {
+  private int first; // Noncompliant {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
+
+  @Override
+  public void init() throws ServletException {
+    getInstance().first = 42;
+  }
+
+  abstract S2226FP3 getInstance();
+}
+
 @interface Inject{}
 
 class HttpServletA {
