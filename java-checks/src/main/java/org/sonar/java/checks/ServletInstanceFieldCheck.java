@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -32,6 +33,7 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -107,11 +109,21 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
   private class AssignmentVisitor extends BaseTreeVisitor {
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (tree.variable().is(Kind.IDENTIFIER)) {
-        Tree declaration = ((IdentifierTree) tree.variable()).symbol().declaration();
-        if (declaration != null && declaration.is(Kind.VARIABLE)) {
-          excludedVariables.add((VariableTree) declaration);
-        }
+      var variable = tree.variable();
+      if (variable instanceof  IdentifierTree identifier) {
+        // handles e.g. "second = this.first * 2;" assignments -> no "this" prefix to member "second"
+        addVariableToExcluded(identifier.symbol().declaration());
+      } else if (variable instanceof MemberSelectExpressionTree memberSelectTree
+        && memberSelectTree.expression() instanceof IdentifierTree identifier
+        && "this".equals(identifier.identifierToken().text())) {
+        // handles e.g. "this.first = 42;" assignments -> member "first" is prefixed with "this."
+        addVariableToExcluded(memberSelectTree.identifier().symbol().declaration());
+      }
+    }
+    private void addVariableToExcluded(@Nullable Tree declaration) {
+      // if declaration set, and a variable, then add to excluded
+      if (declaration != null && declaration.is(Kind.VARIABLE)) {
+        excludedVariables.add((VariableTree) declaration);
       }
     }
   }
