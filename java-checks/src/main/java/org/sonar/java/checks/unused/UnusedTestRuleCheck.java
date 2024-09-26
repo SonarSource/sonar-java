@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -48,14 +49,14 @@ public class UnusedTestRuleCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    boolean isAbstract = classTree.modifiers().modifiers().stream().anyMatch(m -> Modifier.ABSTRACT == m.modifier());
+    boolean isAbstract = ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT);;
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) member;
         Symbol symbol = variableTree.symbol();
         if ((isTestNameOrTemporaryFolderRule(symbol) || hasTempDirAnnotation(symbol)) && symbol.usages().isEmpty()) {
           // if class is abstract, then we need to check modifier - if not private, then it's okay
-          if (isAbstract && variableTree.modifiers().modifiers().stream().noneMatch(m -> Modifier.PRIVATE == m.modifier())) {
+          if (isAbstract && !ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.PRIVATE)) {
             continue;
           }
           reportIssue(variableTree.simpleName(), "Remove this unused \"" + getSymbolType(symbol) + "\".");
