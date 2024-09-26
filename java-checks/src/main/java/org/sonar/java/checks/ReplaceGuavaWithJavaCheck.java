@@ -40,9 +40,7 @@ public class ReplaceGuavaWithJavaCheck extends AbstractMethodDetection implement
   private static final String GUAVA_BASE_ENCODING = "com.google.common.io.BaseEncoding";
   private static final String GUAVA_OPTIONAL = "com.google.common.base.Optional";
   private static final String GUAVA_FILES = "com.google.common.io.Files";
-  private static final String GUAVA_IMMUTABLE_SET = "com.google.common.collect.ImmutableSet";
   private static final String GUAVA_IMMUTABLE_LIST = "com.google.common.collect.ImmutableList";
-  private static final String GUAVA_IMMUTABLE_MAP = "com.google.common.collect.ImmutableMap";
 
   private static final Map<String, String> GUAVA_TO_JAVA_UTIL_TYPES = MapBuilder.<String, String>newMap()
     .put("com.google.common.base.Predicate", "java.util.function.Predicate")
@@ -69,7 +67,7 @@ public class ReplaceGuavaWithJavaCheck extends AbstractMethodDetection implement
       MethodMatchers.create().ofTypes(GUAVA_OPTIONAL).names("absent").addWithoutParametersMatcher().build(),
       MethodMatchers.create().ofTypes(GUAVA_OPTIONAL).names("fromNullable", "of").withAnyParameters().build(),
       MethodMatchers.create().ofTypes(GUAVA_FILES).names("createTempDir").addWithoutParametersMatcher().build(),
-      MethodMatchers.create().ofTypes(GUAVA_IMMUTABLE_LIST, GUAVA_IMMUTABLE_SET, GUAVA_IMMUTABLE_MAP)
+      MethodMatchers.create().ofTypes(GUAVA_IMMUTABLE_LIST)
         .names("of").withAnyParameters().build());
   }
 
@@ -110,12 +108,6 @@ public class ReplaceGuavaWithJavaCheck extends AbstractMethodDetection implement
         break;
       case GUAVA_IMMUTABLE_LIST:
         reportJava9Issue(mit, "java.util.List.of()");
-        break;
-      case GUAVA_IMMUTABLE_SET:
-        reportJava9Issue(mit, "java.util.Set.of()");
-        break;
-      case GUAVA_IMMUTABLE_MAP:
-        reportJava9Issue(mit, "java.util.Map.of()\" or \"java.util.Map.ofEntries()");
         break;
       default:
         break;
