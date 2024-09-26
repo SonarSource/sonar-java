@@ -63,6 +63,54 @@ abstract class ArrayCopyLoopCheckSample implements Collection<Integer> {
     return result;
   }
 
+  public Float[] boxed(float[] arr) {
+    Float[] result = new Float[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto boxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public float[] unboxed(Float[] arr) {
+    float[] result = new float[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto unboxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public Double[] boxed(double[] arr) {
+    Double[] result = new Double[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto boxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public double[] unboxed(Double[] arr) {
+    double[] result = new double[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto unboxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public Character[] boxed(char[] arr) {
+    Character[] result = new Character[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto boxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public char[] unboxed(Character[] arr) {
+    char[] result = new char[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto unboxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
   int x;
 
   void f() throws InterruptedException {
