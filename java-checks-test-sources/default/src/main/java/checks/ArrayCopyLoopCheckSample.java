@@ -34,7 +34,7 @@ abstract class ArrayCopyLoopCheckSample implements Collection<Integer> {
   public Integer[] boxed(int[] arr) {
     Integer[] result = new Integer[arr.length];
     for (int i = 0; i < arr.length; i++) {
-      result[i] = /* using auto boxing */ arr[i]; // Compliant, was FP
+      result[i] = /* using auto boxing */ arr[i]; // Compliant
     }
     return result;
   }
@@ -42,7 +42,7 @@ abstract class ArrayCopyLoopCheckSample implements Collection<Integer> {
   public int[] unboxed(Integer[] arr) {
     int[] result = new int[arr.length];
     for (int i = 0; i < arr.length; i++) {
-      result[i] = /* using auto unboxing */ arr[i]; // Compliant, was FP
+      result[i] = /* using auto unboxing */ arr[i]; // Compliant
     }
     return result;
   }
@@ -50,7 +50,7 @@ abstract class ArrayCopyLoopCheckSample implements Collection<Integer> {
   public Long[] boxed(long[] arr) {
     Long[] result = new Long[arr.length];
     for (int i = 0; i < arr.length; i++) {
-      result[i] = /* using auto boxing */ arr[i]; // Compliant, was FP
+      result[i] = /* using auto boxing */ arr[i]; // Compliant
     }
     return result;
   }
@@ -58,7 +58,7 @@ abstract class ArrayCopyLoopCheckSample implements Collection<Integer> {
   public long[] unboxed(Long[] arr) {
     long[] result = new long[arr.length];
     for (int i = 0; i < arr.length; i++) {
-      result[i] = /* using auto unboxing */ arr[i]; // Compliant, was FP
+      result[i] = /* using auto unboxing */ arr[i]; // Compliant
     }
     return result;
   }
