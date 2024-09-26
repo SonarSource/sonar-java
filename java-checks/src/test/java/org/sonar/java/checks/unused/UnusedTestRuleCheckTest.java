@@ -47,7 +47,7 @@ class UnusedTestRuleCheckTest {
     CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath("checks/tests/UnusedTestRuleCheck_Protected.java"))
       .withCheck(new UnusedTestRuleCheck())
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
   @Test

@@ -9,3 +9,36 @@ public abstract class UnusedTestRuleCheck_Protected {
   @TempDir
   protected Path tempDirOldFP; // Compliant FP as used in a subclass - compliant because not private
 }
+
+// Test abstract private
+abstract class AbstractTestCase {
+
+  @TempDir
+  private Path tempDir; // Noncompliant {{Remove this unused "TempDir".}}
+
+  void test() {
+  }
+
+}
+
+// Test non-abstract private
+class ClassTestCase {
+
+  @TempDir
+  private Path tempDir; // Noncompliant {{Remove this unused "TempDir".}}
+
+  void test() {
+  }
+
+}
+
+// Test non-abstract protected
+class ClassTestCase2 {
+
+  @TempDir
+  protected Path tempDir; // Noncompliant {{Remove this unused "TempDir".}}
+
+  void test() {
+  }
+
+}
