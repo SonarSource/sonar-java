@@ -7,6 +7,110 @@ import java.util.Set;
 
 abstract class ArrayCopyLoopCheckSample implements Collection<Integer> {
 
+  // test where src and dst are not primitives but compatible
+  public void coverageEdgeCase(Long[] arrWE) {
+    Number[] result = new Number[arrWE.length];
+    for (int i = 0; i < arrWE.length; i++) {
+      result[i] = arrWE[i]; // Noncompliant {{Use "Arrays.copyOf", "Arrays.asList", "Collections.addAll" or "System.arraycopy" instead.}}
+    }
+  }
+
+  public Integer[] classToClass(Long[] arrWE) {
+    Integer[] result = new Integer[arrWE.length];
+    for (int i = 0; i < arrWE.length; i++) {
+      result[i] = /* using auto boxing */ Integer.parseInt(String.valueOf(arrWE[i])); // Compliant
+    }
+    return result;
+  }
+
+  public Long[] classToClassLong(Integer[] arr) {
+    Long[] result = new Long[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto boxing */ Long.parseLong(String.valueOf(arr[i])); // Compliant
+    }
+    return result;
+  }
+
+  public Integer[] boxed(int[] arr) {
+    Integer[] result = new Integer[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto boxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public int[] unboxed(Integer[] arr) {
+    int[] result = new int[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto unboxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public Long[] boxed(long[] arr) {
+    Long[] result = new Long[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto boxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public long[] unboxed(Long[] arr) {
+    long[] result = new long[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto unboxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public Float[] boxed(float[] arr) {
+    Float[] result = new Float[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto boxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public float[] unboxed(Float[] arr) {
+    float[] result = new float[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto unboxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public Double[] boxed(double[] arr) {
+    Double[] result = new Double[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto boxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public double[] unboxed(Double[] arr) {
+    double[] result = new double[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto unboxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public Character[] boxed(char[] arr) {
+    Character[] result = new Character[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto boxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
+  public char[] unboxed(Character[] arr) {
+    char[] result = new char[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = /* using auto unboxing */ arr[i]; // Compliant
+    }
+    return result;
+  }
+
   int x;
 
   void f() throws InterruptedException {
@@ -316,7 +420,7 @@ abstract class ArrayCopyLoopCheckSample implements Collection<Integer> {
       list.add(src[i++]);
       System.out.println(i);
     }
-  
+
     while (c < b) {
       list.add(src[from]);
       ++from;
