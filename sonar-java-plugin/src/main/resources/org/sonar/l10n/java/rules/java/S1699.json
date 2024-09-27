@@ -20,7 +20,7 @@
   "ruleSpecification": "RSPEC-1699",
   "sqKey": "S1699",
   "scope": "Main",
-  "quickfix": "unknown",
+  "quickfix": "infeasible",
   "securityStandards": {
     "CERT": [
       "MET05-J.",

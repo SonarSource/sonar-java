@@ -43,7 +43,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.InvalidKeyException;
 import java.security.InvalidAlgorithmParameterException;
 import javax.crypto.Cipher;
-import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.NoSuchPaddingException;
 
@@ -51,12 +51,12 @@ public void encrypt(String key, String plainText) {
 
     byte[] RandomBytes = "7cVgr5cbdCZVw5WY".getBytes(StandardCharsets.UTF_8);
 
-    GCMParameterSpec iv   = new GCMParameterSpec(128, RandomBytes);
+    IvParameterSpec iv   = new IvParameterSpec(RandomBytes);
     SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
 
     try {
-        Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv); // Noncompliant
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
 
     } catch(NoSuchAlgorithmException|InvalidKeyException|
             NoSuchPaddingException|InvalidAlgorithmParameterException e) {
@@ -73,21 +73,21 @@ import java.security.NoSuchAlgorithmException;
 import java.security.InvalidKeyException;
 import java.security.InvalidAlgorithmParameterException;
 import javax.crypto.Cipher;
-import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.NoSuchPaddingException;
 
 public void encrypt(String key, String plainText) {
 
     SecureRandom random = new SecureRandom();
-    byte[] randomBytes  = new byte[16];
+    byte[] randomBytes  = new byte[128];
     random.nextBytes(randomBytes);
 
-    GCMParameterSpec iv   = new GCMParameterSpec(128, randomBytes);
+    IvParameterSpec iv   = new IvParameterSpec(randomBytes);
     SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
 
     try {
-        Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
 
     } catch(NoSuchAlgorithmException|InvalidKeyException|
@@ -118,8 +118,7 @@ attempts.</p>
   <li> CWE - <a href="https://cwe.mitre.org/data/definitions/780">CWE-780 - Use of RSA Algorithm without OAEP</a> </li>
   <li> <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf">NIST, SP-800-38A</a> - Recommendation for Block Cipher
   Modes of Operation </li>
-  <li> OWASP - <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x08-v3-cryptography_verification_requirements">Mobile AppSec
-  Verification Standard - Cryptography Requirements</a> </li>
+  <li> OWASP - <a href="https://mas.owasp.org/checklists/MASVS-CRYPTO/">Mobile AppSec Verification Standard - Cryptography Requirements</a> </li>
   <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m5-insufficient-cryptography">Mobile Top 10 2016 Category M5 -
   Insufficient Cryptography</a> </li>
 </ul>
