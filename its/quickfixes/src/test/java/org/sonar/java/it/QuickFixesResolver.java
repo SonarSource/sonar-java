@@ -50,9 +50,9 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
-public class QuickFixesApplier {
+public class QuickFixesResolver {
 
-  private static final Logger LOG = LoggerFactory.getLogger(QuickFixesApplier.class);
+  private static final Logger LOG = LoggerFactory.getLogger(QuickFixesResolver.class);
   private static final List<File> DEFAULT_CLASSPATH;
   private static final Set<Integer> EDITED_LINES = new HashSet<>();
 
@@ -64,7 +64,7 @@ public class QuickFixesApplier {
   }
 
   public void scanAndApplyQuickFixes(List<InputFile> files) throws IOException {
-    List<JavaFileScanner> visitors = new ArrayList<>(ChecksListWithQuickFix.checks);
+    List<JavaFileScanner> visitors = new ArrayList<>(QuickFixTestUtils.CHECKS_WITH_QUICKFIX);
     SonarComponents sonarComponents = sonarComponents();
     VisitorsBridgeForQuickFixes visitorsBridge = new VisitorsBridgeForQuickFixes(visitors, DEFAULT_CLASSPATH, sonarComponents, new JavaVersionImpl(21));
 
