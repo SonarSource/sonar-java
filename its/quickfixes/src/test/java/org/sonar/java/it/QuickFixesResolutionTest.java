@@ -24,9 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -34,7 +32,6 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.JParser;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -51,41 +48,19 @@ public class QuickFixesResolutionTest {
   public static TemporaryFolder tmpProjectClone = new TemporaryFolder();
 
   @Test
-  public void checkRspecMapping() {
-    Pattern pattern = Pattern.compile("@Rule\\(key\\s*=\\s*\"(.*?)\"\\)");
-    Path javaChecksPath = Paths.get("../../java-checks/src/main/java/org/sonar/java/checks/");
-    List<String> actualQuickfixImplementations = new ArrayList<>();
-    try (Stream<Path> paths = Files.walk(javaChecksPath)) {
-      paths.forEach(path -> {
-        if (path.toString().endsWith(".java")) {
-          try {
-            String content = new String(Files.readAllBytes(path));
-            if (content.contains("QuickFixHelper") || content.contains("JavaQuickFix")) {
-              var matcher = pattern.matcher(content);
-              if (matcher.find()) {
-                String ruleKey = matcher.group(1);
-                LOG.info("Rule {} was detected to be implementing quickfixes", ruleKey);
-                actualQuickfixImplementations.add(ruleKey);
-              }
-            }
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
-        }
-      });
-    } catch (IOException e) {
-      LOG.error("Error reading java-checks folder", e);
-    }
-    assertThat(actualQuickfixImplementations).containsExactlyInAnyOrder(ChecksListWithQuickFix.QUICKFIX_KEYS.toArray(new String[0]));
+  public void checkRspecMapping() throws IOException {
+    List<String> actualRulesWithQuickfixImplementation = QuickFixTestUtils.RULE_KEYS_IMPLEMENTING_QUICKFIXES;
+    List<String> ruleWithQuickfixMetadata = QuickFixTestUtils.RULE_KEYS_WITH_QUICKFIX_METADATA;
+    assertThat(actualRulesWithQuickfixImplementation)
+      .as("Rules metadata does not correspond to checks actually implementing quickfixes.")
+      .containsExactlyInAnyOrderElementsOf(ruleWithQuickfixMetadata);
   }
 
   @Test
   public void testParsingAfterQuickfixes() throws Exception {
     cloneJavaCheckTestSources();
-    var applier = new QuickFixesApplier();
-    List<InputFile> files = collectJavaFiles(tmpProjectClone.getRoot().getAbsolutePath());
-    applier.scanAndApplyQuickFixes(files);
-    LOG.info("Analysis complete with {} quickfixes found", applier.getQuickfixesCount());
+    List<InputFile> files = QuickFixTestUtils.collectJavaFiles(tmpProjectClone.getRoot().getAbsolutePath());
+    new QuickFixesResolver().scanAndApplyQuickFixes(files);
     assertThat(validateFilesStillParse(files)).isTrue();
   }
 
@@ -101,17 +76,6 @@ public class QuickFixesResolutionTest {
           throw new RuntimeException(e.getMessage(), e);
         }
       });
-    }
-  }
-
-  private static List<InputFile> collectJavaFiles(String directory) throws IOException {
-    Path start = Paths.get(directory);
-    int maxDepth = Integer.MAX_VALUE; // this is to say that it should search as deep as possible
-    try (Stream<Path> stream = Files.walk(start, maxDepth)) {
-      return stream
-        .filter(path -> path.toString().endsWith(".java"))
-        .map(path -> TestUtils.inputFile(path.toFile()))
-        .toList();
     }
   }
 
