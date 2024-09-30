@@ -23,12 +23,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -54,7 +54,7 @@ public class KnownCapacityHashBasedCollectionCheck extends AbstractMethodDetecti
       .forRule(this)
       .onTree(newClassTree)
       .withMessage(getIssueMessage(newClassTree))
-      .withQuickFixes(() -> computeQuickFix(newClassTree))
+      .withQuickFix(() -> computeQuickFix(newClassTree))
       .report();
   }
 
@@ -77,13 +77,12 @@ public class KnownCapacityHashBasedCollectionCheck extends AbstractMethodDetecti
     return String.format("Replace this call to the constructor with the better suited static method %s", replacementMethod);
   }
 
-  private static List<JavaQuickFix> computeQuickFix(NewClassTree newClassTree) {
+  private static JavaQuickFix computeQuickFix(NewClassTree newClassTree) {
     String replacementMethod = TYPES_TO_METHODS.get(newClassTree.symbolType().name()).replace("(int numMappings)", "");
     JavaTextEdit edit = JavaTextEdit.replaceBetweenTree(newClassTree.firstToken(), newClassTree.identifier().lastToken(), replacementMethod);
-    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("Replace with \"" + replacementMethod + "\".")
+    return JavaQuickFix.newQuickFix("Replace with \"" + replacementMethod + "\".")
       .addTextEdit(edit)
       .build();
-    return List.of(quickFix);
   }
 
 }
