@@ -36,19 +36,11 @@ class KnownCapacityHashBasedCollectionCheckTest {
   }
 
   @Test
-  void testNoIssuesOnEarlierJavaVersions() {
-
-    var check = new KnownCapacityHashBasedCollectionCheck();
-
+  void test_no_issues_on_java_versions_less_than_19() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/KnownCapacityHashBasedCollectionCheckSample.java"))
-      .withCheck(check)
+      .withCheck(new KnownCapacityHashBasedCollectionCheck())
       .withJavaVersion(18)
-      .verifyNoIssues();
-
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/KnownCapacityHashBasedCollectionCheckSample.java"))
-      .withCheck(check)
       .verifyNoIssues();
   }
 
