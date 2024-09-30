@@ -170,7 +170,7 @@ sanity_task:
     <<: *CONTAINER_DEFINITION
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j21-latest
     cpu: 4
-    memory: 2G
+    memory: 4G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   sanity_script:
