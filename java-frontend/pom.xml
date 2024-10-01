@@ -16,7 +16,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>jdt-package</artifactId>
-      <version>1.2.0.77</version>
+      <version>1.2.0.78</version>
     </dependency>
 
     <dependency>
