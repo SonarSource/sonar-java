@@ -29,6 +29,11 @@ class BooleanMethodReturnCheckJSpecifySampleA {
   public Boolean bar() {
     return null; // Compliant
   }
+
+  public Boolean foobar() {
+    return null; // Noncompliant {{Null is returned but a "Boolean" is expected.}}
+  }
+  
 }
 
 // NullMarked at the package level

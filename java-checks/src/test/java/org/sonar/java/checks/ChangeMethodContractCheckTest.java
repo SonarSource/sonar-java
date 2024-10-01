@@ -52,6 +52,18 @@ class ChangeMethodContractCheckTest {
   }
 
   @Test
+  void test_jspecify_null_marked() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/ChangeMethodContractCheckNullMarked.java"))
+      .withCheck(new ChangeMethodContractCheck())
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/ChangeMethodContractCheck.java"))
+      .withCheck(new ChangeMethodContractCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/ChangeMethodContractCheck.java"))
