@@ -43,4 +43,16 @@ class PrimitivesMarkedNullableCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_jspecify_null_marked() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/PrimitivesMarkedNullableCheckNullMarked.java"))
+      .withCheck(new PrimitivesMarkedNullableCheck())
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/PrimitivesMarkedNullableCheck.java"))
+      .withCheck(new PrimitivesMarkedNullableCheck())
+      .verifyIssues();
+  }
+
 }
