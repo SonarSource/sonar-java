@@ -39,4 +39,25 @@ class NullShouldNotBeUsedWithOptionalCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_jspecify_null_marked() {
+    NullShouldNotBeUsedWithOptionalCheck check = new NullShouldNotBeUsedWithOptionalCheck();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/NullShouldNotBeUsedWithOptionalCheckNullMarked_jdk.java"))
+      .withCheck(check)
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/NullShouldNotBeUsedWithOptionalCheckNullMarked_guava.java"))
+      .withCheck(check)
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/NullShouldNotBeUsedWithOptionalCheck_jdk.java"))
+      .withCheck(check)
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/NullShouldNotBeUsedWithOptionalCheck_guava.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
 }

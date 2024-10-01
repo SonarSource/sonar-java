@@ -33,4 +33,17 @@ class EqualsParametersMarkedNonNullCheckTest {
       .withCheck(new EqualsParametersMarkedNonNullCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_jspecify_null_marked() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/EqualsParametersMarkedNonNullCheckNullMarked.java"))
+      .withCheck(new EqualsParametersMarkedNonNullCheck())
+      .verifyNoIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/EqualsParametersMarkedNonNullCheck.java"))
+      .withCheck(new EqualsParametersMarkedNonNullCheck())
+      .verifyNoIssues();
+  }
+
 }
