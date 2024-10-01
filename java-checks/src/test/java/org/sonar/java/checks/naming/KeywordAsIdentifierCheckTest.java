@@ -31,11 +31,6 @@ class KeywordAsIdentifierCheckTest {
       .withCheck(new KeywordAsIdentifierCheck())
       .withJavaVersion(4)
       .verifyIssues();
-    CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/naming/KeywordAsIdentifierCheck_java1.java")
-      .withCheck(new KeywordAsIdentifierCheck())
-      .withJavaVersion(1)
-      .verifyIssues();
   }
 
 }

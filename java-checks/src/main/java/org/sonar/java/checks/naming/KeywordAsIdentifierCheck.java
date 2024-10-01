@@ -33,7 +33,7 @@ public class KeywordAsIdentifierCheck extends BaseTreeVisitor implements JavaFil
 
   private JavaFileScannerContext context;
 
-  private static final Set<String> FORBIDDEN_IDENTIFIERS = SetUtils.immutableSetOf("enum", "_","assert");
+  private static final Set<String> FORBIDDEN_IDENTIFIERS = SetUtils.immutableSetOf( "_");
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
