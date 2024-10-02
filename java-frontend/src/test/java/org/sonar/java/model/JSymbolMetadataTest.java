@@ -49,6 +49,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.CLASS;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.METHOD;
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.MODULE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.VARIABLE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType.NON_NULL;
@@ -82,7 +83,7 @@ class JSymbolMetadataTest {
     JavaTree.CompilationUnitTreeImpl cu = test("class A {}");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     SymbolMetadata.NullabilityData nullabilityData = c.symbol().metadata().nullabilityData();
-    assertThat(nullabilityData.isNonNull(NullabilityLevel.PACKAGE, false, false)).isFalse();
+    assertThat(nullabilityData.isNonNull(MODULE, false, false)).isFalse();
     assertThat(nullabilityData.annotation()).isNull();
     assertThat(nullabilityData.level()).isEqualTo(NullabilityLevel.UNKNOWN);
     assertThat(nullabilityData.declaration()).isNull();
@@ -93,7 +94,7 @@ class JSymbolMetadataTest {
     JavaTree.CompilationUnitTreeImpl cu = test("@Unknown class A {}");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     SymbolMetadata.NullabilityData nullabilityData = c.symbol().metadata().nullabilityData();
-    assertThat(nullabilityData.isNonNull(NullabilityLevel.PACKAGE, false, false)).isFalse();
+    assertThat(nullabilityData.isNonNull(MODULE, false, false)).isFalse();
     assertThat(nullabilityData.annotation()).isNull();
     assertThat(nullabilityData.level()).isEqualTo(NullabilityLevel.UNKNOWN);
     assertThat(nullabilityData.declaration()).isNull();
@@ -276,6 +277,7 @@ class JSymbolMetadataTest {
       assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isTrue();
       assertThat(nonNullAtVariable.isNonNull(CLASS, true, false)).isTrue();
       assertThat(nonNullAtVariable.isNonNull(PACKAGE, true, false)).isTrue();
+      assertThat(nonNullAtVariable.isNonNull(MODULE, true, false)).isTrue();
     }
 
     @Test
@@ -287,6 +289,7 @@ class JSymbolMetadataTest {
       assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isTrue();
       assertThat(nonNullAtVariable.isNonNull(CLASS, true, false)).isTrue();
       assertThat(nonNullAtVariable.isNonNull(PACKAGE, true, false)).isTrue();
+      assertThat(nonNullAtVariable.isNonNull(MODULE, true, false)).isTrue();
     }
 
     @Test
@@ -298,6 +301,7 @@ class JSymbolMetadataTest {
       assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(CLASS, true, false)).isTrue();
       assertThat(nonNullAtVariable.isNonNull(PACKAGE, true, false)).isTrue();
+      assertThat(nonNullAtVariable.isNonNull(MODULE, true, false)).isTrue();
     }
 
     @Test
@@ -309,6 +313,19 @@ class JSymbolMetadataTest {
       assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(CLASS, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(PACKAGE, true, false)).isTrue();
+      assertThat(nonNullAtVariable.isNonNull(MODULE, true, false)).isTrue();
+    }
+
+    @Test
+    void nullability_data_level_module() {
+      SymbolMetadata.NullabilityData nonNullAtVariable =
+        new JSymbolMetadata.JNullabilityData(NON_NULL, MODULE, null, null, false);
+
+      assertThat(nonNullAtVariable.isNonNull(VARIABLE, true, false)).isFalse();
+      assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isFalse();
+      assertThat(nonNullAtVariable.isNonNull(CLASS, true, false)).isFalse();
+      assertThat(nonNullAtVariable.isNonNull(PACKAGE, true, false)).isFalse();
+      assertThat(nonNullAtVariable.isNonNull(MODULE, true, false)).isTrue();
     }
 
     @Test
@@ -320,6 +337,7 @@ class JSymbolMetadataTest {
       assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(CLASS, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(PACKAGE, true, false)).isFalse();
+      assertThat(nonNullAtVariable.isNonNull(MODULE, true, false)).isFalse();
     }
 
     @Test
@@ -331,6 +349,8 @@ class JSymbolMetadataTest {
       assertThat(nonNullAtVariable.isNonNull(METHOD, false, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(CLASS, false, false)).isTrue();
       assertThat(nonNullAtVariable.isNonNull(PACKAGE, false, false)).isTrue();
+      assertThat(nonNullAtVariable.isNonNull(MODULE, false, false)).isTrue();
+
     }
 
     @Test
@@ -344,6 +364,7 @@ class JSymbolMetadataTest {
       assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(CLASS, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(PACKAGE, true, false)).isFalse();
+      assertThat(nonNullAtVariable.isNonNull(MODULE, true, false)).isFalse();
     }
   }
 

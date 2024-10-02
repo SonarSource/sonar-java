@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.checks.helpers.NullabilityDataUtils.nullabilityAsString;
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.MODULE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 
 @Rule(key = "S2638")
@@ -73,9 +74,9 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     // If the method from the parent claims to never return null, the method from the child
     // that can actually be executed at runtime should not return null.
     NullabilityData overrideeNullability = overridee.metadata().nullabilityData();
-    if (overrideeNullability.isNonNull(PACKAGE, false, false)) {
+    if (overrideeNullability.isNonNull(MODULE, false, false)) {
       NullabilityData methodNullability = methodTree.symbol().metadata().nullabilityData();
-      if (methodNullability.isNullable(PACKAGE, false, false)) {
+      if (methodNullability.isNullable(MODULE, false, false)) {
         // returnType() returns null in case of constructor: the rule does not support them.
         reportIssue(methodTree.returnType(), overrideeNullability, methodNullability);
       }
@@ -85,9 +86,9 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
   private void checkParameter(VariableTree parameter, SymbolMetadata overrideeParamMetadata) {
     // Annotations on parameters is the opposite of return value: if arguments of the parent can be null, the child method has to accept null value.
     NullabilityData overrideeParamNullability = overrideeParamMetadata.nullabilityData();
-    if (overrideeParamNullability.isNullable(PACKAGE, false, false)) {
+    if (overrideeParamNullability.isNullable(MODULE, false, false)) {
       NullabilityData paramNullability = parameter.symbol().metadata().nullabilityData();
-      if (paramNullability.isNonNull(PACKAGE, false, false)) {
+      if (paramNullability.isNonNull(MODULE, false, false)) {
         reportIssue(parameter.simpleName(), overrideeParamNullability, paramNullability);
       }
     }

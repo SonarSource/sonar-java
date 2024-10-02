@@ -106,7 +106,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       SymbolMetadata metadata = methodTree.symbol().metadata();
-      if (metadata.nullabilityData().isNullable(SymbolMetadata.NullabilityLevel.PACKAGE, false, true) || requiresReturnNull(methodTree)) {
+      if (metadata.nullabilityData().isNullable(SymbolMetadata.NullabilityLevel.MODULE, false, true) || requiresReturnNull(methodTree)) {
         returnKinds.push(ReturnKind.OTHER);
       } else {
         returnKinds.push(ReturnKind.forType(methodTree.returnType().symbolType()));
