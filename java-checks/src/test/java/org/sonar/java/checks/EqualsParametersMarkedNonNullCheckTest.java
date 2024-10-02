@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -36,10 +37,18 @@ class EqualsParametersMarkedNonNullCheckTest {
 
   @Test
   void test_jspecify_null_marked() {
+    // module level
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPathInModule("jspecify-null-marked",
+        "jspecify/nullunmarkedonly/EqualsParametersMarkedNonNullCheck.java"))
+      .withCheck(new EqualsParametersMarkedNonNullCheck())
+      .verifyNoIssues();
+    // package level
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/jspecify/EqualsParametersMarkedNonNullCheckNullMarked.java"))
       .withCheck(new EqualsParametersMarkedNonNullCheck())
       .verifyNoIssues();
+    // class level
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/EqualsParametersMarkedNonNullCheck.java"))
       .withCheck(new EqualsParametersMarkedNonNullCheck())

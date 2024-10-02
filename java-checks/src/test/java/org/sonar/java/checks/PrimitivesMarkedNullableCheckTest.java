@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -45,12 +46,20 @@ class PrimitivesMarkedNullableCheckTest {
 
   @Test
   void test_jspecify_null_marked() {
+    // module level
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/jspecify/PrimitivesMarkedNullableCheckNullMarked.java"))
+      .onFile(TestUtils.mainCodeSourcesPathInModule("jspecify-null-marked",
+        "jspecify/nullunmarkedonly/PrimitivesMarkedNullableCheck.java"))
       .withCheck(new PrimitivesMarkedNullableCheck())
       .verifyIssues();
+    // package level
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/PrimitivesMarkedNullableCheck.java"))
+      .withCheck(new PrimitivesMarkedNullableCheck())
+      .verifyIssues();
+    // class level
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/PrimitivesMarkedNullableCheckNullMarked.java"))
       .withCheck(new PrimitivesMarkedNullableCheck())
       .verifyIssues();
   }

@@ -47,14 +47,21 @@ class ReturnEmptyArrayNotNullCheckTest {
   }
 
   @Test
-  void test_jspecify_nullmarked() {
+  void test_jspecify_null_marked() {
+    // module level
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/jspecify/ReturnEmptyArrayNotNullCheckNullMarked.java"))
+      .onFile(TestUtils.mainCodeSourcesPathInModule("jspecify-null-marked",
+        "jspecify/nullunmarkedonly/ReturnEmptyArrayNotNullCheck.java"))
       .withCheck(new ReturnEmptyArrayNotNullCheck())
       .verifyIssues();
-
+    // package level
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/jspecify/nullmarked/ReturnEmptyArrayNotNullCheck.java"))
+      .withCheck(new ReturnEmptyArrayNotNullCheck())
+      .verifyIssues();
+    // class level
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/jspecify/ReturnEmptyArrayNotNullCheckNullMarked.java"))
       .withCheck(new ReturnEmptyArrayNotNullCheck())
       .verifyIssues();
   }

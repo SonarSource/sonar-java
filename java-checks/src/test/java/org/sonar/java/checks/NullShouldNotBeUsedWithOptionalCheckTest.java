@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -42,20 +43,33 @@ class NullShouldNotBeUsedWithOptionalCheckTest {
   @Test
   void test_jspecify_null_marked() {
     NullShouldNotBeUsedWithOptionalCheck check = new NullShouldNotBeUsedWithOptionalCheck();
+    // module level
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/jspecify/NullShouldNotBeUsedWithOptionalCheckNullMarked_jdk.java"))
+      .onFile(TestUtils.mainCodeSourcesPathInModule("jspecify-null-marked",
+        "jspecify/nullunmarkedonly/NullShouldNotBeUsedWithOptionalCheck_jdk.java"))
       .withCheck(check)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/jspecify/NullShouldNotBeUsedWithOptionalCheckNullMarked_guava.java"))
+      .onFile(TestUtils.mainCodeSourcesPathInModule("jspecify-null-marked",
+        "jspecify/nullunmarkedonly/NullShouldNotBeUsedWithOptionalCheck_guava.java"))
       .withCheck(check)
       .verifyIssues();
+    // package level
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/NullShouldNotBeUsedWithOptionalCheck_jdk.java"))
       .withCheck(check)
       .verifyIssues();
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/NullShouldNotBeUsedWithOptionalCheck_guava.java"))
+      .withCheck(check)
+      .verifyIssues();
+    // class level
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/NullShouldNotBeUsedWithOptionalCheckNullMarked_jdk.java"))
+      .withCheck(check)
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/NullShouldNotBeUsedWithOptionalCheckNullMarked_guava.java"))
       .withCheck(check)
       .verifyIssues();
   }
