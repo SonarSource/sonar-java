@@ -44,6 +44,7 @@ public final class FilesUtils {
    */
   public static final String DEFAULT_TEST_CLASSPATH_FILE = TEST_SOURCES_ROOT + "default" + TARGET_TEST_CLASSPATH_FILE;
   public static final String DEFAULT_TEST_CLASSES_DIRECTORY = TEST_SOURCES_ROOT + "default" + TARGET_CLASSES;
+  public static final String JSPECIFY_TEST_CLASSES_DIRECTORY = TEST_SOURCES_ROOT + "jspecify-null-marked" + TARGET_CLASSES;
 
   @VisibleForTesting
   public static List<File> getFilesRecursively(Path root, String... extensions) {

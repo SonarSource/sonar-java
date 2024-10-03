@@ -24,9 +24,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IModuleBinding;
+import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -154,7 +157,7 @@ abstract class JSymbol implements Symbol {
   private Symbol convertOwner() {
     switch (binding.getKind()) {
       case IBinding.PACKAGE:
-        return Symbols.rootPackage;
+        return packageOwner((IPackageBinding) binding);
       case IBinding.TYPE:
         return typeOwner((ITypeBinding) binding);
       case IBinding.METHOD:
@@ -168,6 +171,19 @@ abstract class JSymbol implements Symbol {
 
   private String unexpectedBinding() {
     return "Unexpected binding Kind: " + binding.getKind();
+  }
+
+  private Symbol packageOwner(IPackageBinding packageBinding) {
+//    packageBinding.
+//    packageBinding.getModule();
+//    IJavaElement javaElement = packageBinding.getJavaElement();
+//    IJavaElement parent = javaElement.getParent();
+//    parent.getElementName();
+//    packageBinding.
+//    Symbol symbol = sema.packageSymbol(packageBinding);
+//    IModuleBinding moduleBinding = packageBinding.getModule();
+//    sema.typeSymbol()
+    return Symbols.rootPackage;
   }
 
   private Symbol typeOwner(ITypeBinding typeBinding) {
@@ -369,6 +385,8 @@ abstract class JSymbol implements Symbol {
 
   private SymbolMetadata convertMetadata() {
     switch (binding.getKind()) {
+//      case IBinding.MODULE:
+//        return new JSymbolMetadata(sema, this, sema.resolveModuleAnnotations(binding.getName()));
       case IBinding.PACKAGE:
         return new JSymbolMetadata(sema, this, sema.resolvePackageAnnotations(binding.getName()));
       case IBinding.VARIABLE:

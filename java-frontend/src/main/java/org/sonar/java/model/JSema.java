@@ -32,6 +32,7 @@ import org.eclipse.jdt.core.dom.ASTUtils;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IModuleBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
@@ -71,6 +72,10 @@ public final class JSema implements Sema {
       result[i] = type(typeBindings[i]);
     }
     return Arrays.asList(result);
+  }
+
+  public Symbol moduleSymbol(@Nullable IModuleBinding moduleBinding) {
+    return symbols.computeIfAbsent(moduleBinding, k -> new JModuleSymbol(this, (IModuleBinding) k));
   }
 
   public Symbol packageSymbol(@Nullable IPackageBinding packageBinding) {
@@ -149,6 +154,10 @@ public final class JSema implements Sema {
   IAnnotationBinding[] resolvePackageAnnotations(String packageName) {
     return ASTUtils.resolvePackageAnnotations(ast, packageName);
   }
+
+//  IAnnotationBinding[] resolveModuleAnnotations(String moduleName) {
+//    return ASTUtils.resolveModuleAnnotations(ast, moduleName);
+//  }
 
   public Runnable getEnvironmentCleaner() {
     return ASTUtils.getEnvironmentCleaner(ast);

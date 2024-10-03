@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IModuleBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
@@ -85,6 +86,8 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
           return root.sema.variableSymbol((IVariableBinding) binding);
         case IBinding.PACKAGE:
           return root.sema.packageSymbol((IPackageBinding) binding);
+        case IBinding.MODULE:
+          return root.sema.moduleSymbol((IModuleBinding) binding);
       }
     }
     if (labelSymbol != null) {
