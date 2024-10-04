@@ -5,6 +5,11 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 class BooleanMethodReturnCheckSampleA {
+
+  public @org.jspecify.annotations.Nullable Boolean myTest() {
+    return null; // Compliant
+  }
+
   public Boolean myMethod() {
     return null; // Noncompliant {{Null is returned but a "Boolean" is expected.}}
   }

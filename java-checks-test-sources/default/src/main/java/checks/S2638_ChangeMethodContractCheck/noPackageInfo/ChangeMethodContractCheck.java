@@ -1,6 +1,7 @@
 package checks.S2638_ChangeMethodContractCheck.noPackageInfo;
 
 import javax.annotation.meta.When;
+import java.util.List;
 
 /**
  * For parameters:
@@ -22,7 +23,9 @@ class ChangeMethodContractCheck {
   void argAnnotatedWeakNullable(@javax.annotation.Nullable Object a) { }
   void argAnnotatedStrongNullable(@javax.annotation.CheckForNull Object a) { }
   void argAnnotatedNullableJSpecify(@org.jspecify.annotations.Nullable Object a) { }
+  void typeArgAnnotatedNullableJSpecify(List<@org.jspecify.annotations.Nullable String> a) { }
   void argAnnotatedNonNullJSpecify(@org.jspecify.annotations.NonNull Object a) { }
+  void typeArgAnnotatedNonNullJSpecify(List<@org.jspecify.annotations.NonNull String> a) { }
   void argAnnotatedNonNull(@javax.annotation.Nonnull Object a, @javax.annotation.Nonnull Object b) { }
 
   @javax.annotation.Nullable
@@ -38,6 +41,10 @@ class ChangeMethodContractCheck {
 
   @org.jspecify.annotations.NonNull
   String annotatedNonNullJSpecify(Object a) { return "null"; }
+
+  List<@org.jspecify.annotations.Nullable String> typeAnnotatedNullableJSpecify(Object a) { return List.of(); }
+
+  List<@org.jspecify.annotations.NonNull String> typeAnnotatedNonNullJSpecify(Object a) { return List.of(); }
 }
 
 class ChangeMethodContractCheck_B extends ChangeMethodContractCheck {
@@ -51,7 +58,13 @@ class ChangeMethodContractCheck_B extends ChangeMethodContractCheck {
   void argAnnotatedNullableJSpecify(@org.jspecify.annotations.NonNull Object a) { } // Noncompliant
 
   @Override
+  void typeArgAnnotatedNullableJSpecify(List<@org.jspecify.annotations.NonNull String> a) { } // Noncompliant
+
+  @Override
   void argAnnotatedNonNullJSpecify(@org.jspecify.annotations.Nullable Object a) { } // Compliant
+
+  @Override
+  void typeArgAnnotatedNonNullJSpecify(List<@org.jspecify.annotations.Nullable String> a) { } // Compliant
 
   // For arguments: if you call the method from the parent but the child is actually used, the caller will be force to give non-null argument
   // despite the fact that the implementation would accept null. It is not armful, therefore, NonNull to Strong/Weak Nullable is compliant.
@@ -77,6 +90,10 @@ class ChangeMethodContractCheck_B extends ChangeMethodContractCheck {
   @Override
   @org.jspecify.annotations.Nullable
   String annotatedNonNullJSpecify(Object a) { return "null"; } // Noncompliant
+
+  List<@org.jspecify.annotations.NonNull String> typeAnnotatedNullableJSpecify(Object a) { return List.of(); } // Compliant
+
+  List<@org.jspecify.annotations.Nullable String> typeAnnotatedNonNullJSpecify(Object a) { return List.of(); } // Noncompliant
 
   public boolean equals(Object o) { return false; } // Compliant: no nullable annotation
 }
