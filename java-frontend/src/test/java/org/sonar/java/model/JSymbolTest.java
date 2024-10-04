@@ -19,6 +19,11 @@
  */
 package org.sonar.java.model;
 
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,6 +33,7 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -39,6 +45,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.sonar.java.model.assertions.SymbolAssert.assertThat;
 
 class JSymbolTest {
@@ -369,6 +377,30 @@ class JSymbolTest {
 
     VariableTree y = lambda.parameters().get(1);
     assertThat(y.symbol()).isOfType("java.lang.Boolean");
+  }
+
+  @Test
+  void test_with_type_annotation() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m(List<@Nullable String> p) { } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    Symbol.MethodSymbol declarationSymbol = m.symbol();
+    SymbolMetadata metadata = declarationSymbol.metadata();
+    assertThat(metadata).isNotNull();
+    SymbolMetadata parameterMetadata = m.parameters().get(0).symbol().metadata();
+    assertThat(parameterMetadata.annotations()).hasSize(1);
+  }
+
+  @Test
+  void test_with_type_null() {
+    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
+    astParser.setSource("class C { void m(String p) { } }".toCharArray());
+    CompilationUnit cu = (CompilationUnit) astParser.createAST(null);
+    JSema jSema = new JSema(cu.getAST());
+    IVariableBinding mock = mock(IVariableBinding.class);
+    when(mock.getKind()).thenReturn(IBinding.VARIABLE);
+    JVariableSymbol jVariableSymbol = new JVariableSymbol(jSema, mock);
+    assertThat(jVariableSymbol.metadata()).isNotNull();
   }
 
   @Nested
