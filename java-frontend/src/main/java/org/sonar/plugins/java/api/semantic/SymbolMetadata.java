@@ -117,7 +117,6 @@ public interface SymbolMetadata {
 
   enum NullabilityLevel {
     UNKNOWN,
-    MODULE,
     PACKAGE,
     CLASS,
     METHOD,

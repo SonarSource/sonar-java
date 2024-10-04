@@ -44,7 +44,6 @@ import org.sonarsource.analyzer.commons.collections.SetUtils;
 import static org.sonar.java.model.JSymbolMetadata.noNullabilityAnnotationAt;
 import static org.sonar.java.model.JSymbolMetadata.unknownNullabilityAt;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.CLASS;
-import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.MODULE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.VARIABLE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityTarget.FIELD;
@@ -224,9 +223,9 @@ public class JSymbolMetadataNullabilityHelper {
       Arrays.asList(METHOD, PARAMETER), Collections.singletonList(PACKAGE));
 
     configureAnnotation(ORG_JSPECIFY_ANNOTATIONS_NULL_MARKED, NON_NULL,
-      Arrays.asList(FIELD, METHOD, PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE, MODULE));
+      Arrays.asList(FIELD, METHOD, PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
     configureAnnotation(ORG_JSPECIFY_ANNOTATIONS_NULL_UNMARKED, WEAK_NULLABLE,
-      Arrays.asList(FIELD, METHOD, PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE, MODULE));
+      Arrays.asList(FIELD, METHOD, PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
 
     configureAnnotation(JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT, NON_NULL,
       Collections.singletonList(PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));

@@ -70,11 +70,6 @@ public class SESymbols {
     }
 
     @Override
-    public boolean isModuleSymbol() {
-      return false;
-    }
-
-    @Override
     public final boolean isStatic() {
       return false;
     }

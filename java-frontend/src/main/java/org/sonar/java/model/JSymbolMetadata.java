@@ -207,8 +207,6 @@ final class JSymbolMetadata implements SymbolMetadata {
       return NullabilityLevel.CLASS;
     } else if (symbol.isPackageSymbol()) {
       return NullabilityLevel.PACKAGE;
-    } else if (symbol.isModuleSymbol()) {
-      return NullabilityLevel.MODULE;
     }
     return NullabilityLevel.UNKNOWN;
   }

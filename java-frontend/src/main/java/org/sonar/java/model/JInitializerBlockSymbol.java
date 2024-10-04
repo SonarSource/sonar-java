@@ -102,11 +102,6 @@ final class JInitializerBlockSymbol implements Symbol.MethodSymbol {
   }
 
   @Override
-  public boolean isModuleSymbol() {
-    return false;
-  }
-
-  @Override
   public boolean isStatic() {
     return isStatic;
   }

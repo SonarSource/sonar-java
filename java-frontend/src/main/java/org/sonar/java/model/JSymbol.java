@@ -282,11 +282,6 @@ abstract class JSymbol implements Symbol {
   }
 
   @Override
-  public final boolean isModuleSymbol() {
-    return binding.getKind() == IBinding.MODULE;
-  }
-
-  @Override
   public final boolean isStatic() {
     return Modifier.isStatic(binding.getModifiers());
   }

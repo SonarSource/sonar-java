@@ -45,7 +45,7 @@ public class BooleanMethodReturnCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     SymbolMetadata metadata = methodTree.symbol().metadata();
-    if (returnsBoolean(methodTree) && !metadata.nullabilityData().isNullable(NullabilityLevel.MODULE, false, true)) {
+    if (returnsBoolean(methodTree) && !metadata.nullabilityData().isNullable(NullabilityLevel.PACKAGE, false, true)) {
       methodTree.accept(new ReturnStatementVisitor());
     }
   }
