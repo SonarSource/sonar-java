@@ -84,7 +84,6 @@ public class JavaCheckVerifier implements CheckVerifier {
     // Because of 'java-custom-rules-example' module, we silently use an empty classpath if the file does not exist
     DEFAULT_CLASSPATH = Files.exists(path) ? TestClasspathUtils.loadFromFile(path.toString()) : new ArrayList<>();
     Optional.of(new File(FilesUtils.DEFAULT_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(DEFAULT_CLASSPATH::add);
-    Optional.of(new File(FilesUtils.JSPECIFY_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(DEFAULT_CLASSPATH::add);
   }
 
   private List<JavaFileScanner> checks = null;

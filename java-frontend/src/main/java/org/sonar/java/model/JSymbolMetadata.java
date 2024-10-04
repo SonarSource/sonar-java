@@ -29,7 +29,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ASTUtils;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
@@ -169,7 +168,6 @@ final class JSymbolMetadata implements SymbolMetadata {
     }
 
     // Not annotated or meta annotated, check upper level in the ownership hierarchy...
-//    if (symbol.isModuleSymbol()) {
     if (symbol.isPackageSymbol()) {
       return NO_ANNOTATION_NULLABILITY[currentLevel.ordinal()];
     }

@@ -44,17 +44,12 @@ class BooleanMethodReturnCheckTest {
 
   @Test
   void test_jspecify_null_marked() {
-//    CheckVerifier.newVerifier()
-//      .onFile(TestUtils.mainCodeSourcesPathInModule("jspecify-null-marked",
-//        "module-info.java"))
-//      .withCheck(new BooleanMethodReturnCheck())
-//      .verifyIssues();
     // module level
-//    CheckVerifier.newVerifier()
-//      .onFile(TestUtils.mainCodeSourcesPathInModule("jspecify-null-marked",
-//        "jspecify/nullunmarkedonly/BooleanMethodReturnCheck.java"))
-//      .withCheck(new BooleanMethodReturnCheck())
-//      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPathInModule("jspecify-null-marked",
+        "jspecify/nullunmarkedonly/BooleanMethodReturnCheck.java"))
+      .withCheck(new BooleanMethodReturnCheck())
+      .verifyIssues();
     // package level
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/jspecify/nullmarked/BooleanMethodReturnCheck.java"))
