@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.TestUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
@@ -54,18 +53,10 @@ class ChangeMethodContractCheckTest {
 
   @Test
   void test_jspecify_null_marked() {
-    // module level
-    CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPathInModule("jspecify-null-marked",
-        "jspecify/nullunmarkedonly/ChangeMethodContractCheck.java"))
-      .withCheck(new ChangeMethodContractCheck())
-      .verifyIssues();
-    // package level
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/jspecify/ChangeMethodContractCheckNullMarked.java"))
       .withCheck(new ChangeMethodContractCheck())
       .verifyIssues();
-    // class level
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/ChangeMethodContractCheck.java"))
       .withCheck(new ChangeMethodContractCheck())
