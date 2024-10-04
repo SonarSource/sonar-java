@@ -118,7 +118,11 @@ class ReturnEmptyArrayNotNullCheckSampleC {
   public int[] fool() {
     return null; 
   }
-  
+
+  public int @org.jspecify.annotations.Nullable [] fool_jspecify() {
+    return null;
+  }
+
   @CheckForNull
   public int[] bark() {
     return null; 

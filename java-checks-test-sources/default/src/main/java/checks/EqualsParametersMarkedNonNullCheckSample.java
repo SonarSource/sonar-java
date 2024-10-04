@@ -59,4 +59,10 @@ public class EqualsParametersMarkedNonNullCheckSample {
     }
   }
 
+  static class J {
+    public boolean equals(@org.jspecify.annotations.NonNull Object object) { // Noncompliant
+      return false;
+    }
+  }
+
 }

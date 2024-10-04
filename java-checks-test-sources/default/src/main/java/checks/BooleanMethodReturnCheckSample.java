@@ -27,6 +27,11 @@ class BooleanMethodReturnCheckSampleA {
   public Boolean bar() {
     return null; // Compliant
   }
+
+  @org.jspecify.annotations.Nullable
+  public Boolean baz() {
+    return null; // Compliant
+  }
 }
 
 class BooleanMethodReturnCheckSampleB {
