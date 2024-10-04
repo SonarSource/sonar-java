@@ -369,23 +369,24 @@ abstract class JSymbol implements Symbol {
         return new JSymbolMetadata(sema, this, sema.resolvePackageAnnotations(binding.getName()));
       case IBinding.VARIABLE:
         ITypeBinding type = ((IVariableBinding) binding).getType();
-        if (type == null) {
-          return new JSymbolMetadata(sema, this, new IAnnotationBinding[0], binding.getAnnotations());
-        }
-        return new JSymbolMetadata(sema, this, getAnnotationBindings(type), binding.getAnnotations());
+        return new JSymbolMetadata(
+          sema,
+          this,
+          type == null ? new IAnnotationBinding[0] : getAnnotations(type),
+          binding.getAnnotations());
       case IBinding.METHOD:
         ITypeBinding returnType = ((IMethodBinding) binding).getReturnType();
         // In rare circumstances, when the semantic information is incomplete, returnType can be null.
         if (returnType == null) {
           return Symbols.EMPTY_METADATA;
         }
-        return new JSymbolMetadata(sema, this, getAnnotationBindings(returnType), binding.getAnnotations());
+        return new JSymbolMetadata(sema, this, getAnnotations(returnType), binding.getAnnotations());
       default:
         return new JSymbolMetadata(sema, this, binding.getAnnotations());
     }
   }
 
-  private static IAnnotationBinding[] getAnnotationBindings(ITypeBinding type) {
+  private static IAnnotationBinding[] getAnnotations(ITypeBinding type) {
     List<IAnnotationBinding> iAnnotationBindings = new ArrayList<>();
     for (ITypeBinding typeArgument : type.getTypeArguments()) {
       Collections.addAll(iAnnotationBindings, typeArgument.getTypeAnnotations());

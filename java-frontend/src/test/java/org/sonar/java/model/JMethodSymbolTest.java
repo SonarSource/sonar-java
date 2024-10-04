@@ -40,6 +40,7 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -97,6 +98,18 @@ class JMethodSymbolTest {
     invocationSymbol.declarationParameters().containsAll(
       declarationSymbol.declarationParameters()
     );
+  }
+
+  @Test
+  void test_with_type_annotation() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m(List<@Nullable String> p) { } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    Symbol.MethodSymbol declarationSymbol = m.symbol();
+    SymbolMetadata metadata = declarationSymbol.metadata();
+    assertThat(metadata).isNotNull();
+    SymbolMetadata parameterMetadata = m.parameters().get(0).symbol().metadata();
+    assertThat(parameterMetadata.annotations()).hasSize(1);
   }
 
   @Test
