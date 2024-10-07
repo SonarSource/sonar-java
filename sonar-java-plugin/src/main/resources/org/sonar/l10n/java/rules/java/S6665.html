@@ -1,0 +1,23 @@
+<h2>Why is this an issue?</h2>
+<p>Nullability annotations in Java are used to indicate whether a variable or parameter can be assigned a null value or not. These annotations help to prevent Null Pointer Exceptions and improve the reliability of code.</p>
+<p>Redundant nullability annotations can clutter the code and make it harder to read and understand. When a nullability annotation is already implied by the context or by other annotations, explicitly adding it again only adds noise and makes the code less clear.</p>
+<p>Removing them improves code readability, maintainability, reduces the risk of inconsistencies, and ensures that the remaining annotations carry meaningful information.</p>
+<h3>Noncompliant code example</h3>
+JSpecify code example:
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@NullMarked
+class MyClass {
+  public void method(@NonNull Object o) { // Noncompliant: @NonNull is redundant here
+    // ...
+  }
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+@NullMarked
+class MyClass {
+  public void method(Object o) {
+    // ...
+  }
+}
+</pre>

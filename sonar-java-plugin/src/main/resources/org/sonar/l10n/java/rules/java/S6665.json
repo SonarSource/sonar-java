@@ -1,0 +1,32 @@
+{
+  "title": "Redundant nullability annotations should be removed",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "nullability",
+    "jspecify"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6665",
+  "sqKey": "S6665",
+  "scope": "All",
+  "defaultQualityProfiles": [
+    "Sonar way"
+  ],
+  "quickfix": "unknown",
+  "allKeys": [
+    "S6665"
+  ],
+  "prUrl": "https://github.com/SonarSource/rspec/pull/2495",
+  "branch": "rule/add-RSPEC-S6665",
+  "languagesSupport": [
+    {
+      "name": "java",
+      "status": "ready"
+    }
+  ]
+}
