@@ -25,6 +25,7 @@ class ChangeMethodContractCheck_Child extends ChangeMethodContractCheck {
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
 class ChangeMethodContractCheckAtClassLevel {
   void argAnnotatedNonNullViaClassAnnotation(Object a) { }
+  Object argAnnotatedNonNullViaClassAnnotation_jspecify(Object a) { return new Object(); }
 }
 
 class ChangeMethodContractCheckAtClassLevel_Child extends ChangeMethodContractCheckAtClassLevel {
@@ -33,4 +34,8 @@ class ChangeMethodContractCheckAtClassLevel_Child extends ChangeMethodContractCh
   @Override
   void argAnnotatedNonNullViaClassAnnotation(Object a) { } // Noncompliant {{Fix the incompatibility of the annotation @Nullable to honor @NonNullByDefault at class level of the overridden method.}}
 //^^^^
+
+  @org.jspecify.annotations.Nullable
+  @Override
+  Object argAnnotatedNonNullViaClassAnnotation_jspecify(Object a) { return null; } // Noncompliant
 }

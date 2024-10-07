@@ -38,6 +38,11 @@ abstract class PrimitivesMarkedNullableCheckSample {
   @javax.annotation.Nullable
   public double getDouble1() { return 0.0; } // Noncompliant {{"@Nullable" annotation should not be used on primitive types}}
 
+  @org.jspecify.annotations.Nullable
+  public double getDouble1_jspecify() { return 0.0; } // Noncompliant
+
+  public @org.jspecify.annotations.Nullable double getDouble2_jspecify() { return 0.0; } // Noncompliant
+
   public double getDouble2() { return 0.0; }
 
   @MyCheckForNull

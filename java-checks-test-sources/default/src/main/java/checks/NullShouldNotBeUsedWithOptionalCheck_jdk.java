@@ -12,6 +12,9 @@ interface NullShouldNotBeUsedWithOptionalCheck_jdk {
 //^^^^^^^^^
   public Optional<String> getOptionalKo();
 
+
+  @org.jspecify.annotations.Nullable // Noncompliant
+  Optional<String> getOptional();
 }
 
 class NullShouldNotBeUsedWithOptionalCheck_jdkClassA {
@@ -101,9 +104,17 @@ class NullShouldNotBeUsedWithOptionalCheck_jdkClassA {
 //                         ^^^^^^^^^
   }
 
+  public void doSomething6_Jspecify(@org.jspecify.annotations.Nullable Optional<String> arg) { // Noncompliant
+  }
+
   public void doSomething7() {
     @Nullable // Noncompliant {{"Optional" variables should not be "@Nullable".}}
 //  ^^^^^^^^^
+    Optional<String> var;
+  }
+
+  public void doSomething7_jspecify() {
+    @org.jspecify.annotations.Nullable // Noncompliant
     Optional<String> var;
   }
 
