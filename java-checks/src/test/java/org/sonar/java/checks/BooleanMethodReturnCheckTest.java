@@ -41,4 +41,17 @@ class BooleanMethodReturnCheckTest {
       .verifyNoIssues();
 
   }
+
+  @Test
+  void test_jspecify_null_marked() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/jspecify/nullmarked/BooleanMethodReturnCheck.java"))
+      .withCheck(new BooleanMethodReturnCheck())
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/jspecify/BooleanMethodReturnCheckNullMarked.java"))
+      .withCheck(new BooleanMethodReturnCheck())
+      .verifyIssues();
+  }
+
 }

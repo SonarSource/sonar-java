@@ -47,6 +47,19 @@ class ReturnEmptyArrayNotNullCheckTest {
   }
 
   @Test
+  void test_jspecify_nullmarked() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/jspecify/ReturnEmptyArrayNotNullCheckNullMarked.java"))
+      .withCheck(new ReturnEmptyArrayNotNullCheck())
+      .verifyIssues();
+
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/jspecify/nullmarked/ReturnEmptyArrayNotNullCheck.java"))
+      .withCheck(new ReturnEmptyArrayNotNullCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/ReturnEmptyArrayNotNullCheckSample.java"))

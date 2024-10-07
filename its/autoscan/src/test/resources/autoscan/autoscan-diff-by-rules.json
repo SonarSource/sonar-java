@@ -218,7 +218,7 @@
   {
     "ruleKey": "S1128",
     "hasTruePositives": true,
-    "falseNegatives": 32,
+    "falseNegatives": 34,
     "falsePositives": 0
   },
   {
@@ -320,7 +320,7 @@
   {
     "ruleKey": "S1168",
     "hasTruePositives": true,
-    "falseNegatives": 6,
+    "falseNegatives": 24,
     "falsePositives": 0
   },
   {
@@ -338,7 +338,7 @@
   {
     "ruleKey": "S1172",
     "hasTruePositives": true,
-    "falseNegatives": 13,
+    "falseNegatives": 21,
     "falsePositives": 0
   },
   {
@@ -1286,7 +1286,7 @@
   {
     "ruleKey": "S2447",
     "hasTruePositives": true,
-    "falseNegatives": 0,
+    "falseNegatives": 4,
     "falsePositives": 0
   },
   {
@@ -1298,13 +1298,13 @@
   {
     "ruleKey": "S2583",
     "hasTruePositives": true,
-    "falseNegatives": 21,
+    "falseNegatives": 20,
     "falsePositives": 0
   },
   {
     "ruleKey": "S2589",
     "hasTruePositives": true,
-    "falseNegatives": 5,
+    "falseNegatives": 6,
     "falsePositives": 0
   },
   {
@@ -1322,13 +1322,13 @@
   {
     "ruleKey": "S2637",
     "hasTruePositives": true,
-    "falseNegatives": 21,
+    "falseNegatives": 87,
     "falsePositives": 0
   },
   {
     "ruleKey": "S2638",
     "hasTruePositives": true,
-    "falseNegatives": 7,
+    "falseNegatives": 9,
     "falsePositives": 0
   },
   {
@@ -1442,7 +1442,7 @@
   {
     "ruleKey": "S2789",
     "hasTruePositives": true,
-    "falseNegatives": 11,
+    "falseNegatives": 37,
     "falsePositives": 0
   },
   {
@@ -1664,7 +1664,7 @@
   {
     "ruleKey": "S3516",
     "hasTruePositives": true,
-    "falseNegatives": 11,
+    "falseNegatives": 8,
     "falsePositives": 0
   },
   {
@@ -1766,7 +1766,7 @@
   {
     "ruleKey": "S3958",
     "hasTruePositives": true,
-    "falseNegatives": 2,
+    "falseNegatives": 4,
     "falsePositives": 0
   },
   {
@@ -2018,7 +2018,7 @@
   {
     "ruleKey": "S4682",
     "hasTruePositives": true,
-    "falseNegatives": 0,
+    "falseNegatives": 8,
     "falsePositives": 0
   },
   {
@@ -2036,7 +2036,7 @@
   {
     "ruleKey": "S4738",
     "hasTruePositives": false,
-    "falseNegatives": 55,
+    "falseNegatives": 68,
     "falsePositives": 0
   },
   {
