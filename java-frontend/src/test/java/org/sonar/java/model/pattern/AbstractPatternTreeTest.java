@@ -108,6 +108,7 @@ class AbstractPatternTreeTest {
     ExpressionTree patternExpression = nullExpressions.get(0);
     assertThat(patternExpression).is(Tree.Kind.NULL_PATTERN);
     NullPatternTree nullPattern = (NullPatternTree) patternExpression;
+    assertThat(nullPattern.symbolType().fullyQualifiedName()).isEqualTo("<nulltype>");
     assertThat(patternExpression.symbolType()).isSameAs(nullPattern.nullLiteral().symbolType());
     assertThat(patternExpression.asConstant()).isSameAs(nullPattern.nullLiteral().asConstant());
     assertThat(patternExpression.asConstant(Object.class)).isSameAs(nullPattern.nullLiteral().asConstant(Object.class));
@@ -149,6 +150,7 @@ class AbstractPatternTreeTest {
     TypePatternTree typePattern = (TypePatternTree) expression;
     VariableTree patternVariable = typePattern.patternVariable();
     assertThat(patternVariable.symbol()).isOfType("java.lang.Integer");
+    assertThat(typePattern.symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
     assertThat(typePattern.symbolType()).isSameAs(patternVariable.symbol().type());
     assertThat(typePattern.asConstant()).isEmpty();
     assertThat(typePattern.asConstant(Object.class)).isEmpty();
@@ -189,7 +191,7 @@ class AbstractPatternTreeTest {
     assertThat(guardedPattern.whenOperator()).is("when");
     assertThat(guardedPattern.whenOperator().range()).hasToString("(4:22)-(4:26)");
     assertThat(guardedPattern.expression()).is(Tree.Kind.GREATER_THAN);
-    assertThat(guardedPattern.symbolType()).isUnknown();
+    assertThat(guardedPattern.symbolType().fullyQualifiedName()).isEqualTo("A$Rectangle");
     assertThat(guardedPattern.asConstant()).isEmpty();
     assertThat(guardedPattern.asConstant(Object.class)).isEmpty();
   }

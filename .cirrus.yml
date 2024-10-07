@@ -33,7 +33,7 @@ container_definition: &CONTAINER_DEFINITION
 
 container_with_docker_definition: &CONTAINER_WITH_DOCKER_DEFINITION
   <<: *CONTAINER_DEFINITION
-  dockerfile: .cirrus/Dockerfile.jdk17And21
+  dockerfile: .cirrus/Dockerfile.jdk17AndLatest
   builder_role: cirrus-builder
   builder_image: docker-builder-v*
   builder_instance_type: t3.small
@@ -52,7 +52,7 @@ only_sonarsource_qa: &ONLY_SONARSOURCE_QA
 common_build_definition: &COMMON_BUILD_DEFINITION
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j21-latest
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j22-latest
     cpu: 4
     memory: 4G
   env:
@@ -113,7 +113,7 @@ ws_scan_task:
   whitesource_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
-    - mvn clean install -Dmaven.test.skip=true -pl '!java-checks-test-sources,!java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-3.2'
+    - mvn clean install --batch-mode -Dmaven.test.skip=true -pl '!java-checks-test-sources,!java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-3.2'
     - source ws_scan.sh
   allow_failures: "true"
   always:
@@ -122,7 +122,7 @@ ws_scan_task:
 
 qa_os_win_task:
   ec2_instance:
-    image: base-windows-jdk21-v*
+    image: base-windows-jdk22-v*
     <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
@@ -159,7 +159,7 @@ plugin_qa_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/plugin
-    - mvn package -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
+    - mvn package --batch-mode -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 sanity_task:
@@ -168,7 +168,7 @@ sanity_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j21-latest
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j22-latest
     cpu: 4
     memory: 4G
   maven_cache:
@@ -177,9 +177,9 @@ sanity_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd java-checks-test-sources
-    - mvn clean compile
+    - mvn clean compile --batch-mode
     - cd ../
-    - mvn verify -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
+    - mvn verify --batch-mode -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_task:
@@ -207,7 +207,7 @@ ruling_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
-    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[10.3] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package --batch-mode "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[10.3] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
   on_failure:
     actual_artifacts:
@@ -236,7 +236,7 @@ ruling_win_task:
     - init_git_submodules its/sources
     - git submodule update --init --recursive
     - cd its/ruling
-    - mvn package "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[10.3] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+    - mvn package --batch-mode "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[10.3] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 autoscan_task:
@@ -246,9 +246,9 @@ autoscan_task:
   eks_container:
     <<: *CONTAINER_WITH_DOCKER_DEFINITION
     # For now, this autoscan_task need to execute two mvn commands:
-    # * The build of java-checks-test-sources module which requires Java 21.
-    # * The tests using Orchestrator and SonarQube that, for now, fail to work using Java 21
-    # This is why we have a local Dockerfile that provide the 2 versions of Java, 17 and 21.
+    # * The build of java-checks-test-sources module which requires Java 22.
+    # * The tests using Orchestrator and SonarQube that, for now, fail to work using Java 22
+    # This is why we have a local Dockerfile that provide the 2 versions of Java, 17 and 22.
     cpu: 14
     memory: 6G
   maven_cache:
@@ -260,7 +260,7 @@ autoscan_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd java-checks-test-sources
-    - JAVA_HOME="${JAVA_21_HOME}" mvn clean compile
+    - JAVA_HOME="${JAVA_LATEST_HOME}" mvn clean compile --batch-mode
     - cd ../its/autoscan
     - mvn clean package --batch-mode --errors --show-version --activate-profiles it-autoscan -Dsonar.runtimeVersion=LATEST_RELEASE[10.3] -Dmaven.test.redirectTestOutputToFile=false -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository

@@ -118,9 +118,8 @@ public abstract class JParserConfig {
 
   public ASTParser astParser() {
     ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    Map<String, String> options = new HashMap<>();
-    options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion.effectiveJavaVersionAsString());
-    options.put(JavaCore.COMPILER_SOURCE, javaVersion.effectiveJavaVersionAsString());
+    Map<String, String> options = new HashMap<>(JavaCore.getOptions());
+    JavaCore.setComplianceOptions(javaVersion.effectiveJavaVersionAsString(), options);
     options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
     if (shouldIgnoreUnnamedModuleForSplitPackage) {
       options.put(JavaCore.COMPILER_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE, "enabled");

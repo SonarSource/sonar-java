@@ -1,7 +1,14 @@
 package checks.unused;
 
+import org.hibernate.validator.internal.engine.validationcontext.ValidatorScopedContext;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Queue;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class UnusedLocalVariableCheck {
@@ -10,6 +17,7 @@ class UnusedLocalVariableCheck {
 
   {
     int unused = 42; // Noncompliant
+    int _ = 42; // Compliant
     int used = 23; // Compliant
     System.out.println(used);
   }
@@ -38,6 +46,7 @@ class UnusedLocalVariableCheck {
     }
 
     try (Stream foo = Stream.of()) { // Compliant
+    } catch (Exception _) {
     }
 
     for (int a : new int[]{0, 1, 2}) { // Noncompliant
@@ -67,7 +76,7 @@ class UnusedLocalVariableCheck {
     int unreadLocalVariable2 = 1; // Noncompliant
     unreadLocalVariable2 = readLocalVariable2;
 
-    java.util.stream.Stream<Object> s = Stream.of();
+    Stream<Object> s = Stream.of();
     s.map(v -> "");
 
     try (Stream foo3 = Stream.of()) {
@@ -291,6 +300,80 @@ class UnusedLocalVariableCheck {
         var x = 42; // Noncompliant
         System.out.println();
       }
+    }
+  }
+
+  abstract class Ball {}
+  final class RedBall extends Ball {}
+  final class BlueBall extends Ball {}
+  final class GreenBall extends Ball {}
+
+  record BallHolder<T extends Ball>(T ball) { }
+
+  record Point(int x, int y) { }
+  record ColoredPoint(Point p, String color) { }
+
+  void unnamedVariablesUseCases(Queue<Ball> queue, BallHolder<? extends Ball> ballHolder, ColoredPoint coloredPoint) {
+    int total = 0;
+    for(Object _ : queue) { // Compliant
+      total++;
+    }
+    System.out.println(total);
+
+    while(queue.size() > 2) {
+      var a = queue.remove();
+      var _ = queue.remove(); // Compliant
+      System.out.println(a);
+    }
+
+    try {
+      queue.remove();
+    } catch (Exception _) { // Compliant
+      System.out.println("Exception");
+    }
+
+    queue.stream()
+      .collect(Collectors.toMap(Function.identity(), _ -> 42)); // Compliant
+
+    var ball = queue.remove();
+    switch (ball) {
+      case RedBall _ -> System.out.println("Red"); // Compliant
+      case BlueBall _ -> System.out.println("Blue"); // Compliant
+      default -> throw new IllegalStateException("Unexpected value: " + ball);
+    }
+
+    switch (ballHolder) {
+      case BallHolder(RedBall _) -> System.out.println("One Red"); // Compliant
+      // FIXME: the following line is commented because ECJ 3.39.0 is not able to parse it, Syntax error on the second _.
+      // case BallHolder(BlueBall _), BallHolder(GreenBall _) -> System.out.println("Blue or Green Ball"); // Compliant
+      case BallHolder(var _) -> System.out.println("Other"); // Compliant
+    }
+
+    switch (ballHolder) {
+      // FIXME: the following line is commented because ECJ 3.39.0 is not able to parse it, Syntax error on the second _.
+      // case BallHolder(RedBall _), BallHolder(BlueBall _) -> System.out.println("Red or Blue Ball"); // Compliant
+      case BallHolder(_) -> System.out.println("Other Ball"); // Compliant
+      default -> System.out.println("Other Ball");
+    }
+
+    if(ballHolder instanceof BallHolder(RedBall _)) { // Compliant
+      System.out.println("BallHolder with RedBall");
+    }
+
+    if(coloredPoint instanceof ColoredPoint(Point(_, _), _)) { // Compliant
+      System.out.println("Point (_:_) with color not important");
+    }
+
+    if(coloredPoint instanceof ColoredPoint(Point(int x, int y), _)) { // Compliant
+      System.out.println("Point ("+ x  + ":"  + y + ") with color not important");
+    }
+
+    if(coloredPoint instanceof ColoredPoint(Point(int x, int _), _)) { // Compliant
+      System.out.println("Point ("+ x  + ":_) with color not important");
+    }
+
+    if(coloredPoint instanceof ColoredPoint(Point(_, int y), _)) { // Compliant
+      System.out.println("Point (_:" + y + ") with color not important");
     }
   }
 }

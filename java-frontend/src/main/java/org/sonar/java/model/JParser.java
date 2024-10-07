@@ -160,6 +160,7 @@ import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.InitializerListTreeImpl;
@@ -302,7 +303,7 @@ public class JParser {
     converter.sema = new JSema(astNode.getAST());
     converter.sema.undefinedTypes.addAll(undefinedTypes);
     converter.compilationUnit = astNode;
-    converter.tokenManager = new TokenManager(lex(version, unitName, source.toCharArray()), source, new DefaultCodeFormatterOptions(new HashMap<>()));
+    converter.tokenManager = createTokenManager(version, unitName, source);
     converter.lineColumnConverter = lineColumnConverter;
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
@@ -313,6 +314,11 @@ public class JParser {
 
     setParents(tree);
     return tree;
+  }
+
+  @VisibleForTesting
+  static TokenManager createTokenManager(String version, String unitName, String source) {
+    return new TokenManager(lex(version, unitName, source.toCharArray()), source, new DefaultCodeFormatterOptions(new HashMap<>()));
   }
 
   private static void setParents(Tree node) {
@@ -332,7 +338,8 @@ public class JParser {
     return ((JavaTree) node).getChildren().iterator();
   }
 
-  private static List<Token> lex(String version, String unitName, char[] sourceChars) {
+  @VisibleForTesting
+  static List<Token> lex(String version, String unitName, char[] sourceChars) {
     List<Token> tokens = new ArrayList<>();
     Scanner scanner = new Scanner(
       true,
@@ -435,6 +442,25 @@ public class JParser {
    */
   private InternalSyntaxToken firstTokenIn(ASTNode e, int tokenType) {
     return createSyntaxToken(tokenManager.firstIndexIn(e, tokenType));
+  }
+
+  /**
+   * @param tokenTypeCandidateA {@link TerminalTokens}
+   * @param tokenTypeCandidateB {@link TerminalTokens}
+   * @return {@link TerminalTokens}
+   */
+  @VisibleForTesting
+  static int firstIndexIn(TokenManager tokenManager, ASTNode e, int tokenTypeCandidateA, int tokenTypeCandidateB) {
+    int first = tokenManager.firstIndexIn(e, ANY_TOKEN);
+    int last = tokenManager.lastIndexIn(e, ANY_TOKEN);
+    for (int tokenIndex = first; tokenIndex <= last; tokenIndex++) {
+      Token token = tokenManager.get(tokenIndex);
+      if (token.tokenType == tokenTypeCandidateA || token.tokenType == tokenTypeCandidateB) {
+        return tokenIndex;
+      }
+    }
+    throw new IllegalStateException("Failed to find token " + tokenTypeCandidateA + " or " + tokenTypeCandidateB +
+      " in the tokens of a " + ASTNode.nodeClassForType(e.getNodeType()).getName());
   }
 
   /**
@@ -1199,6 +1225,24 @@ public class JParser {
     return type;
   }
 
+  private VariableTreeImpl convertVariable(TypePattern typePattern) {
+    if (typePattern.getAST().apiLevel() < AST.JLS22) {
+      return convertVariable(typePattern.getPatternVariable());
+    }
+    VariableDeclaration variableDeclaration = typePattern.getPatternVariable2();
+    if (variableDeclaration instanceof VariableDeclarationFragment declarationFragment) {
+      return convertVariable(declarationFragment);
+    } else {
+      return convertVariable((SingleVariableDeclaration) variableDeclaration);
+    }
+  }
+
+  private VariableTreeImpl convertVariable(VariableDeclarationFragment declarationFragment) {
+    return completeInitializerAndBinding(
+      new VariableTreeImpl(createSimpleName(declarationFragment.getName())),
+      declarationFragment);
+  }
+
   private VariableTreeImpl convertVariable(SingleVariableDeclaration e) {
     // TODO are extraDimensions and varargs mutually exclusive?
     TypeTree type = convertType(e.getType());
@@ -1220,6 +1264,10 @@ public class JParser {
       type,
       createSimpleName(e.getName())
     );
+    return completeInitializerAndBinding(t, e);
+  }
+
+  private VariableTreeImpl completeInitializerAndBinding(VariableTreeImpl t, VariableDeclaration e) {
     if (e.getInitializer() != null) {
       t.completeTypeAndInitializer(
         t.type(),
@@ -1228,7 +1276,12 @@ public class JParser {
       );
     }
     t.variableBinding = e.resolveBinding();
-    declaration(t.variableBinding, t);
+    if (t.variableBinding != null) {
+      if (t.type() instanceof InferedTypeTree inferredType) {
+        inferredType.typeBinding = t.variableBinding.getType();
+      }
+      declaration(t.variableBinding, t);
+    }
     return t;
   }
 
@@ -1265,7 +1318,10 @@ public class JParser {
   }
 
   private IdentifierTreeImpl createSimpleName(SimpleName e) {
-    IdentifierTreeImpl t = new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNameIdentifier));
+    int tokenIndex = firstIndexIn(tokenManager, e, TerminalTokens.TokenNameIdentifier, TerminalTokens.TokenNameUNDERSCORE);
+    Token token = tokenManager.get(tokenIndex);
+    boolean isUnnamedVariable = token.tokenType == TerminalTokens.TokenNameUNDERSCORE;
+    IdentifierTreeImpl t = new IdentifierTreeImpl(createSyntaxToken(tokenIndex), isUnnamedVariable);
     t.typeBinding = e.resolveTypeBinding();
     t.binding = e.resolveBinding();
     return t;
@@ -1532,7 +1588,7 @@ public class JParser {
 
   private ExpressionTree convertExpressionFromCase(Expression e) {
     if (e.getNodeType() == ASTNode.CASE_DEFAULT_EXPRESSION) {
-      return new DefaultPatternTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamedefault));
+      return new DefaultPatternTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamedefault), e.resolveTypeBinding());
     }
     if (e.getNodeType() == ASTNode.NULL_LITERAL) {
       return new NullPatternTreeImpl((LiteralTreeImpl) convertExpression(e));
@@ -1546,7 +1602,8 @@ public class JParser {
   private PatternTree convertPattern(Pattern p) {
     switch (p.getNodeType()) {
       case ASTNode.TYPE_PATTERN:
-        return new TypePatternTreeImpl(convertVariable(((TypePattern) p).getPatternVariable()));
+        TypePattern typePattern = (TypePattern) p;
+        return new TypePatternTreeImpl(convertVariable(typePattern), typePattern.resolveTypeBinding());
       case ASTNode.RECORD_PATTERN:
         RecordPattern recordPattern = (RecordPattern) p;
         List<PatternTree> nestedPatterns = recordPattern.patterns().stream()
@@ -1562,7 +1619,8 @@ public class JParser {
         return new GuardedPatternTreeImpl(
           convertPattern(g.getPattern()),
           firstTokenBefore(g.getExpression(), TerminalTokens.TokenNameRestrictedIdentifierWhen),
-          convertExpression(g.getExpression()));
+          convertExpression(g.getExpression()),
+          g.resolveTypeBinding());
       case ASTNode.NULL_PATTERN:
         // It is not clear how to reach this one, it seems to be possible only with badly constructed AST
         // fall-through. Do nothing for now.
