@@ -114,4 +114,8 @@ public class NullableInjectedFieldsHaveDefaultValueSample {
     a = b;
     return a;
   }
+
+  @org.jspecify.annotations.Nullable
+  @Value("${my.property_jspecify}") // Noncompliant  {{Provide a default null value for this field.}} [[sc=3;ec=27;secondary=-1]]
+  private String myProperty_jspecify;
 }

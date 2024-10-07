@@ -77,7 +77,8 @@ public class JSymbolMetadataNullabilityHelper {
     // From the documentation (https://wiki.eclipse.org/JDT_Core/Null_Analysis):
     // For any variable whose type is annotated with @Nullable [...] It is illegal to dereference such a variable for either field or method access.
     "org.eclipse.jdt.annotation.Nullable",
-    "org.eclipse.jgit.annotations.Nullable");
+    "org.eclipse.jgit.annotations.Nullable",
+    "org.jspecify.annotations.Nullable");
 
   /**
    * List of "weak" annotations, when something can be null, but it may be fine to not check it.
@@ -133,7 +134,8 @@ public class JSymbolMetadataNullabilityHelper {
     "org.jmlspecs.annotation.NonNull",
     "org.netbeans.api.annotations.common.NonNull",
     "org.springframework.lang.NonNull",
-    "reactor.util.annotation.NonNull");
+    "reactor.util.annotation.NonNull",
+    "org.jspecify.annotations.NonNull");
 
   /**
    * Can have different type depending on the argument "when" value:
