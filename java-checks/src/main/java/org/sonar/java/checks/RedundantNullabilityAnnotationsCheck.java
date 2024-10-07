@@ -19,17 +19,48 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 
 @Rule(key = "S6665")
-public class RedundantNullabilityAnnotationsCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class RedundantNullabilityAnnotationsCheck  extends IssuableSubscriptionVisitor {
 
   @Override
-  public void scanFile(final JavaFileScannerContext context) {
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.INTERFACE, Tree.Kind.CLASS, Tree.Kind.RECORD);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    // have I (the class), or my package or module, a non-null annotation?
+    if (classTree.symbol().metadata().nullabilityData().isNonNull(PACKAGE, false, false)) {
+      // if so, highlight members that also have a non-null annotation
+      checkClass(classTree);
+    }
+  }
+
+  private void checkClass(ClassTree tree) {
+    tree.members().forEach(member -> {
+      if (member.is(Tree.Kind.METHOD)) {
+        checkMethod((MethodTree) member);
+      } else if (member.is(Tree.Kind.CLASS)) {
+        // TODO check member class DIRECT annotations (not inherited)
+        // then check inside the member class
+        checkClass((ClassTree) member);
+      }
+    });
+  }
+
+  private void checkMethod(MethodTree tree) {
+    // TODO check member DIRECT annotations (not inherited) for returns, parameters
   }
 
 }
