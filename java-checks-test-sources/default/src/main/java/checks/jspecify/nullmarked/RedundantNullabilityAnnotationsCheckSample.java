@@ -1,40 +1,10 @@
-package checks;
+package checks.jspecify.nullmarked;
 
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 
-class RedundantNullabilityAnnotationsCheckSampleNoAnnotation {
-
-  public void methodNonNullParam(@NonNull Object o) { // Compliant
-    // ...
-  }
-
-  public void methodNonNullParamTyped(List<@NonNull Object> o) { // Compliant
-    // ..
-  }
-
-  @NonNull // Compliant
-  public Integer methodNonNullReturn(Object o) {
-    return 0;
-  }
-
-  public void methodOkay(Object o) { // Compliant
-    // ...
-  }
-
-  @NullMarked // Compliant
-  static class InnerClass {
-
-    public void methodOkay(Object o) { // Compliant
-      // ...
-    }
-
-  }
-
-}
-
-@NullMarked
+// NullMarked at the package level
 class RedundantNullabilityAnnotationsCheckSample {
 
   public void methodNonNullParam(@NonNull Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
@@ -65,7 +35,7 @@ class RedundantNullabilityAnnotationsCheckSample {
 
 }
 
-@NullMarked
+// NullMarked at the package level
 class RedundantNullabilityAnnotationsCheckSampleMix {
 
   public void methodNonNullParam(@jakarta.annotation.Nonnull Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
@@ -92,7 +62,7 @@ class RedundantNullabilityAnnotationsCheckSampleMix {
 
 }
 
-@NullMarked
+// NullMarked at the package level
 record RedundantNullabilityAnnotationsCheckSampleRecord(Integer id) {
 
   public void methodNonNullParam(@jakarta.annotation.Nonnull Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
@@ -123,7 +93,7 @@ record RedundantNullabilityAnnotationsCheckSampleRecord(Integer id) {
 
 }
 
-@NullMarked
+// NullMarked at the package level
 interface RedundantNullabilityAnnotationsCheckSampleInterface {
 
   public void methodNonNullParam(@jakarta.annotation.Nonnull Object o); // Noncompliant {{Remove redundant nullability annotation.}}
@@ -135,7 +105,7 @@ interface RedundantNullabilityAnnotationsCheckSampleInterface {
 
   public void methodOkay(Object o);
 
-  @org.jspecify.annotations.NonNull // Noncompliant {{Remove redundant nullability annotation.}}
+  @NullMarked // Noncompliant {{Remove redundant nullability annotation.}}
   static interface InnerClass {
 
     public void methodOkay(Object o);

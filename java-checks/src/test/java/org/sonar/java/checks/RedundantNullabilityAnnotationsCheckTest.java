@@ -28,10 +28,16 @@ class RedundantNullabilityAnnotationsCheckTest {
 
   @Test
   void test() {
+    // package level
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/RedundantNullabilityAnnotationsCheckSample.java"))
+      .withCheck(new RedundantNullabilityAnnotationsCheck())
+      .verifyIssues();
+    // class level
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/RedundantNullabilityAnnotationsCheckSample.java"))
       .withCheck(new RedundantNullabilityAnnotationsCheck())
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
 }
