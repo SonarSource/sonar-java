@@ -4,12 +4,18 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.meta.When;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.NullUnmarked;
+import org.springframework.beans.factory.annotation.Value;
 
 @NullMarked
 class RedundantNullabilityAnnotationsCheckSampleB {
+
+  @org.jspecify.annotations.NonNull // Noncompliant {{Remove redundant nullability annotation.}}
+  @Value("${my.property_jspecify}")
+  private String myProperty_jspecify;
 
   public void methodNonNullParam(@javax.annotation.Nonnull(when= When.ALWAYS) Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
     // ...
@@ -119,12 +125,24 @@ class RedundantNullabilityAnnotationsCheckSampleNoAnnotation {
 @NullMarked
 class RedundantNullabilityAnnotationsCheckSample {
 
+  @Nullable
+  private String myProperty_jspecify_okay;
+
+  public void methodNonNullParamNullable(@Nullable Object o) { // Compliant
+    // ...
+  }
+
   public void methodNonNullParam(@NonNull Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
     // ...
   }
 
   public void methodNonNullParamTyped(List<@NonNull Object> o) { // Noncompliant {{Remove redundant nullability annotation.}}
     // ..
+  }
+
+  @Nullable // Compliant
+  public Integer methodNullableReturn(Object o) {
+    return 0;
   }
 
   @NonNull // Noncompliant {{Remove redundant nullability annotation.}}

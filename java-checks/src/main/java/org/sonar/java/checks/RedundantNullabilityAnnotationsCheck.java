@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.CLASS;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.METHOD;
@@ -63,7 +64,13 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
   private void checkIfMembersContainNonNull(ClassTree tree) {
     // for all members
     tree.members().forEach(member -> {
-      if (member.is(Tree.Kind.METHOD)) {
+      if (member.is(Tree.Kind.VARIABLE)) {
+        // check field
+        if (((VariableTree) member).symbol().metadata().nullabilityData()
+          .isNonNull(VARIABLE, false, false)) {
+          reportIssue(member, ISSUE_MESSAGE);
+        }
+      } else if (member.is(Tree.Kind.METHOD)) {
         // check method
         checkIfMethodContainsNonNull((MethodTree) member);
       } else if (member.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD)) {

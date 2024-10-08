@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.meta.When;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
+import org.springframework.beans.factory.annotation.Value;
 
 @NullMarked
 class RedundantNullabilityAnnotationsCheckRedundantClass {
@@ -16,6 +17,12 @@ class RedundantNullabilityAnnotationsCheckRedundantClass {
 
 // NullMarked at the package level
 class RedundantNullabilityAnnotationsCheckSample {
+
+  @org.jspecify.annotations.NonNull // Noncompliant {{Remove redundant nullability annotation.}}
+  @Value("${my.property_jspecify}")
+  private String myProperty_jspecify;
+
+  private String myProperty_jspecify_okay;
 
   public void methodNonNullParam(@NonNull Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
     // ...
