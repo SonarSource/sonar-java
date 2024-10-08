@@ -33,9 +33,14 @@ class RedundantNullabilityAnnotationsCheckTest {
       .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/RedundantNullabilityAnnotationsCheckSample.java"))
       .withCheck(new RedundantNullabilityAnnotationsCheck())
       .verifyIssues();
+    // no package
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("RedundantNullabilityDefaultPackage.java"))
+      .withCheck(new RedundantNullabilityAnnotationsCheck())
+      .verifyIssues();
     // class level
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RedundantNullabilityAnnotationsCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/jspecify/RedundantNullabilityAnnotationsCheckSample.java"))
       .withCheck(new RedundantNullabilityAnnotationsCheck())
       .verifyIssues();
   }

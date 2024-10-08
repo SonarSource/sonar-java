@@ -1,6 +1,7 @@
 package checks.jspecify.nullmarked;
 
 import java.util.List;
+import javax.annotation.meta.When;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 
@@ -34,6 +35,61 @@ class RedundantNullabilityAnnotationsCheckSample {
   }
 
 }
+
+@NullMarked
+class RedundantNullabilityAnnotationsCheckSampleB {
+
+  public void methodNonNullParam(@javax.annotation.Nonnull(when= When.ALWAYS) Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
+    // ...
+  }
+
+  @javax.annotation.Nonnull(when= When.ALWAYS) // Noncompliant {{Remove redundant nullability annotation.}}
+  public Integer methodNonNullReturn(Object o) {
+    return 0;
+  }
+
+  public void methodOkay(Object o) { // Compliant
+    // ...
+  }
+
+  @NullMarked // Noncompliant {{Remove redundant nullability annotation.}}
+  static class InnerClass {
+
+    public void methodOkay(Object o) { // Compliant
+      // ...
+    }
+
+  }
+
+}
+
+@NullMarked
+class RedundantNullabilityAnnotationsCheckSampleC {
+
+  public void methodNonNullParam(@jakarta.annotation.Nonnull Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
+    // ...
+  }
+
+  @javax.annotation.Nonnull // Noncompliant {{Remove redundant nullability annotation.}}
+  public Integer methodNonNullReturn(Object o) {
+    return 0;
+  }
+
+  public void methodOkay(Object o) { // Compliant
+    // ...
+  }
+
+  @NullMarked // Noncompliant {{Remove redundant nullability annotation.}}
+  static class InnerClass {
+
+    public void methodOkay(Object o) { // Compliant
+      // ...
+    }
+
+  }
+
+}
+
 
 // NullMarked at the package level
 class RedundantNullabilityAnnotationsCheckSampleMix {
@@ -121,3 +177,8 @@ interface RedundantNullabilityAnnotationsCheckSampleInterface {
 
 }
 
+enum TEST_COVERAGE {
+  ABACUS,
+  BABA,
+  CIRCUS
+}

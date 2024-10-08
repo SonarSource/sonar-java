@@ -35,7 +35,9 @@ import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLeve
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.VARIABLE;
 
 @Rule(key = "S6665")
-public class RedundantNullabilityAnnotationsCheck  extends IssuableSubscriptionVisitor {
+public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVisitor {
+
+  private static final String ISSUE_MESSAGE = "Remove redundant nullability annotation.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -47,15 +49,15 @@ public class RedundantNullabilityAnnotationsCheck  extends IssuableSubscriptionV
     // am I an outer class
     if (tree instanceof ClassTree classTree &&
       (classTree.symbol().owner() == null ||
-      Objects.requireNonNull(classTree.symbol().owner()).isPackageSymbol())) {
-        // get my nullability
-        SymbolMetadata.NullabilityData highestData = classTree.symbol().metadata().nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
-        // if non-null
-        if (highestData.isNonNull(PACKAGE, false, false)) {
-          // then check my members are not directly annotated with non-null
-          checkMembersAreNotNonNull(classTree);
-        }
+        Objects.requireNonNull(classTree.symbol().owner()).isPackageSymbol())) {
+      // get my nullability
+      SymbolMetadata.NullabilityData highestData = classTree.symbol().metadata().nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
+      // if non-null
+      if (highestData.isNonNull(PACKAGE, false, false)) {
+        // then check my members are not directly annotated with non-null
+        checkMembersAreNotNonNull(classTree);
       }
+    }
   }
 
   private void checkMembersAreNotNonNull(ClassTree tree) {
@@ -68,7 +70,7 @@ public class RedundantNullabilityAnnotationsCheck  extends IssuableSubscriptionV
         // check inner class is not directly annotated
         if (((ClassTree) member).symbol().metadata().nullabilityData(SymbolMetadata.NullabilityTarget.CLASS)
           .isNonNull(CLASS, false, false)) {
-          reportIssue(member, "Remove redundant nullability annotation.");
+          reportIssue(member, ISSUE_MESSAGE);
         }
         checkMembersAreNotNonNull((ClassTree) member);
       }
@@ -79,13 +81,13 @@ public class RedundantNullabilityAnnotationsCheck  extends IssuableSubscriptionV
     // check return type at method level - do not look up hierarchy
     if (method.symbol().metadata().nullabilityData()
       .isNonNull(METHOD, false, false)) {
-      reportIssue(method, "Remove redundant nullability annotation.");
+      reportIssue(method, ISSUE_MESSAGE);
     }
     // check parameters at variable level - do not look up hierarchy
     method.parameters().forEach(parameter -> {
       if (parameter.symbol().metadata().nullabilityData()
         .isNonNull(VARIABLE, false, false)) {
-        reportIssue(parameter, "Remove redundant nullability annotation.");
+        reportIssue(parameter, ISSUE_MESSAGE);
       }
     });
   }
