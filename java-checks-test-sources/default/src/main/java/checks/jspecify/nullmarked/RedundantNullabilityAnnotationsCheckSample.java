@@ -34,6 +34,20 @@ class RedundantNullabilityAnnotationsCheckSample {
 
   }
 
+  static class UnMarkedInnerClass {
+
+    public void methodOkay(Object o) { // Compliant
+      // ...
+    }
+
+  }
+
+  enum INNER_TEST_COVERAGE {
+    ABACUS,
+    BABA,
+    CIRCUS
+  }
+
 }
 
 @NullMarked

@@ -46,13 +46,13 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
 
   @Override
   public void visitNode(Tree tree) {
-    // am I an outer class
-    if (tree instanceof ClassTree classTree &&
-      (classTree.symbol().owner() == null ||
-        Objects.requireNonNull(classTree.symbol().owner()).isPackageSymbol())) {
-      // get my nullability
-      SymbolMetadata.NullabilityData highestData = classTree.symbol().metadata().nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
-      // if non-null
+    ClassTree classTree = (ClassTree) tree;
+    // am I an outer class - will return default package if necessary
+    if (Objects.requireNonNull(classTree.symbol().owner()).isPackageSymbol()) {
+      // get nullability directly at class target level
+      SymbolMetadata.NullabilityData highestData = classTree.symbol().metadata()
+        .nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
+      // if non-null, either directly or inherited from higher entity
       if (highestData.isNonNull(PACKAGE, false, false)) {
         // then check my members are not directly annotated with non-null
         checkMembersAreNotNonNull(classTree);
