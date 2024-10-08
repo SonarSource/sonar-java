@@ -148,6 +148,12 @@ public class JSymbolMetadataNullabilityHelper {
   private static final String JAKARTA_ANNOTATION_NONNULL = "jakarta.annotation.Nonnull";
 
   /**
+   * JSpecify set of <a href="https://jspecify.dev/">Standard Annotations for Java Static Analysis</a>.
+   */
+  private static final String ORG_JSPECIFY_ANNOTATIONS_NULL_MARKED = "org.jspecify.annotations.NullMarked";
+  private static final String ORG_JSPECIFY_ANNOTATIONS_NULL_UNMARKED = "org.jspecify.annotations.NullUnmarked";
+
+  /**
    * Target parameters and return values.
    * Only applicable to package.
    */
@@ -218,6 +224,11 @@ public class JSymbolMetadataNullabilityHelper {
     configureAnnotation(ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API, NON_NULL,
       Arrays.asList(METHOD, PARAMETER), Collections.singletonList(PACKAGE));
 
+    configureAnnotation(ORG_JSPECIFY_ANNOTATIONS_NULL_MARKED, NON_NULL,
+      Arrays.asList(FIELD, METHOD, PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
+    configureAnnotation(ORG_JSPECIFY_ANNOTATIONS_NULL_UNMARKED, WEAK_NULLABLE,
+      Arrays.asList(FIELD, METHOD, PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
+
     configureAnnotation(JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT, NON_NULL,
       Collections.singletonList(PARAMETER), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
     configureAnnotation(JAVAX_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT, WEAK_NULLABLE,
@@ -250,6 +261,8 @@ public class JSymbolMetadataNullabilityHelper {
     KNOWN_ANNOTATIONS.add(JAKARTA_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT);
     KNOWN_ANNOTATIONS.add(ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS);
     KNOWN_ANNOTATIONS.add(ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT);
+    KNOWN_ANNOTATIONS.add(ORG_JSPECIFY_ANNOTATIONS_NULL_MARKED);
+    KNOWN_ANNOTATIONS.add(ORG_JSPECIFY_ANNOTATIONS_NULL_UNMARKED);
   }
 
   private static void configureAnnotation(String name, NullabilityType type, List<NullabilityTarget> targets, List<NullabilityLevel> levels) {
