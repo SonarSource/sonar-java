@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.NullabilityDataUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -59,12 +58,12 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
       // if non-null, either directly or inherited from higher entity
       if (classNullabilityData.isNonNull(PACKAGE, false, false)) {
         // then check my members are not directly annotated with non-null
-        checkIfMembersContainNonNull(classNullabilityData, classTree);
+        checkMembersForNonNull(classNullabilityData, classTree);
       }
     }
   }
 
-  private void checkIfMembersContainNonNull(SymbolMetadata.NullabilityData classNullabilityData, ClassTree tree) {
+  private void checkMembersForNonNull(SymbolMetadata.NullabilityData classNullabilityData, ClassTree tree) {
     // for all members
     tree.members().forEach(member -> {
       if (member.is(Tree.Kind.VARIABLE)) {
@@ -75,7 +74,7 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
         }
       } else if (member.is(Tree.Kind.METHOD)) {
         // check method
-        checkIfMethodContainsNonNull(classNullabilityData, (MethodTree) member);
+        checkMethodForNonNull(classNullabilityData, (MethodTree) member);
       } else if (member.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD)) {
         // check inner object is not directly annotated
         SymbolMetadata.NullabilityData innerNullabilityData = ((ClassTree) member).symbol().metadata().nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
@@ -83,12 +82,12 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
           reportIssue(member, innerNullabilityData, classNullabilityData);
         }
         // now recurse to check class members
-        checkIfMembersContainNonNull(classNullabilityData, (ClassTree) member);
+        checkMembersForNonNull(classNullabilityData, (ClassTree) member);
       }
     });
   }
 
-  private void checkIfMethodContainsNonNull(SymbolMetadata.NullabilityData classNullabilityData, MethodTree method) {
+  private void checkMethodForNonNull(SymbolMetadata.NullabilityData classNullabilityData, MethodTree method) {
     // check return type at method level - do not look up hierarchy
     SymbolMetadata.NullabilityData methodNullabilityData = method.symbol().metadata().nullabilityData();
     if (methodNullabilityData.isNonNull(METHOD, false, false)) {
