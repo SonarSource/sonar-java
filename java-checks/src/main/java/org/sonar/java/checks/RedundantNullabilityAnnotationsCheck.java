@@ -71,9 +71,7 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
         // check field
         SymbolMetadata.NullabilityData variableNullabilityData = ((VariableTree) member).symbol().metadata().nullabilityData();
         if (variableNullabilityData.isNonNull(VARIABLE, false, false)) {
-          reportIssue(member, String.format(ISSUE_MESSAGE,
-            NullabilityDataUtils.nullabilityAsString(variableNullabilityData),
-            NullabilityDataUtils.nullabilityAsString(classNullabilityData)));
+          reportIssue(member, variableNullabilityData, classNullabilityData);
         }
       } else if (member.is(Tree.Kind.METHOD)) {
         // check method

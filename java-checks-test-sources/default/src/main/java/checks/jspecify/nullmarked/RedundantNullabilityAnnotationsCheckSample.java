@@ -18,7 +18,7 @@ class RedundantNullabilityAnnotationsCheckRedundantClass {
 // NullMarked at the package level
 class RedundantNullabilityAnnotationsCheckSample {
 
-  @org.jspecify.annotations.NonNull // Noncompliant {{Remove redundant nullability annotation Optional[@NonNull] as already annotated with Optional[@NullMarked at package level].}}
+  @org.jspecify.annotations.NonNull // Noncompliant {{Remove redundant nullability annotation @NonNull as already annotated with @NullMarked at package level.}}
   @Value("${my.property_jspecify}")
   private String myProperty_jspecify;
 
