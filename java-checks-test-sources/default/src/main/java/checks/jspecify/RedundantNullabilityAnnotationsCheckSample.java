@@ -1,15 +1,23 @@
 package checks.jspecify;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import javax.annotation.meta.When;
+import javax.validation.constraints.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.NullUnmarked;
 
 @NullMarked
 class RedundantNullabilityAnnotationsCheckSampleB {
 
   public void methodNonNullParam(@javax.annotation.Nonnull(when= When.ALWAYS) Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
     // ...
+  }
+
+  @NotNull // Noncompliant {{Remove redundant nullability annotation.}}
+  public Integer methodJXNonNullReturn(Object o) {
+    return 0;
   }
 
   @javax.annotation.Nonnull(when= When.ALWAYS) // Noncompliant {{Remove redundant nullability annotation.}}
@@ -21,8 +29,27 @@ class RedundantNullabilityAnnotationsCheckSampleB {
     // ...
   }
 
+  @Nullable // Compliant
+  public Boolean methodBooleanNullable(@Nullable Object o) { // Compliant
+    return false;
+  }
+
+  @org.jspecify.annotations.Nullable // Compliant
+  public Boolean methodBooleanJNullable(@org.jspecify.annotations.Nullable Object o) { // Compliant
+    return false;
+  }
+
   @NullMarked // Noncompliant {{Remove redundant nullability annotation.}}
   static class InnerClass {
+
+    public void methodOkay(Object o) { // Compliant
+      // ...
+    }
+
+  }
+
+  @NullUnmarked // Compliant
+  static class InnerClassUnmarked {
 
     public void methodOkay(Object o) { // Compliant
       // ...

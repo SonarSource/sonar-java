@@ -5,6 +5,15 @@ import javax.annotation.meta.When;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 
+@NullMarked
+class RedundantNullabilityAnnotationsCheckRedundantClass {
+
+  public void methodNonNullParam(@NonNull Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
+    // ...
+  }
+
+}
+
 // NullMarked at the package level
 class RedundantNullabilityAnnotationsCheckSample {
 

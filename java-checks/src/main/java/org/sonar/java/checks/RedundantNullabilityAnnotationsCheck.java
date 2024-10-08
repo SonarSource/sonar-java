@@ -49,35 +49,36 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
     ClassTree classTree = (ClassTree) tree;
     // am I an outer class - will return default package if necessary
     if (Objects.requireNonNull(classTree.symbol().owner()).isPackageSymbol()) {
-      // get nullability directly at class target level
-      SymbolMetadata.NullabilityData highestData = classTree.symbol().metadata()
+      // get nullability from class target level up
+      SymbolMetadata.NullabilityData classNullabilityData = classTree.symbol().metadata()
         .nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
       // if non-null, either directly or inherited from higher entity
-      if (highestData.isNonNull(PACKAGE, false, false)) {
+      if (classNullabilityData.isNonNull(PACKAGE, false, false)) {
         // then check my members are not directly annotated with non-null
-        checkMembersAreNotNonNull(classTree);
+        checkIfMembersContainNonNull(classTree);
       }
     }
   }
 
-  private void checkMembersAreNotNonNull(ClassTree tree) {
+  private void checkIfMembersContainNonNull(ClassTree tree) {
     // for all members
     tree.members().forEach(member -> {
       if (member.is(Tree.Kind.METHOD)) {
         // check method
-        checkMethod((MethodTree) member);
+        checkIfMethodContainsNonNull((MethodTree) member);
       } else if (member.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD)) {
-        // check inner class is not directly annotated
+        // check inner object is not directly annotated
         if (((ClassTree) member).symbol().metadata().nullabilityData(SymbolMetadata.NullabilityTarget.CLASS)
           .isNonNull(CLASS, false, false)) {
           reportIssue(member, ISSUE_MESSAGE);
         }
-        checkMembersAreNotNonNull((ClassTree) member);
+        // now recurse to check class members
+        checkIfMembersContainNonNull((ClassTree) member);
       }
     });
   }
 
-  private void checkMethod(MethodTree method) {
+  private void checkIfMethodContainsNonNull(MethodTree method) {
     // check return type at method level - do not look up hierarchy
     if (method.symbol().metadata().nullabilityData()
       .isNonNull(METHOD, false, false)) {
