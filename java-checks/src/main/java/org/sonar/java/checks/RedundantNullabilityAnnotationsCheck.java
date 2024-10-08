@@ -22,7 +22,9 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.NullabilityDataUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -30,6 +32,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.NullabilityDataUtils.nullabilityAsString;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.CLASS;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.METHOD;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
@@ -38,7 +41,7 @@ import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLeve
 @Rule(key = "S6665")
 public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVisitor {
 
-  private static final String ISSUE_MESSAGE = "Remove redundant nullability annotation.";
+  private static final String ISSUE_MESSAGE = "Remove redundant nullability annotation %s as already annotated with %s.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -56,48 +59,63 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
       // if non-null, either directly or inherited from higher entity
       if (classNullabilityData.isNonNull(PACKAGE, false, false)) {
         // then check my members are not directly annotated with non-null
-        checkIfMembersContainNonNull(classTree);
+        checkIfMembersContainNonNull(classNullabilityData, classTree);
       }
     }
   }
 
-  private void checkIfMembersContainNonNull(ClassTree tree) {
+  private void checkIfMembersContainNonNull(SymbolMetadata.NullabilityData classNullabilityData, ClassTree tree) {
     // for all members
     tree.members().forEach(member -> {
       if (member.is(Tree.Kind.VARIABLE)) {
         // check field
-        if (((VariableTree) member).symbol().metadata().nullabilityData()
-          .isNonNull(VARIABLE, false, false)) {
-          reportIssue(member, ISSUE_MESSAGE);
+        SymbolMetadata.NullabilityData variableNullabilityData = ((VariableTree) member).symbol().metadata().nullabilityData();
+        if (variableNullabilityData.isNonNull(VARIABLE, false, false)) {
+          reportIssue(member, String.format(ISSUE_MESSAGE,
+            NullabilityDataUtils.nullabilityAsString(variableNullabilityData),
+            NullabilityDataUtils.nullabilityAsString(classNullabilityData)));
         }
       } else if (member.is(Tree.Kind.METHOD)) {
         // check method
-        checkIfMethodContainsNonNull((MethodTree) member);
+        checkIfMethodContainsNonNull(classNullabilityData, (MethodTree) member);
       } else if (member.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD)) {
         // check inner object is not directly annotated
-        if (((ClassTree) member).symbol().metadata().nullabilityData(SymbolMetadata.NullabilityTarget.CLASS)
-          .isNonNull(CLASS, false, false)) {
-          reportIssue(member, ISSUE_MESSAGE);
+        SymbolMetadata.NullabilityData innerNullabilityData = ((ClassTree) member).symbol().metadata().nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
+        if (innerNullabilityData.isNonNull(CLASS, false, false)) {
+          reportIssue(member, innerNullabilityData, classNullabilityData);
         }
         // now recurse to check class members
-        checkIfMembersContainNonNull((ClassTree) member);
+        checkIfMembersContainNonNull(classNullabilityData, (ClassTree) member);
       }
     });
   }
 
-  private void checkIfMethodContainsNonNull(MethodTree method) {
+  private void checkIfMethodContainsNonNull(SymbolMetadata.NullabilityData classNullabilityData, MethodTree method) {
     // check return type at method level - do not look up hierarchy
-    if (method.symbol().metadata().nullabilityData()
-      .isNonNull(METHOD, false, false)) {
-      reportIssue(method, ISSUE_MESSAGE);
+    SymbolMetadata.NullabilityData methodNullabilityData = method.symbol().metadata().nullabilityData();
+    if (methodNullabilityData.isNonNull(METHOD, false, false)) {
+      reportIssue(method, methodNullabilityData, classNullabilityData);
     }
     // check parameters at variable level - do not look up hierarchy
     method.parameters().forEach(parameter -> {
-      if (parameter.symbol().metadata().nullabilityData()
-        .isNonNull(VARIABLE, false, false)) {
-        reportIssue(parameter, ISSUE_MESSAGE);
+      SymbolMetadata.NullabilityData parameterNullabilityData = parameter.symbol().metadata().nullabilityData();
+      if (parameterNullabilityData.isNonNull(VARIABLE, false, false)) {
+        reportIssue(parameter, parameterNullabilityData, classNullabilityData);
       }
     });
+  }
+
+  private void reportIssue(Tree reportLocation,
+    SymbolMetadata.NullabilityData directNullabilityData,
+    SymbolMetadata.NullabilityData higherNullabilityData) {
+    Optional<String> directNullabilityDataAsString = nullabilityAsString(directNullabilityData);
+    Optional<String> higherNullabilityDataAsString = nullabilityAsString(higherNullabilityData);
+    if (directNullabilityDataAsString.isPresent() && higherNullabilityDataAsString.isPresent()) {
+      reportIssue(reportLocation,
+        String.format(ISSUE_MESSAGE,
+          directNullabilityDataAsString.get(),
+          higherNullabilityDataAsString.get()));
+    }
   }
 
 }

@@ -13,20 +13,20 @@ import org.springframework.beans.factory.annotation.Value;
 @NullMarked
 class RedundantNullabilityAnnotationsCheckSampleB {
 
-  @org.jspecify.annotations.NonNull // Noncompliant {{Remove redundant nullability annotation.}}
+  @org.jspecify.annotations.NonNull // Noncompliant {{Remove redundant nullability annotation Optional[@NonNull] as already annotated with Optional[@NullMarked at class level].}}
   @Value("${my.property_jspecify}")
   private String myProperty_jspecify;
 
-  public void methodNonNullParam(@javax.annotation.Nonnull(when= When.ALWAYS) Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
+  public void methodNonNullParam(@javax.annotation.Nonnull(when= When.ALWAYS) Object o) { // Noncompliant {{Remove redundant nullability annotation @Nonnull(when=ALWAYS) as already annotated with @NullMarked at class level.}}
     // ...
   }
 
-  @NotNull // Noncompliant {{Remove redundant nullability annotation.}}
+  @NotNull // Noncompliant {{Remove redundant nullability annotation @NotNull as already annotated with @NullMarked at class level.}}
   public Integer methodJXNonNullReturn(Object o) {
     return 0;
   }
 
-  @javax.annotation.Nonnull(when= When.ALWAYS) // Noncompliant {{Remove redundant nullability annotation.}}
+  @javax.annotation.Nonnull(when= When.ALWAYS) // Noncompliant {{Remove redundant nullability annotation @Nonnull(when=ALWAYS) as already annotated with @NullMarked at class level.}}
   public Integer methodNonNullReturn(Object o) {
     return 0;
   }
@@ -45,7 +45,7 @@ class RedundantNullabilityAnnotationsCheckSampleB {
     return false;
   }
 
-  @NullMarked // Noncompliant {{Remove redundant nullability annotation.}}
+  @NullMarked // Noncompliant {{Remove redundant nullability annotation @NullMarked at class level as already annotated with @NullMarked at class level.}}
   static class InnerClass {
 
     public void methodOkay(Object o) { // Compliant
@@ -68,11 +68,11 @@ class RedundantNullabilityAnnotationsCheckSampleB {
 @NullMarked
 class RedundantNullabilityAnnotationsCheckSampleC {
 
-  public void methodNonNullParam(@jakarta.annotation.Nonnull Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
+  public void methodNonNullParam(@jakarta.annotation.Nonnull Object o) { // Noncompliant {{Remove redundant nullability annotation @Nonnull as already annotated with @NullMarked at class level.}}
     // ...
   }
 
-  @javax.annotation.Nonnull // Noncompliant {{Remove redundant nullability annotation.}}
+  @javax.annotation.Nonnull // Noncompliant {{Remove redundant nullability annotation @Nonnull as already annotated with @NullMarked at class level.}}
   public Integer methodNonNullReturn(Object o) {
     return 0;
   }
@@ -81,7 +81,7 @@ class RedundantNullabilityAnnotationsCheckSampleC {
     // ...
   }
 
-  @NullMarked // Noncompliant {{Remove redundant nullability annotation.}}
+  @NullMarked // Noncompliant {{Remove redundant nullability annotation @NullMarked at class level as already annotated with @NullMarked at class level.}}
   static class InnerClass {
 
     public void methodOkay(Object o) { // Compliant
@@ -132,11 +132,11 @@ class RedundantNullabilityAnnotationsCheckSample {
     // ...
   }
 
-  public void methodNonNullParam(@NonNull Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
+  public void methodNonNullParam(@NonNull Object o) { // Noncompliant {{Remove redundant nullability annotation @NonNull as already annotated with @NullMarked at class level.}}
     // ...
   }
 
-  public void methodNonNullParamTyped(List<@NonNull Object> o) { // Noncompliant {{Remove redundant nullability annotation.}}
+  public void methodNonNullParamTyped(List<@NonNull Object> o) { // Noncompliant {{Remove redundant nullability annotation @NonNull as already annotated with @NullMarked at class level.}}
     // ..
   }
 
@@ -145,7 +145,7 @@ class RedundantNullabilityAnnotationsCheckSample {
     return 0;
   }
 
-  @NonNull // Noncompliant {{Remove redundant nullability annotation.}}
+  @NonNull // Noncompliant {{Remove redundant nullability annotation @NonNull as already annotated with @NullMarked at class level.}}
   public Integer methodNonNullReturn(Object o) {
     return 0;
   }
@@ -154,7 +154,7 @@ class RedundantNullabilityAnnotationsCheckSample {
     // ...
   }
 
-  @NullMarked // Noncompliant {{Remove redundant nullability annotation.}}
+  @NullMarked // Noncompliant {{Remove redundant nullability annotation @NullMarked at class level as already annotated with @NullMarked at class level.}}
   static class InnerClass {
 
     public void methodOkay(Object o) { // Compliant
@@ -168,11 +168,11 @@ class RedundantNullabilityAnnotationsCheckSample {
 @NullMarked
 class RedundantNullabilityAnnotationsCheckSampleMix {
 
-  public void methodNonNullParam(@jakarta.annotation.Nonnull Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
+  public void methodNonNullParam(@jakarta.annotation.Nonnull Object o) { // Noncompliant {{Remove redundant nullability annotation @Nonnull as already annotated with @NullMarked at class level.}}
     // ...
   }
 
-  @javax.annotation.Nonnull // Noncompliant {{Remove redundant nullability annotation.}}
+  @javax.annotation.Nonnull // Noncompliant {{Remove redundant nullability annotation @Nonnull as already annotated with @NullMarked at class level.}}
   public Integer methodNonNullReturn(Object o) {
     return 0;
   }
@@ -181,7 +181,7 @@ class RedundantNullabilityAnnotationsCheckSampleMix {
     // ...
   }
 
-  @NullMarked // Noncompliant {{Remove redundant nullability annotation.}}
+  @NullMarked // Noncompliant {{Remove redundant nullability annotation @NullMarked at class level as already annotated with @NullMarked at class level.}}
   static class InnerClass {
 
     public void methodOkay(Object o) { // Compliant
@@ -195,15 +195,15 @@ class RedundantNullabilityAnnotationsCheckSampleMix {
 @NullMarked
 record RedundantNullabilityAnnotationsCheckSampleRecord(Integer id) {
 
-  public void methodNonNullParam(@jakarta.annotation.Nonnull Object o) { // Noncompliant {{Remove redundant nullability annotation.}}
+  public void methodNonNullParam(@jakarta.annotation.Nonnull Object o) { // Noncompliant {{Remove redundant nullability annotation @Nonnull as already annotated with @NullMarked at class level.}}
     // ...
   }
 
-  public void methodNonNullParamTyped(List<@NonNull Object> o) { // Noncompliant {{Remove redundant nullability annotation.}}
+  public void methodNonNullParamTyped(List<@NonNull Object> o) { // Noncompliant {{Remove redundant nullability annotation @NonNull as already annotated with @NullMarked at class level.}}
     // ..
   }
 
-  @javax.annotation.Nonnull // Noncompliant {{Remove redundant nullability annotation.}}
+  @javax.annotation.Nonnull // Noncompliant {{Remove redundant nullability annotation @Nonnull as already annotated with @NullMarked at class level.}}
   public Integer methodNonNullReturn(Object o) {
     return 0;
   }
@@ -212,7 +212,7 @@ record RedundantNullabilityAnnotationsCheckSampleRecord(Integer id) {
     // ...
   }
 
-  @NullMarked // Noncompliant {{Remove redundant nullability annotation.}}
+  @NullMarked // Noncompliant {{Remove redundant nullability annotation @NullMarked at class level as already annotated with @NullMarked at class level.}}
   static class InnerClass {
 
     public void methodOkay(Object o) { // Compliant
@@ -226,23 +226,23 @@ record RedundantNullabilityAnnotationsCheckSampleRecord(Integer id) {
 @NullMarked
 interface RedundantNullabilityAnnotationsCheckSampleInterface {
 
-  public void methodNonNullParam(@jakarta.annotation.Nonnull Object o); // Noncompliant {{Remove redundant nullability annotation.}}
+  public void methodNonNullParam(@jakarta.annotation.Nonnull Object o); // Noncompliant {{Remove redundant nullability annotation @Nonnull as already annotated with @NullMarked at class level.}}
 
-  public void methodNonNullParamTyped(List<@NonNull Object> o); // Noncompliant {{Remove redundant nullability annotation.}}
+  public void methodNonNullParamTyped(List<@NonNull Object> o); // Noncompliant {{Remove redundant nullability annotation @NonNull as already annotated with @NullMarked at class level.}}
 
-  @javax.annotation.Nonnull // Noncompliant {{Remove redundant nullability annotation.}}
+  @javax.annotation.Nonnull // Noncompliant {{Remove redundant nullability annotation @Nonnull as already annotated with @NullMarked at class level.}}
   public Integer methodNonNullReturn(Object o);
 
   public void methodOkay(Object o);
 
-  @org.jspecify.annotations.NonNull // Noncompliant {{Remove redundant nullability annotation.}}
+  @org.jspecify.annotations.NonNull // Noncompliant {{Remove redundant nullability annotation @NullMarked at class level as already annotated with @NullMarked at class level.}}
   static interface InnerClass {
 
     public void methodOkay(Object o);
 
   }
 
-  @NullMarked // Noncompliant {{Remove redundant nullability annotation.}}
+  @NullMarked // Noncompliant {{Remove redundant nullability annotation @NullMarked at class level as already annotated with @NullMarked at class level.}}
   static interface InnerRecord {
 
     public void methodOkay(Object o);
