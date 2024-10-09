@@ -2,51 +2,30 @@
 <p>Programming languages evolve over time, and new versions of Java introduce additional keywords. If future keywords are used in the current code, it
 can create compatibility issues when transitioning to newer versions of Java. The code may fail to compile or behave unexpectedly due to conflicts
 with newly introduced keywords.</p>
-<p>The following keywords are marked as invalid identifiers:</p>
-<table>
-  <colgroup>
-    <col style="width: 50%;">
-    <col style="width: 50%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>Keyword</th>
-      <th>Added in version</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><p><code>_</code></p></td>
-      <td><p>9</p></td>
-    </tr>
-    <tr>
-      <td><p><code>enum</code></p></td>
-      <td><p>5.0</p></td>
-    </tr>
-  </tbody>
-</table>
-<p><code>assert</code> and <code>strictfp</code> are another example of valid identifiers which became keywords in later versions, but are not
-supported by this rule.</p>
+<p>The <code>_</code> keyword was deprecated in Java 9 and disallowed since Java 11. Starting from Java 22 the <code>_</code> was introduced as
+<code>unnamed variable</code>.</p>
+<p>This rule reports an issue when <code>_</code> is used in versions prior to Java 22.</p>
 <h2>How to fix it</h2>
-<p>Rename the identifiers that use Java keywords.</p>
+<p>Rename the <code>_</code> identifiers.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public class MyClass {
-    int enum = 42;            // Noncompliant
     String _ = "";            // Noncompliant
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 public class MyClass {
-    int magic = 42;           // Noncompliant
     String s = "";            // Noncompliant
 }
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html">Oracle - Java Language Keywords</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/22/docs/specs/unnamed-jls.html#jls-3.9">Oracle - Unnamed Variables and Patterns Keywords</a>
+  </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/22/language/unnamed-variables-and-patterns.html">Oracle - Unnamed Variables and Patterns</a>
+  </li>
 </ul>
 

@@ -33,7 +33,7 @@ public class KeywordAsIdentifierCheck extends BaseTreeVisitor implements JavaFil
 
   private JavaFileScannerContext context;
 
-  private static final Set<String> FORBIDDEN_IDENTIFIERS = SetUtils.immutableSetOf("enum", "_","assert");
+  private static final String FORBIDDEN_IDENTIFIER = "_";
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -44,7 +44,7 @@ public class KeywordAsIdentifierCheck extends BaseTreeVisitor implements JavaFil
   @Override
   public void visitVariable(VariableTree tree) {
     IdentifierTree simpleName = tree.simpleName();
-    if (FORBIDDEN_IDENTIFIERS.contains(simpleName.name())) {
+    if (!simpleName.isUnnamedVariable() && FORBIDDEN_IDENTIFIER.equals(simpleName.name())) {
       context.reportIssue(this, simpleName, "Use a different name than \"" + simpleName.name() + "\".");
     }
     super.visitVariable(tree);

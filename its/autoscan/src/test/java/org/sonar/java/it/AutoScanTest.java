@@ -125,7 +125,7 @@ public class AutoScanTest {
       .setSourceEncoding("UTF-8")
       .setSourceDirs("aws/src/main/java/,default/src/main/java/,java-17/src/main/java/,spring-3.2/src/main/java/")
       .setTestDirs("default/src/test/java/,test-classpath-reader/src/test/java")
-      .setProperty("sonar.java.source", "21")
+      .setProperty("sonar.java.source", "22")
       // common properties
       .setProperty("sonar.cpd.exclusions", "**/*")
       .setProperty("sonar.skipPackageDesign", "true")

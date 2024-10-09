@@ -26,13 +26,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -79,11 +79,14 @@ class SanityTest {
 
   private static final String AWS_MODULE = "aws";
 
-  private static final String[] FILE_DIRECTORIES = {
+  private static final String[] COMPILING_FILE_DIRECTORIES = {
     mainCodeSourcesPath(""),
-    nonCompilingTestSourcesPath(""),
     testCodeSourcesPath(""),
-    mainCodeSourcesPathInModule(AWS_MODULE, ""),
+    mainCodeSourcesPathInModule(AWS_MODULE, "")
+  };
+
+  private static final String[] NON_COMPILING_FILE_DIRECTORIES = {
+    nonCompilingTestSourcesPath(""),
     nonCompilingTestSourcesPathInModule(AWS_MODULE, ""),
     "../java-checks/src/test/files"
   };
@@ -112,65 +115,68 @@ class SanityTest {
    */
   @Test
   @EnabledIfSystemProperty(named = "force.sanity.test", matches = "true")
-  void test() throws Exception {
+  void scan_non_compiling_files() throws Exception {
     logTester.setLevel(Level.WARN);
 
     List<JavaCheck> checks = getJavaCheckInstances();
-    assertThat(checks).isNotEmpty();
 
     File moduleBaseDir = new File(".").getCanonicalFile().getParentFile();
-    List<InputFile> inputFiles = getJavaInputFiles(moduleBaseDir);
-    assertThat(inputFiles).hasSizeGreaterThanOrEqualTo(checks.size());
+    List<InputFile> inputFiles = getJavaInputFiles(moduleBaseDir, NON_COMPILING_FILE_DIRECTORIES);
+    assertThat(inputFiles).hasSizeGreaterThan(350);
 
-    List<File> classpath = getClassPathFromModule(DEFAULT_MODULE);
-    classpath.addAll(getClassPathFromModule(AWS_MODULE));
-    assertThat(classpath).isNotEmpty();
-
-    List<SanityCheckException> exceptions = scanFiles(moduleBaseDir, inputFiles, checks, classpath);
+    List<File> classpathList = getClasspath();
+    List<SanityCheckException> exceptions = scanFiles(moduleBaseDir, inputFiles, checks, classpathList);
     if (!exceptions.isEmpty()) {
       LOG.error(processExceptions(exceptions));
       fail(String.format("Should have been able to execute all the rules on all the test files. %d file(s) made at least 1 rule fail.", exceptions.size()));
     }
 
     List<LogAndArguments> errorLogs = logTester.getLogs(Level.ERROR);
-    List<LogAndArguments> parsingErrors = errorLogs.stream()
-      .filter(SanityTest::isParseError)
-      .toList();
-    List<LogAndArguments> typeResolutionErrors = errorLogs.stream()
-      .filter(SanityTest::isTypeResolutionError)
-      .toList();
 
-    SoftAssertions softly = new SoftAssertions();
-    softly.assertThat(errorLogs).hasSize(6);
-
-    List<LogAndArguments> remainingErrors = new ArrayList<>(errorLogs);
-    remainingErrors.removeAll(parsingErrors);
-    remainingErrors.removeAll(typeResolutionErrors);
-    softly.assertThat(remainingErrors).isEmpty();
-
-    softly.assertThat(typeResolutionErrors)
-      .isEmpty();
-
-    softly.assertThat(parsingErrors)
-      .hasSize(6)
+    assertThat(errorLogs)
+      .hasSize(4)
+      .allMatch(SanityTest::isParseError)
       .map(LogAndArguments::getFormattedMsg)
       .allMatch(log ->
       // ECJ error message
       log.startsWith("Parse error at line ")
         // analyzer error message mentioning the file
-        || log.contains("KeywordAsIdentifierCheck")
+        || log.contains("RestrictedIdentifiersUsageCheckSample")
         || log.contains("EmptyStatementsInImportsBug"));
+  }
 
-    softly.assertAll();
+  @Test
+  @EnabledIfSystemProperty(named = "force.sanity.test", matches = "true")
+  void scan_compiling_files() throws Exception {
+    logTester.setLevel(Level.WARN);
+
+    List<JavaCheck> checks = getJavaCheckInstances();
+
+    File moduleBaseDir = new File(".").getCanonicalFile().getParentFile();
+    List<InputFile> inputFiles = getJavaInputFiles(moduleBaseDir, COMPILING_FILE_DIRECTORIES);
+    assertThat(inputFiles).hasSizeGreaterThan(400);
+
+    List<File> classpath = getClasspath();
+
+    List<SanityCheckException> exceptions = scanFiles(moduleBaseDir, inputFiles, checks, classpath);
+    if (!exceptions.isEmpty()) {
+      LOG.error(processExceptions(exceptions));
+      fail(String.format("Should have been able to execute all the rules on all the test files. %d file(s) made at least 1 rule fail.", exceptions.size()));
+    }
+    assertThat(logTester.getLogs(Level.ERROR)).isEmpty();
+  }
+
+  private static List<File> getClasspath() {
+    Set<File> classpathSet = new LinkedHashSet<>();
+    appendModuleClassPath(classpathSet, DEFAULT_MODULE);
+    appendModuleClassPath(classpathSet, AWS_MODULE);
+    assertThat(classpathSet).isNotEmpty();
+    return classpathSet.stream().toList();
   }
 
   private static boolean isParseError(LogAndArguments log) {
     String message = log.getFormattedMsg();
     return message.startsWith("Unable to parse source file : '") || message.startsWith("Parse error at line ");
-  }
-
-  private static boolean isTypeResolutionError(LogAndArguments log) {
-    return log.getFormattedMsg().startsWith("ECJ Unable to resolve type ");
   }
 
   private static String processExceptions(List<SanityCheckException> exceptions) {
@@ -208,11 +214,12 @@ class SanityTest {
         }
       }
     }
+    assertThat(javaChecks).hasSizeGreaterThan(400);
     return javaChecks;
   }
 
-  private static List<InputFile> getJavaInputFiles(File moduleBaseDir) {
-    return Stream.of(FILE_DIRECTORIES)
+  private static List<InputFile> getJavaInputFiles(File moduleBaseDir, String[] directories) {
+    return Stream.of(directories)
       .map(File::new)
       .map(File::toPath)
       .map(p -> FilesUtils.getFilesRecursively(p, "java"))
@@ -227,11 +234,9 @@ class SanityTest {
     return !(filename.contains("ParsingError") || filename.contains("ParseError"));
   }
 
-  private static List<File> getClassPathFromModule(String module) {
-    List<File> classpath = new ArrayList<>();
+  private static void appendModuleClassPath(Set<File> classpath, String module) {
     classpath.addAll(TestClasspathUtils.loadFromFile(FilesUtils.TEST_SOURCES_ROOT + module + FilesUtils.TARGET_TEST_CLASSPATH_FILE));
     classpath.add(new File(FilesUtils.TEST_SOURCES_ROOT + module + FilesUtils.TARGET_CLASSES).getAbsoluteFile());
-    return classpath;
   }
 
   private static List<SanityCheckException> scanFiles(File moduleBaseDir, List<InputFile> inputFiles, List<JavaCheck> checks, List<File> classpath) {

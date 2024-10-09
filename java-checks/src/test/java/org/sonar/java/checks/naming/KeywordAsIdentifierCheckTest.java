@@ -25,17 +25,21 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 class KeywordAsIdentifierCheckTest {
 
   @Test
-  void test() {
+  void test_java_8() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/KeywordAsIdentifierCheck.java")
       .withCheck(new KeywordAsIdentifierCheck())
-      .withJavaVersion(4)
+      .withJavaVersion(8)
       .verifyIssues();
+  }
+
+  @Test
+  void test_java_22() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/naming/KeywordAsIdentifierCheck_java1.java")
+      .onFile("src/test/files/checks/naming/KeywordAsIdentifierCheck.java")
       .withCheck(new KeywordAsIdentifierCheck())
-      .withJavaVersion(1)
-      .verifyIssues();
+      .withJavaVersion(22)
+      .verifyNoIssues();
   }
 
 }

@@ -619,20 +619,28 @@ class JavaFrontendTest {
     assertThat(allLogs).contains("Use of preview features");
   }
 */
+
   @Test
-  void test_sealed_classes_in_java_16_log_message() throws IOException {
-    // When the actual version is lower than the maximum supported version (currently 19),
-    // we can not guarantee that we are still parsing preview features the same way (it may have evolved) and log a message.
+  void test_sealed_classes_not_supported_with_java_16() throws IOException {
     logTester.setLevel(Level.DEBUG);
     scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "16"),
       SONARLINT_RUNTIME, "sealed class Shape permits Circle { } final class Circle extends Shape { }");
+    assertThat(sensorContext.allAnalysisErrors()).hasSize(1);
+    assertThat(logTester.logs(Level.ERROR))
+      .contains(
+        "Unable to parse source file : 'Shape.java'",
+        "Parse error at line 1 column 8: Syntax error on token \"class\", . expected");
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
+    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
+  }
+
+  @Test
+  void test_sealed_classes_support_using_java_17() throws IOException {
+    logTester.setLevel(Level.DEBUG);
+    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "17"),
+      SONARLINT_RUNTIME, "sealed class Shape permits Circle { } final class Circle extends Shape { }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     assertTrue(logTester.logs(Level.WARN).stream().noneMatch(l -> l.endsWith("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.")));
-    assertTrue(logTester.logs(Level.WARN).stream().anyMatch(l -> l.endsWith("Use of preview features have been detected during analysis. Enable DEBUG mode to see them.")));
-    // We should keep this message or we won't have anything actionable in the debug logs to understand the warning
-    assertTrue(logTester.logs(Level.DEBUG).stream().anyMatch(l -> l.replace("\r\n", "\n").endsWith("Use of preview features:\n" +
-      "- The Java feature 'Sealed Types' is only available with source level 17 and above\n"+
-      "  * Shape.java")));
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }

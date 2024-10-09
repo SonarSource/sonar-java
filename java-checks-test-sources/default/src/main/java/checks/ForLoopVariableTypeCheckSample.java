@@ -48,15 +48,15 @@ class ForLoopVariableTypeCheckSample {
       }
 
       java.util.List<B> listOfB = java.util.Collections.singletonList(new B());
-      for (B b : listOfB) {
+      for (B _ : listOfB) {
       }
-      for (A a : listOfB) {
+      for (A _ : listOfB) {
       }
       for (A a : listOfB) { // Noncompliant {{Change "A" to the type handled by the Collection.}}
 //         ^     ^^^^^^^<
         B b = (B) a;
       }
-      for (Object o : listOfB) {
+      for (Object _ : listOfB) {
       }
       for (Object o : listOfB) { // Noncompliant {{Change "Object" to the type handled by the Collection.}}
         B b = (B) o;

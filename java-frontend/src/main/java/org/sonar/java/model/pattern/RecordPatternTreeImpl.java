@@ -21,6 +21,7 @@ package org.sonar.java.model.pattern;
 
 import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -40,11 +41,16 @@ public class RecordPatternTreeImpl extends AbstractPatternTree implements Record
   private final InternalSyntaxToken closeParenToken;
 
   public RecordPatternTreeImpl(TypeTree type, InternalSyntaxToken openParenToken, List<PatternTree> patterns, InternalSyntaxToken closeParenToken) {
-    super(Kind.RECORD_PATTERN);
+    super(Kind.RECORD_PATTERN, null);
     this.type = type;
     this.openParenToken = openParenToken;
     this.patterns = patterns;
     this.closeParenToken = closeParenToken;
+  }
+
+  @Override
+  public Type symbolType() {
+    return type.symbolType();
   }
 
   @Override

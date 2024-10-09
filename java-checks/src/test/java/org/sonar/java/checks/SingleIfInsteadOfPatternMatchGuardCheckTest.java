@@ -30,7 +30,7 @@ class SingleIfInsteadOfPatternMatchGuardCheckTest {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/SingleIfInsteadOfPatternMatchGuardCheckSample.java"))
       .withCheck(new SingleIfInsteadOfPatternMatchGuardCheck())
-      .withJavaVersion(21)
+      .withJavaVersion(22)
       .verifyIssues();
   }
 

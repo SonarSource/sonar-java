@@ -547,7 +547,7 @@ class TestInteger extends TestNumber {
     // edit@qf_supertype2 [[sc=40;ec=72]] {{TestObject::foo}}
     Optional.of(new TestInteger()).map(testInteger -> TestNumber.foo(testInteger)); // Compliant, method reference is ambiguous
     Optional.of(new TestInteger()).map(testInteger -> testInteger.spam()); // Compliant, method reference is ambiguous
-    Optional.of(new TestInteger()).map(testInteger -> (foo().length() % 23 == 0 ? testInteger : null).spam(testInteger)); // Compliant, method reference is ambiguous
+    Optional.of(new TestInteger()).map(testInteger -> (foo().length() % 23 == 0 ? testInteger : (TestObject) null).spam(testInteger)); // Compliant, method reference is ambiguous
     Optional.of(new TestInteger()).map(testInteger -> testInteger.eggs()); // Compliant, method reference is ambiguous
     consumeBoth((testInteger, s) -> testInteger.bar(s)); // Noncompliant [[quickfixes=qf_2args]]
 //                               ^^
