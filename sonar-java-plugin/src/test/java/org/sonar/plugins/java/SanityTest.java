@@ -79,15 +79,6 @@ class SanityTest {
 
   private static final String AWS_MODULE = "aws";
 
-  private static final String[] FILE_DIRECTORIES = {
-    mainCodeSourcesPath(""),
-    nonCompilingTestSourcesPath(""),
-    testCodeSourcesPath(""),
-    mainCodeSourcesPathInModule(AWS_MODULE, ""),
-    nonCompilingTestSourcesPathInModule(AWS_MODULE, ""),
-    "../java-checks/src/test/files"
-  };
-
   private static final String[] COMPILING_FILE_DIRECTORIES = {
     mainCodeSourcesPath(""),
     testCodeSourcesPath(""),
@@ -186,10 +177,6 @@ class SanityTest {
   private static boolean isParseError(LogAndArguments log) {
     String message = log.getFormattedMsg();
     return message.startsWith("Unable to parse source file : '") || message.startsWith("Parse error at line ");
-  }
-
-  private static boolean isTypeResolutionError(LogAndArguments log) {
-    return log.getFormattedMsg().startsWith("ECJ Unable to resolve type ");
   }
 
   private static String processExceptions(List<SanityCheckException> exceptions) {
