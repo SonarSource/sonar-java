@@ -1,12 +1,12 @@
 package checks.jspecify;
 
 import java.util.List;
-import javax.annotation.Nullable;
 import javax.annotation.meta.When;
 import javax.validation.constraints.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 
 @NullMarked
@@ -254,4 +254,54 @@ enum TEST_COVERAGE {
   ABACUS,
   BABA,
   CIRCUS
+}
+
+@NullMarked
+class InnerClassTests {
+  @NullUnmarked
+  class InnerNullmarked {
+    @NullMarked // Compliant
+    class Inner {
+      @NonNull Object o; // Noncompliant {{Remove redundant annotation @NonNull as inside scope annotation @NullMarked at class level.}}
+      @Nullable Object o2; // Compliant
+    }
+  }
+
+  @NullMarked // Noncompliant {{Remove redundant annotation @NullMarked at class level as inside scope annotation @NullMarked at class level.}}
+  class InnerNullUnmarked {
+    @NullUnmarked
+    class Inner {
+      @NonNull Object o; // Compliant
+    }
+  }
+
+  @NullUnmarked
+  class InnerRedundantNullMarked {
+    @NullMarked // Compliant
+    class Inner {
+      @NullMarked // Noncompliant {{Remove redundant annotation @NullMarked at class level as inside scope annotation @NullMarked at class level.}}
+      class InnerInner {}
+    }
+  }
+
+  @NullMarked // Noncompliant {{Remove redundant annotation @NullMarked at class level as inside scope annotation @NullMarked at class level.}}
+  class InnerRedundantNullUnmarked {
+    @NullUnmarked // Compliant
+    class Inner {
+      @NullUnmarked // Noncompliant {{Remove redundant annotation @NullUnmarked at class level as inside scope annotation @NullUnmarked at class level.}}
+      class InnerInner {}
+    }
+  }
+}
+
+@NullUnmarked
+class InnerClassTestsTwo {
+  @NullUnmarked // Noncompliant {{Remove redundant annotation @NullUnmarked at class level as inside scope annotation @NullUnmarked at class level.}}
+  class InnerNullmarked {
+    @NullMarked // Compliant
+    class Inner {
+      @NonNull Object o; // Noncompliant {{Remove redundant annotation @NonNull as inside scope annotation @NullMarked at class level.}}
+      @Nullable Object o2; // Compliant
+    }
+  }
 }

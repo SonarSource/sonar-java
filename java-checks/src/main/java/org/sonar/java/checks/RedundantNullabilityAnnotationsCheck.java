@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -58,49 +59,75 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
       // if non-null, either directly or inherited from higher scope
       if (classNullabilityData.isNonNull(PACKAGE, false, false)) {
         // then check my members are not directly annotated with non-null
-        checkMembersForNonNull(classNullabilityData, classTree);
+        checkMembers(classNullabilityData, classTree, NULLABILITY_SCOPE.NON_NULLABLE);
+      }
+      // if nullable, either directly or inherited from higher scope
+      else if (classNullabilityData.isNullable(PACKAGE, false, false)) {
+        // then check my members are not directly annotated with non-null
+        checkMembers(classNullabilityData, classTree, NULLABILITY_SCOPE.NULLABLE);
       }
     }
   }
 
-  private void checkMembersForNonNull(SymbolMetadata.NullabilityData classNullabilityData, ClassTree tree) {
+  private void checkMembers(SymbolMetadata.NullabilityData classNullabilityData,
+    ClassTree tree, NULLABILITY_SCOPE scope) {
     // for all members
     tree.members().forEach(member -> {
       if (member.is(Tree.Kind.VARIABLE)) {
         // check field
-        SymbolMetadata.NullabilityData variableNullabilityData = ((VariableTree) member).symbol().metadata().nullabilityData();
-        if (variableNullabilityData.isNonNull(VARIABLE, false, false)) {
-          reportIssue(member, variableNullabilityData, classNullabilityData);
-        }
+        VariableTree variableTree = (VariableTree) member;
+        checkSymbol(classNullabilityData, variableTree, VARIABLE, variableTree.symbol(), scope);
       } else if (member.is(Tree.Kind.METHOD)) {
         // check method
-        checkMethodForNonNull(classNullabilityData, (MethodTree) member);
+        checkMethod(classNullabilityData, (MethodTree) member, scope);
       } else if (member.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD)) {
-        // check inner object is not directly annotated
-        SymbolMetadata.NullabilityData innerNullabilityData = ((ClassTree) member).symbol().metadata()
-          .nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
-        if (innerNullabilityData.isNonNull(CLASS, false, false)) {
-          reportIssue(member, innerNullabilityData, classNullabilityData);
-        }
-        // now recurse to check class members
-        checkMembersForNonNull(classNullabilityData, (ClassTree) member);
+        // check inner class
+        checkInnerClass(classNullabilityData, (ClassTree) member, scope);
       }
     });
   }
 
-  private void checkMethodForNonNull(SymbolMetadata.NullabilityData classNullabilityData, MethodTree method) {
-    // check return type at method level - do not look up hierarchy
-    SymbolMetadata.NullabilityData methodNullabilityData = method.symbol().metadata().nullabilityData();
-    if (methodNullabilityData.isNonNull(METHOD, false, false)) {
-      reportIssue(method, methodNullabilityData, classNullabilityData);
-    }
-    // check parameters at variable level - do not look up hierarchy
-    method.parameters().forEach(parameter -> {
-      SymbolMetadata.NullabilityData parameterNullabilityData = parameter.symbol().metadata().nullabilityData();
-      if (parameterNullabilityData.isNonNull(VARIABLE, false, false)) {
-        reportIssue(parameter, parameterNullabilityData, classNullabilityData);
+  private void checkInnerClass(SymbolMetadata.NullabilityData classNullabilityData,
+    ClassTree tree, NULLABILITY_SCOPE scope) {
+    // check inner object is not directly annotated
+    SymbolMetadata.NullabilityData innerNullabilityData = tree.symbol().metadata()
+      .nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
+    if (innerNullabilityData.isNonNull(CLASS, false, false)) {
+      if (scope.equals(NULLABILITY_SCOPE.NON_NULLABLE)) {
+        reportIssue(tree, innerNullabilityData, classNullabilityData);
       }
-    });
+      // now recurse to check class members
+      checkMembers(innerNullabilityData, tree, NULLABILITY_SCOPE.NON_NULLABLE);
+    } else if (innerNullabilityData.isNullable(CLASS, false, false)) {
+      if (scope.equals(NULLABILITY_SCOPE.NULLABLE)) {
+        reportIssue(tree, innerNullabilityData, classNullabilityData);
+      }
+      // now recurse to check class members
+      checkMembers(innerNullabilityData, tree, NULLABILITY_SCOPE.NULLABLE);
+    }
+  }
+
+  private void checkMethod(SymbolMetadata.NullabilityData classNullabilityData,
+    MethodTree method, NULLABILITY_SCOPE scope) {
+    // check return type at method level - do not look up hierarchy
+    checkSymbol(classNullabilityData, method, METHOD, method.symbol(), scope);
+    // check parameters at variable level - do not look up hierarchy
+    method.parameters().forEach(parameter ->
+      checkSymbol(classNullabilityData, parameter, VARIABLE, parameter.symbol(), scope)
+    );
+  }
+
+  private void checkSymbol(SymbolMetadata.NullabilityData classNullabilityData, Tree tree,
+    SymbolMetadata.NullabilityLevel treeLevel, Symbol symbol, NULLABILITY_SCOPE scope) {
+    SymbolMetadata.NullabilityData methodNullabilityData = symbol.metadata().nullabilityData();
+    if (methodNullabilityData.isNonNull(treeLevel, false, false) &&
+      scope.equals(NULLABILITY_SCOPE.NON_NULLABLE)) {
+      reportIssue(tree, methodNullabilityData, classNullabilityData);
+    }
+    if (methodNullabilityData.isNullable(treeLevel, false, false) &&
+      scope.equals(NULLABILITY_SCOPE.NULLABLE)) {
+      reportIssue(tree, methodNullabilityData, classNullabilityData);
+    }
   }
 
   // helpful method that handles string conversions of NullabilityData annotations prior to issue reporting
@@ -115,6 +142,12 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
           directNullabilityDataAsString.get(),
           higherNullabilityDataAsString.get()));
     }
+  }
+
+  // track class scope nullability state during recursion
+  private enum NULLABILITY_SCOPE {
+    NULLABLE,
+    NON_NULLABLE
   }
 
 }
