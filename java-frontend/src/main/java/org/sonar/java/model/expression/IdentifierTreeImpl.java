@@ -22,13 +22,11 @@ package org.sonar.java.model.expression;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JLabelSymbol;
 import org.sonar.java.model.JavaTree;
@@ -39,17 +37,24 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class IdentifierTreeImpl extends AssessableExpressionTree implements IdentifierTree, JavaTree.AnnotatedTypeTree {
 
   private final InternalSyntaxToken nameToken;
+  private final boolean isUnnamedVariable;
   private List<AnnotationTree> annotations;
 
   public IBinding binding;
   public JLabelSymbol labelSymbol;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
+    this(nameToken, false);
+  }
+
+  public IdentifierTreeImpl(InternalSyntaxToken nameToken, boolean isUnnamedVariable) {
     this.nameToken = Objects.requireNonNull(nameToken);
+    this.isUnnamedVariable = isUnnamedVariable;
     this.annotations = Collections.emptyList();
   }
 
@@ -74,8 +79,13 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
   }
 
   @Override
+  public boolean isUnnamedVariable() {
+    return isUnnamedVariable;
+  }
+
+  @Override
   public Symbol symbol() {
-    if (binding != null) {
+    if (binding != null && !isUnnamedVariable) {
       switch (binding.getKind()) {
         case IBinding.TYPE:
           return root.sema.typeSymbol((ITypeBinding) binding);

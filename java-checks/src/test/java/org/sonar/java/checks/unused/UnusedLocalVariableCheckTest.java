@@ -30,6 +30,7 @@ class UnusedLocalVariableCheckTest {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/unused/UnusedLocalVariableCheck.java"))
       .withCheck(new UnusedLocalVariableCheck())
+      .withJavaVersion(22)
       .verifyIssues();
   }
 
@@ -38,6 +39,7 @@ class UnusedLocalVariableCheckTest {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/unused/UnusedLocalVariableCheck.java"))
       .withCheck(new UnusedLocalVariableCheck())
+      .withJavaVersion(22)
       .verifyIssues();
   }
 

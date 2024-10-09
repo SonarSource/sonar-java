@@ -78,8 +78,8 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
     }
     switch (o) {
       case Long l when l == 1 -> System.out.println("long");
-      case Double d -> System.out.println("double");
-      case String s -> System.out.println("string");
+      case Double _ -> System.out.println("double");
+      case String _ -> System.out.println("string");
       default -> System.out.println("many");
     }
   }
@@ -108,7 +108,7 @@ public class SingleIfInsteadOfPatternMatchGuardCheckSample {
           default -> System.out.println("many");
         }
       }
-      case Integer i -> {
+      case Integer _ -> {
       }
       case String s -> {
         if (s.length() == 2) { // Noncompliant {{Replace this "if" statement with a pattern match guard.}}
