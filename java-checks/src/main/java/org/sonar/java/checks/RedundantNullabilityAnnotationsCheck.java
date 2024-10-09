@@ -60,9 +60,8 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
       if (classNullabilityData.isNonNull(PACKAGE, false, false)) {
         // then check my members are not directly annotated with non-null
         checkMembers(classNullabilityData, classTree, NULLABILITY_SCOPE.NON_NULLABLE);
-      }
-      // if nullable, either directly or inherited from higher scope
-      else if (classNullabilityData.isNullable(PACKAGE, false, false)) {
+      } else if (classNullabilityData.isNullable(PACKAGE, false, false)) {
+        // if nullable, either directly or inherited from higher scope
         // then check my members are not directly annotated with non-null
         checkMembers(classNullabilityData, classTree, NULLABILITY_SCOPE.NULLABLE);
       }
