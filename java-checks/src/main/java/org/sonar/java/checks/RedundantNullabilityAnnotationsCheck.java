@@ -40,7 +40,7 @@ import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLeve
 @Rule(key = "S6665")
 public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVisitor {
 
-  private static final String ISSUE_MESSAGE = "Remove redundant nullability annotation %s as already annotated with %s.";
+  private static final String ISSUE_MESSAGE = "Remove redundant annotation %s as inside scope annotation %s.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -50,12 +50,12 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    // am I an outer class - will return default package if necessary
+    // check if outer class - this will return default package if necessary
     if (Objects.requireNonNull(classTree.symbol().owner()).isPackageSymbol()) {
       // get nullability from class target level up
       SymbolMetadata.NullabilityData classNullabilityData = classTree.symbol().metadata()
         .nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
-      // if non-null, either directly or inherited from higher entity
+      // if non-null, either directly or inherited from higher scope
       if (classNullabilityData.isNonNull(PACKAGE, false, false)) {
         // then check my members are not directly annotated with non-null
         checkMembersForNonNull(classNullabilityData, classTree);
@@ -77,7 +77,8 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
         checkMethodForNonNull(classNullabilityData, (MethodTree) member);
       } else if (member.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD)) {
         // check inner object is not directly annotated
-        SymbolMetadata.NullabilityData innerNullabilityData = ((ClassTree) member).symbol().metadata().nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
+        SymbolMetadata.NullabilityData innerNullabilityData = ((ClassTree) member).symbol().metadata()
+          .nullabilityData(SymbolMetadata.NullabilityTarget.CLASS);
         if (innerNullabilityData.isNonNull(CLASS, false, false)) {
           reportIssue(member, innerNullabilityData, classNullabilityData);
         }
@@ -102,6 +103,7 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
     });
   }
 
+  // helpful method that handles string conversions of NullabilityData annotations prior to issue reporting
   private void reportIssue(Tree reportLocation,
     SymbolMetadata.NullabilityData directNullabilityData,
     SymbolMetadata.NullabilityData higherNullabilityData) {
