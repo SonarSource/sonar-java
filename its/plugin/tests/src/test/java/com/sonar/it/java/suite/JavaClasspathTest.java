@@ -179,7 +179,7 @@ public class JavaClasspathTest {
   }
 
   @Test
-  public void directory_of_classes_in_library_should_be_supported() throws Exception {
+  public void directory_of_classes_in_library_should_be_supported() {
     String projectKey = "directory_of_classes_in_library_should_be_supported";
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target");
@@ -198,12 +198,6 @@ public class JavaClasspathTest {
   @Test
   public void analyze_java8_project_using_a_modular_runtime_and_dedicated_jdkHome_property() {
     testJdk8ProjectWithModularJdk(true);
-  }
-
-  private static boolean isBeforeSonarQube9() {
-    return !ORCHESTRATOR.getServer()
-      .version()
-      .isGreaterThanOrEquals(9, 0);
   }
 
   private static void testJdk8ProjectWithModularJdk(boolean useJdkHomeProperty) {

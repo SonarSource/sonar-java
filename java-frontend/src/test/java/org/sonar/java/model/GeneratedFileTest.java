@@ -92,7 +92,7 @@ class GeneratedFileTest {
   }
 
   @Test
-  void test_not_implemented() throws Exception {
+  void test_not_implemented() {
     assertThrows(UnsupportedOperationException.class, () -> actual.type());
     assertThrows(UnsupportedOperationException.class, () -> actual.status());
     assertThrows(UnsupportedOperationException.class, () -> actual.lines());
@@ -155,7 +155,7 @@ class GeneratedFileTest {
   }
 
   @Test
-  void sourcemap_should_be_instantiated_lazily() throws Exception {
+  void sourcemap_should_be_instantiated_lazily() {
     String smap = "SMAP\n" +
       "index_jsp.java\n" +
       "JSP\n" +

@@ -44,7 +44,7 @@ class ClasspathForTestTest {
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp() {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("foo.java", InputFile.Type.TEST));
     settings = new MapSettings();
@@ -117,14 +117,14 @@ class ClasspathForTestTest {
   }
 
   @Test
-  void empty_libraries() throws Exception {
+  void empty_libraries() {
     settings.setProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "");
     javaTestClasspath = createJavaClasspath();
     assertThat(javaTestClasspath.getElements()).isEmpty();
   }
 
   @Test
-  void empty_libraries_if_only_main_files() throws Exception {
+  void empty_libraries_if_only_main_files() {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("plop.java"));
     javaTestClasspath = createJavaClasspath();
@@ -132,7 +132,7 @@ class ClasspathForTestTest {
   }
 
   @Test
-  void libraries_without_dir() throws Exception {
+  void libraries_without_dir() {
     settings.setProperty(ClasspathProperties.SONAR_JAVA_TEST_BINARIES, "bin");
     settings.setProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "hello.jar");
     checkIllegalStateException("No files nor directories matching 'hello.jar'");

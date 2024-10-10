@@ -47,14 +47,14 @@ public class ThrowsSeveralCheckedException extends Base {
   }
 
   @Override
-  public void overridenMethod() throws IOException, SQLException { // Compliant - overriden methods
+  public void overriddenMethod() throws IOException, SQLException { // Compliant - overridden methods
   }
 
 }
 
 class Base {
 
-  public void overridenMethod() throws IOException, SQLException { // Noncompliant
+  public void overriddenMethod() throws IOException, SQLException { // Noncompliant
   }
 
 }
@@ -66,7 +66,7 @@ class Implements implements I {
   }
 
   @Override
-  public void bar() throws IOException, SQLException { // Compliant - overriden
+  public void bar() throws IOException, SQLException { // Compliant - overridden
   }
 
   public void baz() {

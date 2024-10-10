@@ -84,13 +84,13 @@ class UnclosedResourcesCheckTest {
   }
 
   @Test
-  void test_value_as_string_for_open_resource_constraints() throws Exception {
+  void test_value_as_string_for_open_resource_constraints() {
     assertThat(UnclosedResourcesCheck.ResourceConstraint.OPEN.valueAsString()).isSameAs("open");
     assertThat(UnclosedResourcesCheck.ResourceConstraint.CLOSED.valueAsString()).isSameAs("closed");
   }
 
   @Test
-  void test_streams() throws Exception {
+  void test_streams() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnclosedResourcesCheckStreams.java")
       .withCheck(new UnclosedResourcesCheck())
@@ -99,7 +99,7 @@ class UnclosedResourcesCheckTest {
   }
 
   @Test
-  void skip_exception_messages() throws Exception {
+  void skip_exception_messages() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnclosedResourcesCheckWithoutExceptionMessages.java")
       .withCheck(new UnclosedResourcesCheck())

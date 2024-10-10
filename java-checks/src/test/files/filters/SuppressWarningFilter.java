@@ -19,7 +19,7 @@ import java.io.Serializable;
  * - EmptyBlockCheck
  * - EmptyStatementUsageCheck
  * - ReturnInFinallyCheck
- * - EqualsOverridenWithHashCodeCheck
+ * - EqualsOverriddenWithHashCodeCheck
  * - StaticMembersAccessCheck
  * - SerialVersionUidCheck
  * - RawTypeCheck

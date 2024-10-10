@@ -29,7 +29,7 @@ import org.sonar.java.checks.AtLeastOneConstructorCheck;
 import org.sonar.java.checks.CollectionInappropriateCallsCheck;
 import org.sonar.java.checks.ConstantsShouldBeStaticFinalCheck;
 import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
-import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
+import org.sonar.java.checks.EqualsNotOverriddenWithCompareToCheck;
 import org.sonar.java.checks.ExceptionsShouldBeImmutableCheck;
 import org.sonar.java.checks.FieldModifierCheck;
 import org.sonar.java.checks.PrivateFieldUsedLocallyCheck;
@@ -64,7 +64,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     /* S2175 */ CollectionInappropriateCallsCheck.class,
     /* S1170 */ ConstantsShouldBeStaticFinalCheck.class,
     /* S1210 */ EqualsNotOverriddenInSubclassCheck.class,
-    /* S1210 */ EqualsNotOverridenWithCompareToCheck.class,
+    /* S1210 */ EqualsNotOverriddenWithCompareToCheck.class,
     /* S1165 */ ExceptionsShouldBeImmutableCheck.class,
     /* S2039 */ FieldModifierCheck.class,
     /* S1450 */ PrivateFieldUsedLocallyCheck.class,
@@ -132,7 +132,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
     excludeLinesIfTrue(generatesEquals || usesAnnotation(tree, GENERATE_UNUSED_FIELD_RELATED_METHODS), tree, UnusedPrivateFieldCheck.class, PrivateFieldUsedLocallyCheck.class);
     excludeLinesIfTrue(usesAnnotation(tree, GENERATE_CONSTRUCTOR), tree, AtLeastOneConstructorCheck.class, SpringComponentWithNonAutowiredMembersCheck.class);
-    excludeLinesIfTrue(generatesEquals, tree, EqualsNotOverriddenInSubclassCheck.class, EqualsNotOverridenWithCompareToCheck.class);
+    excludeLinesIfTrue(generatesEquals, tree, EqualsNotOverriddenInSubclassCheck.class, EqualsNotOverriddenWithCompareToCheck.class);
     excludeLinesIfTrue(generatesNonPublicConstructor(tree), tree, UtilityClassWithPublicConstructorCheck.class);
     boolean isUtilityClass = usesAnnotation(tree, UTILITY_CLASS);
     excludeLinesIfTrue(isUtilityClass, tree, BadFieldNameCheck.class, ConstantsShouldBeStaticFinalCheck.class, StaticMethodCheck.class);

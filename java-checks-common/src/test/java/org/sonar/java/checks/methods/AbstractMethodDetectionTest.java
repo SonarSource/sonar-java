@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
@@ -50,7 +49,7 @@ class AbstractMethodDetectionTest {
   }
 
   @Test
-  void withAnyParameters() throws Exception {
+  void withAnyParameters() {
     Visitor visitor = new Visitor(
       MethodMatchers.create().ofTypes("A").names("method").withAnyParameters().build());
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
@@ -59,7 +58,7 @@ class AbstractMethodDetectionTest {
   }
 
   @Test
-  void withoutParameter() throws Exception {
+  void withoutParameter() {
     Visitor visitor = new Visitor(
       MethodMatchers.create().ofTypes("A").names("method").addWithoutParametersMatcher().build());
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
@@ -67,10 +66,10 @@ class AbstractMethodDetectionTest {
     assertThat(visitor.lines).containsExactly(14);
   }
 
-  class Visitor extends AbstractMethodDetection {
+  static class Visitor extends AbstractMethodDetection {
 
     public List<Integer> lines = new ArrayList<>();
-    private MethodMatchers methodInvocationMatchers;
+    private final MethodMatchers methodInvocationMatchers;
 
     public Visitor(MethodMatchers methodInvocationMatchers) {
       this.methodInvocationMatchers = methodInvocationMatchers;

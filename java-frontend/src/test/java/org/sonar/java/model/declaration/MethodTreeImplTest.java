@@ -48,7 +48,7 @@ class MethodTreeImplTest {
   }
 
   @Test
-  void override_with_generic_parameters_should_be_detected() throws Exception {
+  void override_with_generic_parameters_should_be_detected() {
     CompilationUnitTree cut = createTree("public class ReferenceQueue<T> {\n" +
         "\n" +
         "    private static class Null extends ReferenceQueue {\n" +

@@ -105,12 +105,12 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
       // remove generic methods, which can not be written as lambda (JLS-11 §15.27)
       .filter(symbol -> !symbol.isParametrizedMethod())
       // always take same symbol if method is redeclared over and over in hierarchy
-      .map(AnonymousClassShouldBeLambdaCheck::overridenSymbolIfAny)
+      .map(AnonymousClassShouldBeLambdaCheck::overriddenSymbolIfAny)
       .collect(Collectors.toSet())
       .size() == 1;
   }
 
-  private static Symbol.MethodSymbol overridenSymbolIfAny(MethodSymbol symbol) {
+  private static Symbol.MethodSymbol overriddenSymbolIfAny(MethodSymbol symbol) {
     return symbol.overriddenSymbols().stream()
       .findFirst()
       .orElse(symbol);
@@ -142,7 +142,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
   }
 
   private static boolean canRefactorMethod(MethodTree methodTree) {
-    // if overriden method declares to throw an exception, refactoring to a lambda might prove tricky
+    // if overridden method declares to throw an exception, refactoring to a lambda might prove tricky
     // if it is annotated with something else than @Override, it is not possible to refactor the code
     return methodTree.throwsClauses().isEmpty()
       && methodTree.symbol().metadata().annotations().stream()

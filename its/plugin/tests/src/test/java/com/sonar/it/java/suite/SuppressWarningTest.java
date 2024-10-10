@@ -39,7 +39,7 @@ public class SuppressWarningTest {
   public static final Orchestrator ORCHESTRATOR = JavaTestSuite.ORCHESTRATOR;
 
   @Test
-  public void suppressWarnings_nosonar() throws Exception {
+  public void suppressWarnings_nosonar() {
     String projectKey = "org.sonarsource.it.projects:suppress-warnings";
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("suppress-warnings"))
       .setProperty("sonar.scm.disabled", "true")
@@ -60,7 +60,7 @@ public class SuppressWarningTest {
   //     .addPlugin(MavenLocation.of("org.sonarsource.pmd", "sonar-pmd-plugin", "3.2.1"))
   @Test
   @Ignore("temporarily ignored until SONARJAVA-4553 is fixed")
-  public void suppressWarnings_also_supress_issues_of_other_analyzers() throws Exception {
+  public void suppressWarnings_also_supress_issues_of_other_analyzers() {
     String projectKey = "org.sonarsource.it.projects:suppress-warnings-pmd";
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("suppress-warnings-pmd"))
       .setProperty("sonar.scm.disabled", "true")

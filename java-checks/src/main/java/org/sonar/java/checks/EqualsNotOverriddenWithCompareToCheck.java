@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S1210")
-public class EqualsNotOverridenWithCompareToCheck extends IssuableSubscriptionVisitor {
+public class EqualsNotOverriddenWithCompareToCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

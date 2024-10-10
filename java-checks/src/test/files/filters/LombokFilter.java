@@ -162,7 +162,7 @@ class EqualsNotOverriddenInSubclass {
   }
 }
 
-public class EqualsNotOverridenWithCompareToCheck implements Comparable {
+public class EqualsNotOverriddenWithCompareToCheck implements Comparable {
 
   class A implements Comparable {
     public int compareTo(Object o) { // WithIssue

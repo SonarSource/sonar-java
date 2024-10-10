@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1174")
-public class ObjectFinalizeOverridenNotPublicCheck extends IssuableSubscriptionVisitor {
+public class ObjectFinalizeOverriddenNotPublicCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

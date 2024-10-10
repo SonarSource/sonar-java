@@ -3506,7 +3506,7 @@ class JavaTreeModelTest {
   }
 
   @Test
-  void method_reference_expression_should_not_break_AST() throws Exception {
+  void method_reference_expression_should_not_break_AST() {
     String code = "class T { public void meth() {"
       + "  IntStream.range(1,12)"
       + "    .map(new MethodReferences()::<String>square)"

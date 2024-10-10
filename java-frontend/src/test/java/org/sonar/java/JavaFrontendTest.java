@@ -157,7 +157,7 @@ class JavaFrontendTest {
   }
 
   @Test
-  void scanning_empty_project_should_be_logged_in_file_by_file() throws Exception {
+  void scanning_empty_project_should_be_logged_in_file_by_file() {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.fileByFile", "true");
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
@@ -171,7 +171,7 @@ class JavaFrontendTest {
   }
 
   @Test
-  void scanning_empty_project_should_be_logged_in_file_by_file_sonarlint() throws Exception {
+  void scanning_empty_project_should_be_logged_in_file_by_file_sonarlint() {
     scan(new MapSettings(), SONARLINT_RUNTIME, Collections.emptyList());
 
     assertThat(logTester.logs(Level.INFO)).containsExactly(
@@ -183,7 +183,7 @@ class JavaFrontendTest {
   }
 
   @Test
-  void scanning_empty_project_should_be_logged_in_batch() throws Exception {
+  void scanning_empty_project_should_be_logged_in_batch() {
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
@@ -196,7 +196,7 @@ class JavaFrontendTest {
   }
 
   @Test
-  void scanning_empty_project_should_be_logged_in_autoscan() throws Exception {
+  void scanning_empty_project_should_be_logged_in_autoscan() {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.internal.analysis.autoscan", "true");
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
@@ -528,7 +528,7 @@ class JavaFrontendTest {
     "sonar.java.experimental.batchModeSizeInKB,1000",
     "sonar.internal.analysis.autoscan,true"
   })
-  void should_handle_analysis_cancellation_batch_mode(String propertyName, String propertyValue) throws IOException {
+  void should_handle_analysis_cancellation_batch_mode(String propertyName, String propertyValue) {
     mainCodeIssueScannerAndFilter.isCancelled = true;
     MapSettings settings = new MapSettings();
     settings.setProperty(propertyName, propertyValue);
@@ -560,7 +560,7 @@ class JavaFrontendTest {
     "sonar.java.experimental.batchModeSizeInKB,1000",
     "sonar.internal.analysis.autoscan,true"
   })
-  void analysis_exception_should_interrupt_analysis_in_batch_mode(String propertyName, String propertyValue) throws IOException {
+  void analysis_exception_should_interrupt_analysis_in_batch_mode(String propertyName, String propertyValue) {
     MapSettings settings = new MapSettings();
     settings.setProperty(propertyName, propertyValue);
     mainCodeIssueScannerAndFilter.exceptionDuringScan = new IllegalRuleParameterException("Test AnalysisException", new NullPointerException());
@@ -574,7 +574,7 @@ class JavaFrontendTest {
     "sonar.java.experimental.batchModeSizeInKB,1000",
     "sonar.internal.analysis.autoscan,true"
   })
-  void exceptions_outside_rules_as_batch_should_be_logged(String propertyName, String propertyValue) throws IOException {
+  void exceptions_outside_rules_as_batch_should_be_logged(String propertyName, String propertyValue) {
     MapSettings settings = new MapSettings();
     settings.setProperty(propertyName, propertyValue);
     InputFile brokenFile = mock(InputFile.class);
@@ -589,7 +589,7 @@ class JavaFrontendTest {
     "sonar.java.experimental.batchModeSizeInKB,1000",
     "sonar.internal.analysis.autoscan,true"
   })
-  void exceptions_outside_rules_as_batch_should_interrupt_analysis_if_fail_fast(String propertyName, String propertyValue) throws IOException {
+  void exceptions_outside_rules_as_batch_should_interrupt_analysis_if_fail_fast(String propertyName, String propertyValue) {
     MapSettings settings = new MapSettings();
     settings.setProperty(propertyName, propertyValue);
     settings.setProperty("sonar.internal.analysis.failFast", "true");
@@ -706,7 +706,7 @@ class JavaFrontendTest {
   }
 
   @Test
-  void batch_generator_returns_an_empty_list_when_no_input_files() throws IOException {
+  void batch_generator_returns_an_empty_list_when_no_input_files() {
     List<InputFile> emptyList = Collections.emptyList();
     JavaFrontend.BatchGenerator generator = new JavaFrontend.BatchGenerator(emptyList.iterator(), 0);
     assertThat(generator.hasNext()).isFalse();
@@ -835,7 +835,7 @@ class JavaFrontendTest {
     return scan(settings, sonarRuntime, inputFiles);
   }
 
-  private List<InputFile> scan(MapSettings settings, SonarRuntime sonarRuntime, List<InputFile> inputFiles) throws IOException {
+  private List<InputFile> scan(MapSettings settings, SonarRuntime sonarRuntime, List<InputFile> inputFiles) {
     if (sensorContext == null) {
       File baseDir = temp.getRoot().getAbsoluteFile();
       sensorContext = SensorContextTester.create(baseDir);

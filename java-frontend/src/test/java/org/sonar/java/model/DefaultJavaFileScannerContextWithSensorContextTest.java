@@ -90,7 +90,7 @@ class DefaultJavaFileScannerContextWithSensorContextTest {
   }
 
   @Test
-  void test_report_issue_with_secondary_locations() throws Exception {
+  void test_report_issue_with_secondary_locations() {
     List<JavaFileScannerContext.Location> secondary = Arrays.asList(
       new JavaFileScannerContext.Location("+1", tree),
       new JavaFileScannerContext.Location("+1", tree)
@@ -101,7 +101,7 @@ class DefaultJavaFileScannerContextWithSensorContextTest {
   }
 
   @Test
-  void test_report_issue_with_flow() throws Exception {
+  void test_report_issue_with_flow() {
     List<JavaFileScannerContext.Location> flow1 = Collections.singletonList(new JavaFileScannerContext.Location("flow1", tree));
     List<JavaFileScannerContext.Location> flow2 = Collections.singletonList(new JavaFileScannerContext.Location("flow2", tree));
     Set<List<JavaFileScannerContext.Location>> flows = SetUtils.immutableSetOf(flow1, flow2);

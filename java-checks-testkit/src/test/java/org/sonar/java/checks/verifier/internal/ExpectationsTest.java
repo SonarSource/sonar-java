@@ -146,7 +146,7 @@ class ExpectationsTest {
   }
 
   @Test
-  void flow_with_message() throws Exception {
+  void flow_with_message() {
     List<Expectations.FlowComment> flows = Expectations.Parser.parseFlows("// flow@npe1 {{message}}", TEST_LINE);
     assertThat(flows).hasSize(1);
     Expectations.FlowComment flow = flows.iterator().next();
@@ -156,7 +156,7 @@ class ExpectationsTest {
   }
 
   @Test
-  void flow_with_attributes_and_message() throws Exception {
+  void flow_with_attributes_and_message() {
     List<Expectations.FlowComment> flows = Expectations.Parser.parseFlows("// flow@npe1 [[sc=1;ec=6]] {{message}}", TEST_LINE);
     assertThat(flows).hasSize(1);
     Expectations.FlowComment flow = flows.iterator().next();

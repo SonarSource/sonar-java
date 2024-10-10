@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ProgramPointTest {
   @Test
-  void test_to_string_method() throws Exception {
+  void test_to_string_method() {
     // ToString method of program point is used by viewer.
     CFG cfg = CFGTestUtils.buildCFG("void foo() {foo();}");
     ProgramPoint pp = new ProgramPoint(cfg.blocks().get(0));

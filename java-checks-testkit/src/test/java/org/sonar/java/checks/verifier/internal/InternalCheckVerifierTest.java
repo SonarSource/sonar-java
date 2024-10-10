@@ -72,6 +72,7 @@ import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TES
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE_WITH_QUICK_FIX;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE_WITH_QUICK_FIX_ON_MULTIPLE_LINE;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE_WITH_TWO_QUICK_FIX;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.equivalent;
 
 class InternalCheckVerifierTest {
 
@@ -380,7 +381,7 @@ class InternalCheckVerifierTest {
     }
 
     @Test
-    void should_fail_when_no_cost() throws Exception {
+    void should_fail_when_no_cost() {
       @Rule(key = "LinearJSON")
       class LinearRemediationFunctionCheck implements JavaFileScanner {
         @Override
@@ -400,7 +401,7 @@ class InternalCheckVerifierTest {
     }
 
     @Test
-    void test_rspec_key_with_no_metadata_should_not_fail() throws Exception {
+    void test_rspec_key_with_no_metadata_should_not_fail() {
       @Rule(key = "Dummy_fake_JSON")
       class DoesntExistsMetadataCheck implements JavaFileScanner {
         @Override
@@ -987,9 +988,9 @@ class InternalCheckVerifierTest {
   void addFiles_throws_an_IllegalArgumentException_if_file_added_before() {
     InternalCheckVerifier checkVerifier = InternalCheckVerifier.newInstance();
     checkVerifier.onFiles(TEST_FILE);
-    assertThatThrownBy(() -> {
-      checkVerifier.addFiles(InputFile.Status.ADDED, TEST_FILE);
-    }).isInstanceOf(IllegalArgumentException.class)
+    assertThatThrownBy(() -> checkVerifier
+      .addFiles(InputFile.Status.ADDED, TEST_FILE))
+      .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining(String.format("File %s was already added.", Path.of(TEST_FILE)));
   }
 
@@ -1012,8 +1013,8 @@ class InternalCheckVerifierTest {
       .withCheck(check)
       .verifyNoIssues();
 
-    verify(check, times(1)).scanWithoutParsing(argThat(context -> CheckVerifierTestUtils.equivalent(cacheContext, context.getCacheContext())));
-    verify(check, times(1)).endOfAnalysis(argThat(context -> CheckVerifierTestUtils.equivalent(cacheContext, context.getCacheContext())));
+    verify(check, times(1)).scanWithoutParsing(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
+    verify(check, times(1)).endOfAnalysis(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
   }
 
   @Test

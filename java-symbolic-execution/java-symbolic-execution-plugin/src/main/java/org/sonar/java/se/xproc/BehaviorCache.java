@@ -92,7 +92,7 @@ public class BehaviorCache {
     }
     if (symbol != null) {
       MethodTree declaration = symbol.declaration();
-      if (SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol) && declaration != null) {
+      if (SymbolicExecutionVisitor.methodCanNotBeOverridden(symbol) && declaration != null) {
         sev.execute(declaration);
         return behaviors.get(signature);
       }

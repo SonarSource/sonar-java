@@ -17,31 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.helpers;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-class CredentialMethodsLoaderTest {
-  @Test
-  void testSuccessfulLoad() throws IOException {
-    Map<String, List<CredentialMethod>> loadedMethods = CredentialMethodsLoader.load("/test-methods.json");
-
-    assertThat(loadedMethods).hasSize(2);
-  }
+class EqualsOverriddenWithHashCodeCheckTest {
 
   @Test
-  void testFailedToLoad() {
-    assertThatThrownBy(() -> CredentialMethodsLoader.load("/non-existing-test-methods.json"))
-      .isInstanceOf(IOException.class);
+  void test() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EqualsOverriddenWithHashCodeCheck.java")
+      .withCheck(new EqualsOverriddenWithHashCodeCheck())
+      .verifyIssues();
   }
 
 }

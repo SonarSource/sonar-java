@@ -94,7 +94,7 @@ class JasperTest {
   }
 
   @Test
-  void test_empty() throws Exception {
+  void test_empty() {
     SensorContextTester ctx = SensorContextTester.create(tempFolder);
     ctx.fileSystem().setWorkDir(workDir);
     Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
@@ -138,7 +138,7 @@ class JasperTest {
   }
 
   @Test
-  void test_exclude_filter() throws Exception {
+  void test_exclude_filter() {
     List<String> sonarExclusions = List.of("**/*A_jsp.java", "**\\*B_jsp.java", " *C_jsp.java ");
     Predicate<String> filter = Jasper.createExclusionFilter(sonarExclusions);
     assertThat(filter.test(null)).isTrue();

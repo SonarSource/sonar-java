@@ -100,7 +100,7 @@ class DroppedPropertiesSensorTest {
   }
 
   @Test
-  void test_descriptor() throws Exception {
+  void test_descriptor() {
     DroppedPropertiesSensor sensor = new DroppedPropertiesSensor(w -> {
     });
     DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();

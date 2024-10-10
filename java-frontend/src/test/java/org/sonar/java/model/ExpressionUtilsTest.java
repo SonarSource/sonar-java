@@ -51,7 +51,7 @@ import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 class ExpressionUtilsTest {
 
   @Test
-  void test_skip_parenthesis() throws Exception {
+  void test_skip_parenthesis() {
     File file = new File("src/test/files/model/ExpressionUtilsTestSample.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(0);
@@ -64,7 +64,7 @@ class ExpressionUtilsTest {
   }
 
   @Test
-  void test_simple_assignments() throws Exception {
+  void test_simple_assignments() {
     File file = new File("src/test/files/model/ExpressionUtilsTestSample.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
@@ -78,7 +78,7 @@ class ExpressionUtilsTest {
   }
 
   @Test
-  void method_name() throws Exception {
+  void method_name() {
     File file = new File("src/test/files/model/ExpressionUtilsMethodNameTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(0);
@@ -101,7 +101,7 @@ class ExpressionUtilsTest {
   }
 
   @Test
-  void test_extract_identifier_mixed_access() throws Exception {
+  void test_extract_identifier_mixed_access() {
     File file = new File("src/test/files/model/ExpressionUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
@@ -123,7 +123,7 @@ class ExpressionUtilsTest {
   }
 
   @Test
-  void test_cannot_extract_identifier() throws Exception {
+  void test_cannot_extract_identifier() {
     File file = new File("src/test/files/model/ExpressionUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
@@ -133,7 +133,7 @@ class ExpressionUtilsTest {
   }
 
   @Test
-  void test_get_assigned_symbol() throws Exception {
+  void test_get_assigned_symbol() {
     File file = new File("src/test/files/model/ExpressionUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);

@@ -80,7 +80,7 @@ class JavaAstScannerTest {
   private SensorContextTester context;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp() {
     context = SensorContextTester.create(new File(""));
   }
 
@@ -102,7 +102,7 @@ class JavaAstScannerTest {
   }
 
   @Test
-  void noSonarLines() throws Exception {
+  void noSonarLines() {
     InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new Measurer(context, noSonarFilter)));
@@ -135,7 +135,7 @@ class JavaAstScannerTest {
   }
 
   @Test
-  void scan_single_file_with_dumb_file_should_fail_when_fail_fast() throws Exception {
+  void scan_single_file_with_dumb_file_should_fail_when_fail_fast() {
     InputFile inputFile = TestUtils.emptyInputFile("!!dummy");
     AnalysisException e = assertThrows(AnalysisException.class, () -> scanSingleFile(inputFile, true));
     assertThat(e).hasMessage("Unable to analyze file : '!!dummy'");
@@ -219,7 +219,7 @@ class JavaAstScannerTest {
   }
 
   @Test
-  void should_interrupt_analysis_when_is_cancelled() throws Exception {
+  void should_interrupt_analysis_when_is_cancelled() {
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
     List<JavaFileScanner> visitors = Collections.singletonList(new CheckCancellingAnalysis(context));
 

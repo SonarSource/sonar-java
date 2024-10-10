@@ -45,7 +45,7 @@ class SmapFileTest {
   public Path temporaryFolder;
 
   @Test
-  void test() throws Exception {
+  void test() {
     String sourceMap = "SMAP\n" +
       "test_jsp.java\n" +
       "JSP\n" +

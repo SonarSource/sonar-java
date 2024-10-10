@@ -40,7 +40,7 @@ class JavaVersionAwareVisitorTest {
   private List<String> messages;
 
   @BeforeEach
-  void setUp() throws Exception {
+  void setUp() {
     messages = new LinkedList<>();
     javaChecks = new JavaCheck[] {
       new JavaVersionCheck(7, messages),

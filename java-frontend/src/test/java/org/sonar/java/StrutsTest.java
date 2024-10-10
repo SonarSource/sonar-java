@@ -41,7 +41,7 @@ class StrutsTest extends MeasurerTester {
   }
 
   @Test
-  void measures_on_project() throws Exception {
+  void measures_on_project() {
     Map<String, Double> metrics = getMetrics();
 
     assertThat(metrics.get("classes").intValue()).isEqualTo(146);

@@ -67,7 +67,7 @@ class ClassWithoutHashCodeInHashStructureCheck {
     }
   }
 
-  class NotOverridenEquals {
+  class NotOverriddenEquals {
     private Set<Equality> set = new HashSet<>(); // Compliant
   }
 

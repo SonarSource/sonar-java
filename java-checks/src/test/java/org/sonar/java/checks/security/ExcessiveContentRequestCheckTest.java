@@ -191,7 +191,7 @@ class ExcessiveContentRequestCheckTest {
     }
 
     @Test
-    void log_when_failing_to_write_to_cache() throws IOException {
+    void log_when_failing_to_write_to_cache() {
 
       var spyOnWriteCache = spy(writeCache);
       IllegalArgumentException expectedException = new IllegalArgumentException("boom");

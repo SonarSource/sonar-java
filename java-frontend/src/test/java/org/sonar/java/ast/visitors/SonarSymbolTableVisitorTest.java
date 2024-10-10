@@ -62,7 +62,7 @@ class SonarSymbolTableVisitorTest {
   }
 
   @Test
-  void sonar_symbol_table() throws Exception {
+  void sonar_symbol_table() {
     File source = new File("src/test/files/highlighter/SonarSymTable.java");
     InputFile inputFile = TestUtils.inputFile(source);
 
