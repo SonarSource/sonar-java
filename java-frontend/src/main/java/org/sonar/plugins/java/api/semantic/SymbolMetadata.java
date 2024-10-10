@@ -124,6 +124,7 @@ public interface SymbolMetadata {
   }
 
   enum NullabilityTarget {
+    CLASS,
     METHOD,
     PARAMETER,
     FIELD,
