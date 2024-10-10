@@ -61,12 +61,12 @@ public class BadTestMethodNameCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (isNotOverriden(methodTree) && hasTestAnnotation(methodTree) && !pattern.matcher(methodTree.simpleName().name()).matches()) {
+    if (isNotOverridden(methodTree) && hasTestAnnotation(methodTree) && !pattern.matcher(methodTree.simpleName().name()).matches()) {
       reportIssue(methodTree.simpleName(), "Rename this method name to match the regular expression: '" + format + "'");
     }
   }
 
-  private static boolean isNotOverriden(MethodTree methodTree) {
+  private static boolean isNotOverridden(MethodTree methodTree) {
     return Boolean.FALSE.equals(methodTree.isOverriding());
   }
 

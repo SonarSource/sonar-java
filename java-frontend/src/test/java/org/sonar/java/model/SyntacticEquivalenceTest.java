@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SyntacticEquivalenceTest {
 
   @Test
-  void null_equivalence() throws Exception {
+  void null_equivalence() {
     assertThat(SyntacticEquivalence.areEquivalent((Tree) null, null)).isTrue();
     assertThat(SyntacticEquivalence.areEquivalent(null, compilationUnitTree("class A{}"))).isFalse();
     assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), null)).isFalse();

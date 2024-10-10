@@ -59,7 +59,7 @@ class SymbolicValueTest {
   }
 
   @Test
-  void test_computed_from() throws Exception {
+  void test_computed_from() {
     SymbolicValue symbolicValue = new SymbolicValue();
     assertThat(symbolicValue.computedFrom()).isEmpty();
 
@@ -73,7 +73,7 @@ class SymbolicValueTest {
   }
 
   @Test
-  void test_toString() throws Exception {
+  void test_toString() {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue.NotSymbolicValue notSV = new SymbolicValue.NotSymbolicValue();
@@ -102,7 +102,7 @@ class SymbolicValueTest {
   }
 
   @Test
-  void test_hashCode_equals() throws Exception {
+  void test_hashCode_equals() {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     assertThat(sv1)

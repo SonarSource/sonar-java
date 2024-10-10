@@ -47,7 +47,7 @@ class LiveVariablesTest {
   }
 
   @Test
-  void test_try_finally_liveness() throws Exception {
+  void test_try_finally_liveness() {
     CFG cfg = buildCFG("void foo() {   Object object = null;\n" +
       "    try {\n" +
       "      object = new Object();\n" +
@@ -104,7 +104,7 @@ class LiveVariablesTest {
   }
 
   @Test
-  void method_ref_liveness() throws Exception {
+  void method_ref_liveness() {
     CFG cfg = buildCFG("void foo(Object a) { if(true) { System.out.println(); } bar(a::toString);} void bar(java.util.function.Supplier<String> func) {}");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();

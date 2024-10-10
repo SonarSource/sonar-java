@@ -86,7 +86,7 @@ class HappyPathYieldTest {
   }
 
   @Test
-  void test_toString() throws Exception {
+  void test_toString() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/HappyPathYields.java", new NullDereferenceCheck());
     Set<String> yieldsToString = getMethodBehavior(sev, "bar").yields().stream().map(MethodYield::toString).collect(Collectors.toSet());
     assertThat(yieldsToString).contains(

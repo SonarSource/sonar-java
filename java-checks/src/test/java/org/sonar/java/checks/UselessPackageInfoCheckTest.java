@@ -108,7 +108,7 @@ class UselessPackageInfoCheckTest {
   }
 
   @Test
-  void caching() throws IOException, ClassNotFoundException {
+  void caching() {
     String changedFilePath1 = mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/package-info.java");
     String changedFilePath2 = mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java");
     verifier

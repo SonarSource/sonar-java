@@ -433,7 +433,7 @@ class SonarComponentsTest {
   }
 
   @Test
-  void no_issue_when_check_not_found() throws Exception {
+  void no_issue_when_check_not_found() {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
@@ -447,7 +447,7 @@ class SonarComponentsTest {
   }
 
   @Test
-  void add_issue_or_parse_error() throws Exception {
+  void add_issue_or_parse_error() {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
     SensorContextTester context = SensorContextTester.create(new File("."));
@@ -632,7 +632,7 @@ class SonarComponentsTest {
   }
 
   @Test
-  void jsp_classpath_should_include_plugin() throws Exception {
+  void jsp_classpath_should_include_plugin() {
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     DefaultFileSystem fs = sensorContextTester.fileSystem();
 
@@ -819,7 +819,7 @@ class SonarComponentsTest {
   }
 
   @Test
-  void fileCanBeSkipped_returns_false_when_the_file_is_a_generated_file() throws ApiMismatchException {
+  void fileCanBeSkipped_returns_false_when_the_file_is_a_generated_file() {
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     SonarComponents sonarComponents = spy(
       new SonarComponents(
@@ -838,7 +838,7 @@ class SonarComponentsTest {
   }
 
   @Test
-  void fileCanBeSkipped_always_returns_false_when_skipUnchangedFiles_is_false() throws ApiMismatchException, IOException {
+  void fileCanBeSkipped_always_returns_false_when_skipUnchangedFiles_is_false() throws ApiMismatchException {
 
     SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
     SensorContext contextMock = mock(SensorContext.class);
@@ -1179,7 +1179,7 @@ class SonarComponentsTest {
   }
 
   @Test
-  void should_return_generated_code_visitors() throws Exception {
+  void should_return_generated_code_visitors() {
     ActiveRules activeRules = new ActiveRulesBuilder()
       .addRule(new NewActiveRule.Builder().setRuleKey(RuleKey.of("custom", "jsp")).build())
       .build();

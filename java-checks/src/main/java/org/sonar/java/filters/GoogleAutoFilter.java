@@ -22,8 +22,8 @@ package org.sonar.java.filters;
 import java.util.List;
 import java.util.Set;
 import org.sonar.java.checks.AbstractClassNoFieldShouldBeInterfaceCheck;
-import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
-import org.sonar.java.checks.EqualsOverridenWithHashCodeCheck;
+import org.sonar.java.checks.EqualsNotOverriddenWithCompareToCheck;
+import org.sonar.java.checks.EqualsOverriddenWithHashCodeCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -31,8 +31,8 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 public class GoogleAutoFilter extends BaseTreeVisitorIssueFilter {
 
   private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = Set.of(
-    EqualsOverridenWithHashCodeCheck.class,
-    EqualsNotOverridenWithCompareToCheck.class,
+    EqualsOverriddenWithHashCodeCheck.class,
+    EqualsNotOverriddenWithCompareToCheck.class,
     AbstractClassNoFieldShouldBeInterfaceCheck.class);
 
   private static final String AUTO_VALUE_ANNOTATION = "com.google.auto.value.AutoValue";
@@ -52,7 +52,7 @@ public class GoogleAutoFilter extends BaseTreeVisitorIssueFilter {
 
     boolean isAnnotatedWithAutoValue = classMetadata.isAnnotatedWith(AUTO_VALUE_ANNOTATION);
     excludeLinesIfTrue(isAnnotatedWithAutoValue,
-      tree, EqualsOverridenWithHashCodeCheck.class, EqualsNotOverridenWithCompareToCheck.class);
+      tree, EqualsOverriddenWithHashCodeCheck.class, EqualsNotOverriddenWithCompareToCheck.class);
     excludeLinesIfTrue(isAnnotatedWithAutoValue || AUTO_ANNOTATIONS.stream().anyMatch(classMetadata::isAnnotatedWith),
       tree.simpleName(), AbstractClassNoFieldShouldBeInterfaceCheck.class);
 

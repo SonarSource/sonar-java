@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MethodNestingLevelVisitorTest {
 
   @Test
-  void anonymousClassHandling() throws Exception {
+  void anonymousClassHandling() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
       " Object foo(){" +
       "   Runnable runnable = new Runnable() { " +
@@ -60,7 +60,7 @@ class MethodNestingLevelVisitorTest {
   }
 
   @Test
-  void ifElseHandling() throws Exception {
+  void ifElseHandling() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
       " Object foo(){" +
       "   if(a) { return new Object(); } " +
@@ -76,7 +76,7 @@ class MethodNestingLevelVisitorTest {
   }
   
   @Test
-  void ifHandling() throws Exception {
+  void ifHandling() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
       " Object foo(){" +
       "   if(a) { return new Object(); } " +
@@ -92,7 +92,7 @@ class MethodNestingLevelVisitorTest {
   }
 
   @Test
-  void whileHandling() throws Exception {
+  void whileHandling() {
     CompilationUnitTree cut = JParserTestUtils.parse(
       "class A {" +
         "  Object foo(java.util.List<Integer> list){" +
@@ -112,7 +112,7 @@ class MethodNestingLevelVisitorTest {
   }
 
   @Test
-  void forHandling() throws Exception {
+  void forHandling() {
     CompilationUnitTree cut = JParserTestUtils.parse(
       "class A {" +
         "  Object foo(java.util.List<Integer> list){" +
@@ -132,7 +132,7 @@ class MethodNestingLevelVisitorTest {
   }
 
   @Test
-  void lambdaHandling() throws Exception {
+  void lambdaHandling() {
     CompilationUnitTree cut = JParserTestUtils.parse(
       "class A {" +
         "  Object foo(java.util.List<Integer> list, Stream<Object> objs){" +
@@ -149,7 +149,7 @@ class MethodNestingLevelVisitorTest {
   }
 
   @Test
-  void switchHandling() throws Exception {
+  void switchHandling() {
     CompilationUnitTree cut = JParserTestUtils.parse(
       "class A {" +
         "  String foo(int a) {" +
@@ -171,7 +171,7 @@ class MethodNestingLevelVisitorTest {
   }
 
   @Test
-  void tryHandling() throws Exception {
+  void tryHandling() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
       " Object foo(){" +
       " try { " +
@@ -188,7 +188,7 @@ class MethodNestingLevelVisitorTest {
   }
 
   @Test
-  void emptyMethod() throws Exception {
+  void emptyMethod() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
       " abstract Object foo();" +
       "}");

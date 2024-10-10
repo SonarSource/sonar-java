@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConstraintTest {
 
   @Test
-  void ObjectConstraint_should_be_valid_with_correct_constraints() throws Exception {
+  void ObjectConstraint_should_be_valid_with_correct_constraints() {
     assertThat(ObjectConstraint.NULL.isValidWith(null)).isTrue();
     assertThat(ObjectConstraint.NOT_NULL.isValidWith(null)).isTrue();
     assertThat(ObjectConstraint.NULL.isValidWith(ObjectConstraint.NULL)).isTrue();

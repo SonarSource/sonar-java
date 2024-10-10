@@ -45,7 +45,7 @@ class ModifiersUtilsTest {
   }
 
   @Test
-  void test_int_and_long_value() throws Exception {
+  void test_int_and_long_value() {
     File file = new File("src/test/files/model/ModifiersUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     ClassTree classTree = (ClassTree) tree.types().get(0);

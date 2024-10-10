@@ -112,7 +112,7 @@ class NullDereferenceCheckTest {
   }
 
   @Test
-  void test_deferred_reporting() throws Exception {
+  void test_deferred_reporting() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/NPE_deferred.java")
       .withCheck(new NullDereferenceCheck())
@@ -120,7 +120,7 @@ class NullDereferenceCheckTest {
   }
 
   @Test
-  void test_npe_transitive() throws Exception {
+  void test_npe_transitive() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/NPE_transitive.java")
       .withCheck(new NullDereferenceCheck())
@@ -128,7 +128,7 @@ class NullDereferenceCheckTest {
   }
 
   @Test
-  void test_booleanValue_method() throws Exception {
+  void test_booleanValue_method() {
     SECheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullFromBooleanValueCall.java"))
       .withChecks(new NullDereferenceCheck())

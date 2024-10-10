@@ -97,7 +97,7 @@ public class JavaComplexityTest {
   }
 
   @Test
-  public void complexity_sqale_computation() throws Exception {
+  public void complexity_sqale_computation() {
     List<Issue> issues = TestUtils.issuesForComponent(orchestrator, PROJECT);
 
     assertThat(issues).hasSize(3);

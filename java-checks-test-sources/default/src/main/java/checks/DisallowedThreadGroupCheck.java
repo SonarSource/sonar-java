@@ -38,7 +38,7 @@ abstract class DisallowedThreadGroupCheck
     tg.suspend(); // Compliant
     tg.uncaughtException(new Thread(), new Exception()); // Compliant
     tg.toString(); // Compliant
-    tg.equals(o);  // Compliant - not overriden in ThreadGroup
+    tg.equals(o);  // Compliant - not overridden in ThreadGroup
   }
 
   void qix(Object o, boolean b) {

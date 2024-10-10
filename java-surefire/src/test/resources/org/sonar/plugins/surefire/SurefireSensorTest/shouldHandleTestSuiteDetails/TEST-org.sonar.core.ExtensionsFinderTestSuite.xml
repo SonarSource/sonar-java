@@ -162,9 +162,9 @@
   <testcase classname="org.sonar.core.ExtensionsFinderTest2" time="0.001" name="shouldFindCheckstyleExtensions"/>
   <testcase classname="org.sonar.core.ExtensionsFinderTest2" time="0.001" name="shouldNotFailIfNoCheckstyleExtensions"/>
   <testcase classname="org.sonar.core.ExtensionsFinderTest3" time="0.016"
-            name="shouldFindCheckstyleExtensionsFromOverridenPath"/>
+            name="shouldFindCheckstyleExtensionsFromOverriddenPath"/>
   <testcase classname="org.sonar.core.ExtensionsFinderTest3" time="0.001"
-            name="shouldFailIfOverridenRulesExtensionsPathDoesNotExist">
+            name="shouldFailIfOverriddenRulesExtensionsPathDoesNotExist">
     <skipped/>
   </testcase>
 </testsuite>

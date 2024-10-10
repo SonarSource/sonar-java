@@ -70,7 +70,7 @@ class TooManyMethodsCheckSampleE {
     public void method10() {}
   };
 
-  TooManyMethodsCheckSampleC c2 = new TooManyMethodsCheckSampleC() { // compliant : only overriden methods, some without annotation
+  TooManyMethodsCheckSampleC c2 = new TooManyMethodsCheckSampleC() { // compliant : only overridden methods, some without annotation
     /* @Override */ public void method1() {}
     /* @Override */ public void method2() {}
     @Override public void method3() {}

@@ -43,7 +43,7 @@ public abstract class MeasurerTester {
   private SensorContextTester context;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp() {
     context = SensorContextTester.create(projectDir());
 
     DefaultFileSystem fs = context.fileSystem();

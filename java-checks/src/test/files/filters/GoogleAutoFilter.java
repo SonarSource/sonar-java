@@ -3,7 +3,7 @@ import com.google.auto.value.AutoValue;
 
 public class GoogleAutoFilter {
 
-  // Filter "EqualsOverridenWithHashCodeCheck"
+  // Filter "EqualsOverriddenWithHashCodeCheck"
   @AutoValue
   abstract class OverrideHashCode {
     @Override
@@ -19,7 +19,7 @@ public class GoogleAutoFilter {
     }
   }
 
-  // Filter "EqualsNotOverridenWithCompareToCheck"
+  // Filter "EqualsNotOverriddenWithCompareToCheck"
   @AutoValue
   class CompareTo implements Comparable<Integer> {
     @Override

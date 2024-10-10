@@ -21,7 +21,7 @@ class B {
   protected void method3() {}
 }
 final class C extends B {
-  protected void method3() {} //Compliant method is overriden
+  protected void method3() {} //Compliant method is overridden
 }
 
 final class D {

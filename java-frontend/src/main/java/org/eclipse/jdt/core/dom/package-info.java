@@ -17,19 +17,4 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
-
-import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
-
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
-
-class ObjectFinalizeOverridenNotPublicCheckTest {
-  @Test
-  void test() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeOverridenNotPublicCheckSample.java"))
-      .withCheck(new ObjectFinalizeOverridenNotPublicCheck())
-      .verifyIssues();
-  }
-}
+package org.eclipse.jdt.core.dom;

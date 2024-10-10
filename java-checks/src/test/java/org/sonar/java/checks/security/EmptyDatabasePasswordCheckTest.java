@@ -27,7 +27,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class EmptyDatabasePasswordCheckTest {
 
   @Test
-  void test() throws Exception {
+  void test() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/security/EmptyDatabasePasswordCheckSample.java"))
       .withCheck(new EmptyDatabasePasswordCheck())

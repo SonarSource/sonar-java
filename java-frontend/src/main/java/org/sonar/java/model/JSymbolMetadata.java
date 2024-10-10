@@ -176,10 +176,10 @@ final class JSymbolMetadata implements SymbolMetadata {
   }
 
   private static NullabilityData getNullabilityDataFromInheritance(Symbol.MethodSymbol methodSymbol, NullabilityTarget target) {
-    List<Symbol.MethodSymbol> overridenSymbols = methodSymbol.overriddenSymbols();
+    List<Symbol.MethodSymbol> overriddenSymbols = methodSymbol.overriddenSymbols();
     NullabilityLevel level = NullabilityLevel.METHOD;
-    for (Symbol.MethodSymbol overridenSymbol: overridenSymbols) {
-      SymbolMetadata metadata = overridenSymbol.metadata();
+    for (Symbol.MethodSymbol overriddenSymbol : overriddenSymbols) {
+      SymbolMetadata metadata = overriddenSymbol.metadata();
       NullabilityData nullabilityData = getNullabilityDataAtLevel(metadata, target, level);
       if (nullabilityData.type() != NullabilityType.NO_ANNOTATION && !nullabilityData.equals(unknownNullabilityAt(level))) {
         return nullabilityData;

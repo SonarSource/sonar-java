@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.fail;
 class MethodMatcherFactoryTest {
 
   @Test
-  void fail_arg() throws Exception {
+  void fail_arg() {
     try {
       MethodMatcherFactory.methodMatchers("org.sonar.test.Test$match");
       fail("Argument should not be accepted.");
@@ -84,7 +84,7 @@ class MethodMatcherFactoryTest {
   }
 
   @Test
-  void inner_classes() throws Exception {
+  void inner_classes() {
     MethodMatchers anyArg = MethodMatcherFactory.methodMatchers("org.sonar.test.Outer$Inner#foo");
     MethodVisitor visitor = new MethodVisitor();
     visitor.add(anyArg);

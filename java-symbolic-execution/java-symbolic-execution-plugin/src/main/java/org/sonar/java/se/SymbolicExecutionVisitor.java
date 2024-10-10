@@ -66,7 +66,7 @@ public class SymbolicExecutionVisitor extends BaseTreeVisitor implements JavaFil
     ExplodedGraphWalker walker = getWalker();
     try {
       Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-      if (methodCanNotBeOverriden(methodSymbol)) {
+      if (methodCanNotBeOverridden(methodSymbol)) {
         MethodBehavior methodBehavior = behaviorCache.methodBehaviorForSymbol(methodSymbol);
         if (!methodBehavior.isVisited()) {
           walker.visitMethod(methodTree, methodBehavior);
@@ -94,7 +94,7 @@ public class SymbolicExecutionVisitor extends BaseTreeVisitor implements JavaFil
     return egwFactory.createWalker(behaviorCache, context);
   }
 
-  public static boolean methodCanNotBeOverriden(Symbol.MethodSymbol methodSymbol) {
+  public static boolean methodCanNotBeOverridden(Symbol.MethodSymbol methodSymbol) {
     if (methodSymbol.isNativeMethod()) {
       return false;
     }

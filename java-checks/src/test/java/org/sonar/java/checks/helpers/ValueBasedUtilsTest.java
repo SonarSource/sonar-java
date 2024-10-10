@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ValueBasedUtilsTest {
 
   @Test
-  void testIsValueBased() throws Exception {
+  void testIsValueBased() {
     File file = new File("src/test/files/checks/helpers/ValueBasedUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
 

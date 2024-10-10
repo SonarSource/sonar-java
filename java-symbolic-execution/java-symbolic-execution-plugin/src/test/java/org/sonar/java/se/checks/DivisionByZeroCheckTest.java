@@ -78,7 +78,7 @@ class DivisionByZeroCheckTest {
   }
 
   @Test
-  void test_zero_constraint_copy() throws Exception {
+  void test_zero_constraint_copy() {
     SymbolicValue a = new SymbolicValue();
     SymbolicValue b = new SymbolicValue();
     DivisionByZeroCheck.ZeroConstraint bConstraint = copyConstraint(a, b, EQUAL);

@@ -90,13 +90,15 @@ class TestClasspathUtilsTest {
   @Test
   void find_module_jar_in_target_folder(@TempDir Path moduleDir) throws IOException {
     writePomFile(moduleDir.resolve("pom.xml"),
-      "  <parent>\n" +
-      "    <groupId>org.example</groupId>\n" +
-      "    <artifactId>my-parent</artifactId>\n" +
-      "    <version>1.0</version>\n" +
-      "  </parent>\n" +
-      "\n" +
-      "  <artifactId>my-artifact</artifactId>\n");
+      """
+          <parent>
+            <groupId>org.example</groupId>
+            <artifactId>my-parent</artifactId>
+            <version>1.0</version>
+          </parent>
+        
+          <artifactId>my-artifact</artifactId>
+        """);
     Path target = moduleDir.resolve("target");
     Files.createDirectory(target);
     Path targetJarPath = target.resolve("my-artifact-1.0.jar");
@@ -108,9 +110,11 @@ class TestClasspathUtilsTest {
   @Test
   void find_module_jar_in_local_repo(@TempDir Path moduleDir) throws IOException {
     writePomFile(moduleDir.resolve("pom.xml"),
-      "  <groupId>com.google.code.findbugs</groupId>\n" +
-        "  <artifactId>jsr305</artifactId>\n" +
-        "  <version>3.0.2</version>\n");
+      """
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>jsr305</artifactId>
+          <version>3.0.2</version>
+        """);
     Path actual = TestClasspathUtils.findModuleJarPath(moduleDir.toString());
     assertThat(actual.toString()).endsWith(fixSeparator("/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar"));
   }
@@ -127,15 +131,17 @@ class TestClasspathUtilsTest {
   @Test
   void find_module_jar_without_jar(@TempDir Path moduleDir) throws IOException {
     writePomFile(moduleDir.resolve("pom.xml"),
-      "  <parent>\n" +
-        "    <groupId>org.example</groupId>\n" +
-        "    <artifactId>my-parent</artifactId>\n" +
-        "    <version>1.0</version>\n" +
-        "  </parent>\n" +
-        "\n" +
-        "  <groupId>org.example.error</groupId>\n" +
-        "  <artifactId>missing-artifact</artifactId>\n" +
-        "  <version>42.0</version>\n");
+      """
+          <parent>
+            <groupId>org.example</groupId>
+            <artifactId>my-parent</artifactId>
+            <version>1.0</version>
+          </parent>
+        
+          <groupId>org.example.error</groupId>
+          <artifactId>missing-artifact</artifactId>
+          <version>42.0</version>
+        """);
     String moduleDirPath = moduleDir.toString();
     assertThatThrownBy(() -> TestClasspathUtils.findModuleJarPath(moduleDirPath))
       .isInstanceOf(IllegalArgumentException.class)
@@ -145,7 +151,7 @@ class TestClasspathUtilsTest {
   }
 
   @Test
-  void find_module_jar_in_invalid_folder() throws IOException {
+  void find_module_jar_in_invalid_folder() {
     assertThatThrownBy(() -> TestClasspathUtils.findModuleJarPath("/invalid/path/to/module"))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageStartingWith("Module path exception '/invalid/path/to/module'");
@@ -155,12 +161,14 @@ class TestClasspathUtilsTest {
   void read_xml_node_value(@TempDir Path moduleDir) throws IOException {
     Path pomPath = moduleDir.resolve("pom.xml");
     writePomFile(pomPath,
-      "  <parent>\n" +
-        "    <groupId>org.example</groupId>\n" +
-        "    <artifactId>my-parent</artifactId>\n" +
-        "    <version>1.0</version>\n" +
-        "  </parent>\n" +
-        "  <artifactId>my-artifact</artifactId>\n");
+      """
+          <parent>
+            <groupId>org.example</groupId>
+            <artifactId>my-parent</artifactId>
+            <version>1.0</version>
+          </parent>
+          <artifactId>my-artifact</artifactId>
+        """);
 
     Document xml = TestClasspathUtils.loadXml(pomPath);
     assertThat(xmlNodeValue(xml, "/project/artifactId/text()")).isEqualTo("my-artifact");

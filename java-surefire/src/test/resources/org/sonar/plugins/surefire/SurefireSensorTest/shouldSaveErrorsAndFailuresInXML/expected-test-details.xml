@@ -72,7 +72,7 @@
   <testcase status="ok" time="1"
             name="shouldNotFailIfNoCheckstyleExtensions"/>
   <testcase status="ok" time="16"
-            name="shouldFindCheckstyleExtensionsFromOverridenPath"/>
+            name="shouldFindCheckstyleExtensionsFromOverriddenPath"/>
   <testcase status="skipped" time="0"
-            name="shouldFailIfOverridenRulesExtensionsPathDoesNotExist"/>
+            name="shouldFailIfOverriddenRulesExtensionsPathDoesNotExist"/>
 </tests-details>

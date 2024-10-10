@@ -96,7 +96,7 @@ class RelationalSymbolicValueTest {
     Tree.Kind.LESS_THAN, Tree.Kind.LESS_THAN_OR_EQUAL_TO);
 
   @Test
-  void test_normalization() throws Exception {
+  void test_normalization() {
     assertThat(relationalSV(Tree.Kind.EQUAL_TO, b, a)).hasToString("SV_1==SV_2");
     assertThat(relationalSV(Tree.Kind.NOT_EQUAL_TO, b, a)).hasToString("SV_1!=SV_2");
     assertThat(relationalSV(Tree.Kind.GREATER_THAN, b, a)).hasToString("SV_2<SV_1");
@@ -132,7 +132,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_different_operand() throws Exception {
+  void test_different_operand() {
     RelationalSymbolicValue ab = new RelationalSymbolicValue(EQUAL, a, b);
     RelationalSymbolicValue bc = new RelationalSymbolicValue(EQUAL, b, c);
     assertThat(ab.differentOperand(bc)).isEqualTo(a);
@@ -140,7 +140,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_direct_deduction() throws Exception {
+  void test_direct_deduction() {
     List<String> actual = new ArrayList<>();
     for (Tree.Kind operator : operators) {
       actual.addAll(resolveRelationStateForAllKinds(relationalSV(operator, b, a), () -> relationToString(operator, a, b)));
@@ -177,7 +177,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_conjuction_equal() throws Exception {
+  void test_conjuction_equal() {
     RelationalSymbolicValue aLEb = relationalSV(Tree.Kind.LESS_THAN_OR_EQUAL_TO, a, b);
     RelationalSymbolicValue bLEa = relationalSV(Tree.Kind.LESS_THAN_OR_EQUAL_TO, b, a);
     RelationalSymbolicValue aEb = relationalSV(Tree.Kind.EQUAL_TO, a, b);
@@ -186,7 +186,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_transitive_GE() throws Exception {
+  void test_transitive_GE() {
     RelationalSymbolicValue ab = relationalSV(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, a, b);
     RelationalSymbolicValue bc = relationalSV(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, b, c);
     RelationalSymbolicValue deduced = ab.deduceTransitiveOrSimplified(bc);
@@ -194,7 +194,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_transitive_method_equals() throws Exception {
+  void test_transitive_method_equals() {
     RelationalSymbolicValue equalAB = relationalSV(Tree.Kind.EQUAL_TO, a, b);
     RelationalSymbolicValue methodEqualBC = new RelationalSymbolicValue(METHOD_EQUALS, b, c);
     RelationalSymbolicValue deduced = equalAB.deduceTransitiveOrSimplified(methodEqualBC);
@@ -205,7 +205,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_chained_transitivity() throws Exception {
+  void test_chained_transitivity() {
     // create chain of relations in the form sv1 < sv2 < ... < sv45
     // and test if relation sv1 < sv45 is deduced
     int chainLength = 45;
@@ -222,7 +222,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_not_equals_is_not_transitive() throws Exception {
+  void test_not_equals_is_not_transitive() {
     RelationalSymbolicValue aNEb = relationalSV(Tree.Kind.NOT_EQUAL_TO, a, b);
     RelationalSymbolicValue bNEc = relationalSV(Tree.Kind.NOT_EQUAL_TO, b, c);
     RelationalSymbolicValue relation = aNEb.deduceTransitiveOrSimplified(bNEc);
@@ -230,7 +230,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_transitive_constraint_copy() throws Exception {
+  void test_transitive_constraint_copy() {
     SymbolicValue aNEb = relationalSV(Tree.Kind.NOT_EQUAL_TO, b, a);
     SymbolicValue bNEc = relationalSV(Tree.Kind.NOT_EQUAL_TO, c, b);
     ProgramState programState = ProgramState.EMPTY_STATE;
@@ -247,7 +247,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_equals_hashCode() throws Exception {
+  void test_equals_hashCode() {
     SymbolicValue ab = relationalSV(Tree.Kind.EQUAL_TO, a, b);
     SymbolicValue ba = relationalSV(Tree.Kind.EQUAL_TO, b, a);
     assertThat(ab)
@@ -288,7 +288,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_constraint_copy() throws Exception {
+  void test_constraint_copy() {
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue a = new SymbolicValue();
     SymbolicValue b = new SymbolicValue();
@@ -305,7 +305,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_setting_operands() throws Exception {
+  void test_setting_operands() {
     RelationalSymbolicValue relSV = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.EQUAL, a, b);
     assertThatThrownBy(() -> SymbolicValueTestUtil.computedFrom(relSV, b, a))
       .isInstanceOf(IllegalStateException.class)
@@ -316,7 +316,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_transitive_deduction() throws Exception {
+  void test_transitive_deduction() {
     List<String> actual = new ArrayList<>();
     for (Tree.Kind r : operators) {
       RelationalSymbolicValue first = relationalSV(r, b, a);
@@ -348,7 +348,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_all_transitive_relations_are_computed() throws Exception {
+  void test_all_transitive_relations_are_computed() {
     RelationalSymbolicValue ab = relationalSV(Tree.Kind.EQUAL_TO, a, b);
     RelationalSymbolicValue bc = relationalSV(Tree.Kind.EQUAL_TO, b, c);
     RelationalSymbolicValue cd = relationalSV(Tree.Kind.EQUAL_TO, c, d);
@@ -357,7 +357,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_constraints_are_copied_over_transitive_relations() throws Exception {
+  void test_constraints_are_copied_over_transitive_relations() {
     ProgramState ps = ProgramState.EMPTY_STATE;
     ps = ListUtils.getOnlyElement(a.setConstraint(ps, ObjectConstraint.NULL));
     RelationalSymbolicValue ab = relationalSV(Tree.Kind.EQUAL_TO, a, b);
@@ -384,7 +384,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void relationships_transitivity_should_take_known_relationships_into_account() throws Exception {
+  void relationships_transitivity_should_take_known_relationships_into_account() {
     // Testcase in that file can fail with a stackoverflow if known relations in program state are not taken into account.
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/InifiniteTransitiveRelationshipConstraintCopy.java")
@@ -432,7 +432,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_equality() throws Exception {
+  void test_equality() {
     RelationalSymbolicValue equalRSV = relationalSV(Tree.Kind.EQUAL_TO, a, b);
     assertThat(equalRSV.isEquality()).isTrue();
     RelationalSymbolicValue methodEqualsRSV = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, a, b);
@@ -443,7 +443,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_to_string() throws Exception {
+  void test_to_string() {
     RelationalSymbolicValue rsv = new RelationalSymbolicValue(EQUAL);
     Symbol var = SETestUtils.variable("x");
     SymbolicValue left = new SymbolicValue() {
@@ -464,7 +464,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_constraint_copy_of_sv_with_no_constraints_is_symmetric() throws Exception {
+  void test_constraint_copy_of_sv_with_no_constraints_is_symmetric() {
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue svZero = new SymbolicValue();
     ps = ListUtils.getOnlyElement(svZero.setConstraint(ps, ZERO));
@@ -479,7 +479,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void test_constraint_copy_of_not_null_constraint() throws Exception {
+  void test_constraint_copy_of_not_null_constraint() {
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue svNotNull = new SymbolicValue();
     ps = ListUtils.getOnlyElement(svNotNull.setConstraint(ps, ObjectConstraint.NOT_NULL));
@@ -505,7 +505,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void recursion_on_copy_constraint_should_stop() throws Exception {
+  void recursion_on_copy_constraint_should_stop() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/RelationSV.java")
       .withCheck(new NullDereferenceCheck())
@@ -514,7 +514,7 @@ class RelationalSymbolicValueTest {
   }
 
   @Test
-  void too_many_relationship_should_stop_se_engine() throws Exception {
+  void too_many_relationship_should_stop_se_engine() {
     logTester.setLevel(Level.TRACE);
     SETestUtils.createSymbolicExecutionVisitor("src/test/files/se/ExceedTransitiveLimit.java", new NullDereferenceCheck());
     String exceptionMessage = "reached maximum number of transitive relations generated for method hashCode in class ExceedTransitiveLimit";

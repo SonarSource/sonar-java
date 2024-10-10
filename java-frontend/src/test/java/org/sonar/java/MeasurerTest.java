@@ -40,7 +40,7 @@ class MeasurerTest {
   private SensorContextTester context;
 
   @BeforeEach
-  void setUp() throws Exception {
+  void setUp() {
     context = SensorContextTester.create(BASE_DIR);
   }
 
