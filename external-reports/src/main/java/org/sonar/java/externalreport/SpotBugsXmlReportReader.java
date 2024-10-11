@@ -108,8 +108,8 @@ public class SpotBugsXmlReportReader {
         sourceLinePath = getAttributeValue(element, SOURCE_PATH_ATTRIBUTE);
         sourceLineStart = getAttributeValue(element, START_ATTRIBUTE);
         break;
-      case "BugCollection/BugInstance/LongMessage":
-      case "BugCollection/Project/SrcDir":
+      case "BugCollection/BugInstance/LongMessage",
+        "BugCollection/Project/SrcDir":
         textBuilder = new StringBuilder();
         break;
       default:

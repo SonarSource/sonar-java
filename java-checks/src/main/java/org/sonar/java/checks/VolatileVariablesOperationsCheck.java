@@ -118,17 +118,17 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
     boolean foundClass = false;
     while (!foundClass) {
       switch (current.kind()) {
-        case LAMBDA_EXPRESSION:
-        case SYNCHRONIZED_STATEMENT:
-        case COMPILATION_UNIT:
+        case LAMBDA_EXPRESSION,
+          SYNCHRONIZED_STATEMENT,
+          COMPILATION_UNIT:
           return;
         case METHOD:
           if (ModifiersUtils.hasModifier(((MethodTree) current).modifiers(), Modifier.SYNCHRONIZED)) {
             return;
           }
           break;
-        case ENUM:
-        case CLASS:
+        case ENUM,
+          CLASS:
           if (((ClassTree) current).simpleName() == null) {
             return;
           }

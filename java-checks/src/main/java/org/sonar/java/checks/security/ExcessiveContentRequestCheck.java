@@ -260,21 +260,21 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
   private static Long getMultiplierFromName(String name) {
     switch (name.toUpperCase(Locale.ENGLISH)) {
-      case "OFKILOBYTES":
-      case "KILOBYTES":
-      case "KB":
+      case "OFKILOBYTES",
+        "KILOBYTES",
+        "KB":
         return BYTES_PER_KB;
-      case "OFMEGABYTES":
-      case "MEGABYTES":
-      case "MB":
+      case "OFMEGABYTES",
+        "MEGABYTES",
+        "MB":
         return BYTES_PER_MB;
-      case "OFGIGABYTES":
-      case "GIGABYTES":
-      case "GB":
+      case "OFGIGABYTES",
+        "GIGABYTES",
+        "GB":
         return BYTES_PER_GB;
-      case "OFTERABYTES":
-      case "TERABYTES":
-      case "TB":
+      case "OFTERABYTES",
+        "TERABYTES",
+        "TB":
         return BYTES_PER_TB;
       default:
         return 1L;

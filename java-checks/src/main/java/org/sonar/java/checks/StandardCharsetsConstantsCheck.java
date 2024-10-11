@@ -276,8 +276,8 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
         .ifPresent(constantName -> {
           String methodRef = getMethodRef(symbol);
           switch (methodRef) {
-            case "Charset.forName":
-            case "Charsets.toCharset":
+            case "Charset.forName",
+              "Charsets.toCharset":
               reportQuickfixOnCharsetCall(callExpression, constantName, methodRef);
               break;
             case "IOUtils.toString":
@@ -383,10 +383,10 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       return Optional.of(stringArguments.get(0));
     }
     switch (getMethodRef(symbol)) {
-      case "FileUtils.writeStringToFile":
-      case "IOUtils.toInputStream":
-      case "IOUtils.write":
-      case "IOUtils.writeLines":
+      case "FileUtils.writeStringToFile",
+        "IOUtils.toInputStream",
+        "IOUtils.write",
+        "IOUtils.writeLines":
         return Optional.of(ListUtils.getLast(stringArguments));
       case "LockableFileWriter.<init>":
         return Optional.of(stringArguments.get(0));

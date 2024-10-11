@@ -131,12 +131,12 @@ public class HardcodedStringExpressionChecker {
       case TYPE_CAST:
         TypeCastTree typeCast = (TypeCastTree) arg;
         return isExpressionDerivedFromPlainText(typeCast.expression(), secondaryLocations, visited);
-      case BOOLEAN_LITERAL:
-      case CHAR_LITERAL:
-      case DOUBLE_LITERAL:
-      case FLOAT_LITERAL:
-      case INT_LITERAL:
-      case LONG_LITERAL:
+      case BOOLEAN_LITERAL,
+        CHAR_LITERAL,
+        DOUBLE_LITERAL,
+        FLOAT_LITERAL,
+        INT_LITERAL,
+        LONG_LITERAL:
         return true;
       default:
         if (arg instanceof BinaryExpressionTree binaryExpression) {

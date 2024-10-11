@@ -117,16 +117,16 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
       String constraintAsString = constraintsByDomainJsonArray.get(i).getAsString();
       Constraint constraint;
       switch (constraintAsString) {
-        case "NULL":
-        case "NOT_NULL":
+        case "NULL",
+          "NOT_NULL":
           constraint = ObjectConstraint.valueOf(constraintAsString);
           break;
-        case "TRUE":
-        case "FALSE":
+        case "TRUE",
+          "FALSE":
           constraint = BooleanConstraint.valueOf(constraintAsString);
           break;
-        case "ZERO":
-        case "NON_ZERO":
+        case "ZERO",
+          "NON_ZERO":
           constraint = ZeroConstraint.valueOf(constraintAsString);
           break;
         default:

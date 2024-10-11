@@ -62,8 +62,8 @@ public class ConstraintManager {
       case LOGICAL_COMPLEMENT:
         result = new SymbolicValue.NotSymbolicValue();
         break;
-      case INSTANCE_OF:
-      case PATTERN_INSTANCE_OF:
+      case INSTANCE_OF,
+        PATTERN_INSTANCE_OF:
         result = new SymbolicValue.InstanceOfSymbolicValue();
         break;
       case MEMBER_SELECT:
@@ -102,18 +102,18 @@ public class ConstraintManager {
       case GREATER_THAN_OR_EQUAL_TO:
         result = createRelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, computedFrom);
         break;
-      case AND:
-      case AND_ASSIGNMENT:
+      case AND,
+        AND_ASSIGNMENT:
         result = new SymbolicValue.AndSymbolicValue();
         result.computedFrom(computedFrom);
         break;
-      case OR:
-      case OR_ASSIGNMENT:
+      case OR,
+        OR_ASSIGNMENT:
         result = new SymbolicValue.OrSymbolicValue();
         result.computedFrom(computedFrom);
         break;
-      case XOR:
-      case XOR_ASSIGNMENT:
+      case XOR,
+        XOR_ASSIGNMENT:
         result = new SymbolicValue.XorSymbolicValue();
         result.computedFrom(computedFrom);
         break;

@@ -163,23 +163,23 @@ public class QuickFixHelper {
       case LIST:
         // parent.parent() is Kind.TRY_STATEMENT or Kind.FOR_STATEMENT
         return (List<? extends Tree>) parent;
-      case BLOCK:
-      case INITIALIZER:
-      case STATIC_INITIALIZER:
+      case BLOCK,
+        INITIALIZER,
+        STATIC_INITIALIZER:
         return ((JavaTree) parent).getChildren();
       case CASE_GROUP:
         return ((CaseGroupTree) parent).body();
-      case METHOD:
-      case CONSTRUCTOR:
-      case CATCH:
-      case LAMBDA_EXPRESSION:
-      case FOR_EACH_STATEMENT:
-      case TYPE_PATTERN:
+      case METHOD,
+        CONSTRUCTOR,
+        CATCH,
+        LAMBDA_EXPRESSION,
+        FOR_EACH_STATEMENT,
+        TYPE_PATTERN:
         return Collections.emptyList();
-      case CLASS:
-      case ENUM:
-      case INTERFACE:
-      case ANNOTATION_TYPE:
+      case CLASS,
+        ENUM,
+        INTERFACE,
+        ANNOTATION_TYPE:
         return ((ClassTree) parent).members();
       case RECORD:
         ClassTree classLike = (ClassTree) parent;

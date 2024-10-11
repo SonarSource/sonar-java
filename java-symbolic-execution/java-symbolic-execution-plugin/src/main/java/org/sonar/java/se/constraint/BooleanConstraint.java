@@ -51,11 +51,11 @@ public enum BooleanConstraint implements Constraint {
   @Override
   public Constraint copyOver(RelationalSymbolicValue.Kind kind) {
     switch (kind) {
-      case LESS_THAN:
-      case GREATER_THAN_OR_EQUAL:
+      case LESS_THAN,
+        GREATER_THAN_OR_EQUAL:
         return null;
-      case EQUAL:
-      case METHOD_EQUALS:
+      case EQUAL,
+        METHOD_EQUALS:
         return this;
       default:
         return inverse();

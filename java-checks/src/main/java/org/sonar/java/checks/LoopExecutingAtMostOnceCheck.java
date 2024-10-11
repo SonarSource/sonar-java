@@ -225,8 +225,8 @@ public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
     } while (!currentTree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER));
 
     switch(currentTree.kind()) {
-      case METHOD:
-      case CONSTRUCTOR:
+      case METHOD,
+        CONSTRUCTOR:
         return (CFG) ((MethodTree) currentTree).cfg();
       case LAMBDA_EXPRESSION:
         return (CFG) ((LambdaExpressionTree) currentTree).cfg();

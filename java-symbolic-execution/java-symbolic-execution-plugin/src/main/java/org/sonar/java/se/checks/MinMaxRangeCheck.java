@@ -147,8 +147,8 @@ public class MinMaxRangeCheck extends SECheck {
         return handleNumericalLiteral(context, SELiteralUtils.intLiteralValue((ExpressionTree) syntaxNode));
       case LONG_LITERAL:
         return handleNumericalLiteral(context, SELiteralUtils.longLiteralValue((ExpressionTree) syntaxNode));
-      case UNARY_MINUS:
-      case UNARY_PLUS:
+      case UNARY_MINUS,
+        UNARY_PLUS:
         return handleNumericalLiteral(context, (UnaryExpressionTree) syntaxNode);
       case IDENTIFIER:
         return handleNumericalConstant(context, (IdentifierTree) syntaxNode);

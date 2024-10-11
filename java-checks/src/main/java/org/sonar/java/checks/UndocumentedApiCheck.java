@@ -166,10 +166,10 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
         return "field";
       case ANNOTATION_TYPE:
         return "annotation";
-      case CLASS:
-      case INTERFACE:
-      case ENUM:
-      case RECORD:
+      case CLASS,
+        INTERFACE,
+        ENUM,
+        RECORD:
         return ((ClassTree) tree).declarationKeyword().text();
       default:
         return "";

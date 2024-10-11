@@ -53,8 +53,8 @@ public enum ObjectConstraint implements Constraint {
   @Override
   public Constraint copyOver(RelationalSymbolicValue.Kind kind) {
     switch (kind) {
-      case EQUAL:
-      case METHOD_EQUALS:
+      case EQUAL,
+        METHOD_EQUALS:
         return this;
       default:
         // x != NULL -> x is NOT_NULL , but if x != NOT_NULL we learn nothing about x

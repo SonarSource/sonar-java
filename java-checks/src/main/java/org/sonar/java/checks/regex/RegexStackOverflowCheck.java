@@ -141,8 +141,8 @@ public class RegexStackOverflowCheck extends AbstractRegexCheck {
         case REPETITION:
           RepetitionTree repetition = (RepetitionTree) tree;
           return !repetition.getQuantifier().isFixed() || containsBacktrackableBranch(repetition.getElement());
-        case CAPTURING_GROUP:
-        case NON_CAPTURING_GROUP:
+        case CAPTURING_GROUP,
+          NON_CAPTURING_GROUP:
           return containsBacktrackableBranch(((GroupTree) tree).getElement());
         case SEQUENCE:
           for (RegexTree child : ((SequenceTree) tree).getItems()) {
@@ -248,8 +248,8 @@ public class RegexStackOverflowCheck extends AbstractRegexCheck {
           }
           RegexTree first = items.get(0);
           return edgeCost(first).add(shortestPath(first, tree.continuation(), shortestPathComparator));
-        case NON_CAPTURING_GROUP:
-        case CAPTURING_GROUP:
+        case NON_CAPTURING_GROUP,
+          CAPTURING_GROUP:
           return Optional.ofNullable(((GroupTree) tree).getElement())
             .map(groupElement -> edgeCost(groupElement).add(shortestInnerPath(groupElement, shortestPathComparator)))
             .orElse(new PathInfo(0, 0));

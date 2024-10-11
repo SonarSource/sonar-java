@@ -359,14 +359,14 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
     private static boolean isConstant(ExpressionTree operand) {
       switch (operand.kind()) {
-        case BOOLEAN_LITERAL:
-        case CHAR_LITERAL:
-        case DOUBLE_LITERAL:
-        case FLOAT_LITERAL:
-        case INT_LITERAL:
-        case LONG_LITERAL:
-        case STRING_LITERAL:
-        case NULL_LITERAL:
+        case BOOLEAN_LITERAL,
+          CHAR_LITERAL,
+          DOUBLE_LITERAL,
+          FLOAT_LITERAL,
+          INT_LITERAL,
+          LONG_LITERAL,
+          STRING_LITERAL,
+          NULL_LITERAL:
           return true;
         case IDENTIFIER:
           return isConstant(((IdentifierTree) operand).symbol());

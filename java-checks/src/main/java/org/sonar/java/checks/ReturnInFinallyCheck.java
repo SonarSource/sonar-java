@@ -151,11 +151,11 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
     switch (blockKind) {
       case BLOCK:
         return true;
-      case FOR_STATEMENT:
-      case FOR_EACH_STATEMENT:
-      case WHILE_STATEMENT:
-      case DO_STATEMENT:
-      case SWITCH_STATEMENT:
+      case FOR_STATEMENT,
+        FOR_EACH_STATEMENT,
+        WHILE_STATEMENT,
+        DO_STATEMENT,
+        SWITCH_STATEMENT:
         return handleControlFlowInFinally(jumpKind);
       case METHOD:
       default:

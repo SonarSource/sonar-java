@@ -248,13 +248,13 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   private RelationState relationStateForSameOperand() {
     switch (kind) {
-      case EQUAL:
-      case GREATER_THAN_OR_EQUAL:
-      case METHOD_EQUALS:
+      case EQUAL,
+        GREATER_THAN_OR_EQUAL,
+        METHOD_EQUALS:
         return RelationState.FULFILLED;
-      case NOT_EQUAL:
-      case LESS_THAN:
-      case NOT_METHOD_EQUALS:
+      case NOT_EQUAL,
+        LESS_THAN,
+        NOT_METHOD_EQUALS:
         return RelationState.UNFULFILLED;
       default:
         throw new IllegalStateException("Unknown resolution for same operand " + this);
@@ -438,10 +438,10 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   private boolean isCommutative() {
     switch (kind) {
-      case EQUAL:
-      case NOT_EQUAL:
-      case METHOD_EQUALS:
-      case NOT_METHOD_EQUALS:
+      case EQUAL,
+        NOT_EQUAL,
+        METHOD_EQUALS,
+        NOT_METHOD_EQUALS:
         return true;
       default:
         return false;

@@ -112,10 +112,10 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
         return handleBiConsumerInterface(type, usages);
       case "java.util.function.Supplier":
         return handleSupplier(type, usages);
-      case "java.util.function.Consumer":
-      case "java.util.function.Predicate":
-      case "java.util.function.UnaryOperator":
-      case "java.util.function.BinaryOperator":
+      case "java.util.function.Consumer",
+        "java.util.function.Predicate",
+        "java.util.function.UnaryOperator",
+        "java.util.function.BinaryOperator":
         return handleSingleParameterFunctions(type, usages);
       default:
         return Optional.empty();

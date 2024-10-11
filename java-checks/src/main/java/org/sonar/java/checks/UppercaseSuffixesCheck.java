@@ -51,8 +51,8 @@ public class UppercaseSuffixesCheck extends IssuableSubscriptionVisitor {
     String value = ((LiteralTree) tree).value();
     char suffix = value.charAt(value.length() - 1);
     switch (suffix) {
-      case DOUBLE:
-      case FLOAT:
+      case DOUBLE,
+        FLOAT:
         if (checkOnlyLong) {
           return;
         }
