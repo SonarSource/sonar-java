@@ -161,12 +161,12 @@ class SonarComponentsTest {
   void base_and_work_directories() {
     File baseDir = new File("");
     File workDir = new File("target");
-    SensorContextTester context = SensorContextTester.create(baseDir);
-    DefaultFileSystem fs = context.fileSystem();
+    SensorContextTester specificContext = SensorContextTester.create(baseDir);
+    DefaultFileSystem fs = specificContext.fileSystem();
     fs.setWorkDir(workDir.toPath());
 
     SonarComponents sonarComponents = new SonarComponents(
-      fileLinesContextFactory, fs, null, mock(ClasspathForTest.class), checkFactory, context.activeRules());
+      fileLinesContextFactory, fs, null, mock(ClasspathForTest.class), checkFactory, specificContext.activeRules());
 
     assertThat(sonarComponents.projectLevelWorkDir()).isEqualTo(workDir);
   }
@@ -175,15 +175,15 @@ class SonarComponentsTest {
   void set_work_directory_using_project_definition() {
     File baseDir = new File("");
     File workDir = new File("target");
-    SensorContextTester context = SensorContextTester.create(baseDir);
-    DefaultFileSystem fs = context.fileSystem();
+    SensorContextTester specificContext = SensorContextTester.create(baseDir);
+    DefaultFileSystem fs = specificContext.fileSystem();
     fs.setWorkDir(workDir.toPath());
     ProjectDefinition parentProjectDefinition = ProjectDefinition.create();
     parentProjectDefinition.setWorkDir(workDir);
     ProjectDefinition childProjectDefinition = ProjectDefinition.create();
     parentProjectDefinition.addSubProject(childProjectDefinition);
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(ClasspathForTest.class),
-      checkFactory, context.activeRules(), childProjectDefinition);
+      checkFactory, specificContext.activeRules(), childProjectDefinition);
     assertThat(sonarComponents.projectLevelWorkDir()).isEqualTo(workDir);
   }
 
@@ -309,7 +309,7 @@ class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
       null, checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
-    sonarComponents.setCheckFilter(checks -> checks.stream()
+    sonarComponents.setCheckFilter(checkList -> checkList.stream()
       .filter(c -> !c.getClass().getSimpleName().equals("CheckB")).toList());
 
     List<JavaCheck> mainChecks = sonarComponents.mainChecks();
@@ -347,8 +347,8 @@ class SonarComponentsTest {
   @Test
   void register_shared_check_when_rules_are_active_or_not() {
     ActiveRules activeRules = activeRules("java:S101", "java:S102");
-    CheckFactory checkFactory = new CheckFactory(activeRules);
-    SensorContextTester context = SensorContextTester.create(new File(".")).setActiveRules(activeRules);
+    CheckFactory specificCheckFactory = new CheckFactory(activeRules);
+    SensorContextTester specificContext = SensorContextTester.create(new File(".")).setActiveRules(activeRules);
 
     class RuleA implements JavaCheck {
     }
@@ -364,7 +364,7 @@ class SonarComponentsTest {
     }
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, activeRules, new CheckRegistrar[]{
+      null, specificCheckFactory, activeRules, new CheckRegistrar[]{
       ctx -> ctx.registerMainSharedCheck(new RuleA(), ruleKeys("java:S404", "java:S102")),
       ctx -> ctx.registerMainSharedCheck(new RuleB(), ruleKeys("java:S404", "java:S500")),
       ctx -> ctx.registerMainSharedCheck(new RuleC(), ruleKeys("java:S101", "java:S102")),
@@ -372,7 +372,7 @@ class SonarComponentsTest {
       ctx -> ctx.registerTestSharedCheck(new RuleE(), ruleKeys("java:S102")),
       ctx -> ctx.registerTestSharedCheck(new RuleF(), List.of())
     });
-    sonarComponents.setSensorContext(context);
+    sonarComponents.setSensorContext(specificContext);
 
     assertThat(sonarComponents.mainChecks())
       .extracting(c -> c.getClass().getSimpleName())
@@ -385,8 +385,8 @@ class SonarComponentsTest {
   @Test
   void register_custom_rule_by_instances_instead_of_classes() {
     ActiveRules activeRules = activeRules("java:S101", "java:S102");
-    CheckFactory checkFactory = new CheckFactory(activeRules);
-    SensorContextTester context = SensorContextTester.create(new File(".")).setActiveRules(activeRules);
+    CheckFactory specificCheckFactory = new CheckFactory(activeRules);
+    SensorContextTester specificContext = SensorContextTester.create(new File(".")).setActiveRules(activeRules);
     @Rule(key = "S101")
     class RuleA implements JavaCheck {
     }
@@ -397,14 +397,14 @@ class SonarComponentsTest {
     class RuleC implements JavaCheck {
     }
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, activeRules, new CheckRegistrar[]{
+      null, specificCheckFactory, activeRules, new CheckRegistrar[]{
       ctx -> ctx.registerMainChecks("java", List.of(
         new RuleA(),
         new RuleC())),
       ctx -> ctx.registerTestChecks("java", List.of(
         new RuleB()))
     });
-    sonarComponents.setSensorContext(context);
+    sonarComponents.setSensorContext(specificContext);
 
     assertThat(sonarComponents.mainChecks())
       .extracting(c -> c.getClass().getSimpleName())
@@ -417,15 +417,15 @@ class SonarComponentsTest {
   @Test
   void auto_scan_compatible_rules() {
     ActiveRules activeRules = activeRules();
-    CheckFactory checkFactory = new CheckFactory(activeRules);
-    SensorContextTester context = SensorContextTester.create(new File(".")).setActiveRules(activeRules);
+    CheckFactory specificCheckFactory = new CheckFactory(activeRules);
+    SensorContextTester specificContext = SensorContextTester.create(new File(".")).setActiveRules(activeRules);
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, activeRules, new CheckRegistrar[]{
+      null, specificCheckFactory, activeRules, new CheckRegistrar[]{
       ctx -> ctx.registerAutoScanCompatibleRules(ruleKeys("java:S101", "java:S102")),
       ctx -> ctx.registerAutoScanCompatibleRules(ruleKeys("javabugs:S200"))
     });
-    sonarComponents.setSensorContext(context);
+    sonarComponents.setSensorContext(specificContext);
 
     assertThat(sonarComponents.getAdditionalAutoScanCompatibleRuleKeys())
       .extracting(RuleKey::toString)
@@ -450,9 +450,9 @@ class SonarComponentsTest {
   void add_issue_or_parse_error() {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
-    SensorContextTester context = SensorContextTester.create(new File("."));
+    SensorContextTester specificContext = SensorContextTester.create(new File("."));
 
-    DefaultFileSystem fileSystem = context.fileSystem();
+    DefaultFileSystem fileSystem = specificContext.fileSystem();
     TestInputFileBuilder inputFileBuilder = new TestInputFileBuilder("", "file.java");
     inputFileBuilder.setLines(45);
     int[] lineStartOffsets = new int[45];
@@ -468,14 +468,14 @@ class SonarComponentsTest {
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null,
-      null, checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
-    sonarComponents.setSensorContext(context);
+      null, checkFactory, specificContext.activeRules(), new CheckRegistrar[]{expectedRegistrar});
+    sonarComponents.setSensorContext(specificContext);
 
     sonarComponents.addIssue(inputFile, expectedCheck, -5, "message on wrong line", null);
     sonarComponents.addIssue(inputFile, expectedCheck, 42, "message on line 42", 1);
     sonarComponents.reportIssue(new AnalyzerMessage(expectedCheck, inputFile, 35, "other message", 0));
 
-    List<Issue> issues = new ArrayList<>(context.allIssues());
+    List<Issue> issues = new ArrayList<>(specificContext.allIssues());
     assertThat(issues).hasSize(3);
     assertThat(issues.get(0).primaryLocation().message()).isEqualTo("message on wrong line");
     assertThat(issues.get(1).primaryLocation().message()).isEqualTo("message on line 42");
@@ -483,10 +483,10 @@ class SonarComponentsTest {
 
     RecognitionException parseError = new RecognitionException(-1, "invalid code", new Exception("parse error"));
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
+    specificContext.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
     assertThat(sonarComponents.reportAnalysisError(parseError, inputFile)).isTrue();
 
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(V8_9, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
+    specificContext.setRuntime(SonarRuntimeImpl.forSonarQube(V8_9, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
     assertThat(sonarComponents.reportAnalysisError(parseError, inputFile)).isFalse();
 
   }
@@ -506,74 +506,74 @@ class SonarComponentsTest {
         }
         """).build();
 
-    SensorContextTester context = SensorContextTester.create(new File(""));
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), null, null,
-      checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
-    sonarComponents.setSensorContext(context);
+    SensorContextTester specificContext = SensorContextTester.create(new File(""));
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, specificContext.fileSystem(), null, null,
+      checkFactory, specificContext.activeRules(), new CheckRegistrar[]{expectedRegistrar});
+    sonarComponents.setSensorContext(specificContext);
 
     AnalyzerMessage.TextSpan emptyTextSpan = new AnalyzerMessage.TextSpan(3, 10, 3, 10);
     AnalyzerMessage analyzerMessageEmptyLocation = new AnalyzerMessage(expectedCheck, inputFile, emptyTextSpan, "message", 0);
 
     assertThatThrownBy(() -> sonarComponents.reportIssue(analyzerMessageEmptyLocation, ruleKey, inputFile, 0.0))
       .isInstanceOf(IllegalStateException.class).hasMessageContaining("Issue location should not be empty");
-    assertThat(context.allIssues()).isEmpty();
+    assertThat(specificContext.allIssues()).isEmpty();
 
     AnalyzerMessage.TextSpan nonEmptyTextSpan = new AnalyzerMessage.TextSpan(3, 10, 3, 15);
     AnalyzerMessage analyzerMessageValidLocation = new AnalyzerMessage(expectedCheck, inputFile, nonEmptyTextSpan, "message", 0);
     sonarComponents.reportIssue(analyzerMessageValidLocation, ruleKey, inputFile, 0.0);
-    assertThat(context.allIssues()).isNotEmpty();
+    assertThat(specificContext.allIssues()).isNotEmpty();
   }
 
   @Test
   void cancellation() {
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
-    SensorContextTester context = SensorContextTester.create(new File(""));
-    sonarComponents.setSensorContext(context);
+    SensorContextTester specificContext = SensorContextTester.create(new File(""));
+    sonarComponents.setSensorContext(specificContext);
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
+    specificContext.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
     assertThat(sonarComponents.analysisCancelled()).isFalse();
 
     // cancellation only handled from SQ 6.0
-    context.setCancelled(true);
+    specificContext.setCancelled(true);
 
     assertThat(sonarComponents.analysisCancelled()).isTrue();
   }
 
   @Test
   void knows_if_quickfixes_are_supported() {
-    SensorContextTester context = SensorContextTester.create(new File(""));
+    SensorContextTester specificContext = SensorContextTester.create(new File(""));
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
-    sonarComponents.setSensorContext(context);
+    sonarComponents.setSensorContext(specificContext);
 
     SonarRuntime sonarQube = SonarRuntimeImpl.forSonarQube(V8_9, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
-    context.setRuntime(sonarQube);
+    specificContext.setRuntime(sonarQube);
     assertThat(sonarComponents.isQuickFixCompatible()).isFalse();
 
     SonarRuntime sonarLintWithoutQuickFix = new SonarLintRuntimeImpl(V8_9, Version.create(5, 3), -1L);
-    context.setRuntime(sonarLintWithoutQuickFix);
+    specificContext.setRuntime(sonarLintWithoutQuickFix);
     assertThat(sonarComponents.isQuickFixCompatible()).isFalse();
 
     // support of quickfixes introduced in 6.3
     SonarRuntime sonarLintWithQuickFix = new SonarLintRuntimeImpl(V8_9, Version.create(6, 4), -1L);
-    context.setRuntime(sonarLintWithQuickFix);
+    specificContext.setRuntime(sonarLintWithQuickFix);
     assertThat(sonarComponents.isQuickFixCompatible()).isTrue();
   }
 
   @Test
   void knows_if_quickfixes_can_be_advertised() {
-    SensorContextTester context = SensorContextTester.create(new File(""));
+    SensorContextTester specificContext = SensorContextTester.create(new File(""));
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
-    sonarComponents.setSensorContext(context);
+    sonarComponents.setSensorContext(specificContext);
 
     assertTrue(sonarComponents.isSetQuickFixAvailableCompatible());
   }
 
   @Test
   void knows_if_quickfixes_can_not_be_advertised() {
-    SensorContextTester context = SensorContextTester.create(new File(""));
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(9, 0), SonarQubeSide.SERVER, SonarEdition.COMMUNITY));
+    SensorContextTester specificContext = SensorContextTester.create(new File(""));
+    specificContext.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(9, 0), SonarQubeSide.SERVER, SonarEdition.COMMUNITY));
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
-    sonarComponents.setSensorContext(context);
+    sonarComponents.setSensorContext(specificContext);
 
     assertFalse(sonarComponents.isSetQuickFixAvailableCompatible());
   }
@@ -583,14 +583,14 @@ class SonarComponentsTest {
     // read a file containing kanji set with correct encoding and expecting proper length of read input.
     InputFile inputFile = spy(TestUtils.inputFile("src/test/files/Kanji.java"));
 
-    SensorContextTester context = SensorContextTester.create(new File(""));
-    DefaultFileSystem fileSystem = context.fileSystem();
+    SensorContextTester specificContext = SensorContextTester.create(new File(""));
+    DefaultFileSystem fileSystem = specificContext.fileSystem();
     fileSystem.add(inputFile);
     fileSystem.setEncoding(StandardCharsets.ISO_8859_1);
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
-    sonarComponents.setSensorContext(context);
+    specificContext.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
+    sonarComponents.setSensorContext(specificContext);
 
     String fileContent = sonarComponents.inputFileContents(inputFile);
     assertThat(fileContent).hasSize(59);
@@ -607,13 +607,13 @@ class SonarComponentsTest {
 
   @Test
   void io_error_when_reading_file_should_fail_analysis() {
-    SensorContextTester context = SensorContextTester.create(new File(""));
-    DefaultFileSystem fileSystem = context.fileSystem();
+    SensorContextTester specificContext = SensorContextTester.create(new File(""));
+    DefaultFileSystem fileSystem = specificContext.fileSystem();
     InputFile unknownInputFile = TestUtils.emptyInputFile("unknown_file.java");
     fileSystem.add(unknownInputFile);
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
+    specificContext.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
-    sonarComponents.setSensorContext(context);
+    sonarComponents.setSensorContext(specificContext);
 
     try {
       sonarComponents.inputFileContents(unknownInputFile);
@@ -773,13 +773,13 @@ class SonarComponentsTest {
       checkFactory,
       context.activeRules());
 
-    IncrementalAnalysisSensorContext context = mock(IncrementalAnalysisSensorContext.class);
-    when(context.canSkipUnchangedFiles()).thenReturn(true);
-    sonarComponents.setSensorContext(context);
+    IncrementalAnalysisSensorContext specificContext = mock(IncrementalAnalysisSensorContext.class);
+    when(specificContext.canSkipUnchangedFiles()).thenReturn(true);
+    sonarComponents.setSensorContext(specificContext);
     assertThat(sonarComponents.canSkipUnchangedFiles()).isTrue();
 
-    when(context.canSkipUnchangedFiles()).thenReturn(false);
-    sonarComponents.setSensorContext(context);
+    when(specificContext.canSkipUnchangedFiles()).thenReturn(false);
+    sonarComponents.setSensorContext(specificContext);
     assertThat(sonarComponents.canSkipUnchangedFiles()).isFalse();
   }
 
@@ -809,9 +809,9 @@ class SonarComponentsTest {
       checkFactory,
       context.activeRules());
 
-    IncrementalAnalysisSensorContext context = mock(IncrementalAnalysisSensorContext.class);
-    when(context.canSkipUnchangedFiles()).thenThrow(new NoSuchMethodError("API version mismatch :-("));
-    sonarComponents.setSensorContext(context);
+    IncrementalAnalysisSensorContext specificContext = mock(IncrementalAnalysisSensorContext.class);
+    when(specificContext.canSkipUnchangedFiles()).thenThrow(new NoSuchMethodError("API version mismatch :-("));
+    sonarComponents.setSensorContext(specificContext);
 
     ApiMismatchException error = assertThrows(
       ApiMismatchException.class,
@@ -941,19 +941,19 @@ class SonarComponentsTest {
       checkFactory,
       context.activeRules());
 
-    IncrementalAnalysisSensorContext context = mock(IncrementalAnalysisSensorContext.class);
+    IncrementalAnalysisSensorContext specificContext = mock(IncrementalAnalysisSensorContext.class);
     Configuration config = mock(Configuration.class);
-    when(context.config()).thenReturn(config);
+    when(specificContext.config()).thenReturn(config);
 
     when(config.getBoolean(any())).thenReturn(Optional.ofNullable(overrideFlagVal));
 
     if (apiResponseVal == null) {
-      lenient().when(context.canSkipUnchangedFiles()).thenThrow(new NoSuchMethodError("API version mismatch :-("));
+      lenient().when(specificContext.canSkipUnchangedFiles()).thenThrow(new NoSuchMethodError("API version mismatch :-("));
     } else {
-      lenient().when(context.canSkipUnchangedFiles()).thenReturn(apiResponseVal);
+      lenient().when(specificContext.canSkipUnchangedFiles()).thenReturn(apiResponseVal);
     }
 
-    sonarComponents.setSensorContext(context);
+    sonarComponents.setSensorContext(specificContext);
 
     if (expectedResult == null) {
       ApiMismatchException noSuchMethodError = assertThrows(ApiMismatchException.class, sonarComponents::canSkipUnchangedFiles);
@@ -1185,17 +1185,17 @@ class SonarComponentsTest {
     ActiveRules activeRules = new ActiveRulesBuilder()
       .addRule(new NewActiveRule.Builder().setRuleKey(RuleKey.of("custom", "jsp")).build())
       .build();
-    CheckFactory checkFactory = new CheckFactory(activeRules);
+    CheckFactory specificCheckFactory = new CheckFactory(activeRules);
 
     JspCodeCheck check = new JspCodeCheck();
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null,
-      checkFactory, context.activeRules(), new CheckRegistrar[]{getRegistrar(check)});
-    List<JavaCheck> checks = sonarComponents.jspChecks();
-    assertThat(checks)
+      specificCheckFactory, context.activeRules(), new CheckRegistrar[]{getRegistrar(check)});
+    List<JavaCheck> checkList = sonarComponents.jspChecks();
+    assertThat(checkList)
       .isNotEmpty()
       .allMatch(JspCodeCheck.class::isInstance);
 
-    sonarComponents = new SonarComponents(null, null, null, null, checkFactory, context.activeRules());
+    sonarComponents = new SonarComponents(null, null, null, null, specificCheckFactory, context.activeRules());
     assertThat(sonarComponents.jspChecks()).isEmpty();
   }
 

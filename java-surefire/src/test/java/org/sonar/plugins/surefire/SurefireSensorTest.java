@@ -79,9 +79,9 @@ class SurefireSensorTest {
     MapSettings settings = new MapSettings();
     settings.setProperty(SurefireUtils.SUREFIRE_REPORT_PATHS_PROPERTY, "unknown");
 
-    SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings.asConfig(), fs, pathResolver);
+    SurefireSensor specificSurefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings.asConfig(), fs, pathResolver);
 
-    assertDoesNotThrow(() -> surefireSensor.execute(mock(SensorContext.class)));
+    assertDoesNotThrow(() -> specificSurefireSensor.execute(mock(SensorContext.class)));
   }
 
   @Test

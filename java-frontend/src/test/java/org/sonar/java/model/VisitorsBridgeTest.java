@@ -208,12 +208,12 @@ class VisitorsBridgeTest {
 
   @Test
   void should_not_create_symbol_table_for_generated() {
-    SonarComponents sonarComponents = mock(SonarComponents.class);
-    VisitorsBridge bridge = new VisitorsBridge(Collections.emptySet(), Collections.emptyList(), sonarComponents);
+    SonarComponents specificSonarComponents = mock(SonarComponents.class);
+    VisitorsBridge bridge = new VisitorsBridge(Collections.emptySet(), Collections.emptyList(), specificSonarComponents);
     bridge.setCurrentFile(new GeneratedFile(null));
     Tree tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
     bridge.visitFile(tree, false);
-    verify(sonarComponents, never()).symbolizableFor(any());
+    verify(specificSonarComponents, never()).symbolizableFor(any());
   }
 
   @Test
@@ -295,21 +295,21 @@ class VisitorsBridgeTest {
 
   @Test
   void canSkipScanningOfUnchangedFiles_returns_based_on_context() throws ApiMismatchException {
-    SonarComponents sonarComponents = mock(SonarComponents.class);
+    SonarComponents specificSonarComponents = mock(SonarComponents.class);
     VisitorsBridge vb = new VisitorsBridge(
       Collections.emptyList(),
       Collections.emptyList(),
-      sonarComponents
+      specificSonarComponents
     );
 
-    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    doReturn(true).when(specificSonarComponents).canSkipUnchangedFiles();
     assertThat(vb.canSkipScanningOfUnchangedFiles()).isTrue();
 
-    doReturn(false).when(sonarComponents).canSkipUnchangedFiles();
+    doReturn(false).when(specificSonarComponents).canSkipUnchangedFiles();
     assertThat(vb.canSkipScanningOfUnchangedFiles()).isFalse();
 
     ApiMismatchException exception = new ApiMismatchException(new NoSuchMethodError());
-    doThrow(exception).when(sonarComponents).canSkipUnchangedFiles();
+    doThrow(exception).when(specificSonarComponents).canSkipUnchangedFiles();
     assertThat(vb.canSkipScanningOfUnchangedFiles()).isFalse();
   }
 
@@ -333,8 +333,8 @@ class VisitorsBridgeTest {
 
   @Test
   void visitorsBridge_uses_appropriate_scanners() throws ApiMismatchException {
-    SonarComponents sonarComponents = mock(SonarComponents.class);
-    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    SonarComponents specificSonarComponents = mock(SonarComponents.class);
+    doReturn(true).when(specificSonarComponents).canSkipUnchangedFiles();
 
     VisitorThatCanBeSkipped skippableVisitor = spy(new VisitorThatCanBeSkipped());
     EndOfAnalysisVisitor endOfAnalysisVisitor = spy(new EndOfAnalysisVisitor());
@@ -344,7 +344,7 @@ class VisitorsBridgeTest {
     VisitorsBridge visitorsBridge = new VisitorsBridge(
       List.of(skippableVisitor, endOfAnalysisVisitor, unskippableVisitor, incompatibleVisitor),
       Collections.emptyList(),
-      sonarComponents,
+      specificSonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION
     );
 
@@ -381,12 +381,12 @@ class VisitorsBridgeTest {
 
   @Test
   void endOfAnalysis_logs_when_no_file_has_been_optimized() throws ApiMismatchException {
-    SonarComponents sonarComponents = mock(SonarComponents.class);
-    doReturn(false).when(sonarComponents).canSkipUnchangedFiles();
+    SonarComponents specificSonarComponents = mock(SonarComponents.class);
+    doReturn(false).when(specificSonarComponents).canSkipUnchangedFiles();
     VisitorsBridge visitorsBridge = new VisitorsBridge(
       Collections.emptyList(),
       Collections.emptyList(),
-      sonarComponents
+      specificSonarComponents
     );
 
     assertThat(logTester.getLogs(Level.INFO)).isEmpty();
@@ -401,12 +401,12 @@ class VisitorsBridgeTest {
 
   @Test
   void endOfAnalysis_logs_when_at_least_one_file_has_been_optimized() throws ApiMismatchException {
-    SonarComponents sonarComponents = mock(SonarComponents.class);
-    doReturn(false).when(sonarComponents).canSkipUnchangedFiles();
+    SonarComponents specificSonarComponents = mock(SonarComponents.class);
+    doReturn(false).when(specificSonarComponents).canSkipUnchangedFiles();
     VisitorsBridge visitorsBridge = new VisitorsBridge(
       Collections.emptyList(),
       Collections.emptyList(),
-      sonarComponents
+      specificSonarComponents
     );
 
     assertThat(logTester.getLogs(Level.INFO)).isEmpty();
@@ -441,13 +441,13 @@ class VisitorsBridgeTest {
       assertThat(visitorsBridge.scanWithoutParsing(inputFile)).isFalse();
 
       // When SonarComponents is set and does not allow the file to be skipped
-      SonarComponents sonarComponents = mock(SonarComponents.class);
-      doReturn(false).when(sonarComponents).fileCanBeSkipped(any(InputFile.class));
-      doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+      SonarComponents specificSonarComponents = mock(SonarComponents.class);
+      doReturn(false).when(specificSonarComponents).fileCanBeSkipped(any(InputFile.class));
+      doReturn(true).when(specificSonarComponents).canSkipUnchangedFiles();
       VisitorsBridge visitorsBridgeWithSonarComponents = new VisitorsBridge(
         Collections.emptyList(),
         Collections.emptyList(),
-        sonarComponents
+        specificSonarComponents
       );
 
       assertThat(visitorsBridge.scanWithoutParsing(inputFile)).isFalse();
@@ -457,15 +457,15 @@ class VisitorsBridgeTest {
     void scanWithoutParsing_returns_false_when_the_file_is_a_generated_file() throws ApiMismatchException {
       InputFile inputFile = new GeneratedFile(Path.of("non-existing-generated-file.java"));
 
-      SonarComponents sonarComponents = spy(new SonarComponents(null, null, null, null, null, null));
+      SonarComponents specificSonarComponents = spy(new SonarComponents(null, null, null, null, null, null));
       SensorContext contextMock = mock(SensorContext.class);
-      sonarComponents.setSensorContext(contextMock);
+      specificSonarComponents.setSensorContext(contextMock);
 
-      doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+      doReturn(true).when(specificSonarComponents).canSkipUnchangedFiles();
       VisitorsBridge visitorsBridge = new VisitorsBridge(
         Collections.singletonList(new EndOfAnalysisVisitor()),
         Collections.emptyList(),
-        sonarComponents
+        specificSonarComponents
       );
 
       assertThat(visitorsBridge.scanWithoutParsing(inputFile)).isFalse();
@@ -522,24 +522,24 @@ class VisitorsBridgeTest {
     }
 
     private void returns_false_when_a_scanner_throws_an_exception_while_scanning_without_parsing_and_fail_fast_is_disabled(JavaFileScanner scanner) throws ApiMismatchException {
-      SonarComponents sonarComponents = mock(SonarComponents.class);
-      doReturn(true).when(sonarComponents).fileCanBeSkipped(any(InputFile.class));
-      doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
-      doReturn(false).when(sonarComponents).shouldFailAnalysisOnException();
+      SonarComponents specificSonarComponents = mock(SonarComponents.class);
+      doReturn(true).when(specificSonarComponents).fileCanBeSkipped(any(InputFile.class));
+      doReturn(true).when(specificSonarComponents).canSkipUnchangedFiles();
+      doReturn(false).when(specificSonarComponents).shouldFailAnalysisOnException();
 
-      assertThat(scan_without_parsing(sonarComponents, scanner)).isFalse();
+      assertThat(scan_without_parsing(specificSonarComponents, scanner)).isFalse();
     }
 
     private void triggers_an_AnalysisException_when_a_scanner_throws_while_scanning_without_parsing(JavaFileScanner scanner) throws ApiMismatchException {
-      SonarComponents sonarComponents = mock(SonarComponents.class);
-      doReturn(true).when(sonarComponents).fileCanBeSkipped(any(InputFile.class));
-      doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
-      doReturn(true).when(sonarComponents).shouldFailAnalysisOnException();
+      SonarComponents specificSonarComponents = mock(SonarComponents.class);
+      doReturn(true).when(specificSonarComponents).fileCanBeSkipped(any(InputFile.class));
+      doReturn(true).when(specificSonarComponents).canSkipUnchangedFiles();
+      doReturn(true).when(specificSonarComponents).shouldFailAnalysisOnException();
 
       InputFile inputFile = mock(InputFile.class);
       doReturn(InputFile.Status.CHANGED).when(inputFile).status();
 
-      assertThatThrownBy(() -> scan_without_parsing(sonarComponents, scanner, inputFile))
+      assertThatThrownBy(() -> scan_without_parsing(specificSonarComponents, scanner, inputFile))
         .hasRootCauseMessage("boom")
         .hasRootCauseInstanceOf(RuntimeException.class)
         .hasMessage("Failing check")
@@ -557,11 +557,11 @@ class VisitorsBridgeTest {
     }
 
     private boolean scan_without_parsing(JavaFileScanner scanner) throws ApiMismatchException {
-      SonarComponents sonarComponents = mock(SonarComponents.class);
-      doReturn(true).when(sonarComponents).fileCanBeSkipped(any(InputFile.class));
-      doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+      SonarComponents specificSonarComponents = mock(SonarComponents.class);
+      doReturn(true).when(specificSonarComponents).fileCanBeSkipped(any(InputFile.class));
+      doReturn(true).when(specificSonarComponents).canSkipUnchangedFiles();
 
-      return scan_without_parsing(sonarComponents, scanner);
+      return scan_without_parsing(specificSonarComponents, scanner);
     }
 
     private boolean scan_without_parsing(SonarComponents sonarComponents, JavaFileScanner scanner) {

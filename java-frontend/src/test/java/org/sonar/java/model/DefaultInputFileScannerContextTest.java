@@ -82,11 +82,11 @@ class DefaultInputFileScannerContextTest {
   }
 
   private SonarComponents createSonarComponentsMock() {
-    SonarComponents sonarComponents = mock(SonarComponents.class);
+    SonarComponents specificSonarComponents = mock(SonarComponents.class);
     doAnswer(invocation -> {
       reportedMessage = (AnalyzerMessage) invocation.getArguments()[0];
       return null;
-    }).when(sonarComponents).reportIssue(any(AnalyzerMessage.class));
+    }).when(specificSonarComponents).reportIssue(any(AnalyzerMessage.class));
 
     doAnswer(invocation -> {
       Integer cost = invocation.getArgument(4);
@@ -96,13 +96,13 @@ class DefaultInputFileScannerContextTest {
         invocation.getArgument(3),
         cost != null ? cost : 0);
       return null;
-    }).when(sonarComponents).addIssue(any(InputComponent.class), any(JavaCheck.class), anyInt(), anyString(), any());
+    }).when(specificSonarComponents).addIssue(any(InputComponent.class), any(JavaCheck.class), anyInt(), anyString(), any());
 
-    when(sonarComponents.fileLines(any(InputFile.class))).thenReturn(Arrays.asList("1st line", "2nd line"));
-    when(sonarComponents.inputFileContents(any(InputFile.class))).thenReturn("content");
-    when(sonarComponents.projectLevelWorkDir()).thenReturn(WORK_DIR);
-    when(sonarComponents.project()).thenReturn(PROJECT_BASE_DIR);
+    when(specificSonarComponents.fileLines(any(InputFile.class))).thenReturn(Arrays.asList("1st line", "2nd line"));
+    when(specificSonarComponents.inputFileContents(any(InputFile.class))).thenReturn("content");
+    when(specificSonarComponents.projectLevelWorkDir()).thenReturn(WORK_DIR);
+    when(specificSonarComponents.project()).thenReturn(PROJECT_BASE_DIR);
 
-    return sonarComponents;
+    return specificSonarComponents;
   }
 }

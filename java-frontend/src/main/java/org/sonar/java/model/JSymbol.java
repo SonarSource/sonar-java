@@ -116,8 +116,8 @@ abstract class JSymbol implements Symbol {
   @Override
   public final int hashCode() {
     if (hashCode == 0) {
-      Symbol owner = owner();
-      hashCode = owner == null ? 0 : (owner.hashCode() * 31);
+      Symbol resolvedOwner = owner();
+      hashCode = resolvedOwner == null ? 0 : (resolvedOwner.hashCode() * 31);
       hashCode += name().hashCode();
     }
     return hashCode;

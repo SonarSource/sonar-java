@@ -217,13 +217,13 @@ class JavaFrontendTest {
     doReturn(true).when(spy).isCacheEnabled();
     doReturn(mock(ReadCache.class)).when(spy).previousCache();
     doReturn(mock(WriteCache.class)).when(spy).nextCache();
-    var sonarComponents = mock(SonarComponents.class);
-    doReturn(spy).when(sonarComponents).context();
-    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    var specificSonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(specificSonarComponents).context();
+    doReturn(true).when(specificSonarComponents).canSkipUnchangedFiles();
 
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
-      sonarComponents,
+      specificSonarComponents,
       null,
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
@@ -253,13 +253,13 @@ class JavaFrontendTest {
     doReturn(true).when(spy).isCacheEnabled();
     doReturn(mock(ReadCache.class)).when(spy).previousCache();
     doReturn(mock(WriteCache.class)).when(spy).nextCache();
-    var sonarComponents = mock(SonarComponents.class);
-    doReturn(spy).when(sonarComponents).context();
-    doReturn(false).when(sonarComponents).canSkipUnchangedFiles();
+    var specificSonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(specificSonarComponents).context();
+    doReturn(false).when(specificSonarComponents).canSkipUnchangedFiles();
 
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
-      sonarComponents,
+      specificSonarComponents,
       null,
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
@@ -289,13 +289,13 @@ class JavaFrontendTest {
     doReturn(true).when(spy).isCacheEnabled();
     doReturn(mock(ReadCache.class)).when(spy).previousCache();
     doReturn(mock(WriteCache.class)).when(spy).nextCache();
-    var sonarComponents = mock(SonarComponents.class);
-    doReturn(spy).when(sonarComponents).context();
-    doThrow(new ApiMismatchException(new NoSuchMethodError("BOOM!"))).when(sonarComponents).canSkipUnchangedFiles();
+    var specificSonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(specificSonarComponents).context();
+    doThrow(new ApiMismatchException(new NoSuchMethodError("BOOM!"))).when(specificSonarComponents).canSkipUnchangedFiles();
 
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
-      sonarComponents,
+      specificSonarComponents,
       null,
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
@@ -324,13 +324,13 @@ class JavaFrontendTest {
     SensorContext spy = spy(sensorContextTester);
     doReturn(false).when(spy).isCacheEnabled();
 
-    var sonarComponents = mock(SonarComponents.class);
-    doReturn(spy).when(sonarComponents).context();
-    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    var specificSonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(specificSonarComponents).context();
+    doReturn(true).when(specificSonarComponents).canSkipUnchangedFiles();
 
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
-      sonarComponents,
+      specificSonarComponents,
       null,
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
@@ -359,13 +359,13 @@ class JavaFrontendTest {
     SensorContext spy = spy(sensorContextTester);
     doReturn(false).when(spy).isCacheEnabled();
 
-    var sonarComponents = mock(SonarComponents.class);
-    doReturn(spy).when(sonarComponents).context();
-    doReturn(false).when(sonarComponents).canSkipUnchangedFiles();
+    var specificSonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(specificSonarComponents).context();
+    doReturn(false).when(specificSonarComponents).canSkipUnchangedFiles();
 
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
-      sonarComponents,
+      specificSonarComponents,
       null,
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter

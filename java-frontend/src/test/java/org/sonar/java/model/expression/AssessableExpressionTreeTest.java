@@ -96,8 +96,8 @@ class AssessableExpressionTreeTest {
 
   private ExpressionTree expression(String expressionAsString) {
     CompilationUnitTree compilationUnit = JParserTestUtils.parse("class A { Object obj = " + expressionAsString + "; } ");
-    ClassTree classTree = (ClassTree) compilationUnit.types().get(0);
-    VariableTree field = (VariableTree) classTree.members().get(0);
+    ClassTree rootClassTree = (ClassTree) compilationUnit.types().get(0);
+    VariableTree field = (VariableTree) rootClassTree.members().get(0);
     return field.initializer();
   }
 

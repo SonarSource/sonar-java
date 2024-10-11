@@ -27,7 +27,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
@@ -41,13 +40,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PublicApiCheckerTest {
-
-  private CompilationUnitTree cut;
-
-  @BeforeEach
-  public void setUp() {
-    cut = JParserTestUtils.parse(new File("src/test/files/ast/PublicApi.java"));
-  }
 
   @Test
   void private_constructor() throws Exception {
@@ -160,6 +152,7 @@ class PublicApiCheckerTest {
   @Test
   void isPublicApiAccessorsHandledAsMethods() {
     SubscriptionVisitor visitor = getPublicApiVisitor();
+    CompilationUnitTree cut = JParserTestUtils.parse(new File("src/test/files/ast/PublicApi.java"));
     visitor.scanTree(cut);
   }
 
@@ -216,6 +209,7 @@ class PublicApiCheckerTest {
 
   @Test
   void retrieveJavadoc() {
+    CompilationUnitTree cut = JParserTestUtils.parse(new File("src/test/files/ast/PublicApi.java"));
     new SubscriptionVisitor() {
 
       @Override

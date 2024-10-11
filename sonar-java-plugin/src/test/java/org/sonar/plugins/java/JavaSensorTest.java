@@ -440,10 +440,10 @@ class JavaSensorTest {
       .map(key -> new NewActiveRule.Builder().setRuleKey(RuleKey.of("CustomRepository", key)).build())
       .forEach(activeRulesBuilder::addRule);
 
-    CheckFactory checkFactory = new CheckFactory(activeRulesBuilder.build());
+    CheckFactory specificCheckFactory = new CheckFactory(activeRulesBuilder.build());
 
     SonarComponents components = new SonarComponents(fileLinesContextFactory, fs,
-      javaClasspath, javaTestClasspath, checkFactory, context.activeRules(), checkRegistrars, null, null);
+      javaClasspath, javaTestClasspath, specificCheckFactory, context.activeRules(), checkRegistrars, null, null);
 
     JavaSensor jss = new JavaSensor(components, fs, resourceLocator, context.config(), mock(NoSonarFilter.class), null);
     jss.execute(context);

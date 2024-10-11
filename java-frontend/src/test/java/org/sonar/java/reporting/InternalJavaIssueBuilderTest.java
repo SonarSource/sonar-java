@@ -301,8 +301,8 @@ class InternalJavaIssueBuilderTest {
   @Test
   void test_sonar_component_is_null() {
     logTester.setLevel(Level.TRACE);
-    InternalJavaIssueBuilder builder = new InternalJavaIssueBuilder(inputFile, null);
-    builder.forRule(CHECK)
+    InternalJavaIssueBuilder specificBuilder = new InternalJavaIssueBuilder(inputFile, null);
+    specificBuilder.forRule(CHECK)
       .onTree(compilationUnitTree.types().get(0))
       .withMessage("msg")
       .report();
@@ -315,8 +315,8 @@ class InternalJavaIssueBuilderTest {
     logTester.setLevel(Level.TRACE);
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.getRuleKey(any())).thenReturn(Optional.empty());
-    InternalJavaIssueBuilder builder = new InternalJavaIssueBuilder(inputFile, sonarComponents);
-    builder.forRule(CHECK)
+    InternalJavaIssueBuilder specificBuilder = new InternalJavaIssueBuilder(inputFile, sonarComponents);
+    specificBuilder.forRule(CHECK)
       .onTree(compilationUnitTree.types().get(0))
       .withMessage("msg")
       .report();
@@ -399,15 +399,15 @@ class InternalJavaIssueBuilderTest {
     @Test
     void test_can_set_quick_fix_multiple_times() {
       JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description").addTextEdit().build();
-      InternalJavaIssueBuilder builder = new InternalJavaIssueBuilder(ipf, sc)
+      InternalJavaIssueBuilder specificBuilder = new InternalJavaIssueBuilder(ipf, sc)
         .forRule(CHECK)
         .onTree(cut)
         .withMessage("msg")
         .withQuickFix(() -> quickFix);
 
-      builder.withQuickFixes(() -> Arrays.asList(quickFix, quickFix));
+      specificBuilder.withQuickFixes(() -> Arrays.asList(quickFix, quickFix));
 
-      List<Supplier<List<JavaQuickFix>>> actual = builder.quickFixes();
+      List<Supplier<List<JavaQuickFix>>> actual = specificBuilder.quickFixes();
       assertThat(actual).hasSize(2);
 
       assertThat(actual.get(0).get()).hasSize(1);
