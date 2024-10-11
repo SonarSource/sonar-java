@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;

@@ -20,7 +20,6 @@
 package org.sonar.plugins.surefire;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
