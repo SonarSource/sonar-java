@@ -103,7 +103,7 @@ class LiteralUtilsTest {
   }
 
   @Test
-  void test_int_and_long_value() throws Exception {
+  void test_int_and_long_value() {
     Integer[] expectedIntegerValues = {42, -7, 3, null, null, 0xff, 0b0100, 5678, 0xFF, 0b1100110, 0xff000000};
     Long[] expectedLongValues = {42L, 42L, -7L, -7L, +3L, +3L, null, null, 0xFFL, null, null, null,
       Long.MAX_VALUE, Long.MAX_VALUE, 0b11010010_01101001_10010100_10010010L, 10010L, 0xFFL, 0b1100110L};
@@ -142,7 +142,7 @@ class LiteralUtilsTest {
   }
 
   @Test
-  void testTrimLongSuffix() throws Exception {
+  void testTrimLongSuffix() {
     assertThat(LiteralUtils.trimLongSuffix("")).isEmpty();
     String longValue = "12345";
     assertThat(LiteralUtils.trimLongSuffix(longValue)).isEqualTo(longValue);

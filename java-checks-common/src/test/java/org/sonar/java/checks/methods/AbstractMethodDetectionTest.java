@@ -49,7 +49,7 @@ class AbstractMethodDetectionTest {
   }
 
   @Test
-  void withAnyParameters() throws Exception {
+  void withAnyParameters() {
     Visitor visitor = new Visitor(
       MethodMatchers.create().ofTypes("A").names("method").withAnyParameters().build());
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
@@ -58,7 +58,7 @@ class AbstractMethodDetectionTest {
   }
 
   @Test
-  void withoutParameter() throws Exception {
+  void withoutParameter() {
     Visitor visitor = new Visitor(
       MethodMatchers.create().ofTypes("A").names("method").addWithoutParametersMatcher().build());
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));

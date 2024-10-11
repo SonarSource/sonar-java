@@ -1517,7 +1517,7 @@ class CFGTest {
   }
 
   @Test
-  void assignement_order_of_evaluation() throws Exception {
+  void assignement_order_of_evaluation() {
     CFG cfg = buildCFG("  void foo() {\n" +
       "    int[] a = {4,4};\n" +
       "    int b = 1;\n" +
@@ -1541,7 +1541,7 @@ class CFGTest {
   }
 
   @Test
-  void compound_assignment() throws Exception {
+  void compound_assignment() {
     CFG cfg = buildCFG("void foo() {\n" +
       "  myField *= 0;\n" +
       "}\n" +
@@ -1558,7 +1558,7 @@ class CFGTest {
   }
 
   @Test
-  void compound_assignment_member_select() throws Exception {
+  void compound_assignment_member_select() {
     CFG cfg = buildCFG("void foo() {\n" +
       "  this.myField *= 0;\n" +
       "}\n" +
@@ -1587,7 +1587,7 @@ class CFGTest {
     cfgChecker.check(cfg);
   }
   @Test
-  void exit_block_for_finally_with_if_statement() throws Exception {
+  void exit_block_for_finally_with_if_statement() {
     CFG cfg = buildCFG(" void test(boolean fooCalled) {\n" +
       "      Object bar;\n" +
       "      try {\n" +
@@ -1627,7 +1627,7 @@ class CFGTest {
   }
 
   @Test
-  void catch_thrown_in_exception() throws Exception {
+  void catch_thrown_in_exception() {
     CFG cfg = buildCFG("  void  foo() throws MyException {\n"+
       "    try {\n"+
       "      try {\n"+
@@ -1668,7 +1668,7 @@ class CFGTest {
   }
 
   @Test
-  void nested_try_finally() throws Exception {
+  void nested_try_finally() {
 
     CFG cfg = buildCFG("  void  foo() {\n"+
       "    try {\n"+
@@ -1711,7 +1711,7 @@ class CFGTest {
   }
 
   @Test
-  void catch_throwable() throws Exception {
+  void catch_throwable() {
     CFG cfg = buildCFG(" public void reschedule() {\n" +
       "        try {\n" +
       "          getNextSchedule();\n" +
@@ -1737,7 +1737,7 @@ class CFGTest {
   }
 
   @Test
-  void catch_error() throws Exception {
+  void catch_error() {
     CFG cfg = buildCFG(" public void foo() {\n" +
       "        try {\n" +
       "          doSomething();\n" +
@@ -1956,7 +1956,7 @@ class CFGTest {
   }
 
   @Test
-  void try_with_resource() throws Exception {
+  void try_with_resource() {
     final CFG cfg = buildCFG("void fun() { String path = \"\"; try (BufferedReader br = new BufferedReader(new FileReader(path))) {} }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1974,7 +1974,7 @@ class CFGTest {
   }
 
   @Test
-  void try_with_resource_java9() throws Exception {
+  void try_with_resource_java9() {
     final CFG cfg = buildCFG("void fun() { final Resource r = new Resource(); try (r) {} }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1988,7 +1988,7 @@ class CFGTest {
   }
 
   @Test
-  void returnCascadedAnd() throws Exception {
+  void returnCascadedAnd() {
     final CFG cfg = buildCFG(
       "boolean andAll(boolean a, boolean b, boolean c) { return a && b && c;}");
     final CFGChecker cfgChecker = checker(
@@ -2001,7 +2001,7 @@ class CFGTest {
   }
 
   @Test
-  void returnCascadedOr() throws Exception {
+  void returnCascadedOr() {
     final CFG cfg = buildCFG(
       "boolean orAll(boolean a, boolean b, boolean c) { return a || b || c;}");
     final CFGChecker cfgChecker = checker(
@@ -2014,7 +2014,7 @@ class CFGTest {
   }
 
   @Test
-  void complex_boolean_expression() throws Exception {
+  void complex_boolean_expression() {
     final CFG cfg = buildCFG(" private boolean fun(boolean bool, boolean a, boolean b) {\n" +
         "    return (!bool && a) || (bool && b);\n" +
         "  }");
@@ -2033,7 +2033,7 @@ class CFGTest {
   }
 
   @Test
-  void method_reference() throws Exception {
+  void method_reference() {
     final CFG cfg = buildCFG("void fun() { foo(Object::toString); }");
     final CFGChecker cfgChecker = checker(
         block(
@@ -2272,7 +2272,7 @@ class CFGTest {
   }
 
   @Test
-  void successor_of_labeled_break_statement() throws Exception {
+  void successor_of_labeled_break_statement() {
     CFG cfg = buildCFG("private static void test(long toRevision, boolean inverted, Object visitor) {\n" +
       "\n" +
       "    testBlock: {\n" +
@@ -2342,7 +2342,7 @@ class CFGTest {
 
 
   @Test
-  void constructor_arguments_order() throws Exception {
+  void constructor_arguments_order() {
     CFG cfg = buildCFG("private void foo(Exception e) {\n" +
       "throw new IllegalArgumentException(\"iae\", e);\n" +
       "} "
@@ -2358,7 +2358,7 @@ class CFGTest {
   }
 
   @Test
-  void array_dim_initializer_order() throws Exception {
+  void array_dim_initializer_order() {
     CFG cfg = buildCFG("private void fun() {\n" +
       "String[] plop = {foo(), bar()};\n" +
       "String[][] plop2 = new String[qix()][baz()];\n" +
@@ -2384,7 +2384,7 @@ class CFGTest {
   }
 
   @Test
-  void assert_statement() throws Exception {
+  void assert_statement() {
     CFG cfg = buildCFG("private void fun(boolean x) {\n" +
       "assert x;\n" +
       "} "
@@ -2398,7 +2398,7 @@ class CFGTest {
   }
 
   @Test
-  void exception_raised_in_catch() throws Exception {
+  void exception_raised_in_catch() {
     CFG cfg = buildCFG("private void fun() {\n" +
       "     try {\n" +
       "      try {\n" +
@@ -3043,17 +3043,17 @@ class CFGTest {
   }
 
   @Test
-  void build_partial_cfg_with_break() throws Exception {
+  void build_partial_cfg_with_break() {
     build_partial_cfg("break");
   }
 
   @Test
-  void build_partial_cfg_with_continue() throws Exception {
+  void build_partial_cfg_with_continue() {
     build_partial_cfg("continue");
   }
 
   @Test
-  void connect_catch_blocks_with_unknown_exception_types() throws Exception {
+  void connect_catch_blocks_with_unknown_exception_types() {
     CFG cfg = buildCFG("void fun() { " +
       " try {" +
       "   foo();" +
@@ -3075,7 +3075,7 @@ class CFGTest {
   }
 
   @Test
-  void connect_catch_blocks_with_unknown_exception_types2() throws Exception {
+  void connect_catch_blocks_with_unknown_exception_types2() {
     CFG cfg = buildCFG("void fun() { " +
       " try {" +
       "   foo();" +

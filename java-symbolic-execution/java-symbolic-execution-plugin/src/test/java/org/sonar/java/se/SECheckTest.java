@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SECheckTest {
   @Test
   @Timeout(3)
-  void flow_from_exit_node_should_not_lead_to_infinite_recursion() throws Exception {
+  void flow_from_exit_node_should_not_lead_to_infinite_recursion() {
     CFG cfg = CFGTestUtils.buildCFG("void foo(boolean a) { if(a) {foo(true);} foo(false); }");
     ExplodedGraph eg = new ExplodedGraph();
     ExplodedGraph.Node node = eg.node(new ProgramPoint(cfg.blocks().get(3)), ProgramState.EMPTY_STATE);

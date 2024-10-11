@@ -59,7 +59,7 @@ class DefaultJavaResourceLocatorTest {
   }
 
   @Test
-  void resource_by_class() throws Exception {
+  void resource_by_class() {
     Set<String> classNames = javaResourceLocator.resourcesByClass.keySet();
     assertThat(classNames)
       .hasSize(5)
@@ -72,13 +72,13 @@ class DefaultJavaResourceLocatorTest {
   }
 
   @Test
-  void resource_by_class_name() throws Exception {
+  void resource_by_class_name() {
     assertThat(javaResourceLocator.findResourceByClassName("org.sonar.java.DefaultJavaResourceLocatorTest")).isNotNull();
     assertThat(javaResourceLocator.findResourceByClassName("org.sonar.java.DumbClassName")).isNull();
   }
 
   @Test
-  void classpath() throws Exception {
+  void classpath() {
     var classpath = javaResourceLocator.classpath();
     assertThat(classpath).hasSize(1);
 
@@ -88,7 +88,7 @@ class DefaultJavaResourceLocatorTest {
   }
 
   @Test
-  void testClasspath() throws Exception {
+  void testClasspath() {
     var classpath = javaResourceLocator.testClasspath();
     assertThat(classpath).containsExactly(new File(TEST_BINARY_DIRS));
 
@@ -118,7 +118,7 @@ class DefaultJavaResourceLocatorTest {
   }
 
   @Test
-  void classFilesToAnalyze() throws Exception {
+  void classFilesToAnalyze() {
     assertThat(javaResourceLocator.classFilesToAnalyze()).hasSize(5);
   }
 

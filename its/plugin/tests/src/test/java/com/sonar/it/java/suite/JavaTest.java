@@ -84,7 +84,7 @@ public class JavaTest {
   }
 
   @Test
-  public void multiple_package_in_directory_should_not_fail() throws Exception {
+  public void multiple_package_in_directory_should_not_fail() {
     MavenBuild inspection = MavenBuild.create()
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))
       .setCleanPackageSonarGoals();
@@ -102,7 +102,7 @@ public class JavaTest {
    * SONARJAVA-1615
    */
   @Test
-  public void filtered_issues() throws Exception {
+  public void filtered_issues() {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("filtered-issues"))
       .setCleanPackageSonarGoals();
 
@@ -152,7 +152,7 @@ public class JavaTest {
   }
 
   @Test
-  public void should_execute_rule_on_test() throws Exception {
+  public void should_execute_rule_on_test() {
     MavenLocation junit411 = MavenLocation.of("junit", "junit", "4.11");
     orchestrator.getConfiguration().locators().copyToDirectory(junit411, tmp.getRoot());
     MavenBuild build = MavenBuild.create()

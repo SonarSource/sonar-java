@@ -26,7 +26,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class LoggedRethrownExceptionsCheckTest {
   @Test
-  void test() throws Exception {
+  void test() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/LoggedRethrownExceptionsCheckSample.java"))
       .withCheck(new LoggedRethrownExceptionsCheck())

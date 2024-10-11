@@ -53,7 +53,7 @@ class BadMethodNameCheckTest {
   }
 
   @Test
-  void testOverrideWithoutAnnotation() throws Exception {
+  void testOverrideWithoutAnnotation() {
     BadMethodNameCheck check = new BadMethodNameCheck();
     check.format = "^[A-Z0-9]*$";
     CheckVerifier.newVerifier()

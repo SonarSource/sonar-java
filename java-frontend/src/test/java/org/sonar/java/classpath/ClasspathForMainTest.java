@@ -60,7 +60,7 @@ class ClasspathForMainTest {
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @BeforeEach
-  void setup() throws Exception {
+  void setup() {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("foo.java"));
     PropertyDefinitions propertyDefinitions = new PropertyDefinitions(System2.INSTANCE);
@@ -93,7 +93,7 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void properties() throws Exception {
+  void properties() {
     assertThat(ClasspathProperties.getProperties()).hasSize(5);
   }
 
@@ -235,7 +235,7 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void libraries_should_accept_relative_paths() throws Exception {
+  void libraries_should_accept_relative_paths() {
     settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/classpath/lib/*.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(2);
@@ -245,7 +245,7 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void libraries_should_accept_relative_paths_with_wildcard() throws Exception {
+  void libraries_should_accept_relative_paths_with_wildcard() {
     settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/**/lib");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(9);
@@ -335,13 +335,13 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void non_existing_resources_should_fail() throws Exception {
+  void non_existing_resources_should_fail() {
     settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "toto/**/hello.jar");
     checkIllegalStateException("No files nor directories matching 'toto/**/hello.jar'");
   }
 
   @Test
-  void deprecated_properties_set_should_fail_the_analysis() throws Exception {
+  void deprecated_properties_set_should_fail_the_analysis() {
     settings.setProperty("sonar.binaries", "bin");
     settings.setProperty("sonar.libraries", "hello.jar");
     javaClasspath = createJavaClasspath();
@@ -375,7 +375,7 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void sonar_binaries_should_not_check_for_existence_of_files_when_no_sources() throws Exception {
+  void sonar_binaries_should_not_check_for_existence_of_files_when_no_sources() {
     settings.setProperty(ClasspathProperties.SONAR_JAVA_BINARIES, "toto/**/hello.jar");
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("plop.java", InputFile.Type.TEST));
@@ -384,7 +384,7 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void empty_binaries_on_project_with_more_than_one_source_should_fail() throws Exception {
+  void empty_binaries_on_project_with_more_than_one_source_should_fail() {
     createTwoFilesInFileSystem();
     javaClasspath = createJavaClasspath();
     try {
@@ -398,7 +398,7 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void empty_binaries_on_project_with_more_than_one_source_should_fail_on_sonarqube() throws Exception {
+  void empty_binaries_on_project_with_more_than_one_source_should_fail_on_sonarqube() {
     createTwoFilesInFileSystem();
     javaClasspath = createJavaClasspath();
     try {
@@ -412,7 +412,7 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void empty_binaries_on_project_with_more_than_one_source_should_not_fail_on_sonarlint() throws Exception {
+  void empty_binaries_on_project_with_more_than_one_source_should_not_fail_on_sonarlint() {
     createTwoFilesInFileSystem();
     try {
       javaClasspath = new ClasspathForMainForSonarLint(settings.asConfig(), fs);
@@ -431,7 +431,7 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void classpath_empty_if_only_test_files() throws Exception {
+  void classpath_empty_if_only_test_files() {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("plop.java", InputFile.Type.TEST));
     javaClasspath = createJavaClasspath();
@@ -439,7 +439,7 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void validate_libraries_only_if_not_filtered_out() throws Exception {
+  void validate_libraries_only_if_not_filtered_out() {
     settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/lib.so").getAbsolutePath());
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("plop.java"));

@@ -183,7 +183,7 @@ class ExecutionTimeReportTest {
   }
 
   @Test
-  void interrupt_the_report() throws IOException {
+  void interrupt_the_report() {
     InputFile inputFile = mockEmptyInputFile("f1");
     report.start(inputFile);
     clock.addMilliseconds(50_000);
@@ -196,7 +196,7 @@ class ExecutionTimeReportTest {
   }
 
   @Test
-  void log_as_batch() throws IOException {
+  void log_as_batch() {
     simulateAnalysis("f1", 50_000);
     report.reportAsBatch();
     assertThat(logTester.logs(Level.TRACE)).isEmpty();

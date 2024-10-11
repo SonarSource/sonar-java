@@ -53,7 +53,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void parameter() throws Exception {
+  void parameter() {
     String code = newCode(
       "int foo(int a) {",
       "  return a;",
@@ -65,7 +65,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void parameter_with_usage() throws Exception {
+  void parameter_with_usage() {
     String code = newCode(
       "int foo(boolean test) {",
       "  if (test) {}",
@@ -78,7 +78,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void declaration() throws Exception {
+  void declaration() {
     String code = newCode(
       "int foo() {",
       "  int a = 0;",
@@ -91,7 +91,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void unknown_variable() throws Exception {
+  void unknown_variable() {
     String code = newCode(
       "int foo() {",
       "  return a;",
@@ -102,7 +102,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void array_declaration() throws Exception {
+  void array_declaration() {
     String code = newCode(
       "int foo() {",
       "  int a[] = new int[42];",
@@ -116,7 +116,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void assignement() throws Exception {
+  void assignement() {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -130,7 +130,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void assignement_with_other_variable() throws Exception {
+  void assignement_with_other_variable() {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -146,7 +146,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void assignement_with_parenthesis() throws Exception {
+  void assignement_with_parenthesis() {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -161,7 +161,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void last_assignement() throws Exception {
+  void last_assignement() {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -176,7 +176,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void last_assignement_on_same_line() throws Exception {
+  void last_assignement_on_same_line() {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -190,7 +190,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void outside_method() throws Exception {
+  void outside_method() {
     String code = newCode(
       "int b;",
       "int foo() {",
@@ -220,7 +220,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void ignore_assignation_after_starting_point() throws Exception {
+  void ignore_assignation_after_starting_point() {
     String code = newCode(
       "int foo() {",
       "  int b = 0;",
@@ -236,7 +236,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void ignore_assignation_after_starting_point_same_line() throws Exception {
+  void ignore_assignation_after_starting_point_same_line() {
     String code = newCode(
       "int foo() {",
       "  int b = 0;",
@@ -255,7 +255,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void known_limitation() throws Exception {
+  void known_limitation() {
     String code = newCode(
       "int foo(boolean test) {",
       "  int a;",

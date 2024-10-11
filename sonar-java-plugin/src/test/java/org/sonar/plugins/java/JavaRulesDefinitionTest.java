@@ -97,7 +97,7 @@ class JavaRulesDefinitionTest {
   }
 
   @Test
-  void test_security_hotspot() throws Exception {
+  void test_security_hotspot() {
     JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_2);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);

@@ -274,7 +274,7 @@ class AnalyzerMessageTest {
   }
 
   @Test
-  void toString_test() throws Exception {
+  void toString_test() {
     JavaCheck javaCheck = mock(JavaCheck.class);
     InputFile file = TestUtils.emptyInputFile("file");
     String message = "analyzer message";

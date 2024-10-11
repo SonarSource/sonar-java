@@ -37,7 +37,7 @@ class MetricsComputerTest implements MetricsScannerContext {
   }
 
   @Test
-  void testMetricsPresence() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+  void testMetricsPresence() throws SecurityException, IllegalArgumentException {
     CompilationUnitTree cut = JParserTestUtils.parse(
       "class A {" +
         "  Object foo(){" +

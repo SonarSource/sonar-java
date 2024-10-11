@@ -27,7 +27,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class SyncGetterAndSetterCheckTest {
 
   @Test
-  void syncGetterAndSetterCheckTest() throws Exception {
+  void syncGetterAndSetterCheckTest() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/SyncGetterAndSetterCheckSample.java"))
       .withCheck(new SyncGetterAndSetterCheck())

@@ -72,7 +72,7 @@ import static org.sonar.java.se.utils.SETestUtils.variable;
 
 class MethodYieldTest {
   @Test
-  void test_creation_of_states() throws Exception {
+  void test_creation_of_states() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java", new NullDereferenceCheck());
     MethodBehavior mb = getMethodBehavior(sev, "foo");
 
@@ -89,7 +89,7 @@ class MethodYieldTest {
   }
 
   @Test
-  void test_creation_of_flows() throws Exception {
+  void test_creation_of_flows() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsFlows.java",
       new NullDereferenceCheck());
     MethodBehavior mb = getMethodBehavior(sev, "foo");
@@ -105,7 +105,7 @@ class MethodYieldTest {
   }
 
   @Test
-  void test_yield_on_reassignments() throws Exception {
+  void test_yield_on_reassignments() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsReassignments.java",
       new NullDereferenceCheck());
     MethodBehavior mb = getMethodBehavior(sev, "foo");
@@ -121,7 +121,7 @@ class MethodYieldTest {
   }
 
   @Test
-  void flow_should_fail_if_no_parameters_are_passed() throws Exception {
+  void flow_should_fail_if_no_parameters_are_passed() {
     MethodYield methodYield = new HappyPathYield(null, mockMethodBehavior(1, false));
     List<Integer> parameters = Collections.emptyList();
     List<Class<? extends Constraint>> domains = Collections.singletonList(ObjectConstraint.class);
@@ -209,7 +209,7 @@ class MethodYieldTest {
   }
 
   @Test
-  void calling_varargs_method_with_no_arg() throws Exception {
+  void calling_varargs_method_with_no_arg() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/VarArgsWithNoArgYield.java",
       new NullDereferenceCheck());
     MethodBehavior mb = getMethodBehavior(sev, "toArr");
@@ -219,7 +219,7 @@ class MethodYieldTest {
   }
 
   @Test
-  void constraints_on_varargs() throws Exception {
+  void constraints_on_varargs() {
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(new File("src/test/files/se/VarArgsYields.java"));
     Sema semanticModel = cut.sema;
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.singletonList(new NullDereferenceCheck()));
@@ -304,13 +304,13 @@ class MethodYieldTest {
   }
 
   @Test
-  void native_methods_behavior_should_not_be_used() throws Exception {
+  void native_methods_behavior_should_not_be_used() {
     Map<String, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcNativeMethods.java").behaviorCache.behaviors;
     behaviorCache.entrySet().stream().filter(e -> "foo".contains(e.getKey())).forEach(e -> assertThat(e.getValue().yields()).hasSize(2));
   }
 
   @Test
-  void catch_class_cast_exception() throws Exception {
+  void catch_class_cast_exception() {
     Map<String, MethodBehavior> behaviorCache =
       createSymbolicExecutionVisitor("src/test/files/se/XProcCatchClassCastException.java", new NullDereferenceCheck())
         .behaviorCache.behaviors;
