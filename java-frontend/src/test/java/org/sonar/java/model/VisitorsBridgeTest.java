@@ -437,7 +437,6 @@ class VisitorsBridgeTest {
       VisitorsBridge visitorsBridge = new VisitorsBridge(null);
       InputFile inputFile = mock(InputFile.class);
       doReturn(InputFile.Status.CHANGED).when(inputFile).status();
-      CacheContext cacheContext = mock(CacheContext.class);
       assertThat(visitorsBridge.scanWithoutParsing(inputFile)).isFalse();
 
       // When SonarComponents is set and does not allow the file to be skipped
@@ -450,7 +449,7 @@ class VisitorsBridgeTest {
         specificSonarComponents
       );
 
-      assertThat(visitorsBridge.scanWithoutParsing(inputFile)).isFalse();
+      assertThat(visitorsBridgeWithSonarComponents.scanWithoutParsing(inputFile)).isFalse();
     }
 
     @Test

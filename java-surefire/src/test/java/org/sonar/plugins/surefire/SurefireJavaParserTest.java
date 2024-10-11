@@ -60,8 +60,6 @@ class SurefireJavaParserTest {
   void should_store_zero_tests_when_directory_is_null_or_non_existing_or_a_file() {
 
     SensorContext context = mock(SensorContext.class);
-
-    context = mock(SensorContext.class);
     parser.collect(context, getDirs("nonExistingReportsDirectory"), false);
     verify(context, never()).newMeasure();
 

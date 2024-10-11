@@ -418,7 +418,6 @@ class ExpressionUtilsTest {
   void areVariablesSame_member_select_assert_true() {
     var unit = JParserTestUtils.parse("class A { int min; void m(int min, int max, int value) { int conditionalValue = value == this.min ? min : value; }}");
     var classTree = (ClassTree) unit.types().get(0);
-    var variable = (VariableTree) classTree.members().get(0);
     var methodTree = (MethodTree) classTree.members().get(1);
     var variableTree = (VariableTree) methodTree.block().body().get(0);
     var initializer = (ConditionalExpressionTree) variableTree.initializer();
@@ -429,7 +428,6 @@ class ExpressionUtilsTest {
   void areVariablesSame_member_select_assert_false() {
     var unit = JParserTestUtils.parse("class A { int min; void m(int min, int max, int value) { int conditionalValue = value == this.min ? max : value; }}");
     var classTree = (ClassTree) unit.types().get(0);
-    var variable = (VariableTree) classTree.members().get(0);
     var methodTree = (MethodTree) classTree.members().get(1);
     var variableTree = (VariableTree) methodTree.block().body().get(0);
     var initializer = (ConditionalExpressionTree) variableTree.initializer();
