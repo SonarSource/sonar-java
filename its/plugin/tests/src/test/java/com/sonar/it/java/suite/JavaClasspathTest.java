@@ -200,12 +200,6 @@ public class JavaClasspathTest {
     testJdk8ProjectWithModularJdk(true);
   }
 
-  private static boolean isBeforeSonarQube9() {
-    return !ORCHESTRATOR.getServer()
-      .version()
-      .isGreaterThanOrEquals(9, 0);
-  }
-
   private static void testJdk8ProjectWithModularJdk(boolean useJdkHomeProperty) {
     String projectKey = "use-jdk8-only-api-" + (useJdkHomeProperty ? "with" : "without") + "-jdkHome-property";
 
