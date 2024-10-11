@@ -43,15 +43,17 @@ import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
 class LambdaExpressionTreeImplTest {
 
-  private static final String CLASS_WITH_METHOD_WITH_LAMBDA = "class A {\n"
-    + "  void foo(Runnable r) {\n"
-    + "    foo(%s);\n"
-    + "  }\n"
-    + "\n"
-    + "  void bar() { }\n"
-    + "  void qix() { }\n"
-    + "  boolean test() { return false; }\n"
-    + "}\n";
+  private static final String CLASS_WITH_METHOD_WITH_LAMBDA = """
+    class A {
+      void foo(Runnable r) {
+        foo(%s);
+      }
+    
+      void bar() { }
+      void qix() { }
+      boolean test() { return false; }
+    }
+    """;
 
   @ParameterizedTest
   @ValueSource(strings = {"() -> bar()", "() -> { bar(); }"})
@@ -81,9 +83,11 @@ class LambdaExpressionTreeImplTest {
 
   @Test
   void compute_cfg_with_complexe_cases() {
-    LambdaExpressionTree lambda = lambda("() -> {\n"
-      + "if (test()) { bar(); } else { qix(); }\n"
-      + "}");
+    LambdaExpressionTree lambda = lambda("""
+      () -> {
+        if (test()) { bar(); } else { qix(); }
+      }
+      """);
 
     ControlFlowGraph cfg = lambda.cfg();
     assertThat(cfg).isNotNull();
@@ -133,11 +137,12 @@ class LambdaExpressionTreeImplTest {
   }
 
   private static LambdaExpressionTree parseFieldLambda(String fieldCode) {
-    var code = String.format(
-      "import java.util.function.IntSupplier;\n" +
-      "class A {\n" +
-      "  %s;\n" +
-      "}\n", fieldCode);
+    var code = String.format("""
+        import java.util.function.IntSupplier;
+        class A {
+          %s;
+        }
+        """, fieldCode);
     var tree = JParserTestUtils.parse(code);
     var firstClass = (ClassTree) tree.types().get(0);
     var firstField = (VariableTree) firstClass.members().get(0);

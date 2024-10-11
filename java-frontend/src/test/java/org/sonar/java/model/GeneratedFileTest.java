@@ -105,20 +105,22 @@ class GeneratedFileTest {
 
   @Test
   void test_source_map() {
-    String smap = "SMAP\n" +
-      "index_jsp.java\n" +
-      "JSP\n" +
-      "*S JSP\n" +
-      "*F\n" +
-      "+ 0 index.jsp\n" +
-      "index.jsp\n" +
-      "*L\n" +
-      "1,6:116,0\n" +
-      "123:207\n" +
-      "130,3:210\n" +
-      "140:250,7\n" +
-      "160,3:300,2\n" +
-      "*E\n";
+    String smap = """
+      SMAP
+      index_jsp.java
+      JSP
+      *S JSP
+      *F
+      + 0 index.jsp
+      index.jsp
+      *L
+      1,6:116,0
+      123:207
+      130,3:210
+      140:250,7
+      160,3:300,2
+      *E
+      """;
 
     InputFile inputFile = inputFileFromPath(tmp.resolve("src/main/webapp/index.jsp"));
     fs.add(inputFile);
@@ -156,16 +158,18 @@ class GeneratedFileTest {
 
   @Test
   void sourcemap_should_be_instantiated_lazily() {
-    String smap = "SMAP\n" +
-      "index_jsp.java\n" +
-      "JSP\n" +
-      "*S JSP\n" +
-      "*F\n" +
-      "+ 0 index.jsp\n" +
-      "index.jsp\n" +
-      "*L\n" +
-      "1,6:116,0\n" +
-      "*E\n";
+    String smap = """
+      SMAP
+      index_jsp.java
+      JSP
+      *S JSP
+      *F
+      + 0 index.jsp
+      index.jsp
+      *L
+      1,6:116,0
+      *E
+      """;
 
     SmapFile smapFile = new SmapFile(tmp, smap, tmp, fs);
     GeneratedFile generatedFile = new GeneratedFile(tmp.resolve("index_jsp.java"));
@@ -177,19 +181,21 @@ class GeneratedFileTest {
 
   @Test
   void test_multiple_files() {
-    String smap = "SMAP\n" +
-      "index_jsp.java\n" +
-      "JSP\n" +
-      "*S JSP\n" +
-      "*F\n" +
-      "+ 0 index.jsp\n" +
-      "index.jsp\n" +
-      "+ 1 index2.jsp\n" +
-      "index2.jsp\n" +
-      "*L\n" +
-      "1:1\n" +
-      "2#1:2\n" +
-      "*E\n";
+    String smap = """
+      SMAP
+      index_jsp.java
+      JSP
+      *S JSP
+      *F
+      + 0 index.jsp
+      index.jsp
+      + 1 index2.jsp
+      index2.jsp
+      *L
+      1:1
+      2#1:2
+      *E
+      """;
 
     Path uriRoot = tmp.resolve("src/main/webapp");
     InputFile indexJsp = inputFileFromPath(uriRoot.resolve("index.jsp"));

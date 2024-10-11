@@ -201,11 +201,12 @@ class JMethodSymbolTest {
 
   @Test
   void testClassInheritanceChainOnlyFindsDirectOverride() {
-    JavaTree.CompilationUnitTreeImpl cu = test(""
-      + "interface Interface { void a(); }\n"
-      + "class A implements Interface { public void a() {} }\n"
-      + "class B extends A { public void a() {} }\n"
-      + "class C extends B { public void a() {} }");
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+      interface Interface { void a(); }
+      class A implements Interface { public void a() {} }
+      class B extends A { public void a() {} }
+      class C extends B { public void a() {} }
+      """);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(3);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
@@ -246,10 +247,11 @@ class JMethodSymbolTest {
 
   @Test
   void testMultipleInheritance() {
-    JavaTree.CompilationUnitTreeImpl cu = test(""
-      + "interface A { void a(); }\n"
-      + "interface B { void a(); }\n"
-      + "class C implements A, B { public void a() { } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+      interface A { void a(); }
+      interface B { void a(); }
+      class C implements A, B { public void a() { } }
+      """);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(2);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
@@ -306,11 +308,12 @@ class JMethodSymbolTest {
 
   @Test
   void testMultipleInheritanceWithExtensionOfObject() {
-    JavaTree.CompilationUnitTreeImpl cu = test(""
-      + "interface A { boolean equals(Object other); }\n"
-      + "interface B { boolean equals(Object other); }\n"
-      + "interface C extends B { }\n"
-      + "class Clazz implements A, C { public boolean equals(Object other) { return false; } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+      interface A { boolean equals(Object other); }
+      interface B { boolean equals(Object other); }
+      interface C extends B { }
+      class Clazz implements A, C { public boolean equals(Object other) { return false; } }
+      """);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(3);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
@@ -432,13 +435,14 @@ class JMethodSymbolTest {
 
   @Test
   void testParameterDeclarationsOfCompactConstructor() {
-    JavaTree.CompilationUnitTreeImpl cu = test(""
-      + "record TestSonar(String arg1, String arg2, String arg3, String arg4, long arg5, String arg6) {\n"
-      + "  public TestSonar {}\n"
-      + "  public static void f() {\n"
-      + "    new TestSonar(null, null, null, null, 0L, null);\n"
-      + "  }\n"
-      + "}");
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+      record TestSonar(String arg1, String arg2, String arg3, String arg4, long arg5, String arg6) {
+        public TestSonar {}
+        public static void f() {
+          new TestSonar(null, null, null, null, 0L, null);
+        }
+      }
+      """);
 
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(1);

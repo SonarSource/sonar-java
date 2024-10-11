@@ -41,33 +41,34 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class MethodBehaviorJsonAdapterTest {
 
   private static final String IS_INSTANCE_SIGNATURE = "java.lang.Class#isInstance(Ljava/lang/Object;)Z";
-  private static final String IS_INSTANCE_METHOD_BEHAVIOR = "{\n"
-    + "  \"signature\": \"java.lang.Class#isInstance(Ljava/lang/Object;)Z\",\n"
-    + "  \"varArgs\": false,\n"
-    + "  \"declaredExceptions\": [],\n"
-    + "  \"yields\": [\n"
-    + "    {\n"
-    + "      \"parametersConstraints\": [\n"
-    + "        [\n"
-    + "          \"NOT_NULL\"\n"
-    + "        ]\n"
-    + "      ],\n"
-    + "      \"resultIndex\": -1,\n"
-    + "      \"resultConstraint\": [\n"
-    + "        \"TRUE\"\n"
-    + "      ]\n"
-    + "    },\n"
-    + "    {\n"
-    + "      \"parametersConstraints\": [\n"
-    + "        []\n"
-    + "      ],\n"
-    + "      \"resultIndex\": -1,\n"
-    + "      \"resultConstraint\": [\n"
-    + "        \"FALSE\"\n"
-    + "      ]\n"
-    + "    }\n"
-    + "  ]\n"
-    + "}";
+  private static final String IS_INSTANCE_METHOD_BEHAVIOR = """
+    {
+      "signature": "java.lang.Class#isInstance(Ljava/lang/Object;)Z",
+      "varArgs": false,
+      "declaredExceptions": [],
+      "yields": [
+        {
+          "parametersConstraints": [
+            [
+              "NOT_NULL"
+            ]
+          ],
+          "resultIndex": -1,
+          "resultConstraint": [
+            "TRUE"
+          ]
+        },
+        {
+          "parametersConstraints": [
+            []
+          ],
+          "resultIndex": -1,
+          "resultConstraint": [
+            "FALSE"
+          ]
+        }
+      ]
+    }""";
 
   private BehaviorCache cache;
   private Gson gson;
@@ -125,10 +126,12 @@ class MethodBehaviorJsonAdapterTest {
     mb.completed();
 
     assertThat(gson.toJson(mb))
-    .contains("resultConstraint\": [\n"
-      + "        \"NOT_NULL\"\n"
-      + "      ]")
-    .doesNotContain("SQUARE");
+      .contains("""
+        resultConstraint": [
+                "NOT_NULL"
+              ]
+        """)
+      .doesNotContain("SQUARE");
   }
 
   private enum CustomConstraint implements Constraint {
@@ -165,36 +168,36 @@ class MethodBehaviorJsonAdapterTest {
     customBehavior.completed();
 
     String serialized = gson.toJson(customBehavior);
-    assertThat(serialized).isEqualTo(
-      "{\n"
-      + "  \"signature\": \"org.bar.A#foo(Ljava/lang/Object;)Z\",\n"
-      + "  \"varArgs\": true,\n"
-      + "  \"declaredExceptions\": [\n"
-      + "    \"org.foo.MyException\",\n"
-      + "    \"org.bar.MyOtherException\"\n"
-      + "  ],\n"
-      + "  \"yields\": [\n"
-      + "    {\n"
-      + "      \"parametersConstraints\": [\n"
-      + "        [\n"
-      + "          \"NULL\"\n"
-      + "        ]\n"
-      + "      ],\n"
-      + "      \"exception\": \"org.bar.MyOtherException\"\n"
-      + "    },\n"
-      + "    {\n"
-      + "      \"parametersConstraints\": [\n"
-      + "        [\n"
-      + "          \"NOT_NULL\"\n"
-      + "        ]\n"
-      + "      ],\n"
-      + "      \"resultIndex\": -1,\n"
-      + "      \"resultConstraint\": [\n"
-      + "        \"TRUE\"\n"
-      + "      ]\n"
-      + "    }\n"
-      + "  ]\n"
-      + "}");
+    assertThat(serialized).isEqualTo("""
+        {
+          "signature": "org.bar.A#foo(Ljava/lang/Object;)Z",
+          "varArgs": true,
+          "declaredExceptions": [
+            "org.foo.MyException",
+            "org.bar.MyOtherException"
+          ],
+          "yields": [
+            {
+              "parametersConstraints": [
+                [
+                  "NULL"
+                ]
+              ],
+              "exception": "org.bar.MyOtherException"
+            },
+            {
+              "parametersConstraints": [
+                [
+                  "NOT_NULL"
+                ]
+              ],
+              "resultIndex": -1,
+              "resultConstraint": [
+                "TRUE"
+              ]
+            }
+          ]
+        }""");
     MethodBehavior deserialized = gson.fromJson(serialized, MethodBehavior.class);
     assertThat(deserialized).isEqualTo(customBehavior);
   }
@@ -290,16 +293,18 @@ class MethodBehaviorJsonAdapterTest {
     mb.completed();
 
     String serialized = gson.toJson(mb);
-    assertThat(serialized).contains("\"yields\": [\n"
-      + "    {\n"
-      + "      \"parametersConstraints\": [\n"
-      + "        [\n"
-      + "          \"NULL\"\n"
-      + "        ]\n"
-      + "      ],\n"
-      + "      \"exception\": \"java.lang.Exception\"\n"
-      + "    }\n"
-      + "  ]");
+    assertThat(serialized).contains("""
+      "yields": [
+          {
+            "parametersConstraints": [
+              [
+                "NULL"
+              ]
+            ],
+            "exception": "java.lang.Exception"
+          }
+        ]
+      """);
 
     MethodBehavior deserialized = gson.fromJson(serialized, MethodBehavior.class);
     assertThat(deserialized).isEqualTo(mb);

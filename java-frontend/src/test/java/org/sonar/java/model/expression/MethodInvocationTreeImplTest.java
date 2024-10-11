@@ -49,11 +49,13 @@ class MethodInvocationTreeImplTest {
 
   @Test
   void first_token() {
-    CompilationUnitTree cut = createTree("class A {\n"
-      + "  void bar(){\n"
-      + "    foo();\n"
-      + "  }"
-      + "}");
+    CompilationUnitTree cut = createTree("""
+      class A {
+        void bar(){
+          foo();
+        }
+      }
+      """);
 
     ClassTree classTree = (ClassTree) cut.types().get(0);
     MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) ((MethodTree) (classTree.members().get(0))).block().body().get(0)).expression();
@@ -63,12 +65,14 @@ class MethodInvocationTreeImplTest {
 
   @Test
   void first_token_with_type_arguments() {
-    CompilationUnitTree cut = createTree("class A {\n"
-      + "  void bar(){\n"
-      + "    new A().<String>foo();\n"
-      + "  }"
-      + "  <T> void foo() {}"
-      + "}");
+    CompilationUnitTree cut = createTree("""
+      class A {
+        void bar(){
+          new A().<String>foo();
+        }
+        <T> void foo() {}
+      }
+      """);
 
     ClassTree classTree = (ClassTree) cut.types().get(0);
     MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) ((MethodTree) (classTree.members().get(0))).block().body().get(0)).expression();

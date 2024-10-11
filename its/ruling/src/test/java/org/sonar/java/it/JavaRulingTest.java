@@ -120,9 +120,11 @@ public class JavaRulingTest {
         "S1451",
         ImmutableMap.of(
           "headerFormat",
-          "\n/*\n" +
-            " * Copyright (c) 1998, 2006, Oracle and/or its affiliates. All rights reserved.\n" +
-          " * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."))
+          """
+            
+            /*
+             * Copyright (c) 1998, 2006, Oracle and/or its affiliates. All rights reserved.
+             * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."""))
       .put("S5961", ImmutableMap.of("MaximumAssertionNumber", "50"))
       .put("S6539", ImmutableMap.of("couplingThreshold", "20"))
       .build();

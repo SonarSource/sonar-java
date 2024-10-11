@@ -38,9 +38,11 @@ class ClassTreeImplTest {
 
   @Test
   void getLine() {
-    CompilationUnitTree tree = JParserTestUtils.parse("class A {\n" +
-        "A a = new A() {};" +
-        "\n}");
+    CompilationUnitTree tree = JParserTestUtils.parse("""
+      class A {
+        A a = new A() {};
+      }
+      """);
     ClassTree classTree = (ClassTree) tree.types().get(0);
     assertThat(((JavaTree) classTree).getLine()).isEqualTo(1);
     //get line of anonymous class
@@ -84,17 +86,18 @@ class ClassTreeImplTest {
 
   @Test
   void records_members_order() {
-    ClassTree classTree = (ClassTree) JParserTestUtils.parse(
-      "record Output(String title, String summary, String text) {\n"
-        + "  public Output {}"
-        + "  public static final String CONST_1 = \"abc\";\n"
-        + "  boolean isTooLong() { return true; }\n"
-        + "  public static final int CONST_2 = 42;\n"
-        + "  Output(String s) { this(s, s, s); }\n"
-        + "  public static final boolean CONST_3 = false;\n"
-        + "  class Inner {}\n"
-        + "  public static final Object CONST_4 = null;\n"
-        + "}")
+    ClassTree classTree = (ClassTree) JParserTestUtils.parse("""
+          record Output(String title, String summary, String text) {
+            public Output {}
+            public static final String CONST_1 = "abc";
+            boolean isTooLong() { return true; }
+            public static final int CONST_2 = 42;
+            Output(String s) { this(s, s, s); }
+            public static final boolean CONST_3 = false;
+            class Inner {}
+            public static final Object CONST_4 = null;
+          }
+          """)
       .types().get(0);
 
     assertThat(classTree).is(Tree.Kind.RECORD);

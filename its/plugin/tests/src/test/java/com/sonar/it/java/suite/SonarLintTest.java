@@ -73,14 +73,15 @@ public class SonarLintTest {
 
   @Test
   public void simpleJava() throws Exception {
-    ClientInputFile inputFile = prepareInputFile("Foo.java",
-      "public class Foo {\n"
-        + "  public void foo() {\n"
-        + "    int x;\n"
-        + "    System.out.println(\"Foo\");\n"
-        + "    System.out.println(\"Foo\"); //NOSONAR\n"
-        + "  }\n"
-        + "}",
+    ClientInputFile inputFile = prepareInputFile("Foo.java", """
+        public class Foo {
+          public void foo() {
+            int x;
+            System.out.println("Foo");
+            System.out.println("Foo"); //NOSONAR
+          }
+        }
+        """,
       false);
 
     final List<Issue> issues = new ArrayList<>();
@@ -133,15 +134,16 @@ public class SonarLintTest {
 
   @Test
   public void supportJavaSuppressWarning() throws Exception {
-    ClientInputFile inputFile = prepareInputFile("Foo.java",
-      "public class Foo {\n"
-        + "  @SuppressWarnings(\"java:S106\")\n"
-        + "  public void foo() {\n"
-        + "    int x;\n"
-        + "    System.out.println(\"Foo\");\n"
-        + "    System.out.println(\"Foo\"); //NOSONAR\n"
-        + "  }\n"
-        + "}",
+    ClientInputFile inputFile = prepareInputFile("Foo.java", """
+        public class Foo {
+          @SuppressWarnings("java:S106")
+          public void foo() {
+            int x;
+            System.out.println("Foo");
+            System.out.println("Foo"); //NOSONAR
+          }
+        }
+        """,
       false);
 
     final List<Issue> issues = new ArrayList<>();
@@ -181,15 +183,16 @@ public class SonarLintTest {
       .build();
     StandaloneSonarLintEngine sonarlintEngine = new StandaloneSonarLintEngineImpl(config);
 
-    ClientInputFile inputFile = prepareInputFile("Foo.java",
-      "public class Foo {\n"
-        + "  @SuppressWarnings(\"java:S106\")\n"
-        + "  public void foo() {\n"
-        + "    int x;\n"
-        + "    System.out.println(\"Foo\");\n"
-        + "    System.out.println(\"Foo\"); //NOSONAR\n"
-        + "  }\n"
-        + "}",
+    ClientInputFile inputFile = prepareInputFile("Foo.java", """
+        public class Foo {
+          @SuppressWarnings("java:S106")
+          public void foo() {
+            int x;
+            System.out.println("Foo");
+            System.out.println("Foo"); //NOSONAR
+          }
+        }
+        """,
       false);
 
     StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()

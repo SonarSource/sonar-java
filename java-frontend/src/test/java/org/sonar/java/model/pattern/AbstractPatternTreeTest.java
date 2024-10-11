@@ -57,28 +57,32 @@ import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
 class AbstractPatternTreeTest {
 
-  private static final String BASE_SOURCE_CODE = "class A {\n"
-    + "  static Object method(%s) {\n"
-    + "    return %s;\n"
-    + "  }\n"
-    + "  public sealed interface Shape permits Rectangle,Triangle {\n"
-    + "    default int volume() { return 0; }\n"
-    + "  }\n"
-    + "  public static non-sealed class Rectangle implements Shape {\n"
-    + "    private int base, height;\n"
-    + "    Rectangle(int base, int height) { this.base = base; this.height = height; }\n"
-    + "  }\n"
-    + "  public static final class Square extends Rectangle {\n"
-    + "    Square(int side) { super(side, side); }\n"
-    + "  }\n"
-    + "  public static record Triangle(int a, int b, int c) implements Shape {}\n"
-    + "}\n";
+  private static final String BASE_SOURCE_CODE = """
+    class A {
+      static Object method(%s) {
+        return %s;
+      }
+      public sealed interface Shape permits Rectangle,Triangle {
+        default int volume() { return 0; }
+      }
+      public static non-sealed class Rectangle implements Shape {
+        private int base, height;
+        Rectangle(int base, int height) { this.base = base; this.height = height; }
+      }
+      public static final class Square extends Rectangle {
+        Square(int side) { super(side, side); }
+      }
+      public static record Triangle(int a, int b, int c) implements Shape {}
+    }
+    """;
 
   @Test
   void test_default_pattern() {
-    String code = "switch (o) {\n"
-      + "  case default -> o;\n"
-      + "}";
+    String code = """
+      switch (o) {
+        case default -> o;
+      }
+      """;
     SwitchExpressionTree s = switchExpressionTree("Object o", code);
     List<CaseLabelTree> labels = s.cases().get(0).labels();
     assertThat(labels).hasSize(1);
@@ -94,10 +98,12 @@ class AbstractPatternTreeTest {
 
   @Test
   void test_null_pattern() {
-    String code = "switch (o) {\n"
-      + "  case null -> -1;\n"
-      + "  default -> o;\n"
-      + "}";
+    String code = """
+      switch (o) {
+        case null -> -1;
+        default -> o;
+      }
+      """;
     SwitchExpressionTree s = switchExpressionTree("Object o", code);
     List<CaseGroupTree> cases = s.cases();
     List<CaseLabelTree> nullLabels = cases.get(0).labels();
@@ -121,9 +127,11 @@ class AbstractPatternTreeTest {
 
   @Test
   void test_default_null_combined_pattern() {
-    String code = "switch (o) {\n"
-      + "  case null, default -> -1;\n"
-      + "}";
+    String code = """
+      switch (o) {
+        case null, default -> -1;
+      }
+      """;
     SwitchExpressionTree s = switchExpressionTree("Object o", code);
     List<CaseLabelTree> labels = s.cases().get(0).labels();
     assertThat(labels).hasSize(1);
@@ -135,10 +143,12 @@ class AbstractPatternTreeTest {
 
   @Test
   void test_type_pattern() {
-    String code = "switch (o) {\n"
-      + "  case Integer i -> -1;\n"
-      + "  default -> o;\n"
-      + "}";
+    String code = """
+      switch (o) {
+        case Integer i -> -1;
+        default -> o;
+      }
+      """;
     SwitchExpressionTree s = switchExpressionTree("Object o", code);
     List<CaseLabelTree> labels = s.cases().get(0).labels();
     assertThat(labels).hasSize(1);
@@ -157,10 +167,12 @@ class AbstractPatternTreeTest {
 
   @Test
   void test_array_type_pattern() {
-    String code = "switch (o) {\n"
-      + "  case Integer[] i -> -1;\n"
-      + "  default -> o;\n"
-      + "}";
+    String code = """
+      switch (o) {
+        case Integer[] i -> -1;
+        default -> o;
+      }
+      """;
     SwitchExpressionTree s = switchExpressionTree("Object o", code);
     List<CaseLabelTree> labels = s.cases().get(0).labels();
     assertThat(labels).hasSize(1);
@@ -174,10 +186,12 @@ class AbstractPatternTreeTest {
 
   @Test
   void test_guarded_pattern() {
-    String code = "switch (shape) {\n"
-      + "    case Rectangle r when r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
-      + "    default -> \"default case\";\n"
-      + "  }";
+    String code = """
+        switch (shape) {
+          case Rectangle r when r.volume() > 42 -> String.format("big rectangle of volume %d!", r.volume());
+          default -> "default case";
+        }
+      """;
     SwitchExpressionTree s = switchExpressionTree("Shape shape", code);
     List<CaseLabelTree> labels = s.cases().get(0).labels();
     assertThat(labels).hasSize(1);
@@ -303,10 +317,12 @@ class AbstractPatternTreeTest {
 
   @Test
   void test_guarded_pattern_parenthesized_nested() {
-    String code = "switch (shape) {\n"
-      + "    case Rectangle r when r.volume() > 42 && false -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
-      + "    default -> \"default case\";\n"
-      + "  }";
+    String code = """
+        switch (shape) {
+          case Rectangle r when r.volume() > 42 && false -> String.format("big rectangle of volume %d!", r.volume());
+          default -> "default case";
+        }
+      """;
     SwitchExpressionTree s = switchExpressionTree("Shape shape", code);
     List<CaseLabelTree> labels = s.cases().get(0).labels();
     assertThat(labels).hasSize(1);
@@ -325,14 +341,16 @@ class AbstractPatternTreeTest {
 
   @Test
   void test_guarded_pattern_mixed() {
-    String code = "switch (shape) {\n"
-      + "      case null -> \"null case\";\n"
-      + "      case Triangle t -> String.format(\"triangle (%d,%d,%d)\", t.a(), t.b(), t.c());\n"
-      + "      case Rectangle r when r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
-      + "      case Square s -> \"Square!\";\n"
-      + "      case Rectangle r -> String.format(\"Rectangle (%d,%d)\", r.base, r.height);\n"
-      + "      case default -> \"default case\";\n"
-      + "    }";
+    String code = """
+        switch (shape) {
+          case null -> "null case";
+          case Triangle t -> String.format("triangle (%d,%d,%d)", t.a(), t.b(), t.c());
+          case Rectangle r when r.volume() > 42 -> String.format("big rectangle of volume %d!", r.volume());
+          case Square s -> "Square!";
+          case Rectangle r -> String.format("Rectangle (%d,%d)", r.base, r.height);
+          case default -> "default case";
+        }
+      """;
     SwitchExpressionTree s = switchExpressionTree("Shape shape", code);
     List<CaseGroupTree> cases = s.cases();
     assertThat(cases).hasSize(6);
@@ -353,13 +371,15 @@ class AbstractPatternTreeTest {
 
   @Test
   void test_base_tree_visitor() {
-    String code = "switch (shape) {\n"
-      + "      case null -> \"null case\";\n"
-      + "      case Triangle(int a, var b, int c) when a + b < 42 -> String.format(\"Big trangle\");\n"
-      + "      case Triangle t -> String.format(\"triangle (%d,%d,%d)\", t.a(), t.b(), t.c());\n"
-      + "      case Rectangle r when r.volume() > 42 -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
-      + "      case default -> \"default case\";\n"
-      + "    }";
+    String code = """
+        switch (shape) {
+          case null -> "null case";
+          case Triangle(int a, var b, int c) when a + b < 42 -> String.format("Big trangle");
+          case Triangle t -> String.format("triangle (%d,%d,%d)", t.a(), t.b(), t.c());
+          case Rectangle r when r.volume() > 42 -> String.format("big rectangle of volume %d!", r.volume());
+          case default -> "default case";
+        }
+      """;
     SwitchExpressionTree s = switchExpressionTree("Shape shape", code);
     List<Tree.Kind> patternKinds = new ArrayList<>();
     s.accept(new BaseTreeVisitor() {

@@ -37,13 +37,14 @@ class LineUtilsTest {
 
   @BeforeAll
   static void before() {
-    tree = JParserTestUtils.parse("package org.foo;\n"
-      + "\n"
-      + "class A {\n"
-      + " /*\n"
-      + "  * trivia\n"
-      + "  */\n"
-      + "}");
+    tree = JParserTestUtils.parse("""
+      package org.foo;
+      
+      class A {
+       /*
+        * trivia
+        */
+      }""");
   }
 
   @Test

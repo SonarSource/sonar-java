@@ -319,11 +319,13 @@ class QuickFixHelperTest {
 
     @Test
     void imported_via_star_import() {
-      String source = "package org.foo;\n"
-        + "import java.util.*;\n"
-        + "import org.bar.B;\n"
-        + "import static java.util.function.Function.identity;\n"
-        + "class A { }";
+      String source = """
+        package org.foo;
+        import java.util.*;
+        import org.bar.B;
+        import static java.util.function.Function.identity;
+        class A { }
+        """;
 
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
@@ -340,11 +342,13 @@ class QuickFixHelperTest {
 
     @Test
     void imported_via_explicit_import() {
-      String source = "package org.foo;\n"
-        + "import java.util.List;\n"
-        + "import org.bar.B;\n"
-        + "import static java.util.function.Function.identity;\n"
-        + "class A { }";
+      String source = """
+        package org.foo;
+        import java.util.List;
+        import org.bar.B;
+        import static java.util.function.Function.identity;
+        class A { }
+        """;
 
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
@@ -359,9 +363,11 @@ class QuickFixHelperTest {
 
     @Test
     void default_package() {
-      String source = "import java.util.List;\n"
-        + "import org.bar.B;\n"
-        + "class A { }";
+      String source = """
+        import java.util.List;
+        import org.bar.B;
+        class A { }
+        """;
 
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
@@ -377,8 +383,10 @@ class QuickFixHelperTest {
 
     @Test
     void import_insertion_are_computed_only_once() {
-      String source = "package org.foo;\n"
-        + "class A { }";
+      String source = """
+        package org.foo;
+        class A { }
+        """;
 
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
@@ -394,11 +402,13 @@ class QuickFixHelperTest {
 
     @Test
     void type_already_imported_does_not_require_edits() {
-      String source = "package org.foo;\n"
-        + "import java.util.List;\n"
-        + "import java.util.function.*;\n"
-        + "import static java.util.function.Function.identity;\n"
-        + "class A { }";
+      String source = """
+        package org.foo;
+        import java.util.List;
+        import java.util.function.*;
+        import static java.util.function.Function.identity;
+        class A { }
+        """;
 
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
@@ -410,11 +420,13 @@ class QuickFixHelperTest {
 
     @Test
     void import_inserted_middle_other_imports() {
-      String source = "package org.foo;\n"
-        + "import java.util.List;\n"
-        + "import org.bar.B;\n"
-        + "import static java.util.function.Function.identity;\n"
-        + "class A { }";
+      String source = """
+        package org.foo;
+        import java.util.List;
+        import org.bar.B;
+        import static java.util.function.Function.identity;
+        class A { }
+        """;
 
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
@@ -436,10 +448,12 @@ class QuickFixHelperTest {
 
     @Test
     void import_inserted_on_top_of_other_imports() {
-      String source = "package org.foo;\n"
-        + "import java.util.List;\n"
-        + "import org.bar.B;\n"
-        + "class A { }";
+      String source = """
+        package org.foo;
+        import java.util.List;
+        import org.bar.B;
+        class A { }
+        """;
 
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
@@ -454,10 +468,12 @@ class QuickFixHelperTest {
 
     @Test
     void import_inserted_after_other_imports() {
-      String source = "package org.foo;\n"
-        + "import java.util.List;\n"
-        + "import org.bar.B;\n"
-        + "class A { }";
+      String source = """
+        package org.foo;
+        import java.util.List;
+        import org.bar.B;
+        class A { }
+        """;
 
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
@@ -472,8 +488,10 @@ class QuickFixHelperTest {
 
     @Test
     void import_inserted_after_package_when_no_imports() {
-      String source = "package org.foo;\n"
-        + "class A { }";
+      String source = """
+        package org.foo;
+        class A { }
+        """;
 
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);

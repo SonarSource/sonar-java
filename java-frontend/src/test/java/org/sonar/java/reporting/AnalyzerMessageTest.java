@@ -145,12 +145,14 @@ class AnalyzerMessageTest {
 
   @Test
   void textSpanForTextBlocks() {
-    CompilationUnitTree cut = JParserTestUtils.parse(
-      "class A {\n String s = \"\"\"\n" +
-      "              \n" +
-      "  hello\n" +
-      "  \n" +
-      "  \"\"\";}\n");
+    CompilationUnitTree cut = JParserTestUtils.parse("""
+        class A {
+         String s = ""\"
+                     \s
+          hello
+         \s
+          ""\";}
+        """);
     ClassTree classTree = (ClassTree) cut.types().get(0);
     VariableTree variableTree = (VariableTree) classTree.members().get(0);
     ExpressionTree textBlock = variableTree.initializer();
@@ -167,15 +169,15 @@ class AnalyzerMessageTest {
   @Test
   void textSpanBetweenTextBlocks() {
     CompilationUnitTree cut;
-    cut = JParserTestUtils.parse(
-      "class A {  " +
-        "public void str() {\n" +
-        "    String question2 = \"\"\"\n" +
-        "              \\\"What's the point, really\n" +
-        "              \\\"What's the point, really\n" +
-        "              ?\"\"\"; " +
-        "}" +
-        "}");
+    cut = JParserTestUtils.parse("""
+        class A { public void str() {
+            String question2 = ""\"
+                      \\"What's the point, really
+                      \\"What's the point, really
+                      ?""\";
+          }
+        }
+        """);
     ClassTree classTree = (ClassTree) cut.types().get(0);
     VariableTree variableTree = (VariableTree) ((MethodTree)(classTree.members()).get(0)).block().body().get(0);
 
@@ -217,12 +219,13 @@ class AnalyzerMessageTest {
 
   @Test
   void shouldNotFailOnEmptyTrees() {
-    CompilationUnitTree cut = JParserTestUtils.parse(
-      "class A {\n" +
-        "  void foo(java.util.List l) {\n" +
-        "    l.forEach(o -> {});\n" +
-        "  }\n" +
-        "}");
+    CompilationUnitTree cut = JParserTestUtils.parse("""
+        class A {
+          void foo(java.util.List l) {
+            l.forEach(o -> {});
+          }
+        }
+        """);
 
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
     MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) methodTree.block().body().get(0)).expression();

@@ -462,12 +462,14 @@ class JParserSemanticTest {
    */
   @Test
   void expression_super_method_reference() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S {\n"
-      + "  java.util.function.Supplier m() { return super::m; }\n"
-      + "}\n"
-      + "class S {\n"
-      + "  Object m() { return null; }\n"
-      + "}");
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+      class C extends S {
+        java.util.function.Supplier m() { return super::m; }
+      }
+      class S {
+        Object m() { return null; }
+      }
+      """);
     ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
     MethodTreeImpl superClassMethod = (MethodTreeImpl) superClass.members().get(0);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
@@ -496,12 +498,14 @@ class JParserSemanticTest {
    */
   @Test
   void expression_super_method_reference_qualified() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S {\n"
-      + "  java.util.function.Supplier m() { return C.super::m; }\n"
-      + "}\n"
-      + "class S {\n"
-      + "  Object m() { return null; }\n"
-      + "}");
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+      class C extends S {
+        java.util.function.Supplier m() { return C.super::m; }
+      }
+      class S {
+        Object m() { return null; }
+      }
+      """);
     ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
     MethodTreeImpl superClassMethod = (MethodTreeImpl) superClass.members().get(0);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
@@ -726,12 +730,14 @@ class JParserSemanticTest {
 
   @Test
   void expression_super_method_invocation_interface() {
-    String source = "interface MyIterable<T> extends Iterable<T> {\n" +
-      "  @Override\n" +
-      "  default void forEach(java.util.function.Consumer<? super T> action) {\n" +
-      "    Iterable.super.forEach(action);\n" +
-      "  }\n" +
-      "}";
+    String source = """
+      interface MyIterable<T> extends Iterable<T> {
+        @Override
+        default void forEach(java.util.function.Consumer<? super T> action) {
+          Iterable.super.forEach(action);
+        }
+      }
+      """;
     JavaTree.CompilationUnitTreeImpl cu = test(source);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl forEach = (MethodTreeImpl) c.members().get(0);
@@ -747,10 +753,12 @@ class JParserSemanticTest {
 
   @Test
   void expression_lambda() {
-    String source = "package org.foo;\n" +
-      "class A {\n" +
-      "  java.util.function.Consumer<String> f = p -> { };\n" +
-      "}";
+    String source = """
+      package org.foo;
+      class A {
+        java.util.function.Consumer<String> f = p -> { };
+      }
+      """;
     JavaTree.CompilationUnitTreeImpl cu = test(source);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     VariableTreeImpl f = (VariableTreeImpl) c.members().get(0);
@@ -770,14 +778,16 @@ class JParserSemanticTest {
 
   @Test
   void expression_nested_lambda() {
-    String source = "class A {\n" +
-      "  void m() {\n" +
-      "    java.util.function.Function<Integer, java.util.function.Supplier<Integer>> v =\n" +
-      "      p1 -> {\n" +
-      "        return () -> 42;\n" +
-      "      };\n" +
-      "  }\n" +
-      "}";
+    String source = """
+      class A {
+        void m() {
+          java.util.function.Function<Integer, java.util.function.Supplier<Integer>> v =
+            p1 -> {
+              return () -> 42;
+            };
+        }
+      }
+      """;
 
     JavaTree.CompilationUnitTreeImpl cu = test(source);
 
@@ -799,11 +809,13 @@ class JParserSemanticTest {
    */
   @Test
   void conditional_expression() {
-    String source = "class A {\n" +
-      "  void foo(Class<? extends java.io.Serializable>[] arr1, Class<?>[] arr2, boolean b) {\n" +
-      "    Class<?>[] t = b ? arr1 : arr2;\n" +
-      "  }\n" +
-      "}";
+    String source = """
+      class A {
+        void foo(Class<? extends java.io.Serializable>[] arr1, Class<?>[] arr2, boolean b) {
+          Class<?>[] t = b ? arr1 : arr2;
+        }
+      }
+      """;
 
     JavaTree.CompilationUnitTreeImpl cu = test(source);
 
@@ -1179,11 +1191,13 @@ class JParserSemanticTest {
 
   @Test
   void declaration_method_parameterized_recovered() {
-    String source = "class D<E> {\n" +
-      "  private java.util.Collection<UnknownClass.Entry<E>> samples() {\n" +
-      "    return null;\n" +
-      "  }\n" +
-      "}";
+    String source = """
+      class D<E> {
+        private java.util.Collection<UnknownClass.Entry<E>> samples() {
+          return null;
+        }
+      }
+      """;
     JavaTree.CompilationUnitTreeImpl cu = test(source);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
@@ -1591,19 +1605,20 @@ class JParserSemanticTest {
 
   @Test
   void constructor_with_type_arguments() {
-    String source =
-      "class MyClass {\n" +
-        "  <T extends I> MyClass(T t) {}\n" +
-        "  <T extends J & I> MyClass(T t) {}\n" +
-        "  void foo(B b, C c) {\n" +
-        "    new<B>MyClass((I) b);\n" +
-        "    new<C>MyClass(c);\n" +
-        "  }\n" +
-        "}\n" +
-        "interface I {}\n" +
-        "interface J {}\n" +
-        "class B implements I {}\n" +
-        "class C implements I, J {}\n";
+    String source = """
+        class MyClass {
+          <T extends I> MyClass(T t) {}
+          <T extends J & I> MyClass(T t) {}
+          void foo(B b, C c) {
+            new<B>MyClass((I) b);
+            new<C>MyClass(c);
+          }
+        }
+        interface I {}
+        interface J {}
+        class B implements I {}
+        class C implements I, J {}
+        """;
 
     JavaTree.CompilationUnitTreeImpl cu = test(source);
     ClassTree c = (ClassTree) cu.types().get(0);
@@ -1668,19 +1683,21 @@ class JParserSemanticTest {
 
   @Test
   void super_constructor_external_inner_class() {
-    final String source = "class C {\n" +
-      "    class InnerC {\n" +
-      "        InnerC(int i) {}\n" +
-      "    }\n" +
-      "}\n" +
-      "\n" +
-      "class B {\n" +
-      "    class InnerB extends C.InnerC {\n" +
-      "        InnerB(C c, int i) {\n" +
-      "            c.super(i);\n" +
-      "        }\n" +
-      "    }\n" +
-      "}";
+    final String source = """
+      class C {
+          class InnerC {
+              InnerC(int i) {}
+          }
+      }
+      
+      class B {
+          class InnerB extends C.InnerC {
+              InnerB(C c, int i) {
+                  c.super(i);
+              }
+          }
+      }
+      """;
 
     JavaTree.CompilationUnitTreeImpl cu = test(source);
     ClassTree c = (ClassTree) cu.types().get(0);
@@ -1691,22 +1708,23 @@ class JParserSemanticTest {
 
   @Test
   void inner_class_depending_on_outer_class_parametrized_type() {
-    final String source =
-      "class X<T> {\n" +
-      "  InnerClass innerClass;\n" +
-      "  class InnerClass {\n" +
-      "    T method() {\n" +
-      "      return null;\n" +
-      "    }\n" +
-      "  }\n" +
-      "  static void test() {\n" +
-      "    new X<Y>().innerClass.method().method1();\n" +
-      "  }\n" +
-      "}" +
-      "class Y {\n" +
-      "  void method1() {\n" +
-      "  }\n" +
-      "}";
+    final String source = """
+        class X<T> {
+          InnerClass innerClass;
+          class InnerClass {
+            T method() {
+              return null;
+            }
+          }
+          static void test() {
+            new X<Y>().innerClass.method().method1();
+          }
+        }
+        class Y {
+          void method1() {
+          }
+        }
+        """;
     JavaTree.CompilationUnitTreeImpl cu = test(source);
     ClassTree classX = (ClassTree) cu.types().get(0);
     MethodTreeImpl method = (MethodTreeImpl) ((ClassTree) classX.members().get(1)).members().get(0);

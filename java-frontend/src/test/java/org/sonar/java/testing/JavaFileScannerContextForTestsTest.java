@@ -58,10 +58,11 @@ class JavaFileScannerContextForTestsTest {
 
   @BeforeAll
   static void setup() {
-    JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(
-      "package orf.foo;\n"
-      + "class A {}\n"
-      + "class B {}\n");
+    JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("""
+        package orf.foo;
+        class A {}
+        class B {}
+        """);
     classA = (ClassTree) cut.types().get(0);
     classB = (ClassTree) cut.types().get(1);
 

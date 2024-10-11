@@ -166,14 +166,15 @@ class JUtilsTest {
 
   @Nested
   class IsIntersectionType {
-    private final JavaTree.CompilationUnitTreeImpl cu = test(
-      "import java.io.Serializable;\n"
-        + "import java.util.Comparator;\n"
-        + "\n"
-        + "class C {\n"
-        + "  Serializable f = (Comparator<Object> & Serializable) (o1, o2) -> o1.toString().compareTo(o2.toString());\n"
-        + "  Unknown u;\n"
-        + "}");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+        import java.io.Serializable;
+        import java.util.Comparator;
+        
+        class C {
+          Serializable f = (Comparator<Object> & Serializable) (o1, o2) -> o1.toString().compareTo(o2.toString());
+          Unknown u;
+        }
+        """);
     private final ClassTreeImpl c = firstClass(cu);
     private final VariableTreeImpl f = firstField(c);
 
@@ -259,11 +260,13 @@ class JUtilsTest {
 
   @Nested
   class IsLocalVariable {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("class C {\n"
-      + "  static { int value; }\n"
-      + "  Object field;\n"
-      + "  void m() { String localVariable; }\n"
-      + "}");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      class C {
+        static { int value; }
+        Object field;
+        void m() { String localVariable; }
+      }
+      """);
     private final ClassTreeImpl c = firstClass(cu);
 
     @Test
@@ -294,14 +297,16 @@ class JUtilsTest {
 
   @Nested
   class IsParameter {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("class C {\n"
-      + "  Object field;\n"
-      + "  void m(Object p) {\n"
-      + "    String localVariable;\n"
-      + "    m(this);\n"
-      + "    \"\".substring(1);\n"
-      + "  }\n"
-      + "}");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      class C {
+        Object field;
+        void m(Object p) {
+          String localVariable;
+          m(this);
+          "".substring(1);
+        }
+      }
+      """);
     private final ClassTreeImpl c = firstClass(cu);
     private final MethodTreeImpl m = nthMethod(c, 1);
 
@@ -520,10 +525,12 @@ class JUtilsTest {
 
   @Nested
   class IsVarArgsMethod {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("class A {\n"
-      + "  void bar(Object ... os) { }\n"
-      + "  void foo(Object o) { }\n"
-      + "}");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      class A {
+        void bar(Object ... os) { }
+        void foo(Object o) { }
+      }
+      """);
     private final ClassTreeImpl a = firstClass(cu);
 
     @Test
@@ -546,10 +553,12 @@ class JUtilsTest {
 
   @Nested
   class IsSynchronizedMethod {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("class A {\n"
-      + "  synchronized void foo() { }\n"
-      + "  void bar() { }\n"
-      + "}");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      class A {
+        synchronized void foo() { }
+        void bar() { }
+      }
+      """);
     private final ClassTreeImpl a = firstClass(cu);
 
     @Test
@@ -572,10 +581,12 @@ class JUtilsTest {
 
   @Nested
   class IsDefaultMethod {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("interface A {\n"
-      + "  default void foo() {}\n"
-      + "  void bar();\n"
-      + "}");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      interface A {
+        default void foo() {}
+        void bar();
+      }
+      """);
     private final ClassTreeImpl a = firstClass(cu);
 
     @Test
@@ -598,10 +609,12 @@ class JUtilsTest {
 
   @Nested
   class DefaultValue {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("@interface A {\n"
-      + "  int foo() default 42;\n"
-      + "  String bar();\n"
-      + "}");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      @interface A {
+        int foo() default 42;
+        String bar();
+      }
+      """);
     private final ClassTreeImpl a = firstClass(cu);
 
     @Test
@@ -624,15 +637,17 @@ class JUtilsTest {
 
   @Nested
   class IsOverridable {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("class A {\n"
-      + "  void foo() {}\n"
-      + "  private void bar() {}\n"
-      + "  static void qix() {}\n"
-      + "  final void gul() {}\n"
-      + "}\n"
-      + "record B() {\n"
-      + "  void foo() {}\n"
-      + "}");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      class A {
+        void foo() {}
+        private void bar() {}
+        static void qix() {}
+        final void gul() {}
+      }
+      record B() {
+        void foo() {}
+      }
+      """);
     private final ClassTreeImpl a = firstClass(cu);
 
     @Test
@@ -679,10 +694,12 @@ class JUtilsTest {
 
   @Nested
   class IsParametrizedMethod {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("class C {\n"
-      + "  <T> void m(T p) { m(42); }\n"
-      + "  void n() {}\n"
-      + " }");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      class C {
+        <T> void m(T p) { m(42); }
+        void n() {}
+      }
+      """);
     private final ClassTreeImpl c = firstClass(cu);
 
     @Test
@@ -790,13 +807,15 @@ class JUtilsTest {
 
   @Nested
   class EnclosingClass {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("package org.foo;\n"
-      + "class A {\n"
-      + "  class B {\n"
-      + "    void foo() { }\n"
-      + "    Object o;\n"
-      + "  }\n"
-      + "}");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      package org.foo;
+      class A {
+        class B {
+          void foo() { }
+          Object o;
+        }
+      }
+      """);
 
     @Test
     void enclosingClass_from_compilation_unit_is_null() {
@@ -828,9 +847,11 @@ class JUtilsTest {
   @Nested
   class ImporTreeSymbol {
 
-    private final JavaTree.CompilationUnitTreeImpl cu = test("import java.util.List;\n"
-      + "import org.foo.Unknown;\n"
-      + "class A {}");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      import java.util.List;
+      import org.foo.Unknown;
+      class A {}
+      """);
 
     @Test
     void resolved_imports_have_type_symbols() {

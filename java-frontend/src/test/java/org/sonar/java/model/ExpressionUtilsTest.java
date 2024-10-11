@@ -160,18 +160,19 @@ class ExpressionUtilsTest {
 
   @Test
   void test_invocation_on_same_variable() {
-    CompilationUnitTree tree = JParserTestUtils.parse(
-      "class A {\n" +
-        "  static {\n" +
-        "    String s1 = \"a\";" +
-        "    String s2 = \"b\";" +
-        "    s1.toString();\n" +
-        "    s2.toString();\n" +
-        "    toString();\n" +
-        "    Optional.of(s1).get().toString();\n" +
-        "    Optional.of(s2).get().toString();\n" +
-        "  }\n" +
-        "}");
+    CompilationUnitTree tree = JParserTestUtils.parse("""
+        class A {
+          static {
+            String s1 = "a";
+            String s2 = "b";
+            s1.toString();
+            s2.toString();
+            toString();
+            Optional.of(s1).get().toString();
+            Optional.of(s2).get().toString();
+          }
+        }
+        """);
 
     StaticInitializerTree staticInitializer = (StaticInitializerTree) ((ClassTree) tree.types().get(0)).members().get(0);
     List<Symbol> variablesSymbols = staticInitializer.body().stream()
@@ -214,15 +215,16 @@ class ExpressionUtilsTest {
 
   @Test
   void securing_byte() {
-    CompilationUnitTree tree = JParserTestUtils.parse(
-      "class A {\n" +
-        "  static {\n" +
-        "    int i1 = 12;\n" +
-        "    int i2 = 12 & 0xFF;\n" +
-        "    int i3 = 0xff & 12;\n" +
-        "    int i4 = 12 & 12;\n" +
-        "  }\n" +
-        "}");
+    CompilationUnitTree tree = JParserTestUtils.parse("""
+        class A {
+          static {
+            int i1 = 12;
+            int i2 = 12 & 0xFF;
+            int i3 = 0xff & 12;
+            int i4 = 12 & 12;
+          }
+        }
+        """);
 
     StaticInitializerTree staticInitializer = (StaticInitializerTree) ((ClassTree) tree.types().get(0)).members().get(0);
     List<ExpressionTree> expressions = staticInitializer.body().stream()

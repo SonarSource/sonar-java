@@ -1631,15 +1631,17 @@ class JavaTreeModelTest {
 
     @Test
     void switch_expression() {
-      ReturnStatementTree rst = (ReturnStatementTree) firstMethodFirstStatement("class T {\n" +
-      "  int m(int e) {\n" +
-      "    return switch (e) {\n" +
-      "      case 1 -> 0;\n" +
-      "      case 2, 3 -> 1;\n" +
-      "      default -> 42;\n" +
-      "    };\n" +
-      "  }\n" +
-      "}");
+      ReturnStatementTree rst = (ReturnStatementTree) firstMethodFirstStatement("""
+        class T {
+          int m(int e) {
+            return switch (e) {
+              case 1 -> 0;
+              case 2, 3 -> 1;
+              default -> 42;
+            };
+          }
+        }
+        """);
       SwitchExpressionTree switchExpression = (SwitchExpressionTree) rst.expression();
       assertThat(switchExpression.cases()).hasSize(3);
       CaseGroupTree c = switchExpression.cases().get(1);
