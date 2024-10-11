@@ -40,28 +40,28 @@ class HappyPathYieldTest {
   void test_equals() {
     MethodBehavior mb = mockMethodBehavior(1, false);
 
-    HappyPathYield yield = new HappyPathYield(mb);
+    HappyPathYield happyPathYield = new HappyPathYield(mb);
     HappyPathYield otherYield = new HappyPathYield(mb);
 
-    assertThat(yield)
+    assertThat(happyPathYield)
       .isNotEqualTo(null)
-      .isEqualTo(yield)
+      .isEqualTo(happyPathYield)
       .isEqualTo(otherYield);
 
     // same arity and constraints but different return value
-    otherYield.setResult(0, yield.resultConstraint());
-    assertThat(yield).isNotEqualTo(otherYield);
+    otherYield.setResult(0, happyPathYield.resultConstraint());
+    assertThat(happyPathYield).isNotEqualTo(otherYield);
 
     // same arity but different return constraint
     otherYield = new HappyPathYield(mb);
-    otherYield.setResult(yield.resultIndex(), NOT_NULL_CONSTRAINT);
-    assertThat(yield).isNotEqualTo(otherYield);
+    otherYield.setResult(happyPathYield.resultIndex(), NOT_NULL_CONSTRAINT);
+    assertThat(happyPathYield).isNotEqualTo(otherYield);
 
     // same return constraint
-    yield.setResult(-1, NOT_NULL_CONSTRAINT);
+    happyPathYield.setResult(-1, NOT_NULL_CONSTRAINT);
     otherYield = new HappyPathYield(mb);
     otherYield.setResult(-1, NOT_NULL_CONSTRAINT);
-    assertThat(yield)
+    assertThat(happyPathYield)
       .isEqualTo(otherYield)
       // same arity and parameters but exceptional yield
       .isNotEqualTo(new ExceptionalYield(mb));

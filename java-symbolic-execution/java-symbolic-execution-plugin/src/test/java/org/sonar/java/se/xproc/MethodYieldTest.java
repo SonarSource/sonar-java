@@ -139,22 +139,22 @@ class MethodYieldTest {
 
   @Test
   void yields_are_not_generated_by_check() {
-    MethodYield yield = newMethodYield(mockMethodBehavior(1, false));
+    MethodYield methodYield = newMethodYield(mockMethodBehavior(1, false));
 
-    assertThat(yield.generatedByCheck(null)).isFalse();
-    assertThat(yield.generatedByCheck(new SECheck() {
+    assertThat(methodYield.generatedByCheck(null)).isFalse();
+    assertThat(methodYield.generatedByCheck(new SECheck() {
     })).isFalse();
   }
 
   @Test
   void test_yield_equality() {
     MethodBehavior methodBehavior = mockMethodBehavior(1, false);
-    MethodYield yield = newMethodYield(methodBehavior);
-    assertThat(yield)
+    MethodYield methodYield = newMethodYield(methodBehavior);
+    assertThat(methodYield)
       .isNotEqualTo(null)
       .isNotEqualTo(new Object())
       // same instance
-      .isEqualTo(yield)
+      .isEqualTo(methodYield)
       // method behavior not taken into account
       .isEqualTo(newMethodYield(null))
       // node not taken into account
@@ -235,12 +235,12 @@ class MethodYieldTest {
     assertThat(yields).hasSize(5);
     assertThat(mb.exceptionalPathYields()).hasSize(4);
 
-    MethodYield yield = mb.happyPathYields().findFirst().get();
+    MethodYield methodYield = mb.happyPathYields().findFirst().get();
 
     // check that we have NOT_NULL constraint on the first argument
-    assertThat(yield.parametersConstraints.get(0).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+    assertThat(methodYield.parametersConstraints.get(0).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
     // check that we have NOT_NULL constraint on the variadic argument
-    assertThat(yield.parametersConstraints.get(1).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+    assertThat(methodYield.parametersConstraints.get(1).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
 
     List<IdentifierTree> usages = methodSymbol.usages();
     assertThat(usages).hasSize(6);
@@ -257,27 +257,27 @@ class MethodYieldTest {
     SymbolicValue svResult = new SymbolicValue();
 
     // apply constraint NotNull to parameter
-    Collection<ProgramState> arrayOfA = yield.statesAfterInvocation(Arrays.asList(svFirstArg, svVarArg1), arguments.get(0), ps, () -> svResult).toList();
+    Collection<ProgramState> arrayOfA = methodYield.statesAfterInvocation(Arrays.asList(svFirstArg, svVarArg1), arguments.get(0), ps, () -> svResult).toList();
     assertThat(arrayOfA).hasSize(1);
     psResult = arrayOfA.iterator().next();
     assertThat(psResult.getConstraint(svFirstArg, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
     assertThat(psResult.getConstraint(svVarArg1, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
 
     // apply constraint NotNull to parameter (B[] is a subtype of A[])
-    Collection<ProgramState> arrayOfB = yield.statesAfterInvocation(Arrays.asList(svFirstArg, svVarArg1), arguments.get(1), ps, () -> svResult).toList();
+    Collection<ProgramState> arrayOfB = methodYield.statesAfterInvocation(Arrays.asList(svFirstArg, svVarArg1), arguments.get(1), ps, () -> svResult).toList();
     assertThat(arrayOfB).hasSize(1);
     psResult = arrayOfB.iterator().next();
     assertThat(psResult.getConstraint(svFirstArg, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
     assertThat(psResult.getConstraint(svVarArg1, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
     // no constraint, as 'a' is not an array
-    Collection<ProgramState> objectA = yield.statesAfterInvocation(Arrays.asList(svFirstArg, svVarArg1), arguments.get(2), ps, () -> svResult).toList();
+    Collection<ProgramState> objectA = methodYield.statesAfterInvocation(Arrays.asList(svFirstArg, svVarArg1), arguments.get(2), ps, () -> svResult).toList();
     assertThat(objectA).hasSize(1);
     psResult = objectA.iterator().next();
     assertThat(psResult.getConstraint(svFirstArg, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
     assertThat(psResult.getConstraint(svVarArg1, ObjectConstraint.class)).isNull();
 
     // no constraint, as 'a' and 'b' can not receive the constraint of the array
-    Collection<ProgramState> objectsAandB = yield.statesAfterInvocation(Arrays.asList(svFirstArg, svVarArg1, svVarArg2), arguments.get(3), ps, () -> svResult).toList();
+    Collection<ProgramState> objectsAandB = methodYield.statesAfterInvocation(Arrays.asList(svFirstArg, svVarArg1, svVarArg2), arguments.get(3), ps, () -> svResult).toList();
     assertThat(objectsAandB).hasSize(1);
     psResult = objectsAandB.iterator().next();
     assertThat(psResult.getConstraint(svFirstArg, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
@@ -285,13 +285,13 @@ class MethodYieldTest {
     assertThat(psResult.getConstraint(svVarArg2, ObjectConstraint.class)).isNull();
 
     // no param, we only learn something about the argument which is not variadic
-    Collection<ProgramState> noParam = yield.statesAfterInvocation(Collections.singletonList(svFirstArg), arguments.get(4), ps, () -> svResult).toList();
+    Collection<ProgramState> noParam = methodYield.statesAfterInvocation(Collections.singletonList(svFirstArg), arguments.get(4), ps, () -> svResult).toList();
     assertThat(noParam).hasSize(1);
     psResult = noParam.iterator().next();
     assertThat(psResult.getConstraint(svFirstArg, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
     // null param, contradiction, no resulting program state
     ps = ProgramState.EMPTY_STATE.addConstraint(svFirstArg, ObjectConstraint.NULL);
-    Collection<ProgramState> nullParam = yield.statesAfterInvocation(Arrays.asList(svFirstArg, svVarArg1), arguments.get(5), ps, () -> svResult).toList();
+    Collection<ProgramState> nullParam = methodYield.statesAfterInvocation(Arrays.asList(svFirstArg, svVarArg1), arguments.get(5), ps, () -> svResult).toList();
     assertThat(nullParam).isEmpty();
   }
 

@@ -47,25 +47,25 @@ class ExceptionalYieldTest {
   void test_equals() {
     MethodBehavior methodBehavior = mockMethodBehavior();
 
-    ExceptionalYield yield = new ExceptionalYield(methodBehavior);
+    ExceptionalYield methodYield = new ExceptionalYield(methodBehavior);
     ExceptionalYield otherYield = new ExceptionalYield(methodBehavior);
 
-    assertThat(yield)
+    assertThat(methodYield)
       .isNotEqualTo(null)
-      .isEqualTo(yield)
+      .isEqualTo(methodYield)
       .isEqualTo(otherYield);
 
     otherYield.setExceptionType("java.lang.Exception");
-    assertThat(yield).isNotEqualTo(otherYield);
+    assertThat(methodYield).isNotEqualTo(otherYield);
 
-    yield.setExceptionType("java.lang.Exception");
-    assertThat(yield).isEqualTo(otherYield);
+    methodYield.setExceptionType("java.lang.Exception");
+    assertThat(methodYield).isEqualTo(otherYield);
 
     Sema semanticModel = ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A{}")).sema;
-    assertThat(yield.exceptionType(semanticModel)).isEqualTo(otherYield.exceptionType(semanticModel));
+    assertThat(methodYield.exceptionType(semanticModel)).isEqualTo(otherYield.exceptionType(semanticModel));
 
     // same arity and parameters but happy yield
-    assertThat(yield).isNotEqualTo(new HappyPathYield(methodBehavior));
+    assertThat(methodYield).isNotEqualTo(new HappyPathYield(methodBehavior));
   }
 
   @Test
@@ -157,11 +157,11 @@ class ExceptionalYieldTest {
       .contains(ObjectConstraint.NOT_NULL);
   }
 
-  private static Constraint paramObjectConstraint(MethodYield yield) {
-    return yield.parametersConstraints.get(0).get(ObjectConstraint.class);
+  private static Constraint paramObjectConstraint(MethodYield methodYield) {
+    return methodYield.parametersConstraints.get(0).get(ObjectConstraint.class);
   }
 
-  private static Constraint paramBooleanConstraint(MethodYield yield) {
-    return yield.parametersConstraints.get(0).get(BooleanConstraint.class);
+  private static Constraint paramBooleanConstraint(MethodYield methodYield) {
+    return methodYield.parametersConstraints.get(0).get(BooleanConstraint.class);
   }
 }

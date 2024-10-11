@@ -286,10 +286,10 @@ class MethodBehaviorJsonAdapterTest {
   @Test
   void exceptional_yield_serialization_deserialaization() {
     MethodBehavior mb = newMethodBehavior("org.foo.A.bar(Ljava/lang/Object;)Z");
-    ExceptionalYield yield = new ExceptionalYield(mb);
-    yield.setExceptionType("java.lang.Exception");
-    yield.parametersConstraints.add(ConstraintsByDomain.empty().put(ObjectConstraint.NULL));
-    mb.addYield(yield);
+    ExceptionalYield methodYield = new ExceptionalYield(mb);
+    methodYield.setExceptionType("java.lang.Exception");
+    methodYield.parametersConstraints.add(ConstraintsByDomain.empty().put(ObjectConstraint.NULL));
+    mb.addYield(methodYield);
     mb.completed();
 
     String serialized = gson.toJson(mb);

@@ -252,14 +252,14 @@ class MethodBehaviorTest {
   }
 
   private void addYield(MethodBehavior mb, @Nullable Constraint result, Constraint... constraints) {
-    HappyPathYield yield = new HappyPathYield(mb);
+    HappyPathYield methodYield = new HappyPathYield(mb);
     for (Constraint constraint : constraints) {
-      yield.parametersConstraints.add(ConstraintsByDomain.empty().put(constraint));
+      methodYield.parametersConstraints.add(ConstraintsByDomain.empty().put(constraint));
     }
     if (result != null) {
-      yield.setResult(-1, ConstraintsByDomain.empty().put(result));
+      methodYield.setResult(-1, ConstraintsByDomain.empty().put(result));
     }
-    mb.addYield(yield);
+    mb.addYield(methodYield);
   }
 
   private static MethodBehavior newMethodBehavior(String signature) {
