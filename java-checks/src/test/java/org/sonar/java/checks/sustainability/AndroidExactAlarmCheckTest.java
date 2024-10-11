@@ -20,18 +20,7 @@
 package org.sonar.java.checks.sustainability;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.security.AndroidBroadcastingCheck;
-import org.sonar.java.checks.security.AndroidUnencryptedFilesCheck;
 import org.sonar.java.checks.verifier.CheckVerifier;
-
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
-
-
-  import org.junit.jupiter.api.Test;
-  import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.plugins.java.api.InputFileScannerContext;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
