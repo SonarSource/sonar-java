@@ -66,10 +66,10 @@ class AbstractMethodDetectionTest {
     assertThat(visitor.lines).containsExactly(14);
   }
 
-  class Visitor extends AbstractMethodDetection {
+  static class Visitor extends AbstractMethodDetection {
 
     public List<Integer> lines = new ArrayList<>();
-    private MethodMatchers methodInvocationMatchers;
+    private final MethodMatchers methodInvocationMatchers;
 
     public Visitor(MethodMatchers methodInvocationMatchers) {
       this.methodInvocationMatchers = methodInvocationMatchers;
