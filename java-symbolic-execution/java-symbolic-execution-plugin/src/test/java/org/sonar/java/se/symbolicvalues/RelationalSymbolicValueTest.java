@@ -445,7 +445,7 @@ class RelationalSymbolicValueTest {
   @Test
   void test_to_string() {
     RelationalSymbolicValue rsv = new RelationalSymbolicValue(EQUAL);
-    Symbol var = SETestUtils.variable("x");
+    Symbol varSymbol = SETestUtils.variable("x");
     SymbolicValue left = new SymbolicValue() {
       @Override
       public String toString() {
@@ -459,7 +459,7 @@ class RelationalSymbolicValueTest {
       }
     };
 
-    rsv.computedFrom(Arrays.asList(new ProgramState.SymbolicValueSymbol(right, null), new ProgramState.SymbolicValueSymbol(left, var)));
+    rsv.computedFrom(Arrays.asList(new ProgramState.SymbolicValueSymbol(right, null), new ProgramState.SymbolicValueSymbol(left, varSymbol)));
     assertThat(rsv).hasToString("left(A#x)==right");
   }
 
