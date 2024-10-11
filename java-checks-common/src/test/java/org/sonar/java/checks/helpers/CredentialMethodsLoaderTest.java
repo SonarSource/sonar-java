@@ -20,12 +20,9 @@
 package org.sonar.java.checks.helpers;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

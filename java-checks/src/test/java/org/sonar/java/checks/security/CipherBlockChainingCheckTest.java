@@ -20,7 +20,6 @@
 package org.sonar.java.checks.security;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.InterruptedExceptionCheck;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;

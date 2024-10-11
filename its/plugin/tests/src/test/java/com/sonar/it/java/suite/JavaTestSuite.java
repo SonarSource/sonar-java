@@ -22,7 +22,6 @@ package com.sonar.it.java.suite;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
-import com.sonar.orchestrator.locator.MavenLocation;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
