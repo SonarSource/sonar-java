@@ -24,12 +24,12 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class ObjectFinalizeOverridenNotPublicCheckTest {
+class ObjectFinalizeOverriddenNotPublicCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeOverridenNotPublicCheckSample.java"))
-      .withCheck(new ObjectFinalizeOverridenNotPublicCheck())
+      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeOverriddenNotPublicCheckSample.java"))
+      .withCheck(new ObjectFinalizeOverriddenNotPublicCheck())
       .verifyIssues();
   }
 }

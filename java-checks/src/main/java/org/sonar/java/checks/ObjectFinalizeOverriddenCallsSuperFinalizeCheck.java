@@ -44,7 +44,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "ObjectFinalizeOverridenCallsSuperFinalizeCheck", repositoryKey = "squid")
 @Rule(key = "S1114")
-public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubscriptionVisitor {
+public class ObjectFinalizeOverriddenCallsSuperFinalizeCheck extends IssuableSubscriptionVisitor {
 
   private static final String FINALIZE = "finalize";
   private static final MethodMatchers FINALIZE_MATCHER = MethodMatchers.create()

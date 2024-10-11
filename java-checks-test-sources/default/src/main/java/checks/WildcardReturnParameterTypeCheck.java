@@ -26,7 +26,7 @@ class WildcardReturnParameterTypeCheck {
   }
 
   class Dog extends Animal {
-    public List<? extends Animal> getAnimals() { // Compliant method is overriden
+    public List<? extends Animal> getAnimals() { // Compliant method is overridden
       return super.getAnimals();
     }
 

@@ -90,7 +90,7 @@ class BehaviorCacheTest {
       "MethodBehavior#foo(Z)Z",
       "MethodBehavior#independent()V");
 
-    // method which can be overriden should not have behaviors: 'abstractMethod', 'publicMethod', 'nativeMethod'
+    // method which can be overridden should not have behaviors: 'abstractMethod', 'publicMethod', 'nativeMethod'
     assertThat(sev.behaviorCache.behaviors.keySet().stream()
       .filter(s -> s.equals("#nativeMethod") || s.contains("#abstractMethod") || s.contains("#publicMethod"))
       .map(s -> sev.behaviorCache.behaviors.get(s))).isEmpty();

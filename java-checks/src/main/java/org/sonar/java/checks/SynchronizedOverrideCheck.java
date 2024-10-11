@@ -51,9 +51,9 @@ public class SynchronizedOverrideCheck extends IssuableSubscriptionVisitor {
     Symbol.MethodSymbol overriddenSymbol = overriddenSymbols.get(0);
     if (overriddenSymbol.isSynchronizedMethod() && !methodSymbol.isSynchronizedMethod()) {
       List<JavaFileScannerContext.Location> secondaries = Collections.emptyList();
-      MethodTree overridenMethodTree = overriddenSymbol.declaration();
-      if (overridenMethodTree != null) {
-        secondaries = Collections.singletonList(new JavaFileScannerContext.Location("", overridenMethodTree.simpleName()));
+      MethodTree overriddenMethodTree = overriddenSymbol.declaration();
+      if (overriddenMethodTree != null) {
+        secondaries = Collections.singletonList(new JavaFileScannerContext.Location("", overriddenMethodTree.simpleName()));
       }
       reportIssue(methodTree.simpleName(), MESSAGE, secondaries, null);
     }

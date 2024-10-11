@@ -25,7 +25,7 @@ class A {
     };
   ThreadLocal<List<String>> myThreadLocal4 = new ThreadLocal<List<String>>(); // compliant
   ThreadLocal<List<String>> myThreadLocal5 =
-    new ThreadLocal<List<String>>() { // compliant : only overriden method is not initialValue
+    new ThreadLocal<List<String>>() { // compliant : only overridden method is not initialValue
       List<String> get() {
         return null;
       }
