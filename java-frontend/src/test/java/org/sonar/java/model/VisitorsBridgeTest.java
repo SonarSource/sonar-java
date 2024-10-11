@@ -85,20 +85,6 @@ class VisitorsBridgeTest {
 
   private static final NullPointerException NPE = new NullPointerException("BimBadaboum");
 
-  private static void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
-    visitorsBridge.setCurrentFile(TestUtils.emptyInputFile(filename));
-    visitorsBridge.visitFile(JParserTestUtils.parse(code), false);
-  }
-
-
-  private static String constructFileName(String... path) {
-    String result = "";
-    for (String s : path) {
-      result += s + File.separator;
-    }
-    return result.substring(0, result.length() - 1);
-  }
-
   @Test
   void rethrow_exception_when_hidden_property_set_to_true_with_JavaFileScanner() {
     VisitorsBridge visitorsBridge = visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), true);

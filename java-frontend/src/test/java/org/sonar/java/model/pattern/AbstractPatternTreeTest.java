@@ -35,7 +35,6 @@ import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.DefaultPatternTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.GuardedPatternTree;
@@ -470,11 +469,4 @@ class AbstractPatternTreeTest {
     return (SwitchExpressionTree) returnStatementTree.expression();
   }
 
-  private static ConditionalExpressionTree conditionalExpressionTree(String methodParametersDeclaration, String ifStatementCode) {
-    CompilationUnitTree cut = JParserTestUtils.parse(String.format(BASE_SOURCE_CODE, methodParametersDeclaration, ifStatementCode));
-    ClassTree classTree = (ClassTree) cut.types().get(0);
-    MethodTree methodTree = (MethodTree) classTree.members().get(0);
-    ReturnStatementTree returnStatementTree = (ReturnStatementTree) methodTree.block().body().get(0);
-    return (ConditionalExpressionTree) returnStatementTree.expression();
-  }
 }
