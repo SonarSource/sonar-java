@@ -290,18 +290,18 @@ class RelationalSymbolicValueTest {
   @Test
   void test_constraint_copy() {
     ProgramState ps = ProgramState.EMPTY_STATE;
-    SymbolicValue a = new SymbolicValue();
-    SymbolicValue b = new SymbolicValue();
-    List<ProgramState> newProgramStates = a.setConstraint(ps, ZERO);
+    SymbolicValue aValue = new SymbolicValue();
+    SymbolicValue bValue = new SymbolicValue();
+    List<ProgramState> newProgramStates = aValue.setConstraint(ps, ZERO);
     ps = ListUtils.getOnlyElement(newProgramStates);
-    // 0 >= b
-    SymbolicValue aGEb = relationalSV(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, b, a);
+    // 0 >= bValue
+    SymbolicValue aGEb = relationalSV(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, bValue, aValue);
     newProgramStates = aGEb.setConstraint(ps, TRUE);
     ps = ListUtils.getOnlyElement(newProgramStates);
 
     // Zero constraint should stay when Zero is >= to SV without any constraint
-    assertThat(ps.getConstraint(a, DivisionByZeroCheck.ZeroConstraint.class)).isEqualTo(ZERO);
-    assertThat(ps.getConstraint(b, DivisionByZeroCheck.ZeroConstraint.class)).isNull();
+    assertThat(ps.getConstraint(aValue, DivisionByZeroCheck.ZeroConstraint.class)).isEqualTo(ZERO);
+    assertThat(ps.getConstraint(bValue, DivisionByZeroCheck.ZeroConstraint.class)).isNull();
   }
 
   @Test

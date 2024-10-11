@@ -384,25 +384,25 @@ class JUtilsTest {
 
     @Test
     void constantValue() {
-      JavaTree.CompilationUnitTreeImpl cu = test("interface I { short SHORT = 42; char CHAR = 42; byte BYTE = 42; boolean BOOLEAN = false; }");
-      ClassTreeImpl c = firstClass(cu);
+      JavaTree.CompilationUnitTreeImpl specificCu = test("interface I { short SHORT = 42; char CHAR = 42; byte BYTE = 42; boolean BOOLEAN = false; }");
+      ClassTreeImpl specificC = firstClass(specificCu);
 
-      Symbol.VariableSymbol shortConstant = cu.sema.variableSymbol(firstField(c).variableBinding);
+      Symbol.VariableSymbol shortConstant = specificCu.sema.variableSymbol(firstField(specificC).variableBinding);
       assertThat(shortConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol charConstant = cu.sema.variableSymbol(nthField(c, 1).variableBinding);
+      Symbol.VariableSymbol charConstant = specificCu.sema.variableSymbol(nthField(specificC, 1).variableBinding);
       assertThat(charConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol byteConstant = cu.sema.variableSymbol(nthField(c, 2).variableBinding);
+      Symbol.VariableSymbol byteConstant = specificCu.sema.variableSymbol(nthField(specificC, 2).variableBinding);
       assertThat(byteConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol booleanConstant = cu.sema.variableSymbol(nthField(c, 3).variableBinding);
+      Symbol.VariableSymbol booleanConstant = specificCu.sema.variableSymbol(nthField(specificC, 3).variableBinding);
       assertThat(booleanConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Boolean.class)
         .isEqualTo(Boolean.FALSE);

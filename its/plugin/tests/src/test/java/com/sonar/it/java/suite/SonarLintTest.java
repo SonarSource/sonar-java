@@ -181,7 +181,7 @@ public class SonarLintTest {
       .setLogOutput((formattedMessage, level) -> logLevels.add(level))
       .addEnabledLanguage(Language.JAVA)
       .build();
-    StandaloneSonarLintEngine sonarlintEngine = new StandaloneSonarLintEngineImpl(config);
+    StandaloneSonarLintEngine specificSonarlintEngine = new StandaloneSonarLintEngineImpl(config);
 
     ClientInputFile inputFile = prepareInputFile("Foo.java", """
         public class Foo {
@@ -201,7 +201,7 @@ public class SonarLintTest {
       .build();
     final List<Issue> issues = new ArrayList<>();
     CancellableProgressMonitor progressMonitor = new CancellableProgressMonitor();
-    sonarlintEngine.analyze(
+    specificSonarlintEngine.analyze(
       standaloneAnalysisConfiguration,
       issue -> {
         if (!issues.isEmpty()) {

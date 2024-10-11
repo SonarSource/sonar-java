@@ -464,14 +464,14 @@ class JavaTreeModelTest {
 
     @Test
     void annotated_extends_wildcard() {
-      VariableTree variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<@Foo ? extends A> var; } }");
-      ParameterizedTypeTree parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
-      assertThat(parameterizedTypeTree).hasChildrenSize(2);
+      VariableTree specificVariableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<@Foo ? extends A> var; } }");
+      ParameterizedTypeTree specificParameterizedTypeTree = (ParameterizedTypeTree) specificVariableTree.type();
+      assertThat(specificParameterizedTypeTree).hasChildrenSize(2);
 
-      TypeArguments typeArguments = parameterizedTypeTree.typeArguments();
-      assertThat(typeArguments).hasChildrenSize(3);
+      TypeArguments specificTypeArguments = specificParameterizedTypeTree.typeArguments();
+      assertThat(specificTypeArguments).hasChildrenSize(3);
 
-      WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
+      WildcardTree wildcard = (WildcardTree) specificTypeArguments.get(0);
       assertThat(wildcard)
         .is(Tree.Kind.EXTENDS_WILDCARD)
         .hasChildrenSize(4);
@@ -484,14 +484,14 @@ class JavaTreeModelTest {
 
     @Test
     void annotated_extends_wildcard_bound() {
-      VariableTree variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends @Foo @Bar A> var; } }");
-      ParameterizedTypeTree parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
-      assertThat(parameterizedTypeTree).hasChildrenSize(2);
+      VariableTree specificVariableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends @Foo @Bar A> var; } }");
+      ParameterizedTypeTree specificParameterizedTypeTree = (ParameterizedTypeTree) specificVariableTree.type();
+      assertThat(specificParameterizedTypeTree).hasChildrenSize(2);
 
-      TypeArguments typeArguments = parameterizedTypeTree.typeArguments();
-      assertThat(typeArguments).hasChildrenSize(3);
+      TypeArguments specificTypeArguments = specificParameterizedTypeTree.typeArguments();
+      assertThat(specificTypeArguments).hasChildrenSize(3);
 
-      WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
+      WildcardTree wildcard = (WildcardTree) specificTypeArguments.get(0);
       assertThat(wildcard)
         .is(Tree.Kind.EXTENDS_WILDCARD)
         .hasChildrenSize(3);

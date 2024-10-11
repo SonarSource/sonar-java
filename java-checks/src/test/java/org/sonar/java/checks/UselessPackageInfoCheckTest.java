@@ -163,12 +163,12 @@ class UselessPackageInfoCheckTest {
     doReturn(new ByteArrayInputStream(cachedHash))
     .when(localReadCache).read("java:contentHash:MD5:"+cachedFile.key());
 
-    var verifier = CheckVerifier.newVerifier()
+    var specificVerifier = CheckVerifier.newVerifier()
       .withCache(localReadCache, new InternalWriteCache().bind(localReadCache))
       .addFiles(InputFile.Status.SAME, filePath)
       .withCheck(new UselessPackageInfoCheck());
 
-    assertThatThrownBy(verifier::verifyNoIssues)
+    assertThatThrownBy(specificVerifier::verifyNoIssues)
       .isInstanceOf(AnalysisException.class)
       .hasRootCauseInstanceOf(IOException.class);
   }

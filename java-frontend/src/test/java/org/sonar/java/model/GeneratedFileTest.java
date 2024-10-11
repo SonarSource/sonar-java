@@ -175,8 +175,8 @@ class GeneratedFileTest {
     GeneratedFile generatedFile = new GeneratedFile(tmp.resolve("index_jsp.java"));
     generatedFile.addSmap(smapFile);
 
-    SourceMap actual = generatedFile.sourceMap();
-    assertThat(actual).isSameAs(generatedFile.sourceMap());
+    SourceMap actualSourceMap = generatedFile.sourceMap();
+    assertThat(actualSourceMap).isSameAs(generatedFile.sourceMap());
   }
 
   @Test
