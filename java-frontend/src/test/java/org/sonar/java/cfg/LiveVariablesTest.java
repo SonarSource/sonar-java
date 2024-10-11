@@ -48,14 +48,18 @@ class LiveVariablesTest {
 
   @Test
   void test_try_finally_liveness() {
-    CFG cfg = buildCFG("void foo() {   Object object = null;\n" +
-      "    try {\n" +
-      "      object = new Object();\n" +
-      "    } catch (Exception e) {\n" +
-      "      object.hashCode(); // Noncompliant\n" +
-      "    } finally {\n" +
-      "      object.hashCode();// Noncompliant\n" +
-      "    } }");
+    CFG cfg = buildCFG("""
+        void foo() {
+          Object object = null;
+          try {
+            object = new Object();
+          } catch (Exception e) {
+            object.hashCode(); // Noncompliant
+          } finally {
+            object.hashCode(); // Noncompliant
+          }
+        }
+      """);
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     cfg.reversedBlocks().stream().filter(block -> block.id() > 1).forEach(block -> assertThat(liveVariables.getOut(block)).as("Issue with block B" + block.id()).hasSize(1));
   }

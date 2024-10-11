@@ -46,23 +46,25 @@ class SmapFileTest {
 
   @Test
   void test() {
-    String sourceMap = "SMAP\n" +
-      "test_jsp.java\n" +
-      "JSP\n" +
-      "*S JSP\n" +
-      "*F\n" +
-      "+ 0 test.jsp\n" +
-      "WEB-INF/test.jsp\n" +
-      "2 Incl.xyz\n" +
-      "*L\n" +
-      "1,5:116,0\n" +
-      "123:207\n" +
-      "130,3:210\n" +
-      "140:250,7\n" +
-      "160,3:300,2\n" +
-      "160#2,3:300,2\n" +
-      "160,3:300,2\n" +
-      "*E\n";
+    String sourceMap = """
+      SMAP
+      test_jsp.java
+      JSP
+      *S JSP
+      *F
+      + 0 test.jsp
+      WEB-INF/test.jsp
+      2 Incl.xyz
+      *L
+      1,5:116,0
+      123:207
+      130,3:210
+      140:250,7
+      160,3:300,2
+      160#2,3:300,2
+      160,3:300,2
+      *E
+      """;
     DefaultFileSystem fs = new DefaultFileSystem(temporaryFolder);
     DefaultInputFile inputFile = TestInputFileBuilder.create("module", temporaryFolder.toFile(), temporaryFolder.resolve("WEB-INF/test.jsp").toFile()).build();
     fs.add(inputFile);
@@ -112,8 +114,15 @@ class SmapFileTest {
   void invalid_line_info() {
     Path p = Paths.get("file.class.smap");
 
-    new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n" +
-      "invalid line info\n",
+    new SmapFile(p, """
+      SMAP
+      test.jsp
+      JSP
+      *S JSP
+      *F
+      *L
+      invalid line info
+      """,
       null, null);
 
     assertThat(logTester.logs(Level.WARN)).contains("Invalid line info invalid line info");

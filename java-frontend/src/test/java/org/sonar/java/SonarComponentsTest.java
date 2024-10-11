@@ -498,11 +498,13 @@ class SonarComponentsTest {
     RuleKey ruleKey = RuleKey.of("MyRepo", "CustomCheck");
 
     InputFile inputFile = new TestInputFileBuilder("", "file.java")
-      .initMetadata("class A {\n"
-        + "  void foo() {\n"
-        + "    System.out.println();\n"
-        + "  }\n"
-        + "}\n").build();
+      .initMetadata("""
+        class A {
+          void foo() {
+            System.out.println();
+          }
+        }
+        """).build();
 
     SensorContextTester context = SensorContextTester.create(new File(""));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), null, null,

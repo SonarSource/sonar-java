@@ -36,11 +36,12 @@ class RegexCacheTest {
 
   @Test
   void same_result_if_same_tree_is_provided() {
-    CompilationUnitTree cut = JParserTestUtils.parse(
-      "class A {\n"
-        + "  String s0 = \"abc\";\n"
-        + "  String s1 = \"abc\";\n"
-        + "}");
+    CompilationUnitTree cut = JParserTestUtils.parse("""
+        class A {
+          String s0 = "abc";
+          String s1 = "abc";
+        }
+        """);
     ClassTree a = (ClassTree) cut.types().get(0);
     List<Tree> fields = a.members();
     LiteralTree s0 = (LiteralTree) ((VariableTree) fields.get(0)).initializer();
@@ -61,11 +62,12 @@ class RegexCacheTest {
 
   @Test
   void same_result_if_same_trees_are_provided() {
-    CompilationUnitTree cut = JParserTestUtils.parse(
-      "class A {\n"
-        + "  String s0 = \"abc\";\n"
-        + "  String s1 = \"abc\";\n"
-        + "}");
+    CompilationUnitTree cut = JParserTestUtils.parse("""
+        class A {
+          String s0 = "abc";
+          String s1 = "abc";
+        }
+        """);
     ClassTree a = (ClassTree) cut.types().get(0);
     List<Tree> fields = a.members();
     LiteralTree s0 = (LiteralTree) ((VariableTree) fields.get(0)).initializer();

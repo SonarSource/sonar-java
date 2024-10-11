@@ -78,10 +78,14 @@ class PublicApiCheckerTest {
   class SpecialCases {
     @Test
     void getApiJavadoc_parametrized_method() {
-      CompilationUnitTree cut = JParserTestUtils.parse("interface A {\n"
-        + "  /**\n   * documented\n   */\n"
-        + "  <T> void foo(T t);\n"
-        + "}");
+      CompilationUnitTree cut = JParserTestUtils.parse("""
+        interface A {
+          /**
+           * documented
+           */
+          <T> void foo(T t);
+        }
+        """);
       Optional<String> apiJavadoc = PublicApiChecker.getApiJavadoc(((ClassTree)(cut.types().get(0))).members().get(0));
       assertThat(apiJavadoc)
         .isPresent()
@@ -137,14 +141,15 @@ class PublicApiCheckerTest {
 
     @Test
     void two_javadoc_comment() {
-      CompilationUnitTree cut = JParserTestUtils.parse(
-        "/**\n" +
-        "* dandling javadoc\n" +
-        "*/\n" +
-        "/**\n" +
-        "* documented\n" +
-        "*/\n" +
-        "class A { }");
+      CompilationUnitTree cut = JParserTestUtils.parse("""
+          /**
+          * dandling javadoc
+          */
+          /**
+          * documented
+          */
+          class A { }
+          """);
       Optional<String> apiJavadoc = PublicApiChecker.getApiJavadoc(cut.types().get(0));
       assertThat(apiJavadoc)
         .isPresent()

@@ -43,14 +43,16 @@ import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
 class InstanceOfTreeImplTest {
 
-  private static final String CLASS_WITH_INSTANCE_OF = "class A {\n"
-    + "  void foo(Object o) {\n"
-    + "    if(%s) {"
-    + "      System.out.println(%s);\n"
-    + "    }\n"
-    + "  }\n"
-    + "  record Rectangle(int a, int b) {}"
-    + "}\n";
+  private static final String CLASS_WITH_INSTANCE_OF = """
+    class A {
+      void foo(Object o) {
+        if(%s) {
+          System.out.println(%s);
+        }
+      }
+      record Rectangle(int a, int b) {}
+    }
+    """;
 
   @Test
   void test_PatternInstanceOfTree() {

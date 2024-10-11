@@ -59,11 +59,12 @@ import static org.mockito.Mockito.spy;
 
 class JasperTest {
 
-  private static final String JSP_SOURCE = "<html>\n" +
-    "<body>\n" +
-    "<h2>Hello World!</h2>\n" +
-    "</body>\n" +
-    "</html>";
+  private static final String JSP_SOURCE = """
+    <html>
+    <body>
+    <h2>Hello World!</h2>
+    </body>
+    </html>""";
 
   private static final String SPRING_TLD = "<%@ taglib prefix=\"spring\" uri=\"http://www.springframework.org/tags\" %>\n";
 
@@ -175,14 +176,15 @@ class JasperTest {
 
   @Test
   void test_with_classpath_jee6_jstl() throws Exception {
-    SensorContextTester ctx = jspContext(
-      "<%@ taglib uri = \"http://java.sun.com/jsp/jstl/core\" prefix = \"c\" %>\n" +
-      "<html>\n" +
-      "<body>\n" +
-      "<h2>Hello World!</h2>\n" +
-      "<c:if test=\"true\">what-if</c:if>\n" +
-      "</body>\n" +
-      "</html>");
+    SensorContextTester ctx = jspContext("""
+        <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
+        <html>
+        <body>
+        <h2>Hello World!</h2>
+        <c:if test="true">what-if</c:if>
+        </body>
+        </html>
+        """);
     Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, asList(jee6Jar, jstlJar));
 
     assertThat(generatedFiles).isEmpty();

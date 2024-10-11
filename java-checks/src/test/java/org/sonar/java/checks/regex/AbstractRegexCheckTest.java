@@ -51,16 +51,17 @@ import static org.sonar.java.checks.regex.AbstractRegexCheck.getLiterals;
 
 class AbstractRegexCheckTest {
 
-  private static final String JAVA_CODE = ""
-    + "package org.foo;\n"
-    + "import static java.util.regex.Pattern.MULTILINE;"
-    + "class A {\n"
-    + "  void m(Object arg) {\n"
-    + "    %s\n"
-    + "    m(%s);\n"
-    + "  }\n"
-    + "  public static final String A_CONST = \"a_constant_value\";\n"
-    + "}";
+  private static final String JAVA_CODE = """
+    package org.foo;
+    import static java.util.regex.Pattern.MULTILINE;
+    class A {
+      void m(Object arg) {
+        %s
+        m(%s);
+      }
+      public static final String A_CONST = "a_constant_value";
+    }
+    """;
 
   @Test
   void test_GetLiterals_string_literals() {

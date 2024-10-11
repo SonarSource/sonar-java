@@ -671,26 +671,30 @@ class CFGTest {
 
   @Test
   void switch_statement() {
-    CFG cfg = buildCFG("void foo(int i, int j, int k) {\n" +
-        "    switch (i==-1 ? j:k) {\n" +
-        "      default:;\n" +
-        "    }\n" +
-        "  }");
+    CFG cfg = buildCFG("""
+      void foo(int i, int j, int k) {
+          switch (i==-1 ? j:k) {
+            default:;
+          }
+        }
+      """);
 
     assertThat(cfg.blocks().get(0).id()).isEqualTo(5);
 
-    cfg = buildCFG("void fun(int foo) {\n" +
-      "  int a;" +
-      "  switch(foo) {\n" +
-      "    case 1:\n" +
-      "      System.out.println(bar);\n" +
-      "    case 2:\n" +
-      "      System.out.println(qix);\n" +
-      "      break;\n" +
-      "    default:\n" +
-      "      System.out.println(baz);\n" +
-      "  }\n" +
-      "}");
+    cfg = buildCFG("""
+      void fun(int foo) {
+        int a;
+        switch(foo) {
+          case 1:
+            System.out.println(bar);
+          case 2:
+            System.out.println(qix);
+            break;
+          default:
+            System.out.println(baz);
+        }
+      }
+      """);
     CFGChecker cfgChecker = checker(
       block(
         element(CASE_GROUP),
@@ -724,20 +728,22 @@ class CFGTest {
 
   @Test
   void switch_statement_with_piledUpCases_againstDefault() {
-    final CFG cfg = buildCFG("void fun(int foo) {\n" +
-      "    int a;\n" +
-      "    switch (foo) {\n" +
-      "      case 1:\n" +
-      "        System.out.println(bar);\n" +
-      "      case 2:\n" +
-      "        System.out.println(qix);\n" +
-      "        break;\n" +
-      "      case 3:\n" +
-      "      case 4:\n" +
-      "      default:\n" +
-      "        System.out.println(baz);\n" +
-      "    }\n" +
-      "  }");
+    final CFG cfg = buildCFG("""
+        void fun(int foo) {
+          int a;
+          switch (foo) {
+            case 1:
+              System.out.println(bar);
+            case 2:
+              System.out.println(qix);
+              break;
+            case 3:
+            case 4:
+            default:
+              System.out.println(baz);
+          }
+        }
+        """);
     final CFGChecker cfgChecker = checker(
       block(
         element(CASE_GROUP),
@@ -769,17 +775,19 @@ class CFGTest {
 
   @Test
   void switch_statement_without_default() {
-    final CFG cfg = buildCFG("void fun(int foo) {\n" +
-      "    int a;\n" +
-      "    switch (foo) {\n" +
-      "      case 1:\n" +
-      "        System.out.println(bar);\n" +
-      "      case 2:\n" +
-      "        System.out.println(qix);\n" +
-      "        break;\n" +
-      "    }\n" +
-      "    Integer.toString(foo);\n" +
-      "  }");
+    final CFG cfg = buildCFG("""
+        void fun(int foo) {
+          int a;
+          switch (foo) {
+            case 1:
+              System.out.println(bar);
+            case 2:
+              System.out.println(qix);
+              break;
+          }
+          Integer.toString(foo);
+        }
+      """);
     final CFGChecker cfgChecker = checker(
       block(
         element(CASE_GROUP),
@@ -810,20 +818,22 @@ class CFGTest {
    */
   @Test
   void switch_statement_without_fallthrough() {
-    final CFG cfg = buildCFG("void fun(int foo) throws Exception {\n" +
-      "    int a;\n" +
-      "    switch (foo) {\n" +
-      "      case 1     -> {\n" +
-      "        fun(bar1);\n" +
-      "        fun(bar2);\n" +
-      "      }\n" +
-      "      case 2,3,4 -> fun(qix);\n" +
-      "      case 5     -> fun(gul);\n" +
-      "      case 6     -> throw new Exception(\"boom\");\n" +
-      "      default    -> fun(def);\n" +
-      "    }\n" +
-      "    Integer.toString(foo);\n" +
-      "  }");
+    final CFG cfg = buildCFG("""
+        void fun(int foo) throws Exception {
+          int a;
+          switch (foo) {
+            case 1     -> {
+              fun(bar1);
+              fun(bar2);
+            }
+            case 2,3,4 -> fun(qix);
+            case 5     -> fun(gul);
+            case 6     -> throw new Exception("boom");
+            default    -> fun(def);
+          }
+          Integer.toString(foo);
+        }
+      """);
     final CFGChecker cfgChecker = checker(
       block(
         element(CASE_GROUP),
@@ -870,14 +880,16 @@ class CFGTest {
 
   @Test
   void switch_expression_without_default() {
-    final CFG cfg = buildCFG("int fun(MyEnum foo) {\n" +
-      "    int a = switch (foo) {\n" +
-      "      case BAR -> 1;\n" +
-      "      case QIX -> 2;\n" +
-      "    };\n" +
-      "    return a;\n" +
-      "  }\n"
-      + "enum MyEnum { BAR, QIX; }");
+    final CFG cfg = buildCFG("""
+        int fun(MyEnum foo) {
+          int a = switch (foo) {
+            case BAR -> 1;
+            case QIX -> 2;
+          };
+          return a;
+        }
+        enum MyEnum { BAR, QIX; }
+      """);
     final CFGChecker cfgChecker = checker(
       block(
         element(CASE_GROUP),
@@ -897,15 +909,17 @@ class CFGTest {
 
   @Test
   void switch_expression_without_fallthrough() {
-    final CFG cfg = buildCFG("int fun(int foo) throws Exception {\n" +
-      "    int a = switch (foo) {\n" +
-      "      case 1 -> fun(bar1) + fun(bar2);\n" +
-      "      case 2, 3, 4 -> fun(qix);\n" +
-      "      case 5 -> throw new Exception(\"boom\");\n" +
-      "      default -> fun(def);\n" +
-      "    };\n" +
-      "    return a;\n" +
-      "  }");
+    final CFG cfg = buildCFG("""
+        int fun(int foo) throws Exception {
+          int a = switch (foo) {
+            case 1 -> fun(bar1) + fun(bar2);
+            case 2, 3, 4 -> fun(qix);
+            case 5 -> throw new Exception("boom");
+            default -> fun(def);
+          };
+          return a;
+        }
+      """);
     final CFGChecker cfgChecker = checker(
       block(
         element(CASE_GROUP),
@@ -945,23 +959,25 @@ class CFGTest {
 
   @Test
   void switch_expression_with_fallthrough() {
-    final CFG cfg = buildCFG("int fun(int foo) throws Exception {\n" +
-      "    int a = switch (foo) {\n" +
-      "      case 1:\n" +
-      "        fun(bar);\n" +
-      "      case 2:\n" +
-      "      case 3:\n" +
-      "      case 4:\n" +
-      "        yield fun(bar1) + fun(bar2);\n" +
-      "      case 5:\n" +
-      "        throw new Exception(\"boom\");\n" +
-      "      case 6:\n" +
-      "        yield foo;\n" +
-      "      default:\n" +
-      "        yield fun(def);\n" +
-      "    };\n" +
-      "    return a;\n" +
-      "  }");
+    final CFG cfg = buildCFG("""
+        int fun(int foo) throws Exception {
+          int a = switch (foo) {
+            case 1:
+              fun(bar);
+            case 2:
+            case 3:
+            case 4:
+              yield fun(bar1) + fun(bar2);
+            case 5:
+              throw new Exception("boom");
+            case 6:
+              yield foo;
+            default:
+              yield fun(def);
+          };
+          return a;
+        }
+      """);
     final CFGChecker cfgChecker = checker(
       block(
         element(CASE_GROUP),
@@ -1217,11 +1233,15 @@ class CFGTest {
           element(CHAR_LITERAL, "'d'"),
           element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
-    cfg = buildCFG("void fun(){ for (String n : dir.list(foo() ? \"**\" : \"\")) {\n" +
-        "      if (s.isEmpty()) {\n" +
-        "        relativePath = n;\n" +
-        "      }\n" +
-        "    }}");
+    cfg = buildCFG("""
+          void fun(){
+            for (String n : dir.list(foo() ? "**" : "")) {
+              if (s.isEmpty()) {
+                relativePath = n;
+              }
+            }
+          }
+        """);
     cfgChecker = new CFGChecker(
         block(
           element(IDENTIFIER, "dir"),
@@ -1316,14 +1336,18 @@ class CFGTest {
 
   @Test
   void continue_in_try_finally() {
-    final CFG cfg = buildCFG("void fun() { while (foo()) {\n" +
-      "      try {\n" +
-      "        bar(\"try\");\n" +
-      "        continue;\n" +
-      "      } finally {\n" +
-      "        qix(\"finally\");\n" +
-      "      }\n" +
-      "    }}");
+    final CFG cfg = buildCFG("""
+        void fun() {
+          while (foo()) {
+            try {
+              bar("try");
+              continue;
+            } finally {
+              qix("finally");
+            }
+          }
+        }
+        """);
     final CFGChecker cfgChecker = checker(
       block(
         element(IDENTIFIER, "foo"),
@@ -1346,14 +1370,18 @@ class CFGTest {
 
   @Test
   void break_in_try_finally() {
-    final CFG cfg = buildCFG("void fun() { while (foo()) {\n" +
-      "      try {\n" +
-      "        bar(\"try\");\n" +
-      "        break;\n" +
-      "      } finally {\n" +
-      "        qix(\"finally\");\n" +
-      "      }\n" +
-      "    }}");
+    final CFG cfg = buildCFG("""
+        void fun() {
+          while (foo()) {
+            try {
+              bar("try");
+              break;
+            } finally {
+              qix("finally");
+            }
+          }
+        }
+        """);
     final CFGChecker cfgChecker = checker(
       block(
         element(IDENTIFIER, "foo"),
@@ -1448,12 +1476,14 @@ class CFGTest {
 
   @Test
   void break_on_label() {
-    final CFG cfg = buildCFG("void fun() {\n" +
-      "    foo: for (int i = 0; i < 10; i++) {\n" +
-      "      if (i == 5)\n" +
-      "        break foo;\n" +
-      "    }\n" +
-      "  }");
+    final CFG cfg = buildCFG("""
+        void fun() {
+          foo: for (int i = 0; i < 10; i++) {
+            if (i == 5)
+              break foo;
+          }
+        }
+      """);
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
@@ -1479,14 +1509,16 @@ class CFGTest {
 
   @Test
   void continue_on_label() {
-    final CFG cfg = buildCFG("void fun() {\n" +
-      "    foo: for (int i = 0; i < 10; i++) {\n" +
-      "      plop();\n" +
-      "      if (i == 5)\n" +
-      "        continue foo;\n" +
-      "      plop();\n" +
-      "    }\n" +
-      "  }");
+    final CFG cfg = buildCFG("""
+      void fun() {
+        foo: for (int i = 0; i < 10; i++) {
+          plop();
+          if (i == 5)
+            continue foo;
+          plop();
+        }
+      }
+      """);
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
@@ -1518,11 +1550,13 @@ class CFGTest {
 
   @Test
   void assignement_order_of_evaluation() {
-    CFG cfg = buildCFG("  void foo() {\n" +
-      "    int[] a = {4,4};\n" +
-      "    int b = 1;\n" +
-      "    a[b] = b = 0;\n" +
-      "   }");
+    CFG cfg = buildCFG("""
+        void foo() {
+          int[] a = {4,4};
+          int b = 1;
+          a[b] = b = 0;
+        }
+      """);
     CFGChecker checker = checker(
       block(
         element(INT_LITERAL, 4),
@@ -1542,10 +1576,12 @@ class CFGTest {
 
   @Test
   void compound_assignment() {
-    CFG cfg = buildCFG("void foo() {\n" +
-      "  myField *= 0;\n" +
-      "}\n" +
-      "int myField;");
+    CFG cfg = buildCFG("""
+      void foo() {
+        myField *= 0;
+      }
+      int myField;
+      """);
 
     CFGChecker checker = checker(
       block(
@@ -1559,10 +1595,12 @@ class CFGTest {
 
   @Test
   void compound_assignment_member_select() {
-    CFG cfg = buildCFG("void foo() {\n" +
-      "  this.myField *= 0;\n" +
-      "}\n" +
-      "int myField;");
+    CFG cfg = buildCFG("""
+      void foo() {
+        this.myField *= 0;
+      }
+      int myField;
+      """);
 
     CFGChecker checker = checker(
       block(
@@ -1588,16 +1626,19 @@ class CFGTest {
   }
   @Test
   void exit_block_for_finally_with_if_statement() {
-    CFG cfg = buildCFG(" void test(boolean fooCalled) {\n" +
-      "      Object bar;\n" +
-      "      try {\n" +
-      "        bar = new Bar();\n" +
-      "      } finally {\n" +
-      "        if (fooCalled) {foo();\n" +
-      "        }\n" +
-      "      }\n" +
-      "      bar.toString();\n" +
-      "    }");
+    CFG cfg = buildCFG("""
+        void test(boolean fooCalled) {
+          Object bar;
+          try {
+            bar = new Bar();
+          } finally {
+            if (fooCalled) {
+              foo();
+            }
+          }
+          bar.toString();
+        }
+      """);
     CFGChecker cfgChecker = checker(
       block(
         element(VARIABLE, "bar"),
@@ -1628,18 +1669,20 @@ class CFGTest {
 
   @Test
   void catch_thrown_in_exception() {
-    CFG cfg = buildCFG("  void  foo() throws MyException {\n"+
-      "    try {\n"+
-      "      try {\n"+
-      "        foo();      \n"+
-      "      } catch (MyException e) {\n"+
-      "        foo();      \n"+
-      "      }\n"+
-      "    } catch (MyException e) {\n"+
-      "      System.out.println(\"outercatch\");\n"+
-      "    }\n"+
-      "   }" +
-      " class MyException extends Exception {}");
+    CFG cfg = buildCFG("""
+        void  foo() throws MyException {
+          try {
+            try {
+              foo();
+            } catch (MyException e) {
+              foo();
+            }
+          } catch (MyException e) {
+            System.out.println("outercatch");
+          }
+        }
+        class MyException extends Exception {}
+      """);
     CFGChecker checker = checker(
       block(
         element(TRY_STATEMENT)
@@ -1670,18 +1713,20 @@ class CFGTest {
   @Test
   void nested_try_finally() {
 
-    CFG cfg = buildCFG("  void  foo() {\n"+
-      "    try {\n"+
-      "      java.util.zip.ZipFile file = new java.util.zip.ZipFile(fileName);\n"+
-      "      try {\n"+
-      "        file.foo();// do something with the file...\n"+
-      "      } finally {\n"+
-      "        file.close();\n"+
-      "      }\n"+
-      "    } catch (Exception e) {\n"+
-      "      // Handle exception\n"+
-      "    }\n"+
-      "  }");
+    CFG cfg = buildCFG("""
+        void  foo() {
+          try {
+            java.util.zip.ZipFile file = new java.util.zip.ZipFile(fileName);
+            try {
+              file.foo();// do something with the file...
+            } finally {
+              file.close();
+            }
+          } catch (Exception e) {
+            // Handle exception
+          }
+        }
+      """);
     CFGChecker cfgChecker = checker(
       block(
         element(TRY_STATEMENT)
@@ -1712,13 +1757,15 @@ class CFGTest {
 
   @Test
   void catch_throwable() {
-    CFG cfg = buildCFG(" public void reschedule() {\n" +
-      "        try {\n" +
-      "          getNextSchedule();\n" +
-      "        } catch (Throwable t) {\n" +
-      "          notifyFailed();\n" +
-      "        }\n" +
-      "      }");
+    CFG cfg = buildCFG("""
+       public void reschedule() {
+         try {
+           getNextSchedule();
+         } catch (Throwable t) {
+           notifyFailed();
+         }
+       }
+      """);
       CFGChecker cfgChecker = checker(
         block(
           element(TRY_STATEMENT)
@@ -1738,13 +1785,15 @@ class CFGTest {
 
   @Test
   void catch_error() {
-    CFG cfg = buildCFG(" public void foo() {\n" +
-      "        try {\n" +
-      "          doSomething();\n" +
-      "        } catch (Error e) {\n" +
-      "          throw e;\n" +
-      "        }\n" +
-      "      }");
+    CFG cfg = buildCFG("""
+       public void foo() {
+          try {
+            doSomething();
+          } catch (Error e) {
+            throw e;
+          }
+        }
+      """);
     CFGChecker cfgChecker = checker(
       block(
         element(TRY_STATEMENT)).successors(2),
@@ -1809,12 +1858,15 @@ class CFGTest {
       ).successors(0).isFinallyBlock()
     );
     cfgChecker.check(cfg);
-    cfg = buildCFG(
-        "  private void f() {\n" +
-            "    try {\n" +
-            "    } catch (Exception e) {\n" +
-            "      if (e instanceof IOException) { \n" +
-            "      }\n}}");
+    cfg = buildCFG("""
+        private void f() {
+          try {
+          } catch (Exception e) {
+            if (e instanceof IOException) {\s
+            }
+          }
+        }
+        """);
     cfgChecker = checker(
         block(
             element(TRY_STATEMENT)
@@ -1826,11 +1878,16 @@ class CFGTest {
       ).terminator(IF_STATEMENT).ifTrue(0).ifFalse(0).isCatchBlock()
     );
     cfgChecker.check(cfg);
-    cfg = buildCFG(
-        "  private void f() {\n" +
-            "    try {\n" +
-            "    return;" +
-            "} finally { foo();} bar(); }");
+    cfg = buildCFG("""
+          private void f() {
+            try {
+              return;
+            } finally {
+              foo();
+            }
+            bar();
+          }
+        """);
     cfgChecker = checker(
         block(
             element(TRY_STATEMENT)
@@ -2015,9 +2072,11 @@ class CFGTest {
 
   @Test
   void complex_boolean_expression() {
-    final CFG cfg = buildCFG(" private boolean fun(boolean bool, boolean a, boolean b) {\n" +
-        "    return (!bool && a) || (bool && b);\n" +
-        "  }");
+    final CFG cfg = buildCFG("""
+        private boolean fun(boolean bool, boolean a, boolean b) {
+          return (!bool && a) || (bool && b);
+        }
+      """);
     final CFGChecker cfgChecker = checker(
         block(
             element(IDENTIFIER, "bool"),
@@ -2047,14 +2106,19 @@ class CFGTest {
   @Test
   void try_statement_with_CFG_blocks() {
     // method invocation after if
-    CFG cfg = buildCFG(
-      "  private void f(boolean action) {\n" +
-        "    try {\n" +
-        "    if (action) {" +
-        "       performAction();" +
-        "    }" +
-        "    doSomething();" +
-        "} catch(Exception e) { foo();} bar(); }");
+    CFG cfg = buildCFG("""
+          private void f(boolean action) {
+            try {
+              if (action) {
+                 performAction();
+              }
+              doSomething();
+            } catch(Exception e) {
+              foo();
+            }
+            bar();
+          }
+        """);
     CFGChecker cfgChecker = checker(
       block(
         element(TRY_STATEMENT)).successors(5),
@@ -2076,14 +2140,19 @@ class CFGTest {
     cfgChecker.check(cfg);
 
     // method invocation before if
-    cfg = buildCFG(
-      "  private void f(boolean action) {\n" +
-        "    try {\n" +
-        "    doSomething();" +
-        "    if (action) {" +
-        "       performAction();" +
-        "    }" +
-        "} catch(Exception e) { foo();} bar(); }");
+    cfg = buildCFG("""
+          private void f(boolean action) {
+            try {
+              doSomething();
+              if (action) {
+                performAction();
+              }
+            } catch(Exception e) {
+              foo();
+            }
+            bar();
+          }
+        """);
     cfgChecker = checker(
       block(
         element(TRY_STATEMENT)).successors(5),
@@ -2105,14 +2174,19 @@ class CFGTest {
     cfgChecker.check(cfg);
 
     // finally
-    cfg = buildCFG(
-      "  private void f(boolean action) {\n" +
-        "    try {\n" +
-        "    if (action) {" +
-        "       performAction();" +
-        "    }" +
-        "    doSomething();" +
-        "} finally { foo();} bar(); }");
+    cfg = buildCFG("""
+          private void f(boolean action) {
+            try {
+              if (action) {
+                performAction();
+              }
+              doSomething();
+            } finally {
+              foo();
+            }
+            bar();
+          }
+        """);
     cfgChecker = checker(
       block(
         element(TRY_STATEMENT)).successors(5),
@@ -2273,14 +2347,15 @@ class CFGTest {
 
   @Test
   void successor_of_labeled_break_statement() {
-    CFG cfg = buildCFG("private static void test(long toRevision, boolean inverted, Object visitor) {\n" +
-      "\n" +
-      "    testBlock: {\n" +
-      "      if (inverted) \n" +
-      "        break testBlock;\n" +
-      "      test(0, false ? inverted : !inverted, visitor);\n" +
-      "    }\n" +
-      "  }");
+    CFG cfg = buildCFG("""
+        private static void test(long toRevision, boolean inverted, Object visitor) {
+          testBlock: {
+            if (inverted)\s
+              break testBlock;
+            test(0, false ? inverted : !inverted, visitor);
+          }
+        }
+      """);
     CFGChecker cfgChecker = checker(
       block(
         element(IDENTIFIER, "inverted")
@@ -2313,13 +2388,15 @@ class CFGTest {
 
   @Test
   void test_chained_method_invocation() {
-    CFG cfg = buildCFG("private void foo(Object p) {\n" +
-      "    if(p == null) {\n" +
-      "      NullArrayAccess\n" +
-      "        .method(p.toString())\n" +
-      "        .method2(p.hashCode());\n" +
-      "    }\n" +
-      "  }");
+    CFG cfg = buildCFG("""
+        private void foo(Object p) {
+          if(p == null) {
+            NullArrayAccess
+              .method(p.toString())
+              .method2(p.hashCode());
+          }
+        }
+      """);
     CFGChecker cfgChecker = checker(
       block(
         element(IDENTIFIER, "p"),
@@ -2343,9 +2420,10 @@ class CFGTest {
 
   @Test
   void constructor_arguments_order() {
-    CFG cfg = buildCFG("private void foo(Exception e) {\n" +
-      "throw new IllegalArgumentException(\"iae\", e);\n" +
-      "} "
+    CFG cfg = buildCFG("""
+      private void foo(Exception e) {
+      throw new IllegalArgumentException("iae", e);
+      }\s"""
     );
     CFGChecker cfgChecker = checker(
       block(
@@ -2359,10 +2437,11 @@ class CFGTest {
 
   @Test
   void array_dim_initializer_order() {
-    CFG cfg = buildCFG("private void fun() {\n" +
-      "String[] plop = {foo(), bar()};\n" +
-      "String[][] plop2 = new String[qix()][baz()];\n" +
-      "} "
+    CFG cfg = buildCFG("""
+      private void fun() {
+      String[] plop = {foo(), bar()};
+      String[][] plop2 = new String[qix()][baz()];
+      }\s"""
     );
     CFGChecker cfgChecker = checker(
       block(
@@ -2385,9 +2464,10 @@ class CFGTest {
 
   @Test
   void assert_statement() {
-    CFG cfg = buildCFG("private void fun(boolean x) {\n" +
-      "assert x;\n" +
-      "} "
+    CFG cfg = buildCFG("""
+      private void fun(boolean x) {
+      assert x;
+      }\s"""
     );
     CFGChecker cfgChecker = checker(
       block(element(IDENTIFIER, "x"),
@@ -2399,19 +2479,20 @@ class CFGTest {
 
   @Test
   void exception_raised_in_catch() {
-    CFG cfg = buildCFG("private void fun() {\n" +
-      "     try {\n" +
-      "      try {\n" +
-      "        f();\n" +
-      "      } catch (Exception e) {\n" +
-      "        ex();\n" +
-      "      } finally {\n" +
-      "        fin();\n" +
-      "      }\n" +
-      "    } catch (Exception e) {\n" +
-      "      outEx();\n" +
-      "    }\n"+
-      "} "
+    CFG cfg = buildCFG("""
+      private void fun() {
+           try {
+            try {
+              f();
+            } catch (Exception e) {
+              ex();
+            } finally {
+              fin();
+            }
+          } catch (Exception e) {
+            outEx();
+          }
+      }\s"""
     );
     CFGChecker cfgChecker = checker(
       block(element(TRY_STATEMENT)),
@@ -2441,503 +2522,530 @@ class CFGTest {
 
   @Test
   void break_in_nested_catch() {
-    CFG cfg = buildCFG(
-      "  void foo(boolean a) {\n" +
-      "    String[] types = new String[12];\n" +
-      "    try {\n" +
-      "      invoke0();\n" +
-      "    for (int i = 0; i < files.length; i++) {\n" +
-      "      A file = files[i];\n" +
-      "      try{\n" +
-      "        invoke1();\n" +
-      "      }catch(Throwable e) {\n" +
-      "        invoke2();\n" +
-      "        invoke3();\n" +
-      "        break;\n" +
-      "      } finally {\n" +
-      "        types[i] = invoke4();\n" +
-      "      }\n" +
-      "    }\n" +
-      "    } finally {\n" +
-      "      invoke10();\n" +
-      "      invoke11();\n" +
-      "    }\n" +
-      "    \n" +
-      "  }\n");
-    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B13\n" +
-      "\n" +
-      "B13\n" +
-      "0:\tINT_LITERAL                         \t12\n" +
-      "1:\tNEW_ARRAY                           \tnew []\n" +
-      "2:\tVARIABLE                            \ttypes\n" +
-      "3:\tTRY_STATEMENT                       \t\n" +
-      "\tjumps to: B12\n" +
-      "\n" +
-      "B12\n" +
-      "0:\tIDENTIFIER                          \tinvoke0\n" +
-      "1:\tMETHOD_INVOCATION                   \tinvoke0()\n" +
-      "\tjumps to: B11\n" +
-      "\texceptions to: B1\n" +
-      "\n" +
-      "B11\n" +
-      "0:\tINT_LITERAL                         \t0\n" +
-      "1:\tVARIABLE                            \ti\n" +
-      "\tjumps to: B10\n" +
-      "\n" +
-      "B10\n" +
-      "0:\tIDENTIFIER                          \ti\n" +
-      "1:\tIDENTIFIER                          \tfiles\n" +
-      "2:\tMEMBER_SELECT                       \tfiles.length\n" +
-      "3:\tLESS_THAN                           \ti < files.length\n" +
-      "T:\tFOR_STATEMENT                       \tfor {i;i < files.length;i++}\n" +
-      "\tjumps to: B9(true) B1(false)\n" +
-      "\n" +
-      "B9\n" +
-      "0:\tIDENTIFIER                          \tfiles\n" +
-      "1:\tIDENTIFIER                          \ti\n" +
-      "2:\tARRAY_ACCESS_EXPRESSION             \tfiles[i]\n" +
-      "3:\tVARIABLE                            \tfile\n" +
-      "4:\tTRY_STATEMENT                       \t\n" +
-      "\tjumps to: B8\n" +
-      "\n" +
-      "B8\n" +
-      "0:\tIDENTIFIER                          \tinvoke1\n" +
-      "1:\tMETHOD_INVOCATION                   \tinvoke1()\n" +
-      "\tjumps to: B4\n" +
-      "\texceptions to: B4 B7\n" +
-      "\n" +
-      "B7\n" +
-      "0:\tVARIABLE                            \te\n" +
-      "1:\tIDENTIFIER                          \tinvoke2\n" +
-      "2:\tMETHOD_INVOCATION                   \tinvoke2()\n" +
-      "\tjumps to: B6\n" +
-      "\texceptions to: B4\n" +
-      "\n" +
-      "B6\n" +
-      "0:\tIDENTIFIER                          \tinvoke3\n" +
-      "1:\tMETHOD_INVOCATION                   \tinvoke3()\n" +
-      "\tjumps to: B5\n" +
-      "\texceptions to: B4\n" +
-      "\n" +
-      "B5\n" +
-      "T:\tBREAK_STATEMENT                     \tbreak\n" +
-      "\tjumps to: B4\n" +
-      "\n" +
-      "B4\n" +
-      "0:\tIDENTIFIER                          \ttypes\n" +
-      "1:\tIDENTIFIER                          \ti\n" +
-      "2:\tARRAY_ACCESS_EXPRESSION             \ttypes[i]\n" +
-      "3:\tIDENTIFIER                          \tinvoke4\n" +
-      "4:\tMETHOD_INVOCATION                   \tinvoke4()\n" +
-      "\tjumps to: B3\n" +
-      "\texceptions to: B1\n" +
-      "\n" +
-      "B3\n" +
-      "0:\tASSIGNMENT                          \ttypes[i]=invoke4()\n" +
-      "\tjumps to: B2 B1(exit)\n" +
-      "\n" +
-      "B2\n" +
-      "0:\tIDENTIFIER                          \ti\n" +
-      "1:\tPOSTFIX_INCREMENT                   \ti++\n" +
-      "\tjumps to: B10\n" +
-      "\n" +
-      "B1\n" +
-      "0:\tIDENTIFIER                          \tinvoke10\n" +
-      "1:\tMETHOD_INVOCATION                   \tinvoke10()\n" +
-      "2:\tIDENTIFIER                          \tinvoke11\n" +
-      "3:\tMETHOD_INVOCATION                   \tinvoke11()\n" +
-      "\tjumps to: B0(exit)\n" +
-      "\n" +
-      "B0 (Exit):\n" +
-      "\n");
+    CFG cfg = buildCFG("""
+          void foo(boolean a) {
+            String[] types = new String[12];
+            try {
+              invoke0();
+            for (int i = 0; i < files.length; i++) {
+              A file = files[i];
+              try{
+                invoke1();
+              }catch(Throwable e) {
+                invoke2();
+                invoke3();
+                break;
+              } finally {
+                types[i] = invoke4();
+              }
+            }
+            } finally {
+              invoke10();
+              invoke11();
+            }
+           \s
+          }
+        """);
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("""
+      Starts at B13
+      
+      B13
+      0:\tINT_LITERAL                         \t12
+      1:\tNEW_ARRAY                           \tnew []
+      2:\tVARIABLE                            \ttypes
+      3:\tTRY_STATEMENT                       \t
+      \tjumps to: B12
+      
+      B12
+      0:\tIDENTIFIER                          \tinvoke0
+      1:\tMETHOD_INVOCATION                   \tinvoke0()
+      \tjumps to: B11
+      \texceptions to: B1
+      
+      B11
+      0:\tINT_LITERAL                         \t0
+      1:\tVARIABLE                            \ti
+      \tjumps to: B10
+      
+      B10
+      0:\tIDENTIFIER                          \ti
+      1:\tIDENTIFIER                          \tfiles
+      2:\tMEMBER_SELECT                       \tfiles.length
+      3:\tLESS_THAN                           \ti < files.length
+      T:\tFOR_STATEMENT                       \tfor {i;i < files.length;i++}
+      \tjumps to: B9(true) B1(false)
+      
+      B9
+      0:\tIDENTIFIER                          \tfiles
+      1:\tIDENTIFIER                          \ti
+      2:\tARRAY_ACCESS_EXPRESSION             \tfiles[i]
+      3:\tVARIABLE                            \tfile
+      4:\tTRY_STATEMENT                       \t
+      \tjumps to: B8
+      
+      B8
+      0:\tIDENTIFIER                          \tinvoke1
+      1:\tMETHOD_INVOCATION                   \tinvoke1()
+      \tjumps to: B4
+      \texceptions to: B4 B7
+      
+      B7
+      0:\tVARIABLE                            \te
+      1:\tIDENTIFIER                          \tinvoke2
+      2:\tMETHOD_INVOCATION                   \tinvoke2()
+      \tjumps to: B6
+      \texceptions to: B4
+      
+      B6
+      0:\tIDENTIFIER                          \tinvoke3
+      1:\tMETHOD_INVOCATION                   \tinvoke3()
+      \tjumps to: B5
+      \texceptions to: B4
+      
+      B5
+      T:\tBREAK_STATEMENT                     \tbreak
+      \tjumps to: B4
+      
+      B4
+      0:\tIDENTIFIER                          \ttypes
+      1:\tIDENTIFIER                          \ti
+      2:\tARRAY_ACCESS_EXPRESSION             \ttypes[i]
+      3:\tIDENTIFIER                          \tinvoke4
+      4:\tMETHOD_INVOCATION                   \tinvoke4()
+      \tjumps to: B3
+      \texceptions to: B1
+      
+      B3
+      0:\tASSIGNMENT                          \ttypes[i]=invoke4()
+      \tjumps to: B2 B1(exit)
+      
+      B2
+      0:\tIDENTIFIER                          \ti
+      1:\tPOSTFIX_INCREMENT                   \ti++
+      \tjumps to: B10
+      
+      B1
+      0:\tIDENTIFIER                          \tinvoke10
+      1:\tMETHOD_INVOCATION                   \tinvoke10()
+      2:\tIDENTIFIER                          \tinvoke11
+      3:\tMETHOD_INVOCATION                   \tinvoke11()
+      \tjumps to: B0(exit)
+      
+      B0 (Exit):
+      
+      """);
   }
 
   @Test
   void break_in_try_finally_within_while() {
-    CFG cfg = buildCFG("void run1() {\n" +
-      "    while (true) {\n" +
-      "      try {\n" +
-      "        break;\n" +
-      "      } finally {\n" +
-      "        String s = true ? \"trueLiteral\" : \"falseLiteral\";\n" +
-      "        System.out.println(s);\n" +
-      "      }\n" +
-      "    }\n" +
-      "  }");
-    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B7\n" +
-      "\n" +
-      "B7\n" +
-      "0:\tBOOLEAN_LITERAL                     \ttrue\n" +
-      "T:\tWHILE_STATEMENT                     \twhile (true)\n" +
-      "\tjumps to: B6(true) B0(false)\n" +
-      "\n" +
-      "B6\n" +
-      "0:\tTRY_STATEMENT                       \t\n" +
-      "\tjumps to: B5\n" +
-      "\n" +
-      "B5\n" +
-      "T:\tBREAK_STATEMENT                     \tbreak\n" +
-      "\tjumps to: B4\n" +
-      "\n" +
-      "B4\n" +
-      "0:\tBOOLEAN_LITERAL                     \ttrue\n" +
-      "T:\tCONDITIONAL_EXPRESSION              \ttrue ? \"trueLiteral\" : \"falseLiteral\"\n" +
-      "\tjumps to: B3(true) B2(false)\n" +
-      "\n" +
-      "B3\n" +
-      "0:\tSTRING_LITERAL                      \t\"trueLiteral\"\n" +
-      "\tjumps to: B1\n" +
-      "\n" +
-      "B2\n" +
-      "0:\tSTRING_LITERAL                      \t\"falseLiteral\"\n" +
-      "\tjumps to: B1\n" +
-      "\n" +
-      "B1\n" +
-      "0:\tVARIABLE                            \ts\n" +
-      "1:\tIDENTIFIER                          \tSystem\n" +
-      "2:\tMEMBER_SELECT                       \tSystem.out\n" +
-      "3:\tIDENTIFIER                          \ts\n" +
-      "4:\tMETHOD_INVOCATION                   \t.println(s)\n" +
-      "\tjumps to: B7 B0(exit)\n" +
-      "\n" +
-      "B0 (Exit):\n\n");
+    CFG cfg = buildCFG("""
+      void run1() {
+        while (true) {
+          try {
+            break;
+          } finally {
+            String s = true ? "trueLiteral" : "falseLiteral";
+            System.out.println(s);
+          }
+        }
+      }
+      """);
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("""
+      Starts at B7
+      
+      B7
+      0:\tBOOLEAN_LITERAL                     \ttrue
+      T:\tWHILE_STATEMENT                     \twhile (true)
+      \tjumps to: B6(true) B0(false)
+      
+      B6
+      0:\tTRY_STATEMENT                       \t
+      \tjumps to: B5
+      
+      B5
+      T:\tBREAK_STATEMENT                     \tbreak
+      \tjumps to: B4
+      
+      B4
+      0:\tBOOLEAN_LITERAL                     \ttrue
+      T:\tCONDITIONAL_EXPRESSION              \ttrue ? "trueLiteral" : "falseLiteral"
+      \tjumps to: B3(true) B2(false)
+      
+      B3
+      0:\tSTRING_LITERAL                      \t"trueLiteral"
+      \tjumps to: B1
+      
+      B2
+      0:\tSTRING_LITERAL                      \t"falseLiteral"
+      \tjumps to: B1
+      
+      B1
+      0:\tVARIABLE                            \ts
+      1:\tIDENTIFIER                          \tSystem
+      2:\tMEMBER_SELECT                       \tSystem.out
+      3:\tIDENTIFIER                          \ts
+      4:\tMETHOD_INVOCATION                   \t.println(s)
+      \tjumps to: B7 B0(exit)
+      
+      B0 (Exit):
+      
+      """);
   }
   @Test
   void continue_in_try_finally_within_while() {
-    CFG cfg = buildCFG("void run2() {\n" +
-      "    while (true) {\n" +
-      "      try {\n" +
-      "        continue;\n" +
-      "      } finally {\n" +
-      "        System.out.println(true ? \"trueLiteral\" : \"falseLiteral\");\n" +
-      "      }\n" +
-      "    }\n" +
-      "  }");
-    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B7\n" +
-      "\n" +
-      "B7\n" +
-      "0:\tBOOLEAN_LITERAL                     \ttrue\n" +
-      "T:\tWHILE_STATEMENT                     \twhile (true)\n" +
-      "\tjumps to: B6(true) B0(false)\n" +
-      "\n" +
-      "B6\n" +
-      "0:\tTRY_STATEMENT                       \t\n" +
-      "\tjumps to: B5\n" +
-      "\n" +
-      "B5\n" +
-      "T:\tCONTINUE_STATEMENT                  \tcontinue\n" +
-      "\tjumps to: B4\n" +
-      "\n" +
-      "B4\n" +
-      "0:\tIDENTIFIER                          \tSystem\n" +
-      "1:\tMEMBER_SELECT                       \tSystem.out\n" +
-      "2:\tBOOLEAN_LITERAL                     \ttrue\n" +
-      "T:\tCONDITIONAL_EXPRESSION              \ttrue ? \"trueLiteral\" : \"falseLiteral\"\n" +
-      "\tjumps to: B3(true) B2(false)\n" +
-      "\n" +
-      "B3\n" +
-      "0:\tSTRING_LITERAL                      \t\"trueLiteral\"\n" +
-      "\tjumps to: B1\n" +
-      "\n" +
-      "B2\n" +
-      "0:\tSTRING_LITERAL                      \t\"falseLiteral\"\n" +
-      "\tjumps to: B1\n" +
-      "\n" +
-      "B1\n" +
-      "0:\tMETHOD_INVOCATION                   \t.println(true ? \"trueLiteral\" : \"falseLiteral\")\n" +
-      "\tjumps to: B7 B0(exit)\n" +
-      "\n" +
-      "B0 (Exit):\n\n");
+    CFG cfg = buildCFG("""
+        void run2() {
+          while (true) {
+            try {
+              continue;
+            } finally {
+              System.out.println(true ? "trueLiteral" : "falseLiteral");
+            }
+          }
+        }
+      """);
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("""
+      Starts at B7
+      
+      B7
+      0:\tBOOLEAN_LITERAL                     \ttrue
+      T:\tWHILE_STATEMENT                     \twhile (true)
+      \tjumps to: B6(true) B0(false)
+      
+      B6
+      0:\tTRY_STATEMENT                       \t
+      \tjumps to: B5
+      
+      B5
+      T:\tCONTINUE_STATEMENT                  \tcontinue
+      \tjumps to: B4
+      
+      B4
+      0:\tIDENTIFIER                          \tSystem
+      1:\tMEMBER_SELECT                       \tSystem.out
+      2:\tBOOLEAN_LITERAL                     \ttrue
+      T:\tCONDITIONAL_EXPRESSION              \ttrue ? "trueLiteral" : "falseLiteral"
+      \tjumps to: B3(true) B2(false)
+      
+      B3
+      0:\tSTRING_LITERAL                      \t"trueLiteral"
+      \tjumps to: B1
+      
+      B2
+      0:\tSTRING_LITERAL                      \t"falseLiteral"
+      \tjumps to: B1
+      
+      B1
+      0:\tMETHOD_INVOCATION                   \t.println(true ? "trueLiteral" : "falseLiteral")
+      \tjumps to: B7 B0(exit)
+      
+      B0 (Exit):
+      
+      """);
   }
 
   @Test
   void break_in_try_finally_within_for() {
-    CFG cfg = buildCFG(" void run3() {\n" +
-      "    for (int i = 0; i < 5; i++) {\n" +
-      "      try {\n" +
-      "        break;\n" +
-      "      } finally {\n" +
-      "        String s;\n" +
-      "        System.out.println(true ? \"trueLiteral\" : \"falseLiteral\");\n" +
-      "      }\n" +
-      "    }\n" +
-      "  }\n");
-    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B9\n" +
-      "\n" +
-      "B9\n" +
-      "0:\tINT_LITERAL                         \t0\n" +
-      "1:\tVARIABLE                            \ti\n" +
-      "\tjumps to: B8\n" +
-      "\n" +
-      "B8\n" +
-      "0:\tIDENTIFIER                          \ti\n" +
-      "1:\tINT_LITERAL                         \t5\n" +
-      "2:\tLESS_THAN                           \ti < 5\n" +
-      "T:\tFOR_STATEMENT                       \tfor {i;i < 5;i++}\n" +
-      "\tjumps to: B7(true) B0(false)\n" +
-      "\n" +
-      "B7\n" +
-      "0:\tTRY_STATEMENT                       \t\n" +
-      "\tjumps to: B6\n" +
-      "\n" +
-      "B6\n" +
-      "T:\tBREAK_STATEMENT                     \tbreak\n" +
-      "\tjumps to: B5\n" +
-      "\n" +
-      "B5\n" +
-      "0:\tVARIABLE                            \ts\n" +
-      "1:\tIDENTIFIER                          \tSystem\n" +
-      "2:\tMEMBER_SELECT                       \tSystem.out\n" +
-      "3:\tBOOLEAN_LITERAL                     \ttrue\n" +
-      "T:\tCONDITIONAL_EXPRESSION              \ttrue ? \"trueLiteral\" : \"falseLiteral\"\n" +
-      "\tjumps to: B4(true) B3(false)\n" +
-      "\n" +
-      "B4\n" +
-      "0:\tSTRING_LITERAL                      \t\"trueLiteral\"\n" +
-      "\tjumps to: B2\n" +
-      "\n" +
-      "B3\n" +
-      "0:\tSTRING_LITERAL                      \t\"falseLiteral\"\n" +
-      "\tjumps to: B2\n" +
-      "\n" +
-      "B2\n" +
-      "0:\tMETHOD_INVOCATION                   \t.println(true ? \"trueLiteral\" : \"falseLiteral\")\n" +
-      "\tjumps to: B1 B0(exit)\n" +
-      "\n" +
-      "B1\n" +
-      "0:\tIDENTIFIER                          \ti\n" +
-      "1:\tPOSTFIX_INCREMENT                   \ti++\n" +
-      "\tjumps to: B8\n" +
-      "\n" +
-      "B0 (Exit):\n\n");
+    CFG cfg = buildCFG("""
+       void run3() {
+          for (int i = 0; i < 5; i++) {
+            try {
+              break;
+            } finally {
+              String s;
+              System.out.println(true ? "trueLiteral" : "falseLiteral");
+            }
+          }
+        }
+      """);
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("""
+      Starts at B9
+      
+      B9
+      0:\tINT_LITERAL                         \t0
+      1:\tVARIABLE                            \ti
+      \tjumps to: B8
+      
+      B8
+      0:\tIDENTIFIER                          \ti
+      1:\tINT_LITERAL                         \t5
+      2:\tLESS_THAN                           \ti < 5
+      T:\tFOR_STATEMENT                       \tfor {i;i < 5;i++}
+      \tjumps to: B7(true) B0(false)
+      
+      B7
+      0:\tTRY_STATEMENT                       \t
+      \tjumps to: B6
+      
+      B6
+      T:\tBREAK_STATEMENT                     \tbreak
+      \tjumps to: B5
+      
+      B5
+      0:\tVARIABLE                            \ts
+      1:\tIDENTIFIER                          \tSystem
+      2:\tMEMBER_SELECT                       \tSystem.out
+      3:\tBOOLEAN_LITERAL                     \ttrue
+      T:\tCONDITIONAL_EXPRESSION              \ttrue ? "trueLiteral" : "falseLiteral"
+      \tjumps to: B4(true) B3(false)
+      
+      B4
+      0:\tSTRING_LITERAL                      \t"trueLiteral"
+      \tjumps to: B2
+      
+      B3
+      0:\tSTRING_LITERAL                      \t"falseLiteral"
+      \tjumps to: B2
+      
+      B2
+      0:\tMETHOD_INVOCATION                   \t.println(true ? "trueLiteral" : "falseLiteral")
+      \tjumps to: B1 B0(exit)
+      
+      B1
+      0:\tIDENTIFIER                          \ti
+      1:\tPOSTFIX_INCREMENT                   \ti++
+      \tjumps to: B8
+      
+      B0 (Exit):
+      
+      """);
   }
   @Test
   void break_in_try_and_complex_finally_within_while() {
-    CFG cfg = buildCFG(" void run4() {\n" +
-      "    while (true) {\n" +
-      "      try {\n" +
-      "        break;\n" +
-      "      } finally {\n" +
-      "        String s;\n" +
-      "        if (true) { s = \"trueLiteral\"; } else { s = \"falseLiteral\"; }\n" +
-      "        System.out.println(s);\n" +
-      "      }\n" +
-      "    }\n" +
-      "  }");
-    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B7\n" +
-      "\n" +
-      "B7\n" +
-      "0:\tBOOLEAN_LITERAL                     \ttrue\n" +
-      "T:\tWHILE_STATEMENT                     \twhile (true)\n" +
-      "\tjumps to: B6(true) B0(false)\n" +
-      "\n" +
-      "B6\n" +
-      "0:\tTRY_STATEMENT                       \t\n" +
-      "\tjumps to: B5\n" +
-      "\n" +
-      "B5\n" +
-      "T:\tBREAK_STATEMENT                     \tbreak\n" +
-      "\tjumps to: B4\n" +
-      "\n" +
-      "B4\n" +
-      "0:\tVARIABLE                            \ts\n" +
-      "1:\tBOOLEAN_LITERAL                     \ttrue\n" +
-      "T:\tIF_STATEMENT                        \tif (true)\n" +
-      "\tjumps to: B3(true) B2(false)\n" +
-      "\n" +
-      "B3\n" +
-      "0:\tSTRING_LITERAL                      \t\"trueLiteral\"\n" +
-      "1:\tASSIGNMENT                          \ts=\"trueLiteral\"\n" +
-      "\tjumps to: B1\n" +
-      "\n" +
-      "B2\n" +
-      "0:\tSTRING_LITERAL                      \t\"falseLiteral\"\n" +
-      "1:\tASSIGNMENT                          \ts=\"falseLiteral\"\n" +
-      "\tjumps to: B1\n" +
-      "\n" +
-      "B1\n" +
-      "0:\tIDENTIFIER                          \tSystem\n" +
-      "1:\tMEMBER_SELECT                       \tSystem.out\n" +
-      "2:\tIDENTIFIER                          \ts\n" +
-      "3:\tMETHOD_INVOCATION                   \t.println(s)\n" +
-      "\tjumps to: B7 B0(exit)\n" +
-      "\n" +
-      "B0 (Exit):\n\n");
+    CFG cfg = buildCFG("""
+       void run4() {
+          while (true) {
+            try {
+              break;
+            } finally {
+              String s;
+              if (true) { s = "trueLiteral"; } else { s = "falseLiteral"; }
+              System.out.println(s);
+            }
+          }
+        }
+      """);
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("""
+      Starts at B7
+      
+      B7
+      0:\tBOOLEAN_LITERAL                     \ttrue
+      T:\tWHILE_STATEMENT                     \twhile (true)
+      \tjumps to: B6(true) B0(false)
+      
+      B6
+      0:\tTRY_STATEMENT                       \t
+      \tjumps to: B5
+      
+      B5
+      T:\tBREAK_STATEMENT                     \tbreak
+      \tjumps to: B4
+      
+      B4
+      0:\tVARIABLE                            \ts
+      1:\tBOOLEAN_LITERAL                     \ttrue
+      T:\tIF_STATEMENT                        \tif (true)
+      \tjumps to: B3(true) B2(false)
+      
+      B3
+      0:\tSTRING_LITERAL                      \t"trueLiteral"
+      1:\tASSIGNMENT                          \ts="trueLiteral"
+      \tjumps to: B1
+      
+      B2
+      0:\tSTRING_LITERAL                      \t"falseLiteral"
+      1:\tASSIGNMENT                          \ts="falseLiteral"
+      \tjumps to: B1
+      
+      B1
+      0:\tIDENTIFIER                          \tSystem
+      1:\tMEMBER_SELECT                       \tSystem.out
+      2:\tIDENTIFIER                          \ts
+      3:\tMETHOD_INVOCATION                   \t.println(s)
+      \tjumps to: B7 B0(exit)
+      
+      B0 (Exit):
+      
+      """);
   }
 
   @Test
   void break_without_finally() {
-    CFG cfg = buildCFG("void fun(int highestLevel) {       while (highestLevel >= lowestOddLevel) {\n" +
-      "            int i = levelStart;\n" +
-      "\n" +
-      "            for (;;) {\n" +
-      "                while (i < levelLimit && levels[i] < highestLevel) {\n" +
-      "                    i++;\n" +
-      "                }\n" +
-      "                int begin = i++;\n" +
-      "\n" +
-      "                if (begin == levelLimit) {\n" +
-      "                    break; // no more runs at this level\n" +
-      "                }\n" +
-      "\n" +
-      "                while (i < levelLimit && levels[i] >= highestLevel) {\n" +
-      "                    i++;\n" +
-      "                }\n" +
-      "                int end = i - 1;\n" +
-      "\n" +
-      "\t\tbegin += delta;\n" +
-      "\t\tend += delta;\n" +
-      "                while (begin < end) {\n" +
-      "                    Object temp = objects[begin];\n" +
-      "                    objects[begin] = objects[end];\n" +
-      "                    objects[end] = temp;\n" +
-      "                    ++begin;\n" +
-      "                    --end;\n" +
-      "                }\n" +
-      "            }\n" +
-      "\n" +
-      "            --highestLevel;\n" +
-      "        }}");
-    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B15\n" +
-      "\n" +
-      "B15\n" +
-      "0:\tIDENTIFIER                          \thighestLevel\n" +
-      "1:\tIDENTIFIER                          \tlowestOddLevel\n" +
-      "2:\tGREATER_THAN_OR_EQUAL_TO            \thighestLevel >= lowestOddLevel\n" +
-      "T:\tWHILE_STATEMENT                     \twhile (highestLevel >= lowestOddLevel)\n" +
-      "\tjumps to: B14(true) B0(false)\n" +
-      "\n" +
-      "B14\n" +
-      "0:\tIDENTIFIER                          \tlevelStart\n" +
-      "1:\tVARIABLE                            \ti\n" +
-      "\tjumps to: B13\n" +
-      "\n" +
-      "B13\n" +
-      "T:\tFOR_STATEMENT                       \tfor {;;}\n" +
-      "\tjumps to: B12\n" +
-      "\n" +
-      "B12\n" +
-      "0:\tIDENTIFIER                          \ti\n" +
-      "1:\tIDENTIFIER                          \tlevelLimit\n" +
-      "2:\tLESS_THAN                           \ti < levelLimit\n" +
-      "T:\tCONDITIONAL_AND                     \ti < levelLimit && levels[i] < highestLevel\n" +
-      "\tjumps to: B11(true) B9(false)\n" +
-      "\n" +
-      "B11\n" +
-      "0:\tIDENTIFIER                          \tlevels\n" +
-      "1:\tIDENTIFIER                          \ti\n" +
-      "2:\tARRAY_ACCESS_EXPRESSION             \tlevels[i]\n" +
-      "3:\tIDENTIFIER                          \thighestLevel\n" +
-      "4:\tLESS_THAN                           \tlevels[i] < highestLevel\n" +
-      "T:\tWHILE_STATEMENT                     \twhile (i < levelLimit && levels[i] < highestLevel)\n" +
-      "\tjumps to: B10(true) B9(false)\n" +
-      "\n" +
-      "B10\n" +
-      "0:\tIDENTIFIER                          \ti\n" +
-      "1:\tPOSTFIX_INCREMENT                   \ti++\n" +
-      "\tjumps to: B12\n" +
-      "\n" +
-      "B9\n" +
-      "0:\tIDENTIFIER                          \ti\n" +
-      "1:\tPOSTFIX_INCREMENT                   \ti++\n" +
-      "2:\tVARIABLE                            \tbegin\n" +
-      "3:\tIDENTIFIER                          \tbegin\n" +
-      "4:\tIDENTIFIER                          \tlevelLimit\n" +
-      "5:\tEQUAL_TO                            \tbegin == levelLimit\n" +
-      "T:\tIF_STATEMENT                        \tif (begin == levelLimit)\n" +
-      "\tjumps to: B8(true) B7(false)\n" +
-      "\n" +
-      "B8\n" +
-      "T:\tBREAK_STATEMENT                     \tbreak\n" +
-      "\tjumps to: B1\n" +
-      "\n" +
-      "B7\n" +
-      "0:\tIDENTIFIER                          \ti\n" +
-      "1:\tIDENTIFIER                          \tlevelLimit\n" +
-      "2:\tLESS_THAN                           \ti < levelLimit\n" +
-      "T:\tCONDITIONAL_AND                     \ti < levelLimit && levels[i] >= highestLevel\n" +
-      "\tjumps to: B6(true) B4(false)\n" +
-      "\n" +
-      "B6\n" +
-      "0:\tIDENTIFIER                          \tlevels\n" +
-      "1:\tIDENTIFIER                          \ti\n" +
-      "2:\tARRAY_ACCESS_EXPRESSION             \tlevels[i]\n" +
-      "3:\tIDENTIFIER                          \thighestLevel\n" +
-      "4:\tGREATER_THAN_OR_EQUAL_TO            \tlevels[i] >= highestLevel\n" +
-      "T:\tWHILE_STATEMENT                     \twhile (i < levelLimit && levels[i] >= highestLevel)\n" +
-      "\tjumps to: B5(true) B4(false)\n" +
-      "\n" +
-      "B5\n" +
-      "0:\tIDENTIFIER                          \ti\n" +
-      "1:\tPOSTFIX_INCREMENT                   \ti++\n" +
-      "\tjumps to: B7\n" +
-      "\n" +
-      "B4\n" +
-      "0:\tIDENTIFIER                          \ti\n" +
-      "1:\tINT_LITERAL                         \t1\n" +
-      "2:\tMINUS                               \ti - 1\n" +
-      "3:\tVARIABLE                            \tend\n" +
-      "4:\tIDENTIFIER                          \tbegin\n" +
-      "5:\tIDENTIFIER                          \tdelta\n" +
-      "6:\tPLUS_ASSIGNMENT                     \tbegin+=delta\n" +
-      "7:\tIDENTIFIER                          \tend\n" +
-      "8:\tIDENTIFIER                          \tdelta\n" +
-      "9:\tPLUS_ASSIGNMENT                     \tend+=delta\n" +
-      "\tjumps to: B3\n" +
-      "\n" +
-      "B3\n" +
-      "0:\tIDENTIFIER                          \tbegin\n" +
-      "1:\tIDENTIFIER                          \tend\n" +
-      "2:\tLESS_THAN                           \tbegin < end\n" +
-      "T:\tWHILE_STATEMENT                     \twhile (begin < end)\n" +
-      "\tjumps to: B13(false) B2(true)\n" +
-      "\n" +
-      "B2\n" +
-      "0:\tIDENTIFIER                          \tobjects\n" +
-      "1:\tIDENTIFIER                          \tbegin\n" +
-      "2:\tARRAY_ACCESS_EXPRESSION             \tobjects[begin]\n" +
-      "3:\tVARIABLE                            \ttemp\n" +
-      "4:\tIDENTIFIER                          \tobjects\n" +
-      "5:\tIDENTIFIER                          \tbegin\n" +
-      "6:\tARRAY_ACCESS_EXPRESSION             \tobjects[begin]\n" +
-      "7:\tIDENTIFIER                          \tobjects\n" +
-      "8:\tIDENTIFIER                          \tend\n" +
-      "9:\tARRAY_ACCESS_EXPRESSION             \tobjects[end]\n" +
-      "10:\tASSIGNMENT                          \tobjects[begin]=objects[end]\n" +
-      "11:\tIDENTIFIER                          \tobjects\n" +
-      "12:\tIDENTIFIER                          \tend\n" +
-      "13:\tARRAY_ACCESS_EXPRESSION             \tobjects[end]\n" +
-      "14:\tIDENTIFIER                          \ttemp\n" +
-      "15:\tASSIGNMENT                          \tobjects[end]=temp\n" +
-      "16:\tIDENTIFIER                          \tbegin\n" +
-      "17:\tPREFIX_INCREMENT                    \t++begin\n" +
-      "18:\tIDENTIFIER                          \tend\n" +
-      "19:\tPREFIX_DECREMENT                    \t--end\n" +
-      "\tjumps to: B3\n" +
-      "\n" +
-      "B1\n" +
-      "0:\tIDENTIFIER                          \thighestLevel\n" +
-      "1:\tPREFIX_DECREMENT                    \t--highestLevel\n" +
-      "\tjumps to: B15\n" +
-      "\n" +
-      "B0 (Exit):\n\n");
+    CFG cfg = buildCFG("""
+        void fun(int highestLevel) {
+          while (highestLevel >= lowestOddLevel) {
+            int i = levelStart;
+            for (;;) {
+              while (i < levelLimit && levels[i] < highestLevel) {
+                  i++;
+              }
+              int begin = i++;
+              if (begin == levelLimit) {
+                  break; // no more runs at this level
+              }
+              while (i < levelLimit && levels[i] >= highestLevel) {
+                  i++;
+              }
+              int end = i - 1;
+              begin += delta;
+              end += delta;
+              while (begin < end) {
+                Object temp = objects[begin];
+                objects[begin] = objects[end];
+                objects[end] = temp;
+                ++begin;
+                --end;
+              }
+            }
+            --highestLevel;
+          }
+        }
+      """);
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("""
+      Starts at B15
+      
+      B15
+      0:\tIDENTIFIER                          \thighestLevel
+      1:\tIDENTIFIER                          \tlowestOddLevel
+      2:\tGREATER_THAN_OR_EQUAL_TO            \thighestLevel >= lowestOddLevel
+      T:\tWHILE_STATEMENT                     \twhile (highestLevel >= lowestOddLevel)
+      \tjumps to: B14(true) B0(false)
+      
+      B14
+      0:\tIDENTIFIER                          \tlevelStart
+      1:\tVARIABLE                            \ti
+      \tjumps to: B13
+      
+      B13
+      T:\tFOR_STATEMENT                       \tfor {;;}
+      \tjumps to: B12
+      
+      B12
+      0:\tIDENTIFIER                          \ti
+      1:\tIDENTIFIER                          \tlevelLimit
+      2:\tLESS_THAN                           \ti < levelLimit
+      T:\tCONDITIONAL_AND                     \ti < levelLimit && levels[i] < highestLevel
+      \tjumps to: B11(true) B9(false)
+      
+      B11
+      0:\tIDENTIFIER                          \tlevels
+      1:\tIDENTIFIER                          \ti
+      2:\tARRAY_ACCESS_EXPRESSION             \tlevels[i]
+      3:\tIDENTIFIER                          \thighestLevel
+      4:\tLESS_THAN                           \tlevels[i] < highestLevel
+      T:\tWHILE_STATEMENT                     \twhile (i < levelLimit && levels[i] < highestLevel)
+      \tjumps to: B10(true) B9(false)
+      
+      B10
+      0:\tIDENTIFIER                          \ti
+      1:\tPOSTFIX_INCREMENT                   \ti++
+      \tjumps to: B12
+      
+      B9
+      0:\tIDENTIFIER                          \ti
+      1:\tPOSTFIX_INCREMENT                   \ti++
+      2:\tVARIABLE                            \tbegin
+      3:\tIDENTIFIER                          \tbegin
+      4:\tIDENTIFIER                          \tlevelLimit
+      5:\tEQUAL_TO                            \tbegin == levelLimit
+      T:\tIF_STATEMENT                        \tif (begin == levelLimit)
+      \tjumps to: B8(true) B7(false)
+      
+      B8
+      T:\tBREAK_STATEMENT                     \tbreak
+      \tjumps to: B1
+      
+      B7
+      0:\tIDENTIFIER                          \ti
+      1:\tIDENTIFIER                          \tlevelLimit
+      2:\tLESS_THAN                           \ti < levelLimit
+      T:\tCONDITIONAL_AND                     \ti < levelLimit && levels[i] >= highestLevel
+      \tjumps to: B6(true) B4(false)
+      
+      B6
+      0:\tIDENTIFIER                          \tlevels
+      1:\tIDENTIFIER                          \ti
+      2:\tARRAY_ACCESS_EXPRESSION             \tlevels[i]
+      3:\tIDENTIFIER                          \thighestLevel
+      4:\tGREATER_THAN_OR_EQUAL_TO            \tlevels[i] >= highestLevel
+      T:\tWHILE_STATEMENT                     \twhile (i < levelLimit && levels[i] >= highestLevel)
+      \tjumps to: B5(true) B4(false)
+      
+      B5
+      0:\tIDENTIFIER                          \ti
+      1:\tPOSTFIX_INCREMENT                   \ti++
+      \tjumps to: B7
+      
+      B4
+      0:\tIDENTIFIER                          \ti
+      1:\tINT_LITERAL                         \t1
+      2:\tMINUS                               \ti - 1
+      3:\tVARIABLE                            \tend
+      4:\tIDENTIFIER                          \tbegin
+      5:\tIDENTIFIER                          \tdelta
+      6:\tPLUS_ASSIGNMENT                     \tbegin+=delta
+      7:\tIDENTIFIER                          \tend
+      8:\tIDENTIFIER                          \tdelta
+      9:\tPLUS_ASSIGNMENT                     \tend+=delta
+      \tjumps to: B3
+      
+      B3
+      0:\tIDENTIFIER                          \tbegin
+      1:\tIDENTIFIER                          \tend
+      2:\tLESS_THAN                           \tbegin < end
+      T:\tWHILE_STATEMENT                     \twhile (begin < end)
+      \tjumps to: B13(false) B2(true)
+      
+      B2
+      0:\tIDENTIFIER                          \tobjects
+      1:\tIDENTIFIER                          \tbegin
+      2:\tARRAY_ACCESS_EXPRESSION             \tobjects[begin]
+      3:\tVARIABLE                            \ttemp
+      4:\tIDENTIFIER                          \tobjects
+      5:\tIDENTIFIER                          \tbegin
+      6:\tARRAY_ACCESS_EXPRESSION             \tobjects[begin]
+      7:\tIDENTIFIER                          \tobjects
+      8:\tIDENTIFIER                          \tend
+      9:\tARRAY_ACCESS_EXPRESSION             \tobjects[end]
+      10:\tASSIGNMENT                          \tobjects[begin]=objects[end]
+      11:\tIDENTIFIER                          \tobjects
+      12:\tIDENTIFIER                          \tend
+      13:\tARRAY_ACCESS_EXPRESSION             \tobjects[end]
+      14:\tIDENTIFIER                          \ttemp
+      15:\tASSIGNMENT                          \tobjects[end]=temp
+      16:\tIDENTIFIER                          \tbegin
+      17:\tPREFIX_INCREMENT                    \t++begin
+      18:\tIDENTIFIER                          \tend
+      19:\tPREFIX_DECREMENT                    \t--end
+      \tjumps to: B3
+      
+      B1
+      0:\tIDENTIFIER                          \thighestLevel
+      1:\tPREFIX_DECREMENT                    \t--highestLevel
+      \tjumps to: B15
+      
+      B0 (Exit):
+      
+      """);
 
   }
 
   @Test
   void break_in_try_finally_within_loop_do_not_always_lead_to_exit() {
-    CFG cfg = buildCFG("void test() {\n" +
-      "    RuntimeException e = null;\n" +
-      "    for (int i = 0; i < 2; ) {\n" +
-      "      try {\n" +
-      "        e = new RuntimeException();\n" +
-      "        break;\n" +
-      "      } finally {\n" +
-      "        doSomething();\n" +
-      "      }\n" +
-      "    }\n" +
-      "    throw e;\n" +
-      "  }");
+    CFG cfg = buildCFG("""
+        void test() {
+          RuntimeException e = null;
+          for (int i = 0; i < 2; ) {
+            try {
+              e = new RuntimeException();
+              break;
+            } finally {
+              doSomething();
+            }
+          }
+          throw e;
+        }
+      """);
 
     CFGChecker cfgChecker = checker(
       block(
@@ -2969,18 +3077,20 @@ class CFGTest {
 
   @Test
   void break_in_try_finally_in_for_without_condition() {
-    CFG cfg = buildCFG("void test() {\n" +
-      "    RuntimeException e = null;\n" +
-      "    for (;;) {\n" +
-      "      try {\n" +
-      "        e = new RuntimeException();\n" +
-      "        break;\n" +
-      "      } finally {\n" +
-      "        doSomething();\n" +
-      "      }\n" +
-      "    }\n" +
-      "    throw e;\n" +
-      "  }");
+    CFG cfg = buildCFG("""
+        void test() {
+          RuntimeException e = null;
+          for (;;) {
+            try {
+              e = new RuntimeException();
+              break;
+            } finally {
+              doSomething();
+            }
+          }
+          throw e;
+        }
+        """);
 
     CFGChecker cfgChecker = checker(
       block(

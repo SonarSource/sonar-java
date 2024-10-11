@@ -239,11 +239,13 @@ class JTypeTest {
 
   @Test
   void capture_type() {
-    CompilationUnitTreeImpl cu = test("class A {\n" +
-      "  Object foo(java.util.List<? extends A> list) {\n" +
-      "    return list.get(0);\n" +
-      "  }\n" +
-      "}");
+    CompilationUnitTreeImpl cu = test("""
+      class A {
+        Object foo(java.util.List<? extends A> list) {
+          return list.get(0);
+        }
+      }
+      """);
     cu.types().get(0);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);

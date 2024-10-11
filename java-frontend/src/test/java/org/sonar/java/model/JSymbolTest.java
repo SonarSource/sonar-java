@@ -230,11 +230,12 @@ class JSymbolTest {
 
   @Test
   void super_keyword_in_the_java_lang_Object_scope_has_unknown_type_instead_of_null() {
-    JavaTree.CompilationUnitTreeImpl cu = test("" +
-      "package java.lang;\n" +
-      "class Object {\n" +
-      "  void foo() { super.hashCode(); }\n" +
-      "}");
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+      package java.lang;
+      class Object {
+        void foo() { super.hashCode(); }
+      }
+      """);
     ClassTree objectClass = (ClassTree) cu.types().get(0);
     MethodTree fooMethod = (MethodTree) objectClass.members().get(0);
     ExpressionStatementTree firstStatement = (ExpressionStatementTree) fooMethod.block().body().get(0);
