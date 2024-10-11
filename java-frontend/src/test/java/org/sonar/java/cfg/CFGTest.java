@@ -336,18 +336,18 @@ class CFGTest {
       this.kind = kind;
       this.name = name;
       switch (kind) {
-        case VARIABLE:
-        case CLASS:
-        case ENUM:
-        case INTERFACE:
-        case RECORD:
-        case ANNOTATION_TYPE:
-        case IDENTIFIER:
-        case CHAR_LITERAL:
-        case STRING_LITERAL:
-        case BOOLEAN_LITERAL:
-        case INT_LITERAL:
-        case METHOD_INVOCATION:
+        case VARIABLE,
+          CLASS,
+          ENUM,
+          INTERFACE,
+          RECORD,
+          ANNOTATION_TYPE,
+          IDENTIFIER,
+          CHAR_LITERAL,
+          STRING_LITERAL,
+          BOOLEAN_LITERAL,
+          INT_LITERAL,
+          METHOD_INVOCATION:
           break;
         default:
           throw new IllegalArgumentException("Unsupported element kind! "+kind);
@@ -371,42 +371,42 @@ class CFGTest {
       this.kind = kind;
       name = null;
       switch (kind) {
-        case METHOD_INVOCATION:
-        case ASSERT_STATEMENT:
-        case METHOD_REFERENCE:
-        case MEMBER_SELECT:
-        case NULL_LITERAL:
-        case EQUAL_TO:
-        case NOT_EQUAL_TO:
-        case LESS_THAN:
-        case LESS_THAN_OR_EQUAL_TO:
-        case GREATER_THAN:
-        case GREATER_THAN_OR_EQUAL_TO:
-        case POSTFIX_INCREMENT:
-        case PREFIX_INCREMENT:
-        case POSTFIX_DECREMENT:
-        case PREFIX_DECREMENT:
-        case TRY_STATEMENT:
-        case NEW_CLASS:
-        case NEW_ARRAY:
-        case INSTANCE_OF:
-        case PATTERN_INSTANCE_OF:
-        case SWITCH_EXPRESSION:
-        case LAMBDA_EXPRESSION:
-        case TYPE_CAST:
-        case PLUS_ASSIGNMENT:
-        case ASSIGNMENT:
-        case ARRAY_ACCESS_EXPRESSION:
-        case LOGICAL_COMPLEMENT:
-        case MULTIPLY_ASSIGNMENT:
-        case UNARY_MINUS:
-        case PLUS:
-        case CASE_GROUP:
-        case NULL_PATTERN:
-        case TYPE_PATTERN:
-        case GUARDED_PATTERN:
-        case DEFAULT_PATTERN:
-        case RECORD_PATTERN:
+        case METHOD_INVOCATION,
+          ASSERT_STATEMENT,
+          METHOD_REFERENCE,
+          MEMBER_SELECT,
+          NULL_LITERAL,
+          EQUAL_TO,
+          NOT_EQUAL_TO,
+          LESS_THAN,
+          LESS_THAN_OR_EQUAL_TO,
+          GREATER_THAN,
+          GREATER_THAN_OR_EQUAL_TO,
+          POSTFIX_INCREMENT,
+          PREFIX_INCREMENT,
+          POSTFIX_DECREMENT,
+          PREFIX_DECREMENT,
+          TRY_STATEMENT,
+          NEW_CLASS,
+          NEW_ARRAY,
+          INSTANCE_OF,
+          PATTERN_INSTANCE_OF,
+          SWITCH_EXPRESSION,
+          LAMBDA_EXPRESSION,
+          TYPE_CAST,
+          PLUS_ASSIGNMENT,
+          ASSIGNMENT,
+          ARRAY_ACCESS_EXPRESSION,
+          LOGICAL_COMPLEMENT,
+          MULTIPLY_ASSIGNMENT,
+          UNARY_MINUS,
+          PLUS,
+          CASE_GROUP,
+          NULL_PATTERN,
+          TYPE_PATTERN,
+          GUARDED_PATTERN,
+          DEFAULT_PATTERN,
+          RECORD_PATTERN:
           break;
         default:
           throw new IllegalArgumentException("Unsupported element kind: " + kind);
@@ -442,11 +442,11 @@ class CFGTest {
             assertThat(select.identifier()).as("Method").hasToString(name);
           }
           break;
-        case CLASS:
-        case ENUM:
-        case INTERFACE:
-        case RECORD:
-        case ANNOTATION_TYPE:
+        case CLASS,
+          ENUM,
+          INTERFACE,
+          RECORD,
+          ANNOTATION_TYPE:
           assertThat(((ClassTree) element).simpleName().name()).as("Type name").isEqualTo(name);
           break;
         default:
@@ -463,22 +463,22 @@ class CFGTest {
     private TerminatorChecker(final Tree.Kind kind) {
       this.kind = kind;
       switch (kind) {
-        case IF_STATEMENT:
-        case CONDITIONAL_OR:
-        case CONDITIONAL_AND:
-        case CONDITIONAL_EXPRESSION:
-        case BREAK_STATEMENT:
-        case YIELD_STATEMENT:
-        case CONTINUE_STATEMENT:
-        case SWITCH_STATEMENT:
-        case SWITCH_EXPRESSION:
-        case RETURN_STATEMENT:
-        case FOR_STATEMENT:
-        case FOR_EACH_STATEMENT:
-        case WHILE_STATEMENT:
-        case DO_STATEMENT:
-        case THROW_STATEMENT:
-        case SYNCHRONIZED_STATEMENT:
+        case IF_STATEMENT,
+          CONDITIONAL_OR,
+          CONDITIONAL_AND,
+          CONDITIONAL_EXPRESSION,
+          BREAK_STATEMENT,
+          YIELD_STATEMENT,
+          CONTINUE_STATEMENT,
+          SWITCH_STATEMENT,
+          SWITCH_EXPRESSION,
+          RETURN_STATEMENT,
+          FOR_STATEMENT,
+          FOR_EACH_STATEMENT,
+          WHILE_STATEMENT,
+          DO_STATEMENT,
+          THROW_STATEMENT,
+          SYNCHRONIZED_STATEMENT:
           break;
         default:
           throw new IllegalArgumentException("Unexpected terminator kind!");

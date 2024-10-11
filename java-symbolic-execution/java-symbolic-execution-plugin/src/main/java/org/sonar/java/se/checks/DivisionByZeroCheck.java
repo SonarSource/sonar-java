@@ -107,12 +107,12 @@ public class DivisionByZeroCheck extends SECheck {
     @Override
     public Constraint copyOver(RelationalSymbolicValue.Kind kind) {
       switch (kind) {
-        case EQUAL:
-        case METHOD_EQUALS:
+        case EQUAL,
+          METHOD_EQUALS:
           return this;
-        case LESS_THAN:
-        case NOT_EQUAL:
-        case NOT_METHOD_EQUALS:
+        case LESS_THAN,
+          NOT_EQUAL,
+          NOT_METHOD_EQUALS:
           return inverse();
         default:
           return null;
@@ -186,11 +186,11 @@ public class DivisionByZeroCheck extends SECheck {
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
       switch (tree.kind()) {
-        case MULTIPLY:
-        case PLUS:
-        case MINUS:
-        case DIVIDE:
-        case REMAINDER:
+        case MULTIPLY,
+          PLUS,
+          MINUS,
+          DIVIDE,
+          REMAINDER:
           ProgramState.Pop unstackValue = programState.unstackValue(2);
           checkExpression(tree, unstackValue.values.get(1), unstackValue.values.get(0), unstackValue.valuesAndSymbols.get(0).symbol());
           break;
@@ -223,20 +223,20 @@ public class DivisionByZeroCheck extends SECheck {
 
     private void checkExpression(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp, Symbol rightOpSymbol) {
       switch (tree.kind()) {
-        case MULTIPLY:
-        case MULTIPLY_ASSIGNMENT:
+        case MULTIPLY,
+          MULTIPLY_ASSIGNMENT:
           handleMultiply(leftOp, rightOp);
           break;
-        case PLUS:
-        case PLUS_ASSIGNMENT:
-        case MINUS:
-        case MINUS_ASSIGNMENT:
+        case PLUS,
+          PLUS_ASSIGNMENT,
+          MINUS,
+          MINUS_ASSIGNMENT:
           handlePlusMinus(leftOp, rightOp);
           break;
-        case DIVIDE:
-        case DIVIDE_ASSIGNMENT:
-        case REMAINDER:
-        case REMAINDER_ASSIGNMENT:
+        case DIVIDE,
+          DIVIDE_ASSIGNMENT,
+          REMAINDER,
+          REMAINDER_ASSIGNMENT:
           handleDivide(tree, leftOp, rightOp, rightOpSymbol);
           break;
         default:

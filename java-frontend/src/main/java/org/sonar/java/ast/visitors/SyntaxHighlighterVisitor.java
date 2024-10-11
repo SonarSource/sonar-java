@@ -124,8 +124,8 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
         // 'record' is a 'restricted identifier' (JSL16, $3.9) only acting as keyword in a record declaration
         highlight(((ClassTree) tree).declarationKeyword(), TypeOfText.KEYWORD);
         return;
-      case CLASS:
-      case INTERFACE:
+      case CLASS,
+        INTERFACE:
         // 'permits' is a 'restricted identifier' (JSL16, $3.9) only acting as keyword in a class/interface declaration
         Optional.ofNullable(((ClassTree) tree).permitsKeyword()).ifPresent(permitsKeyword -> highlight(permitsKeyword, TypeOfText.KEYWORD));
         return;

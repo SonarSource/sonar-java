@@ -939,8 +939,8 @@ public class JParser {
     final int separatorTokenIndex = firstTokenIndexAfter(e);
     final InternalSyntaxToken separatorToken;
     switch (tokenManager.get(separatorTokenIndex).tokenType) {
-      case TerminalTokens.TokenNameCOMMA:
-      case TerminalTokens.TokenNameSEMICOLON:
+      case TerminalTokens.TokenNameCOMMA,
+        TerminalTokens.TokenNameSEMICOLON:
         separatorToken = createSyntaxToken(separatorTokenIndex);
         break;
       case TerminalTokens.TokenNameRBRACE:
@@ -973,10 +973,10 @@ public class JParser {
     final int lastTokenIndex;
 
     switch (node.getNodeType()) {
-      case ASTNode.ANNOTATION_TYPE_DECLARATION:
-      case ASTNode.ENUM_DECLARATION:
-      case ASTNode.RECORD_DECLARATION:
-      case ASTNode.TYPE_DECLARATION:
+      case ASTNode.ANNOTATION_TYPE_DECLARATION,
+        ASTNode.ENUM_DECLARATION,
+        ASTNode.RECORD_DECLARATION,
+        ASTNode.TYPE_DECLARATION:
         lastTokenIndex = processTypeDeclaration((AbstractTypeDeclaration) node, members);
         break;
       case ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION:
@@ -1915,9 +1915,9 @@ public class JParser {
         return convertLiteral((StringLiteral) node);
       case ASTNode.TEXT_BLOCK:
         return convertTextBlock((TextBlock) node);
-      case ASTNode.NORMAL_ANNOTATION:
-      case ASTNode.MARKER_ANNOTATION:
-      case ASTNode.SINGLE_MEMBER_ANNOTATION:
+      case ASTNode.NORMAL_ANNOTATION,
+        ASTNode.MARKER_ANNOTATION,
+        ASTNode.SINGLE_MEMBER_ANNOTATION:
         return convertAnnotation((Annotation) node);
       default:
         throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
@@ -2737,9 +2737,9 @@ public class JParser {
 
   private ModifierTree convertModifier(IExtendedModifier node) {
     switch (((ASTNode) node).getNodeType()) {
-      case ASTNode.NORMAL_ANNOTATION:
-      case ASTNode.MARKER_ANNOTATION:
-      case ASTNode.SINGLE_MEMBER_ANNOTATION:
+      case ASTNode.NORMAL_ANNOTATION,
+        ASTNode.MARKER_ANNOTATION,
+        ASTNode.SINGLE_MEMBER_ANNOTATION:
         return (AnnotationTree) convertExpression((Expression) node);
       case ASTNode.MODIFIER:
         return convertModifier((org.eclipse.jdt.core.dom.Modifier) node);

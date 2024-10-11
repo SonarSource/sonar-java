@@ -194,13 +194,13 @@ final class JType implements Type, Type.ArrayType {
   @Override
   public boolean isNumerical() {
     switch (fullyQualifiedName()) {
-      case "byte":
-      case "char":
-      case "short":
-      case "int":
-      case "long":
-      case "float":
-      case "double":
+      case "byte",
+        "char",
+        "short",
+        "int",
+        "long",
+        "float",
+        "double":
         return true;
       default:
         return false;

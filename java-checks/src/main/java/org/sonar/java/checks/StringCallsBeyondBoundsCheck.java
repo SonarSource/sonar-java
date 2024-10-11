@@ -69,8 +69,8 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
     boolean issue;
     String method = invocation.methodSymbol().name();
     switch (method) {
-      case "charAt":
-      case "codePointAt":
+      case "charAt",
+        "codePointAt":
         issue = checkCodePointAt(invocation);
         break;
       case "codePointBefore":
@@ -82,8 +82,8 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
       case "offsetByCodePoints":
         issue = checkOffsetByCodePoints(invocation);
         break;
-      case "codePointCount":
-      case "subSequence":
+      case "codePointCount",
+        "subSequence":
         issue = checkSubsequence(invocation);
         break;
       case "substring":

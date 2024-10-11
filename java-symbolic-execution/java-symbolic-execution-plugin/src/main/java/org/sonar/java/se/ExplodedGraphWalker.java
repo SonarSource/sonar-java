@@ -444,8 +444,8 @@ public class ExplodedGraphWalker {
         case SWITCH_EXPRESSION:
           handleSwitch(block, ((SwitchExpressionTree) terminator).cases());
           return;
-        case CONDITIONAL_OR:
-        case CONDITIONAL_AND:
+        case CONDITIONAL_OR,
+          CONDITIONAL_AND:
           handleBranch(block, ((BinaryExpressionTree) terminator).leftOperand());
           return;
         case CONDITIONAL_EXPRESSION:
@@ -671,10 +671,10 @@ public class ExplodedGraphWalker {
         }
         executeMethodInvocation(mit);
         return;
-      case LABELED_STATEMENT:
-      case SWITCH_STATEMENT:
-      case EXPRESSION_STATEMENT:
-      case PARENTHESIZED_EXPRESSION:
+      case LABELED_STATEMENT,
+        SWITCH_STATEMENT,
+        EXPRESSION_STATEMENT,
+        PARENTHESIZED_EXPRESSION:
         throw new IllegalStateException("Cannot appear in ControlFlowGraph: " + tree.kind().name());
       case VARIABLE:
         executeVariable((VariableTree) tree, terminator);
@@ -682,20 +682,20 @@ public class ExplodedGraphWalker {
       case TYPE_CAST:
         executeTypeCast((TypeCastTree) tree);
         break;
-      case ASSIGNMENT:
-      case MULTIPLY_ASSIGNMENT:
-      case DIVIDE_ASSIGNMENT:
-      case REMAINDER_ASSIGNMENT:
-      case PLUS_ASSIGNMENT:
-      case MINUS_ASSIGNMENT:
-      case LEFT_SHIFT_ASSIGNMENT:
-      case RIGHT_SHIFT_ASSIGNMENT:
-      case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
+      case ASSIGNMENT,
+        MULTIPLY_ASSIGNMENT,
+        DIVIDE_ASSIGNMENT,
+        REMAINDER_ASSIGNMENT,
+        PLUS_ASSIGNMENT,
+        MINUS_ASSIGNMENT,
+        LEFT_SHIFT_ASSIGNMENT,
+        RIGHT_SHIFT_ASSIGNMENT,
+        UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
         executeAssignment((AssignmentExpressionTree) tree);
         break;
-      case AND_ASSIGNMENT:
-      case XOR_ASSIGNMENT:
-      case OR_ASSIGNMENT:
+      case AND_ASSIGNMENT,
+        XOR_ASSIGNMENT,
+        OR_ASSIGNMENT:
         executeLogicalAssignment((AssignmentExpressionTree) tree);
         break;
       case ARRAY_ACCESS_EXPRESSION:
@@ -707,35 +707,35 @@ public class ExplodedGraphWalker {
       case NEW_CLASS:
         executeNewClass((NewClassTree) tree);
         break;
-      case MULTIPLY:
-      case DIVIDE:
-      case REMAINDER:
-      case PLUS:
-      case MINUS:
-      case LEFT_SHIFT:
-      case RIGHT_SHIFT:
-      case UNSIGNED_RIGHT_SHIFT:
-      case AND:
-      case XOR:
-      case OR:
-      case GREATER_THAN:
-      case GREATER_THAN_OR_EQUAL_TO:
-      case LESS_THAN:
-      case LESS_THAN_OR_EQUAL_TO:
-      case EQUAL_TO:
-      case NOT_EQUAL_TO:
+      case MULTIPLY,
+        DIVIDE,
+        REMAINDER,
+        PLUS,
+        MINUS,
+        LEFT_SHIFT,
+        RIGHT_SHIFT,
+        UNSIGNED_RIGHT_SHIFT,
+        AND,
+        XOR,
+        OR,
+        GREATER_THAN,
+        GREATER_THAN_OR_EQUAL_TO,
+        LESS_THAN,
+        LESS_THAN_OR_EQUAL_TO,
+        EQUAL_TO,
+        NOT_EQUAL_TO:
         executeBinaryExpression(tree);
         break;
-      case POSTFIX_INCREMENT:
-      case POSTFIX_DECREMENT:
-      case PREFIX_INCREMENT:
-      case PREFIX_DECREMENT:
-      case UNARY_MINUS:
-      case UNARY_PLUS:
-      case BITWISE_COMPLEMENT:
-      case LOGICAL_COMPLEMENT:
-      case INSTANCE_OF:
-      case PATTERN_INSTANCE_OF:
+      case POSTFIX_INCREMENT,
+        POSTFIX_DECREMENT,
+        PREFIX_INCREMENT,
+        PREFIX_DECREMENT,
+        UNARY_MINUS,
+        UNARY_PLUS,
+        BITWISE_COMPLEMENT,
+        LOGICAL_COMPLEMENT,
+        INSTANCE_OF,
+        PATTERN_INSTANCE_OF:
         executeUnaryExpression(tree);
         break;
       case IDENTIFIER:
@@ -744,13 +744,13 @@ public class ExplodedGraphWalker {
       case MEMBER_SELECT:
         executeMemberSelect((MemberSelectExpressionTree) tree);
         break;
-      case INT_LITERAL:
-      case LONG_LITERAL:
-      case FLOAT_LITERAL:
-      case DOUBLE_LITERAL:
-      case CHAR_LITERAL:
-      case TEXT_BLOCK:
-      case STRING_LITERAL:
+      case INT_LITERAL,
+        LONG_LITERAL,
+        FLOAT_LITERAL,
+        DOUBLE_LITERAL,
+        CHAR_LITERAL,
+        TEXT_BLOCK,
+        STRING_LITERAL:
         SymbolicValue val = constraintManager.createSymbolicValue(tree);
         programState = programState.stackValue(val);
         programState = programState.addConstraint(val, ObjectConstraint.NOT_NULL);
@@ -762,9 +762,9 @@ public class ExplodedGraphWalker {
       case NULL_LITERAL:
         programState = programState.stackValue(SymbolicValue.NULL_LITERAL);
         break;
-      case LAMBDA_EXPRESSION:
-      case METHOD_REFERENCE:
-      case SWITCH_EXPRESSION:
+      case LAMBDA_EXPRESSION,
+        METHOD_REFERENCE,
+        SWITCH_EXPRESSION:
         programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
         break;
       case DEFAULT_PATTERN:

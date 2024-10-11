@@ -75,13 +75,13 @@ public class DefaultInitializedFieldCheck extends IssuableSubscriptionVisitor {
       case BOOLEAN_LITERAL:
         return literalValue(expression)
           .filter(booleanValue -> LiteralUtils.isFalse(expression));
-      case INT_LITERAL:
-      case LONG_LITERAL:
+      case INT_LITERAL,
+        LONG_LITERAL:
         return Optional.ofNullable(LiteralUtils.longLiteralValue(expression))
           .filter(numericalValue -> numericalValue == 0)
           .flatMap(numericalValue -> literalValue(expression));
-      case FLOAT_LITERAL:
-      case DOUBLE_LITERAL:
+      case FLOAT_LITERAL,
+        DOUBLE_LITERAL:
         return literalValue(expression)
           .filter(numericalValue -> Double.doubleToLongBits(Double.valueOf(numericalValue)) == 0);
       case TYPE_CAST:

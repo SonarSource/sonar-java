@@ -110,8 +110,8 @@ public class FileLinesVisitor extends SubscriptionVisitor {
   public void visitNode(Tree tree) {
     List<? extends Tree> trees = Collections.emptyList();
     switch (tree.kind()) {
-      case INITIALIZER:
-      case STATIC_INITIALIZER:
+      case INITIALIZER,
+        STATIC_INITIALIZER:
         trees = ((BlockTree) tree).body();
         break;
       case VARIABLE:
@@ -120,14 +120,14 @@ public class FileLinesVisitor extends SubscriptionVisitor {
       case LAMBDA_EXPRESSION:
         trees = visitLambda((LambdaExpressionTree) tree);
         break;
-      case METHOD:
-      case CONSTRUCTOR:
+      case METHOD,
+        CONSTRUCTOR:
         trees = visitMethod((MethodTree) tree);
         break;
-      case FOR_STATEMENT:
-      case FOR_EACH_STATEMENT:
-      case WHILE_STATEMENT:
-      case DO_STATEMENT:
+      case FOR_STATEMENT,
+        FOR_EACH_STATEMENT,
+        WHILE_STATEMENT,
+        DO_STATEMENT:
         executableLines.add(startLine(tree.lastToken()));
         break;
       default:

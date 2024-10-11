@@ -71,46 +71,46 @@ public class SyntaxTreeDebug {
         return methodInvocationString((MethodInvocationTree) syntaxNode);
       case MEMBER_SELECT:
         return memberSelectString((MemberSelectExpressionTree) syntaxNode);
-      case EQUAL_TO:
-      case NOT_EQUAL_TO:
-      case CONDITIONAL_AND:
-      case CONDITIONAL_OR:
-      case LESS_THAN:
-      case LESS_THAN_OR_EQUAL_TO:
-      case GREATER_THAN:
-      case GREATER_THAN_OR_EQUAL_TO:
-      case AND:
-      case OR:
-      case XOR:
-      case PLUS:
-      case MINUS:
-      case MULTIPLY:
-      case DIVIDE:
-      case REMAINDER:
-      case LEFT_SHIFT:
-      case RIGHT_SHIFT:
-      case UNSIGNED_RIGHT_SHIFT:
+      case EQUAL_TO,
+        NOT_EQUAL_TO,
+        CONDITIONAL_AND,
+        CONDITIONAL_OR,
+        LESS_THAN,
+        LESS_THAN_OR_EQUAL_TO,
+        GREATER_THAN,
+        GREATER_THAN_OR_EQUAL_TO,
+        AND,
+        OR,
+        XOR,
+        PLUS,
+        MINUS,
+        MULTIPLY,
+        DIVIDE,
+        REMAINDER,
+        LEFT_SHIFT,
+        RIGHT_SHIFT,
+        UNSIGNED_RIGHT_SHIFT:
         return binaryExpressionString((BinaryExpressionTree) syntaxNode);
-      case ASSIGNMENT:
-      case PLUS_ASSIGNMENT:
-      case MINUS_ASSIGNMENT:
-      case MULTIPLY_ASSIGNMENT:
-      case DIVIDE_ASSIGNMENT:
-      case REMAINDER_ASSIGNMENT:
-      case AND_ASSIGNMENT:
-      case LEFT_SHIFT_ASSIGNMENT:
-      case RIGHT_SHIFT_ASSIGNMENT:
-      case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
+      case ASSIGNMENT,
+        PLUS_ASSIGNMENT,
+        MINUS_ASSIGNMENT,
+        MULTIPLY_ASSIGNMENT,
+        DIVIDE_ASSIGNMENT,
+        REMAINDER_ASSIGNMENT,
+        AND_ASSIGNMENT,
+        LEFT_SHIFT_ASSIGNMENT,
+        RIGHT_SHIFT_ASSIGNMENT,
+        UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
         return assignmentString((AssignmentExpressionTree) syntaxNode);
       case NULL_LITERAL:
         return "null";
-      case STRING_LITERAL:
-      case CHAR_LITERAL:
-      case BOOLEAN_LITERAL:
-      case INT_LITERAL:
-      case LONG_LITERAL:
-      case FLOAT_LITERAL:
-      case DOUBLE_LITERAL:
+      case STRING_LITERAL,
+        CHAR_LITERAL,
+        BOOLEAN_LITERAL,
+        INT_LITERAL,
+        LONG_LITERAL,
+        FLOAT_LITERAL,
+        DOUBLE_LITERAL:
         return literalString((LiteralTree) syntaxNode);
       case IF_STATEMENT:
         return ifStatementString((IfStatementTree) syntaxNode);
@@ -128,21 +128,21 @@ public class SyntaxTreeDebug {
         return returnString((ReturnStatementTree) syntaxNode);
       case CONDITIONAL_EXPRESSION:
         return conditionalExpressionString((ConditionalExpressionTree) syntaxNode);
-      case EMPTY_STATEMENT:
-      case TRY_STATEMENT:
-      case DO_STATEMENT:
+      case EMPTY_STATEMENT,
+        TRY_STATEMENT,
+        DO_STATEMENT:
         return "";
       case SYNCHRONIZED_STATEMENT:
         return synchronizedStatementString((SynchronizedStatementTree) syntaxNode);
-      case PREFIX_DECREMENT:
-      case PREFIX_INCREMENT:
-      case LOGICAL_COMPLEMENT:
-      case BITWISE_COMPLEMENT:
-      case UNARY_MINUS:
-      case UNARY_PLUS:
+      case PREFIX_DECREMENT,
+        PREFIX_INCREMENT,
+        LOGICAL_COMPLEMENT,
+        BITWISE_COMPLEMENT,
+        UNARY_MINUS,
+        UNARY_PLUS:
         return prefixExpressionString((UnaryExpressionTree) syntaxNode);
-      case POSTFIX_DECREMENT:
-      case POSTFIX_INCREMENT:
+      case POSTFIX_DECREMENT,
+        POSTFIX_INCREMENT:
         return postfixExpressionString((UnaryExpressionTree) syntaxNode);
       case TYPE_CAST:
         return typeCastString((TypeCastTree) syntaxNode);

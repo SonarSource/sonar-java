@@ -57,8 +57,8 @@ public interface Constraint {
   @Nullable
   default Constraint copyOver(RelationalSymbolicValue.Kind kind) {
     switch (kind) {
-      case EQUAL:
-      case METHOD_EQUALS:
+      case EQUAL,
+        METHOD_EQUALS:
         return this;
       default:
         return inverse();

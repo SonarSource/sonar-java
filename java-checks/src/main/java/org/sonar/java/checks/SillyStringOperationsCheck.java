@@ -76,15 +76,15 @@ public class SillyStringOperationsCheck extends AbstractMethodDetection {
       Arguments args = tree.arguments();
       String method = tree.methodSymbol().name();
       switch (method) {
-        case "contains":
-        case "compareTo":
-        case "compareToIgnoreCase":
-        case "endsWith":
-        case "indexOf":
-        case "lastIndexOf":
-        case "matches":
-        case "split":
-        case "startsWith":
+        case "contains",
+          "compareTo",
+          "compareToIgnoreCase",
+          "endsWith",
+          "indexOf",
+          "lastIndexOf",
+          "matches",
+          "split",
+          "startsWith":
           issue = checkStartsWith(str, args);
           break;
         case "replaceFirst":

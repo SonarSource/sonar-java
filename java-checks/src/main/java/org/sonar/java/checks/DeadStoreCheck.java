@@ -95,18 +95,18 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
   private Set<Symbol> checkElement(Symbol.MethodSymbol methodSymbol, Set<Symbol> outVar, Set<Tree> assignmentLHS, Tree element) {
     Set<Symbol> out = outVar;
     switch (element.kind()) {
-      case PLUS_ASSIGNMENT:
-      case DIVIDE_ASSIGNMENT:
-      case MINUS_ASSIGNMENT:
-      case MULTIPLY_ASSIGNMENT:
-      case OR_ASSIGNMENT:
-      case XOR_ASSIGNMENT:
-      case AND_ASSIGNMENT:
-      case LEFT_SHIFT_ASSIGNMENT:
-      case RIGHT_SHIFT_ASSIGNMENT:
-      case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
-      case REMAINDER_ASSIGNMENT:
-      case ASSIGNMENT:
+      case PLUS_ASSIGNMENT,
+        DIVIDE_ASSIGNMENT,
+        MINUS_ASSIGNMENT,
+        MULTIPLY_ASSIGNMENT,
+        OR_ASSIGNMENT,
+        XOR_ASSIGNMENT,
+        AND_ASSIGNMENT,
+        LEFT_SHIFT_ASSIGNMENT,
+        RIGHT_SHIFT_ASSIGNMENT,
+        UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
+        REMAINDER_ASSIGNMENT,
+        ASSIGNMENT:
         handleAssignment(out, assignmentLHS, (AssignmentExpressionTree) element);
         break;
       case IDENTIFIER:
@@ -129,18 +129,18 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
       case TRY_STATEMENT:
         handleTryStatement(out, methodSymbol, (TryStatementTree) element);
         break;
-      case PREFIX_DECREMENT:
-      case PREFIX_INCREMENT:
+      case PREFIX_DECREMENT,
+        PREFIX_INCREMENT:
         handlePrefixExpression(out, (UnaryExpressionTree) element);
         break;
-      case POSTFIX_INCREMENT:
-      case POSTFIX_DECREMENT:
+      case POSTFIX_INCREMENT,
+        POSTFIX_DECREMENT:
         handlePostfixExpression(out, (UnaryExpressionTree) element);
         break;
-      case CLASS:
-      case ENUM:
-      case ANNOTATION_TYPE:
-      case INTERFACE:
+      case CLASS,
+        ENUM,
+        ANNOTATION_TYPE,
+        INTERFACE:
         ClassTree classTree = (ClassTree) element;
         out.addAll(getUsedLocalVarInSubTree(classTree, methodSymbol));
         break;
@@ -195,16 +195,16 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
   private static boolean isUsualDefaultValue(ExpressionTree tree) {
     ExpressionTree expr = ExpressionUtils.skipParentheses(tree);
     switch (expr.kind()) {
-      case BOOLEAN_LITERAL:
-      case NULL_LITERAL:
+      case BOOLEAN_LITERAL,
+        NULL_LITERAL:
         return true;
       case STRING_LITERAL:
         return LiteralUtils.isEmptyString(expr);
       case INT_LITERAL:
         String value = ((LiteralTree) expr).value();
         return "0".equals(value) || "1".equals(value);
-      case UNARY_MINUS:
-      case UNARY_PLUS:
+      case UNARY_MINUS,
+        UNARY_PLUS:
         return isUsualDefaultValue(((UnaryExpressionTree) expr).expression());
       default:
         return false;

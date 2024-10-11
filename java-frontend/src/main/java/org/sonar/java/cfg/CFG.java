@@ -539,37 +539,37 @@ public class CFG implements ControlFlowGraph {
       case VARIABLE:
         buildVariable((VariableTree) tree);
         break;
-      case MULTIPLY:
-      case DIVIDE:
-      case REMAINDER:
-      case PLUS:
-      case MINUS:
-      case LEFT_SHIFT:
-      case RIGHT_SHIFT:
-      case UNSIGNED_RIGHT_SHIFT:
-      case AND:
-      case XOR:
-      case OR:
-      case GREATER_THAN:
-      case GREATER_THAN_OR_EQUAL_TO:
-      case LESS_THAN:
-      case LESS_THAN_OR_EQUAL_TO:
-      case EQUAL_TO:
-      case NOT_EQUAL_TO:
+      case MULTIPLY,
+        DIVIDE,
+        REMAINDER,
+        PLUS,
+        MINUS,
+        LEFT_SHIFT,
+        RIGHT_SHIFT,
+        UNSIGNED_RIGHT_SHIFT,
+        AND,
+        XOR,
+        OR,
+        GREATER_THAN,
+        GREATER_THAN_OR_EQUAL_TO,
+        LESS_THAN,
+        LESS_THAN_OR_EQUAL_TO,
+        EQUAL_TO,
+        NOT_EQUAL_TO:
         buildBinaryExpression(tree);
         break;
-      case ASSIGNMENT:
-      case LEFT_SHIFT_ASSIGNMENT:
-      case RIGHT_SHIFT_ASSIGNMENT:
-      case AND_ASSIGNMENT:
-      case REMAINDER_ASSIGNMENT:
-      case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
-      case OR_ASSIGNMENT:
-      case XOR_ASSIGNMENT:
-      case DIVIDE_ASSIGNMENT:
-      case MULTIPLY_ASSIGNMENT:
-      case PLUS_ASSIGNMENT:
-      case MINUS_ASSIGNMENT:
+      case ASSIGNMENT,
+        LEFT_SHIFT_ASSIGNMENT,
+        RIGHT_SHIFT_ASSIGNMENT,
+        AND_ASSIGNMENT,
+        REMAINDER_ASSIGNMENT,
+        UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
+        OR_ASSIGNMENT,
+        XOR_ASSIGNMENT,
+        DIVIDE_ASSIGNMENT,
+        MULTIPLY_ASSIGNMENT,
+        PLUS_ASSIGNMENT,
+        MINUS_ASSIGNMENT:
         buildAssignment((AssignmentExpressionTree) tree);
         break;
       case MEMBER_SELECT:
@@ -620,14 +620,14 @@ public class CFG implements ControlFlowGraph {
       case SYNCHRONIZED_STATEMENT:
         buildSynchronizedStatement((SynchronizedStatementTree) tree);
         break;
-      case POSTFIX_INCREMENT:
-      case POSTFIX_DECREMENT:
-      case PREFIX_INCREMENT:
-      case PREFIX_DECREMENT:
-      case UNARY_MINUS:
-      case UNARY_PLUS:
-      case BITWISE_COMPLEMENT:
-      case LOGICAL_COMPLEMENT:
+      case POSTFIX_INCREMENT,
+        POSTFIX_DECREMENT,
+        PREFIX_INCREMENT,
+        PREFIX_DECREMENT,
+        UNARY_MINUS,
+        UNARY_PLUS,
+        BITWISE_COMPLEMENT,
+        LOGICAL_COMPLEMENT:
         buildUnaryExpression((UnaryExpressionTree) tree);
         break;
       case PARENTHESIZED_EXPRESSION:
@@ -659,35 +659,35 @@ public class CFG implements ControlFlowGraph {
         buildAssertStatement((AssertStatementTree) tree);
         break;
       // store declarations as complete blocks.
-      case EMPTY_STATEMENT:
-      case CLASS:
-      case RECORD:
-      case ENUM:
-      case ANNOTATION_TYPE:
-      case INTERFACE:
-      case METHOD_REFERENCE:
-      case LAMBDA_EXPRESSION:
+      case EMPTY_STATEMENT,
+        CLASS,
+        RECORD,
+        ENUM,
+        ANNOTATION_TYPE,
+        INTERFACE,
+        METHOD_REFERENCE,
+        LAMBDA_EXPRESSION,
         // simple instructions
-      case INT_LITERAL:
-      case LONG_LITERAL:
-      case DOUBLE_LITERAL:
-      case CHAR_LITERAL:
-      case FLOAT_LITERAL:
-      case STRING_LITERAL:
-      case TEXT_BLOCK:
-      case BOOLEAN_LITERAL:
-      case NULL_LITERAL:
+        INT_LITERAL,
+        LONG_LITERAL,
+        DOUBLE_LITERAL,
+        CHAR_LITERAL,
+        FLOAT_LITERAL,
+        STRING_LITERAL,
+        TEXT_BLOCK,
+        BOOLEAN_LITERAL,
+        NULL_LITERAL:
         currentBlock.elements.add(tree);
         break;
       case IDENTIFIER:
         checkIdentifierSemantic((IdentifierTree) tree);
         currentBlock.elements.add(tree);
         break;
-      case NULL_PATTERN:
-      case TYPE_PATTERN:
-      case GUARDED_PATTERN:
-      case RECORD_PATTERN:
-      case DEFAULT_PATTERN:
+      case NULL_PATTERN,
+        TYPE_PATTERN,
+        GUARDED_PATTERN,
+        RECORD_PATTERN,
+        DEFAULT_PATTERN:
         buildPattern((PatternTree) tree);
         break;
       default:

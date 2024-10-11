@@ -236,8 +236,8 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
         return getLiteralsFromFinalVariables((IdentifierTree) expr);
       case PARENTHESIZED_EXPRESSION:
         return getLiterals(ExpressionUtils.skipParentheses(expr));
-      case STRING_LITERAL:
-      case TEXT_BLOCK:
+      case STRING_LITERAL,
+        TEXT_BLOCK:
         return Optional.of(new LiteralTree[] {(LiteralTree) expr});
       case METHOD_INVOCATION:
         // We do not need to consider flags or precedence issues here because Pattern.toString() does not include
