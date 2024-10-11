@@ -77,10 +77,10 @@ public class CheckListGenerator {
     writeToFile(importChecks, main, test, all, pathToWriteList);
   }
 
-  public List<? extends Class<?>> getCheckClasses() {
+  public List<Class<?>> getCheckClasses() {
     var checkFiles = getCheckFiles();
     return checkFiles.stream()
-      .map(CheckListGenerator::getClassByName)
+      .<Class<?>>map(CheckListGenerator::getClassByName)
       .filter(c -> !Modifier.isAbstract(c.getModifiers()))
       .filter(c -> c.getAnnotationsByType(Rule.class).length != 0)
       .toList();
@@ -115,7 +115,7 @@ public class CheckListGenerator {
     return gson.fromJson(reader, Metadata.class);
   }
 
-  public static String generateImportStatements(List<? extends Class<?>> checks) {
+  public static String generateImportStatements(List<Class<?>> checks) {
     return checks.stream()
       .map(c -> "import " + c.getPackageName() + "." + c.getSimpleName() + ";")
       .collect(Collectors.joining("\n"));
@@ -127,7 +127,7 @@ public class CheckListGenerator {
       .collect(Collectors.joining(", \n    "));
   }
 
-  public void generateCheckListClasses(List<? extends Class<?>> checks, List<Class<?>> mainClasses, List<Class<?>> testClasses, List<Class<?>> allClasses, String rulesPath) {
+  public void generateCheckListClasses(List<Class<?>> checks, List<Class<?>> mainClasses, List<Class<?>> testClasses, List<Class<?>> allClasses, String rulesPath) {
     checks.forEach(check -> {
       String ruleKey = getRuleKey(check);
       String fileName = rulesPath + ruleKey + ".json";
