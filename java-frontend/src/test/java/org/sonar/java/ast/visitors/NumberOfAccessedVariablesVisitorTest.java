@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class NumberOfAccessedVariablesVisitorTest {
 
   @Test
-  void zeroVariables() throws Exception {
+  void zeroVariables() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
       " private Object foo(){ }" +
       "}");
@@ -40,7 +40,7 @@ class NumberOfAccessedVariablesVisitorTest {
   }
 
   @Test
-  void threeVariables() throws Exception {
+  void threeVariables() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
       " private Object foo(String v1){"
       + " String v2 = null;  "
@@ -53,7 +53,7 @@ class NumberOfAccessedVariablesVisitorTest {
   }
 
   @Test
-  void multipleAccessesOnSameVariableDoNotCount() throws Exception {
+  void multipleAccessesOnSameVariableDoNotCount() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
       " private Object foo(String v1){"
       + " String v2 = null; "

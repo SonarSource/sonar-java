@@ -39,7 +39,7 @@ class CredentialMethodsLoaderTest {
   }
 
   @Test
-  void testFailedToLoad() throws IOException {
+  void testFailedToLoad() {
     assertThatThrownBy(() -> CredentialMethodsLoader.load("/non-existing-test-methods.json"))
       .isInstanceOf(IOException.class);
   }

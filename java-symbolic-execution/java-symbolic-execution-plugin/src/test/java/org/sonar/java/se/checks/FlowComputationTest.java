@@ -44,7 +44,7 @@ class FlowComputationTest {
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
-  void test() throws Exception {
+  void test() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputation.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -53,7 +53,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_catof() throws Exception {
+  void test_catof() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationCATOF.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -62,7 +62,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_messages_on_method_invocation() throws Exception {
+  void test_messages_on_method_invocation() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationMIT.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -71,7 +71,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_flow_messages_on_parameter_declaration() throws Exception {
+  void test_flow_messages_on_parameter_declaration() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowMessagesParameterDeclaration.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -80,7 +80,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_flow_messages_on_branch() throws Exception {
+  void test_flow_messages_on_branch() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowMessagesBranch.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -89,7 +89,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_getArgumentIdentifier() throws Exception {
+  void test_getArgumentIdentifier() {
     CompilationUnitTree cut = JParserTestUtils.parse(new File("src/test/files/se/FlowComputationGetArgumentIdentifier.java"));
     MethodTree foo = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(1);
     MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) foo.block().body().get(1)).expression();
@@ -102,7 +102,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_relational_sv_operands() throws Exception {
+  void test_relational_sv_operands() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationRelSV.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -111,7 +111,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_unary_sv_operands() throws Exception {
+  void test_unary_sv_operands() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationUnarySV.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -138,7 +138,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_trigger_yield_flow_computation_only_on_relevant_yields() throws Exception {
+  void test_trigger_yield_flow_computation_only_on_relevant_yields() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/UselessFlowComputation.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck())
@@ -147,7 +147,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void avoid_visiting_equivalent_paths() throws Exception {
+  void avoid_visiting_equivalent_paths() {
     logTester.setLevel(Level.DEBUG);
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationNoOverflowWhenMergingPaths.java")
@@ -158,7 +158,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void xproc_flow_messages() throws Exception {
+  void xproc_flow_messages() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/XProcFlowMessages.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck())
@@ -167,7 +167,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void xproc_flow_messages_constraint_is_VS_can_be() throws Exception {
+  void xproc_flow_messages_constraint_is_VS_can_be() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/XProcFlowMessagesIsCanBe.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck())
@@ -176,7 +176,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_flows_with_single_msg_not_reported() throws Exception {
+  void test_flows_with_single_msg_not_reported() {
     SECheckVerifier.newVerifier()
       .withCustomIssueVerifier(issues -> {
         assertThat(issues).hasSize(4);
@@ -194,7 +194,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_method_invocations_without_flows() throws Exception {
+  void test_method_invocations_without_flows() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/MethodInvocationWithoutFlows.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck())
@@ -203,7 +203,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_exception_flows() throws Exception {
+  void test_exception_flows() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/ExceptionFlows.java")
       .withCheck(new NullDereferenceCheck())
@@ -212,7 +212,7 @@ class FlowComputationTest {
   }
 
   @Test
-  void test_location_should_not_be_created_on_null_tree() throws Exception {
+  void test_location_should_not_be_created_on_null_tree() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowNullTree.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck(), new DivisionByZeroCheck())

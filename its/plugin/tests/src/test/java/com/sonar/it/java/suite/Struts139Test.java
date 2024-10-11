@@ -49,7 +49,7 @@ public class Struts139Test {
   }
 
   @Test
-  public void struts_is_analyzed() throws Exception {
+  public void struts_is_analyzed() {
     assertThat(getComponent(PROJECT_STRUTS).getName()).isEqualTo("Struts");
     assertThat(getComponent(moduleKey()).getName()).isEqualTo("core/src");
   }

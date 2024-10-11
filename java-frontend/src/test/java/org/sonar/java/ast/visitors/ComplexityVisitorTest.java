@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ComplexityVisitorTest {
 
   @Test
-  void lambda_complexity() throws Exception {
+  void lambda_complexity() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A { Function f = s -> {if(s.isEmpty()) return s; return new MyClass(){ void foo(){if(a) return;} };};}");
     ExpressionTree lambda = ((VariableTree) ((ClassTree) cut.types().get(0)).members().get(0)).initializer();
     List<Tree> nodes = new ComplexityVisitor().getNodes(lambda);
@@ -42,7 +42,7 @@ class ComplexityVisitorTest {
   }
 
   @Test
-  void method_complexity() throws Exception {
+  void method_complexity() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
         " Object foo(){" +
         " if(a) { " +
@@ -59,7 +59,7 @@ class ComplexityVisitorTest {
   }
 
   @Test
-  void switch_handling() throws Exception {
+  void switch_handling() {
     CompilationUnitTree cut = JParserTestUtils.parse(
       "class A {" +
         "  String foo(int a) {" +

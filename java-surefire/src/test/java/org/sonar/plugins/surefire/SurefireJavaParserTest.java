@@ -57,7 +57,7 @@ class SurefireJavaParserTest {
   }
 
   @Test
-  void should_store_zero_tests_when_directory_is_null_or_non_existing_or_a_file() throws Exception {
+  void should_store_zero_tests_when_directory_is_null_or_non_existing_or_a_file() {
 
     SensorContext context = mock(SensorContext.class);
 
@@ -71,7 +71,7 @@ class SurefireJavaParserTest {
   }
 
   @Test
-  void shouldAggregateReports() throws URISyntaxException {
+  void shouldAggregateReports() {
     SensorContextTester context = mockContext();
     parser.collect(context, getDirs("multipleReports"), true);
     assertThat(context.measures(":ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest")).hasSize(5);
@@ -83,7 +83,7 @@ class SurefireJavaParserTest {
   }
 
   @Test
-  void shouldAggregateReportsFromMultipleDirectories() throws URISyntaxException {
+  void shouldAggregateReportsFromMultipleDirectories() {
     SensorContextTester context = mockContext();
     parser.collect(context, getDirs("multipleDirectories/dir1", "multipleDirectories/dir2"), true);
     assertThat(context.measures(":ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest")).hasSize(5);
@@ -96,7 +96,7 @@ class SurefireJavaParserTest {
 
   // SONAR-2841: if there's only a test suite report, then it should be read.
   @Test
-  void shouldUseTestSuiteReportIfAlone() throws URISyntaxException {
+  void shouldUseTestSuiteReportIfAlone() {
     SensorContextTester context = mockContext();
 
     parser.collect(context, getDirs("onlyTestSuiteReport"), true);
@@ -108,21 +108,21 @@ class SurefireJavaParserTest {
    * See http://jira.codehaus.org/browse/SONAR-2371
    */
   @Test
-  void shouldInsertZeroWhenNoReports() throws URISyntaxException {
+  void shouldInsertZeroWhenNoReports() {
     SensorContext context = mock(SensorContext.class);
     parser.collect(context, getDirs("noReports"), true);
     verify(context, never()).newMeasure();
   }
 
   @Test
-  void shouldNotInsertZeroOnFiles() throws URISyntaxException {
+  void shouldNotInsertZeroOnFiles() {
     SensorContext context = mock(SensorContext.class);
     parser.collect(context, getDirs("noTests"), true);
     verify(context, never()).newMeasure();
   }
 
   @Test
-  void shouldMergeInnerClasses() throws URISyntaxException {
+  void shouldMergeInnerClasses() {
     SensorContextTester context = mockContext();
     parser.collect(context, getDirs("innerClasses"), true);
     assertThat(context.measure(":org.apache.commons.collections.bidimap.AbstractTestBidiMap", CoreMetrics.TESTS).value()).isEqualTo(7);
@@ -131,21 +131,21 @@ class SurefireJavaParserTest {
   }
 
   @Test
-  void shouldMergeNestedInnerClasses() throws URISyntaxException {
+  void shouldMergeNestedInnerClasses() {
     SensorContextTester context = mockContext();
     parser.collect(context, getDirs("nestedInnerClasses"), true);
     assertThat(context.measure(":org.sonar.plugins.surefire.NestedInnerTest", CoreMetrics.TESTS).value()).isEqualTo(3);
   }
 
   @Test
-  void shouldMergeInnerClassReportInExtraFile() throws URISyntaxException {
+  void shouldMergeInnerClassReportInExtraFile() {
     SensorContextTester context = mockContext();
     parser.collect(context, getDirs("innerClassExtraFile"), true);
     assertThat(context.measure(":com.example.project.CalculatorTests", CoreMetrics.TESTS).value()).isEqualTo(6);
   }
 
   @Test
-  void should_not_count_negative_tests() throws URISyntaxException {
+  void should_not_count_negative_tests() {
     SensorContextTester context = mockContext();
 
     parser.collect(context, getDirs("negativeTestTime"), true);
@@ -158,7 +158,7 @@ class SurefireJavaParserTest {
   }
 
   @Test
-  void should_handle_parameterized_tests() throws URISyntaxException {
+  void should_handle_parameterized_tests() {
     SensorContextTester context = mockContext();
     when(javaResourceLocator.findResourceByClassName(anyString()))
       .thenAnswer(invocation -> {
@@ -188,14 +188,14 @@ class SurefireJavaParserTest {
   }
 
   @Test
-  void should_log_missing_resource_with_debug_level() throws Exception {
+  void should_log_missing_resource_with_debug_level() {
     parser = new SurefireJavaParser(mock(JavaResourceLocator.class));
     parser.collect(mockContext(), getDirs("resourceNotFound"), true);
     assertThat(logTester.logs(Level.WARN)).isEmpty();
     assertThat(logTester.logs(Level.DEBUG)).contains("Resource not found: org.sonar.Foo");
   }
 
-  private static List<File> getDirs(String... directoryNames) throws URISyntaxException {
+  private static List<File> getDirs(String... directoryNames) {
     return Stream.of(directoryNames)
       .map(directoryName -> new File("src/test/resources/org/sonar/plugins/surefire/api/SurefireParserTest/" + directoryName))
       .toList();

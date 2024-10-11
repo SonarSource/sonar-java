@@ -25,7 +25,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 class CloneMethodCallsSuperCloneCheckTest {
 
   @Test
-  void test() throws Exception {
+  void test() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CloneMethodCallsSuperCloneCheck.java")
       .withCheck(new CloneMethodCallsSuperCloneCheck())

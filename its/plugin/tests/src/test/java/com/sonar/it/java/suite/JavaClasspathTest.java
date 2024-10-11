@@ -179,7 +179,7 @@ public class JavaClasspathTest {
   }
 
   @Test
-  public void directory_of_classes_in_library_should_be_supported() throws Exception {
+  public void directory_of_classes_in_library_should_be_supported() {
     String projectKey = "directory_of_classes_in_library_should_be_supported";
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target");

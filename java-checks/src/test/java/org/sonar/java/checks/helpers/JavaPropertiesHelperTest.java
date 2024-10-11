@@ -44,7 +44,7 @@ class JavaPropertiesHelperTest {
   }
 
   @Test
-  void null_if_not_get_property() throws Exception {
+  void null_if_not_get_property() {
     ExpressionTree tree = firstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
     ExpressionTree defaultValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(tree);
     assertThat(defaultValue).isNull();
@@ -55,21 +55,21 @@ class JavaPropertiesHelperTest {
   }
 
   @Test
-  void null_if_get_property_without_default_value() throws Exception {
+  void null_if_get_property_without_default_value() {
     ExpressionTree tree = firstExpression("void foo(java.util.Properties props){ props.getProperty(\"myKey\"); }");
     ExpressionTree defaultValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(tree);
     assertThat(defaultValue).isNull();
   }
   
   @Test
-  void null_if_not_identifier_or_method_invocation() throws Exception {
+  void null_if_not_identifier_or_method_invocation() {
     ExpressionTree tree = firstExpression("void foo(int a){ a++; }");
     ExpressionTree defaultValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(tree);
     assertThat(defaultValue).isNull();
   }
 
   @Test
-  void retrieve_default_value_on_method_invocation() throws Exception {
+  void retrieve_default_value_on_method_invocation() {
     ExpressionTree tree = firstExpression("void foo(java.util.Properties props){ props.getProperty(\"myKey\", \"defaultValue\"); }");
     ExpressionTree defaultValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(tree);
     assertThat(defaultValue).isNotNull();
@@ -77,7 +77,7 @@ class JavaPropertiesHelperTest {
   }
 
   @Test
-  void retrieve_default_value_on_identifier() throws Exception {
+  void retrieve_default_value_on_identifier() {
     ExpressionTree tree = firstExpression(
       "void foo(String prop){ foo(myValue); } "
         + "java.util.Properties props = new java.util.Properties();"
@@ -88,7 +88,7 @@ class JavaPropertiesHelperTest {
   }
 
   @Test
-  void null_if_variable_used_more_than_once() throws Exception {
+  void null_if_variable_used_more_than_once() {
     ExpressionTree tree = firstExpression(
       "void foo(String prop){ foo(myValue); myValue = 0; } "
         + "java.util.Properties props = new java.util.Properties();"
@@ -98,7 +98,7 @@ class JavaPropertiesHelperTest {
   }
 
   @Test
-  void null_if_variable_not_initialized() throws Exception {
+  void null_if_variable_not_initialized() {
     ExpressionTree tree = firstExpression(
       "void foo(String prop){ foo(myValue);} "
         + "String myValue;");
@@ -107,7 +107,7 @@ class JavaPropertiesHelperTest {
   }
 
   @Test
-  void null_if_variable_not_initilialized_method_invocation() throws Exception {
+  void null_if_variable_not_initilialized_method_invocation() {
     ExpressionTree tree = firstExpression(
       "void foo(String prop){ foo(myValue);} "
         + "java.util.Properties props = new java.util.Properties();"
@@ -117,7 +117,7 @@ class JavaPropertiesHelperTest {
   }
 
   @Test
-  void null_if_unknown_symbol() throws Exception {
+  void null_if_unknown_symbol() {
     ExpressionTree tree = firstExpression("void foo() { unknown(e -> e.method()); }");
     ExpressionTree functionCallArgument = ((MethodInvocationTree) tree).arguments().get(0);
     MethodInvocationTree methodCallInsideLambda = (MethodInvocationTree)((LambdaExpressionTree)functionCallArgument).body();

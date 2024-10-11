@@ -63,7 +63,7 @@ class SyntaxHighlighterVisitorTest {
   private SyntaxHighlighterVisitor syntaxHighlighterVisitor;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp() {
     context = SensorContextTester.create(temp.getRoot());
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
       mock(ClasspathForMain.class), mock(ClasspathForTest.class), mock(CheckFactory.class), mock(ActiveRules.class));
@@ -82,7 +82,7 @@ class SyntaxHighlighterVisitorTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"\n", "\r\n", "\r"})
-  void test_different_end_of_line(String eol) throws IOException {
+  void test_different_end_of_line(String eol) {
     InputFile inputFile = generateTestFile("src/test/files/highlighter/Example.java");
     scan(inputFile);
     verifyHighlighting(inputFile);
@@ -92,7 +92,7 @@ class SyntaxHighlighterVisitorTest {
    * Java 9 modules introduces restricted keywords only used in their context
    */
   @Test
-  void test_restricted_keywords_within_module() throws Exception {
+  void test_restricted_keywords_within_module() {
     InputFile inputFile = generateTestFile("src/test/files/highlighter/module-info.java");
     scan(inputFile);
 
@@ -132,7 +132,7 @@ class SyntaxHighlighterVisitorTest {
   }
 
   @Test
-  void test_restricted_keywords_outside_module() throws Exception {
+  void test_restricted_keywords_outside_module() {
     InputFile inputFile = generateTestFile("src/test/files/highlighter/ExampleWithModuleKeywords.java");
     scan(inputFile);
 
@@ -162,7 +162,7 @@ class SyntaxHighlighterVisitorTest {
   }
 
   @Test
-  void test_java10_var() throws Exception {
+  void test_java10_var() {
     InputFile inputFile = generateTestFile("src/test/files/highlighter/Java10Var.java");
     scan(inputFile);
 
@@ -177,7 +177,7 @@ class SyntaxHighlighterVisitorTest {
   }
 
   @Test
-  void text_block() throws Exception {
+  void text_block() {
     InputFile inputFile = generateTestFile("src/test/files/highlighter/TextBlock.java");
     scan(inputFile);
 
@@ -190,7 +190,7 @@ class SyntaxHighlighterVisitorTest {
    * Java 15
    */
   @Test
-  void switch_expression() throws Exception {
+  void switch_expression() {
     InputFile inputFile = generateTestFile("src/test/files/highlighter/SwitchExpression.java");
     scan(inputFile);
 
@@ -205,7 +205,7 @@ class SyntaxHighlighterVisitorTest {
    * Java 19 (third preview of pattern matching)
    */
   @Test
-  void switch_pattern_expression_with_when_keyword() throws Exception {
+  void switch_pattern_expression_with_when_keyword() {
     InputFile inputFile = generateTestFile("src/test/files/highlighter/SwitchPatternExpression.java");
     scan(inputFile);
 
@@ -223,7 +223,7 @@ class SyntaxHighlighterVisitorTest {
    * Java 16
    */
   @Test
-  void records() throws Exception {
+  void records() {
     InputFile inputFile = generateTestFile("src/test/files/highlighter/Records.java");
     scan(inputFile);
 
@@ -236,7 +236,7 @@ class SyntaxHighlighterVisitorTest {
    * Java 16 (second preview)
    */
   @Test
-  void sealed_classes() throws Exception {
+  void sealed_classes() {
     InputFile inputFile = generateTestFile("src/test/files/highlighter/SealedClass.java");
     scan(inputFile);
 
@@ -260,11 +260,11 @@ class SyntaxHighlighterVisitorTest {
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 
-  private InputFile generateTestFile(String sourceFile) throws IOException {
+  private InputFile generateTestFile(String sourceFile) {
     return TestUtils.inputFile(new File(sourceFile));
   }
 
-  private void verifyHighlighting(InputFile inputFile) throws IOException {
+  private void verifyHighlighting(InputFile inputFile) {
     String componentKey = inputFile.key();
     assertThatHasBeenHighlighted(componentKey, 1, 1, 3, 4, TypeOfText.COMMENT);
     assertThatHasBeenHighlighted(componentKey, 5, 1, 7, 4, TypeOfText.STRUCTURED_COMMENT);

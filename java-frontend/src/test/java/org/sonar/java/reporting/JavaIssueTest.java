@@ -91,7 +91,7 @@ class JavaIssueTest {
   }
 
   @Test
-  void test_addFlow() throws Exception {
+  void test_addFlow() {
     InputFile inputFile = inputFile();
     RuleKey ruleKey = RuleKey.of("java", "ruleKey");
     SensorContext sensorContext = mock(SensorContext.class);

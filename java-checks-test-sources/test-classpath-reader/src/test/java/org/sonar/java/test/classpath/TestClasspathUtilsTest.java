@@ -145,7 +145,7 @@ class TestClasspathUtilsTest {
   }
 
   @Test
-  void find_module_jar_in_invalid_folder() throws IOException {
+  void find_module_jar_in_invalid_folder() {
     assertThatThrownBy(() -> TestClasspathUtils.findModuleJarPath("/invalid/path/to/module"))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageStartingWith("Module path exception '/invalid/path/to/module'");

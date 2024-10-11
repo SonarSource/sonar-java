@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class InputFileUtilsTest {
 
   @Test
-  void md5_hash_from_bytes() throws Exception {
+  void md5_hash_from_bytes() {
     byte[] bytes = "content".getBytes(UTF_8);
     assertEquals("9a0364b9e99bb480dd25e1f0284c8555", InputFileUtils.hash(bytes, "MD5", 32));
     bytes = "363".getBytes(UTF_8);
@@ -58,7 +58,7 @@ class InputFileUtilsTest {
   }
 
   @Test
-  void hash_using_invalid_algorithm() throws Exception {
+  void hash_using_invalid_algorithm() {
     byte[] bytes = "363".getBytes(UTF_8);
     assertThatThrownBy(() -> InputFileUtils.hash(bytes, "invalid-algorithm", 32))
       .isInstanceOf(IllegalStateException.class)

@@ -101,7 +101,7 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void compute_behavior_only_once() throws Exception {
+  void compute_behavior_only_once() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
     assertThat(sev.behaviorCache.behaviors.values()).allMatch(MethodBehavior::isVisited);
@@ -110,7 +110,7 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void explore_method_with_recursive_call() throws Exception {
+  void explore_method_with_recursive_call() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java",
       new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors).hasSize(1);
@@ -118,7 +118,7 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void interrupted_exploration_does_not_create_method_yields() throws Exception {
+  void interrupted_exploration_does_not_create_method_yields() {
     SymbolicExecutionVisitor sev =
       createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
@@ -134,7 +134,7 @@ class BehaviorCacheTest {
 
   @Test
   @EnabledForJreRange(max = JRE.JAVA_17, disabledReason = "change of API")
-  void clear_stack_when_taking_exceptional_path_from_method_invocation_until_jdk17_and_before() throws Exception {
+  void clear_stack_when_taking_exceptional_path_from_method_invocation_until_jdk17_and_before() {
     Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic =
       createSymbolicExecutionVisitorAndSemantic("src/test/files/se/CleanStackWhenRaisingException.java", new NullDereferenceCheck());
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
@@ -152,7 +152,7 @@ class BehaviorCacheTest {
 
   @Test
   @EnabledForJreRange(min = JRE.JAVA_18, disabledReason = "change of API of java.lang.reflect.Method.invoke()")
-  void clear_stack_when_taking_exceptional_path_from_method_invocation_until_jdk18_and_later() throws Exception {
+  void clear_stack_when_taking_exceptional_path_from_method_invocation_until_jdk18_and_later() {
     Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/CleanStackWhenRaisingException.java",
       new NullDereferenceCheck());
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
@@ -203,32 +203,32 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void java_lang_math_methods_should_be_handled() throws Exception {
+  void java_lang_math_methods_should_be_handled() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/JavaLangMathMethods.java"));
   }
 
   @Test
-  void commons_lang3_string_utils_method_should_be_handled() throws Exception {
+  void commons_lang3_string_utils_method_should_be_handled() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang3StringUtilsMethods.java"));
   }
 
   @Test
-  void commons_lang3_array_utils_method_should_be_handled() throws Exception {
+  void commons_lang3_array_utils_method_should_be_handled() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang3ArrayUtilsMethods.java"));
   }
 
   @Test
-  void commons_lang2_string_utils_method_should_be_handled() throws Exception {
+  void commons_lang2_string_utils_method_should_be_handled() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang2StringUtilsMethods.java"));
   }
 
   @Test
-  void commons_lang2_array_utils_method_should_be_handled() throws Exception {
+  void commons_lang2_array_utils_method_should_be_handled() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang2ArrayUtilsMethods.java"));
   }
 
   @Test
-  void guava_preconditions_methods_should_be_handled() throws Exception {
+  void guava_preconditions_methods_should_be_handled() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/GuavaPreconditionsMethods.java"));
   }
 
@@ -238,49 +238,49 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void guava_common_Strings() throws Exception {
+  void guava_common_Strings() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/GuavaCommonStrings.java"));
   }
 
   @Test
-  void guava_verify() throws Exception {
+  void guava_verify() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/GuavaVerifyMethods.java"));
   }
 
   @Test
-  void collections_utils_is_empty_method() throws Exception {
+  void collections_utils_is_empty_method() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CollectionUtilsIsEmpty.java"));
   }
 
   @Test
-  void apache_lang_validate() throws Exception {
+  void apache_lang_validate() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLangValidate.java"));
   }
 
   @Test
-  void log4j_assert() throws Exception {
+  void log4j_assert() {
     // can not be moved in test-sources project, requires log4j-core 2.3,
     // while test-source project has log4j-core 2.13, which doesn't have the method anymore
     verifyNoIssueOnFile("src/test/files/se/Log4jAssert.java");
   }
 
   @Test
-  void spring_assert() throws Exception {
+  void spring_assert() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/SpringAssert.java"));
   }
 
   @Test
-  void spring_string_utils_should_be_handled() throws Exception {
+  void spring_string_utils_should_be_handled() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/SpringStringUtilsMethods.java"));
   }
 
   @Test
-  void eclipse_aspectj_assert() throws Exception {
+  void eclipse_aspectj_assert() {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/EclipseAssert.java"));
   }
 
   @Test
-  void test_blacklist() throws Exception {
+  void test_blacklist() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/BehaviorCacheBlacklist.java");
     assertThat(sev.behaviorCache.get("java.lang.Class#getClassLoader()Ljava/lang/ClassLoader;")).isNull();
     assertThat(sev.behaviorCache.get("java.lang.Object#wait()V;")).isNull();
@@ -340,7 +340,7 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void log_when_unable_to_load_resources_with_method_behavior() throws Exception {
+  void log_when_unable_to_load_resources_with_method_behavior() {
     Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors
       .loadHardcodedBehaviors(() -> Collections.singletonList((InputStream) null));
     assertThat(result).isEmpty();
@@ -348,7 +348,7 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void log_when_unable_to_load_resources_with_invalid_method_behaviors() throws Exception {
+  void log_when_unable_to_load_resources_with_invalid_method_behaviors() {
     Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors
       .loadHardcodedBehaviors(() -> Collections.singletonList(BehaviorCacheTest.class.getResourceAsStream("invalid.json")));
     assertThat(result).isEmpty();
@@ -366,7 +366,7 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void spring_5_assert() throws Exception {
+  void spring_5_assert() {
     SECheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("symbolicexecution/behaviorcache/Spring5Assert.java"))
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())

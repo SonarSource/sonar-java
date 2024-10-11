@@ -124,7 +124,7 @@ class AccessorsUtilsTest {
   }
 
   @Test
-  void getter_using_this_are_not_accessor() throws Exception {
+  void getter_using_this_are_not_accessor() {
     // FIXME : those getters should be considered as accessors
     assertThat(isAccessor("class T { private int a; public int getA() { return this.a; } }")).isFalse();
   }

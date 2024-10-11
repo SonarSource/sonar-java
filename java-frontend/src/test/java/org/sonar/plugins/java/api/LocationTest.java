@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
 class LocationTest {
 
   @Test
-  void testLocation() throws Exception {
+  void testLocation() {
     String message = "message";
     Tree node = mock(Tree.class);
     JavaFileScannerContext.Location location = new JavaFileScannerContext.Location(message, node);

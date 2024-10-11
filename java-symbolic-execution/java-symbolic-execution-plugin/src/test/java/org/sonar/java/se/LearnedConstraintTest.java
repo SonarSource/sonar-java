@@ -30,7 +30,7 @@ class LearnedConstraintTest {
 
 
   @Test
-  void test_toString() throws Exception {
+  void test_toString() {
     SymbolicValue sv = new SymbolicValue() {
       @Override
       public String toString() {

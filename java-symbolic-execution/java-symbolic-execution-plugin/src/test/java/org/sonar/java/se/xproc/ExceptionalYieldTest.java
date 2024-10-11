@@ -113,7 +113,7 @@ class ExceptionalYieldTest {
   }
 
   @Test
-  void test_toString() throws Exception {
+  void test_toString() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYields.java", new NullDereferenceCheck());
     Set<String> yieldsToString = getMethodBehavior(sev, "myMethod").exceptionalPathYields().map(MethodYield::toString).collect(Collectors.toSet());
     assertThat(yieldsToString).contains(

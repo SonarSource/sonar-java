@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConstraintsByDomainTest {
 
   @Test
-  void test_isEmpty() throws Exception {
+  void test_isEmpty() {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty();
     assertThat(constraints.isEmpty()).isTrue();
     constraints = constraints.put(ObjectConstraint.NULL);
@@ -36,7 +36,7 @@ class ConstraintsByDomainTest {
   }
 
   @Test
-  void test_remove() throws Exception {
+  void test_remove() {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
     assertThat(constraints.get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NULL);
     constraints = constraints.remove(ObjectConstraint.class);
@@ -48,7 +48,7 @@ class ConstraintsByDomainTest {
   }
 
   @Test
-  void test_domains() throws Exception {
+  void test_domains() {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty();
     assertThat(constraints.domains()).isEmpty();
     constraints = constraints.put(ObjectConstraint.NOT_NULL).put(BooleanConstraint.TRUE);
@@ -56,7 +56,7 @@ class ConstraintsByDomainTest {
   }
 
   @Test
-  void test_constraints_stream() throws Exception {
+  void test_constraints_stream() {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty();
     assertThat(constraints.stream()).isEmpty();
     constraints = constraints.put(ObjectConstraint.NOT_NULL).put(BooleanConstraint.TRUE);
@@ -64,7 +64,7 @@ class ConstraintsByDomainTest {
   }
 
   @Test
-  void test_put() throws Exception {
+  void test_put() {
     ConstraintsByDomain c1 = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
     ConstraintsByDomain c2 = c1.put(ObjectConstraint.NOT_NULL);
     assertThat(c1).isSameAs(c2);
@@ -110,7 +110,7 @@ class ConstraintsByDomainTest {
   }
 
   @Test
-  void test_equals_hashcode() throws Exception {
+  void test_equals_hashcode() {
     ConstraintsByDomain c1 = ConstraintsByDomain.empty();
     ConstraintsByDomain c2 = c1.put(ObjectConstraint.NOT_NULL);
     assertThat(c1)

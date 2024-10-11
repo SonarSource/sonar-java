@@ -37,7 +37,7 @@ class ListTreeImplTest {
 
 
   @Test
-  void separators_order_in_children_iteration() throws Exception {
+  void separators_order_in_children_iteration() {
     Tree tree1 = new EmptyStatementTreeImpl(null);
     Tree tree2 = new EmptyStatementTreeImpl(null);
     Tree tree3 = new EmptyStatementTreeImpl(null);
@@ -51,7 +51,7 @@ class ListTreeImplTest {
   }
 
   @Test
-  void emptySeparators() throws Exception {
+  void emptySeparators() {
     Tree tree1 = new EmptyStatementTreeImpl(null);
     List<Tree> trees = Collections.singletonList(tree1);
     List<SyntaxToken> separators = new ArrayList<>();

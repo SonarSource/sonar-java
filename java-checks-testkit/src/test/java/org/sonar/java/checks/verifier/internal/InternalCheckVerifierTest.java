@@ -380,7 +380,7 @@ class InternalCheckVerifierTest {
     }
 
     @Test
-    void should_fail_when_no_cost() throws Exception {
+    void should_fail_when_no_cost() {
       @Rule(key = "LinearJSON")
       class LinearRemediationFunctionCheck implements JavaFileScanner {
         @Override
@@ -400,7 +400,7 @@ class InternalCheckVerifierTest {
     }
 
     @Test
-    void test_rspec_key_with_no_metadata_should_not_fail() throws Exception {
+    void test_rspec_key_with_no_metadata_should_not_fail() {
       @Rule(key = "Dummy_fake_JSON")
       class DoesntExistsMetadataCheck implements JavaFileScanner {
         @Override

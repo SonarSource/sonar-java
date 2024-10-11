@@ -148,7 +148,7 @@ class ProgramStateTest {
   }
 
   @Test
-  void test_learned_associations() throws Exception {
+  void test_learned_associations() {
     ProgramState parent = ProgramState.EMPTY_STATE;
     ProgramState child = ProgramState.EMPTY_STATE;
     assertThat(child.learnedAssociations(parent)).isEmpty();
@@ -179,7 +179,7 @@ class ProgramStateTest {
   }
 
   @Test
-  void test_setting_constraint_on_relational_sv() throws Exception {
+  void test_setting_constraint_on_relational_sv() {
     RelationalSymbolicValue rel = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.EQUAL);
     SymbolicValueTestUtil.computedFrom(rel, new SymbolicValue(), new SymbolicValue());
     assertThatThrownBy(() -> ProgramState.EMPTY_STATE.addConstraint(rel, BooleanConstraint.FALSE))
@@ -188,7 +188,7 @@ class ProgramStateTest {
   }
 
   @Test
-  void assignment_order_should_not_lead_to_different_state() throws Exception {
+  void assignment_order_should_not_lead_to_different_state() {
     SymbolicValue sv = new SymbolicValue();
     Symbol var1 = variable("var1");
     Symbol var2 = variable("var2");
@@ -217,7 +217,7 @@ class ProgramStateTest {
   }
 
   @Test
-  void test_symbol_should_not_change_equals() throws Exception {
+  void test_symbol_should_not_change_equals() {
     ProgramState ps1 = ProgramState.EMPTY_STATE;
     ProgramState ps2 = ProgramState.EMPTY_STATE;
     SymbolicValue sv = new SymbolicValue();
@@ -229,7 +229,7 @@ class ProgramStateTest {
   }
 
   @Test
-  void test_adding_constraint_transitively() throws Exception {
+  void test_adding_constraint_transitively() {
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();

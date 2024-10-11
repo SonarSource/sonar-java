@@ -101,7 +101,7 @@ class JavaFrontendIntegrationTest {
    * Extracted from org.sonar.java.model.DefaultJavaFileScannerContextWithSensorContextTest
    */
   @Test
-  void DefaultJavaFileScannerContext_should_report_se_issue_with_flow() throws Exception {
+  void DefaultJavaFileScannerContext_should_report_se_issue_with_flow() {
     // fake issue
     List<JavaFileScannerContext.Location> flow1 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow1", tree));
     List<JavaFileScannerContext.Location> flow2 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow2", tree));
