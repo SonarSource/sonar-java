@@ -56,6 +56,7 @@ public class UppercaseSuffixesCheck extends IssuableSubscriptionVisitor {
         if (checkOnlyLong) {
           return;
         }
+        // fall through
       case LONG:
         reportIssue(tree, "Upper-case this literal \"" + suffix + "\" suffix.");
         break;
