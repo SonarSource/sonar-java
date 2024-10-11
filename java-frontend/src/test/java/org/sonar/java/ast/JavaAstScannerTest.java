@@ -370,7 +370,6 @@ class JavaAstScannerTest {
   @Test
   void scanWithoutParsing_returns_the_same_list_of_files_when_the_visitorsBridge_cannot_scan_without_parsing() {
     SonarComponents sonarComponents = mock(SonarComponents.class);
-    CacheContext cacheContext = mock(CacheContext.class);
     VisitorsBridge visitorsBridge = mock(VisitorsBridge.class);
     doReturn(false).when(visitorsBridge).scanWithoutParsing(any());
     JavaAstScanner javaAstScanner = new JavaAstScanner(sonarComponents);

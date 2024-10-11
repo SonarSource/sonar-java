@@ -87,7 +87,6 @@ class SmapFileTest {
 
   @Test
   void invalid_file() {
-    Path uriRoot = Paths.get("");
     Path p = Paths.get("file.class.smap");
     assertThatThrownBy(() -> new SmapFile(p, "not a smap file", null, null))
       .isInstanceOf(IllegalStateException.class)
