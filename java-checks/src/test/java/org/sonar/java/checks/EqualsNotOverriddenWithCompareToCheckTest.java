@@ -22,14 +22,12 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
-
-class ObjectFinalizeOverridenCallsSuperFinalizeCheckTest {
+class EqualsNotOverriddenWithCompareToCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeOverridenCallsSuperFinalizeCheckSample.java"))
-      .withCheck(new ObjectFinalizeOverridenCallsSuperFinalizeCheck())
+      .onFile("src/test/files/checks/EqualsNotOverriddenWithCompareToCheck.java")
+      .withCheck(new EqualsNotOverriddenWithCompareToCheck())
       .verifyIssues();
   }
 }

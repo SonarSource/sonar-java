@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Rule(key = "S1206")
-public class EqualsOverridenWithHashCodeCheck extends IssuableSubscriptionVisitor {
+public class EqualsOverriddenWithHashCodeCheck extends IssuableSubscriptionVisitor {
 
   private static final String HASHCODE = "hashCode";
   private static final String EQUALS = "equals";
@@ -49,8 +49,8 @@ public class EqualsOverridenWithHashCodeCheck extends IssuableSubscriptionVisito
       .map(MethodTree.class::cast)
       .toList();
 
-    Optional<MethodTree> equalsMethod = methods.stream().filter(EqualsOverridenWithHashCodeCheck::isEquals).findAny();
-    Optional<MethodTree> hashCodeMethod = methods.stream().filter(EqualsOverridenWithHashCodeCheck::isHashCode).findAny();
+    Optional<MethodTree> equalsMethod = methods.stream().filter(EqualsOverriddenWithHashCodeCheck::isEquals).findAny();
+    Optional<MethodTree> hashCodeMethod = methods.stream().filter(EqualsOverriddenWithHashCodeCheck::isHashCode).findAny();
 
     if (equalsMethod.isPresent() && !hashCodeMethod.isPresent()) {
       reportIssue(equalsMethod.get().simpleName(), getMessage(EQUALS, HASHCODE));
@@ -72,8 +72,8 @@ public class EqualsOverridenWithHashCodeCheck extends IssuableSubscriptionVisito
     return typeTree != null && typeTree.symbolType().isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.INT);
   }
 
-  private static String getMessage(String overridenMethod, String methodToOverride) {
-    return "This class overrides \"" + overridenMethod + "()\" and should therefore also override \"" + methodToOverride + "()\".";
+  private static String getMessage(String overriddenMethod, String methodToOverride) {
+    return "This class overrides \"" + overriddenMethod + "()\" and should therefore also override \"" + methodToOverride + "()\".";
   }
 
 }

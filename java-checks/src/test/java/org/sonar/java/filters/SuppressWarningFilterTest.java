@@ -26,7 +26,7 @@ import org.sonar.java.checks.CallToDeprecatedMethodCheck;
 import org.sonar.java.checks.DeadStoreCheck;
 import org.sonar.java.checks.EmptyBlockCheck;
 import org.sonar.java.checks.EmptyStatementUsageCheck;
-import org.sonar.java.checks.EqualsOverridenWithHashCodeCheck;
+import org.sonar.java.checks.EqualsOverriddenWithHashCodeCheck;
 import org.sonar.java.checks.ImmediateReverseBoxingCheck;
 import org.sonar.java.checks.MissingDeprecatedCheck;
 import org.sonar.java.checks.ObjectFinalizeCheck;
@@ -74,7 +74,7 @@ class SuppressWarningFilterTest {
       new EmptyBlockCheck(),
       new EmptyStatementUsageCheck(),
       new ReturnInFinallyCheck(),
-      new EqualsOverridenWithHashCodeCheck(),
+      new EqualsOverriddenWithHashCodeCheck(),
       new StaticMembersAccessCheck(),
       new SerialVersionUidCheck(),
       new RawTypeCheck()

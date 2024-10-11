@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-class EqualsNotOverridenWithCompareToCheckTest {
+class EqualsOverriddenWithHashCodeCheckTest {
+
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/EqualsNotOverridenWithCompareToCheck.java")
-      .withCheck(new EqualsNotOverridenWithCompareToCheck())
+      .onFile("src/test/files/checks/EqualsOverriddenWithHashCodeCheck.java")
+      .withCheck(new EqualsOverriddenWithHashCodeCheck())
       .verifyIssues();
   }
+
 }

@@ -74,7 +74,7 @@ public class SillyEqualsCheckSample {
 
     equals(this); // Compliant
     equals(object); // Compliant
-    equals(arrayOfObjects); // False negative, method equals is not overriden
+    equals(arrayOfObjects); // False negative, method equals is not overridden
 
     object.equals(null); // Noncompliant {{Remove this call to "equals"; comparisons against null always return false; consider using '== null' to check for nullity.}}
 
