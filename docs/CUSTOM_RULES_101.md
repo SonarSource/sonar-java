@@ -566,22 +566,35 @@ public class MyJavaFileCheckRegistrar implements CheckRegistrar {
 ```
 
 Now, because we added a new rule, we also need to update our tests to make sure it is taken into account. 
-To do so, navigate to its corresponding test class, named `MyJavaFileCheckRegistrarTest`, and update the expected number of rules from 8 to 9.
+To do so, navigate to its corresponding test class, named `MyJavaFileCheckRegistrarTest`, add your rule key to the end of the mainRuleKeys list
+and your rule class name at the end of the mainCheckClasses list.
 
 ```java
 
 class MyJavaFileCheckRegistrarTest {
 
   @Test
-  void checkNumberRules() {
-    CheckRegistrar.RegistrarContext context = new CheckRegistrar.RegistrarContext();
+  void checkRegisteredRulesKeysAndClasses() {
+    TestCheckRegistrarContext context = new TestCheckRegistrarContext();
 
     MyJavaFileCheckRegistrar registrar = new MyJavaFileCheckRegistrar();
     registrar.register(context);
 
-    assertThat(context.checkClasses()).hasSize(8); // change it to 9, we added a new one!
-    assertThat(context.testCheckClasses()).isEmpty();
+    assertThat(context.mainRuleKeys).extracting(RuleKey::toString).containsExactly(
+      // other rules...
+      "mycompany-java:MyFirstCustomRule");
+
+    assertThat(context.mainCheckClasses).extracting(Class::getSimpleName).containsExactly(
+      // other rules...
+      "MyFirstCustomCheck");
+
+    assertThat(context.testRuleKeys).extracting(RuleKey::toString).containsExactly(
+      "mycompany-java:NoIfStatementInTests");
+
+    assertThat(context.testCheckClasses).extracting(Class::getSimpleName).containsExactly(
+      "NoIfStatementInTestsRule");
   }
+
 }
 ```
 
