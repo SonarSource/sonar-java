@@ -21,7 +21,6 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.io.Files;
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.junit.Rule;

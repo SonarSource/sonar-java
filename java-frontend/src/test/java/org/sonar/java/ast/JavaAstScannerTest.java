@@ -56,7 +56,6 @@ import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
-import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 
 import static org.assertj.core.api.Assertions.assertThat;

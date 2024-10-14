@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModuleNameTree;
 import org.sonar.plugins.java.api.tree.RequiresDirectiveTree;
 import org.sonar.plugins.java.api.tree.Tree;
