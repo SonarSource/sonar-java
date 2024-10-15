@@ -45,19 +45,19 @@ The root of a Maven project is a file named `pom.xml`.
 
 In our case, we have two of them:
 * `pom.xml`: use a snapshot version of the Java Analyzer
-* `pom_SQ_9_9_LTS.xml`: self-contained `pom` file, configured with dependencies matching SonarQube `9.9 LTS` requirements
+* `pom_SQ_10_6_LATEST.xml`: self-contained `pom` file, configured with dependencies matching SonarQube `10.6` requirements
 
 These two `pom`s correspond to different use cases, depending on which instance of SonarQube you will target with your custom-rules plugin. 
 
-In this tutorial, **we will only use the file named `pom_SQ_9_9_LTS.xml`**, as it is entirely independent of the build of the Java Analyzer, is self-contained, and will target the latest release of SonarQube.
+In this tutorial, **we will only use the file named `pom_SQ_10_6_LATEST.xml`**, as it is entirely independent of the build of the Java Analyzer, is self-contained, and will target the latest release of SonarQube.
 
 Let's start by building the custom-plugin template by using the following command:
 
 ```
-mvn clean install -f pom_SQ_9_9_LTS.xml
+mvn clean install -f pom_SQ_10_6_LATEST.xml
 ```
 
-Note that you can also decide to **delete** the original `pom.xml` file (**NOT RECOMMENDED**) and then rename `pom_SQ_9_9_LTS.xml` into `pom.xml`. 
+Note that you can also decide to **delete** the original `pom.xml` file (**NOT RECOMMENDED**) and then rename `pom_SQ_10_6_LATEST.xml` into `pom.xml`. 
 In this case, you would be able to use the very simple command:
 
 ```
@@ -66,13 +66,13 @@ mvn clean install
 
 Looking inside the `pom`, you will see that both SonarQube and the Java Analyzer versions are hard-coded. 
 This is because SonarSource's analyzers are directly embedded in the various SonarQube versions and are shipped together. 
-For instance, SonarQube `8.9` (previous LTS) is shipped with version `6.15.1.26025` of the Java Analyzer, while SonarQube `9.9` (LTS) is shipped with a much more recent version `7.16.0.30901` of the Java Analyzer. 
+For instance, SonarQube `8.9` (previous LTS) is shipped with version `6.15.1.26025` of the Java Analyzer, while the latest SonarQube `10.6` is shipped with a much more recent version `8.0.1.36337` of the Java Analyzer. 
 **These versions can not be changed**.
 
 ```xml
 <properties>
   <sonar.plugin.api.version>9.14.0.375</sonar.plugin.api.version>
-  <sonarjava.version>7.16.0.30901</sonarjava.version>
+  <sonarjava.version>8.0.1.36337</sonarjava.version>
   <!-- [...] -->
 </properties>
 ```
