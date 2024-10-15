@@ -19,5 +19,5 @@
   "ruleSpecification": "RSPEC-6485",
   "sqKey": "S6485",
   "scope": "Main",
-  "quickfix": "targeted"
+  "quickfix": "covered"
 }
