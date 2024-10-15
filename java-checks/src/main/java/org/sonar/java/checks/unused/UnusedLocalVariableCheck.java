@@ -72,15 +72,17 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.VARIABLE)) {
       VariableTree variable = (VariableTree) tree;
-      String name = variable.simpleName().name();
-      boolean unresolved = UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.isUnresolved(name);
-      if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol())) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(variable.simpleName())
-          .withMessage(String.format(MESSAGE, name))
-          .withQuickFixes(() -> computeQuickFix(variable))
-          .report();
+      IdentifierTree simpleName = variable.simpleName();
+      if (!simpleName.isUnnamedVariable()) {
+        boolean unresolved = UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.isUnresolved(simpleName.name());
+        if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol())) {
+          QuickFixHelper.newIssue(context)
+            .forRule(this)
+            .onTree(simpleName)
+            .withMessage(String.format(MESSAGE, simpleName.name()))
+            .withQuickFixes(() -> computeQuickFix(variable))
+            .report();
+        }
       }
     }
 
