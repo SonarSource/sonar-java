@@ -109,10 +109,14 @@
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
-          <excludes>
-            <exclude>src/main/java/**</exclude>
-            <exclude>src/test/java/**</exclude>
-          </excludes>
+          <licenseSets>
+            <licenseSet>
+              <excludes>
+                <exclude>src/main/java/**</exclude>
+                <exclude>src/test/java/**</exclude>
+              </excludes>
+            </licenseSet>
+          </licenseSets>
         </configuration>
       </plugin>
     </plugins>
