@@ -315,18 +315,25 @@ class UnusedLocalVariableCheck {
 
   void unnamedVariablesUseCases(Queue<Ball> queue, BallHolder<? extends Ball> ballHolder, ColoredPoint coloredPoint) {
     int total = 0;
+    int _ = 1 + 1;
+    java.util.function.IntUnaryOperator _ = (int _) -> 0;
+    java.util.function.IntUnaryOperator _ = _ -> 0;
+    java.util.function.IntBinaryOperator _ = (_,_) -> 0;
+    java.util.function.IntBinaryOperator _ = (int _, int _) -> 0;
     for(Object _ : queue) { // Compliant
       total++;
     }
     System.out.println(total);
-
+    for (int i = 0, _ = 1 + 1; i < 2; i++) {
+      System.out.println(i);
+    }
     while(queue.size() > 2) {
       var a = queue.remove();
       var _ = queue.remove(); // Compliant
       System.out.println(a);
     }
 
-    try {
+    try (var _ = new java.io.FileInputStream("foo.txt")) {
       queue.remove();
     } catch (Exception _) { // Compliant
       System.out.println("Exception");

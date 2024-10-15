@@ -1,3 +1,5 @@
+import java.util.function.IntUnaryOperator;
+
 class BadLocalVariableName {
   void method(
     int BAD_FORMAL_PARAMETER // Noncompliant {{Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
@@ -36,4 +38,8 @@ class BadLocalVariableName {
     }
   }
 
+  void foo() {
+    IntUnaryOperator f1 = (int _) -> 0; // Compliant, unnamed variable
+    IntUnaryOperator f2 = _ -> 0; // Compliant, unnamed variable
+  }
 }
