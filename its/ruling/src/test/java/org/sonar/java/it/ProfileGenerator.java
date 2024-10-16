@@ -21,7 +21,7 @@ package org.sonar.java.it;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
-import com.sonar.orchestrator.Orchestrator;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
 import com.sonar.orchestrator.locator.FileLocation;
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class ProfileGenerator {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProfileGenerator.class);
 
-  static void generate(Orchestrator orchestrator, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
+  static void generate(OrchestratorRule orchestrator, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
     Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
     generate(orchestrator, null, rulesParameters, excluded, subsetOfEnabledRules, activatedRuleKeys);
   }
@@ -56,7 +56,7 @@ public class ProfileGenerator {
   /**
    * @return the list of enabled rule keys for the given profile
    */
-  static void generate(Orchestrator orchestrator, @Nullable String qualityProfile, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
+  static void generate(OrchestratorRule orchestrator, @Nullable String qualityProfile, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
     Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
     try {
       LOG.info("Generating profile containing all the rules");
@@ -101,7 +101,7 @@ public class ProfileGenerator {
     }
   }
 
-  private static List<String> getRuleKeys(Orchestrator orchestrator, @Nullable String qualityProfile) {
+  private static List<String> getRuleKeys(OrchestratorRule orchestrator, @Nullable String qualityProfile) {
     List<String> ruleKeys = new ArrayList<>();
     // pages are 1-based
     int currentPage = 1;
@@ -135,7 +135,7 @@ public class ProfileGenerator {
     return ruleKeys;
   }
 
-  private static Optional<String> getQualityProfileName(Orchestrator orchestrator, @Nullable String qualityProfile) {
+  private static Optional<String> getQualityProfileName(OrchestratorRule orchestrator, @Nullable String qualityProfile) {
     if (qualityProfile == null || qualityProfile.isEmpty()) {
       return Optional.empty();
     }

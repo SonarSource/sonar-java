@@ -56,10 +56,10 @@ import org.sonar.api.batch.sensor.issue.fix.TextEdit;
 import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
 import org.sonar.api.issue.impact.SoftwareQuality;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -81,7 +81,7 @@ import static org.mockito.Mockito.when;
 class InternalJavaIssueBuilderTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   private static final File JAVA_FILE = new File("src/test/files/api/JavaFileInternalJavaIssueBuilderTest.java");
   private static final JavaCheck CHECK = new JavaCheck() {

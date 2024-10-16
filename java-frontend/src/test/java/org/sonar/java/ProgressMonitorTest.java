@@ -19,22 +19,27 @@
  */
 package org.sonar.java;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 class ProgressMonitorTest {
+
+  @RegisterExtension
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+
+  private static AtomicInteger threadSafeLoggerId = new AtomicInteger(0);
+  private final Logger logger = LoggerFactory.getLogger("ProgressMonitorTest#" + threadSafeLoggerId.incrementAndGet());
 
   @Test
   void test_set_cancel_does_nothing() {
@@ -49,7 +54,6 @@ class ProgressMonitorTest {
 
   @Test
   void methods_do_nothing() {
-    Logger logger = mock(Logger.class);
     AnalysisProgress analysisProgress = new AnalysisProgress(10);
     ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(500), analysisProgress);
 
@@ -59,13 +63,12 @@ class ProgressMonitorTest {
 
     report.done();
 
-    verifyNoInteractions(logger);
+    assertThat(logTester.logs()).isEmpty();
   }
 
   @Timeout(3)
   @Test
   void test_simple_report_progress() throws Exception {
-    Logger logger = mock(Logger.class);
     AnalysisProgress analysisProgress = new AnalysisProgress(50);
     analysisProgress.startBatch(50);
     ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
@@ -76,11 +79,7 @@ class ProgressMonitorTest {
     report.worked(100);
     report.done();
 
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(logger, atLeast(4)).info(captor.capture());
-
-    List<String> messages = captor.getAllValues();
-    assertThat(messages).hasSizeGreaterThanOrEqualTo(4).contains(
+    assertThat(logTester.logs()).hasSizeGreaterThanOrEqualTo(4).contains(
       "Starting batch processing.",
       "0% analyzed",
       "100% analyzed",
@@ -91,7 +90,6 @@ class ProgressMonitorTest {
   @Timeout(3)
   @Test
   void test_empty_batch() throws Exception {
-    Logger logger = mock(Logger.class);
     AnalysisProgress analysisProgress = new AnalysisProgress(0);
     analysisProgress.startBatch(0);
     ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
@@ -102,11 +100,7 @@ class ProgressMonitorTest {
     report.worked(2);
     report.done();
 
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(logger, atLeast(2)).info(captor.capture());
-
-    List<String> messages = captor.getAllValues();
-    assertThat(messages).hasSizeGreaterThanOrEqualTo(4).contains(
+    assertThat(logTester.logs()).hasSizeGreaterThanOrEqualTo(4).contains(
       "Starting batch processing.",
       "100% analyzed",
       "Batch processing: Done."
@@ -116,7 +110,6 @@ class ProgressMonitorTest {
   @Timeout(3)
   @Test
   void test_report_progress_first_batch() throws Exception {
-    Logger logger = mock(Logger.class);
     AnalysisProgress analysisProgress = new AnalysisProgress(50);
     analysisProgress.startBatch(10);
     ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
@@ -130,10 +123,7 @@ class ProgressMonitorTest {
     waitForMessage(logger);
     report.done();
 
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(logger, atLeast(4)).info(captor.capture());
-    List<String> messages = captor.getAllValues();
-    assertThat(messages).contains(
+    assertThat(logTester.logs()).contains(
       "Starting batch processing.",
       "0% analyzed",
       "10% analyzed",
@@ -144,7 +134,6 @@ class ProgressMonitorTest {
   @Timeout(3)
   @Test
   void test_report_progress_second_batch() throws Exception {
-    Logger logger = mock(Logger.class);
     AnalysisProgress analysisProgress = new AnalysisProgress(50);
     analysisProgress.startBatch(10);
     analysisProgress.endBatch();
@@ -160,10 +149,7 @@ class ProgressMonitorTest {
     waitForMessage(logger);
     report.done();
 
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(logger, atLeast(3)).info(captor.capture());
-    List<String> messages = captor.getAllValues();
-    assertThat(messages).contains(
+    assertThat(logTester.logs()).contains(
       "20% analyzed",
       "30% analyzed",
       "40% analyzed"
@@ -173,7 +159,6 @@ class ProgressMonitorTest {
   @Timeout(3)
   @Test
   void test_report_progress_last_batch() throws Exception {
-    Logger logger = mock(Logger.class);
     AnalysisProgress analysisProgress = new AnalysisProgress(50);
     analysisProgress.startBatch(40);
     analysisProgress.endBatch();
@@ -189,10 +174,7 @@ class ProgressMonitorTest {
     waitForMessage(logger);
     report.done();
 
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(logger, atLeast(3)).info(captor.capture());
-    List<String> messages = captor.getAllValues();
-    assertThat(messages).contains(
+    assertThat(logTester.logs()).contains(
       "80% analyzed",
       "90% analyzed",
       "100% analyzed",
@@ -203,7 +185,6 @@ class ProgressMonitorTest {
   @Timeout(3)
   @Test
   void test_report_progress() throws Exception {
-    Logger logger = mock(Logger.class);
     AnalysisProgress analysisProgress = new AnalysisProgress(500);
     analysisProgress.startBatch(500);
     ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
@@ -221,11 +202,7 @@ class ProgressMonitorTest {
     waitForMessage(logger);
     report.done();
 
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(logger, atLeast(7)).info(captor.capture());
-
-    List<String> messages = captor.getAllValues();
-    assertThat(messages).hasSizeGreaterThanOrEqualTo(7).contains(
+    assertThat(logTester.logs()).hasSizeGreaterThanOrEqualTo(7).contains(
       "Starting batch processing.",
       "0% analyzed",
       "25% analyzed",
@@ -240,8 +217,6 @@ class ProgressMonitorTest {
   @Timeout(3)
   @Test
   void test_unknown_total_work() throws Exception {
-    Logger logger = mock(Logger.class);
-
     AnalysisProgress analysisProgress = new AnalysisProgress(125);
     analysisProgress.startBatch(125);
     ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
@@ -253,11 +228,7 @@ class ProgressMonitorTest {
     waitForMessage(logger);
     report.done();
 
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(logger, atLeast(3)).info(captor.capture());
-
-    List<String> messages = captor.getAllValues();
-    assertThat(messages).hasSizeGreaterThanOrEqualTo(3).contains(
+    assertThat(logTester.logs()).hasSizeGreaterThanOrEqualTo(3).contains(
       "Starting batch processing.",
       "0/UNKNOWN unit(s) analyzed",
       "250/UNKNOWN unit(s) analyzed"
@@ -267,8 +238,6 @@ class ProgressMonitorTest {
   @Timeout(3)
   @Test
   void test_is_cancelled() throws Exception {
-    Logger logger = mock(Logger.class);
-
     AnalysisProgress analysisProgress = new AnalysisProgress(50);
     analysisProgress.startBatch(50);
     ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
@@ -280,11 +249,7 @@ class ProgressMonitorTest {
     waitForMessage(logger);
     report.isCanceled();
 
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(logger, atLeast(4)).info(captor.capture());
-
-    List<String> messages = captor.getAllValues();
-    assertThat(messages).hasSizeGreaterThanOrEqualTo(4).contains(
+    assertThat(logTester.logs()).hasSizeGreaterThanOrEqualTo(4).contains(
       "Starting batch processing.",
       "0% analyzed",
       "50% analyzed",
@@ -295,8 +260,6 @@ class ProgressMonitorTest {
   @Timeout(3)
   @Test
   void test_done_without_success() throws Exception {
-    Logger logger = mock(Logger.class);
-
     AnalysisProgress analysisProgress = new AnalysisProgress(50);
     analysisProgress.startBatch(50);
     ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
@@ -307,11 +270,7 @@ class ProgressMonitorTest {
     report.worked(50);
     report.done();
 
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(logger, atLeast(2)).info(captor.capture());
-
-    List<String> messages = captor.getAllValues();
-    assertThat(messages).hasSizeGreaterThanOrEqualTo(2).contains(
+    assertThat(logTester.logs()).hasSizeGreaterThanOrEqualTo(2).contains(
       "Starting batch processing.",
       "0% analyzed"
     );
@@ -320,8 +279,6 @@ class ProgressMonitorTest {
   @Timeout(2)
   @Test
   void interrupting_the_thread_should_never_create_a_deadlock() {
-    Logger logger = mock(Logger.class);
-
     AnalysisProgress analysisProgress = new AnalysisProgress(50);
     ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(500), analysisProgress);
 
@@ -340,8 +297,6 @@ class ProgressMonitorTest {
   @Timeout(1)
   @Test
   void interrupted_thread_should_exit_immediately() throws InterruptedException {
-    Logger logger = mock(Logger.class);
-
     AnalysisProgress analysisProgress = new AnalysisProgress(50);
     ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(500), analysisProgress);
     AtomicLong time = new AtomicLong(10000);

@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -43,11 +44,20 @@ public class CheckstyleSensor implements Sensor {
   public static final String REPORT_PROPERTY_KEY = "sonar.java.checkstyle.reportPaths";
   public static final String LINTER_KEY = "checkstyle";
 
-  public static final ExternalRuleLoader RULE_LOADER = new ExternalRuleLoader(
-    CheckstyleSensor.LINTER_KEY,
-    CheckstyleSensor.LINTER_NAME,
-    "org/sonar/l10n/java/rules/checkstyle/rules.json",
-    CheckstyleSensor.LANGUAGE_KEY);
+  private final ExternalRuleLoader ruleLoader;
+
+  public CheckstyleSensor(SonarRuntime sonarRuntime) {
+    ruleLoader = new ExternalRuleLoader(
+      CheckstyleSensor.LINTER_KEY,
+      CheckstyleSensor.LINTER_NAME,
+      "org/sonar/l10n/java/rules/checkstyle/rules.json",
+      CheckstyleSensor.LANGUAGE_KEY,
+      sonarRuntime);
+  }
+
+  public ExternalRuleLoader ruleLoader() {
+    return ruleLoader;
+  }
 
   @Override
   public void describe(SensorDescriptor descriptor) {
@@ -60,20 +70,20 @@ public class CheckstyleSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     List<File> reportFiles = ExternalReportProvider.getReportFiles(context, REPORT_PROPERTY_KEY);
-    reportFiles.forEach(report -> importIfExist(LINTER_NAME, context, report, CheckstyleSensor::importReport));
+    reportFiles.forEach(report -> importIfExist(LINTER_NAME, context, report, this::importReport));
   }
 
-  private static void importReport(File reportPath, SensorContext context) {
+  private void importReport(File reportPath, SensorContext context) {
     try (InputStream in = new FileInputStream(reportPath)) {
       LOG.info("Importing {}", reportPath);
-      CheckstyleXmlReportReader.read(context, in, CheckstyleSensor::saveIssue);
+      CheckstyleXmlReportReader.read(context, in, this::saveIssue);
     } catch (Exception e) {
-      LOG.error("Failed to import external issues report: " + reportPath, e);
+      LOG.error("Failed to import external issues report: {}", reportPath, e);
     }
   }
 
-  private static void saveIssue(SensorContext context, InputFile inputFile, String key, String line, String message) {
-    ExternalIssueUtils.saveIssue(context, RULE_LOADER, inputFile, CheckstyleSensor.LINTER_KEY, key, line, message);
+  private void saveIssue(SensorContext context, InputFile inputFile, String key, String line, String message) {
+    ExternalIssueUtils.saveIssue(context, ruleLoader, inputFile, CheckstyleSensor.LINTER_KEY, key, line, message);
   }
 
 }

@@ -35,18 +35,18 @@ import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.config.internal.MultivalueProperty;
-import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.System2;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.TestUtils;
+import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 class ClasspathForMainTest {
 
@@ -57,7 +57,7 @@ class ClasspathForMainTest {
   private ClasspathForMain javaClasspath;
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @BeforeEach
   void setup() {
@@ -88,8 +88,8 @@ class ClasspathForMainTest {
   void no_interaction_with_FileSystem_at_initialization() {
     fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
     javaClasspath = createJavaClasspath();
-    Mockito.verifyZeroInteractions(fs);
-    Mockito.verifyZeroInteractions(analysisWarnings);
+    verifyNoInteractions(fs);
+    verifyNoInteractions(analysisWarnings);
   }
 
   @Test
@@ -154,7 +154,7 @@ class ClasspathForMainTest {
     javaClasspath.init();
     assertThat(javaClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
     assertThat(javaClasspath.hasJavaSources()).isTrue();
-    verifyZeroInteractions(analysisWarnings);
+    verifyNoInteractions(analysisWarnings);
   }
 
   @Test

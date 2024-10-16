@@ -199,4 +199,9 @@ public class InternalSensorContext extends InternalMockedSonarAPI implements Sen
   public Settings settings() {
     throw notSupportedException("settings()");
   }
+
+  @Override
+  public void addTelemetryProperty(String s, String s1) {
+    throw notSupportedException("addTelemetryProperty(String,String)");
+  }
 }

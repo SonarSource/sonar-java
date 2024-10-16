@@ -19,15 +19,23 @@
  */
 package org.sonar.java.externalreport;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ExternalRulesDefinitionTest {
 
+  private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "spotbugs")
+    .toAbsolutePath().normalize();
+
   @Test
   void toString_should_exist_and_contains_linter_name() {
     // to string is used by compute engine logs and should return a unique key
-    assertThat(new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER, "someLinterKey")).hasToString("someLinterKey-rules-definition");
+    SensorContextTester sensorContext = SensorContextTester.create(PROJECT_DIR);
+    var spotBugsSensor = new SpotBugsSensor(sensorContext.runtime());
+    assertThat(new ExternalRulesDefinition(spotBugsSensor.ruleLoader(), "someLinterKey")).hasToString("someLinterKey-rules-definition");
   }
 }

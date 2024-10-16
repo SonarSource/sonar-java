@@ -51,7 +51,8 @@ class CheckstyleSensorTest {
   private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "checkstyle")
     .toAbsolutePath().normalize();
 
-  private static CheckstyleSensor checkstyleSensor = new CheckstyleSensor();
+  private static SensorContextTester sensorContext = SensorContextTester.create(PROJECT_DIR);
+  private static CheckstyleSensor checkstyleSensor = new CheckstyleSensor(sensorContext.runtime());
 
   @Rule
   public final TemporaryFolder tmp = new TemporaryFolder();
@@ -62,7 +63,7 @@ class CheckstyleSensorTest {
   @Test
   void checkstyle_rules_definition() {
     RulesDefinition.Context context = new RulesDefinition.Context();
-    new ExternalRulesDefinition(CheckstyleSensor.RULE_LOADER, CheckstyleSensor.LINTER_KEY).define(context);
+    new ExternalRulesDefinition(checkstyleSensor.ruleLoader(), CheckstyleSensor.LINTER_KEY).define(context);
 
     assertThat(context.repositories()).hasSize(1);
     RulesDefinition.Repository repository = context.repository("external_checkstyle");

@@ -57,11 +57,11 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -102,7 +102,7 @@ import static org.sonar.java.model.JParserTestUtils.parse;
 class JParserTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @Test
   void should_throw_RecognitionException_in_case_of_syntax_error() {

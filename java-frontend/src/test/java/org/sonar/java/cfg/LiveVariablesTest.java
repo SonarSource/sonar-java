@@ -140,7 +140,7 @@ class LiveVariablesTest {
     assertFieldsByMethodEntry("void foo(int a) { B that = new B(); foo(that.field1); }");
   }
 
-  private void assertFieldsByMethodEntry(String methodCode, String ...inEntryNames) {
+  private void assertFieldsByMethodEntry(String methodCode, Object... inEntryNames) {
     CFG cfg = buildCFG(methodCode);
     LiveVariables liveVariables = LiveVariables.analyzeWithFields(cfg);
     assertThat(liveVariables.getOut(cfg.entryBlock())).isEmpty();

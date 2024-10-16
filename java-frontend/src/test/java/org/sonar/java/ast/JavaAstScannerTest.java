@@ -53,6 +53,7 @@ import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
+import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
@@ -68,14 +69,18 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 class JavaAstScannerTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
+
+  @RegisterExtension
+  public LogTesterJUnit5 globalLogTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+
   private SensorContextTester context;
 
   @BeforeEach
@@ -189,7 +194,7 @@ class JavaAstScannerTest {
   void should_interrupt_analysis_when_specific_exception_are_thrown(Class<? extends Exception> exceptionClass) throws Exception {
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
     List<JavaFileScanner> visitors = Collections.singletonList(new CheckThrowingException(
-      new RecognitionException(42, "interrupted", exceptionClass.newInstance())));
+      new RecognitionException(42, "interrupted", exceptionClass.getDeclaredConstructor().newInstance())));
 
     AnalysisException e = assertThrows(AnalysisException.class, () ->
       scanFilesWithVisitors(inputFiles, visitors, -1, false, false));
@@ -207,7 +212,7 @@ class JavaAstScannerTest {
   void should_interrupt_analysis_when_specific_exception_are_thrown_as_batch(Class<? extends Exception> exceptionClass) throws Exception {
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
     List<JavaFileScanner> visitors = Collections.singletonList(new CheckThrowingException(
-      new RecognitionException(42, "interrupted", exceptionClass.newInstance())));
+      new RecognitionException(42, "interrupted", exceptionClass.getDeclaredConstructor().newInstance())));
 
     AnalysisException e = assertThrows(AnalysisException.class, () ->
       scanFilesWithVisitors(inputFiles, visitors, -1, false, true));
@@ -277,7 +282,7 @@ class JavaAstScannerTest {
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
 
-    assertThat(logTester.logs(Level.INFO)).hasSize(3)
+    assertThat(globalLogTester.logs(Level.INFO)).hasSize(3)
       .contains("1/1 source file has been analyzed");
     assertThat(logTester.logs(Level.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
@@ -340,7 +345,7 @@ class JavaAstScannerTest {
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(listener), new ArrayList<>(), sonarComponents));
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
     verify(sonarComponents).reportAnalysisError(any(RecognitionException.class), any(InputFile.class));
-    verifyZeroInteractions(listener);
+    verifyNoInteractions(listener);
   }
 
   @Test

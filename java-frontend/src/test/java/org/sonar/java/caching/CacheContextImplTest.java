@@ -19,7 +19,6 @@
  */
 package org.sonar.java.caching;
 
-import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
@@ -29,9 +28,8 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.config.Configuration;
-import org.sonar.api.testfixtures.log.LogAndArguments;
-import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 
@@ -44,7 +42,7 @@ import static org.mockito.Mockito.verify;
 
 class CacheContextImplTest {
   @RegisterExtension
-  LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @Test
   void should_use_dummy_cache_if_sonarcomponents_is_unavailable() {
@@ -111,10 +109,7 @@ class CacheContextImplTest {
     var sonarComponents = mockSonarComponents(sensorContext, null);
 
     CacheContextImpl.of(sonarComponents);
-    List<String> logs = logTester.getLogs(Level.DEBUG).stream()
-      .map(LogAndArguments::getFormattedMsg)
-      .toList();
-    assertThat(logs)
+    assertThat(logTester.logs(Level.DEBUG))
       .hasSize(1)
       .contains("Missing cache related method from sonar-plugin-api: bim.");
   }

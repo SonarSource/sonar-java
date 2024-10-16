@@ -37,11 +37,14 @@ public final class ExternalReportExtensions {
   }
 
   public static void define(Context context) {
-    context.addExtension(CheckstyleSensor.class);
-    context.addExtension(PmdSensor.class);
-    context.addExtension(SpotBugsSensor.class);
+    var checkstyleSensor = new CheckstyleSensor(context.getRuntime());
+    var pmdSensor = new PmdSensor(context.getRuntime());
+    var spotBugsSensor = new SpotBugsSensor(context.getRuntime());
+    context.addExtension(checkstyleSensor);
+    context.addExtension(pmdSensor);
+    context.addExtension(spotBugsSensor);
 
-    context.addExtension(new ExternalRulesDefinition(CheckstyleSensor.RULE_LOADER, CheckstyleSensor.LINTER_KEY));
+    context.addExtension(new ExternalRulesDefinition(checkstyleSensor.ruleLoader(), CheckstyleSensor.LINTER_KEY));
     context.addExtension(
       PropertyDefinition.builder(CheckstyleSensor.REPORT_PROPERTY_KEY)
         .name("Checkstyle Report Files")
@@ -52,7 +55,7 @@ public final class ExternalReportExtensions {
         .multiValues(true)
         .build());
 
-    context.addExtension(new ExternalRulesDefinition(PmdSensor.RULE_LOADER, PmdSensor.LINTER_KEY));
+    context.addExtension(new ExternalRulesDefinition(pmdSensor.ruleLoader(), PmdSensor.LINTER_KEY));
     context.addExtension(
       PropertyDefinition.builder(PmdSensor.REPORT_PROPERTY_KEY)
         .name("PMD Report Files")
@@ -63,9 +66,9 @@ public final class ExternalReportExtensions {
         .multiValues(true)
         .build());
 
-    context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER, SpotBugsSensor.SPOTBUGS_KEY));
-    context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER, SpotBugsSensor.FINDSECBUGS_KEY));
-    context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.FBCONTRIB_LOADER, SpotBugsSensor.FBCONTRIB_KEY));
+    context.addExtension(new ExternalRulesDefinition(spotBugsSensor.ruleLoader(), SpotBugsSensor.SPOTBUGS_KEY));
+    context.addExtension(new ExternalRulesDefinition(spotBugsSensor.findSecBugsLoader(), SpotBugsSensor.FINDSECBUGS_KEY));
+    context.addExtension(new ExternalRulesDefinition(spotBugsSensor.fbContribLoader(), SpotBugsSensor.FBCONTRIB_KEY));
     context.addExtension(
       PropertyDefinition.builder(SpotBugsSensor.REPORT_PROPERTY_KEY)
         .name("SpotBugs Report Files")

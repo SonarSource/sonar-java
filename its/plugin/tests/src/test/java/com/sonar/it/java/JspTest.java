@@ -21,10 +21,10 @@ package com.sonar.it.java;
 
 import com.sonar.it.java.suite.JavaTestSuite;
 import com.sonar.it.java.suite.TestUtils;
-import com.sonar.orchestrator.Orchestrator;
-import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.container.Edition;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
+import com.sonar.orchestrator.junit4.OrchestratorRuleBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.nio.file.Files;
@@ -44,13 +44,13 @@ public class JspTest {
   }
 
   @ClassRule
-  public static final Orchestrator ENTERPRISE_ORCHESTRATOR_OR_NULL = getEnterpriseOrchestratorOrNull();
+  public static final OrchestratorRule ENTERPRISE_ORCHESTRATOR_OR_NULL = getEnterpriseOrchestratorOrNull();
 
-  private static Orchestrator getEnterpriseOrchestratorOrNull() {
+  private static OrchestratorRule getEnterpriseOrchestratorOrNull() {
     if (isCommunityEditionTestsOnly()) {
       return null;
     }
-    OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
+    OrchestratorRuleBuilder orchestratorBuilder = OrchestratorRule.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .setEdition(Edition.ENTERPRISE)

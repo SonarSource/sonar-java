@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.lang.reflect.Type;
@@ -65,7 +65,7 @@ public class AutoScanTest {
   public static TemporaryFolder tmpDumpOldFolder = new TemporaryFolder();
 
   @ClassRule
-  public static Orchestrator orchestrator = Orchestrator.builderEnv()
+  public static OrchestratorRule orchestrator = OrchestratorRule.builderEnv()
     .useDefaultAdminCredentialsForBuilds(true)
     .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
     .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../sonar-java-plugin").toFile()))
@@ -198,7 +198,7 @@ public class AutoScanTest {
     SoftAssertions softly = new SoftAssertions();
     softly.assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs.values());
     softly.assertThat(newTotal).isEqualTo(knownTotal);
-    softly.assertThat(rulesCausingFPs).hasSize(10);
+    softly.assertThat(rulesCausingFPs).hasSize(11);
     softly.assertThat(rulesNotReporting).hasSize(10);
 
     /**
@@ -226,7 +226,7 @@ public class AutoScanTest {
     return FileLocation.of(path).getFile().getAbsolutePath();
   }
 
-  private static List<String> generateSonarWay(Orchestrator orchestrator) {
+  private static List<String> generateSonarWay(OrchestratorRule orchestrator) {
     Set<String> results = new TreeSet<>(RULE_KEY_COMPARATOR);
     ProfileGenerator.generate(orchestrator, "Sonar Way", ImmutableMap.of(), Collections.emptySet(), Collections.emptySet(), results);
     return new ArrayList<>(results);

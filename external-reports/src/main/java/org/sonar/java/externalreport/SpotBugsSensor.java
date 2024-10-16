@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
@@ -49,23 +50,46 @@ public class SpotBugsSensor implements Sensor {
   private static final String LANGUAGE_KEY = "java";
   public static final String REPORT_PROPERTY_KEY = "sonar.java.spotbugs.reportPaths";
 
-  public static final ExternalRuleLoader RULE_LOADER = new ExternalRuleLoader(
-    SpotBugsSensor.SPOTBUGS_KEY,
-    SpotBugsSensor.SPOTBUGS_NAME,
-    "org/sonar/l10n/java/rules/spotbugs/spotbugs-rules.json",
-    SpotBugsSensor.LANGUAGE_KEY);
+  private final ExternalRuleLoader ruleLoader;
 
-  public static final ExternalRuleLoader FINDSECBUGS_LOADER = new ExternalRuleLoader(
-    SpotBugsSensor.FINDSECBUGS_KEY,
-    SpotBugsSensor.FINDSECBUGS_NAME,
-    "org/sonar/l10n/java/rules/spotbugs/findsecbugs-rules.json",
-    SpotBugsSensor.LANGUAGE_KEY);
+  private final ExternalRuleLoader findSecBugsLoader;
 
-  public static final ExternalRuleLoader FBCONTRIB_LOADER = new ExternalRuleLoader(
-    SpotBugsSensor.FBCONTRIB_KEY,
-    SpotBugsSensor.FBCONTRIB_NAME,
-    "org/sonar/l10n/java/rules/spotbugs/fbcontrib-rules.json",
-    SpotBugsSensor.LANGUAGE_KEY);
+  private final ExternalRuleLoader fbContribLoader;
+
+  public SpotBugsSensor(SonarRuntime sonarRuntime) {
+    ruleLoader = new ExternalRuleLoader(
+      SpotBugsSensor.SPOTBUGS_KEY,
+      SpotBugsSensor.SPOTBUGS_NAME,
+      "org/sonar/l10n/java/rules/spotbugs/spotbugs-rules.json",
+      SpotBugsSensor.LANGUAGE_KEY,
+      sonarRuntime);
+
+    findSecBugsLoader = new ExternalRuleLoader(
+      SpotBugsSensor.FINDSECBUGS_KEY,
+      SpotBugsSensor.FINDSECBUGS_NAME,
+      "org/sonar/l10n/java/rules/spotbugs/findsecbugs-rules.json",
+      SpotBugsSensor.LANGUAGE_KEY,
+      sonarRuntime);
+
+    fbContribLoader = new ExternalRuleLoader(
+      SpotBugsSensor.FBCONTRIB_KEY,
+      SpotBugsSensor.FBCONTRIB_NAME,
+      "org/sonar/l10n/java/rules/spotbugs/fbcontrib-rules.json",
+      SpotBugsSensor.LANGUAGE_KEY,
+      sonarRuntime);
+  }
+
+  public ExternalRuleLoader ruleLoader() {
+    return ruleLoader;
+  }
+
+  public ExternalRuleLoader findSecBugsLoader() {
+    return findSecBugsLoader;
+  }
+
+  public ExternalRuleLoader fbContribLoader() {
+    return fbContribLoader;
+  }
 
   @Override
   public void describe(SensorDescriptor descriptor) {
@@ -78,19 +102,19 @@ public class SpotBugsSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     List<File> reportFiles = ExternalReportProvider.getReportFiles(context, REPORT_PROPERTY_KEY);
-    reportFiles.forEach(report -> importIfExist(SPOTBUGS_NAME, context, report, SpotBugsSensor::importReport));
+    reportFiles.forEach(report -> importIfExist(SPOTBUGS_NAME, context, report, this::importReport));
   }
 
-  private static void importReport(File reportPath, SensorContext context) {
+  private void importReport(File reportPath, SensorContext context) {
     try (InputStream in = new FileInputStream(reportPath)) {
       LOG.info("Importing {}", reportPath);
 
       Map<String, ExternalRuleLoader> otherLoaders = new HashMap<>();
-      otherLoaders.put(FINDSECBUGS_KEY, FINDSECBUGS_LOADER);
-      otherLoaders.put(FBCONTRIB_KEY, FBCONTRIB_LOADER);
-      SpotBugsXmlReportReader.read(context, in, RULE_LOADER, otherLoaders);
+      otherLoaders.put(FINDSECBUGS_KEY, findSecBugsLoader);
+      otherLoaders.put(FBCONTRIB_KEY, fbContribLoader);
+      SpotBugsXmlReportReader.read(context, in, ruleLoader, otherLoaders);
     } catch (Exception e) {
-      LOG.error("Failed to import external issues report: " + reportPath, e);
+      LOG.error("Failed to import external issues report: {}", reportPath, e);
     }
   }
 

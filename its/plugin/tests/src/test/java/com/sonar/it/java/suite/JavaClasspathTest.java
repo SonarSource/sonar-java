@@ -19,10 +19,10 @@
  */
 package com.sonar.it.java.suite;
 
-import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.io.File;
 import java.nio.file.Path;
@@ -50,7 +50,7 @@ public class JavaClasspathTest {
   private static final String PROJECT_KEY_AAR = "org.example:using-aar-dep";
 
   @ClassRule
-  public static final Orchestrator ORCHESTRATOR = JavaTestSuite.ORCHESTRATOR;
+  public static final OrchestratorRule ORCHESTRATOR = JavaTestSuite.ORCHESTRATOR;
 
   @Rule
   public final TemporaryFolder tmp = new TemporaryFolder();
