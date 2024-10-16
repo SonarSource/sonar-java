@@ -28,8 +28,8 @@ import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.TestUtils;
+import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -41,7 +41,7 @@ class ClasspathForTestTest {
   private ClasspathForTest javaTestClasspath;
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @BeforeEach
   public void setUp() {

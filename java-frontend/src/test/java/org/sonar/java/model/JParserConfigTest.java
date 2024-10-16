@@ -20,19 +20,17 @@
 package org.sonar.java.model;
 
 import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
-import org.sonar.api.testfixtures.log.LogAndArguments;
-import org.sonar.api.testfixtures.log.LogTesterJUnit5;
+import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.JParserConfig.shouldEnablePreviewFlag;
 
 class JParserConfigTest {
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.INFO);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.INFO);
 
   @Test
   void should_enable_preview() {
@@ -54,13 +52,10 @@ class JParserConfigTest {
   @Test
   void a_debug_message_is_logged_when_shouldIgnoreUnnamedModuleForSplitPackage_is_set() {
     JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList());
-    assertThat(logTester.getLogs()).isEmpty();
+    assertThat(logTester.logs()).isEmpty();
     JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), false);
-    assertThat(logTester.getLogs()).isEmpty();
+    assertThat(logTester.logs()).isEmpty();
     JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true);
-    List<String> logs = logTester.getLogs().stream()
-      .map(LogAndArguments::getFormattedMsg)
-      .toList();
-    assertThat(logs).containsExactly("The Java analyzer will ignore the unnamed module for split packages.");
+    assertThat(logTester.logs()).containsExactly("The Java analyzer will ignore the unnamed module for split packages.");
   }
 }

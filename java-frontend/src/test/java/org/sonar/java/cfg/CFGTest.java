@@ -29,10 +29,10 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
-import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -105,7 +105,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.YIELD_STATEMENT;
 class CFGTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   static CFGChecker checker(BlockChecker... checkers) {
     return new CFGChecker(checkers);

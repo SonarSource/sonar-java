@@ -56,7 +56,6 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
-import org.sonar.api.testfixtures.log.LogAndArguments;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.Version;
 import org.sonar.java.classpath.ClasspathForMain;
@@ -230,10 +229,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(Level.INFO).stream()
-      .map(LogAndArguments::getFormattedMsg)
-      .toList();
-    assertThat(logs)
+    assertThat(logTester.logs(Level.INFO))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is enabled. The Java analyzer was able to leverage cached data from previous analyses for 0 out of 0 files. These files will not be parsed.",
@@ -266,10 +262,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(Level.INFO).stream()
-      .map(LogAndArguments::getFormattedMsg)
-      .toList();
-    assertThat(logs)
+    assertThat(logTester.logs(Level.INFO))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.",
@@ -302,10 +295,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(Level.INFO).stream()
-      .map(LogAndArguments::getFormattedMsg)
-      .toList();
-    assertThat(logs)
+    assertThat(logTester.logs(Level.INFO))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.",
@@ -337,10 +327,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(Level.INFO).stream()
-      .map(LogAndArguments::getFormattedMsg)
-      .toList();
-    assertThat(logs)
+    assertThat(logTester.logs(Level.INFO))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
@@ -372,10 +359,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(Level.INFO).stream()
-      .map(LogAndArguments::getFormattedMsg)
-      .toList();
-    assertThat(logs)
+    assertThat(logTester.logs(Level.INFO))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
@@ -400,10 +384,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<String> logs = logTester.getLogs(Level.INFO).stream()
-      .map(LogAndArguments::getFormattedMsg)
-      .toList();
-    assertThat(logs)
+    assertThat(logTester.logs(Level.INFO))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
@@ -804,18 +785,12 @@ class JavaFrontendTest {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "false");
     scan(settings, SONARQUBE_RUNTIME, "package com.acme; class Anvil {}");
-    List<String> formattedLogs = logTester.getLogs().stream()
-      .map(LogAndArguments::getFormattedMsg)
-      .toList();
-    assertThat(formattedLogs).doesNotContain("The Java analyzer will ignore the unnamed module for split packages.");
+    assertThat(logTester.logs()).doesNotContain("The Java analyzer will ignore the unnamed module for split packages.");
 
     settings.setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "true");
     scan(settings, SONARQUBE_RUNTIME, "package com.acme; class Dynamite {}");
 
-    formattedLogs = logTester.getLogs().stream()
-      .map(LogAndArguments::getFormattedMsg)
-      .toList();
-    assertThat(formattedLogs).contains("The Java analyzer will ignore the unnamed module for split packages.");
+    assertThat(logTester.logs()).contains("The Java analyzer will ignore the unnamed module for split packages.");
   }
 
   private List<InputFile> scan(SonarRuntime sonarRuntime, String... codeList) throws IOException {

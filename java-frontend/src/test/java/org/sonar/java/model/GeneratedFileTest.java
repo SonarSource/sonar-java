@@ -33,7 +33,7 @@ import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.testfixtures.log.LogTesterJUnit5;
+import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.SourceMap;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -52,7 +52,7 @@ class GeneratedFileTest {
   private GeneratedFile actual;
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
   private DefaultFileSystem fs;
 
   @BeforeEach

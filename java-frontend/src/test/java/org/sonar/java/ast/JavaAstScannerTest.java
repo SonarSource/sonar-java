@@ -53,6 +53,7 @@ import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
+import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
@@ -75,7 +76,11 @@ import static org.mockito.Mockito.when;
 class JavaAstScannerTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
+
+  @RegisterExtension
+  public LogTesterJUnit5 globalLogTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+
   private SensorContextTester context;
 
   @BeforeEach
@@ -277,7 +282,7 @@ class JavaAstScannerTest {
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
 
-    assertThat(logTester.logs(Level.INFO)).hasSize(3)
+    assertThat(globalLogTester.logs(Level.INFO)).hasSize(3)
       .contains("1/1 source file has been analyzed");
     assertThat(logTester.logs(Level.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",

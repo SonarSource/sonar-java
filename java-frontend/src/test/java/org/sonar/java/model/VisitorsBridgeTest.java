@@ -35,8 +35,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.testfixtures.log.LogAndArguments;
-import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
 import org.sonar.java.SonarComponents;
@@ -46,6 +44,7 @@ import org.sonar.java.checks.EndOfAnalysisVisitor;
 import org.sonar.java.checks.VisitorThatCanBeSkipped;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
+import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -75,7 +74,7 @@ import static org.mockito.Mockito.verify;
 class VisitorsBridgeTest {
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   private SonarComponents sonarComponents = null;
 
@@ -374,9 +373,9 @@ class VisitorsBridgeTest {
       Collections.emptyList(),
       null
     );
-    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
     visitorsBridge.endOfAnalysis();
-    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
   }
 
   @Test
@@ -389,14 +388,12 @@ class VisitorsBridgeTest {
       specificSonarComponents
     );
 
-    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
     visitorsBridge.visitFile(null, false);
-    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
     visitorsBridge.endOfAnalysis();
-    List<LogAndArguments> logsAfterEndOfAnalysis = logTester.getLogs(Level.INFO);
-    assertThat(logsAfterEndOfAnalysis).hasSize(1);
-    assertThat(logsAfterEndOfAnalysis.get(0).getFormattedMsg())
-      .isEqualTo("Did not optimize analysis for any files, performed a full analysis for all 1 files.");
+    assertThat(logTester.logs(Level.INFO))
+      .containsExactly("Did not optimize analysis for any files, performed a full analysis for all 1 files.");
   }
 
   @Test
@@ -409,14 +406,12 @@ class VisitorsBridgeTest {
       specificSonarComponents
     );
 
-    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
     visitorsBridge.visitFile(null, true);
-    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
     visitorsBridge.endOfAnalysis();
-    List<LogAndArguments> logsAfterEndOfAnalysis = logTester.getLogs(Level.INFO);
-    assertThat(logsAfterEndOfAnalysis).hasSize(1);
-    assertThat(logsAfterEndOfAnalysis.get(0).getFormattedMsg())
-      .isEqualTo("Optimized analysis for 1 of 1 files.");
+    assertThat(logTester.logs(Level.INFO))
+      .containsExactly("Optimized analysis for 1 of 1 files.");
   }
 
   @Nested
@@ -550,9 +545,7 @@ class VisitorsBridgeTest {
         scanner.getClass().getCanonicalName()
       );
 
-      List<LogAndArguments> warningLogs = logTester.getLogs(Level.WARN);
-      assertThat(warningLogs).hasSize(1);
-      assertThat(warningLogs.get(0).getFormattedMsg()).isEqualTo(expectedLogMessage);
+      assertThat(logTester.logs(Level.WARN)).containsExactly(expectedLogMessage);
     }
 
     private boolean scan_without_parsing(JavaFileScanner scanner) throws ApiMismatchException {
