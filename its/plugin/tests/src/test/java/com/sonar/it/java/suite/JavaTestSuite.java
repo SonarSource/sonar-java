@@ -19,8 +19,8 @@
  */
 package com.sonar.it.java.suite;
 
-import com.sonar.orchestrator.Orchestrator;
-import com.sonar.orchestrator.OrchestratorBuilder;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
+import com.sonar.orchestrator.junit4.OrchestratorRuleBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
 import java.util.List;
 import java.util.Map;
@@ -61,10 +61,10 @@ public class JavaTestSuite {
   public static final FileLocation TUTORIAL_EXAMPLE_PLUGIN_LOCATION = FileLocation.of(TestClasspathUtils.findModuleJarPath("../../../docs/java-custom-rules-example").toFile());
 
   @ClassRule
-  public static final Orchestrator ORCHESTRATOR;
+  public static final OrchestratorRule ORCHESTRATOR;
 
   static {
-    OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
+    OrchestratorRuleBuilder orchestratorBuilder = OrchestratorRule.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .addPlugin(JAVA_PLUGIN_LOCATION)

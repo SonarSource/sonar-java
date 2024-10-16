@@ -52,7 +52,7 @@
     </dependency>
     <dependency>
       <groupId>org.sonarsource.orchestrator</groupId>
-      <artifactId>sonar-orchestrator</artifactId>
+      <artifactId>sonar-orchestrator-junit4</artifactId>
       <version>${orchestrator.version}</version>
       <scope>test</scope>
       <exclusions>

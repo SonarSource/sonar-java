@@ -59,7 +59,7 @@ class ClasspathForTestTest {
   void no_interaction_with_FileSystem_at_initialization() {
     fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
     javaTestClasspath = new ClasspathForTest(settings.asConfig(), fs);
-    Mockito.verifyZeroInteractions(fs);
+    Mockito.verifyNoInteractions(fs);
   }
 
   @Test

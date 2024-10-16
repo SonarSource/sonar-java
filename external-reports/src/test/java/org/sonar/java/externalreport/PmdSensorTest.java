@@ -52,7 +52,8 @@ class PmdSensorTest {
   private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "pmd");
   private static final String PROJECT_ID = "pmd-test";
 
-  private static final PmdSensor sensor = new PmdSensor();
+  private static final SensorContextTester sensorContext = SensorContextTester.create(PROJECT_DIR);
+  private static final PmdSensor sensor = new PmdSensor(sensorContext.runtime());
 
   @RegisterExtension
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
@@ -72,7 +73,7 @@ class PmdSensorTest {
   @Test
   void pmd_rules_definition() {
     RulesDefinition.Context context = new RulesDefinition.Context();
-    new ExternalRulesDefinition(PmdSensor.RULE_LOADER, PmdSensor.LINTER_KEY).define(context);
+    new ExternalRulesDefinition(sensor.ruleLoader(), PmdSensor.LINTER_KEY).define(context);
 
     assertThat(context.repositories()).hasSize(1);
     RulesDefinition.Repository repository = context.repository("external_pmd");
@@ -210,7 +211,7 @@ class PmdSensorTest {
       context.fileSystem().add(TestInputFileBuilder.create(PROJECT_ID, projectDir.toFile(), file.toFile())
         .setCharset(UTF_8)
         .setLanguage(language(file))
-        .setContents(new String(Files.readAllBytes(file), UTF_8))
+        .setContents(Files.readString(file))
         .setType(InputFile.Type.MAIN)
         .build());
     } catch (IOException e) {

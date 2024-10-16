@@ -19,10 +19,10 @@
  */
 package com.sonar.it.java.suite;
 
-import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.io.File;
 import java.util.List;
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JavaTest {
 
   @ClassRule
-  public static Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
+  public static OrchestratorRule orchestrator = JavaTestSuite.ORCHESTRATOR;
 
   @Rule
   public final TemporaryFolder tmp = new TemporaryFolder();

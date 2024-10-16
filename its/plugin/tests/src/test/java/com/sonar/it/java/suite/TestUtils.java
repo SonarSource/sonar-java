@@ -20,8 +20,8 @@
 package com.sonar.it.java.suite;
 
 import com.google.common.collect.Iterables;
-import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.container.Server;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
@@ -70,27 +70,27 @@ public class TestUtils {
     return new File(homeDir(), "projects/" + projectName + "/pom.xml");
   }
 
-  public static List<Issue> issuesForComponent(Orchestrator orchestrator, String componentKey) {
+  public static List<Issue> issuesForComponent(OrchestratorRule orchestrator, String componentKey) {
     return newWsClient(orchestrator)
       .issues()
       .search(new SearchRequest().setComponentKeys(Collections.singletonList(componentKey)))
       .getIssuesList();
   }
 
-  static WsClient newWsClient(Orchestrator orchestrator) {
+  static WsClient newWsClient(OrchestratorRule orchestrator) {
     return WsClientFactories.getDefault().newClient(HttpConnector.newBuilder()
       .url(orchestrator.getServer().getUrl())
       .build());
   }
 
-  static WsClient newAdminWsClient(Orchestrator orchestrator) {
+  static WsClient newAdminWsClient(OrchestratorRule orchestrator) {
     return WsClientFactories.getDefault().newClient(HttpConnector.newBuilder()
       .credentials(ADMIN_LOGIN, ADMIN_PASSWORD)
       .url(orchestrator.getServer().getUrl())
       .build());
   }
 
-  public static void provisionProject(Orchestrator orchestrator, String projectKey, String projectName, String languageKey, String profileName) {
+  public static void provisionProject(OrchestratorRule orchestrator, String projectKey, String projectName, String languageKey, String profileName) {
     Server server = orchestrator.getServer();
     server.provisionProject(projectKey, projectName);
     server.associateProjectToQualityProfile(projectKey, languageKey, profileName);

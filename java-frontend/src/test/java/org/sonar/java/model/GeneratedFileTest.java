@@ -81,7 +81,7 @@ class GeneratedFileTest {
     assertEquals("9a0364b9e99bb480dd25e1f0284c8555", computedMd5Hash);
     assertSame(computedMd5Hash, cachedMd5Hash);
     try (InputStream is = actual.inputStream()) {
-      assertEquals("content", IOUtils.toString(is));
+      assertEquals("content", IOUtils.toString(is, UTF_8));
     }
     assertFalse(actual.isEmpty());
     assertEquals(UTF_8, actual.charset());

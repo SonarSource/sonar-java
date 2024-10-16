@@ -19,9 +19,9 @@
  */
 package com.sonar.it.java.suite;
 
-import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.SonarScanner;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import org.junit.Rule;
@@ -30,7 +30,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CacheEnabledTest {
-  @Rule  public Orchestrator orchestrator = initServer();
+  @Rule  public OrchestratorRule orchestrator = initServer();
 
   @Test
   public void test_cache_is_enabled() {
@@ -64,8 +64,8 @@ public class CacheEnabledTest {
 
 
 
-  private static Orchestrator initServer() {
-    return Orchestrator.builderEnv()
+  private static OrchestratorRule initServer() {
+    return OrchestratorRule.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION)

@@ -19,9 +19,8 @@
  */
 package com.sonar.it.java.suite;
 
-import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
-
+import com.sonar.orchestrator.junit4.OrchestratorRule;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +38,7 @@ public class JavaComplexityTest {
   public static final String PROJECT = "org.sonarsource.it.projects:java-complexity";
 
   @ClassRule
-  public static Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
+  public static OrchestratorRule orchestrator = JavaTestSuite.ORCHESTRATOR;
 
   @BeforeClass
   public static void analyzeProject() {

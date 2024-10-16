@@ -50,6 +50,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
@@ -149,7 +150,7 @@ class RelationalSymbolicValueTest {
     RelationalSymbolicValue eqAB = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, a, b);
     RelationalSymbolicValue eqBA = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, b, a);
     Stream.of(eqAB, eqBA, eqAB.inverse(), eqBA.inverse()).forEach(rel -> actual.addAll(resolveRelationStateForAllKinds(rel, rel::toString)));
-    List<String> expected = IOUtils.readLines(getClass().getResourceAsStream("/relations/direct.txt"));
+    List<String> expected = IOUtils.readLines(getClass().getResourceAsStream("/relations/direct.txt"), UTF_8);
     assertThat(actual).isEqualTo(expected);
   }
 
@@ -327,7 +328,7 @@ class RelationalSymbolicValueTest {
     RelationalSymbolicValue neqAB = eqAB.inverse();
     actual.addAll(combineWithAll(neqAB, neqAB::toString));
 
-    List<String> expected = IOUtils.readLines(getClass().getResourceAsStream("/relations/transitive.txt"));
+    List<String> expected = IOUtils.readLines(getClass().getResourceAsStream("/relations/transitive.txt"), UTF_8);
     assertThat(actual).isEqualTo(expected);
   }
 

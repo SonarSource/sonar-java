@@ -19,8 +19,8 @@
  */
 package com.sonar.it.java.suite;
 
-import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.junit.ClassRule;
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SuppressWarningTest {
 
   @ClassRule
-  public static final Orchestrator ORCHESTRATOR = JavaTestSuite.ORCHESTRATOR;
+  public static final OrchestratorRule ORCHESTRATOR = JavaTestSuite.ORCHESTRATOR;
 
   @Test
   public void suppressWarnings_nosonar() {

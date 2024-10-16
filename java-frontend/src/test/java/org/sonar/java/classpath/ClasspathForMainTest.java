@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 class ClasspathForMainTest {
 
@@ -88,8 +88,8 @@ class ClasspathForMainTest {
   void no_interaction_with_FileSystem_at_initialization() {
     fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
     javaClasspath = createJavaClasspath();
-    Mockito.verifyZeroInteractions(fs);
-    Mockito.verifyZeroInteractions(analysisWarnings);
+    verifyNoInteractions(fs);
+    verifyNoInteractions(analysisWarnings);
   }
 
   @Test
@@ -154,7 +154,7 @@ class ClasspathForMainTest {
     javaClasspath.init();
     assertThat(javaClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
     assertThat(javaClasspath.hasJavaSources()).isTrue();
-    verifyZeroInteractions(analysisWarnings);
+    verifyNoInteractions(analysisWarnings);
   }
 
   @Test

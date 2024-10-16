@@ -24,7 +24,7 @@
     <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>
       <artifactId>sonar-plugin-api</artifactId>
-      <version>9.9.0.229</version>
+      <version>10.11.0.2468</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -46,6 +46,12 @@
     </dependency>
 
     <!-- TEST sources dependencies -->
+    <dependency>
+      <groupId>org.sonarsource.api.plugin</groupId>
+      <artifactId>sonar-plugin-api-test-fixtures</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.sonarsource.java</groupId>
       <artifactId>java-checks-testkit</artifactId>

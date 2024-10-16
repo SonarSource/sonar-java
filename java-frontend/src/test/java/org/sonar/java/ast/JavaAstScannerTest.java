@@ -68,8 +68,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 class JavaAstScannerTest {
@@ -189,7 +189,7 @@ class JavaAstScannerTest {
   void should_interrupt_analysis_when_specific_exception_are_thrown(Class<? extends Exception> exceptionClass) throws Exception {
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
     List<JavaFileScanner> visitors = Collections.singletonList(new CheckThrowingException(
-      new RecognitionException(42, "interrupted", exceptionClass.newInstance())));
+      new RecognitionException(42, "interrupted", exceptionClass.getDeclaredConstructor().newInstance())));
 
     AnalysisException e = assertThrows(AnalysisException.class, () ->
       scanFilesWithVisitors(inputFiles, visitors, -1, false, false));
@@ -207,7 +207,7 @@ class JavaAstScannerTest {
   void should_interrupt_analysis_when_specific_exception_are_thrown_as_batch(Class<? extends Exception> exceptionClass) throws Exception {
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
     List<JavaFileScanner> visitors = Collections.singletonList(new CheckThrowingException(
-      new RecognitionException(42, "interrupted", exceptionClass.newInstance())));
+      new RecognitionException(42, "interrupted", exceptionClass.getDeclaredConstructor().newInstance())));
 
     AnalysisException e = assertThrows(AnalysisException.class, () ->
       scanFilesWithVisitors(inputFiles, visitors, -1, false, true));
@@ -340,7 +340,7 @@ class JavaAstScannerTest {
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(listener), new ArrayList<>(), sonarComponents));
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
     verify(sonarComponents).reportAnalysisError(any(RecognitionException.class), any(InputFile.class));
-    verifyZeroInteractions(listener);
+    verifyNoInteractions(listener);
   }
 
   @Test

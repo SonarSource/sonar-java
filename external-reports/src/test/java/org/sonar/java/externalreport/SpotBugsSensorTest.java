@@ -52,7 +52,8 @@ class SpotBugsSensorTest {
   private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "spotbugs")
     .toAbsolutePath().normalize();
 
-  private static SpotBugsSensor spotBugsSensor = new SpotBugsSensor();
+  private static SensorContextTester sensorContext = SensorContextTester.create(PROJECT_DIR);
+  private static SpotBugsSensor spotBugsSensor = new SpotBugsSensor(sensorContext.runtime());
 
   @Rule
   public final TemporaryFolder tmp = new TemporaryFolder();
@@ -63,9 +64,9 @@ class SpotBugsSensorTest {
   @Test
   void spotbugs_rules_definition() {
     RulesDefinition.Context context = new RulesDefinition.Context();
-    new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER, SpotBugsSensor.SPOTBUGS_KEY).define(context);
-    new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER, SpotBugsSensor.FINDSECBUGS_KEY).define(context);
-    new ExternalRulesDefinition(SpotBugsSensor.FBCONTRIB_LOADER, SpotBugsSensor.FBCONTRIB_KEY).define(context);
+    new ExternalRulesDefinition(spotBugsSensor.ruleLoader(), SpotBugsSensor.SPOTBUGS_KEY).define(context);
+    new ExternalRulesDefinition(spotBugsSensor.findSecBugsLoader(), SpotBugsSensor.FINDSECBUGS_KEY).define(context);
+    new ExternalRulesDefinition(spotBugsSensor.fbContribLoader(), SpotBugsSensor.FBCONTRIB_KEY).define(context);
     assertThat(context.repositories()).hasSize(3);
 
     RulesDefinition.Repository repository = context.repository("external_spotbugs");
