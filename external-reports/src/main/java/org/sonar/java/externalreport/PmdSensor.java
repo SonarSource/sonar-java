@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
@@ -41,11 +42,20 @@ public class PmdSensor implements Sensor {
   private static final String LINTER_NAME = "PMD";
   private static final String LANGUAGE_KEY = "java";
 
-  public static final ExternalRuleLoader RULE_LOADER = new ExternalRuleLoader(
-    PmdSensor.LINTER_KEY,
-    PmdSensor.LINTER_NAME,
-    "org/sonar/l10n/java/rules/pmd/rules.json",
-    PmdSensor.LANGUAGE_KEY);
+  private final ExternalRuleLoader ruleLoader;
+
+  public PmdSensor(SonarRuntime sonarRuntime) {
+    ruleLoader = new ExternalRuleLoader(
+      PmdSensor.LINTER_KEY,
+      PmdSensor.LINTER_NAME,
+      "org/sonar/l10n/java/rules/pmd/rules.json",
+      PmdSensor.LANGUAGE_KEY,
+      sonarRuntime);
+  }
+
+  public ExternalRuleLoader ruleLoader() {
+    return ruleLoader;
+  }
 
   @Override
   public void describe(SensorDescriptor descriptor) {
@@ -58,15 +68,15 @@ public class PmdSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     List<File> reportFiles = ExternalReportProvider.getReportFiles(context, REPORT_PROPERTY_KEY);
-    reportFiles.forEach(report -> importIfExist(LINTER_NAME, context, report, PmdSensor::importReport));
+    reportFiles.forEach(report -> importIfExist(LINTER_NAME, context, report, this::importReport));
   }
 
-  private static void importReport(File reportFile, SensorContext context) {
+  private void importReport(File reportFile, SensorContext context) {
     try {
       LOG.info("Importing {}", reportFile);
-      PmdXmlReportReader.read(context, reportFile, RULE_LOADER);
+      PmdXmlReportReader.read(context, reportFile, ruleLoader);
     } catch (Exception e) {
-      LOG.error("Failed to import external issues report: " + reportFile.getAbsolutePath(), e);
+      LOG.error("Failed to import external issues report: {}", reportFile.getAbsolutePath(), e);
     }
   }
 

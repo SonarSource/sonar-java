@@ -7,8 +7,8 @@ package org.sonar.samples.java.checks;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.sonar.api.utils.log.LogTester;
-import org.sonar.api.utils.log.LoggerLevel;
+import org.slf4j.event.Level;
+import org.sonar.api.testfixtures.log.LogTester;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 @EnableRuleMigrationSupport
@@ -16,7 +16,7 @@ class AvoidBrandInMethodNamesRuleTest {
 
   // Set a LogTester to see the Syntax Tree when running tests and executing the rule
   @Rule
-  public LogTester logTester = new LogTester().setLevel(LoggerLevel.DEBUG);
+  public LogTester logTester = new LogTester().setLevel(Level.DEBUG);
 
   @Test
   void detected() {

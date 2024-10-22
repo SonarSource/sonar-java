@@ -19,8 +19,8 @@
  */
 package com.sonar.it.java.suite;
 
-import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ public class DuplicationTest {
   private static final String DUPLICATION_PROJECT_KEY = "org.sonarsource.it.projects:test-duplications";
 
   @ClassRule
-  public static Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
+  public static OrchestratorRule orchestrator = JavaTestSuite.ORCHESTRATOR;
 
   @Test
   public void duplication_should_be_computed_by_SQ() {

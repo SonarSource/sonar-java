@@ -19,8 +19,8 @@
  */
 package com.sonar.it.java.suite;
 
-import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
 import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UnitTestsTest {
 
   @ClassRule
-  public static Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
+  public static OrchestratorRule orchestrator = JavaTestSuite.ORCHESTRATOR;
 
   @Test
   public void tests_without_main_code() {

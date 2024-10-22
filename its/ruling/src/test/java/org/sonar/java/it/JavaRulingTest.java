@@ -22,14 +22,14 @@ package org.sonar.java.it;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.sonar.orchestrator.Orchestrator;
-import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.build.Build;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.container.Edition;
 import com.sonar.orchestrator.container.Server;
+import com.sonar.orchestrator.junit4.OrchestratorRule;
+import com.sonar.orchestrator.junit4.OrchestratorRuleBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.io.File;
@@ -91,10 +91,10 @@ public class JavaRulingTest {
     return "true".equals(System.getProperty("communityEditionTestsOnly"));
   }
   @ClassRule
-  public static final Orchestrator ORCHESTRATOR = createOrchestrator();
+  public static final OrchestratorRule ORCHESTRATOR = createOrchestrator();
 
-  private static Orchestrator createOrchestrator() {
-    OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
+  private static OrchestratorRule createOrchestrator() {
+    OrchestratorRuleBuilder orchestratorBuilder = OrchestratorRule.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../sonar-java-plugin").toFile()))
@@ -495,7 +495,7 @@ public class JavaRulingTest {
     }
   }
 
-  static WsClient newAdminWsClient(Orchestrator orchestrator) {
+  static WsClient newAdminWsClient(OrchestratorRule orchestrator) {
     return WsClientFactories.getDefault().newClient(HttpConnector.newBuilder()
       .credentials(Server.ADMIN_LOGIN, Server.ADMIN_PASSWORD)
       .url(orchestrator.getServer().getUrl())

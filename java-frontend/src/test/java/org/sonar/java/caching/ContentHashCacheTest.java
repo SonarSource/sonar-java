@@ -33,10 +33,9 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.testfixtures.log.LogAndArguments;
-import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
+import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +47,7 @@ import static org.mockito.Mockito.when;
 class ContentHashCacheTest {
 
   @RegisterExtension
-  LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   private final File file = new File("src/test/files/api/JavaFileScannerContext.java");
   private final InputFile inputFile = TestUtils.inputFile(file.getAbsoluteFile().getAbsolutePath(), file, InputFile.Type.TEST);
@@ -59,8 +58,7 @@ class ContentHashCacheTest {
     ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSonarComponentsTester()));
     Assertions.assertTrue(contentHashCache.hasSameHashCached(inputFile));
 
-    List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
-    assertThat(logs).
+    assertThat(logTester.logs(Level.TRACE)).
       contains("Reading cache for the file " + inputFile.key(),
         "Copying cache from previous for file " + inputFile.key());
   }
@@ -80,7 +78,7 @@ class ContentHashCacheTest {
     logTester.setLevel(level);
     ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSensorContextTesterWithEmptyCache(true)));
     Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile));
-    return logTester.getLogs(level).stream().map(LogAndArguments::getFormattedMsg).toList();
+    return logTester.logs(level);
   }
 
   @Test
@@ -92,8 +90,7 @@ class ContentHashCacheTest {
     ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSensorContextTesterWithEmptyCache(false)));
     Assertions.assertTrue(contentHashCache.hasSameHashCached(inputFile1));
 
-    List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
-    assertThat(logs).
+    assertThat(logTester.logs(Level.TRACE)).
       contains("Cache is disabled. File status is: " + inputFile1.status() + ". File can be skipped.");
   }
 
@@ -105,8 +102,7 @@ class ContentHashCacheTest {
     ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(getSensorContextTesterWithEmptyCache(false)));
     Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile1));
 
-    List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
-    assertThat(logs).
+    assertThat(logTester.logs(Level.TRACE)).
       contains("Cache is disabled. File status is: " + inputFile1.status() + ". File can't be skipped.");
   }
 
@@ -117,8 +113,7 @@ class ContentHashCacheTest {
     contentHashCache.hasSameHashCached(inputFile);
     Assertions.assertTrue(contentHashCache.writeToCache(inputFile));
 
-    List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
-    assertThat(logs).
+    assertThat(logTester.logs(Level.TRACE)).
       contains("Writing to the cache for file " + inputFile.key());
   }
 
@@ -136,8 +131,7 @@ class ContentHashCacheTest {
     ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(sensorContext));
     Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile));
 
-    List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
-    assertThat(logs).
+    assertThat(logTester.logs(Level.TRACE)).
       contains("Reading cache for the file " + inputFile.key(),
         "Writing to the cache for file " + inputFile.key());
   }
@@ -161,8 +155,7 @@ class ContentHashCacheTest {
     ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(sensorContext));
     Assertions.assertFalse(contentHashCache.hasSameHashCached(inputFile1));
 
-    List<String> logs = logTester.getLogs(Level.WARN).stream().map(LogAndArguments::getFormattedMsg).toList();
-    assertThat(logs).
+    assertThat(logTester.logs(Level.WARN)).
       contains("Failed to compute content hash for file " + inputFile1.key());
   }
 
@@ -204,7 +197,7 @@ class ContentHashCacheTest {
       FileHashingUtils.inputFileContentHash(file.getPath()));
     ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(sensorContext));
     Assertions.assertFalse(contentHashCache.writeToCache(inputFile));
-    return logTester.getLogs(level).stream().map(LogAndArguments::getFormattedMsg).toList();
+    return logTester.logs(level);
   }
 
   @Test
@@ -222,8 +215,7 @@ class ContentHashCacheTest {
     ContentHashCache contentHashCache = new ContentHashCache(mockSonarComponents(sensorContext));
     Assertions.assertFalse(contentHashCache.writeToCache(inputFile1));
 
-    List<String> logs = logTester.getLogs(Level.WARN).stream().map(LogAndArguments::getFormattedMsg).toList();
-    assertThat(logs).
+    assertThat(logTester.logs(Level.WARN)).
       contains("Failed to compute content hash for file " + inputFile1.key());
   }
 
@@ -242,8 +234,7 @@ class ContentHashCacheTest {
     InputFile inputFile1 = mock(InputFile.class);
     assertThat(contentHashCache.contains(inputFile1)).isFalse();
 
-    List<String> logs = logTester.getLogs(Level.TRACE).stream().map(LogAndArguments::getFormattedMsg).toList();
-    assertThat(logs).
+    assertThat(logTester.logs(Level.TRACE)).
       contains("Cannot lookup cached hashes when the cache is disabled (null).");
   }
 
