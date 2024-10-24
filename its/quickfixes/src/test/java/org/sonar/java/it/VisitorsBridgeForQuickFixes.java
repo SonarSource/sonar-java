@@ -21,21 +21,17 @@ package org.sonar.java.it;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.ModuleScannerContext;
@@ -50,17 +46,6 @@ public class VisitorsBridgeForQuickFixes extends VisitorsBridge {
   private JavaFileScannerContextForTests testContext;
   private JavaFileScannerContextForTests moduleContext;
   private boolean enableSemantic = true;
-
-
-  @VisibleForTesting
-  public VisitorsBridgeForQuickFixes(JavaFileScanner visitor, SonarComponents sonarComponents) {
-    this(Collections.singletonList(visitor), Collections.emptyList(), sonarComponents, new JavaVersionImpl());
-  }
-
-  public VisitorsBridgeForQuickFixes(Iterable<? extends JavaCheck> visitors, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
-    super(visitors, Collections.emptyList(), sonarComponents, javaVersion);
-    enableSemantic = false;
-  }
 
   public VisitorsBridgeForQuickFixes(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
     super(visitors, projectClasspath, sonarComponents, javaVersion);

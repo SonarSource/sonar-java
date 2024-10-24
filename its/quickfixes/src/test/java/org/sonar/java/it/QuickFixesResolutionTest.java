@@ -48,7 +48,7 @@ public class QuickFixesResolutionTest {
   public static TemporaryFolder tmpProjectClone = new TemporaryFolder();
 
   @Test
-  public void checkRspecMapping() throws IOException {
+  public void checkRspecMapping() {
     List<String> actualRulesWithQuickfixImplementation = QuickFixTestUtils.RULE_KEYS_IMPLEMENTING_QUICKFIXES;
     List<String> ruleWithQuickfixMetadata = QuickFixTestUtils.RULE_KEYS_WITH_QUICKFIX_METADATA;
     assertThat(actualRulesWithQuickfixImplementation)

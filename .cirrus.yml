@@ -189,7 +189,7 @@ quickfixes_task:
   eks_container:
     <<: *CONTAINER_DEFINITION
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j21-latest
-    cpu: 4
+    cpu: 1
     memory: 2G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
@@ -199,7 +199,7 @@ quickfixes_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/quickfixes
-    - mvn package -Pit-quickfixes
+    - mvn verify -B -Pit-quickfixes
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_task:

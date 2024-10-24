@@ -2,18 +2,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>java-its</artifactId>
-    <version>8.1.0-SNAPSHOT</version>
+    <version>8.6.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>it-java-quickfixes</artifactId>
 
   <name>SonarQube Java :: ITs :: Quickfixes Resolution</name>
   <inceptionYear>2024</inceptionYear>
+
+  <properties>
+    <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -67,7 +71,7 @@
       <version>10.3.0.1951</version>
       <scope>test</scope>
     </dependency>
-        <dependency>
+    <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>
       <artifactId>sonar-plugin-api-test-fixtures</artifactId>
       <scope>test</scope>
@@ -102,7 +106,7 @@
       <artifactId>java-checks-testkit</artifactId>
       <version>${project.version}</version>
     </dependency>
-      <dependency>
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
@@ -135,7 +139,7 @@
                       <includes>
                         <include>test-classpath.txt</include>
                       </includes>
-                      </resource>
+                    </resource>
                   </resources>
                 </configuration>
               </execution>
@@ -145,7 +149,6 @@
       </build>
     </profile>
   </profiles>
-
 
 
 </project>

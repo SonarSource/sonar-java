@@ -62,7 +62,7 @@
     <module>java-jsp</module>
     <module>its</module>
     <module>docs</module>
-    <module>java-checks-common</module><module>its/quickfixes</module>
+    <module>java-checks-common</module>
   </modules>
 
   <scm>
