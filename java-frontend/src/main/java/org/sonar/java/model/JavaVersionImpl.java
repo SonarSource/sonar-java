@@ -40,7 +40,7 @@ public class JavaVersionImpl implements JavaVersion {
   private static final int JAVA_17 = 17;
   private static final int JAVA_18 = 18;
   private static final int JAVA_19 = 19;
-  private static final int JAVA_20 = 21;
+  private static final int JAVA_20 = 20;
   private static final int JAVA_21 = 21;
   private static final int JAVA_22 = 22;
   public static final int MAX_SUPPORTED = JAVA_22;
