@@ -88,6 +88,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -557,6 +558,36 @@ class JParserSemanticTest {
       assertThat(caseLabel.colonOrArrowToken().text()).isEqualTo("->");
       assertThat(caseLabel.expressions()).hasSize(2);
     }
+  }
+
+  @Test
+  void switch_expression_with_yield_of_unknown_identifier_without_default_clause() {
+    SwitchExpressionTreeImpl switchExpression = (SwitchExpressionTreeImpl) expression("switch (unknownIdentifier) { case A -> 0; case B -> 1; }");
+    assertThat(switchExpression.expression().symbolType().isUnknown()).isTrue();
+    // the expression type of the full switch expression the should have been int or unknown
+    // instead of java.lang.Object, it is probably a limitation in the JDT parser when it face a missing default clause error
+    assertThat(switchExpression.symbolType().isUnknown()).isFalse();
+    assertThat(switchExpression.symbolType().fullyQualifiedName()).isEqualTo("java.lang.Object");
+    assertThat(switchExpression.cases().get(0).body().get(0)).isInstanceOf(YieldStatementTree.class);
+  }
+
+  @Test
+  void switch_expression_of_unknown_identifier_without_default_clause() {
+    SwitchExpressionTreeImpl switchExpression = (SwitchExpressionTreeImpl) expression("switch (unknownIdentifier) { case A: return 0; case B: return 1; }");
+    assertThat(switchExpression.expression().symbolType().isUnknown()).isTrue();
+    assertThat(switchExpression.symbolType().isUnknown()).isTrue();
+    assertThat(switchExpression.cases().get(0).body().get(0)).isInstanceOf(ReturnStatementTree.class);
+  }
+
+  @Test
+  void switch_expression_of_enum_without_default_clause() {
+    CompilationUnitTree cu = test("class C { Object m(java.time.DayOfWeek x) { return switch (x) { case MONDAY: return 0; case TUESDAY: return 1; } ; } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+    SwitchExpressionTreeImpl switchExpression = (SwitchExpressionTreeImpl) s.expression();
+    assertThat(switchExpression.expression().symbolType().isUnknown()).isFalse();
+    assertThat(switchExpression.symbolType().isUnknown()).isTrue();
   }
 
   /**

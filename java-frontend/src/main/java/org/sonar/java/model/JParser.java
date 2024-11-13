@@ -258,7 +258,19 @@ public class JParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(JParser.class);
 
-  private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> (error.getID() & IProblem.Syntax) != 0;
+  private static final Set<Integer> WRONGLY_CATEGORIZED_AS_SYNTAX_ERROR = Set.of(
+    // Accept missing default clause, it may be due to missing semantic information of the switch expression,
+    // in this case, an enum fully covered with the switch cases will be seen as something that is not an enum
+    // when it is unknown, and the parser will wrongly consider the missing default clause as a syntax error.
+    IProblem.SwitchExpressionsYieldMissingDefaultCase,
+    // Accept missing default clause, it may be due the switch expression being an enum from a wrong dependency.
+    // In this case, the parser will wrongly consider the missing default clause as a syntax error.
+    IProblem.SwitchExpressionsYieldMissingEnumConstantCase
+  );
+
+  private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> ((error.getID() & IProblem.Syntax) != 0) &&
+    !WRONGLY_CATEGORIZED_AS_SYNTAX_ERROR.contains(error.getID());
+
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
 
   /**
