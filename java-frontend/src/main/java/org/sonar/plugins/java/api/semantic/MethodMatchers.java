@@ -43,7 +43,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
  *      <li> {@link TypeBuilder#ofSubTypes(String...)} </li>
  *      <li> {@link TypeBuilder#ofTypes(String...)} </li>
  *      <li> {@link TypeBuilder#ofType(Predicate<Type>)} </li>
- *      <li> {@link TypeBuilder#ofAnyType()}          // same as ofType(type -> true) </li>
+ *      <li> {@link TypeBuilder#ofAnyType()} {@code // same as ofType(type -> true)} </li>
  *   </ul>
  *  </li>
  *  <li> a method name
@@ -51,7 +51,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
  *    <li> {@link NameBuilder#names(String...)} </li>
  *    <li> {@link NameBuilder#constructor()} </li>
  *    <li> {@link NameBuilder#name(Predicate<String>)} </li>
- *    <li> {@link NameBuilder#anyName()}                    // same as name(name -> true) </li>
+ *    <li> {@link NameBuilder#anyName()} {@code // same as name(name -> true)} </li>
  *   </ul>
  *  </li>
  *  <li>a list of parameters, 1 or more call to:
@@ -61,34 +61,46 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
  *     <li> {@link ParametersBuilder#addWithoutParametersMatcher()} </li>
  *     <li> {@link ParametersBuilder#addParametersMatcher(String...)} </li>
  *     <li> {@link ParametersBuilder#addParametersMatcher(Predicate<List<Type>>)} </li>
- *     <li> {@link ParametersBuilder#withAnyParameters()}          // same as addParametersMatcher((List<Type> parameters) -> true) </li>
+ *     <li> {@link ParametersBuilder#withAnyParameters()} {@code // same as addParametersMatcher((List<Type> parameters) -> true)} </li>
  *   </ul>
  *  </li>
  * </ul>
  * The matcher will return true only when the three predicates are respected.
  * <p>
  * Examples:
- * <pre>
- *- match method "a" and "b" from any type, and without parameters:
- *    MethodMatchers.create().ofAnyType().names("a", "b").addWithoutParametersMatcher().build();
- *
- *- match method "a" and "b" from (subtype) of A, and "b" and "c" from B, with any parameters:
- *    MethodMatchers.or(
+ * <p>
+ * <ul>
+ *  <li>match method "a" and "b" from any type, and without parameters:
+ *      {@code MethodMatchers.create().ofAnyType().names("a", "b").addWithoutParametersMatcher().build();}
+ *  </li>
+ *  <li>match method "a" and "b" from (subtype) of A, and "b" and "c" from B, with any parameters:
+ *    <pre>
+ *      MethodMatchers.or(
  *      MethodMatchers.create().ofSubTypes("A").names("a", "b").withAnyParameters().build(),
  *      MethodMatchers.create().ofSubTypes("B").names("b", "c").withAnyParameters().build());
- *- match method "f" with any type and with:
- *    MethodMatchers.create().ofAnyType().names("f")
- *      - one parameter of type either int or long
- *        .addParametersMatcher("int").addParametersMatcher("long");
- *      - one parameter of type int or one parameter of type long with any other number of parameters
- *        .addParametersMatcher("int").addParametersMatcher(params -> params.size() >= 1 && params.get(0).is("long"));
- *     .build()
- *- match any method with any type, with parameter int, any, int:
- *    MethodMatchers.create().ofAnyType().anyName().addParametersMatcher("int", ANY, "int").build();
- *
- *- match any type AND method name "a" OR "b" AND parameter int OR long:
- *    MethodMatchers.create().ofAnyType().names("a", "b").addParametersMatcher("int").addParametersMatcher("long").build()
- * </pre>
+ *    </pre>
+ *  </li>
+ *  <li>
+ *    match method "f" with any type and with:
+ *    {@code MethodMatchers.create().ofAnyType().names("f")}
+ *    <ul>
+ *      <li>one parameter of type either {@code int} or {@code long}
+ *          {@code .addParametersMatcher("int").addParametersMatcher("long");}
+ *      </li>
+ *      <li>
+ *        one parameter of type {@code int} or one parameter of type {@code long} with any other number of parameters
+ *        {@code .addParametersMatcher("int").addParametersMatcher(params -> params.size() >= 1 &amp;&amp; params.get(0).is("long"));}
+ *      </li>
+ *    </ul>
+ *    {@code .build();}
+ *  </li>
+ *  <li>match any method with any type, with parameter {@code int, any, int}:
+ *      {@code MethodMatchers.create().ofAnyType().anyName().addParametersMatcher("int", ANY, "int").build();}
+ *  </li>
+ *  <li>match any type AND method name {@code a} OR {@code b} AND parameter {@code int} OR {@code long}:
+ *      {@code MethodMatchers.create().ofAnyType().names("a", "b").addParametersMatcher("int").addParametersMatcher("long").build();}
+ *  </li>
+ * </ul>
  */
 @Beta
 public interface MethodMatchers {
