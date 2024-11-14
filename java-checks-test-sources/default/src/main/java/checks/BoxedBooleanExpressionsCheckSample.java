@@ -1,5 +1,7 @@
 package checks;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -725,4 +727,52 @@ class BoxedBooleanExpressionsCheckSample {
     }
   }
 
+  // Allow suppressing warnings caused by generic parameters,
+  // see SONARJAVA-5184.
+  public void lambdaParameterAnnotations() {
+    List<Boolean> xs = new ArrayList<>();
+    xs.add(true);
+
+    xs.forEach(b -> {
+      if (b) { // Noncompliant
+        foo();
+      } else {
+        bar();
+      }
+    });
+
+    xs.forEach((Boolean b) -> {
+      if (b) { // Noncompliant
+        foo();
+      } else {
+        bar();
+      }
+    });
+
+    xs.forEach((@NonNull Boolean b) -> {
+      if (b) {
+        foo();
+      } else {
+        bar();
+      }
+    });
+
+    // Suppressing warnings on @NonNull Booleans works too and we like it.
+
+    Boolean badBoolean = getSurprizeBoxedBoolean();
+
+    if(badBoolean) { // Noncompliant
+      foo();
+    } else {
+      bar();
+    }
+
+    @NonNull Boolean goodBoolean = getSurprizeBoxedBoolean();
+
+    if(goodBoolean) {
+      foo();
+    } else {
+      bar();
+    }
+  }
 }

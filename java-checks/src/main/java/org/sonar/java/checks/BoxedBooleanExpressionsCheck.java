@@ -217,7 +217,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
 
   @CheckForNull
   private static ExpressionTree findBoxedBoolean(ExpressionTree tree) {
-    if (tree.symbolType().is(BOOLEAN) && !isValidMethodInvocation(tree)) {
+    if (tree.symbolType().is(BOOLEAN) && !isValidMethodInvocation(tree) && !isNonnullIdentifier(tree)) {
       return tree;
     }
     if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
@@ -245,7 +245,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   private static boolean isValidMethodInvocation(ExpressionTree tree) {
     if (tree.is(Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
-      return isOptionalInvocation(mit) || isAnnotatedNonnull(mit);
+      return isOptionalInvocation(mit) || isAnnotatedNonnull(mit.methodSymbol());
     }
     return false;
   }
@@ -254,8 +254,12 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
     return OPTIONAL_OR_ELSE.matches(mit) && !mit.arguments().get(0).is(Kind.NULL_LITERAL);
   }
 
-  private static boolean isAnnotatedNonnull(MethodInvocationTree mit) {
-    return mit.methodSymbol().metadata()
+  private static boolean isNonnullIdentifier(ExpressionTree tree) {
+    return (tree instanceof IdentifierTree it) && isAnnotatedNonnull(it.symbol());
+  }
+
+  private static boolean isAnnotatedNonnull(Symbol symbol) {
+    return symbol.metadata()
       .annotations()
       .stream()
       .map(SymbolMetadata.AnnotationInstance::symbol)
