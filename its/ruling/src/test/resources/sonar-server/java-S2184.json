@@ -1,0 +1,14 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/JwtSerializerTest.java": [
+117
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/DebtCalculatorTest.java": [
+62
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/IssueFieldsSetterTest.java": [
+383,
+384,
+398,
+413
+]
+}

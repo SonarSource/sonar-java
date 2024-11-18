@@ -175,5 +175,5 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/usertoken/ws/RevokeActionTest.java": [
 93
-],
+]
 }

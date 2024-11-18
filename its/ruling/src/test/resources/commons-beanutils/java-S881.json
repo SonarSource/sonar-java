@@ -8,4 +8,25 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/RowSetDynaClass.java": [
 287
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java": [
+113,
+160,
+243
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
+215
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java": [
+107,
+112
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
+121,
+166,
+241
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
+481,
+486
+]
 }

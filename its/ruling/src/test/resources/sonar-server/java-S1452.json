@@ -5,4 +5,12 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewCoverageMeasuresStep.java": [
 131
 ],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/index/ComponentIndexTest.java": [
+100,
+100,
+100,
+104,
+104,
+104
+]
 }

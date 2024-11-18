@@ -1,0 +1,11 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/web/MasterServletFilterTest.java": [
+59,
+158
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/startup/RegisterServletFiltersTest.java": [
+36,
+42,
+50
+]
+}

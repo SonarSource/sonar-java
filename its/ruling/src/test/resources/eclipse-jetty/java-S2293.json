@@ -15,6 +15,9 @@
 52,
 285
 ],
+"org.eclipse.jetty:jetty-project:jetty-jmx/src/test/java/com/acme/DerivedManaged.java": [
+33
+],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ScopedHandler.java": [
 104
 ],
@@ -23,6 +26,13 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java": [
 338
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java": [
+387
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java": [
+112,
+165
 ],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayUtil.java": [
 142,
@@ -63,6 +73,47 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Sweeper.java": [
 92
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java": [
+133,
+239,
+362,
+403,
+637,
+658,
+679,
+701,
+770,
+793,
+812,
+843,
+947,
+988,
+1093,
+1179,
+1199,
+1345,
+1403,
+1464,
+1496,
+1500,
+1553,
+1614,
+1673,
+1735,
+1809
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/MultiMapTest.java": [
+119,
+199,
+225,
+381
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java": [
+52,
+53,
+145,
+225
 ],
 "org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
 61,

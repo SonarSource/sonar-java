@@ -6,4 +6,19 @@
 298,
 310
 ],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorCloseTestBase.java": [
+186,
+201
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java": [
+292,
+321,
+368
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/InclusiveByteRangeTest.java": [
+39,
+66,
+77,
+274
+]
 }

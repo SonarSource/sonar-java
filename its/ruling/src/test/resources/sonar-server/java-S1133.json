@@ -26,4 +26,14 @@
 119,
 143
 ],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileTesting.java": [
+33,
+46,
+59,
+67,
+75
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/ws/WsTester.java": [
+58
+]
 }

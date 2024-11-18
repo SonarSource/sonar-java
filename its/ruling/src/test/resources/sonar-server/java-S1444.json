@@ -2,4 +2,49 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java": [
 44
 ],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/batch/ProjectDataLoaderMediumTest.java": [
+64
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyClearCacheRequestBuilderTest.java": [
+37
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyClusterHealthRequestBuilderTest.java": [
+39
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyClusterStateRequestBuilderTest.java": [
+37
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyClusterStatsRequestBuilderTest.java": [
+37
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyCreateIndexRequestBuilderTest.java": [
+38
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyDeleteRequestBuilderTest.java": [
+36
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyNodesStatsRequestBuilderTest.java": [
+37
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/IssueServiceMediumTest.java": [
+62
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/ws/SearchActionComponentsMediumTest.java": [
+75
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/ws/SearchActionMediumTest.java": [
+77
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileComparisonMediumTest.java": [
+48
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/CompareActionMediumTest.java": [
+53
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java": [
+75
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/ws/ShowActionMediumTest.java": [
+61
+]
 }

@@ -1,0 +1,11 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/FakeBasicIdentityProvider.java": [
+24
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/FakeOAuth2IdentityProvider.java": [
+24
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/OAuth2CallbackFilterTest.java": [
+222
+]
+}

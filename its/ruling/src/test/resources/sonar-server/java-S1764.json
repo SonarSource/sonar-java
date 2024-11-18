@@ -1,0 +1,20 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/ce/queue/CeTaskTest.java": [
+142
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/notification/NotificationTest.java": [
+68
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/QProfileReferenceTest.java": [
+179,
+196
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/search/FacetValueTest.java": [
+31,
+40
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/usergroups/ws/GroupWsRefTest.java": [
+55,
+63
+]
+}

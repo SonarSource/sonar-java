@@ -6,4 +6,43 @@
 1133,
 1145
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanMapTestCase.java": [
+212,
+230,
+279
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPropertyValueChangeClosureTestCase.java": [
+30,
+31
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicateTestCase.java": [
+30,
+31
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanToPropertyValueTransformerTestCase.java": [
+31,
+32
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConstructorUtilsTestCase.java": [
+86,
+89,
+89,
+100,
+104,
+104,
+138,
+160,
+198,
+203,
+203,
+207
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MethodUtilsTestCase.java": [
+255,
+256,
+256,
+273,
+274,
+274
+]
 }

@@ -5,4 +5,10 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/RepositoriesAction.java": [
 89
 ],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/duplication/ws/DuplicationsParserTest.java": [
+238
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/ws/BulkChangeActionTest.java": [
+472
+]
 }

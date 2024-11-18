@@ -1,0 +1,31 @@
+{
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConstructorUtilsTestCase.java": [
+79,
+85,
+109,
+118,
+130,
+136,
+144,
+159,
+168,
+179,
+188,
+197,
+206,
+219,
+224,
+229,
+236,
+242,
+250,
+257,
+264
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/MemoryTestCase.java": [
+99,
+121,
+185,
+221
+]
+}

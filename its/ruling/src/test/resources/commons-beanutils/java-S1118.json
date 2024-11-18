@@ -17,4 +17,25 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtils.java": [
 32
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/other/Jira18BeanFactory.java": [
+29
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/other/Jira273BeanFactory.java": [
+25
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/other/Jira492IndexedListsSupport.java": [
+34
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/other/Jira61BeanFactory.java": [
+28
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ConverterTestSuite.java": [
+31
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertTestSuite.java": [
+41
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/priv/PrivateBeanFactory.java": [
+27
+]
 }

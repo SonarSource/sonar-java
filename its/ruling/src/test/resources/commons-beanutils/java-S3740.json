@@ -43,4 +43,9 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java": [
 500
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPredicateTestCase.java": [
+37,
+44,
+44
+]
 }

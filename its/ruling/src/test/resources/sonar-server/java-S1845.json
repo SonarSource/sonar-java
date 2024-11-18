@@ -1,0 +1,18 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/CookiesTest.java": [
+88
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/SsoAuthenticatorTest.java": [
+96,
+97
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/index/ComponentIndexTest.java": [
+151
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportComputeMeasureVariationsStepTest.java": [
+79
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsComputeMeasureVariationsStepTest.java": [
+83
+]
+}

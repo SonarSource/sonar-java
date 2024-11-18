@@ -3,4 +3,28 @@
 201,
 207
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/A.java": [
+32
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/AbstractChild.java": [
+27,
+33
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/AbstractParent.java": [
+27
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ExtendMapBean.java": [
+35,
+40
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+1256,
+1262,
+4062,
+4097,
+4210
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java": [
+441
+]
 }

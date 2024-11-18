@@ -1,0 +1,85 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ws/SearchActionTest.java": [
+87
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCreationDateCalculatorTest.java": [
+52,
+54
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/PersistIssuesStepTest.java": [
+72
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/AssignActionTest.java": [
+61
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/IssueServiceMediumTest.java": [
+70
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/measure/ws/SearchActionTest.java": [
+86
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/notification/ws/AddActionTest.java": [
+79,
+80
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/notification/ws/RemoveActionTest.java": [
+76,
+78
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/ws/GroupsActionTest.java": [
+53
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/ws/template/ApplyTemplateActionTest.java": [
+60
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/ws/template/BulkApplyTemplateActionTest.java": [
+60
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/ws/UpgradesActionTest.java": [
+51
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/plugins/UpdateCenterMatrixFactoryTest.java": [
+34
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/project/ws/IndexActionTest.java": [
+58
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/projectlink/ws/CreateActionTest.java": [
+74
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/projectlink/ws/DeleteActionTest.java": [
+64
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/projectlink/ws/SearchActionTest.java": [
+73
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualitygate/ws/DeselectActionTest.java": [
+63
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualitygate/ws/SelectActionTest.java": [
+58
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileExportersTest.java": [
+79
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexerTest.java": [
+62
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/ChangelogActionDatabaseTest.java": [
+58,
+59,
+61
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/CompareActionTest.java": [
+44
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/InheritanceActionTest.java": [
+79,
+85
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/SetDefaultActionTest.java": [
+61,
+63,
+65
+]
+}

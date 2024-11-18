@@ -96,5 +96,11 @@
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/log/Slf4jLogger.java": [
 24,
 95
+],
+"org.eclipse.jetty:jetty-project:jetty-xml/src/test/java/org/eclipse/jetty/xml/AnnotatedTestConfiguration.java": [
+32,
+36,
+148,
+155
 ]
 }

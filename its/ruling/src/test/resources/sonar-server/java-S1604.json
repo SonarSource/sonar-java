@@ -6,4 +6,81 @@
 89,
 142
 ],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/container/TaskContainerImplTest.java": [
+64
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/CrawlerDepthLimitTest.java": [
+46,
+52
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/container/ProjectAnalysisTaskContainerPopulatorTest.java": [
+184
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepositoryTest.java": [
+86,
+210
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryImplTest.java": [
+267
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryRule.java": [
+65
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureTest.java": [
+98
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/source/SourceHashRepositoryImplTest.java": [
+83
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/PurgeDatastoresStepTest.java": [
+93,
+111
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportComputationStepsTest.java": [
+42,
+63
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/duplication/ws/DuplicationsParserTest.java": [
+235
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/EsTester.java": [
+168
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/workflow/IssueWorkflowTest.java": [
+259
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/notification/NotificationDaemonTest.java": [
+252
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/db/migration/DatabaseMigrationImplConcurrentAccessTest.java": [
+55
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/CompareActionMediumTest.java": [
+54
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java": [
+118,
+135,
+149,
+183,
+205,
+230,
+265,
+290,
+320,
+356,
+380,
+403
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/RegisterRulesTest.java": [
+252,
+268,
+287,
+299,
+322,
+334
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/util/AbstractStoppableExecutorServiceTest.java": [
+44
+]
 }

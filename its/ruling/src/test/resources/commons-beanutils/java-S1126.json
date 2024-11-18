@@ -8,4 +8,7 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java": [
 929
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
+215
+]
 }

@@ -1,0 +1,17 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/IssueDocTesting.java": [
+32
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/language/LanguageTesting.java": [
+31
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/OrganizationsWsTestSupport.java": [
+25
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/plugins/TestProjectUtils.java": [
+27
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileTesting.java": [
+33
+]
+}

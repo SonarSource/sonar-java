@@ -1,4 +1,27 @@
 {
+"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorFactoryTest.java": [
+53,
+54,
+55,
+56,
+96,
+97,
+98,
+99
+],
+"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorTest.java": [
+49,
+50,
+51,
+52,
+89,
+90,
+91,
+92
+],
+"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONTest.java": [
+276
+],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java": [
 308
 ]

@@ -1,0 +1,14 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/duplication/DuplicateTest.java": [
+37,
+38,
+39
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/notification/NotificationTest.java": [
+66,
+67
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/search/FacetValueTest.java": [
+32
+]
+}

@@ -1179,4 +1179,551 @@
 59,
 61
 ],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/ce/queue/CeQueueImplTest.java": [
+188,
+197
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/app/EmbeddedTomcatTest.java": [
+76
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/app/StartupLogsTest.java": [
+75
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/app/TomcatConnectorsTest.java": [
+85
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/BasicAuthenticatorTest.java": [
+126,
+162,
+176
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/CredentialsAuthenticatorTest.java": [
+93,
+122,
+139,
+156
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/IdentityProviderRepositoryRule.java": [
+41
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/RealmAuthenticatorTest.java": [
+220,
+236,
+253
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/SsoAuthenticatorTest.java": [
+360,
+435
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/event/AuthenticationExceptionMatcher.java": [
+108,
+110,
+119,
+121,
+133,
+138
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/batch/IssuesActionTest.java": [
+318
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/batch/ProjectDataLoaderMediumTest.java": [
+490
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/batch/ProjectDataLoaderTest.java": [
+124
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ws/SuggestionsActionTest.java": [
+713,
+730
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/batch/BatchReportReaderRule.java": [
+63
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/CallRecorderPathAwareVisitor.java": [
+108
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ComponentImplTest.java": [
+100,
+115
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ComponentRootBuilderTest.java": [
+91
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/event/EventRepositoryImplTest.java": [
+70,
+78
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/filemove/MutableMovedFilesRepositoryImplTest.java": [
+73
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/IntSumFormulaTest.java": [
+128
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/LongSumFormulaTest.java": [
+120
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/FillComponentIssuesVisitorRule.java": [
+61
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/RuleRepositoryImplTest.java": [
+126,
+157
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/ScmAccountToUserLoaderTest.java": [
+92
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepositoryTest.java": [
+192,
+239,
+249
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryImplTest.java": [
+117,
+127,
+249,
+296,
+306
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/period/PeriodHolderRule.java": [
+37
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluatorTest.java": [
+68,
+76,
+84
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitorTest.java": [
+396
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoRepositoryImplTest.java": [
+198
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/source/SourceHashRepositoryImplTest.java": [
+97,
+100
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/source/SourceLinesRepositoryImplTest.java": [
+121
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/BuildComponentTreeStepTest.java": [
+321
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ComputeQProfileMeasureStepTest.java": [
+143
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStepTest.java": [
+199
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/PersistMeasuresStepTest.java": [
+236
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/PersistProjectLinksStepTest.java": [
+210
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/step/ComputationStepExecutorTest.java": [
+138
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/debt/DebtModelPluginRepositoryTest.java": [
+93,
+95
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/debt/DebtRulesXMLImporterTest.java": [
+231
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/email/ws/SendActionTest.java": [
+112
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/EsTester.java": [
+114,
+136,
+227
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/IndexDefinitionContextTest.java": [
+46
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/NewIndexTest.java": [
+56
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/RecoveryIndexerTest.java": [
+370
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/SearchOptionsTest.java": [
+79
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/SortingTest.java": [
+131
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyClearCacheRequestBuilderTest.java": [
+80,
+90,
+100
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyClusterHealthRequestBuilderTest.java": [
+73,
+83,
+93
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyClusterStateRequestBuilderTest.java": [
+69,
+79,
+89
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyClusterStatsRequestBuilderTest.java": [
+68,
+78,
+88
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyCreateIndexRequestBuilderTest.java": [
+69,
+79,
+89
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyDeleteRequestBuilderTest.java": [
+64,
+74,
+84
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyFlushRequestBuilderTest.java": [
+65,
+76,
+86,
+96
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyGetRequestBuilderTest.java": [
+72,
+83,
+93,
+103
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyIndexRequestBuilderTest.java": [
+68,
+80,
+91,
+101,
+111
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyIndicesExistsRequestBuilderTest.java": [
+63,
+79,
+89,
+99
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyIndicesStatsRequestBuilderTest.java": [
+66,
+77,
+87,
+97
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyMultiGetRequestBuilderTest.java": [
+79,
+89,
+99
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyPutMappingRequestBuilderTest.java": [
+78,
+89,
+99,
+109
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxyRefreshRequestBuilderTest.java": [
+68,
+79,
+89,
+99
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxySearchRequestBuilderTest.java": [
+68,
+79,
+89,
+99
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/request/ProxySearchScrollRequestBuilderTest.java": [
+74,
+85,
+95,
+105
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/i18n/I18nRule.java": [
+49
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/ActionTest.java": [
+46,
+65
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/CommentActionTest.java": [
+73
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/IssueFieldsSetterTest.java": [
+185
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/IssueQueryFactoryTest.java": [
+298
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/IssueQueryTest.java": [
+97
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/IssuesFinderSortTest.java": [
+202
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/index/IssueIndexTest.java": [
+726,
+744,
+1302
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/index/IssueIndexerTest.java": [
+119
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/workflow/IssueWorkflowTest.java": [
+126,
+217
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/workflow/TransitionTest.java": [
+74,
+84,
+94,
+104
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/ws/SearchActionComponentsMediumTest.java": [
+159
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/notification/email/EmailNotificationChannelTest.java": [
+87,
+182
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/DefaultOrganizationProviderImplTest.java": [
+124,
+126,
+150,
+156,
+174
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/OrganizationCreationImplTest.java": [
+161
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/OrganizationValidationImplTest.java": [
+82,
+97,
+145,
+179,
+208,
+237
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/CreateActionTest.java": [
+621,
+626,
+631
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/UpdateActionTest.java": [
+346,
+351,
+356
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/GroupPermissionChangerTest.java": [
+93,
+323,
+340,
+357
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/ws/AddGroupActionTest.java": [
+379
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/ws/SearchGlobalPermissionsActionTest.java": [
+111
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/ws/template/DeleteTemplateActionTest.java": [
+135,
+156
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/db/EmbeddedDatabaseTest.java": [
+165
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/db/migration/DatabaseMigrationImplConcurrentAccessTest.java": [
+61,
+92
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/monitoring/BaseMonitorMBeanTest.java": [
+56
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/web/requestid/RequestIdFilterTest.java": [
+85,
+87
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/ws/RestartActionTest.java": [
+84,
+86
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/plugins/PluginDownloaderTest.java": [
+175,
+215,
+233
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/plugins/ServerPluginRepositoryTest.java": [
+134,
+222,
+298,
+305
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/project/ws/UpdateVisibilityActionTest.java": [
+158,
+196
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/projectlink/ws/CreateActionTest.java": [
+242
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/projectlink/ws/SearchActionTest.java": [
+230
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualitygate/ws/CreateConditionActionTest.java": [
+167,
+172,
+177
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualitygate/ws/UpdateConditionActionTest.java": [
+175,
+180,
+185
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileBackuperImplTest.java": [
+190,
+203,
+216
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileCopierTest.java": [
+95,
+151,
+167
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileExportersTest.java": [
+134,
+144,
+210,
+225
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/RegisterQualityProfilesMediumTest.java": [
+178
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java": [
+1153
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java": [
+296,
+309
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java": [
+244
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/RestoreActionTest.java": [
+220
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/RestoreBuiltInActionTest.java": [
+57
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/SetDefaultActionTest.java": [
+224
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/DeprecatedRulesDefinitionLoaderTest.java": [
+206
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/RuleCreatorTest.java": [
+220,
+295
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/RuleTagHelperTest.java": [
+67
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/RuleUpdaterTest.java": [
+100,
+518,
+543,
+561,
+579,
+597
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java": [
+935
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/search/BaseDocTest.java": [
+86
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/ThreadLocalSettingsTest.java": [
+267
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/ws/SettingsFinderTest.java": [
+191
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/ws/ValuesActionTest.java": [
+850,
+858,
+866
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/source/ws/HashActionTest.java": [
+93
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/tester/ServerTester.java": [
+172,
+206,
+241,
+335
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/tester/UserSessionRule.java": [
+166
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/DoPrivilegedTest.java": [
+70
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/SecurityRealmFactoryTest.java": [
+70,
+104,
+127
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/ServerUserSessionTest.java": [
+531
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/UserSessionFilterTest.java": [
+117,
+143,
+160,
+173,
+199,
+216,
+229
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/UserUpdaterTest.java": [
+401
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/util/ObjectInputStreamIteratorTest.java": [
+52,
+71
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/util/RubyUtilsTest.java": [
+57,
+63
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/util/TypeValidationsTest.java": [
+65
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/util/cache/DiskCacheTest.java": [
+60,
+76
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/util/cache/MemoryCacheTest.java": [
+66
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/ws/DumbResponse.java": [
+129
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/ws/RemovedWebServiceHandlerTest.java": [
+46
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/ws/TestRequest.java": [
+135
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/ws/TestResponse.java": [
+47
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/ws/WebServiceEngineTest.java": [
+329,
+338,
+380
+]
 }

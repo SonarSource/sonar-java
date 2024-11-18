@@ -11,4 +11,40 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java": [
 0
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicateTestCase.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanMapDecoratorTestCase.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaBeanTestCase.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaClassTestCase.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaMapTestCase.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestCase.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PassTestException.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira493TestCase.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira509TestCase.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/CalendarConverterTestCase.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DateConverterTestCase.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/SqlTimeConverterTestCase.java": [
+0
+]
 }

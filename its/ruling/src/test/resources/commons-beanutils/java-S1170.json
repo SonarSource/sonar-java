@@ -1,0 +1,10 @@
+{
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java": [
+464
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/priv/PrivateBean.java": [
+56,
+68,
+92
+]
+}

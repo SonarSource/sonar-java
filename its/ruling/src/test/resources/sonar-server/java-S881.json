@@ -1,0 +1,11 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/batch/ProjectDataLoaderTest.java": [
+109
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStepTest.java": [
+477
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/project/ws/UpdateVisibilityActionTest.java": [
+659
+]
+}

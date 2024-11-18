@@ -1,5 +1,11 @@
 {
+"org.eclipse.jetty:jetty-project:jetty-jmx/src/test/java/com/acme/Managed.java": [
+27
+],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Fields.java": [
 42
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/thread/EatWhatYouKillTest.java": [
+128
 ]
 }
