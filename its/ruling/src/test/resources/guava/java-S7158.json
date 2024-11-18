@@ -1,0 +1,28 @@
+{
+"com.google.guava:guava:src/com/google/common/base/Splitter.java": [
+176
+],
+"com.google.guava:guava:src/com/google/common/base/Strings.java": [
+78
+],
+"com.google.guava:guava:src/com/google/common/io/Files.java": [
+730
+],
+"com.google.guava:guava:src/com/google/common/net/InetAddresses.java": [
+233,
+247,
+250
+],
+"com.google.guava:guava:src/com/google/common/net/InternetDomainName.java": [
+259
+],
+"com.google.guava:guava:src/com/google/common/primitives/ParseRequest.java": [
+36
+],
+"com.google.guava:guava:src/com/google/common/primitives/UnsignedLongs.java": [
+304
+],
+"com.google.guava:guava:src/com/google/thirdparty/publicsuffix/TrieParser.java": [
+85
+]
+}
