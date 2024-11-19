@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.List;
-
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -47,13 +46,13 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     .addWithoutParametersMatcher()
     .build();
 
-  private static final Tree.Kind[] TARGETED_BINARY_OPERATOR_TREES = {
-    Tree.Kind.EQUAL_TO,
-    Tree.Kind.NOT_EQUAL_TO,
-    Tree.Kind.LESS_THAN,
-    Tree.Kind.LESS_THAN_OR_EQUAL_TO,
-    Tree.Kind.GREATER_THAN,
-    Tree.Kind.GREATER_THAN_OR_EQUAL_TO
+  private static final Kind[] TARGETED_BINARY_OPERATOR_TREES = {
+    Kind.EQUAL_TO,
+    Kind.NOT_EQUAL_TO,
+    Kind.LESS_THAN,
+    Kind.LESS_THAN_OR_EQUAL_TO,
+    Kind.GREATER_THAN,
+    Kind.GREATER_THAN_OR_EQUAL_TO
   };
 
   // `String.isEmpty()` is available since Java 6.
@@ -79,33 +78,29 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     boolean rightIsZero = LiteralUtils.isZero(right);
     boolean rightIsOne = LiteralUtils.isOne(right);
 
-    if ((isLengthCall(left) || isLengthCall(right))
-      && (isComparisonOnRight(bet, rightIsZero, rightIsOne) || isComparisonOnLeft(leftIsZero, leftIsOne, bet))) {
+    if ((isLengthCall(left) && isComparisonOnRight(bet, rightIsZero, rightIsOne))
+      || (isLengthCall(right) && isComparisonOnLeft(leftIsZero, leftIsOne, bet))) {
       reportIssue(tree, "Use isEmpty() to check whether a string is empty or not.");
     }
   }
 
   private static boolean isLengthCall(ExpressionTree tree) {
-    return tree.is(Tree.Kind.METHOD_INVOCATION) && LENGTH_METHOD.matches((MethodInvocationTree) tree);
+    return tree instanceof MethodInvocationTree mit && LENGTH_METHOD.matches(mit);
   }
 
-  /** Check the comparison for <pre>length() OP VALUE</pre>. */
+  /**
+   * Check the comparison for <pre>length() OP VALUE</pre>.
+   */
   private static boolean isComparisonOnRight(BinaryExpressionTree tree, boolean rightIsZero, boolean rightIsOne) {
-    return (tree.is(Tree.Kind.EQUAL_TO) && rightIsZero)
-      || (tree.is(Tree.Kind.LESS_THAN_OR_EQUAL_TO) && rightIsZero)
-      || (tree.is(Tree.Kind.LESS_THAN) && rightIsOne)
-      || (tree.is(Tree.Kind.NOT_EQUAL_TO) && rightIsZero)
-      || (tree.is(Tree.Kind.GREATER_THAN) && rightIsZero)
-      || (tree.is(Tree.Kind.GREATER_THAN_OR_EQUAL_TO) && rightIsOne);
+    return (tree.is(Kind.EQUAL_TO, Kind.LESS_THAN_OR_EQUAL_TO, Kind.NOT_EQUAL_TO, Kind.GREATER_THAN) && rightIsZero)
+      || (tree.is(Kind.LESS_THAN, Kind.GREATER_THAN_OR_EQUAL_TO) && rightIsOne);
   }
 
-  /** Check the comparison for <pre>VALUE OP length()</pre>. */
+  /**
+   * Check the comparison for <pre>VALUE OP length()</pre>.
+   */
   private static boolean isComparisonOnLeft(boolean leftIsZero, boolean leftIsOne, BinaryExpressionTree tree) {
-    return (leftIsZero && tree.is(Tree.Kind.EQUAL_TO))
-      || (leftIsZero && tree.is(Tree.Kind.GREATER_THAN_OR_EQUAL_TO))
-      || (leftIsOne && tree.is(Tree.Kind.GREATER_THAN))
-      || (leftIsZero && tree.is(Tree.Kind.NOT_EQUAL_TO))
-      || (leftIsZero && tree.is(Tree.Kind.LESS_THAN))
-      || (leftIsOne && tree.is(Tree.Kind.LESS_THAN_OR_EQUAL_TO));
+    return (leftIsZero && tree.is(Kind.EQUAL_TO, Kind.GREATER_THAN_OR_EQUAL_TO, Kind.NOT_EQUAL_TO, Kind.LESS_THAN))
+      || (leftIsOne && tree.is(Kind.GREATER_THAN, Kind.LESS_THAN_OR_EQUAL_TO));
   }
 }

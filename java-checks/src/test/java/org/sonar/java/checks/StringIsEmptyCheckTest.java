@@ -33,4 +33,13 @@ class StringIsEmptyCheckTest {
       .withCheck(new StringIsEmptyCheck())
       .verifyIssues();
   }
+
+  @Test
+  void testOlderJavaVersion() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringIsEmptyCheckSample.java"))
+      .withCheck(new StringIsEmptyCheck())
+      .withJavaVersion(5)
+      .verifyNoIssues();
+  }
 }
