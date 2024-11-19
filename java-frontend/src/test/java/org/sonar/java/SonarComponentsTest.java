@@ -227,6 +227,33 @@ class SonarComponentsTest {
   }
 
   @Test
+  void verify_registration_logging_doesnt_trigger_on_info_level() {
+    logTester.setLevel(Level.INFO);
+
+    JavaCheck expectedCheck = new CustomCheck();
+    CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
+    SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, null, null,
+      null, this.checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
+    sonarComponents.setSensorContext(context);
+
+    assertThat(logTester.getLogs()).isEmpty();
+  }
+
+  @Test
+  void verify_registration_logging() {
+    logTester.setLevel(Level.DEBUG);
+
+    JavaCheck expectedCheck = new CustomCheck();
+    CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
+    SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, null, null,
+      null, this.checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
+    sonarComponents.setSensorContext(context);
+
+    assertThat(logTester.getLogs()).hasSize(2);
+    assertThat(logTester.getLogs().get(0).getRawMsg()).isEqualTo("Registered check: [{}]");
+  }
+
+  @Test
   void creation_of_custom_checks() {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
