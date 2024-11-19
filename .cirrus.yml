@@ -148,7 +148,7 @@ plugin_qa_task:
       orchestrator_LATEST_RELEASE_cache:
         <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
     - env:
-        SQ_VERSION: DEV
+        SQ_VERSION: DEV[10.8]
       orchestrator_DEV_cache:
         <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
 
