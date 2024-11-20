@@ -255,7 +255,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   }
 
   private static boolean isNonnullIdentifier(ExpressionTree tree) {
-    return (tree instanceof IdentifierTree it) && isAnnotatedNonnull(it.symbol());
+    return tree instanceof IdentifierTree it && isAnnotatedNonnull(it.symbol());
   }
 
   private static boolean isAnnotatedNonnull(Symbol symbol) {
