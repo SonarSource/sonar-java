@@ -1,0 +1,24 @@
+<h2>Why is this an issue?</h2>
+<p>Calling <code>String.isEmpty()</code> clearly communicates the code’s intention, which is to test if the string is empty. Using
+<code>String.length() == 0</code> is less direct and makes the code less readable.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+if ("string".length() == 0) { /* … */ } // Noncompliant
+
+if ("string".length() &gt; 0) { /* … */ } // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+if ("string".isEmpty()){ /* … */ }
+
+if (!"string".isEmpty()){ /* … */ }
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Java Documentation - <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/String.html#isEmpty()">java.lang.String.isEmpty() method</a>
+  </li>
+</ul>
+
