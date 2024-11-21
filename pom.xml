@@ -22,8 +22,8 @@
   </organization>
   <licenses>
     <license>
-      <name>GNU LGPL 3</name>
-      <url>http://www.gnu.org/licenses/lgpl.txt</url>
+      <name>SSALv1</name>
+      <url>https://sonarsource.com/license/ssal/</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
