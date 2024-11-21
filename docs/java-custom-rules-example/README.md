@@ -13,5 +13,5 @@ For more details about how to write custom rules, please refer to the official t
 
 ### License
 
-The [GNU LGPL 3.0](https://www.gnu.org/licenses/lgpl.txt) license of this GitHub repository does not apply in the `java-custom-rules-example` directory.
+The [SSALv1](https://www.sonarsource.com/license/ssal/) license of this GitHub repository does not apply in the `java-custom-rules-example` directory.
 All contents under the `java-custom-rules-example` directory are licensed under the more permissive [MIT No Attribution](LICENSE.txt) license.
