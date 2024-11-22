@@ -29,5 +29,5 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/cache/MemoryCache.java": [
 46
-],
+]
 }
