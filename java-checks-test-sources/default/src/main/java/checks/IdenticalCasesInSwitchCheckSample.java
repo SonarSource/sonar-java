@@ -220,7 +220,7 @@ class IdenticalCasesInSwitchCheckSample {
   static class A extends Parent {};
   static class B extends Parent {};
 
-  // Edge case FP.
+  // Edge case involving variables introduced with `instanceof`.
   // See: https://community.sonarsource.com/t/fp-java-s1871-branch-code-block-is-the-same/130645
   void variablesBoundInInstanceOf() {
     Parent p1 = new A();
@@ -230,17 +230,16 @@ class IdenticalCasesInSwitchCheckSample {
       p2 = new A();
     }
 
+    // No problem when `a` refers to different variables.
     Parent p = null;
     if (p1 instanceof A a) {
-//                         ^[el=+3;ec=5]> 1 {{Original}}
       p = a;
     }
-    else if (p2 instanceof A a) { // Noncompliant {{This branch's code block is the same as the block for the branch on line 234.}}
-//                              ^[el=+3;ec=5]
+    else if (p2 instanceof A a) {
       p = a;
     }
 
-    // Renaming variables fixes the issue.
+    // Variables have different names and identities.
     if (p1 instanceof A a1) {
       p = a1;
     }
