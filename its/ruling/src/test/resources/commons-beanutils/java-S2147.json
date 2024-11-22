@@ -16,4 +16,16 @@
 1481,
 2150
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaBeanTestCase.java": [
+227,
+230,
+449,
+452
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaMapTestCase.java": [
+217,
+220,
+439,
+442
+]
 }

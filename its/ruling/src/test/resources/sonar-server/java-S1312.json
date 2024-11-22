@@ -16,5 +16,5 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/SecurityRealmFactory.java": [
 81
-],
+]
 }

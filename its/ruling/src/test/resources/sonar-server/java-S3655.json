@@ -50,5 +50,5 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/webhook/ws/WebhookDeliveryAction.java": [
 86
-],
+]
 }

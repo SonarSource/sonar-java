@@ -591,5 +591,5 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/ws/WebServicesWs.java": [
 35
-],
+]
 }
