@@ -4,7 +4,7 @@ href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html#jls-4.2.5">Ja
 boolean Values</a>) it will throw a <code>NullPointerException</code> if the value is <code>null</code> (as defined in <a
 href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html#jls-5.1.8">Java Language Specification §5.1.8 Unboxing Conversion</a>).</p>
 <p>It is safer to avoid such conversion altogether and handle the <code>null</code> value explicitly.</p>
-<p>Note, however, that no issues will be raised for Booleans that have already been null-checked.</p>
+<p>Note, however, that no issues will be raised for Booleans that have already been null-checked or are marked <code>@NonNull/@NotNull</code>.</p>
 <h3>Noncompliant code example</h3>
 <pre>
 Boolean b = getBoolean();
@@ -28,6 +28,30 @@ Boolean b = getBoolean();
 if(b != null){
   String test = b ? "test" : "";
 }
+</pre>
+<h3>Exceptions</h3>
+<p>The issue is not raised if the expression is annotated <code>@NonNull</code> / <code>@NotNull</code>. This is useful if a boxed type is an
+instantiation of a generic type parameter and cannot be avoided.</p>
+<pre>
+List&lt;Boolean&gt; list = new ArrayList&lt;&gt;();
+list.add(true);
+list.add(false);
+list.forEach((@NonNull Boolean value) -&gt; {
+  // Compliant
+  if(value) {
+    System.out.println("yes");
+  }
+});
+
+@NonNull Boolean someMethod() { /* ... */ }
+
+// Compliant
+if(someMethod()) { /* ... */ }
+
+@NonNull Boolean boxedNonNull = Boolean.TRUE;
+
+// Compliant
+if(boxedNonNull) { /* ... */ }
 </pre>
 <h2>Resources</h2>
 <ul>
