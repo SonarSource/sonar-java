@@ -224,6 +224,13 @@
     "url": "https://checkstyle.sourceforge.net/checks/coding/avoidnoargumentsuperconstructorcall.html#AvoidNoArgumentSuperConstructorCall"
   },
   {
+    "key": "coding.ConstructorsDeclarationGroupingCheck",
+    "name": "Constructors Declaration Grouping",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://checkstyle.sourceforge.net/checks/coding/constructorsdeclarationgrouping.html#ConstructorsDeclarationGrouping"
+  },
+  {
     "key": "coding.CovariantEqualsCheck",
     "name": "Covariant Equals",
     "type": "CODE_SMELL",
