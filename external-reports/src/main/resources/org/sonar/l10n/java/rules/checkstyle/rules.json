@@ -371,6 +371,13 @@
     "url": "https://checkstyle.sourceforge.net/checks/coding/missingctor.html#MissingCtor"
   },
   {
+    "key": "coding.MissingNullCaseInSwitchCheck",
+    "name": "Missing Null Case In Switch",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://checkstyle.sourceforge.net/checks/coding/missingnullcaseinswitch.html#MissingNullCaseInSwitch"
+  },
+  {
     "key": "coding.MissingSwitchDefaultCheck",
     "name": "Missing Switch Default",
     "type": "CODE_SMELL",
@@ -560,6 +567,20 @@
     "url": "https://checkstyle.sourceforge.net/checks/coding/unnecessarysemicolonintrywithresources.html#UnnecessarySemicolonInTryWithResources"
   },
   {
+    "key": "coding.UnusedCatchParameterShouldBeUnnamedCheck",
+    "name": "Unused Catch Parameter Should Be Unnamed",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://checkstyle.sourceforge.net/checks/coding/unusedcatchparametershouldbeunnamed.html#UnusedCatchParameterShouldBeUnnamed"
+  },
+  {
+    "key": "coding.UnusedLambdaParameterShouldBeUnnamedCheck",
+    "name": "Unused Lambda Parameter Should Be Unnamed",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://checkstyle.sourceforge.net/checks/coding/unusedlambdaparametershouldbeunnamed.html#UnusedLambdaParameterShouldBeUnnamed"
+  },
+  {
     "key": "coding.UnusedLocalVariableCheck",
     "name": "Unused Local Variable",
     "type": "CODE_SMELL",
@@ -572,6 +593,13 @@
     "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://checkstyle.sourceforge.net/checks/coding/variabledeclarationusagedistance.html#VariableDeclarationUsageDistance"
+  },
+  {
+    "key": "coding.WhenShouldBeUsedCheck",
+    "name": "When Should Be Used",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://checkstyle.sourceforge.net/checks/coding/whenshouldbeused.html#WhenShouldBeUsed"
   },
   {
     "key": "design.DesignForExtensionCheck",
@@ -621,6 +649,13 @@
     "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://checkstyle.sourceforge.net/checks/design/onetoplevelclass.html#OneTopLevelClass"
+  },
+  {
+    "key": "design.SealedShouldHavePermitsListCheck",
+    "name": "Sealed Should Have Permits List",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://checkstyle.sourceforge.net/checks/design/sealedshouldhavepermitslist.html#SealedShouldHavePermitsList"
   },
   {
     "key": "design.ThrowsCountCheck",
@@ -747,6 +782,13 @@
     "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://checkstyle.sourceforge.net/checks/javadoc/javadoccontentlocation.html#JavadocContentLocation"
+  },
+  {
+    "key": "javadoc.JavadocLeadingAsteriskAlignCheck",
+    "name": "Javadoc Leading Asterisk Align",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://checkstyle.sourceforge.net/checks/javadoc/javadocleadingasteriskalign.html#JavadocLeadingAsteriskAlign"
   },
   {
     "key": "javadoc.JavadocMethodCheck",
