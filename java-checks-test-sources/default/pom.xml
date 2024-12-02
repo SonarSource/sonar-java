@@ -255,7 +255,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
-      <version>5.3.18</version>
+      <version>6.1.14</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
