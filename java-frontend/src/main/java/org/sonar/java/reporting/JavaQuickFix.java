@@ -92,20 +92,7 @@ public class JavaQuickFix {
       public int compare(JavaTextEdit a, JavaTextEdit b) {
         AnalyzerMessage.TextSpan first = a.getTextSpan();
         AnalyzerMessage.TextSpan second = b.getTextSpan();
-
-        int result = first.startLine - second.startLine;
-        if (result != 0) {
-          return result;
-        }
-        result = first.startCharacter - second.startCharacter;
-        if (result != 0) {
-          return result;
-        }
-        result = first.endLine - second.endLine;
-        if (result != 0) {
-          return result;
-        }
-        return first.endCharacter - second.endCharacter;
+        return first.compareTo(second);
       }
     }
   }
