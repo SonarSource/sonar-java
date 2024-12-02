@@ -131,7 +131,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
       for (int j = i + 1; j < allBranches.size(); j++) {
         StatementTree statement1 = allBranches.get(i);
         StatementTree statement2 = allBranches.get(j);
-        if (SyntacticEquivalence.areEquivalent(statement1, statement2)) {
+        if (SyntacticEquivalence.areEquivalentIncludingSameVariables(statement1, statement2)) {
           duplicates.add(statement2);
           ifElseChain.branches.computeIfAbsent(statement1, k -> new HashSet<>()).add(statement2);
         }
