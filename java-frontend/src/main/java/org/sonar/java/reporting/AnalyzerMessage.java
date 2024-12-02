@@ -84,7 +84,7 @@ public class AnalyzerMessage {
     return cost > 0 ? (double) cost : null;
   }
 
-  public static final class TextSpan {
+  public static final class TextSpan implements Comparable<TextSpan> {
     public final int startLine;
     public final int startCharacter;
     public final int endLine;
@@ -140,6 +140,22 @@ public class AnalyzerMessage {
         && endCharacter == other.endCharacter;
     }
 
+    @Override
+    public int compareTo(TextSpan other) {
+      int result = startLine - other.startLine;
+      if (result != 0) {
+        return result;
+      }
+      result = startCharacter - other.startCharacter;
+      if (result != 0) {
+        return result;
+      }
+      result = endLine - other.endLine;
+      if (result != 0) {
+        return result;
+      }
+      return endCharacter - other.endCharacter;
+    }
   }
 
   public static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {

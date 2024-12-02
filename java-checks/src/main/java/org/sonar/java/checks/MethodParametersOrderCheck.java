@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -71,7 +71,7 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
         List<JavaFileScannerContext.Location> flow = matchingTypesWrongOrder.stream()
           .map(param -> new JavaFileScannerContext.Location("Misplaced Parameter", param))
           .toList();
-        QuickFixHelper.newIssue(context)
+        ((DefaultJavaFileScannerContext) context).newIssue()
           .forRule(this)
           .onTree(methodInvTree.arguments())
           .withMessage("Parameters to %s have the same names but not the same order as the method arguments.", methodInvTree.methodSymbol().name() )
