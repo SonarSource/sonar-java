@@ -1,3 +1,39 @@
+class Reproducer {
+  public void test(boolean cond) {
+    // When performing type inference for the lambda below, in particular its return type, Eclipse JDT will deduce a cyclic type for
+    // java.lang.Record.
+    //
+    // To give some more details:
+    // It will deduce that Record implements the interface `SuperType` defined below.
+    // Probably because of this erroneous deduction, it will further report that Record is a sub-type of itself.
+    var response = forceTypeInferenceForLambda(() -> {
+      if (cond) {
+        return new SubTypeA();
+      } else {
+        return new SubTypeB();
+      }
+    });
+
+    // This will crash DBD due to an infinite recursion on the type hierarchy for the commits before DBD-1268.
+    response.toString();
+  }
+
+  <T> T forceTypeInferenceForLambda(Supplier<T> supplier) {
+    return null;
+  }
+
+  private interface SuperType {
+  }
+
+  // Using records seems to be necessary to trigger the problem
+  private record SubTypeA() implements SuperType {
+  }
+
+  private record SubTypeB() implements SuperType {
+  }
+}
+
+
 class A {
   public enum Fruit {
     APPLE, BANANA, GRAPE
