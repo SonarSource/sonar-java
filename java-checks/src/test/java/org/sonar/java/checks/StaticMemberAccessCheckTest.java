@@ -35,6 +35,14 @@ class StaticMemberAccessCheckTest {
   }
 
   @Test
+  void test_default_package() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("StaticMemberAccessCheckSample.java"))
+      .withCheck(new StaticMemberAccessCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void quick_fixes() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/StaticMemberAccessQuickFixes.java"))
