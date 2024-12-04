@@ -609,7 +609,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.truth.extensions  </groupId>
+      <groupId>com.google.truth.extensions</groupId>
       <artifactId>truth-java8-extension</artifactId>
       <version>0.39</version>
       <scope>provided</scope>
@@ -637,6 +637,12 @@
       <artifactId>rest-assured</artifactId>
       <version>3.0.2</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>spring-mock-mvc</artifactId>
+      <version>4.4.0</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -921,13 +927,13 @@
       <artifactId>aspectjweaver</artifactId>
       <version>1.9.9.1</version>
       <scope>provided</scope>
-  </dependency>
-  <dependency>
-    <groupId>io.micronaut</groupId>
-    <artifactId>micronaut-http</artifactId>
-    <version>3.7.2</version>
-    <scope>provided</scope>
-	</dependency>
+    </dependency>
+    <dependency>
+      <groupId>io.micronaut</groupId>
+      <artifactId>micronaut-http</artifactId>
+      <version>3.7.2</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>com.fasterxml.woodstox</groupId>
       <artifactId>woodstox-core</artifactId>
@@ -935,11 +941,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-	    <groupId>org.bouncycastle</groupId>
-	    <artifactId>bcprov-jdk15on</artifactId>
-	    <version>1.70</version>
-	    <scope>provided</scope>
-	  </dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.70</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
       <artifactId>hibernate-jpa-2.0-api</artifactId>
