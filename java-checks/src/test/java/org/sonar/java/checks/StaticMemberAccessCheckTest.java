@@ -24,7 +24,7 @@ import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPa
 
 class StaticMemberAccessCheckTest {
 
-  private static final String FILE_NAME = "checks/StaticMemberAccess.java";
+  private static final String FILE_NAME = "checks/StaticMemberAccessCheckSample.java";
 
   @Test
   void test() {
