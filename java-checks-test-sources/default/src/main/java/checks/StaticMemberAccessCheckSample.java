@@ -2,6 +2,15 @@ package checks;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
+import checks.visibility.restriction.StaticMemberAccessCheckSampleHelper.B;
+import checks.visibility.restriction.StaticMemberAccessCheckSampleHelper.Bar;
+
+class StaticMemberPackageHidden {
+  public void foo(){
+    int x = B.CONSTANT; // Compliant A is not accessible so we should not raise an issue
+    int y = Bar.CONSTANT; // Noncompliant
+  }
+}
 
 class StaticMemberAccessParent {
   public static int counter;
@@ -47,5 +56,4 @@ class GuavaFP {
     "sun.rmi.transport.misc",
     "sun.rmi.server.call",
     "sun.rmi.dgc");
-  
 }
