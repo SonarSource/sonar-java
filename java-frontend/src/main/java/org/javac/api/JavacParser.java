@@ -5,6 +5,7 @@ import com.sun.source.util.JavacTask;
 import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskListener;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.tools.DiagnosticCollector;
@@ -43,7 +44,11 @@ public class JavacParser {
       public void finished(TaskEvent e) {
         if (e.getKind() == TaskEvent.Kind.ANALYZE) {
           CompilationUnitTree compilationUnit = e.getCompilationUnit();
-          sonarJavaParser.scan(compilationUnit, null);
+          try {
+            sonarJavaParser.convert(compilationUnit, e.getSourceFile().getCharContent(true));
+          } catch (IOException ex) {
+            throw new RuntimeException(ex);
+          }
         }
       }
     });

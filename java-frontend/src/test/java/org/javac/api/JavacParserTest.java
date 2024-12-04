@@ -19,21 +19,20 @@ class JavacParserTest {
     String content = """
       package org.example;
       
-      enum Days {
-        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
-      }
-      
+      import org.junit.jupiter.api.Test;
+            
       public class TestFile {
-        public static void main(String[] args) {
+        
+        @Test
+        void testMethod() {
           System.out.println("Hello, World!");
         }
-      }
-      """;
+      }""";
     Files.write(myJavaFile, content.getBytes());
 
     var compilationUnitTree = PARSER.parse(myJavaFile.toFile());
     assertThat(compilationUnitTree.types()).isNotNull();
-    assertThat(compilationUnitTree.types().size()).isEqualTo(1);
+    assertThat(compilationUnitTree.types().size()).isEqualTo(2);
     assertThat(compilationUnitTree.types().get(0)).isNotNull();
     ClassTreeImpl firstClass = (ClassTreeImpl) compilationUnitTree.types().get(0);
     assertThat(firstClass.simpleName()).isNotNull();
