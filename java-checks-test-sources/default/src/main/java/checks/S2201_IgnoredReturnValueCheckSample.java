@@ -176,4 +176,8 @@ class S2201_IgnoredReturnValueCheckSample {
   List<String> makeList() {
     return new ArrayList<>();
   }
+
+  void validateValue(Object o){
+    Optional.ofNullable(o).orElseThrow(); //FP here orElseThrow() is used for the side effect
+  }
 }
