@@ -178,6 +178,6 @@ class S2201_IgnoredReturnValueCheckSample {
   }
 
   void validateValue(Object o){
-    Optional.ofNullable(o).orElseThrow(); //FP here orElseThrow() is used for the side effect
+    Optional.ofNullable(o).orElseThrow(); // Compliant: orElseThrow() is used for the side effect
   }
 }
