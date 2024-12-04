@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 class Address {
 }
 class Person implements Serializable {
-  Address address; // Noncompliant {{Make "address" transient or serializable.}}
+  Address address; // Noncompliant {{Make non-static "address" transient or serializable.}}
 //        ^^^^^^^
   SerializableFieldInSerializableClassCheckSampleA a;
   static Address address2;//Compliant : static field
@@ -50,11 +50,11 @@ class Person2 implements Serializable {
 }
 interface MyCustomInterface extends Serializable {}
 class Person3 implements MyCustomInterface {
-  Address address; // Noncompliant {{Make "address" transient or serializable.}}
+  Address address; // Noncompliant {{Make non-static "address" transient or serializable.}}
 }
 class Person4<T extends Serializable, S extends Address> implements MyCustomInterface {
   T t; //Compliant
-  S s; // Noncompliant {{Make "s" transient or serializable.}}
+  S s; // Noncompliant {{Make non-static "s" transient or serializable.}}
 }
 class Person5 implements Serializable {
   int[][] matrix; //Compliant
@@ -66,17 +66,17 @@ class SerializableFieldInSerializableClassCheckSampleB<T> {}
 class Person6<E, F extends Serializable> implements Serializable {
   private SerializableFieldInSerializableClassCheckSampleB<Object> bs; // Noncompliant
   private List<Person6> persons; // Compliant
-  private List things; // Noncompliant {{Make "things" transient or serializable.}}
-  private List<MyObject> objects; // Noncompliant {{Make "objects" transient or serializable.}}
-  private List<? extends MyObject> otherObjects; // Noncompliant {{Make "otherObjects" transient or serializable.}}
+  private List things; // Noncompliant {{Make non-static "things" transient or serializable.}}
+  private List<MyObject> objects; // Noncompliant {{Make non-static "objects" transient or serializable.}}
+  private List<? extends MyObject> otherObjects; // Noncompliant {{Make non-static "otherObjects" transient or serializable.}}
   private List<? extends Person6> otherPersons; // Compliant
-  private List<? extends E> otherThings; // Noncompliant {{Make "otherThings" transient or serializable.}}
+  private List<? extends E> otherThings; // Noncompliant {{Make non-static "otherThings" transient or serializable.}}
   private List<? extends F> otherSerializableThings; // Compliant
-  private List<?> otherUnknown; // Noncompliant {{Make "otherUnknown" transient or serializable.}}
+  private List<?> otherUnknown; // Noncompliant {{Make non-static "otherUnknown" transient or serializable.}}
   private List<? super F> super1;
   private List<? super E> super2; // Noncompliant
 
-  public List<Person6> persons1; // Noncompliant {{Make "persons1" private or transient.}}
+  public List<Person6> persons1; // Noncompliant {{Make non-static "persons1" private or transient.}}
   transient public List<Person6> persons2; // Compliant - transient
   private List<Person6> persons3 = new ArrayList<>(); // Compliant - ArrayList is serializable
   private List<Person6> persons4 = new MyNonSerializableList<>(); // Noncompliant
@@ -91,13 +91,13 @@ class Person6_2<T extends Serializable & MySimpleInterface> implements Serializa
 }
 
 class Person7 implements Serializable {
-  private Map<Object, Object> both; // Noncompliant {{Make "both" transient or serializable.}}
-  private Map<String, Object> right; // Noncompliant {{Make "right" transient or serializable.}}
-  private Map<Object, String> left; // Noncompliant {{Make "left" transient or serializable.}}
+  private Map<Object, Object> both; // Noncompliant {{Make non-static "both" transient or serializable.}}
+  private Map<String, Object> right; // Noncompliant {{Make non-static "right" transient or serializable.}}
+  private Map<Object, String> left; // Noncompliant {{Make non-static "left" transient or serializable.}}
   private Map<String, String> ok; // Compliant
 
   private Map<String, List<String>> nestedOk; // Compliant
-  private Map<String, List<Object>> nestedLeft; // Noncompliant {{Make "nestedLeft" transient or serializable.}}
+  private Map<String, List<Object>> nestedLeft; // Noncompliant {{Make non-static "nestedLeft" transient or serializable.}}
 
   private Map<String, String> nok1 = new MyNonSerializableMap<>(); // Noncompliant
   private MyNonSerializableMap<String, String> nok2; // Noncompliant
