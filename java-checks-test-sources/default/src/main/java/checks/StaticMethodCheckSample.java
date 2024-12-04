@@ -3,6 +3,7 @@ package checks;
 import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import javax.annotation.Nullable;
@@ -361,5 +362,56 @@ class StaticMethodCheckSampleQuickFix {
     // fix@qf_private_synchronized3 {{Make static}}
     // edit@qf_private_synchronized3 [[sc=21;ec=21]]{{static }}
     return magicWord;
+  }
+}
+
+class SingleTypeVar<T> {
+  private List<T> requiresTypeVar() { // Compliant
+    return List.of();
+  }
+
+  private List<String> doesNotRequireTypeVar() { // Noncompliant
+    return List.of();
+  }
+
+  private static List<String> staticDoesNotRequireTypeVar() { // Compliant
+    return List.of();
+  }
+
+  private <U> List<U> requiresAnotherTypeVar() { // Noncompliant
+    return List.of();
+  }
+
+  private <T> List<T> requiresAnotherTypeVarShadowed() { // Noncompliant
+    return List.of();
+  }
+}
+
+class TwoTypeVar<T1, T2> {
+  private List<T1> oneUsed1() { // Compliant
+    return List.of();
+  }
+
+  private <U> Map<T1,U> oneUsed2() { // Compliant
+    return Map.of();
+  }
+
+  private static <T1,U> Map<T1,U> bothShadowed() { // Compliant
+    return Map.of();
+  }
+
+  private List<String> noneUsed() {  // Noncompliant
+    return List.of();
+  }
+
+  private static List<String> staticNoneUsed() {  // Compliant
+    return List.of();
+  }
+}
+
+class Nested<T> {
+  // FP not implemented yet.
+  private List<List<T>> requiresNestedTypeVar() { // Noncompliant
+    return List.of();
   }
 }
