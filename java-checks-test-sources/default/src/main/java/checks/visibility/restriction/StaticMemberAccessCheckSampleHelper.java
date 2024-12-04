@@ -2,18 +2,18 @@ package checks.visibility.restriction;
 
 public class StaticMemberAccessCheckSampleHelper {
 
-  class A {
+  static class A {
     public static final int CONSTANT = 42;
   }
 
-  public class B  extends A {
+  static public class B  extends A {
   }
 
-  public class Foo {
+  static public class Foo {
     public static final int CONSTANT = 42;
   }
 
-  public class Bar  extends Foo {
+  static public class Bar  extends Foo {
   }
 
 
