@@ -40,6 +40,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_FUNCTION_SUPPLIER = "java.util.function.Supplier";
   private static final String JAVA_UTIL_STREAM_STREAM = "java.util.stream.Stream";
+  private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
   private static final String COLLECT = "collect";
   private static final List<String> CHECKED_TYPES = Arrays.asList(
     JAVA_LANG_STRING,
@@ -67,14 +68,15 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
     "java.time.ZonedDateTime",
     "java.math.BigInteger",
     "java.math.BigDecimal",
-    "java.util.Optional",
+    JAVA_UTIL_OPTIONAL,
     "com.google.common.base.Optional");
 
   private static final List<String> EXCLUDED_PREFIX = Arrays.asList("parse", "format", "decode", "valueOf");
 
   private static final MethodMatchers EXCLUDED = MethodMatchers.or(
     MethodMatchers.create().ofTypes("java.lang.Character").names("toChars").addParametersMatcher("int", "char[]", "int").build(),
-    MethodMatchers.create().ofTypes(JAVA_LANG_STRING).names("intern").addWithoutParametersMatcher().build());
+    MethodMatchers.create().ofTypes(JAVA_LANG_STRING).names("intern").addWithoutParametersMatcher().build(),
+    MethodMatchers.create().ofTypes(JAVA_UTIL_OPTIONAL).names("orElseThrow").withAnyParameters().build());
 
   private static final MethodMatchers STRING_GET_BYTES = MethodMatchers.create()
     .ofTypes(JAVA_LANG_STRING).names("getBytes").addParametersMatcher("java.nio.charset.Charset").build();
