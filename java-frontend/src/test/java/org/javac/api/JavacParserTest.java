@@ -32,9 +32,12 @@ class JavacParserTest {
 
     var compilationUnitTree = PARSER.parse(myJavaFile.toFile());
     assertThat(compilationUnitTree.types()).isNotNull();
-    assertThat(compilationUnitTree.types().size()).isEqualTo(2);
+    assertThat(compilationUnitTree.types().size()).isEqualTo(1);
     assertThat(compilationUnitTree.types().get(0)).isNotNull();
     ClassTreeImpl firstClass = (ClassTreeImpl) compilationUnitTree.types().get(0);
+
+    assertThat(firstClass.getLine()).isEqualTo(4);
+
     assertThat(firstClass.simpleName()).isNotNull();
     String simpleName = firstClass.simpleName().name();
     assertThat(simpleName).isNotNull();

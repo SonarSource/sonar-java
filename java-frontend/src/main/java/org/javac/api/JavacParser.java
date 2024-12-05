@@ -37,7 +37,7 @@ public class JavacParser {
     StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, StandardCharsets.UTF_8);
     var compilationUnits = fileManager.getJavaFileObjectsFromFiles(files);
     JavacTask task = (JavacTask) compiler.getTask(null, fileManager, diagnostics, opts, null, compilationUnits);
-    var sonarJavaParser = new SonarJavaParser(task);
+    var sonarJavaParser = new SonarJavaConverter(task);
 
     task.setTaskListener(new TaskListener() {
       @Override
