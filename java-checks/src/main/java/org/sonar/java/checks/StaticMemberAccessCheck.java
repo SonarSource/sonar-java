@@ -51,37 +51,38 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(tree instanceof CompilationUnitTree file){
+    if (tree instanceof CompilationUnitTree file) {
       PackageDeclarationTree packageDecl = file.packageDeclaration();
-      currentPackage = packageDecl==null ? "" : packageDecl.packageName().toString();
-    }else{
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
-      Symbol symbol = mse.identifier().symbol();
-      if (symbol.isStatic()  && !isListOrSetOf(mse)) {
-        ExpressionTree expression = mse.expression();
+      currentPackage = packageDecl == null ? "" : packageDecl.packageName().toString();
+      return;
+    }
 
-        Symbol owner = symbol.owner();
-        Type staticType = owner.type();
-        Type expressionType = expression.symbolType();
+    MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
+    Symbol symbol = mse.identifier().symbol();
+    if (symbol.isStatic() && !isListOrSetOf(mse)) {
+      ExpressionTree expression = mse.expression();
 
-        if (!staticType.isUnknown() && !expressionType.isUnknown()
-          && !expressionType.erasure().equals(staticType.erasure())
-          && (currentPackage.equals(classPackage(expressionType)) || owner.isPublic())
-        ) {
-          QuickFixHelper.newIssue(context)
-            .forRule(this)
-            .onTree(mse.identifier())
-            .withMessage("Use static access with \"%s\" for \"%s\".", staticType.fullyQualifiedName(), symbol.name())
-            .withQuickFix(() -> quickFix(expression, staticType))
-            .report();
-        }
+      Symbol owner = symbol.owner();
+      Type staticType = owner.type();
+      Type expressionType = expression.symbolType();
+
+      if (!staticType.isUnknown() && !expressionType.isUnknown()
+        && !expressionType.erasure().equals(staticType.erasure())
+        && (currentPackage.equals(classPackage(expressionType)) || owner.isPublic())
+      ) {
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(mse.identifier())
+          .withMessage("Use static access with \"%s\" for \"%s\".", staticType.fullyQualifiedName(), symbol.name())
+          .withQuickFix(() -> quickFix(expression, staticType))
+          .report();
       }
     }
   }
 
-  private static String classPackage(Type classType){
+  private static String classPackage(Type classType) {
     int endPackage = classType.fullyQualifiedName().lastIndexOf('.');
-    return endPackage==-1 ? "" : classType.fullyQualifiedName().substring(0, endPackage);
+    return endPackage == -1 ? "" : classType.fullyQualifiedName().substring(0, endPackage);
   }
 
   private static boolean isListOrSetOf(MemberSelectExpressionTree mse) {
