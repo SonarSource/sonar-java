@@ -17,15 +17,21 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -52,6 +58,19 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     Kind.GREATER_THAN_OR_EQUAL_TO
   };
 
+  private enum ComparisonType {
+    // for example, `s.length() == 0`
+    IS_EMPTY,
+    // for example, `s.length() > 0`
+    IS_NOT_EMPTY,
+    // for example, `s.length() > 80`
+    OTHER
+  }
+
+  private static boolean isEmptinessCheck(ComparisonType comparisonType) {
+    return comparisonType == ComparisonType.IS_EMPTY || comparisonType == ComparisonType.IS_NOT_EMPTY;
+  }
+
   // `String.isEmpty()` is available since Java 6.
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -75,29 +94,99 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     boolean rightIsZero = LiteralUtils.isZero(right);
     boolean rightIsOne = LiteralUtils.isOne(right);
 
-    if ((isLengthCall(left) && isComparisonOnRight(bet, rightIsZero, rightIsOne))
-      || (isLengthCall(right) && isComparisonOnLeft(leftIsZero, leftIsOne, bet))) {
-      reportIssue(tree, "Use isEmpty() to check whether a string is empty or not.");
+    final MethodInvocationTree lengthCall;
+    final ComparisonType comparisonType;
+
+    // First try `s.length() OPERATOR VALUE`, then try `VALUE OPERATOR s.length()`.
+    MethodInvocationTree mit = getLengthCall(left);
+    if (mit != null) {
+      lengthCall = mit;
+      comparisonType = getComparisonOnRight(bet, rightIsZero, rightIsOne);
+    } else {
+      lengthCall = getLengthCall(right);
+      comparisonType = lengthCall != null ? getComparisonOnLeft(leftIsZero, leftIsOne, bet) : null;
+    }
+
+    if (lengthCall != null && isEmptinessCheck(comparisonType)) {
+      QuickFixHelper
+        .newIssue(context)
+        .forRule(this)
+        .onTree(tree)
+        .withMessage("Use isEmpty() to check whether a string is empty or not.")
+        .withQuickFix(() -> getQuickFix(tree, lengthCall, comparisonType))
+        .report();
     }
   }
 
-  private static boolean isLengthCall(ExpressionTree tree) {
-    return tree instanceof MethodInvocationTree mit && LENGTH_METHOD.matches(mit);
+  private static JavaQuickFix getQuickFix(Tree comparisonExpression, MethodInvocationTree lengthInvocation, ComparisonType comparisonType) {
+    // There are two cases to deal with:
+    //   s.length() OP CONST
+    //   CONST OP s.length()
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Replace with \"isEmpty()\"");
+
+    // Replace "[CONST OP]" with "!"/"".
+    AnalyzerMessage.TextSpan prefixSpan = AnalyzerMessage.textSpanBetween(comparisonExpression, true, lengthInvocation, false);
+    String prefixReplacement = comparisonType == ComparisonType.IS_NOT_EMPTY ? "!" : "";
+    if (!prefixReplacement.isEmpty() || !prefixSpan.isEmpty()) {
+      builder.addTextEdit(JavaTextEdit.replaceTextSpan(prefixSpan, prefixReplacement));
+    }
+
+    // Replace "length() [OP CONST]" with "isEmpty()".
+    IdentifierTree lengthIdentifier = ExpressionUtils.methodName(lengthInvocation);
+    builder.addTextEdit(JavaTextEdit.replaceBetweenTree(
+      lengthIdentifier,
+      true,
+      comparisonExpression,
+      true,
+      "isEmpty()"
+    ));
+
+    return builder.build();
+  }
+
+  @Nullable
+  private static MethodInvocationTree getLengthCall(ExpressionTree tree) {
+    if (tree instanceof MethodInvocationTree mit && LENGTH_METHOD.matches(mit)) {
+      return mit;
+    }
+    return null;
   }
 
   /**
    * Check the comparison for <pre>length() OP VALUE</pre>.
    */
-  private static boolean isComparisonOnRight(BinaryExpressionTree tree, boolean rightIsZero, boolean rightIsOne) {
-    return (tree.is(Kind.EQUAL_TO, Kind.LESS_THAN_OR_EQUAL_TO, Kind.NOT_EQUAL_TO, Kind.GREATER_THAN) && rightIsZero)
-      || (tree.is(Kind.LESS_THAN, Kind.GREATER_THAN_OR_EQUAL_TO) && rightIsOne);
+  private static ComparisonType getComparisonOnRight(BinaryExpressionTree tree, boolean rightIsZero, boolean rightIsOne) {
+    if (tree.is(Kind.EQUAL_TO, Kind.LESS_THAN_OR_EQUAL_TO) && rightIsZero) {
+      return ComparisonType.IS_EMPTY;
+    }
+    if (tree.is(Kind.NOT_EQUAL_TO, Kind.GREATER_THAN) && rightIsZero) {
+      return ComparisonType.IS_NOT_EMPTY;
+    }
+    if (tree.is(Kind.LESS_THAN) && rightIsOne) {
+      return ComparisonType.IS_EMPTY;
+    }
+    if (tree.is(Kind.GREATER_THAN_OR_EQUAL_TO) && rightIsOne) {
+      return ComparisonType.IS_NOT_EMPTY;
+    }
+    return ComparisonType.OTHER;
   }
 
   /**
    * Check the comparison for <pre>VALUE OP length()</pre>.
    */
-  private static boolean isComparisonOnLeft(boolean leftIsZero, boolean leftIsOne, BinaryExpressionTree tree) {
-    return (leftIsZero && tree.is(Kind.EQUAL_TO, Kind.GREATER_THAN_OR_EQUAL_TO, Kind.NOT_EQUAL_TO, Kind.LESS_THAN))
-      || (leftIsOne && tree.is(Kind.GREATER_THAN, Kind.LESS_THAN_OR_EQUAL_TO));
+  private static ComparisonType getComparisonOnLeft(boolean leftIsZero, boolean leftIsOne, BinaryExpressionTree tree) {
+    if (leftIsZero && tree.is(Kind.EQUAL_TO, Kind.GREATER_THAN_OR_EQUAL_TO)) {
+      return ComparisonType.IS_EMPTY;
+    }
+    if (leftIsZero && tree.is(Kind.NOT_EQUAL_TO, Kind.LESS_THAN)) {
+      return ComparisonType.IS_NOT_EMPTY;
+    }
+    if (leftIsOne && tree.is(Kind.GREATER_THAN)) {
+      return ComparisonType.IS_EMPTY;
+    }
+    if (leftIsOne && tree.is(Kind.LESS_THAN_OR_EQUAL_TO)) {
+      return ComparisonType.IS_NOT_EMPTY;
+    }
+    return ComparisonType.OTHER;
   }
 }
