@@ -24,12 +24,10 @@ import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPa
 
 class StaticMemberAccessCheckTest {
 
-  private static final String FILE_NAME = "checks/StaticMemberAccessCheckSample.java";
-
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath(FILE_NAME))
+      .onFile(mainCodeSourcesPath("checks/S3252_StaticMemberAccessCheckSample/StaticMemberAccessCheckSample.java"))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
   }
@@ -53,7 +51,7 @@ class StaticMemberAccessCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath(FILE_NAME))
+      .onFile(nonCompilingTestSourcesPath("checks/StaticMemberAccessCheckSample.java"))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
   }

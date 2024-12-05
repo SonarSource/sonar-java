@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.PackageUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -53,7 +54,7 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree instanceof CompilationUnitTree file) {
       PackageDeclarationTree packageDecl = file.packageDeclaration();
-      currentPackage = packageDecl == null ? "" : packageDecl.packageName().toString();
+      currentPackage = packageDecl == null ? "" :  PackageUtils.packageName(packageDecl, ".");
       return;
     }
 
@@ -65,10 +66,11 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
       Symbol owner = symbol.owner();
       Type staticType = owner.type();
       Type expressionType = expression.symbolType();
+      boolean staticMemberOwnerPackageIsCurrentPackage = currentPackage.equals(classPackage(expressionType));
 
       if (!staticType.isUnknown() && !expressionType.isUnknown()
         && !expressionType.erasure().equals(staticType.erasure())
-        && (currentPackage.equals(classPackage(expressionType)) || owner.isPublic())
+        && (staticMemberOwnerPackageIsCurrentPackage || owner.isPublic())
       ) {
         QuickFixHelper.newIssue(context)
           .forRule(this)

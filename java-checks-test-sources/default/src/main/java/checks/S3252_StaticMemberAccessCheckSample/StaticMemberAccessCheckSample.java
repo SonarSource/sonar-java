@@ -1,9 +1,9 @@
-package checks;
+package checks.S3252_StaticMemberAccessCheckSample;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
-import checks.visibility.restriction.StaticMemberAccessCheckSampleHelper.B;
-import checks.visibility.restriction.StaticMemberAccessCheckSampleHelper.Bar;
+import checks.S3252_StaticMemberAccessCheckSample.hide_non_public.StaticMemberAccessCheckSampleHelper.B;
+import checks.S3252_StaticMemberAccessCheckSample.hide_non_public.StaticMemberAccessCheckSampleHelper.Bar;
 
 class StaticMemberPackageHidden {
   public void foo(){
@@ -23,7 +23,7 @@ class StaticMemberAccessParent {
 
 class StaticMemberAccessChild extends StaticMemberAccessParent {
   public StaticMemberAccessChild() {
-    StaticMemberAccessChild.counter++; // Noncompliant {{Use static access with "checks.StaticMemberAccessParent" for "counter".}}
+    StaticMemberAccessChild.counter++; // Noncompliant {{Use static access with "checks.S3252_StaticMemberAccessCheckSample.StaticMemberAccessParent" for "counter".}}
     StaticMemberAccessParent.counter++; // Compliant
 
     StaticMemberAccessChild.foo(); // Noncompliant

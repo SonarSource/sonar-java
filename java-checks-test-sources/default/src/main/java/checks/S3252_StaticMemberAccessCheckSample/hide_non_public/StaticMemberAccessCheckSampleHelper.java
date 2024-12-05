@@ -1,4 +1,4 @@
-package checks.visibility.restriction;
+package checks.S3252_StaticMemberAccessCheckSample.hide_non_public;
 
 public class StaticMemberAccessCheckSampleHelper {
 
