@@ -1,4 +1,6 @@
-public class StaticMemberAccessCheckSample {
+package checks.S3252_StaticMemberAccessCheckSample;
+
+public class S3252TestDefaultPackage {
 
   static class A {
     public static final int CONSTANT = 42;

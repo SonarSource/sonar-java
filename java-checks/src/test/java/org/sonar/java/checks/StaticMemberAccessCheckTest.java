@@ -23,11 +23,12 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class StaticMemberAccessCheckTest {
+  private static final String COMPILING_SAMPLE_FOLDER = "checks/S3252_StaticMemberAccessCheckSample/";
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/S3252_StaticMemberAccessCheckSample/StaticMemberAccessCheckSample.java"))
+      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER+"StaticMemberAccessCheckSample.java"))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
   }
@@ -35,7 +36,7 @@ class StaticMemberAccessCheckTest {
   @Test
   void test_default_package() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("StaticMemberAccessCheckSample.java"))
+      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER+"S3252TestDefaultPackage.java"))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
   }
