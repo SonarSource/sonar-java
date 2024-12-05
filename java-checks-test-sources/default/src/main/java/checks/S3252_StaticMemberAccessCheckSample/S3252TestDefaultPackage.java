@@ -1,5 +1,3 @@
-package checks.S3252_StaticMemberAccessCheckSample;
-
 public class S3252TestDefaultPackage {
 
   static class A {
