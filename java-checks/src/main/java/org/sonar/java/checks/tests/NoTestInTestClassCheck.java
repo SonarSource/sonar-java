@@ -124,7 +124,11 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkTestNGmembers(IdentifierTree className, Stream<Symbol> members) {
-    if (members.noneMatch(member -> member.isMethodSymbol() && member.isPublic() && !member.isStatic() && !"<init>".equals(member.name()))) {
+    if (members.noneMatch(member -> {
+      boolean annotatedWithTest = isTestFieldOrMethod(member);
+      boolean publicMethod = member.isMethodSymbol() && member.isPublic() && !member.isStatic() && !"<init>".equals(member.name());
+      return annotatedWithTest || publicMethod;
+    })) {
       reportClass(className);
     }
   }

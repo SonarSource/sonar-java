@@ -121,6 +121,16 @@ public class TestNGClassTest { // Noncompliant
   private void test1() { }
   public static void foo() {}
 }
+
+@org.testng.annotations.Test
+public class TestNGClassTestUseAnnotation {
+
+  @org.testng.annotations.Test
+  void myMethod(){
+
+  }
+}
+
 @org.testng.annotations.Test(groups ="integration")
 public abstract class AbstractIntegrationTest2{
 }
