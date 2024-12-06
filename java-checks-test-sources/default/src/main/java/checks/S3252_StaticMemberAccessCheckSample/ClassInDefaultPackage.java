@@ -1,4 +1,4 @@
-public class S3252TestDefaultPackage {
+public class ClassInDefaultPackage {
 
   static class A {
     public static final int CONSTANT = 42;

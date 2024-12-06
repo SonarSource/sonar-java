@@ -2,15 +2,6 @@ package checks.S3252_StaticMemberAccessCheckSample;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
-import checks.S3252_StaticMemberAccessCheckSample.hide_non_public.StaticMemberAccessCheckSampleHelper.B;
-import checks.S3252_StaticMemberAccessCheckSample.hide_non_public.StaticMemberAccessCheckSampleHelper.Bar;
-
-class StaticMemberPackageHidden {
-  public void foo(){
-    int x = B.CONSTANT; // Compliant A is not accessible so we should not raise an issue
-    int y = Bar.CONSTANT; // Noncompliant
-  }
-}
 
 class StaticMemberAccessParent {
   public static int counter;

@@ -66,11 +66,11 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
       Symbol owner = symbol.owner();
       Type staticType = owner.type();
       Type expressionType = expression.symbolType();
-      boolean staticMemberOwnerPackageIsCurrentPackage = currentPackage.equals(classPackage(expressionType));
+      boolean memberOwnerIsInCurrentPackage = currentPackage.equals(classPackage(expressionType));
 
       if (!staticType.isUnknown() && !expressionType.isUnknown()
         && !expressionType.erasure().equals(staticType.erasure())
-        && (staticMemberOwnerPackageIsCurrentPackage || owner.isPublic())
+        && (memberOwnerIsInCurrentPackage || owner.isPublic())
       ) {
         QuickFixHelper.newIssue(context)
           .forRule(this)

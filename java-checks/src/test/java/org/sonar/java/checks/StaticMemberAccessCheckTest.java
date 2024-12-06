@@ -28,15 +28,32 @@ class StaticMemberAccessCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER+"StaticMemberAccessCheckSample.java"))
+      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER + "StaticMemberAccessCheckSample.java"))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
   }
 
   @Test
-  void test_default_package() {
+  void test_import_from_other_package() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER+"S3252TestDefaultPackage.java"))
+      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER + "ImportFromOtherPackage.java"))
+      .withCheck(new StaticMemberAccessCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_import_from_other_package_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER + "ImportFromOtherPackage.java"))
+      .withoutSemantic()
+      .withCheck(new StaticMemberAccessCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_when_class_is_in_default_package() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER + "ClassInDefaultPackage.java"))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
   }
