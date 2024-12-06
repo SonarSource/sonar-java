@@ -1,6 +1,7 @@
 package checks.tests.AssertionsInTestsCheck;
 
 import io.restassured.RestAssured;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.ResponseSpecification;
@@ -10,6 +11,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 class RestAssuredTest {
 
@@ -129,5 +131,15 @@ class RestAssuredTest {
       .get("http://url.com")
       .then()
       .time(lessThan(2L), SECONDS);
+  }
+
+  @Test
+  public void test_status() {
+
+    RestAssuredMockMvc.given()
+      .when()
+      .get("/api/expedientes")
+      .then()
+      .status(FORBIDDEN);
   }
 }

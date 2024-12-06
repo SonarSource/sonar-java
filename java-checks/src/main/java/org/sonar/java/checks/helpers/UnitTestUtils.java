@@ -47,9 +47,10 @@ public final class UnitTestUtils {
     MethodMatchers.create().ofSubTypes("org.fest.assertions.GenericAssert", "org.fest.assertions.api.AbstractAssert").anyName().withAnyParameters().build(),
     // rest assured 2.x, 3.x, 4.x
     MethodMatchers.create().ofTypes(
-      "com.jayway.restassured.response.ValidatableResponseOptions", // restassured 2.x
-      "io.restassured.response.ValidatableResponseOptions" // restassured 3.x and 4.x
-    )
+        "com.jayway.restassured.response.ValidatableResponseOptions", // restassured 2.x
+        "io.restassured.response.ValidatableResponseOptions", // restassured 3.x and 4.x
+        "io.restassured.module.mockmvc.response.ValidatableMockMvcResponse" // spring mock mvc extending the io.restassured library
+      )
       .name(name -> "body".equals(name) ||
         "time".equals(name) ||
         name.startsWith("time") ||
