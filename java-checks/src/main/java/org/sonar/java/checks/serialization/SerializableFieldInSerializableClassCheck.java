@@ -97,7 +97,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     if (isCollectionOfSerializable(variableTree.type())) {
       if (!ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.PRIVATE)
         && !implementsSerializable(variableTree.type().symbolType())) {
-        reportIssue(simpleName, "Make \"" + simpleName.name() + "\" private or transient.");
+        reportIssue(simpleName, "Make non-static \"" + simpleName.name() + "\" private or transient.");
       } else if (isUnserializableCollection(variableTree.type().symbolType())
         || isUnserializableCollection(variableTree.initializer())) {
         reportIssue(simpleName);
@@ -133,7 +133,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
   }
 
   private void reportIssue(IdentifierTree tree) {
-    reportIssue(tree, "Make \"" + tree.name() + "\" transient or serializable.");
+    reportIssue(tree, "Make non-static \"" + tree.name() + "\" transient or serializable.");
   }
 
   private static boolean isExcluded(VariableTree variableTree) {
