@@ -49,7 +49,7 @@ public final class UnitTestUtils {
     MethodMatchers.create().ofTypes(
         "com.jayway.restassured.response.ValidatableResponseOptions", // restassured 2.x
         "io.restassured.response.ValidatableResponseOptions", // restassured 3.x and 4.x
-        "io.restassured.module.mockmvc.response.ValidatableMockMvcResponse" // spring mock mvc
+        "io.restassured.module.mockmvc.response.ValidatableMockMvcResponse" // spring mock mvc extending io.restassured
       )
       .name(name -> "body".equals(name) ||
         "time".equals(name) ||
