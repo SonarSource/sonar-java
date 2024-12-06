@@ -134,7 +134,7 @@ class RestAssuredTest {
   }
 
   @Test
-  public void test_status() throws Exception {
+  public void test_status() {
 
     RestAssuredMockMvc.given()
       .when()
