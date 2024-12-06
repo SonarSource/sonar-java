@@ -16,9 +16,13 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
@@ -37,6 +41,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 @Rule(key = "S2325")
 public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -85,13 +90,53 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
       // In case it cannot be determined (isOverriding returns null), consider as overriding to avoid FP.
       return;
     }
-    if ((symbol.isPrivate() || symbol.isFinal() || classTree.symbol().isFinal()) && !symbol.isStatic() && !reference.hasNonStaticReference()) {
+    if ((symbol.isPrivate() || symbol.isFinal() || classTree.symbol().isFinal())
+      && !symbol.isStatic()
+      && !reference.hasNonStaticReference()
+      && !returnRequiresParentTypeParameter(symbol)) {
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(tree.simpleName())
         .withMessage("Make \"%s\" a \"static\" method.", symbol.name())
         .withQuickFix(() -> getQuickFix(tree))
         .report();
+    }
+  }
+
+  /**
+   * Method's return type requires type parameter and therefore cannot be made static.
+   */
+  private static boolean returnRequiresParentTypeParameter(Symbol.MethodSymbol symbol) {
+    MethodTree declaration = symbol.declaration();
+    if (declaration == null) {
+      return false;
+    }
+    ClassTree parent = (ClassTree) declaration.parent();
+    if (parent == null) {
+      return false;
+    }
+    Set<Symbol> parentTypeParam =
+      parent
+        .typeParameters()
+        .stream()
+        .map(TypeParameterTree::symbol)
+        .collect(Collectors.toUnmodifiableSet());
+    Symbol.TypeSymbol returnType = symbol.returnType();
+    List<Type> returnTypeVars = new ArrayList<>();
+    collectTypeVars(returnTypeVars, returnType.type());
+    return returnTypeVars
+      .stream()
+      .map(Type::symbol)
+      .anyMatch(parentTypeParam::contains);
+  }
+
+  private static void collectTypeVars(List<Type> accumulator, Type t) {
+    for(Type tt: t.typeArguments()) {
+      if(tt.isTypeVar()) {
+        accumulator.add(tt);
+      } else {
+        collectTypeVars(accumulator, tt);
+      }
     }
   }
 
