@@ -42,7 +42,6 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
-import org.sonar.plugins.java.api.tree.TypeParameters;
 
 @Rule(key = "S2325")
 public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -91,7 +90,10 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
       // In case it cannot be determined (isOverriding returns null), consider as overriding to avoid FP.
       return;
     }
-    if ((symbol.isPrivate() || symbol.isFinal() || classTree.symbol().isFinal()) && !symbol.isStatic() && !reference.hasNonStaticReference() && !returnRequiresParentTypeParameter(symbol)) {
+    if ((symbol.isPrivate() || symbol.isFinal() || classTree.symbol().isFinal())
+      && !symbol.isStatic()
+      && !reference.hasNonStaticReference()
+      && !returnRequiresParentTypeParameter(symbol)) {
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(tree.simpleName())
