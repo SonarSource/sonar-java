@@ -57,7 +57,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers RANDOM_STRING_UTILS_RANDOM_WITH_RANDOM_SOURCE = MethodMatchers.create()
     .ofSubTypes("org.apache.commons.lang.RandomStringUtils", LANG3_RANDOM_STRING_UTILS)
-    .names("random","secure", "secureStrong")
+    .names("random")
     .addParametersMatcher("int", "int", "int", "boolean", "boolean", "char[]", "java.util.Random")
     .build();
 
