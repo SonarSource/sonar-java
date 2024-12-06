@@ -16,8 +16,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -118,13 +120,22 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
         .map(TypeParameterTree::symbol)
         .collect(Collectors.toUnmodifiableSet());
     Symbol.TypeSymbol returnType = symbol.returnType();
-    return returnType
-      .type()
-      .typeArguments()
+    List<Type> returnTypeVars = new ArrayList<>();
+    collectTypeVars(returnTypeVars, returnType.type());
+    return returnTypeVars
       .stream()
-      .filter(Type::isTypeVar)
       .map(Type::symbol)
       .anyMatch(parentTypeParam::contains);
+  }
+
+  private static void collectTypeVars(List<Type> accumulator, Type t) {
+    for(Type tt: t.typeArguments()) {
+      if(tt.isTypeVar()) {
+        accumulator.add(tt);
+      } else {
+        collectTypeVars(accumulator, tt);
+      }
+    }
   }
 
   private static JavaQuickFix getQuickFix(MethodTree tree) {

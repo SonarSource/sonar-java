@@ -410,8 +410,7 @@ class TwoTypeVar<T1, T2> {
 }
 
 class Nested<T> {
-  // FP not implemented yet.
-  private List<List<T>> requiresNestedTypeVar() { // Noncompliant
+  private List<List<T>> requiresNestedTypeVar() { // Compliant
     return List.of();
   }
 }
