@@ -16,19 +16,21 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.PackageUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3252")
@@ -40,22 +42,36 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
     .withAnyParameters()
     .build();
 
+  private String currentPackage = "";
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.MEMBER_SELECT);
+    return List.of(Tree.Kind.MEMBER_SELECT, Tree.Kind.COMPILATION_UNIT);
   }
 
 
   @Override
   public void visitNode(Tree tree) {
+    if (tree instanceof CompilationUnitTree file) {
+      PackageDeclarationTree packageDecl = file.packageDeclaration();
+      currentPackage = packageDecl == null ? "" :  PackageUtils.packageName(packageDecl, ".");
+      return;
+    }
+
     MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
     Symbol symbol = mse.identifier().symbol();
-    if (symbol.isStatic()  && !isListOrSetOf(mse)) {
+    if (symbol.isStatic() && !isListOrSetOf(mse)) {
       ExpressionTree expression = mse.expression();
-      Type staticType = symbol.owner().type();
+
+      Symbol owner = symbol.owner();
+      Type staticType = owner.type();
       Type expressionType = expression.symbolType();
+      boolean memberOwnerIsInCurrentPackage = currentPackage.equals(classPackage(expressionType));
+
       if (!staticType.isUnknown() && !expressionType.isUnknown()
-        && !expressionType.erasure().equals(staticType.erasure())) {
+        && !expressionType.erasure().equals(staticType.erasure())
+        && (memberOwnerIsInCurrentPackage || owner.isPublic())
+      ) {
         QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(mse.identifier())
@@ -64,6 +80,11 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
           .report();
       }
     }
+  }
+
+  private static String classPackage(Type classType) {
+    int endPackage = classType.fullyQualifiedName().lastIndexOf('.');
+    return endPackage == -1 ? "" : classType.fullyQualifiedName().substring(0, endPackage);
   }
 
   private static boolean isListOrSetOf(MemberSelectExpressionTree mse) {

@@ -23,13 +23,37 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class StaticMemberAccessCheckTest {
-
-  private static final String FILE_NAME = "checks/StaticMemberAccess.java";
+  private static final String COMPILING_SAMPLE_FOLDER = "checks/S3252_StaticMemberAccessCheckSample/";
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath(FILE_NAME))
+      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER + "StaticMemberAccessCheckSample.java"))
+      .withCheck(new StaticMemberAccessCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_import_from_other_package() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER + "ImportFromOtherPackage.java"))
+      .withCheck(new StaticMemberAccessCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_import_from_other_package_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER + "ImportFromOtherPackage.java"))
+      .withoutSemantic()
+      .withCheck(new StaticMemberAccessCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_when_class_is_in_default_package() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(COMPILING_SAMPLE_FOLDER + "ClassInDefaultPackage.java"))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
   }
@@ -45,7 +69,7 @@ class StaticMemberAccessCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath(FILE_NAME))
+      .onFile(nonCompilingTestSourcesPath("checks/StaticMemberAccessCheckSample.java"))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
   }
