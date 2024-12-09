@@ -365,52 +365,54 @@ class StaticMethodCheckSampleQuickFix {
   }
 }
 
-class SingleTypeVar<T> {
-  private List<T> requiresTypeVar() { // Compliant
-    return List.of();
+class ReturnTypeCheck {
+  static class SingleTypeVar<T> {
+    private List<T> requiresTypeVar() { // Compliant
+      return List.of();
+    }
+
+    private List<String> doesNotRequireTypeVar() { // Noncompliant
+      return List.of();
+    }
+
+    private static List<String> staticDoesNotRequireTypeVar() { // Compliant
+      return List.of();
+    }
+
+    private <U> List<U> requiresAnotherTypeVar() { // Noncompliant
+      return List.of();
+    }
+
+    private <T> List<T> requiresAnotherTypeVarShadowed() { // Noncompliant
+      return List.of();
+    }
   }
 
-  private List<String> doesNotRequireTypeVar() { // Noncompliant
-    return List.of();
+  static class TwoTypeVar<T1, T2> {
+    private List<T1> oneUsed1() { // Compliant
+      return List.of();
+    }
+
+    private <U> Map<T1, U> oneUsed2() { // Compliant
+      return Map.of();
+    }
+
+    private static <T1, U> Map<T1, U> bothShadowed() { // Compliant
+      return Map.of();
+    }
+
+    private List<String> noneUsed() {  // Noncompliant
+      return List.of();
+    }
+
+    private static List<String> staticNoneUsed() {  // Compliant
+      return List.of();
+    }
   }
 
-  private static List<String> staticDoesNotRequireTypeVar() { // Compliant
-    return List.of();
-  }
-
-  private <U> List<U> requiresAnotherTypeVar() { // Noncompliant
-    return List.of();
-  }
-
-  private <T> List<T> requiresAnotherTypeVarShadowed() { // Noncompliant
-    return List.of();
-  }
-}
-
-class TwoTypeVar<T1, T2> {
-  private List<T1> oneUsed1() { // Compliant
-    return List.of();
-  }
-
-  private <U> Map<T1,U> oneUsed2() { // Compliant
-    return Map.of();
-  }
-
-  private static <T1,U> Map<T1,U> bothShadowed() { // Compliant
-    return Map.of();
-  }
-
-  private List<String> noneUsed() {  // Noncompliant
-    return List.of();
-  }
-
-  private static List<String> staticNoneUsed() {  // Compliant
-    return List.of();
-  }
-}
-
-class Nested<T> {
-  private List<List<T>> requiresNestedTypeVar() { // Compliant
-    return List.of();
+  static class Nested<T> {
+    private List<List<T>> requiresNestedTypeVar() { // Compliant
+      return List.of();
+    }
   }
 }

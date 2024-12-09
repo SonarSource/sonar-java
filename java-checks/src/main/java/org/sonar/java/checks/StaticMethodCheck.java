@@ -107,12 +107,12 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
    * Method's return type requires type parameter and therefore cannot be made static.
    */
   private static boolean returnRequiresParentTypeParameter(Symbol.MethodSymbol symbol) {
-    // called from visitMethod, so we have declaration (NPE not possible)
     List<Type> returnTypeVars = new ArrayList<>();
-    collectTypeVars(returnTypeVars, returnType.type());
+    collectTypeVars(returnTypeVars, symbol.returnType().type());
     if (returnTypeVars.isEmpty()) {
       return false;
     }
+    // called from visitMethod, so we have declaration (NPE not possible)
     ClassTree parent = (ClassTree) symbol.declaration().parent();
     Set<Symbol> parentTypeParam =
       parent
@@ -128,6 +128,10 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   }
 
   private static void collectTypeVars(List<Type> accumulator, Type t) {
+    // Consider a type such as `Map<T,Map<String,U>>`, it has two type
+    // arguments: `T` and `Map<String,U>`. We collect variables in the `accumulator`,
+    // and descend recursively otherwise (which is fine for simple types, such as String,
+    // which do not have variables).
     for(Type tt: t.typeArguments()) {
       if (tt.isTypeVar()) {
         accumulator.add(tt);
