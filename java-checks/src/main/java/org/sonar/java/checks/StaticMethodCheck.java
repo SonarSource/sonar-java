@@ -120,7 +120,6 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
         .stream()
         .map(TypeParameterTree::symbol)
         .collect(Collectors.toUnmodifiableSet());
-    Symbol.TypeSymbol returnType = symbol.returnType();
     return returnTypeVars
       .stream()
       .map(Type::symbol)
