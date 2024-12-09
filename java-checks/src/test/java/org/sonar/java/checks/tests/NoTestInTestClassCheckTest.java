@@ -85,4 +85,12 @@ class NoTestInTestClassCheckTest {
       .withCheck(new NoTestInTestClassCheck())
       .verifyIssues();
   }
+
+  @Test
+  void testNg() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/NoTestInTestClassCheckTestNgTest.java"))
+      .withCheck(new NoTestInTestClassCheck())
+      .verifyIssues();
+  }
 }
