@@ -242,6 +242,10 @@ abstract class AbstractCrazyHierarchyTest implements TestB { }
 
 interface TestB extends TestA { }
 
+@org.junit.Test
+public class TestSubclass extends ParentTestClass { // Compliant, we cannot know what is in ParentTestClass so we don't raise issues
+}
+
 class MyUnitTest { // Compliant
   @ParameterizedTest
   void foo() {
@@ -264,7 +268,7 @@ class NestedTest { // Compliant
     public void foo() {
       Assert.assertTrue(true);
     }
-  }
+  }org.junit.Test
 }
 
 class NoTestsInNestedTest { // Noncompliant {{Add some tests to this class.}}
