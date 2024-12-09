@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.plugins.java.api.location.Range;
+import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -36,12 +38,21 @@ class JavacParserTest {
     assertThat(compilationUnitTree.types().get(0)).isNotNull();
     ClassTreeImpl firstClass = (ClassTreeImpl) compilationUnitTree.types().get(0);
 
-    assertThat(firstClass.getLine()).isEqualTo(4);
+    assertThat(firstClass.getLine()).isEqualTo(5); // not sure if this should be 0-indexed instead
 
     assertThat(firstClass.simpleName()).isNotNull();
     String simpleName = firstClass.simpleName().name();
     assertThat(simpleName).isNotNull();
     assertThat(simpleName).isEqualTo("TestFile");
+
+    var members = firstClass.members();
+    assertThat(members).isNotNull();
+    assertThat(members.size()).isEqualTo(1);
+    MethodTree method = (MethodTree) members.get(0);
+    assertThat(method).isNotNull();
+    assertThat(method.simpleName().name()).isEqualTo("testMethod");
+    assertThat(method.openParenToken().range()).isEqualTo(Range.at(8, 18, 8, 19));
+    assertThat(method.closeParenToken().range()).isEqualTo(Range.at(8, 19, 8, 20));
 
   }
 

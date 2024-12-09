@@ -9,9 +9,11 @@ import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
 import java.util.Collections;
+import javax.lang.model.element.Element;
 import org.sonar.java.model.InternalSyntaxToken;
 
 import static javax.tools.Diagnostic.NOPOS;
+import static org.javac.api.JavacUtils.isImplicitConstructor;
 
 public class TokenManager {
 
@@ -34,7 +36,7 @@ public class TokenManager {
     int endLine = (int) lineMap.getLineNumber(endPosition);
     return new InternalSyntaxToken(
       startLine,
-      startPosition - startLine,
+      (int) (startPosition - lineMap.getStartPosition(startLine)),
       source.subSequence(startPosition, endPosition).toString(),
       Collections.emptyList(),
       startLine != endLine);
@@ -55,16 +57,28 @@ public class TokenManager {
 
   public InternalSyntaxToken getOpenBraceToken(ClassTree classTree) {
     Tree firstMember = getFirstClassMember(classTree);
-    long firstClassMemberStartPos = sourcePositions.getStartPosition(compilationUnit, firstMember);
+    long firstClassMemberStartPos = getNodeStartPosition(firstMember);
     int startPos = findFirst('{', (int) firstClassMemberStartPos, false);
     return getToken(startPos, startPos + 1);
   }
 
   public InternalSyntaxToken getCloseBraceToken(ClassTree classTree) {
     Tree lastMember = classTree.getMembers().get(classTree.getMembers().size() - 1);
-    long lastClassMemberEndPos = sourcePositions.getEndPosition(compilationUnit, lastMember);
+    long lastClassMemberEndPos = getNodeEndPosition(lastMember);
     int endPos = findFirst('}', (int) lastClassMemberEndPos, true);
     return getToken(endPos, endPos + 1);
+  }
+
+  public InternalSyntaxToken getOpenParenToken(MethodTree methodTree) {
+    long startPosition = getNodeStartPosition(methodTree.getBody());
+    int startPos = findFirst('(', (int) startPosition, false);
+    return getToken(startPos, startPos + 1);
+  }
+
+  public InternalSyntaxToken getCloseParenToken(MethodTree methodTree) {
+    long startPosition = getNodeStartPosition(methodTree.getBody());
+    int startPos = findFirst(')', (int) startPosition, false);
+    return getToken(startPos, startPos + 1);
   }
 
   private int findFirst(char c, int startPos, boolean forward) {
@@ -101,16 +115,25 @@ public class TokenManager {
     return startPosition == NOPOS ? NOPOS : lineMap.getColumnNumber(startPosition);
   }
 
-  public long getNodeStartPosition(Tree node) {
-    TreePath currentNode = getNodePath(node);
-    while (currentNode != null) {
-      long startPosition = sourcePositions.getStartPosition(compilationUnit, currentNode.getLeaf());
+  public long getElementStartPosition(Element element) {
+    TreePath path = trees.getPath(element);
+    return getPathStartPosition(path);
+  }
+
+  public long getPathStartPosition(TreePath path) {
+    while (path != null) {
+      long startPosition = sourcePositions.getStartPosition(compilationUnit, path.getLeaf());
       if (startPosition != NOPOS) {
         return startPosition;
       }
-      currentNode = currentNode.getParentPath();
+      path = path.getParentPath();
     }
     return NOPOS;
+  }
+
+  public long getNodeStartPosition(Tree node) {
+    TreePath path = getNodePath(node);
+    return getPathStartPosition(path);
   }
 
   public long getNodeEndPosition(Tree node) {
@@ -136,14 +159,6 @@ public class TokenManager {
       }
     }
     return null;
-  }
-
-  private boolean isImplicitConstructor(com.sun.source.tree.Tree tree) {
-    if (tree.getKind() != com.sun.source.tree.Tree.Kind.METHOD) {
-      return false;
-    }
-    MethodTree methodTree = (MethodTree) tree;
-    return methodTree.getName().contentEquals("<init>") && methodTree.getParameters().isEmpty();
   }
 
 }

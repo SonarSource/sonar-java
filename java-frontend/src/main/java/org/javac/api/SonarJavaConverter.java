@@ -1,6 +1,5 @@
 package org.javac.api;
 
-import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ImportTree;
@@ -14,17 +13,24 @@ import com.sun.source.util.Trees;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
+import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+
+import static org.javac.api.JavacUtils.isImplicitConstructor;
 
 public class SonarJavaConverter extends TreePathScanner<Void, Void> {
 
@@ -34,11 +40,8 @@ public class SonarJavaConverter extends TreePathScanner<Void, Void> {
   private CompilationUnitTree currentCU;
   private final Trees trees;
 
-  private final FirstBlockScanner blockScanner;
-
   public SonarJavaConverter(JavacTask task) {
     this.trees = Trees.instance(task);
-    blockScanner = new FirstBlockScanner(trees);
   }
 
   public void convert(CompilationUnitTree node, CharSequence sourceCode) {
@@ -68,7 +71,7 @@ public class SonarJavaConverter extends TreePathScanner<Void, Void> {
   }
 
   private ClassTreeImpl convertClassTree(ClassTree classTree) {
-//    blockScanner.scan(new TreePath(new TreePath(currentCU), classTree), null);
+    // blockScanner.scan(new TreePath(new TreePath(currentCU), classTree), null);
     return new ClassTreeImpl(
       Tree.Kind.CLASS,
       tokenManager.getOpenBraceToken(classTree),
@@ -77,15 +80,19 @@ public class SonarJavaConverter extends TreePathScanner<Void, Void> {
       .complete(
         new ModifiersTreeImpl(convertModifiers(classTree)),
         convertClassDeclarationKeyword(classTree),
-        convertClassSimpleName(classTree)
-      );
+        convertClassSimpleName(classTree));
   }
 
   private IdentifierTreeImpl convertClassSimpleName(ClassTree classTree) {
     int startPos = (int) tokenManager.getNodeStartLine(classTree);
     return new IdentifierTreeImpl(
-      new InternalSyntaxToken(startPos, 0, classTree.getSimpleName().toString(), Collections.emptyList(), false)
-    );
+      new InternalSyntaxToken(startPos, 0, classTree.getSimpleName().toString(), Collections.emptyList(), false));
+  }
+
+  private IdentifierTreeImpl convertMethodSimpleName(MethodTree methodTree) {
+    int startPos = (int) tokenManager.getNodeStartLine(methodTree);
+    return new IdentifierTreeImpl(
+      new InternalSyntaxToken(startPos, 0, methodTree.getName().toString(), Collections.emptyList(), false));
   }
 
   private List<ModifierTree> convertModifiers(ClassTree classTree) {
@@ -112,14 +119,52 @@ public class SonarJavaConverter extends TreePathScanner<Void, Void> {
     List<Tree> result = new ArrayList<>();
     for (com.sun.source.tree.Tree member : members) {
       switch (member.getKind()) {
-        case METHOD -> result.add(convertMethodTree((MethodTree) member));
+        case METHOD -> {
+          if (!isImplicitConstructor(member)) {
+            result.add(convertMethodTree((MethodTree) member));
+          }
+        }
       }
     }
     return result;
   }
 
   private MethodTreeImpl convertMethodTree(MethodTree method) {
-    return null;// new MethodTreeImpl( );
+    return new MethodTreeImpl(
+      convertType(method.getReturnType()),
+      convertMethodSimpleName(method),
+      convertMethodParameters(method),
+      convertThrowsToken(method),
+      convertThrowsClauses(method),
+      convertMethodBody(method),
+      convertSemicolonToken(method));
+  }
+
+  private FormalParametersListTreeImpl convertMethodParameters(MethodTree method) {
+    return new FormalParametersListTreeImpl(
+      tokenManager.getOpenParenToken(method),
+      tokenManager.getCloseParenToken(method)
+    );
+  }
+
+  private SyntaxToken convertThrowsToken(MethodTree method) {
+    return null;
+  }
+
+  private ListTree<TypeTree> convertThrowsClauses(MethodTree method) {
+    QualifiedIdentifierListTreeImpl thrownExceptionTypes = QualifiedIdentifierListTreeImpl.emptyList();
+    for(var thrownExceptionType : method.getThrows()) {
+      thrownExceptionTypes.add(convertType(thrownExceptionType));
+    }
+    return thrownExceptionTypes;
+  }
+
+  private BlockTree convertMethodBody(MethodTree method) {
+    return null;
+  }
+
+  private SyntaxToken convertSemicolonToken(MethodTree method) {
+    return null;
   }
 
   private TypeTree convertType(com.sun.source.tree.Tree type) {
@@ -142,28 +187,6 @@ public class SonarJavaConverter extends TreePathScanner<Void, Void> {
 
   public List<JavaTree.CompilationUnitTreeImpl> getParsedCUs() {
     return parsedCUs;
-  }
-
-  private static class FirstBlockScanner extends TreePathScanner<Void, Void> {
-
-    private BlockTree foundBlock;
-    private final Trees trees;
-
-    private FirstBlockScanner(Trees trees) {
-      this.trees = trees;
-    }
-
-    public BlockTree getBlockTree() {
-      return foundBlock;
-    }
-
-    @Override
-    public Void visitBlock(BlockTree node, Void unused) {
-      if (foundBlock == null) {
-        foundBlock = node;
-      }
-      return super.visitBlock(node, unused);
-    }
   }
 
 }
