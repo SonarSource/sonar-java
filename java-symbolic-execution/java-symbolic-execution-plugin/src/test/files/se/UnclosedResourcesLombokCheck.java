@@ -10,9 +10,8 @@ class UnclosedResourcesLombokCheck {
   }
 
   void withLombokCleanup(String fileName) throws IOException {
-    // FP
     @Cleanup
-    InputStream in = new FileInputStream(fileName); // Noncompliant
+    InputStream in = new FileInputStream(fileName);
     in.read();
   }
 }

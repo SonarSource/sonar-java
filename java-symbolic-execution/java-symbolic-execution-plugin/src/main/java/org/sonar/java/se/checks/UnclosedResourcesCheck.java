@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -474,10 +475,20 @@ public class UnclosedResourcesCheck extends SECheck {
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       // close resource as soon as it is encountered in the resource declaration
-      if (isWithinTryHeader(tree)) {
+      // or if it is annotated with @lombok.Cleanup
+      if (isWithinTryHeader(tree) || isAnnotatedLombokCleanup(tree)) {
         Symbol symbol = tree.symbol();
         closeResource(programState.getValue(symbol));
       }
+    }
+
+    private static boolean isAnnotatedLombokCleanup(IdentifierTree tree) {
+      return tree
+        .symbol()
+        .metadata()
+        .annotations()
+        .stream()
+        .anyMatch(annotation -> annotation.symbol().type().fullyQualifiedName().equals("lombok.Cleanup"));
     }
   }
 
