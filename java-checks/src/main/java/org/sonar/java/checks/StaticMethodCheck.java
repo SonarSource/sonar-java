@@ -108,6 +108,11 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
    */
   private static boolean returnRequiresParentTypeParameter(Symbol.MethodSymbol symbol) {
     // called from visitMethod, so we have declaration (NPE not possible)
+    List<Type> returnTypeVars = new ArrayList<>();
+    collectTypeVars(returnTypeVars, returnType.type());
+    if (returnTypeVars.isEmpty()) {
+      return false;
+    }
     ClassTree parent = (ClassTree) symbol.declaration().parent();
     Set<Symbol> parentTypeParam =
       parent
@@ -116,8 +121,6 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
         .map(TypeParameterTree::symbol)
         .collect(Collectors.toUnmodifiableSet());
     Symbol.TypeSymbol returnType = symbol.returnType();
-    List<Type> returnTypeVars = new ArrayList<>();
-    collectTypeVars(returnTypeVars, returnType.type());
     return returnTypeVars
       .stream()
       .map(Type::symbol)
