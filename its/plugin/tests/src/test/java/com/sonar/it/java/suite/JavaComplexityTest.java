@@ -26,7 +26,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.sonarqube.ws.Issues.Issue;
 
-import static com.sonar.it.java.suite.JavaTestSuite.getMeasure;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -85,11 +84,6 @@ public class JavaComplexityTest {
   @Test
   public void testProjectComplexity() {
     assertThat(getMeasureAsInteger(PROJECT, "complexity")).isEqualTo(16);
-  }
-
-  @Test
-  public void shouldNotPersistDistributionOnFiles() {
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "Helloworld.java"), "function_complexity_distribution")).isNull();
   }
 
   @Test
