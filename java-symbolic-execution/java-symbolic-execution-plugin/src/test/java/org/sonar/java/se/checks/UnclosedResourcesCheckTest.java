@@ -34,6 +34,15 @@ class UnclosedResourcesCheckTest {
   }
 
   @Test
+  void test_lombok() {
+    SECheckVerifier.newVerifier()
+      .onFile("src/test/files/se/UnclosedResourcesLombokCheck.java")
+      .withCheck(new UnclosedResourcesCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
+  @Test
   void jdbcTests() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/JdbcResourcesTestFile.java")
