@@ -21,6 +21,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
 
+class SubclassTest extends ParentTestClass { // Compliant, we cannot know what is in ParentTestClass so we don't raise issues
+}
+
+class Subclass2Test extends myPackage.ParentTestClass {
+}
+
+class Subclass3Test implements MyInterface {
+
+}
+
+abstract class ResolvedParent {}
+class Subclass4Test extends ResolvedParent {} // Noncompliant
 
 class A extends junit.framework.TestCase {
   void testFoo() {
