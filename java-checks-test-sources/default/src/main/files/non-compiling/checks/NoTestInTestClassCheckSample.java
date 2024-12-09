@@ -21,6 +21,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
 
+class SubclassTest extends ParentTestClass { // Compliant, we cannot know what is in ParentTestClass so we don't raise issues
+}
 
 class A extends junit.framework.TestCase {
   void testFoo() {
@@ -242,10 +244,6 @@ abstract class AbstractCrazyHierarchyTest implements TestB { }
 
 interface TestB extends TestA { }
 
-@org.junit.Test
-public class TestSubclass extends ParentTestClass { // Compliant, we cannot know what is in ParentTestClass so we don't raise issues
-}
-
 class MyUnitTest { // Compliant
   @ParameterizedTest
   void foo() {
@@ -268,7 +266,7 @@ class NestedTest { // Compliant
     public void foo() {
       Assert.assertTrue(true);
     }
-  }org.junit.Test
+  }
 }
 
 class NoTestsInNestedTest { // Noncompliant {{Add some tests to this class.}}
