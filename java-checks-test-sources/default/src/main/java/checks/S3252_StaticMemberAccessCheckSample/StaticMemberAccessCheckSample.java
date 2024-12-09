@@ -1,4 +1,4 @@
-package checks;
+package checks.S3252_StaticMemberAccessCheckSample;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
@@ -14,7 +14,7 @@ class StaticMemberAccessParent {
 
 class StaticMemberAccessChild extends StaticMemberAccessParent {
   public StaticMemberAccessChild() {
-    StaticMemberAccessChild.counter++; // Noncompliant {{Use static access with "checks.StaticMemberAccessParent" for "counter".}}
+    StaticMemberAccessChild.counter++; // Noncompliant {{Use static access with "checks.S3252_StaticMemberAccessCheckSample.StaticMemberAccessParent" for "counter".}}
     StaticMemberAccessParent.counter++; // Compliant
 
     StaticMemberAccessChild.foo(); // Noncompliant
@@ -47,5 +47,4 @@ class GuavaFP {
     "sun.rmi.transport.misc",
     "sun.rmi.server.call",
     "sun.rmi.dgc");
-  
 }
