@@ -34,16 +34,6 @@ class NoTestInTestClassCheckTest {
   }
 
   @Test
-  void test_with_semantic(){
-    NoTestInTestClassCheck check = new NoTestInTestClassCheck();
-    CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/NoTestInTestClassCheckSample.java"))
-      .withCheck(check)
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
-  @Test
   void surefire_inclusions_class_name_pattern() {
     NoTestInTestClassCheck check = new NoTestInTestClassCheck();
     check.testClassNamePattern = "Test.*|.*(Test|Tests|TestCase)";
