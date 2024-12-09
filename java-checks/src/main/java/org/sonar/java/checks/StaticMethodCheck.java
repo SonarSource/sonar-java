@@ -126,7 +126,7 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
 
   private static void collectTypeVars(List<Type> accumulator, Type t) {
     for(Type tt: t.typeArguments()) {
-      if(tt.isTypeVar()) {
+      if (tt.isTypeVar()) {
         accumulator.add(tt);
       } else {
         collectTypeVars(accumulator, tt);
