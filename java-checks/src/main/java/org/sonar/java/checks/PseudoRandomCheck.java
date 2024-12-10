@@ -34,6 +34,8 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Make sure that using this pseudorandom number generator is safe here.";
 
+  private static final String LANG3_RANDOM_STRING_UTILS = "org.apache.commons.lang3.RandomStringUtils";
+
   private static final MethodMatchers STATIC_RANDOM_METHODS = MethodMatchers.or(
     MethodMatchers.create().ofTypes("java.lang.Math").names("random").addWithoutParametersMatcher().build(),
     MethodMatchers.create()
@@ -41,14 +43,20 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
         "org.apache.commons.lang.math.RandomUtils",
         "org.apache.commons.lang3.RandomUtils",
         "org.apache.commons.lang.RandomStringUtils",
-        "org.apache.commons.lang3.RandomStringUtils")
+        LANG3_RANDOM_STRING_UTILS)
       .anyName()
       .withAnyParameters()
       .build()
   );
 
+  private static final MethodMatchers RANDOM_STRING_UTILS_SECURE_INSTANCES = MethodMatchers.create()
+    .ofSubTypes(LANG3_RANDOM_STRING_UTILS)
+      .names("secure", "secureStrong")
+      .withAnyParameters()
+      .build();
+
   private static final MethodMatchers RANDOM_STRING_UTILS_RANDOM_WITH_RANDOM_SOURCE = MethodMatchers.create()
-    .ofSubTypes("org.apache.commons.lang.RandomStringUtils", "org.apache.commons.lang3.RandomStringUtils")
+    .ofSubTypes("org.apache.commons.lang.RandomStringUtils", LANG3_RANDOM_STRING_UTILS)
     .names("random")
     .addParametersMatcher("int", "int", "int", "boolean", "boolean", "char[]", "java.util.Random")
     .build();
@@ -65,8 +73,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
+    if (tree instanceof MethodInvocationTree mit) {
       IdentifierTree reportLocation = ExpressionUtils.methodName(mit);
 
       if (isStaticCallToInsecureRandomMethod(mit)) {
@@ -83,6 +90,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   private static boolean isStaticCallToInsecureRandomMethod(MethodInvocationTree mit) {
     return STATIC_RANDOM_METHODS.matches(mit)
       && !RANDOM_STRING_UTILS_RANDOM_WITH_RANDOM_SOURCE.matches(mit)
+      && !RANDOM_STRING_UTILS_SECURE_INSTANCES.matches(mit)
       && mit.methodSymbol().isStatic();
   }
 
