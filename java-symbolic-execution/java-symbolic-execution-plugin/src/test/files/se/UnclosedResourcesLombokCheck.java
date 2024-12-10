@@ -4,12 +4,12 @@ import java.io.InputStream;
 import lombok.Cleanup;
 
 class UnclosedResourcesLombokCheck {
-  public void wrongHandling() throws IOException {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant
-    stream.read();
+  public void missingAnnotation(String fileName) throws IOException {
+    InputStream in = new FileInputStream(fileName); // Noncompliant
+    in.read();
   }
 
-  void withLombokCleanup(String fileName) throws IOException {
+  public void sameButAnnotated(String fileName) throws IOException {
     @Cleanup
     InputStream in = new FileInputStream(fileName);
     in.read();
