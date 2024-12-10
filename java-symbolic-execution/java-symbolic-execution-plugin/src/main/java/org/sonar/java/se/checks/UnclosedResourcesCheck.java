@@ -487,7 +487,7 @@ public class UnclosedResourcesCheck extends SECheck {
         .metadata()
         .annotations()
         .stream()
-        .anyMatch(annotation -> "lombok.Cleanup".equals(annotation.symbol().type().fullyQualifiedName()));
+        .anyMatch(annotation -> annotation.symbol().type().fullyQualifiedName().endsWith("Cleanup"));
     }
   }
 

@@ -10,10 +10,9 @@ class UnclosedResourcesLombokCheck {
     in.read();
   }
 
-  public void sameButAnnotated(String fileName) throws IOException {
+  public void annotated(String fileName) throws IOException {
     @Cleanup
     InputStream in = new FileInputStream(fileName);
     in.read();
   }
 }
-
