@@ -1,5 +1,6 @@
 package org.javac.api;
 
+import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.LineMap;
@@ -91,15 +92,6 @@ public class TokenManager {
     return startPos;
   }
 
-  private int findChar(char c, int startPos) {
-    for (int i = startPos; i < source.length(); i++) {
-      if (source.charAt(i) == c) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
   public long getNodeStartLine(Tree node) {
     long startPosition = getNodeStartPosition(node);
     return startPosition == NOPOS ? NOPOS : lineMap.getLineNumber(startPosition);
@@ -161,4 +153,9 @@ public class TokenManager {
     return null;
   }
 
+  public InternalSyntaxToken getAtToken(AnnotationTree annotation) {
+    long startPosition = getNodeStartPosition(annotation);
+    int startPos = findFirst('@', (int) startPosition, true);
+    return getToken(startPos, startPos + 1);
+  }
 }

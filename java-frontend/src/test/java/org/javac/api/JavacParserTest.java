@@ -53,6 +53,9 @@ class JavacParserTest {
     assertThat(method.simpleName().name()).isEqualTo("testMethod");
     assertThat(method.openParenToken().range()).isEqualTo(Range.at(8, 18, 8, 19));
     assertThat(method.closeParenToken().range()).isEqualTo(Range.at(8, 19, 8, 20));
+    assertThat(method.modifiers()).isNotNull();
+    assertThat(method.modifiers().annotations().size()).isEqualTo(1);
+    assertThat(method.modifiers().annotations().get(0).symbolType().is("org.junit.jupiter.api.Test")).isTrue();
 
   }
 

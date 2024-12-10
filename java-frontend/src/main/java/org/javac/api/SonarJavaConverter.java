@@ -2,6 +2,7 @@ package org.javac.api;
 
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.ModuleTree;
@@ -13,10 +14,13 @@ import com.sun.source.util.Trees;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.lang.model.element.Element;
+import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
@@ -130,7 +134,7 @@ public class SonarJavaConverter extends TreePathScanner<Void, Void> {
   }
 
   private MethodTreeImpl convertMethodTree(MethodTree method) {
-    return new MethodTreeImpl(
+    var methodImpl = new MethodTreeImpl(
       convertType(method.getReturnType()),
       convertMethodSimpleName(method),
       convertMethodParameters(method),
@@ -138,6 +142,21 @@ public class SonarJavaConverter extends TreePathScanner<Void, Void> {
       convertThrowsClauses(method),
       convertMethodBody(method),
       convertSemicolonToken(method));
+    methodImpl.completeWithModifiers(convertModifiers(method));
+    return methodImpl;
+  }
+
+  private ModifiersTreeImpl convertModifiers(MethodTree method) {
+    List<ModifierTree> list = new ArrayList<>();
+    for (var annotation : method.getModifiers().getAnnotations()) {
+      Element annotationType = trees.getElement(trees.getPath(currentCU, annotation));
+      list.add(new AnnotationTreeImpl(
+        tokenManager.getAtToken(annotation),
+        convertType(annotation.getAnnotationType()),
+        ArgumentListTreeImpl.emptyList()
+      ));
+    }
+    return new ModifiersTreeImpl(list);
   }
 
   private FormalParametersListTreeImpl convertMethodParameters(MethodTree method) {
@@ -153,7 +172,7 @@ public class SonarJavaConverter extends TreePathScanner<Void, Void> {
 
   private ListTree<TypeTree> convertThrowsClauses(MethodTree method) {
     QualifiedIdentifierListTreeImpl thrownExceptionTypes = QualifiedIdentifierListTreeImpl.emptyList();
-    for(var thrownExceptionType : method.getThrows()) {
+    for (var thrownExceptionType : method.getThrows()) {
       thrownExceptionTypes.add(convertType(thrownExceptionType));
     }
     return thrownExceptionTypes;
@@ -170,8 +189,13 @@ public class SonarJavaConverter extends TreePathScanner<Void, Void> {
   private TypeTree convertType(com.sun.source.tree.Tree type) {
     return switch (type.getKind()) {
       case PRIMITIVE_TYPE -> convertPrimitiveType((PrimitiveTypeTree) type);
+      case IDENTIFIER -> convertIdentifierType((IdentifierTree) type);
       default -> throw new IllegalArgumentException("Unsupported type: " + type.getKind());
     };
+  }
+
+  private TypeTree convertIdentifierType(IdentifierTree type) {
+    return null;
   }
 
   private JavaTree.PrimitiveTypeTreeImpl convertPrimitiveType(PrimitiveTypeTree primitiveType) {
