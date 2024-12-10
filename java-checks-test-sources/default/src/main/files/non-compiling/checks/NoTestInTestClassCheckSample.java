@@ -123,8 +123,8 @@ public class TestNGClassTest { // Noncompliant
 }
 
 @org.testng.annotations.Test
-public class TestNGClassTestUseAnnotation {
-
+class TestNGClassTestWithMethodAnnotated { // compliant, with testng when the class is annotated with @Test all public methods are considered as tests
+                                          // non public methods can also be added to tests with the @Test annotation
   @org.testng.annotations.Test
   void myMethod(){
 
