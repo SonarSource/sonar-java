@@ -313,13 +313,13 @@ public class MyZohhak4Test { // Compliant
   }
 }
 
-class UndefinedParentSubclassTest extends ParentTestClass { // Compliant, we cannot know what is in ParentTestClass so we don't raise issues
+class SubclassTest extends UndefinedParent { // Compliant, we cannot know what is in ParentTestClass so we don't raise issues
 }
 
-class Subclass2Test extends myPackage.ParentTestClass {
+class Subclass2Test extends myPackage.UndefinedParent {
 }
 
-class Subclass3Test implements MyInterface {
+class Subclass3Test implements UndefinedInterface {
 
 }
 
