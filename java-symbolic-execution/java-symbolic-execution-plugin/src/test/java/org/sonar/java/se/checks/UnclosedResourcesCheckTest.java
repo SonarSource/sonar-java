@@ -34,6 +34,25 @@ class UnclosedResourcesCheckTest {
   }
 
   @Test
+  void doesNotRaiseOnLombokCleanupAnnotatedVariable() {
+    SECheckVerifier.newVerifier()
+      .onFile("src/test/files/se/UnclosedResourcesLombokCheck.java")
+      .withCheck(new UnclosedResourcesCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
+  }
+
+  @Test
+  void doesNotRaiseOnLombokCleanupAnnotatedVariable_noSemantic() {
+    SECheckVerifier.newVerifier()
+      .onFile("src/test/files/se/UnclosedResourcesLombokCheck.java")
+      .withCheck(new UnclosedResourcesCheck())
+      .withoutSemantic()
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
+  }
+
+  @Test
   void jdbcTests() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/JdbcResourcesTestFile.java")
