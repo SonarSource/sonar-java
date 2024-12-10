@@ -4,8 +4,9 @@ import java.io.InputStream;
 import lombok.Cleanup;
 
 class UnclosedResourcesLombokCheck {
-  public void missingAnnotation(String fileName) throws IOException {
-    InputStream in = new FileInputStream(fileName); // Noncompliant
+  public void fullyQualified(String fileName) throws IOException {
+    @lombok.Cleanup
+    InputStream in = new FileInputStream(fileName);
     in.read();
   }
 
