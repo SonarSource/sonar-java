@@ -131,7 +131,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
       return type.isUnknown() || type.is(TEST_NG_TEST);
     };
     Predicate<Symbol> isTestMethod = member -> {
-      boolean annotatedWithTest = member.metadata().annotations().stream().anyMatch(isTestNgAnnotation);
+      boolean annotatedWithTest = member.isMethodSymbol() && member.metadata().annotations().stream().anyMatch(isTestNgAnnotation);
       boolean publicMethod = member.isMethodSymbol() && member.isPublic() && !member.isStatic() && !"<init>".equals(member.name());
       return annotatedWithTest || publicMethod;
     };

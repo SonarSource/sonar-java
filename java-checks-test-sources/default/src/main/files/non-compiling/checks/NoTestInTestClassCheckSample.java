@@ -131,6 +131,23 @@ class TestNGClassTestWithMethodAnnotated { // compliant, with testng when the cl
   }
 }
 
+@org.testng.annotations.Test
+class TestNGClassWithUnkownAnnotation {
+  @Unkown
+  void myMethod(){
+
+  }
+}
+
+@org.testng.annotations.Test
+class TestNGClassWithWrongAnnotation { // Noncompliant
+  @Override
+  void myMethod(){
+
+  }
+}
+
+
 @org.testng.annotations.Test(groups ="integration")
 public abstract class AbstractIntegrationTest2{
 }
