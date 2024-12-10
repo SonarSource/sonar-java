@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -78,7 +79,17 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkClass(ClassTree classTree) {
-    if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
+    boolean hasUnknownParent = Optional.ofNullable(classTree.superClass())
+      .map(parent -> parent.symbolType().isUnknown())
+      // If the superClass is null, then the class has no parent, so has no unknownParent.
+      .orElse(false);
+    boolean knownImplementedInterfaces = classTree.superInterfaces().stream()
+      .noneMatch(i -> i.symbolType().isUnknown());
+
+    if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)
+      && !hasUnknownParent
+      && knownImplementedInterfaces
+    ) {
       Symbol.TypeSymbol classSymbol = classTree.symbol();
       Stream<Symbol> members = getAllMembers(classSymbol, checkRunWith(classSymbol, "Enclosed"));
       IdentifierTree simpleName = classTree.simpleName();
