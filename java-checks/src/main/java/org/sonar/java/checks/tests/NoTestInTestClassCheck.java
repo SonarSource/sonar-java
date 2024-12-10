@@ -81,7 +81,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   private void checkClass(ClassTree classTree) {
     boolean hasUnknownParent = Optional.ofNullable(classTree.superClass())
       .map(parent -> parent.symbolType().isUnknown())
-      // If superClass is null, then the class has no parent, so has no unknownParent.
+      // If the superClass is null, then the class has no parent, so has no unknownParent.
       .orElse(false);
     boolean knownImplementedInterfaces = classTree.superInterfaces().stream()
       .noneMatch(i -> i.symbolType().isUnknown());
