@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -36,7 +37,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S2187")
 public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
@@ -79,11 +79,15 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkClass(ClassTree classTree) {
+    boolean hasUnknownParent = Optional.ofNullable(classTree.superClass())
+      .map(parent -> parent.symbolType().isUnknown())
+      // If superClass is null, then the class has no parent, so has no unknownParent.
+      .orElse(false);
     boolean knownImplementedInterfaces = classTree.superInterfaces().stream()
       .noneMatch(i -> i.symbolType().isUnknown());
 
     if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)
-      && isKnownParent(classTree)
+      && !hasUnknownParent
       && knownImplementedInterfaces
     ) {
       Symbol.TypeSymbol classSymbol = classTree.symbol();
@@ -248,15 +252,6 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isPublicStaticClass(Symbol symbol) {
     return symbol.isTypeSymbol() && symbol.isPublic() && symbol.isStatic();
-  }
-
-  private static boolean isKnownParent(ClassTree tree){
-    TypeTree parent  = tree.superClass();
-    if(parent!=null){
-      return !parent.symbolType().isUnknown();
-    }else{
-      return true;
-    }
   }
 
   private void reportClass(IdentifierTree className) {
