@@ -74,6 +74,15 @@ class PseudoRandomCheckSample {
 //                  ^^^^^^
   }
 
+  static String randomStringUtilsInstances(int value) {
+    return switch (value) {
+      case 0 -> org.apache.commons.lang3.RandomStringUtils.secureStrong().next(42); // Compliant
+      case 42 -> org.apache.commons.lang3.RandomStringUtils.secure().next(42); // Compliant
+      default -> org.apache.commons.lang3.RandomStringUtils.insecure().next(42); // Noncompliant
+      //                                                    ^^^^^^^^
+    };
+  }
+
   int nextInt() {
     return 42;
   }
