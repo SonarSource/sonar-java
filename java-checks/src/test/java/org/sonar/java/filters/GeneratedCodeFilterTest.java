@@ -28,7 +28,7 @@ class GeneratedCodeFilterTest {
   void test() {
     CommentRegularExpressionCheck commentRegularExpressionCheck = new CommentRegularExpressionCheck();
     commentRegularExpressionCheck.regularExpression = ".*alpha.*";
-    FilterVerifier.verify("src/test/files/filters/GeneratedCodeFilter.java", new GeneratedCodeFilter(),
+    FilterVerifier.newInstance().verify("src/test/files/filters/GeneratedCodeFilter.java", new GeneratedCodeFilter(),
       // activated rules
       commentRegularExpressionCheck,
       new BadClassNameCheck(),

@@ -29,7 +29,18 @@ class FilterVerifierTest {
   void filterVerifierShouldFailInCaseOfInvalidFile() {
     String parseErrorFile = "src/test/files/filters/FilterParseError.java";
     JavaIssueFilter testIssueFilter = new TestIssueFilter();
-    assertThrows(AssertionError.class, () -> FilterVerifier.verify(parseErrorFile, testIssueFilter));
+    assertThrows(
+      AssertionError.class,
+      () -> FilterVerifier.newInstance().verify(parseErrorFile, testIssueFilter));
+  }
+
+  @Test
+  void filterVerifierShouldFailInCaseOfInvalidFileWithoutSemantic() {
+    String parseErrorFile = "src/test/files/filters/FilterParseError.java";
+    JavaIssueFilter testIssueFilter = new TestIssueFilter();
+    assertThrows(
+      AssertionError.class,
+      () -> FilterVerifier.newInstance().withoutSemantic().verify(parseErrorFile, testIssueFilter));
   }
 
   /**

@@ -22,6 +22,7 @@ class LombokFilterTest {
 
   @Test
   void test() {
-    FilterVerifier.verify("src/test/files/filters/LombokFilter.java", new LombokFilter());
+    FilterVerifier.newInstance()
+      .verify("src/test/files/filters/LombokFilter.java", new LombokFilter());
   }
 }

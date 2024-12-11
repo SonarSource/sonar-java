@@ -24,11 +24,13 @@ import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPa
 class SpringFilterTest {
   @Test
   void test() {
-    FilterVerifier.verify(mainCodeSourcesPath("filters/SpringFilter.java"), new SpringFilter());
+    FilterVerifier.newInstance()
+      .verify(mainCodeSourcesPath("filters/SpringFilter.java"), new SpringFilter());
   }
 
   @Test
   void test_without_semantic() {
-    FilterVerifier.verify(nonCompilingTestSourcesPath("filters/SpringFilter.java"), new SpringFilter());
+    FilterVerifier.newInstance()
+      .verify(nonCompilingTestSourcesPath("filters/SpringFilter.java"), new SpringFilter());
   }
 }

@@ -22,7 +22,8 @@ class GoogleAutoFilterTest {
 
   @Test
   void test() {
-    FilterVerifier.verify("src/test/files/filters/GoogleAutoFilter.java", new GoogleAutoFilter());
+    FilterVerifier.newInstance()
+      .verify("src/test/files/filters/GoogleAutoFilter.java", new GoogleAutoFilter());
   }
 
 }
