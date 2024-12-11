@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +45,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   public static final String ARCH_UNIT_RUNNER = "ArchUnitRunner";
   public static final String ARCH_UNIT_ANALYZE_CLASSES = "com.tngtech.archunit.junit.AnalyzeClasses";
   public static final String ARCH_UNIT_TEST = "com.tngtech.archunit.junit.ArchTest";
+  private static final String TEST_NG_TEST = "org.testng.annotations.Test";
 
   private static final List<String> PACT_UNIT_TEST = Arrays.asList("au.com.dius.pact.provider.junit.State", "au.com.dius.pact.provider.junitsupport.State");
 
@@ -75,7 +77,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
   private void resetAnnotationCache() {
     Arrays.asList(testFieldAnnotations, testMethodAnnotations, seenAnnotations).forEach(Set::clear);
-    testMethodAnnotations.addAll(Arrays.asList("org.junit.Test", "org.testng.annotations.Test", "org.junit.jupiter.api.Test"));
+    testMethodAnnotations.addAll(Arrays.asList("org.junit.Test", TEST_NG_TEST, "org.junit.jupiter.api.Test"));
   }
 
   private void checkClass(ClassTree classTree) {
@@ -93,7 +95,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
       Symbol.TypeSymbol classSymbol = classTree.symbol();
       Stream<Symbol> members = getAllMembers(classSymbol, checkRunWith(classSymbol, "Enclosed"));
       IdentifierTree simpleName = classTree.simpleName();
-      if (classSymbol.metadata().isAnnotatedWith("org.testng.annotations.Test")) {
+      if (classSymbol.metadata().isAnnotatedWith(TEST_NG_TEST)) {
         checkTestNGmembers(simpleName, members);
       } else {
         boolean isJunit3TestClass = classSymbol.type().isSubtypeOf("junit.framework.TestCase");
@@ -124,7 +126,22 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkTestNGmembers(IdentifierTree className, Stream<Symbol> members) {
-    if (members.noneMatch(member -> member.isMethodSymbol() && member.isPublic() && !member.isStatic() && !"<init>".equals(member.name()))) {
+    Predicate<SymbolMetadata.AnnotationInstance> isTestNgAnnotation = ann -> {
+      Type type = ann.symbol().type();
+      return type.isUnknown() || type.is(TEST_NG_TEST);
+    };
+    Predicate<Symbol> isTestMethod = member -> {
+      if(!member.isMethodSymbol()){
+        return false;
+      }
+
+      // we know member is a method.
+      boolean annotatedWithTest = member.metadata().annotations().stream().anyMatch(isTestNgAnnotation);
+      boolean publicMethod = member.isPublic() && !member.isStatic() && !"<init>".equals(member.name());
+      return annotatedWithTest || publicMethod;
+    };
+
+    if (members.noneMatch(isTestMethod)) {
       reportClass(className);
     }
   }

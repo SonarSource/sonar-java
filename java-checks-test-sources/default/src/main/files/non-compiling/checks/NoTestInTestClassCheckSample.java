@@ -121,6 +121,33 @@ public class TestNGClassTest { // Noncompliant
   private void test1() { }
   public static void foo() {}
 }
+
+@org.testng.annotations.Test
+class TestNGClassTestWithMethodAnnotated { // compliant, with testng when the class is annotated with @Test all public methods are considered as tests
+                                          // non public methods can also be added to tests with the @Test annotation
+  @org.testng.annotations.Test
+  void myMethod(){
+
+  }
+}
+
+@org.testng.annotations.Test
+class TestNGClassWithUnkownAnnotation {
+  @Unkown
+  void myMethod(){
+
+  }
+}
+
+@org.testng.annotations.Test
+class TestNGClassWithWrongAnnotation { // Noncompliant
+  @Override
+  void myMethod(){
+
+  }
+}
+
+
 @org.testng.annotations.Test(groups ="integration")
 public abstract class AbstractIntegrationTest2{
 }
