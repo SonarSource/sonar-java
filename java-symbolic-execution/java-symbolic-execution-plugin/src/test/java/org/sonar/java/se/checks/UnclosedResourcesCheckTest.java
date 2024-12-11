@@ -48,7 +48,6 @@ class UnclosedResourcesCheckTest {
       .onFile("src/test/files/se/UnclosedResourcesLombokCheck.java")
       .withCheck(new UnclosedResourcesCheck())
       .withoutSemantic()
-      .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
   }
 
