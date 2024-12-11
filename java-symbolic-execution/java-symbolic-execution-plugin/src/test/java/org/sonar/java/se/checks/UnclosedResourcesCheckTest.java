@@ -43,7 +43,7 @@ class UnclosedResourcesCheckTest {
   }
 
   @Test
-  void doesNotRaiseOnLombokCleanupAnnotatedVariable_noSemantic() {
+  void doesNotRaiseOnLombokCleanupAnnotatedVariableNoSemantic() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnclosedResourcesLombokCheck.java")
       .withCheck(new UnclosedResourcesCheck())
