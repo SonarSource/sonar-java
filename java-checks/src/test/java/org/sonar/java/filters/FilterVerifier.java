@@ -85,9 +85,9 @@ public class FilterVerifier {
 
     InputFile inputFile = TestUtils.inputFile(filename);
     VisitorsBridgeForTests visitorsBridge;
-    if(this.withoutSemantic) {
+    if (this.withoutSemantic) {
       visitorsBridge = new VisitorsBridgeForTests(visitors, sonarComponents(inputFile), new JavaVersionImpl());
-    } else{
+    } else {
       visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, sonarComponents(inputFile), new JavaVersionImpl());
     }
     JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
