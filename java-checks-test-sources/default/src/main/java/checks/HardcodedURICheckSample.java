@@ -45,8 +45,8 @@ class HardcodedURICheckSample {
 //           ^^^^^^^^^^
 
     String filename;
-    String path = "/home/path/to/my/file.txt"; // Noncompliant {{Refactor your code to get this URI from a customizable parameter.}}
-//                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    String path_ = "/home/path/to/my/file.txt"; // Noncompliant {{Refactor your code to get this URI from a customizable parameter.}}
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
     String fileName = "\\\\blah\\blah\\"; // Noncompliant {{Refactor your code to get this URI from a customizable parameter.}}
     String fileNAME = s; // Compliant
     String stuff = "/home/path/to/my/file.txt"; // Compliant  - requires a variable with adequate name
@@ -62,4 +62,19 @@ class HardcodedURICheckSample {
 
     String v1 = s + "//" + s; // Compliant - not a file name
   }
+
+  static final String relativePath1 = "/search"; // Compliant, we don't raise issues on short relative uri in constants
+  static final String relativePath2 = "/group/members";
+  static final String longRelativePath = "/group/members/list.json"; // Noncompliant
+  static final String urlPath = "https://www.mywebsite.com"; // Noncompliant
+
+  static final String default_uri_path = "/a-great/path/for-this-example"; // Compliant, default_uri is constant and is used in an annotation
+  String path = "/a-great/path/for-this-example"; // FN, we don't test ot what refer an identifier when collecting them in annotations
+
+  @MyAnnotation(path = default_uri_path)
+  void annotated(){}
+
+  @MyAnnotation()
+  String endpoint_url_path = "/a-great/path/for-this-example"; // Compliant, an annotation is applied on the variable
+
 }
