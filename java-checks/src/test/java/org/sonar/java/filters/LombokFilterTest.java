@@ -22,6 +22,14 @@ class LombokFilterTest {
 
   @Test
   void test() {
-    FilterVerifier.verify("src/test/files/filters/LombokFilter.java", new LombokFilter());
+    FilterVerifier.newInstance()
+      .verify("src/test/files/filters/LombokFilter.java", new LombokFilter());
+  }
+
+  @Test
+  void testWithoutSemantic() {
+    FilterVerifier.newInstance()
+      .withoutSemantic()
+      .verify("src/test/files/filters/LombokFilterWithoutSemantic.java", new LombokFilter());
   }
 }

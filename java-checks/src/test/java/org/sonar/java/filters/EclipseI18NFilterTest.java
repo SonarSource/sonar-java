@@ -22,7 +22,8 @@ class EclipseI18NFilterTest {
 
   @Test
   void test() {
-    FilterVerifier.verify("src/test/files/filters/EclipseI18NFilter.java", new EclipseI18NFilter());
+    FilterVerifier.newInstance()
+      .verify("src/test/files/filters/EclipseI18NFilter.java", new EclipseI18NFilter());
   }
 
 }

@@ -40,6 +40,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.JavaVersionImpl;
@@ -58,7 +59,16 @@ import static org.mockito.Mockito.when;
 
 public class FilterVerifier {
 
-  public static void verify(String filename, JavaIssueFilter filter, JavaCheck... extraJavaChecks) {
+  private FilterVerifier() {
+  }
+
+  public static FilterVerifier newInstance() {
+    return new FilterVerifier();
+  }
+
+  private boolean withoutSemantic = false;
+
+  public void verify(String filename, JavaIssueFilter filter, JavaCheck... extraJavaChecks) {
     IssueCollector issueCollector = new IssueCollector();
     List<JavaCheck> visitors = new ArrayList<>();
     visitors.add(filter);
@@ -74,7 +84,12 @@ public class FilterVerifier {
     projectClasspath.add(new File("target/test-classes"));
 
     InputFile inputFile = TestUtils.inputFile(filename);
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, sonarComponents(inputFile), new JavaVersionImpl());
+    VisitorsBridgeForTests visitorsBridge;
+    if (this.withoutSemantic) {
+      visitorsBridge = new VisitorsBridgeForTests(visitors, sonarComponents(inputFile), new JavaVersionImpl());
+    } else {
+      visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, sonarComponents(inputFile), new JavaVersionImpl());
+    }
     JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
     JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
 
@@ -112,6 +127,15 @@ public class FilterVerifier {
 
       Fail.fail("The following lines have not been marked with 'WithIssue' or 'NoIssue' and raised issues:" + builder.toString());
     }
+  }
+
+  /**
+   * Tells the verifier that no bytecode will be provided.
+   * See {@link CheckVerifier#withoutSemantic()} for more.
+   */
+  public FilterVerifier withoutSemantic() {
+    this.withoutSemantic = true;
+    return this;
   }
 
   private static Set<JavaCheck> instantiateRules(Set<Class<? extends JavaCheck>> filteredRules) {

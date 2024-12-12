@@ -56,7 +56,7 @@ class SuppressWarningFilterTest {
   public static final String CONSTANT_RULE_KEY = "java:S115";
   @Test
   void verify() {
-    FilterVerifier.verify("src/test/files/filters/SuppressWarningFilter.java", new SuppressWarningFilter(),
+    FilterVerifier.newInstance().verify("src/test/files/filters/SuppressWarningFilter.java", new SuppressWarningFilter(),
       // activated rules
       new UnusedPrivateFieldCheck(),
       new BadConstantNameCheck(),
@@ -80,7 +80,7 @@ class SuppressWarningFilterTest {
 
   @Test
   void verify_2() {
-    FilterVerifier.verify("src/test/files/filters/SuppressWarningFilter_2.java", new SuppressWarningFilter(),
+    FilterVerifier.newInstance().verify("src/test/files/filters/SuppressWarningFilter_2.java", new SuppressWarningFilter(),
       // activated rules
       new BoxedBooleanExpressionsCheck(),
       new ImmediateReverseBoxingCheck(),
@@ -95,7 +95,7 @@ class SuppressWarningFilterTest {
 
   @Test
   void verify_unused() {
-    FilterVerifier.verify("src/test/files/filters/SuppressWarningFilter_unused.java", new SuppressWarningFilter(),
+    FilterVerifier.newInstance().verify("src/test/files/filters/SuppressWarningFilter_unused.java", new SuppressWarningFilter(),
       // activated rules
       new UnusedLocalVariableCheck(),
       new UnusedLabelCheck(),
@@ -109,7 +109,7 @@ class SuppressWarningFilterTest {
 
   @Test
   void verify_javadoc() {
-    FilterVerifier.verify("src/test/files/filters/SuppressWarningFilter_javadoc.java", new SuppressWarningFilter(),
+    FilterVerifier.newInstance().verify("src/test/files/filters/SuppressWarningFilter_javadoc.java", new SuppressWarningFilter(),
       // activated rules
       new UndocumentedApiCheck()
     );
