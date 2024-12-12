@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.AtLeastOneConstructorCheck;
 import org.sonar.java.checks.CollectionInappropriateCallsCheck;
 import org.sonar.java.checks.ConstantsShouldBeStaticFinalCheck;
@@ -182,7 +183,23 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
   private static boolean usesAnnotation(ClassTree classTree, List<String> annotations) {
     SymbolMetadata classMetadata = classTree.symbol().metadata();
-    return annotations.stream().anyMatch(classMetadata::isAnnotatedWith);
+
+    for(String fullyQualified: annotations) {
+      if(classMetadata.isAnnotatedWith(fullyQualified)) {
+        return true;
+      }
+      // In automatic analysis use only the last part of the annotation.
+      if(classMetadata.isAnnotatedWith(localName(fullyQualified))) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @VisibleForTesting
+  static String localName(String fullyQualified) {
+    return fullyQualified.substring(fullyQualified.lastIndexOf('.') + 1);
   }
 
   private static boolean generatesNonPublicConstructor(ClassTree classTree) {
