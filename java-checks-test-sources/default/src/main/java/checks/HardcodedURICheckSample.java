@@ -67,6 +67,8 @@ class HardcodedURICheckSample {
   static final String relativePath2 = "/group/members";
   static final String longRelativePath = "/group/members/list.json"; // Noncompliant
   static final String urlPath = "https://www.mywebsite.com"; // Noncompliant
+  final String finalRelativePath = "/search"; // Noncompliant
+  static String staticRelativePath = "/search"; // Noncompliant
 
   static final String default_uri_path = "/a-great/path/for-this-example"; // Compliant, default_uri is constant and is used in an annotation
   String path = "/a-great/path/for-this-example"; // FN, we don't test ot what refer an identifier when collecting them in annotations
