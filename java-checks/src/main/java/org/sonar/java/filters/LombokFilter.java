@@ -185,7 +185,6 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     return usesAnnotation(classTree, annotations, false);
   }
 
-  private static final boolean CHECK_LOCAL_NAME = true;
 
   private static boolean usesAnnotation(ClassTree classTree, List<String> annotations, boolean checkLocalName) {
     SymbolMetadata classMetadata = classTree.symbol().metadata();
