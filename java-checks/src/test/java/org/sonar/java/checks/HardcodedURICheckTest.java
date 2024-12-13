@@ -20,12 +20,21 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class HardcodedURICheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/HardcodedURICheckSample.java"))
+      .withCheck(new HardcodedURICheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/HardcodedURICheckSample.java"))
       .withCheck(new HardcodedURICheck())
       .verifyIssues();
   }

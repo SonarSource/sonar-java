@@ -16,16 +16,25 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -33,6 +42,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -67,20 +77,86 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
   private static final Pattern URI_PATTERN = Pattern.compile(URI_REGEX + "|" + LOCAL_URI + "|" + DISK_URI + "|" + BACKSLASH_LOCAL_URI);
   private static final Pattern VARIABLE_NAME_PATTERN = Pattern.compile("filename|path", Pattern.CASE_INSENSITIVE);
   private static final Pattern PATH_DELIMETERS_PATTERN = Pattern.compile("\"/\"|\"//\"|\"\\\\\\\\\"|\"\\\\\\\\\\\\\\\\\"");
+  private static final Pattern RELATIVE_URI_PATTERN = Pattern.compile("^(/[\\w-+!*.]+){1,2}");
+
+
+  // we use these variables to track when we are visiting an annotation
+  private final Deque<AnnotationTree> annotationsStack = new ArrayDeque<>();
+
+  private record IdentifierData(Symbol symbol, String identifier) {
+  }
+
+  private final List<IdentifierData> identifiersUsedInAnnotations = new ArrayList<>();
+
+  private record VariableData(Symbol symbol, String identifier, ExpressionTree initializer) {
+  }
+
+  private final List<VariableData> hardCodedUri = new ArrayList<>();
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    annotationsStack.clear();
+    identifiersUsedInAnnotations.clear();
+    hardCodedUri.clear();
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    // now, we know all variable that are used in annotation so we can report issues
+    Set<Symbol> idSymbols = new HashSet<>();
+    Set<String> idNamesWithSemantic = new HashSet<>();
+    Set<String> idNamesWithoutSemantic = new HashSet<>();
+
+    for (IdentifierData i : identifiersUsedInAnnotations) {
+      if (i.symbol().isUnknown()) {
+        idNamesWithoutSemantic.add(i.identifier());
+      } else {
+        idSymbols.add(i.symbol());
+        idNamesWithSemantic.add(i.identifier());
+      }
+    }
+
+    for(VariableData v : hardCodedUri) {
+      // equals to an identifier with unknown semantic, we cannot compare their symbols
+      if (idNamesWithoutSemantic.contains(v.identifier())) {
+        continue;
+      }
+
+      // idNamesWithSemantic is used to only compare the symbols when their string identifier are the same
+      // as comparing symbols is costly
+      if (idNamesWithSemantic.contains(v.identifier()) && idSymbols.contains(v.symbol())) {
+        continue;
+      }
+      reportHardcodedURI(v.initializer());
+    }
+  }
+
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.NEW_CLASS, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT);
+    return Arrays.asList(Tree.Kind.NEW_CLASS, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.ANNOTATION, Tree.Kind.IDENTIFIER);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.NEW_CLASS)) {
-      checkNewClassTree((NewClassTree) tree);
-    } else if (tree.is(Tree.Kind.VARIABLE)) {
-      checkVariable((VariableTree) tree);
-    } else {
-      checkAssignment((AssignmentExpressionTree) tree);
+    if (tree instanceof NewClassTree classTree) {
+      checkNewClassTree(classTree);
+    } else if (tree instanceof VariableTree variableTree) {
+      checkVariable(variableTree);
+    } else if (tree instanceof AnnotationTree annotationTree) {
+      annotationsStack.add(annotationTree);
+    } else if (tree instanceof IdentifierTree identifier && !annotationsStack.isEmpty()) {
+      identifiersUsedInAnnotations.add(new IdentifierData(identifier.symbol(), identifier.name()));
+    } else if (tree instanceof AssignmentExpressionTree assignment) {
+      checkAssignment(assignment);
+    }
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree instanceof AnnotationTree) {
+      annotationsStack.pop();
     }
   }
 
@@ -91,8 +167,31 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkVariable(VariableTree tree) {
-    if (isFileNameVariable(tree.simpleName())) {
-      checkExpression(tree.initializer());
+    ExpressionTree initializer = tree.initializer();
+
+    if (!isFileNameVariable(tree.simpleName())
+      || initializer == null
+      // we don't raise issues when the variable is annotated
+      || !tree.modifiers().annotations().isEmpty()
+    ) {
+      return;
+    }
+
+    String stringLiteral = stringLiteral(initializer);
+    if (stringLiteral == null) {
+      return;
+    }
+
+    // small relative Uri that are static and final are allowed
+    if (ModifiersUtils.hasAll(tree.modifiers(), Modifier.STATIC, Modifier.FINAL)
+      && RELATIVE_URI_PATTERN.matcher(stringLiteral).matches()) {
+      return;
+    }
+
+    if (isHardcodedURI(initializer)) {
+      hardCodedUri.add(new VariableData(tree.symbol(),
+        tree.simpleName().name(),
+        initializer));
     }
   }
 
@@ -117,26 +216,30 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
     return variable != null && VARIABLE_NAME_PATTERN.matcher(variable.name()).find();
   }
 
-  private void checkExpression(@Nullable ExpressionTree expr) {
-    if (expr != null) {
-      if (isHardcodedURI(expr)) {
-        reportHardcodedURI(expr);
-      } else {
-        reportStringConcatenationWithPathDelimiter(expr);
-      }
+  private void checkExpression(ExpressionTree expr) {
+    if (isHardcodedURI(expr)) {
+      reportHardcodedURI(expr);
+    } else {
+      reportStringConcatenationWithPathDelimiter(expr);
     }
   }
 
   private static boolean isHardcodedURI(ExpressionTree expr) {
-    ExpressionTree newExpr = ExpressionUtils.skipParentheses(expr);
-    if (!newExpr.is(Tree.Kind.STRING_LITERAL)) {
-      return false;
+    String stringLiteral = stringLiteral(expr);
+    return stringLiteral != null
+      && !stringLiteral.contains("*")
+      && !stringLiteral.contains("$")
+      && URI_PATTERN.matcher(stringLiteral).find();
+  }
+
+  @Nullable
+  private static String stringLiteral(ExpressionTree expr) {
+    ExpressionTree unquoted = ExpressionUtils.skipParentheses(expr);
+
+    if (unquoted instanceof LiteralTree literalTree && literalTree.is(Tree.Kind.STRING_LITERAL)) {
+      return LiteralUtils.trimQuotes(literalTree.value());
     }
-    String stringLiteral = LiteralUtils.trimQuotes(((LiteralTree) newExpr).value());
-    if(stringLiteral.contains("*") || stringLiteral.contains("$")) {
-      return false;
-    }
-    return URI_PATTERN.matcher(stringLiteral).find();
+    return null;
   }
 
   private void reportHardcodedURI(ExpressionTree hardcodedURI) {

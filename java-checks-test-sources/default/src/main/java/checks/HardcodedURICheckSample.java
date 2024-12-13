@@ -8,6 +8,8 @@ class HardcodedURICheckSample {
 
   public static @interface MyAnnotation {
     String stuff() default "none";
+    // we cannot name method path otherwise path is detected as an identifier used in annotation
+    //, and it creates clashes (FN) with path variables or fields
     String path() default "/";
   }
 
@@ -62,4 +64,30 @@ class HardcodedURICheckSample {
 
     String v1 = s + "//" + s; // Compliant - not a file name
   }
+
+  @interface MyAnnotation2 {
+    String aVar() default "";
+  }
+
+  static final String relativePath1 = "/search"; // Compliant, we don't raise issues on short relative uri in constants
+  static final String relativePath2 = "/group/members";
+  static final String longRelativePath = "/group/members/list.json"; // Noncompliant
+  static final String urlPath = "https://www.mywebsite.com"; // Noncompliant
+  final String staticIsMissingPath = "/search"; // Noncompliant
+  static String finalIsMissingPath = "/search"; // Noncompliant
+
+  static final String default_uri_path = "/a-great/path/for-this-example"; // Compliant, default_uri is constant and is used in an annotation
+  String aVarPath = "/a-great/path/for-this-example"; // Noncompliant
+
+  @MyAnnotation2(aVar = default_uri_path)
+  void annotated(){}
+
+  @MyAnnotation2()
+  String endpoint_url_path = "/a-great/path/for-this-example"; // Compliant, an annotation is applied on the variable
+
+  void reachFullCoverage(){
+    int path = 0;
+    path = 10;
+  }
+
 }
