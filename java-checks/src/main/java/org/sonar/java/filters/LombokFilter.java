@@ -203,7 +203,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   }
 
   @VisibleForTesting
-  static String localName(String fullyQualified) {
+  static String annotationTypeIdentifier(String fullyQualified) {
     return fullyQualified.substring(fullyQualified.lastIndexOf('.') + 1);
   }
 
