@@ -10,7 +10,7 @@ class HardcodedURICheckSample {
     String stuff() default "none";
     // we cannot name method path otherwise path is detected as an identifier used in annotation
     //, and it creates clashes (FN) with path variables or fields
-    String path__() default "/";
+    String path() default "/";
   }
 
   static final String PATH_WITH_EXPANSION_PATTERN = "/.*+\\.[a-z0-9]{2,4}$"; // Compliant
@@ -20,13 +20,13 @@ class HardcodedURICheckSample {
   String fileName = "//my-network-drive/folder/file.txt"; // Noncompliant
   String[] stuffs = new String[1];
 
-  @MyAnnotation(stuff = "yolo", path__ = "/{var}/bulu/stuff") // Compliant - annotations are ignored
+  @MyAnnotation(stuff = "yolo", path = "/{var}/bulu/stuff") // Compliant - annotations are ignored
   void bar(String var) { }
 
   @MyAnnotation(stuff = "/{var}/bulu/stuff") // Compliant - not a path assignmnet
   void qix(String var) { }
 
-  @MyAnnotation(path__ = "/{var}/bulu/stuff") // Compliant - annotations are ignored
+  @MyAnnotation(path = "/{var}/bulu/stuff") // Compliant - annotations are ignored
   void foo(String s, String var) throws URISyntaxException {
     new Object();
 
@@ -77,7 +77,7 @@ class HardcodedURICheckSample {
   static String finalIsMissingPath = "/search"; // Noncompliant
 
   static final String default_uri_path = "/a-great/path/for-this-example"; // Compliant, default_uri is constant and is used in an annotation
-  String aVar = "/a-great/path/for-this-example"; // FN, we don't test to what refer an identifier when collecting them in annotations
+  String aVarPath = "/a-great/path/for-this-example"; // Noncompliant
 
   @MyAnnotation2(aVar = default_uri_path)
   void annotated(){}

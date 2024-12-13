@@ -20,11 +20,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -34,6 +33,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -43,7 +43,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -83,27 +82,49 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
 
   // we use these variables to track when we are visiting an annotation
   private final Deque<AnnotationTree> annotationsStack = new ArrayDeque<>();
-  private final Set<String> variablesUsedInAnnotations = new HashSet<>();
 
-  // use semantic ???
-  private record HardCodedVariable(String identifier, ExpressionTree initializer) {
+  private record IdentifierData(Symbol symbol, String identifier) {
   }
 
-  private final List<HardCodedVariable> hardCodedUri = new ArrayList<>();
+  private final List<IdentifierData> identifiersUsedInAnnotations = new ArrayList<>();
+
+  private record VariableData(Symbol symbol, String identifier, ExpressionTree initializer) {
+  }
+
+  private final List<VariableData> hardCodedUri = new ArrayList<>();
 
   @Override
   public void setContext(JavaFileScannerContext context) {
     super.setContext(context);
     annotationsStack.clear();
-    variablesUsedInAnnotations.clear();
+    identifiersUsedInAnnotations.clear();
     hardCodedUri.clear();
   }
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     // now, we know all variable that are used in annotation so we can report issues
+    Set<String> idNames = identifiersUsedInAnnotations.stream()
+      .map(IdentifierData::identifier)
+      .collect(Collectors.toSet());
+    Set<Symbol> idSymbols = identifiersUsedInAnnotations.stream()
+      .map(IdentifierData::symbol)
+      .filter(s -> !s.isUnknown())
+      .collect(Collectors.toSet());
+    Set<String> idNamesWithoutSemantic = identifiersUsedInAnnotations.stream()
+      .filter(i -> i.symbol().isUnknown())
+      .map(IdentifierData::identifier)
+      .collect(Collectors.toSet());
+
     hardCodedUri.stream()
-      .filter(v -> !variablesUsedInAnnotations.contains(v.identifier()))
+      .filter(v -> {
+        boolean insideAnnotation = idNames.contains(v.identifier())
+          && (
+            // equals to an identifier with unknown semantic, we cannot compare their symbols
+            idNamesWithoutSemantic.contains(v.identifier())
+            || idSymbols.contains(v.symbol()));
+        return !insideAnnotation;
+      })
       .forEach(v -> reportHardcodedURI(v.initializer()));
   }
 
@@ -122,8 +143,8 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
     } else if (tree instanceof AnnotationTree annotationTree) {
       annotationsStack.add(annotationTree);
     } else if (tree instanceof IdentifierTree identifier && !annotationsStack.isEmpty()) {
-      variablesUsedInAnnotations.add(identifier.name());
-    } else if(tree instanceof AssignmentExpressionTree assignment){
+      identifiersUsedInAnnotations.add(new IdentifierData(identifier.symbol(), identifier.name()));
+    } else if (tree instanceof AssignmentExpressionTree assignment) {
       checkAssignment(assignment);
     }
   }
@@ -152,19 +173,21 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    ModifiersTree modifiers = tree.modifiers();
-    Predicate<String> smallRelativeUri = stringValue ->
-      ModifiersUtils.hasModifier(modifiers, Modifier.STATIC)
-        && ModifiersUtils.hasModifier(modifiers, Modifier.FINAL)
-        && RELATIVE_URI_PATTERN.matcher(stringValue).matches();
-
-
     String stringLiteral = stringLiteral(initializer);
-    if (stringLiteral != null
-      && !smallRelativeUri.test(stringLiteral)
-      && isHardcodedURI(initializer)
-    ) {
-      hardCodedUri.add(new HardCodedVariable(tree.simpleName().name(), initializer));
+    if (stringLiteral == null) {
+      return;
+    }
+
+    // small relative Uri that are static and final are allowed
+    if (ModifiersUtils.hasAll(tree.modifiers(), Modifier.STATIC, Modifier.FINAL)
+      && RELATIVE_URI_PATTERN.matcher(stringLiteral).matches()) {
+      return;
+    }
+
+    if (isHardcodedURI(initializer)) {
+      hardCodedUri.add(new VariableData(tree.symbol(),
+        tree.simpleName().name(),
+        initializer));
     }
   }
 
@@ -195,7 +218,6 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
     } else {
       reportStringConcatenationWithPathDelimiter(expr);
     }
-
   }
 
   private static boolean isHardcodedURI(ExpressionTree expr) {
@@ -210,7 +232,7 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
   private static String stringLiteral(ExpressionTree expr) {
     ExpressionTree unquoted = ExpressionUtils.skipParentheses(expr);
 
-    if (unquoted instanceof LiteralTree literalTree  && literalTree.is(Tree.Kind.STRING_LITERAL)) {
+    if (unquoted instanceof LiteralTree literalTree && literalTree.is(Tree.Kind.STRING_LITERAL)) {
       return LiteralUtils.trimQuotes(literalTree.value());
     }
     return null;
