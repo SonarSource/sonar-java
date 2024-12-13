@@ -104,12 +104,13 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     // now, we know all variable that are used in annotation so we can report issues
-    Set<String> idNames = identifiersUsedInAnnotations.stream()
-      .map(IdentifierData::identifier)
-      .collect(Collectors.toSet());
     Set<Symbol> idSymbols = identifiersUsedInAnnotations.stream()
       .map(IdentifierData::symbol)
       .filter(s -> !s.isUnknown())
+      .collect(Collectors.toSet());
+    Set<String> idNamesWithSemantic = identifiersUsedInAnnotations.stream()
+      .filter(i -> !i.symbol().isUnknown())
+      .map(IdentifierData::identifier)
       .collect(Collectors.toSet());
     Set<String> idNamesWithoutSemantic = identifiersUsedInAnnotations.stream()
       .filter(i -> i.symbol().isUnknown())
@@ -118,11 +119,11 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
 
     hardCodedUri.stream()
       .filter(v -> {
-        boolean insideAnnotation = idNames.contains(v.identifier())
-          && (
-            // equals to an identifier with unknown semantic, we cannot compare their symbols
-            idNamesWithoutSemantic.contains(v.identifier())
-            || idSymbols.contains(v.symbol()));
+        // equals to an identifier with unknown semantic, we cannot compare their symbols
+        boolean insideAnnotation = idNamesWithoutSemantic.contains(v.identifier()) ||
+          // idNamesWithSemantic is used to only compare the symbols when their string identifier are the same
+          // as comparing symbols is costly
+          (idNamesWithSemantic.contains(v.identifier()) && idSymbols.contains(v.symbol()));
         return !insideAnnotation;
       })
       .forEach(v -> reportHardcodedURI(v.initializer()));
