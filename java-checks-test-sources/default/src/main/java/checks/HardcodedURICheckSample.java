@@ -85,4 +85,9 @@ class HardcodedURICheckSample {
   @MyAnnotation2()
   String endpoint_url_path = "/a-great/path/for-this-example"; // Compliant, an annotation is applied on the variable
 
+  void reachFullCoverage(){
+    int path = 0;
+    path = 10;
+  }
+
 }

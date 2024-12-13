@@ -209,7 +209,8 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
   @Nullable
   private static String stringLiteral(ExpressionTree expr) {
     ExpressionTree unquoted = ExpressionUtils.skipParentheses(expr);
-    if (unquoted instanceof LiteralTree literalTree) {
+
+    if (unquoted instanceof LiteralTree literalTree  && literalTree.is(Tree.Kind.STRING_LITERAL)) {
       return LiteralUtils.trimQuotes(literalTree.value());
     }
     return null;
