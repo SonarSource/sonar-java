@@ -20,6 +20,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -104,29 +105,32 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     // now, we know all variable that are used in annotation so we can report issues
-    Set<Symbol> idSymbols = identifiersUsedInAnnotations.stream()
-      .map(IdentifierData::symbol)
-      .filter(s -> !s.isUnknown())
-      .collect(Collectors.toSet());
-    Set<String> idNamesWithSemantic = identifiersUsedInAnnotations.stream()
-      .filter(i -> !i.symbol().isUnknown())
-      .map(IdentifierData::identifier)
-      .collect(Collectors.toSet());
-    Set<String> idNamesWithoutSemantic = identifiersUsedInAnnotations.stream()
-      .filter(i -> i.symbol().isUnknown())
-      .map(IdentifierData::identifier)
-      .collect(Collectors.toSet());
+    Set<Symbol> idSymbols = new HashSet<>();
+    Set<String> idNamesWithSemantic = new HashSet<>();
+    Set<String> idNamesWithoutSemantic = new HashSet<>();
 
-    hardCodedUri.stream()
-      .filter(v -> {
-        // equals to an identifier with unknown semantic, we cannot compare their symbols
-        boolean insideAnnotation = idNamesWithoutSemantic.contains(v.identifier()) ||
-          // idNamesWithSemantic is used to only compare the symbols when their string identifier are the same
-          // as comparing symbols is costly
-          (idNamesWithSemantic.contains(v.identifier()) && idSymbols.contains(v.symbol()));
-        return !insideAnnotation;
-      })
-      .forEach(v -> reportHardcodedURI(v.initializer()));
+    for (IdentifierData i : identifiersUsedInAnnotations) {
+      if (i.symbol().isUnknown()) {
+        idNamesWithoutSemantic.add(i.identifier());
+      } else {
+        idSymbols.add(i.symbol());
+        idNamesWithSemantic.add(i.identifier());
+      }
+    }
+
+    for(VariableData v : hardCodedUri) {
+      // equals to an identifier with unknown semantic, we cannot compare their symbols
+      if (idNamesWithoutSemantic.contains(v.identifier())) {
+        continue;
+      }
+
+      // idNamesWithSemantic is used to only compare the symbols when their string identifier are the same
+      // as comparing symbols is costly
+      if (idNamesWithSemantic.contains(v.identifier()) && idSymbols.contains(v.symbol())) {
+        continue;
+      }
+      reportHardcodedURI(v.initializer());
+    }
   }
 
 
