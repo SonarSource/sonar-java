@@ -102,7 +102,6 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     // now, we know all variable that are used in annotation so we can report issues
-    // all the
     hardCodedUri.stream()
       .filter(v -> !variablesUsedInAnnotations.contains(v.identifier()))
       .forEach(v -> reportHardcodedURI(v.initializer()));
@@ -122,12 +121,10 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
       checkVariable(variableTree);
     } else if (tree instanceof AnnotationTree annotationTree) {
       annotationsStack.add(annotationTree);
-    } else if (tree instanceof IdentifierTree identifier) {
-      if (!annotationsStack.isEmpty()) {
-        variablesUsedInAnnotations.add(identifier.name());
-      }
-    } else {
-      checkAssignment((AssignmentExpressionTree) tree);
+    } else if (tree instanceof IdentifierTree identifier && !annotationsStack.isEmpty()) {
+      variablesUsedInAnnotations.add(identifier.name());
+    } else if(tree instanceof AssignmentExpressionTree assignment){
+      checkAssignment(assignment);
     }
   }
 

@@ -77,7 +77,7 @@ class HardcodedURICheckSample {
   static String finalIsMissingPath = "/search"; // Noncompliant
 
   static final String default_uri_path = "/a-great/path/for-this-example"; // Compliant, default_uri is constant and is used in an annotation
-  String aVar = "/a-great/path/for-this-example"; // FN, we don't test ot what refer an identifier when collecting them in annotations
+  String aVar = "/a-great/path/for-this-example"; // FN, we don't test to what refer an identifier when collecting them in annotations
 
   @MyAnnotation2(aVar = default_uri_path)
   void annotated(){}
