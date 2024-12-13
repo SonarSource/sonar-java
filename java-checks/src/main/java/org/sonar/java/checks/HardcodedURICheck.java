@@ -133,7 +133,7 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.ANNOTATION)) {
+    if (tree instanceof AnnotationTree) {
       annotationsStack.pop();
     }
   }
