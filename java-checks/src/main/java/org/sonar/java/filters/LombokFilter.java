@@ -208,7 +208,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   }
 
   private static boolean generatesNonPublicConstructor(ClassTree classTree) {
-    if (usesAnnotation(classTree, UTILITY_CLASS, CHECK_LOCAL_NAME)) {
+    if (usesAnnotation(classTree, UTILITY_CLASS, true)) {
       return true;
     }
     SymbolMetadata metadata = classTree.symbol().metadata();
