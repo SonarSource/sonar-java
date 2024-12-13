@@ -18,6 +18,9 @@ package org.sonar.java.filters;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.filters.LombokFilter.annotationTypeIdentifier;
+
 class LombokFilterTest {
 
   @Test
@@ -31,5 +34,12 @@ class LombokFilterTest {
     FilterVerifier.newInstance()
       .withoutSemantic()
       .verify("src/test/files/filters/LombokFilterWithoutSemantic.java", new LombokFilter());
+  }
+
+  @Test
+  void testAnnotationTypeIdentifier() {
+    assertThat(annotationTypeIdentifier("noDot")).isEqualTo("noDot");
+    assertThat(annotationTypeIdentifier("one.dot")).isEqualTo("dot");
+    assertThat(annotationTypeIdentifier("many.many.dots")).isEqualTo("dots");
   }
 }
