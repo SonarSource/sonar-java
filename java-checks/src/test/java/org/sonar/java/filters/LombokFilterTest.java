@@ -19,7 +19,7 @@ package org.sonar.java.filters;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.filters.LombokFilter.localName;
+import static org.sonar.java.filters.LombokFilter.annotationTypeIdentifier;
 
 class LombokFilterTest {
 
@@ -37,9 +37,9 @@ class LombokFilterTest {
   }
 
   @Test
-  void testLocalName() {
-    assertThat(localName("noDot")).isEqualTo("noDot");
-    assertThat(localName("one.dot")).isEqualTo("dot");
-    assertThat(localName("many.many.dots")).isEqualTo("dots");
+  void testAnnotationTypeIdentifier() {
+    assertThat(annotationTypeIdentifier("noDot")).isEqualTo("noDot");
+    assertThat(annotationTypeIdentifier("one.dot")).isEqualTo("dot");
+    assertThat(annotationTypeIdentifier("many.many.dots")).isEqualTo("dots");
   }
 }

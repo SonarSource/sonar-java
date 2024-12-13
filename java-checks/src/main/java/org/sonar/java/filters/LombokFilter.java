@@ -184,8 +184,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   private static boolean usesAnnotation(ClassTree classTree, List<String> annotations) {
     return usesAnnotation(classTree, annotations, false);
   }
-
-
+  
   private static boolean usesAnnotation(ClassTree classTree, List<String> annotations, boolean shouldCheckAnnotationLocalName) {
     SymbolMetadata classMetadata = classTree.symbol().metadata();
 
@@ -194,7 +193,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
         return true;
       }
       // In automatic analysis use only the last part of the annotation.
-      if(checkLocalName && classMetadata.isAnnotatedWith(localName(fullyQualified))) {
+      if(shouldCheckAnnotationLocalName && classMetadata.isAnnotatedWith(annotationTypeIdentifier(fullyQualified))) {
         return true;
       }
     }
