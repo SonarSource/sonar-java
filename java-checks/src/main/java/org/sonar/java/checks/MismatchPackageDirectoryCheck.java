@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private static final String MESSAGE = "This file \"{0}\" should be located in \"{1}\" directory, not in \"{2}\"";
+  private static final String MESSAGE = "File path \"{0}\" should match package name \"{1}\". Move file or change package name";
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -47,7 +47,10 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
       String dir = javaFile.getParent();
       if (!dir.endsWith(packageName)) {
         String dirWithoutDots = dir.replace(".", File.separator);
-        String issueMessage = MessageFormat.format(MESSAGE, javaFile.getName(), packageName, dir);
+        int srcIndex = dir.indexOf("src");
+        String truncatedPath = "/" + dir.substring(srcIndex == -1 ? 0 : srcIndex);
+        String issueMessage = MessageFormat.format(MESSAGE, truncatedPath, packageName);
+
         if (dirWithoutDots.endsWith(packageName)) {
           context.reportIssue(this, packageDeclaration.packageName(), issueMessage + "(Do not use dots in directory names).");
         } else {
