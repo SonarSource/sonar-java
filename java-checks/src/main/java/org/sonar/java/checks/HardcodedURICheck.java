@@ -264,7 +264,7 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
 
     private void checkPathDelimiter(ExpressionTree expr) {
       ExpressionTree newExpr = ExpressionUtils.skipParentheses(expr);
-      if (newExpr.is(Tree.Kind.STRING_LITERAL) && PATH_DELIMETERS_PATTERN.matcher(((LiteralTree) newExpr).value()).matches()) {
+      if (newExpr.is(Tree.Kind.STRING_LITERAL) && PATH_DELIMETERS_PATTERN.matcher(((LiteralTree) newExpr).value()).find()) {
         reportIssue(newExpr, "Remove this hard-coded path-delimiter.");
       }
     }
