@@ -179,6 +179,8 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
 
     String stringLiteral = stringLiteral(initializer);
     if (stringLiteral == null) {
+      // the visitor only report path delimiter on binary expressions, so the initializer must not be a string literal
+      reportStringConcatenationWithPathDelimiter(initializer);
       return;
     }
 
@@ -262,7 +264,7 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
 
     private void checkPathDelimiter(ExpressionTree expr) {
       ExpressionTree newExpr = ExpressionUtils.skipParentheses(expr);
-      if (newExpr.is(Tree.Kind.STRING_LITERAL) && PATH_DELIMETERS_PATTERN.matcher(((LiteralTree) newExpr).value()).find()) {
+      if (newExpr.is(Tree.Kind.STRING_LITERAL) && PATH_DELIMETERS_PATTERN.matcher(((LiteralTree) newExpr).value()).matches()) {
         reportIssue(newExpr, "Remove this hard-coded path-delimiter.");
       }
     }
