@@ -35,6 +35,7 @@ class HardcodedURICheckSample {
     new File("", s); // Compliant
     new File("", s + "/" + s); // Noncompliant {{Remove this hard-coded path-delimiter.}}
 //                   ^^^
+    String path1 = "a" + "/" + "b"; // Noncompliant {{Remove this hard-coded path-delimiter.}}
 
     new URI("http:https"); // Compliant
     new URI("http://www.mywebsite.com"); // Noncompliant {{Refactor your code to get this URI from a customizable parameter.}}
