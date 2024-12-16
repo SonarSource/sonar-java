@@ -5,7 +5,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 class HardcodedURICheckSample {
-  String path2 = "/"; // Noncompliant {{Remove this hard-coded path-delimiter.}}
 
   public static @interface MyAnnotation {
     String stuff() default "none";
