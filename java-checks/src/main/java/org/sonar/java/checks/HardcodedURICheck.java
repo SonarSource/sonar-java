@@ -179,7 +179,7 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
 
     String stringLiteral = stringLiteral(initializer);
     if (stringLiteral == null) {
-      // the visitor only report path delimiter on binary expressions, so the initializer must not be a string literal
+      // The check below applies only to binary expressions, so we apply it only if the initializer is not a literal.
       reportStringConcatenationWithPathDelimiter(initializer);
       return;
     }
