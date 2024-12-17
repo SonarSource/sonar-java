@@ -1,9 +1,9 @@
 <p>This rule raises an issue on a non-transient and non-serializable field within a serializable class, if said class does not have
 <code>writeObject</code> and <code>readObject</code> methods defined.</p>
 <h2>Why is this an issue?</h2>
-<p>By contract, fields in a <code>Serializable</code> class must themselves be either <code>Serializable</code> or <code>transient</code>. Even if the
-class is never explicitly serialized or deserialized, it is not safe to assume that this cannot happen. For instance, under load, most J2EE
-application frameworks flush objects to disk.</p>
+<p>By contract, non-static fields in a <code>Serializable</code> class must themselves be either <code>Serializable</code> or <code>transient</code>.
+Even if the class is never explicitly serialized or deserialized, it is not safe to assume that this cannot happen. For instance, under load, most
+J2EE application frameworks flush objects to disk.</p>
 <p>An object that implements <code>Serializable</code> but contains non-transient, non-serializable data members (and thus violates the contract)
 could cause application crashes and open the door to attackers. In general, a <code>Serializable</code> class is expected to fulfil its contract and
 not exhibit unexpected behaviour when an instance is serialized.</p>
@@ -82,6 +82,16 @@ public class Person implements Serializable {
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
     // Appropriate deserialization logic here
   }
+}
+</pre>
+<p>Finally, static fields are out of scope for serialization, so making a field static prevents issues from being raised.</p>
+<pre>
+public class Person implements Serializable {
+  private static final long serialVersionUID = 1905122041950251207L;
+
+  private String name;
+
+  private static Logger log = getLogger(); // Compliant, static fields are not serialized
 }
 </pre>
 <h2>Resources</h2>

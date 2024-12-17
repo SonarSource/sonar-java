@@ -10,11 +10,20 @@
 <p>For all those reasons, a URI should never be hard coded. Instead, it should be replaced by a customizable parameter.</p>
 <p>Further, even if the elements of a URI are obtained dynamically, portability can still be limited if the path delimiters are hard-coded.</p>
 <p>This rule raises an issue when URIs or path delimiters are hard-coded.</p>
+<h3>Exceptions</h3>
+<p>This rule does not raise an issue when:</p>
+<ul>
+  <li> A constant path is relative and contains at most two parts. </li>
+  <li> A constant path is used in an annotation </li>
+  <li> A path is annotated </li>
+</ul>
 <h2>How to fix it</h2>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public class Foo {
+  public static final String FRIENDS_ENDPOINT = "/user/friends"; // Compliant path is relative and has only two parts
+
   public Collection&lt;User&gt; listUsers() {
     File userList = new File("/home/mylogin/Dev/users.txt"); // Noncompliant
     Collection&lt;User&gt; users = parse(userList);
@@ -38,6 +47,21 @@ public class Foo {
     Collection&lt;User&gt; users = parse(userList);
     return users;
   }
+}
+</pre>
+<p>Exceptions examples:</p>
+<pre>
+public class Foo {
+  public static final String FRIENDS_ENDPOINT = "/user/friends"; // Compliant path is relative and has only two parts
+
+  public static final String ACCOUNT = "/account/group/list.html"; // Compliant path is used in an annotation
+
+  @Value("${base.url}" + ACCOUNT)
+  private String groupUrl;
+
+  @MyAnnotation()
+  String path = "/default/url/for/site"; // Compliant path is annotated
+
 }
 </pre>
 
