@@ -48,8 +48,8 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
       if (!dir.endsWith(packageName)) {
         String dirWithoutDots = dir.replace(".", File.separator);
         int srcIndex = dir.indexOf("src");
-        String truncatedPath = "/" + dir.substring(srcIndex == -1 ? 0 : srcIndex);
-        String issueMessage = MessageFormat.format(MESSAGE, truncatedPath, packageName);
+        String truncatedPath = dir.substring(srcIndex == -1 ? 0 : srcIndex);
+        String issueMessage = MessageFormat.format(MESSAGE, truncatedPath, packageName.replace(File.separator, "."));
 
         if (dirWithoutDots.endsWith(packageName)) {
           context.reportIssue(this, packageDeclaration.packageName(), issueMessage + "(Do not use dots in directory names).");
