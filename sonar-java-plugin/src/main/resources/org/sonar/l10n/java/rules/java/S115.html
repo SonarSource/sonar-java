@@ -46,6 +46,19 @@ public enum MyEnum {
   OPTION_TWO;
 }
 </pre>
+<h3>Exceptions</h3>
+<p>The rule applies to fields of primitive types (for example, <code>float</code>), boxed primitives (<code>Float</code>), and Strings. We do not
+apply it to other types, which can be mutated, or have methods with side effects.</p>
+<pre>
+public static final Logger log = getLogger(MyClass.class);
+public static final List&lt;Integer&gt; myList = new ArrayList&lt;&gt;();
+
+// call with side-effects
+log.info("message")
+
+// mutating an object
+myList.add(28);
+</pre>
 <h2>Resources</h2>
 <h3>External coding guidelines</h3>
 <ul>
