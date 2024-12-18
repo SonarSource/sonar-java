@@ -11,10 +11,8 @@ env:
   ARTIFACTORY_DEPLOY_REPO: sonarsource-public-qa
   ARTIFACTORY_ACCESS_TOKEN: VAULT[development/artifactory/token/${CIRRUS_REPO_OWNER}-${CIRRUS_REPO_NAME}-private-reader access_token]
   GITHUB_TOKEN: VAULT[development/github/token/licenses-ro token]
-  GRADLE_ENTERPRISE_USERNAME: VAULT[development/team/sonarqube/kv/data/gradle-enterprise data.username]
-  GRADLE_ENTERPRISE_PASSWORD: VAULT[development/team/sonarqube/kv/data/gradle-enterprise data.password]
-  GRADLE_ENTERPRISE_URL: VAULT[development/team/sonarqube/kv/data/gradle-enterprise data.url]
-  GRADLE_ENTERPRISE_KEY: VAULT[development/team/sonarqube/kv/data/gradle-enterprise data.access-key]
+  DEVELOCITY_TOKEN: VAULT[development/kv/data/develocity data.token]
+  DEVELOCITY_ACCESS_KEY: develocity.sonar.build=${DEVELOCITY_TOKEN}
   # Use bash (instead of sh on linux or cmd.exe on windows)
   CIRRUS_SHELL: bash
   # Allows to run builds for the 50 last commits in a branch:
@@ -46,6 +44,10 @@ win_vm_definition: &WINDOWS_VM_DEFINITION
 
 only_sonarsource_qa: &ONLY_SONARSOURCE_QA
   only_if: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_TAG == "" && ($CIRRUS_PR != "" || $CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*" || $CIRRUS_BRANCH =~ "dogfood-on-.*")
+
+log_develocity_url_script: &log_develocity_url_script |
+  echo "Develocity URL: https://develocity.sonar.build/scans?search.publicHostnames=cirrus-ci-task-${CIRRUS_TASK_ID}"
+
 
 common_build_definition: &COMMON_BUILD_DEFINITION
   eks_container:
@@ -82,6 +84,7 @@ orchestrator_cache_elements_definition: &ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
 build_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
+    - *log_develocity_url_script
     - source cirrus-env BUILD
     - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws'
   cleanup_before_cache_script: cleanup_maven_repository
@@ -89,6 +92,7 @@ build_task:
 test_analyze_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
+    - *log_develocity_url_script
     - source cirrus-env BUILD
     # ignore duplications in the SE engine plugin, as it will be moved away from sonar-java at some point
     - PULL_REQUEST_SHA=$GIT_SHA1 regular_mvn_build_deploy_analyze -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true -Dsonar.cpd.exclusions=java-symbolic-execution/**
@@ -128,6 +132,7 @@ qa_os_win_task:
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
+    - *log_develocity_url_script
     - source cirrus-env CI
     - mvn.cmd clean verify
   cleanup_before_cache_script: cleanup_maven_repository
@@ -157,6 +162,7 @@ plugin_qa_task:
   submodules_script:
     - git submodule update --init --recursive
   qa_script:
+    - *log_develocity_url_script
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/plugin
@@ -175,6 +181,7 @@ sanity_task:
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   sanity_script:
+    - *log_develocity_url_script
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd java-checks-test-sources
@@ -205,6 +212,7 @@ ruling_task:
       - PROFILE: without-sonarqube-project
       - PROFILE: only-sonarqube-project
   ruling_script:
+    - *log_develocity_url_script
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
@@ -232,6 +240,7 @@ ruling_win_task:
       - PROFILE: without-sonarqube-project
       - PROFILE: only-sonarqube-project
   ruling_script:
+    - *log_develocity_url_script
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - init_git_submodules its/sources
@@ -258,6 +267,7 @@ autoscan_task:
   orchestrator_LATEST_RELEASE_cache:
     <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
   autoscan_script:
+    - *log_develocity_url_script
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd java-checks-test-sources

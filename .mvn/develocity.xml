@@ -1,0 +1,13 @@
+<develocity>
+  <server>
+    <url>https://develocity.sonar.build</url>
+  </server>
+  <buildCache>
+    <local>
+      <storeEnabled>#{env['CI'] == null}</storeEnabled>
+    </local>
+    <remote>
+      <storeEnabled>#{env['CI'] != null}</storeEnabled>
+    </remote>
+  </buildCache>
+</develocity>
