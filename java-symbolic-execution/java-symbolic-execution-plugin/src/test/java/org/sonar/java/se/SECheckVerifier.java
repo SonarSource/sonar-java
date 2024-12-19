@@ -134,6 +134,11 @@ public class SECheckVerifier implements CheckVerifier {
   }
 
   @Override
+  public CheckVerifier withRootDirectory(String rootDirectory) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public void verifyIssues() {
     checkVerifier.verifyIssues();
   }

@@ -17,7 +17,8 @@
 package org.sonar.java.checks;
 
 import java.io.File;
-import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.PackageUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -30,7 +31,7 @@ import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private static final String MESSAGE = "File path \"{0}\" should match package name \"{1}\". Move file or change package name";
+  private static final String MESSAGE = "File path \"%s\" should match package name \"%s\". Move file or change package name";
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -47,9 +48,24 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
       String dir = javaFile.getParent();
       if (!dir.endsWith(packageName)) {
         String dirWithoutDots = dir.replace(".", File.separator);
-        int srcIndex = dir.indexOf("src");
-        String truncatedPath = dir.substring(srcIndex == -1 ? 0 : srcIndex);
-        String issueMessage = MessageFormat.format(MESSAGE, truncatedPath, packageName.replace(File.separator, "."));
+        String truncatedPath = dir;
+
+        File rootDirectory = context.getRootProjectWorkingDirectory();
+        File fileDirectory = javaFile.getParentFile();
+
+        if(rootDirectory!=null){
+          String rootName = rootDirectory.getName();
+          List<String> path = new ArrayList<>();
+
+          while (fileDirectory != null && !fileDirectory.getName().equals(rootName)) {
+            path.add(0, fileDirectory.getName());
+            fileDirectory = fileDirectory.getParentFile();
+          }
+
+          truncatedPath = String.join(File.separator, path);
+        }
+
+        String issueMessage = String.format(MESSAGE, truncatedPath, packageName.replace(File.separator, "."));
 
         if (dirWithoutDots.endsWith(packageName)) {
           context.reportIssue(this, packageDeclaration.packageName(), issueMessage + "(Do not use dots in directory names).");

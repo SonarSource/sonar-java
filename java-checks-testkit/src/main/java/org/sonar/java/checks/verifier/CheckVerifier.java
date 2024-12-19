@@ -229,6 +229,14 @@ public interface CheckVerifier {
    */
   CheckVerifier withCache(@Nullable ReadCache readCache, @Nullable WriteCache writeCache);
 
+
+  /**
+   * Tells the verifier to feed the check with cached information in its preScan phase.
+   * @param rootDirectory The path of the project root working directory
+   * @return the verifier configured with the project root working directory.
+   */
+  CheckVerifier withRootDirectory(String rootDirectory);
+
   /**
    * Verifies that all the expected issues are correctly raised by the rule(s),
    * at their expected positions and attributes.

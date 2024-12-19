@@ -48,6 +48,24 @@ class MismatchPackageDirectoryCheckTest {
   }
 
   @Test
+  void mismatch_with_root_directory() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/mismatchPackage/Mismatch.java")
+      .withCheck(new MismatchPackageDirectoryCheck())
+      .withRootDirectory("src")
+      .verifyIssues();
+  }
+
+  @Test
+  void mismatch_with_wrong_root_directory() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/mismatchPackage/Mismatch.java")
+      .withCheck(new MismatchPackageDirectoryCheck())
+      .withRootDirectory("notADirectory")
+      .verifyIssues();
+  }
+
+  @Test
   void mismatchWithDots() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/mismatchPackage/with.dots/PackageWithDots.java")
