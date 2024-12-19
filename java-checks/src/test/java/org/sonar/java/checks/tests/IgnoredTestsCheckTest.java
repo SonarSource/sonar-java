@@ -17,6 +17,7 @@
 package org.sonar.java.checks.tests;
 
 import java.util.Collections;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
