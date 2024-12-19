@@ -60,10 +60,12 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
       getSilentlyIgnoredAnnotation(symbolMetadata, annotationName)
         .ifPresent(
           annotationTree -> {
-            String shortName = annotationTypeIdentifier(annotationName);
-            String message = String.format("Either add an explanation about why this test is skipped or remove the \"@%s\" annotation.", shortName);
+            String message = String.format(
+              "Either add an explanation about why this test is skipped or remove the \"@%s\" annotation.",
+              annotationTypeIdentifier(annotationName)
+            );
             List<JavaFileScannerContext.Location> secondaryLocation =
-              Collections.singletonList(new JavaFileScannerContext.Location(shortName, annotationTree));
+              Collections.singletonList(new JavaFileScannerContext.Location("Cause", annotationTree));
             context.reportIssue(this, methodTree.simpleName(), message, secondaryLocation, null);
           }
         );
@@ -102,7 +104,9 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
         return Optional.empty();
       }
       if (type.is(fullyQualifiedName)) {
-        return annotation.values().isEmpty() ? Optional.of(symbolMetadata.findAnnotationTree(annotation)) : Optional.empty();
+        return annotation.values().isEmpty()
+          ? Optional.of(symbolMetadata.findAnnotationTree(annotation))
+          : Optional.empty();
       }
     }
     return Optional.empty();
