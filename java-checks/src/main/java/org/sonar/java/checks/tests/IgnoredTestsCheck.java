@@ -60,13 +60,14 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
       getSilentlyIgnoredAnnotation(symbolMetadata, annotationName)
         .ifPresent(
           annotationTree -> {
+            String shortName = annotationTypeIdentifier(annotationName);
             String message = String.format(
               "Either add an explanation about why this test is skipped or remove the \"@%s\" annotation.",
-              annotationTypeIdentifier(annotationName)
+              shortName
             );
-            List<JavaFileScannerContext.Location> secondaryLocation =
-              Collections.singletonList(new JavaFileScannerContext.Location("Cause", annotationTree));
-            context.reportIssue(this, methodTree.simpleName(), message, secondaryLocation, null);
+            JavaFileScannerContext.Location secondaryLocation =
+              new JavaFileScannerContext.Location(String.format("@%s annotation skips the test", shortName), annotationTree);
+            context.reportIssue(this, methodTree.simpleName(), message, Collections.singletonList(secondaryLocation), null);
           }
         );
     }
