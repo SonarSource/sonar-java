@@ -6,13 +6,17 @@ import org.junit.jupiter.api.Disabled;
 
 abstract class IgnoredTestsCheckSample {
   @org.junit.Ignore
+//^^^^^^^^^^^^^^^^^>
   void foo() {} // Noncompliant {{Either add an explanation about why this test is skipped or remove the "@Ignore" annotation.}}
 //     ^^^
 
   @Ignore
+//^^^^^^^>
   void bar() {} // Noncompliant
+//     ^^^
 
   @Disabled
+//^^^^^^^^^>
   void disabledJunit5() {} // Noncompliant {{Either add an explanation about why this test is skipped or remove the "@Disabled" annotation.}}
 //     ^^^^^^^^^^^^^^
 
