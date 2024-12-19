@@ -90,6 +90,7 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  /// If a test method is silently ignored, returns the annotation that causes this behavior.
   private static Optional<AnnotationTree> getSilentlyIgnoredAnnotation(SymbolMetadata symbolMetadata, String fullyQualifiedName) {
     // This code duplicates the behavior of SymbolMetadata.valuesForAnnotation but checks for broken semantics
     for (SymbolMetadata.AnnotationInstance annotation : symbolMetadata.annotations()) {
