@@ -104,7 +104,7 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
       }
       if (type.is(fullyQualifiedName)) {
         return annotation.values().isEmpty()
-          ? Optional.of(symbolMetadata.findAnnotationTree(annotation))
+          ? Optional.ofNullable(symbolMetadata.findAnnotationTree(annotation))
           : Optional.empty();
       }
     }
