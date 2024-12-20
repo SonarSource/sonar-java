@@ -56,15 +56,14 @@ public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
    * <pre>
    *   case "Monday", "Tuesday":
    *   case "Wednesday:
-   *   default:
+   *   default: // considered 1 label
    * </pre>
    */
   private static int totalLabelCount(CaseGroupTree caseGroup) {
     int total = 0;
     for (CaseLabelTree label: caseGroup.labels()) {
-      // Use the number of labels, but `default` (which does not have any expressions)
-      // counts as 1 label.
       int sz = label.expressions().size();
+      // `default` does not have any expressions, but we consider it 1 label.
       total += sz > 0 ? sz : 1;
     }
     return total;
