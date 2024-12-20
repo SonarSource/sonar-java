@@ -58,18 +58,16 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
     // check for @Ignore or @Disabled annotations
     for (String annotationName : List.of("org.junit.Ignore", "org.junit.jupiter.api.Disabled")) {
       getSilentlyIgnoredAnnotation(symbolMetadata, annotationName)
-        .ifPresent(
-          annotationTree -> {
-            String shortName = annotationTypeIdentifier(annotationName);
-            String message = String.format(
-              "Either add an explanation about why this test is skipped or remove the \"@%s\" annotation.",
-              shortName
-            );
-            JavaFileScannerContext.Location secondaryLocation =
-              new JavaFileScannerContext.Location(String.format("@%s annotation skips the test", shortName), annotationTree);
-            context.reportIssue(this, methodTree.simpleName(), message, Collections.singletonList(secondaryLocation), null);
-          }
-        );
+        .ifPresent(annotationTree -> {
+          String shortName = annotationTypeIdentifier(annotationName);
+          String message = String.format(
+            "Either add an explanation about why this test is skipped or remove the \"@%s\" annotation.",
+            shortName
+          );
+          JavaFileScannerContext.Location secondaryLocation =
+            new JavaFileScannerContext.Location(String.format("@%s annotation skips the test", shortName), annotationTree);
+          context.reportIssue(this, methodTree.simpleName(), message, Collections.singletonList(secondaryLocation), null);
+        });
     }
 
     // check for "assumeFalse(true)" and "assumeTrue(false)"-calls, which may also result in permanent skipping of the given test
