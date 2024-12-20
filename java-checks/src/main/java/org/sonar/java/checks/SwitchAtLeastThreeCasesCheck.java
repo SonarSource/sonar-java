@@ -52,15 +52,16 @@ public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
 
   /**
    * Count labels, taking into account Java 14 multi-label switch.
-   * For example, here we have 3 labels:
+   * For example, here we have 4 labels:
    * <pre>
    *   case "Monday", "Tuesday":
    *   case "Wednesday:
+   *   default:
    * </pre>
    */
   private static int totalLabelCount(CaseGroupTree caseGroup) {
     int total = 0;
-    for(CaseLabelTree label: caseGroup.labels()) {
+    for (CaseLabelTree label: caseGroup.labels()) {
       // Use the number of labels, but `default` (which does not have any expressions)
       // counts as 1 label.
       int sz = label.expressions().size();
