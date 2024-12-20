@@ -1,16 +1,19 @@
-class A {
+package checks.tests;
 
-  static void recordSwitch1(MyRecord object) {
-    switch (object) { // Compliant
-      case String x when x.length() > 42 -> { }
-      case Integer i -> { }
-    }
-  }
+public class SwitchAtLeastThreeCasesCheckSample {
+  record MyRecord(int x, int y) {}
 
   static void recordSwitch1(Object object) {
     switch (object) { // Compliant
+      case String x when x.length() > 42 -> { }
+      default -> { }
+    }
+  }
+
+  static void recordSwitch2(Object object) {
+    switch (object) { // Compliant
       case MyRecord(int x, int y) -> { }
-      case String s -> { }
+      default -> { }
     }
   }
 
@@ -19,22 +22,25 @@ class A {
     record Box() implements Shape { }
     record Circle() implements Shape {}
 
-    void foo(Shape shape) {
+    default void foo(Shape shape) {
       switch (shape) { // Compliant because of type pattern matching
         case Box ignored -> { }
         case Circle ignored -> System.out.println();
       }
     }
 
-    void goo(Shape shape) {
+    default void goo(Shape shape) {
       switch (shape) { // Compliant because of type pattern matching
-        default -> System.out.println();
         case Box ignored -> { }
+        default -> System.out.println();
       }
     }
   }
 
-  public void f() {
+  private static void doSomething() {}
+  private static void doSomethingElse() {}
+
+  public void f(int variable) {
     switch (variable) { // Noncompliant {{Replace this "switch" statement by "if" statements to increase readability.}}
 //  ^^^^^^
       case 0:
