@@ -64,7 +64,7 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
             "Either add an explanation about why this test is skipped or remove the \"@%s\" annotation.",
             shortName
           );
-          JavaFileScannerContext.Location secondaryLocation =
+          var secondaryLocation =
             new JavaFileScannerContext.Location(String.format("@%s annotation skips the test", shortName), annotationTree);
           context.reportIssue(this, methodTree.simpleName(), message, Collections.singletonList(secondaryLocation), null);
         });
@@ -91,7 +91,9 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  /// If a test method is silently ignored, returns the annotation that causes this behavior.
+  /**
+   * If a test method is silently ignored, returns the annotation that causes this behavior.
+   */
   private static Optional<AnnotationTree> getSilentlyIgnoredAnnotation(SymbolMetadata symbolMetadata, String fullyQualifiedName) {
     // This code duplicates the behavior of SymbolMetadata.valuesForAnnotation but checks for broken semantics
     for (SymbolMetadata.AnnotationInstance annotation : symbolMetadata.annotations()) {

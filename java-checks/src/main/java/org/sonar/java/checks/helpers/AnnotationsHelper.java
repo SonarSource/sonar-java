@@ -28,7 +28,9 @@ public class AnnotationsHelper {
     return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 
-  /// Returns the `name` part of a `fully.qualified.name`, that is, the part after the last dot.
+  /**
+   * Returns the `name` part of a `fully.qualified.name`, that is, the part after the last dot.
+   */
   public static String annotationTypeIdentifier(String fullyQualified) {
     return fullyQualified.substring(fullyQualified.lastIndexOf('.') + 1);
   }
