@@ -27,11 +27,14 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.checks.helpers.AnnotationsHelper.annotationTypeIdentifier;
 
 @Rule(key = "S1607")
 public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
@@ -51,12 +54,20 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     SymbolMetadata symbolMetadata = methodTree.symbol().metadata();
+
     // check for @Ignore or @Disabled annotations
-    boolean hasIgnoreAnnotation = isSilentlyIgnored(symbolMetadata, "org.junit.Ignore");
-    boolean hasDisabledAnnotation = isSilentlyIgnored(symbolMetadata, "org.junit.jupiter.api.Disabled");
-    if (hasIgnoreAnnotation || hasDisabledAnnotation) {
-      reportIssue(methodTree.simpleName(), String.format("Either add an explanation about why this test is skipped or remove the " +
-        "\"@%s\" annotation.", hasIgnoreAnnotation ? "Ignore" : "Disabled"));
+    for (String annotationName : List.of("org.junit.Ignore", "org.junit.jupiter.api.Disabled")) {
+      getSilentlyIgnoredAnnotation(symbolMetadata, annotationName)
+        .ifPresent(annotationTree -> {
+          String shortName = annotationTypeIdentifier(annotationName);
+          String message = String.format(
+            "Either add an explanation about why this test is skipped or remove the \"@%s\" annotation.",
+            shortName
+          );
+          var secondaryLocation =
+            new JavaFileScannerContext.Location(String.format("@%s annotation skips the test", shortName), annotationTree);
+          context.reportIssue(this, methodTree.simpleName(), message, Collections.singletonList(secondaryLocation), null);
+        });
     }
 
     // check for "assumeFalse(true)" and "assumeTrue(false)"-calls, which may also result in permanent skipping of the given test
@@ -80,7 +91,10 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean isSilentlyIgnored(SymbolMetadata symbolMetadata, String fullyQualifiedName) {
+  /**
+   * If a test method is silently ignored, returns the annotation that causes this behavior.
+   */
+  private static Optional<AnnotationTree> getSilentlyIgnoredAnnotation(SymbolMetadata symbolMetadata, String fullyQualifiedName) {
     // This code duplicates the behavior of SymbolMetadata.valuesForAnnotation but checks for broken semantics
     for (SymbolMetadata.AnnotationInstance annotation : symbolMetadata.annotations()) {
       Type type = annotation.symbol().type();
@@ -88,13 +102,15 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
       // As a consequence, fetching the values from the annotation returns an empty list, as if there were no value, even though there might be one or more.
       // In such cases, it is best to consider that the test is not ignored.
       if (type.isUnknown()) {
-        return false;
+        return Optional.empty();
       }
       if (type.is(fullyQualifiedName)) {
-        return annotation.values().isEmpty();
+        return annotation.values().isEmpty()
+          ? Optional.ofNullable(symbolMetadata.findAnnotationTree(annotation))
+          : Optional.empty();
       }
     }
-    return false;
+    return Optional.empty();
   }
 
   private static boolean hasConstantOppositeArg(MethodInvocationTree mit) {

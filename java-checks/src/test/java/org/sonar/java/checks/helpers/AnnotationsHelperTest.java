@@ -16,22 +16,16 @@
  */
 package org.sonar.java.checks.helpers;
 
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.junit.jupiter.api.Test;
 
-public class AnnotationsHelper {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.checks.helpers.AnnotationsHelper.annotationTypeIdentifier;
 
-  private AnnotationsHelper() {
-    // Helper class, should not be implemented.
-  }
-
-  public static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
-    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
-  }
-
-  /**
-   * Returns the `name` part of a `fully.qualified.name`, that is, the part after the last dot.
-   */
-  public static String annotationTypeIdentifier(String fullyQualified) {
-    return fullyQualified.substring(fullyQualified.lastIndexOf('.') + 1);
+class AnnotationsHelperTest {
+  @Test
+  void testAnnotationTypeIdentifier() {
+    assertThat(annotationTypeIdentifier("noDot")).isEqualTo("noDot");
+    assertThat(annotationTypeIdentifier("one.dot")).isEqualTo("dot");
+    assertThat(annotationTypeIdentifier("many.many.dots")).isEqualTo("dots");
   }
 }

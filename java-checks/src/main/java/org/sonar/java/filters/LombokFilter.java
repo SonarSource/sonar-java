@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.AtLeastOneConstructorCheck;
 import org.sonar.java.checks.CollectionInappropriateCallsCheck;
 import org.sonar.java.checks.ConstantsShouldBeStaticFinalCheck;
@@ -51,6 +50,8 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.java.checks.helpers.AnnotationsHelper.annotationTypeIdentifier;
 
 public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
@@ -199,11 +200,6 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     }
 
     return false;
-  }
-
-  @VisibleForTesting
-  static String annotationTypeIdentifier(String fullyQualified) {
-    return fullyQualified.substring(fullyQualified.lastIndexOf('.') + 1);
   }
 
   private static boolean generatesNonPublicConstructor(ClassTree classTree) {
