@@ -55,6 +55,15 @@ class A {
         break;
     }
 
+    switch (variable) {
+      case 0, 1:
+        doSomething();
+        break;
+      default:
+        doSomethingElse();
+        break;
+    }
+
     switch (variable) { // Noncompliant
     }
 
