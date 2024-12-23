@@ -152,6 +152,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
   private void checkJunit4AndAboveTestClass(IdentifierTree className, Symbol.TypeSymbol symbol, List<Symbol> members) {
     addUsedAnnotations(symbol);
+
     if (!runWithCucumberOrSuiteOrTheoriesRunner(symbol)
       && members.stream().noneMatch(this::isTestFieldOrMethod)) {
       reportClass(className);
@@ -170,7 +171,8 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean runWithCucumberOrSuiteOrTheoriesRunner(Symbol.TypeSymbol symbol) {
-    return checkRunWith(symbol, "Cucumber", "Suite", "Theories");
+    return annotatedIncludeEnginesCucumber(symbol)
+      || checkRunWith(symbol, "Cucumber", "Suite", "Theories");
   }
 
   private static boolean runWithZohhak(Symbol.TypeSymbol symbol) {
@@ -194,6 +196,32 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     for (String runnerClass : runnerClasses) {
       if (runnerClass.equals(value.name())) {
         return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * True is the symbol is annotated {@code @IncludeEngines("cucumber")}.
+   */
+  private static boolean annotatedIncludeEnginesCucumber(Symbol.TypeSymbol symbol) {
+    SymbolMetadata metadata = symbol.metadata();
+
+    List<SymbolMetadata.AnnotationInstance> annotations = metadata.annotations();
+    for (SymbolMetadata.AnnotationInstance annotation: annotations) {
+      if (annotation.symbol().type().fullyQualifiedName().endsWith("IncludeEngines")) {
+        // values are not available in automatic analysis, so assume "cucumber" is there
+        if (annotation.values().isEmpty()) {
+          return true;
+        }
+        // otherwise check the list
+        boolean containsCucumber = annotation.values().stream().anyMatch(annotationValue ->
+          annotationValue.value() instanceof Object[] vals
+            && vals.length == 1
+            && "cucumber".equals(vals[0]));
+        if (containsCucumber) {
+          return true;
+        }
       }
     }
     return false;
