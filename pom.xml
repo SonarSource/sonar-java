@@ -315,37 +315,13 @@
               <addMavenDescriptor>false</addMavenDescriptor>
               <manifestEntries>
                 <!--
-                  Develocity (gradle-enterprise-maven-extension) can reduce the build duration using its cache only for deterministic build.
+                  Develocity can reduce the build duration using its cache only for deterministic build.
                   'Build-Time', defined in the parent pom, changes at each build and prevents us from benefiting from the cache.
                   We didn't find a solution to unset 'Build-Time', so as a workaround, we provide a constant value '_'.
                 -->
                 <Build-Time>_</Build-Time>
               </manifestEntries>
             </archive>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>com.gradle</groupId>
-          <artifactId>gradle-enterprise-maven-extension</artifactId>
-          <configuration>
-            <gradleEnterprise>
-              <normalization>
-                <runtimeClassPath>
-                  <metaInf>
-                    <ignoredAttributes>
-                      <ignore>Implementation-Version</ignore>
-                      <ignore>Version</ignore>
-                      <ignore>Implementation-Build</ignore>
-                      <ignore>Build-Time</ignore>
-                      <ignore>Plugin-BuildDate</ignore>
-                      <ignore>Plugin-Display-Version</ignore>
-                      <ignore>Plugin-Version</ignore>
-                      <ignore>Plugin-RequirePlugins</ignore>
-                    </ignoredAttributes>
-                  </metaInf>
-                </runtimeClassPath>
-              </normalization>
-            </gradleEnterprise>
           </configuration>
         </plugin>
       </plugins>
