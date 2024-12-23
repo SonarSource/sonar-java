@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -42,11 +43,30 @@ public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
       if (hasLabelWithAllowedPattern(caseGroup)) {
         return;
       }
-      count += caseGroup.labels().size();
+      count += totalLabelCount(caseGroup);
     }
     if (count < 3) {
       reportIssue(switchStatementTree.switchKeyword(), "Replace this \"switch\" statement by \"if\" statements to increase readability.");
     }
+  }
+
+  /**
+   * Count labels, taking into account Java 14 multi-label switch.
+   * For example, here we have 4 labels:
+   * <pre>
+   *   case "Monday", "Tuesday":
+   *   case "Wednesday:
+   *   default: // considered 1 label
+   * </pre>
+   */
+  private static int totalLabelCount(CaseGroupTree caseGroup) {
+    int total = 0;
+    for (CaseLabelTree label: caseGroup.labels()) {
+      int sz = label.expressions().size();
+      // `default` does not have any expressions, but we consider it 1 label.
+      total += sz > 0 ? sz : 1;
+    }
+    return total;
   }
 
   private static boolean hasLabelWithAllowedPattern(CaseGroupTree caseGroupTree) {

@@ -19,12 +19,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
+
 class SwitchAtLeastThreeCasesCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SwitchAtLeastThreeCasesCheck.java")
+      .onFile(testCodeSourcesPath("checks/tests/SwitchAtLeastThreeCasesCheckSample.java"))
       .withCheck(new SwitchAtLeastThreeCasesCheck())
       .verifyIssues();
   }
