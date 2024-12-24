@@ -170,7 +170,8 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean runWithCucumberOrSuiteOrTheoriesRunner(Symbol.TypeSymbol symbol) {
-    return checkRunWith(symbol, "Cucumber", "Suite", "Theories");
+    return annotatedIncludeEnginesCucumber(symbol)
+      || checkRunWith(symbol, "Cucumber", "Suite", "Theories");
   }
 
   private static boolean runWithZohhak(Symbol.TypeSymbol symbol) {
@@ -194,6 +195,30 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     for (String runnerClass : runnerClasses) {
       if (runnerClass.equals(value.name())) {
         return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * True is the symbol is annotated {@code @IncludeEngines("cucumber")}
+   * (with some approximation for automatic analysis).
+   */
+  private static boolean annotatedIncludeEnginesCucumber(Symbol.TypeSymbol symbol) {
+    for (var annotation: symbol.metadata().annotations()) {
+      if (annotation.symbol().type().fullyQualifiedName().endsWith("IncludeEngines")) {
+        // values are not available in automatic analysis, so assume "cucumber" is there
+        if (annotation.values().isEmpty()) {
+          return true;
+        }
+        // otherwise check the list
+        boolean containsCucumber = annotation.values().stream().anyMatch(annotationValue ->
+          annotationValue.value() instanceof Object[] vals
+            && vals.length == 1
+            && "cucumber".equals(vals[0]));
+        if (containsCucumber) {
+          return true;
+        }
       }
     }
     return false;

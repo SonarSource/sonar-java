@@ -93,4 +93,22 @@ class NoTestInTestClassCheckTest {
       .withCheck(new NoTestInTestClassCheck())
       .verifyIssues();
   }
+
+  @Test
+  void testCucumber() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/NoTestInTestClassCheckCucumberTest.java"))
+      .withCheck(new NoTestInTestClassCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void testCucumberWithoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/NoTestInTestClassCheckCucumberTest.java"))
+      .withCheck(new NoTestInTestClassCheck())
+      .withoutSemantic()
+      // Note, that the sample file contains a noncompliant test, but we are fine with FN in automatic analysis.
+      .verifyNoIssues();
+  }
 }
