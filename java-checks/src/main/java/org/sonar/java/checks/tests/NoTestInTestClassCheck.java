@@ -152,7 +152,6 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
   private void checkJunit4AndAboveTestClass(IdentifierTree className, Symbol.TypeSymbol symbol, List<Symbol> members) {
     addUsedAnnotations(symbol);
-
     if (!runWithCucumberOrSuiteOrTheoriesRunner(symbol)
       && members.stream().noneMatch(this::isTestFieldOrMethod)) {
       reportClass(className);
@@ -202,13 +201,11 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   /**
-   * True is the symbol is annotated {@code @IncludeEngines("cucumber")}.
+   * True is the symbol is annotated {@code @IncludeEngines("cucumber")}
+   * (with some approximation for automatic analysis).
    */
   private static boolean annotatedIncludeEnginesCucumber(Symbol.TypeSymbol symbol) {
-    SymbolMetadata metadata = symbol.metadata();
-
-    List<SymbolMetadata.AnnotationInstance> annotations = metadata.annotations();
-    for (SymbolMetadata.AnnotationInstance annotation: annotations) {
+    for (var annotation: symbol.metadata().annotations()) {
       if (annotation.symbol().type().fullyQualifiedName().endsWith("IncludeEngines")) {
         // values are not available in automatic analysis, so assume "cucumber" is there
         if (annotation.values().isEmpty()) {
