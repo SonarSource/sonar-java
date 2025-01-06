@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2024-2024 SonarSource SA
+ * Copyright (C) 2024-2025 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
