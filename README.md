@@ -194,7 +194,7 @@ You can debug ITs by adding `-Dmaven.binary=mvnDebug` as an option when running 
 
 ### License
 
-Copyright 2012-2024 SonarSource.
+Copyright 2012-2025 SonarSource.
 
 SonarQube analyzers released after November 29, 2024, including patch fixes for prior versions, are published under the [Sonar Source-Available License Version 1 (SSALv1)](LICENSE.txt).
 

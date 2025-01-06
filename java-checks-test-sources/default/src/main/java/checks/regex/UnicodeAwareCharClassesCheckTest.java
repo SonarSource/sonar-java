@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2012-2024 SonarSource SA
+ * Copyright (C) 2012-2025 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +19,6 @@ package checks.regex;
 import java.util.regex.Pattern;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.URL;
-import javax.validation.constraints.Pattern.Flag;
 
 public class UnicodeAwareCharClassesCheckTest {
 
