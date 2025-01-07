@@ -56,7 +56,6 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
       return;
     }
 
-
     String dirWithoutDots = dirPath.replace(".", File.separator);
     String truncatedPath = dirPath;
 
@@ -85,8 +84,6 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
     } else {
       context.reportIssue(this, packageDeclaration.packageName(), issueMessage + ".");
     }
-
-
   }
 
 }
