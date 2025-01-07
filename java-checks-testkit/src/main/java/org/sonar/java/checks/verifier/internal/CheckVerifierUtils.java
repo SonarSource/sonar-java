@@ -39,7 +39,7 @@ public class CheckVerifierUtils {
   protected static final String CHECK_OR_CHECKS = "check(s)";
   protected static final String FILE_OR_FILES = "file(s)";
 
-  protected static SonarComponents sonarComponents(boolean isCacheEnabled, ReadCache readCache, WriteCache writeCache, File workingDirectory) {
+  protected static SonarComponents sonarComponents(boolean isCacheEnabled, ReadCache readCache, WriteCache writeCache, @Nullable File workingDirectory) {
     SensorContext sensorContext;
     if (isCacheEnabled) {
       sensorContext = new CacheEnabledSensorContext(readCache, writeCache);
@@ -64,6 +64,7 @@ public class CheckVerifierUtils {
       }
 
       @Override
+      @Nullable
       public File projectLevelWorkDir(){
         return workingDirectory;
       }

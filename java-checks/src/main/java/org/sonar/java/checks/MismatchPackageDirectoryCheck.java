@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private static final String MESSAGE = "File path \"%s\" should match package name \"%s\". Move file or change package name";
+  private static final String MESSAGE = "File path \"%s\" should match package name \"%s\". Move the file or change the package name";
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -42,38 +42,51 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
     PackageDeclarationTree packageDeclaration = tree.packageDeclaration();
-    if (packageDeclaration != null) {
-      String packageName = PackageUtils.packageName(packageDeclaration, File.separator);
-      File javaFile = context.getInputFile().file();
-      String dir = javaFile.getParent();
-      if (!dir.endsWith(packageName)) {
-        String dirWithoutDots = dir.replace(".", File.separator);
-        String truncatedPath = dir;
-
-        File rootDirectory = context.getRootProjectWorkingDirectory();
-        File fileDirectory = javaFile.getParentFile();
-
-        if(rootDirectory!=null){
-          String rootName = rootDirectory.getName();
-          List<String> path = new ArrayList<>();
-
-          while (fileDirectory != null && !fileDirectory.getName().equals(rootName)) {
-            path.add(0, fileDirectory.getName());
-            fileDirectory = fileDirectory.getParentFile();
-          }
-
-          truncatedPath = String.join(File.separator, path);
-        }
-
-        String issueMessage = String.format(MESSAGE, truncatedPath, packageName.replace(File.separator, "."));
-
-        if (dirWithoutDots.endsWith(packageName)) {
-          context.reportIssue(this, packageDeclaration.packageName(), issueMessage + "(Do not use dots in directory names).");
-        } else {
-          context.reportIssue(this, packageDeclaration.packageName(), issueMessage + ".");
-        }
-      }
+    if (packageDeclaration == null) {
+      return;
     }
+
+    String packageName = PackageUtils.packageName(packageDeclaration, File.separator);
+    File fileDirectory = context.getInputFile().file().getParentFile();
+    String dirPath = fileDirectory.getPath();
+    boolean packageNameIsSuffixOfDirPath = dirPath.endsWith(packageName);
+
+    // In this case, path match package name.
+    if (packageNameIsSuffixOfDirPath) {
+      return;
+    }
+
+
+    String dirWithoutDots = dirPath.replace(".", File.separator);
+    String truncatedPath = dirPath;
+
+    try {
+      File rootDirectory = context.getRootProjectWorkingDirectory();
+      if (rootDirectory != null) {
+        String rootName = rootDirectory.getName();
+        List<String> path = new ArrayList<>();
+
+        while (fileDirectory != null && !fileDirectory.getName().equals(rootName)) {
+          path.add(0, fileDirectory.getName());
+          fileDirectory = fileDirectory.getParentFile();
+        }
+
+        truncatedPath = String.join(File.separator, path);
+      }
+    } catch (NullPointerException ignored) {
+      // TruncatedPath is default initialized if we cannot compute a shorter path.
+      // NullPointerExceptions should not be thrown when accessing rootDirectory, but for now some context do it. See: SONARJAVA-5158.
+    }
+
+    String issueMessage = String.format(MESSAGE, truncatedPath, packageName.replace(File.separator, "."));
+
+    if (dirWithoutDots.endsWith(packageName)) {
+      context.reportIssue(this, packageDeclaration.packageName(), issueMessage + "(Do not use dots in directory names).");
+    } else {
+      context.reportIssue(this, packageDeclaration.packageName(), issueMessage + ".");
+    }
+
+
   }
 
 }
