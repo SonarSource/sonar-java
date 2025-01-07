@@ -178,7 +178,8 @@ class JavaCheckVerifierTest {
       JavaCheckVerifier.newInstance()
         .onFile(TEST_FILE)
         .withCheck(new CheckVerifierTestUtils.VerifyProjectLevelWorkDir(rootWorkDir))
-        .withRootDirectory(rootWorkDir);
+        .withRootDirectory(rootWorkDir)
+        .verifyNoIssues();
     }).doesNotThrowAnyException();
   }
 
