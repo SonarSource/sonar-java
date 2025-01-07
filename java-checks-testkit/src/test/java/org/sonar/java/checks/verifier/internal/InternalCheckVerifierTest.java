@@ -511,6 +511,21 @@ class InternalCheckVerifierTest {
       .hasMessageContaining("No issues expected but got 1 issue(s):");
   }
 
+  @Test
+  void context_root_working_directory_not_supported() {
+    String rootWorkDir = "rootDir";
+
+    Throwable e = catchThrowable(() -> {
+      InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE)
+        .withCheck(new CheckVerifierTestUtils.VerifyProjectLevelWorkDir(rootWorkDir))
+        .withRootDirectory(rootWorkDir);
+    });
+
+    assertThat(e)
+      .isInstanceOf(UnsupportedOperationException.class);
+  }
+
   @Nested
   class TestingNoIssues {
 

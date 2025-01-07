@@ -189,6 +189,22 @@ public class CheckVerifierTestUtils {
     }
   }
 
+  @Rule(key = "VerifyProjectLevelWorkDir")
+  protected static final class VerifyProjectLevelWorkDir implements JavaFileScanner {
+    private final String projectLevelWorkDir;
+
+    public VerifyProjectLevelWorkDir(String projectLevelWorkDir){
+      this.projectLevelWorkDir = projectLevelWorkDir;
+    }
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      if(!projectLevelWorkDir.equals(context.getRootProjectWorkingDirectory().getPath())){
+        throw new RuntimeException("This checks fails if project level does not match context.getRootProjectWorkingDirectory");
+      }
+    }
+  }
+
   protected static boolean equivalent(CacheContext a, CacheContext b) {
     return a.isCacheEnabled() == b.isCacheEnabled() &&
       a.getReadCache().equals(b.getReadCache()) &&

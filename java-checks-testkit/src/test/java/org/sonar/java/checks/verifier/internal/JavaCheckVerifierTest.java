@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -167,6 +168,18 @@ class JavaCheckVerifierTest {
     assertThat(e)
       .isInstanceOf(AssertionError.class)
       .hasMessageContaining("ERROR: No issues were expected, but some were found. expected:<0> but was:<1>");
+  }
+
+  @Test
+  void context_return_good_root_working_directory() {
+    String rootWorkDir = "rootDir";
+
+    assertThatCode(() -> {
+      JavaCheckVerifier.newInstance()
+        .onFile(TEST_FILE)
+        .withCheck(new CheckVerifierTestUtils.VerifyProjectLevelWorkDir(rootWorkDir))
+        .withRootDirectory(rootWorkDir);
+    }).doesNotThrowAnyException();
   }
 
   @Test
