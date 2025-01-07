@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -201,7 +202,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   /**
-   * True is the symbol is annotated {@code @IncludeEngines("cucumber")}
+   * True if the symbol is annotated {@code @IncludeEngines("cucumber")}
    * (with some approximation for automatic analysis).
    */
   private static boolean annotatedIncludeEnginesCucumber(Symbol.TypeSymbol symbol) {
@@ -213,9 +214,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
         }
         // otherwise check the list
         boolean containsCucumber = annotation.values().stream().anyMatch(annotationValue ->
-          annotationValue.value() instanceof Object[] vals
-            && vals.length == 1
-            && "cucumber".equals(vals[0]));
+          Objects.deepEquals(annotationValue.value(), new Object[]{"cucumber"}));
         if (containsCucumber) {
           return true;
         }
