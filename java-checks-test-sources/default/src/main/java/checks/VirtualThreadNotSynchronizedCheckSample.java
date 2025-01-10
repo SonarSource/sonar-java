@@ -2,6 +2,9 @@ package checks;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RunnableFuture;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class VirtualThreadNotSynchronizedCheckSample {
 
@@ -158,4 +161,14 @@ public class VirtualThreadNotSynchronizedCheckSample {
   interface Fooable {
     void foo();
   }
+
+  public static abstract class DefaultThreadPoolExecutor extends ThreadPoolExecutor {
+    protected DefaultThreadPoolExecutor() {
+      super(2,4,20,TimeUnit.SECONDS, null);
+    }
+    void submit(RunnableFuture<Void> runnableFuture) {
+      execute( runnableFuture ); // Compliant, custom ThreadPoolExecutor
+    }
+  }
+
 }
