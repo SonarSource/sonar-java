@@ -48,42 +48,52 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
 
     String packageName = PackageUtils.packageName(packageDeclaration, File.separator);
     File fileDirectory = context.getInputFile().file().getParentFile();
-    String dirPath = fileDirectory.getPath();
-    boolean packageNameIsSuffixOfDirPath = dirPath.endsWith(packageName);
+    String fileDirectoryPath = fileDirectory.getPath();
+    boolean packageNameIsSuffixOfDirPath = fileDirectoryPath.endsWith(packageName);
 
     // In this case, path match package name.
     if (packageNameIsSuffixOfDirPath) {
       return;
     }
 
-    String dirWithoutDots = dirPath.replace(".", File.separator);
-    String truncatedPath = dirPath;
-
+    File rootProjectWorkingDirectory = null;
     try {
-      File rootDirectory = context.getRootProjectWorkingDirectory();
-      if (rootDirectory != null) {
-        String rootName = rootDirectory.getName();
-        List<String> path = new ArrayList<>();
-
-        while (fileDirectory != null && !fileDirectory.getName().equals(rootName)) {
-          path.add(0, fileDirectory.getName());
-          fileDirectory = fileDirectory.getParentFile();
-        }
-
-        truncatedPath = String.join(File.separator, path);
-      }
+      rootProjectWorkingDirectory = context.getRootProjectWorkingDirectory();
     } catch (NullPointerException ignored) {
-      // TruncatedPath is default initialized if we cannot compute a shorter path.
+      // RootProjectWorkingDirectory is initialized to null.
       // NullPointerExceptions should not be thrown when accessing rootDirectory, but for now some context do it. See: SONARJAVA-5158.
     }
 
-    String issueMessage = String.format(MESSAGE, truncatedPath, packageName.replace(File.separator, "."));
+    String truncatedFilePath = fileDirectoryPath;
 
+    if (rootProjectWorkingDirectory != null) {
+      truncatedFilePath = truncateFileDirectoryPath(
+        fileDirectory,
+        rootProjectWorkingDirectory.getName()
+      );
+    }
+
+    String issueMessage = String.format(MESSAGE, truncatedFilePath, packageName.replace(File.separator, "."));
+
+    String dirWithoutDots = fileDirectoryPath.replace(".", File.separator);
     if (dirWithoutDots.endsWith(packageName)) {
       context.reportIssue(this, packageDeclaration.packageName(), issueMessage + "(Do not use dots in directory names).");
     } else {
       context.reportIssue(this, packageDeclaration.packageName(), issueMessage + ".");
     }
+  }
+
+  private static String truncateFileDirectoryPath(File fileDirectory,
+    String rootProjectDirectoryName
+  ) {
+    List<String> path = new ArrayList<>();
+
+    while (fileDirectory != null && !fileDirectory.getName().equals(rootProjectDirectoryName)) {
+      path.add(0, fileDirectory.getName());
+      fileDirectory = fileDirectory.getParentFile();
+    }
+
+    return String.join(File.separator, path);
   }
 
 }

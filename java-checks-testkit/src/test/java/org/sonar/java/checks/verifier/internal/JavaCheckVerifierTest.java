@@ -177,7 +177,7 @@ class JavaCheckVerifierTest {
     assertThatCode(() -> {
       JavaCheckVerifier.newInstance()
         .onFile(TEST_FILE)
-        .withCheck(new CheckVerifierTestUtils.VerifyProjectLevelWorkDir(rootWorkDir))
+        .withCheck(new CheckVerifierTestUtils.VerifyRootProjectWorkingDirectory(rootWorkDir))
         .withRootDirectory(rootWorkDir)
         .verifyNoIssues();
     }).doesNotThrowAnyException();

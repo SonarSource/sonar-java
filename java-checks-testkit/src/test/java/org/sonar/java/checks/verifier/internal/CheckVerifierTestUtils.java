@@ -189,18 +189,18 @@ public class CheckVerifierTestUtils {
     }
   }
 
-  @Rule(key = "VerifyProjectLevelWorkDir")
-  protected static final class VerifyProjectLevelWorkDir implements JavaFileScanner {
-    private final String projectLevelWorkDir;
+  @Rule(key = "VerifyRootProjectWorkingDirectory")
+  protected static final class VerifyRootProjectWorkingDirectory implements JavaFileScanner {
+    private final String rootProjectWorkingDirectory;
 
-    public VerifyProjectLevelWorkDir(String projectLevelWorkDir){
-      this.projectLevelWorkDir = projectLevelWorkDir;
+    public VerifyRootProjectWorkingDirectory(String rootProjectWorkingDirectory){
+      this.rootProjectWorkingDirectory = rootProjectWorkingDirectory;
     }
 
     @Override
     public void scanFile(JavaFileScannerContext context) {
-      if(!projectLevelWorkDir.equals(context.getRootProjectWorkingDirectory().getPath())){
-        throw new RuntimeException("This checks fails if project level does not match context.getRootProjectWorkingDirectory");
+      if(!rootProjectWorkingDirectory.equals(context.getRootProjectWorkingDirectory().getPath())){
+        throw new RuntimeException("Expected rootProjectWorkingDirectory does not match context.getRootProjectWorkingDirectory");
       }
     }
   }

@@ -518,12 +518,13 @@ class InternalCheckVerifierTest {
     Throwable e = catchThrowable(() -> {
       InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE)
-        .withCheck(new CheckVerifierTestUtils.VerifyProjectLevelWorkDir(rootWorkDir))
+        .withCheck(new CheckVerifierTestUtils.VerifyRootProjectWorkingDirectory(rootWorkDir))
         .withRootDirectory(rootWorkDir);
     });
 
     assertThat(e)
-      .isInstanceOf(UnsupportedOperationException.class);
+      .isInstanceOf(RuntimeException.class)
+      .hasMessage("Method not implemented, feel free to implement.");
   }
 
   @Nested
