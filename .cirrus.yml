@@ -145,7 +145,7 @@ plugin_qa_task:
     <<: *CONTAINER_DEFINITION
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 14
-    memory: 6G
+    memory: 8G
   <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
   matrix:
     - env:
@@ -198,7 +198,7 @@ ruling_task:
     <<: *CONTAINER_DEFINITION
     image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
     cpu: 14
-    memory: 6G
+    memory: 8G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
@@ -260,7 +260,7 @@ autoscan_task:
     # * The tests using Orchestrator and SonarQube that, for now, fail to work using Java 22
     # This is why we have a local Dockerfile that provide the 2 versions of Java, 17 and 22.
     cpu: 14
-    memory: 6G
+    memory: 8G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
