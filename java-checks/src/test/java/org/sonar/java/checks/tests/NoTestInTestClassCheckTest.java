@@ -105,10 +105,9 @@ class NoTestInTestClassCheckTest {
   @Test
   void testCucumberWithoutSemantic() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/NoTestInTestClassCheckCucumberTest.java"))
+      .onFile(testCodeSourcesPath("checks/tests/NoTestInTestClassCheckCucumberWithoutSemanticTest.java"))
       .withCheck(new NoTestInTestClassCheck())
       .withoutSemantic()
-      // Note, that the sample file contains a noncompliant test, but we are fine with FN in automatic analysis.
       .verifyNoIssues();
   }
 }

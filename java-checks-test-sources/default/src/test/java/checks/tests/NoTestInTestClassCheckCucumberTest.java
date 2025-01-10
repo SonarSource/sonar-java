@@ -13,3 +13,12 @@ class NoTestInTestClassCheckBellPepperTest {} // Noncompliant
 
 @IncludeEngines({"spring", "cucumber"})
 class NoTestInTestClassCheckTwoEnginesTest{}
+
+@NoTestInTestClassIncompatibleAnnotations.IncludeEngines(42)
+class ClassWithFakeIncludeEnginesAnnotationTest {} // Noncompliant
+
+class NoTestInTestClassIncompatibleAnnotations {
+  @interface IncludeEngines {
+    int value();
+  }
+}
