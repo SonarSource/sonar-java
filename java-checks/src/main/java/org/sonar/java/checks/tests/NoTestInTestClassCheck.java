@@ -214,7 +214,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
         }
         // otherwise check the list
         boolean containsCucumber = annotation.values().stream().anyMatch(annotationValue ->
-          Objects.deepEquals(annotationValue.value(), new Object[]{"cucumber"}));
+          annotationValue.value() instanceof Object[] vals && Arrays.asList(vals).contains("cucumber"));
         if (containsCucumber) {
           return true;
         }
