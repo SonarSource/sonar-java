@@ -107,15 +107,16 @@ public class VirtualThreadNotSynchronizedCheck extends IssuableSubscriptionVisit
     }
 
     private static boolean isRunnableInVirtualThread(MethodInvocationTree tree) {
-      return switch (tree.methodSymbol().name()) {
-        case "start", "unstarted" -> isCallToOfVirtual(tree);
-        case "execute", "submit" -> isCallToExecutorServiceWithVirtualTasks(tree);
-        default -> true;
-      };
+      return tree.methodSelect() instanceof MemberSelectExpressionTree methodSelect &&
+        switch (tree.methodSymbol().name()) {
+          case "start", "unstarted" -> isCallToOfVirtual(methodSelect);
+          case "execute", "submit" -> isCallToExecutorServiceWithVirtualTasks(methodSelect);
+          default -> true;
+        };
     }
 
-    private static boolean isCallToOfVirtual(MethodInvocationTree tree) {
-      var callSiteExpression = ((MemberSelectExpressionTree) tree.methodSelect()).expression();
+    private static boolean isCallToOfVirtual(MemberSelectExpressionTree methodSelect) {
+      var callSiteExpression = methodSelect.expression();
       if (callSiteExpression.symbolType().is(OF_VIRTUAL)) {
         return true;
       }
@@ -126,8 +127,8 @@ public class VirtualThreadNotSynchronizedCheck extends IssuableSubscriptionVisit
         .anyMatch(it -> it.symbolType().is(OF_VIRTUAL));
     }
 
-    private static boolean isCallToExecutorServiceWithVirtualTasks(MethodInvocationTree tree) {
-      var callSiteExpression = ((MemberSelectExpressionTree) tree.methodSelect()).expression();
+    private static boolean isCallToExecutorServiceWithVirtualTasks(MemberSelectExpressionTree methodSelect) {
+      var callSiteExpression = methodSelect.expression();
       if (isCallToExecutorServiceBuilderWithVirtualTasks(callSiteExpression)) {
         return true;
       }
