@@ -89,11 +89,32 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   public void visitLiteral(LiteralTree tree) {
     if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
       String literal = tree.value();
-      if (literal.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree)) {
+      if (literal.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree) && !isThrowableArgument(tree)) {
         String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
         occurrences.computeIfAbsent(stringValue, key -> new ArrayList<>()).add(tree);
       }
     }
+  }
+
+  /**
+   * Verify that <code>tree</code> is an argument in
+   * <code>throw new SomeException(arg1, arg2, ...)</code>.
+   * For simplicity and to avoid surprises there is no recursion on arguments.
+   */
+  private static boolean isThrowableArgument(LiteralTree tree) {
+    Tree arguments = tree.parent();
+    if (arguments == null || !arguments.is(Tree.Kind.ARGUMENTS)) {
+      return false;
+    }
+    Tree newClass = arguments.parent();
+    if (newClass == null || !newClass.is(Tree.Kind.NEW_CLASS)) {
+      return false;
+    }
+    Tree throwStatement = newClass.parent();
+    if (throwStatement == null || !throwStatement.is(Tree.Kind.THROW_STATEMENT)) {
+      return false;
+    }
+    return true;
   }
 
   private static boolean isStringLiteralFragment(ExpressionTree tree) {

@@ -113,3 +113,65 @@ class Coverage {
   private final String prevLeftNull = "SELECT" + 3;
   private final String prevRightNull = 3 + "SELECT";
 }
+
+class ExceptionArguments {
+  private void simple(int r) {
+    if(r == 0) {
+      throw new IllegalArgumentException("simple IAE");
+    } else if (r == 1) {
+      throw new IllegalArgumentException("simple IAE");
+    } else if (r == 2) {
+      throw new IllegalArgumentException("simple IAE");
+    }
+  }
+
+  static class MyException extends Exception {
+    public MyException(String message, Throwable throwable) {
+      super(message, throwable);
+    }
+  }
+
+  private void twoArgs(int r, Throwable throwable) throws MyException {
+    if(r == 0) {
+      throw new MyException("my exception message", throwable);
+    } else if (r == 1) {
+      throw new MyException("my exception message", throwable);
+    } else if (r == 2) {
+      throw new MyException("my exception message", throwable);
+    }
+  }
+
+  private Throwable buildButDoNotThrow(int r) {
+    if(r == 0) {
+      return new NullPointerException("build message"); // Noncompliant {{Define a constant instead of duplicating this literal "build message" 3 times.}}
+    } else if (r == 1) {
+      return new IllegalArgumentException("build message");
+    } else {
+      return new AssertionError("build message");
+    }
+  }
+
+  private void nestedString1(int r) {
+    if(r == 0) {
+      throw new IllegalArgumentException("nested string 1".toLowerCase());
+    } else if (r == 1) {
+      throw new IllegalArgumentException("nested string 1".toUpperCase());
+    } else if (r == 2) {
+      throw new IllegalArgumentException("nested string 1");
+    }
+  }
+
+  private String transform(String s, String suffix) {
+    return s + suffix;
+  }
+
+  private void nestedString2(int r) {
+    if(r == 0) {
+      throw new IllegalArgumentException(transform("nested string 2", "AAA")); // Noncompliant {{Define a constant instead of duplicating this literal "nested string 2" 3 times.}}
+    } else if (r == 1) {
+      throw new IllegalArgumentException(transform("nested string 2", "BBB"));
+    } else if (r == 2) {
+      throw new IllegalArgumentException(transform("nested string 2", "CCC"));
+    }
+  }
+}
