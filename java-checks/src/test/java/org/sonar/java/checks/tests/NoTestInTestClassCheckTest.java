@@ -93,4 +93,21 @@ class NoTestInTestClassCheckTest {
       .withCheck(new NoTestInTestClassCheck())
       .verifyIssues();
   }
+
+  @Test
+  void testCucumber() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/NoTestInTestClassCheckCucumberTest.java"))
+      .withCheck(new NoTestInTestClassCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void testCucumberWithoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/NoTestInTestClassCheckCucumberWithoutSemanticTest.java"))
+      .withCheck(new NoTestInTestClassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }
