@@ -1,1 +1,1 @@
-class DefaultPackage{}
+class DefaultPackageCase{}
