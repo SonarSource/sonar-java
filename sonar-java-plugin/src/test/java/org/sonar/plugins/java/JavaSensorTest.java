@@ -122,7 +122,7 @@ class JavaSensorTest {
   private void testIssueCreation(InputFile.Type onType, int expectedIssues) throws IOException {
     MapSettings settings = new MapSettings();
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    SensorContextTester context = createContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    SensorContextTester context = spy(createContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7))));
     DefaultFileSystem fs = context.fileSystem();
     fs.setWorkDir(tmp.newFolder().toPath());
     SonarComponents sonarComponents = createSonarComponentsMock(context);
@@ -133,6 +133,7 @@ class JavaSensorTest {
     // argument 118 refers to the comment on line #118 in this file, each time this file changes, this argument should be updated
     verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(118));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
+    verify(context).addTelemetryProperty("java.language.version", "22");
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
     jss.execute(context);

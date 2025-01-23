@@ -104,7 +104,10 @@ public class JavaSensor implements Sensor {
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
-    JavaFrontend frontend = new JavaFrontend(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
+    JavaVersion javaVersion = getJavaVersion();
+    context.addTelemetryProperty("java.language.version", "22");
+
+    JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
     frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
