@@ -121,6 +121,7 @@ class JavaSensorTest {
 
   private void testIssueCreation(InputFile.Type onType, int expectedIssues) throws IOException {
     MapSettings settings = new MapSettings();
+    settings.setProperty(JavaVersion.SOURCE_VERSION, "22");
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     SensorContextTester context = spy(createContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7))));
     DefaultFileSystem fs = context.fileSystem();
