@@ -135,6 +135,7 @@ class JavaSensorTest {
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
     verify(context).addTelemetryProperty("java.language.version", "22");
 
+
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
     jss.execute(context);
 

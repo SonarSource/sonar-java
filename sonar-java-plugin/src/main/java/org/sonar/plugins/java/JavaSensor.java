@@ -105,7 +105,7 @@ public class JavaSensor implements Sensor {
     Measurer measurer = new Measurer(context, noSonarFilter);
 
     JavaVersion javaVersion = getJavaVersion();
-    context.addTelemetryProperty("java.language.version", "22");
+    context.addTelemetryProperty("java.language.version", javaVersion.toString());
 
     JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
