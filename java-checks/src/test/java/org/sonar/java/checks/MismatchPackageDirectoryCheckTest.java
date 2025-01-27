@@ -34,7 +34,7 @@ class MismatchPackageDirectoryCheckTest {
   @Test
   void defaultPackage() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/mismatchPackage/DefaultPackage.java"))
+      .onFile(mainCodeSourcesPath("checks/mismatchPackage/DefaultPackageCase.java"))
       .withCheck(new MismatchPackageDirectoryCheck())
       .verifyNoIssues();
   }
