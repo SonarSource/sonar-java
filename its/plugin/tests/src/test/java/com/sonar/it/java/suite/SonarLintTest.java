@@ -38,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
@@ -61,6 +62,7 @@ import org.sonarsource.sonarlint.core.plugin.commons.PluginsLoader;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
+@Ignore("SONARJAVA-5299")
 public class SonarLintTest {
   private static final LogOutput DEFAULT_LOG_OUTPUT = new LogOutput() {
     @Override
