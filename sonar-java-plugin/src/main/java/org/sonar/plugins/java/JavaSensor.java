@@ -169,7 +169,7 @@ public class JavaSensor implements Sensor {
     }
     String enablePreviewAsString = settings.get(JavaVersion.ENABLE_PREVIEW).orElse("false");
 
-    JavaVersion javaVersion = JavaVersionImpl.fromStrings(javaVersionAsString.get(), enablePreviewAsString);
+    JavaVersion javaVersion = JavaVersionImpl.fromString(javaVersionAsString.get(), enablePreviewAsString);
     if (javaVersion.arePreviewFeaturesEnabled() && javaVersion.asInt() < JavaVersionImpl.MAX_SUPPORTED) {
       LOG.warn("sonar.java.enablePreview is set but will be discarded as the Java version is less than the max" +
         " supported version ({} < {})", javaVersion.asInt(), JavaVersionImpl.MAX_SUPPORTED);

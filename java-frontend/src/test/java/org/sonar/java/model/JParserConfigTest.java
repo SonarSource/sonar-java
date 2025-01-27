@@ -43,7 +43,7 @@ class JParserConfigTest {
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(42, true))).isTrue();
 
     assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromString("1.8"))).isFalse();
-    assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromStrings("1.8", "True"))).isTrue();
+    assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromString("1.8", "True"))).isTrue();
   }
 
   @Test

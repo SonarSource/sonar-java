@@ -148,31 +148,31 @@ class JavaVersionImplTest {
   @Test
   void test_fromMap() {
     JavaVersion version;
-    version = JavaVersionImpl.fromStrings("17", "False");
+    version = JavaVersionImpl.fromString("17", "False");
     assertThat(version.isSet()).isTrue();
     assertThat(version.isNotSet()).isFalse();
     assertThat(version.asInt()).isEqualTo(17);
     assertThat(version.arePreviewFeaturesEnabled()).isFalse();
 
-    version = JavaVersionImpl.fromStrings("17", "True");
+    version = JavaVersionImpl.fromString("17", "True");
     assertThat(version.isSet()).isTrue();
     assertThat(version.isNotSet()).isFalse();
     assertThat(version.asInt()).isEqualTo(17);
     assertThat(version.arePreviewFeaturesEnabled()).isTrue();
 
-    version = JavaVersionImpl.fromStrings("", "True");
+    version = JavaVersionImpl.fromString("", "True");
     assertThat(version.isSet()).isFalse();
     assertThat(version.isNotSet()).isTrue();
     assertThat(version.asInt()).isEqualTo(-1);
     assertThat(version.arePreviewFeaturesEnabled()).isFalse();
     
-    version = JavaVersionImpl.fromStrings("", "True");
+    version = JavaVersionImpl.fromString("", "True");
     assertThat(version.isSet()).isFalse();
     assertThat(version.isNotSet()).isTrue();
     assertThat(version.asInt()).isEqualTo(-1);
     assertThat(version.arePreviewFeaturesEnabled()).isFalse();
     
-    version = JavaVersionImpl.fromStrings("", "");
+    version = JavaVersionImpl.fromString("", "");
     assertThat(version.isSet()).isFalse();
     assertThat(version.isNotSet()).isTrue();
     assertThat(version.asInt()).isEqualTo(-1);
