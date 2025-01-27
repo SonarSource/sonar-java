@@ -52,7 +52,7 @@ class MismatchPackageDirectoryCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/mismatchPackage/Mismatch.java"))
       .withCheck(new MismatchPackageDirectoryCheck())
-      .withRootDirectory("src")
+      .withProjectLevelWorkDir("src")
       .verifyIssues();
   }
 
@@ -61,7 +61,7 @@ class MismatchPackageDirectoryCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/mismatchPackage/Mismatch.java"))
       .withCheck(new MismatchPackageDirectoryCheck())
-      .withRootDirectory("notADirectory")
+      .withProjectLevelWorkDir("notADirectory")
       .verifyIssues();
   }
 

@@ -134,7 +134,7 @@ public class SECheckVerifier implements CheckVerifier {
   }
 
   @Override
-  public CheckVerifier withRootDirectory(String rootDirectory) {
+  public CheckVerifier withProjectLevelWorkDir(String rootDirectory) {
     throw new RuntimeException("Method not implemented, feel free to implement.");
   }
 

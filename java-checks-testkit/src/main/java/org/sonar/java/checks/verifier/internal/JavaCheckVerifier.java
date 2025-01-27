@@ -330,7 +330,7 @@ public class JavaCheckVerifier implements CheckVerifier {
   }
 
   @Override
-  public CheckVerifier withRootDirectory(String rootDirectory) {
+  public CheckVerifier withProjectLevelWorkDir(String rootDirectory) {
     this.rootDirectory = new File(rootDirectory);
     return this;
   }

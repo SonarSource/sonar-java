@@ -235,7 +235,7 @@ public interface CheckVerifier {
    * @param rootDirectory The path of the project root working directory
    * @return the verifier configured with the project root working directory.
    */
-  CheckVerifier withRootDirectory(String rootDirectory);
+  CheckVerifier withProjectLevelWorkDir(String rootDirectory);
 
   /**
    * Verifies that all the expected issues are correctly raised by the rule(s),

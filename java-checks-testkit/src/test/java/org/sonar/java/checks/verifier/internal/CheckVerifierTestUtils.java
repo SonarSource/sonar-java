@@ -189,22 +189,6 @@ public class CheckVerifierTestUtils {
     }
   }
 
-  @Rule(key = "VerifyRootProjectWorkingDirectory")
-  protected static final class VerifyRootProjectWorkingDirectory implements JavaFileScanner {
-    private final String rootProjectWorkingDirectory;
-
-    public VerifyRootProjectWorkingDirectory(String rootProjectWorkingDirectory){
-      this.rootProjectWorkingDirectory = rootProjectWorkingDirectory;
-    }
-
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      if(!rootProjectWorkingDirectory.equals(context.getRootProjectWorkingDirectory().getPath())){
-        throw new RuntimeException("Expected rootProjectWorkingDirectory does not match context.getRootProjectWorkingDirectory");
-      }
-    }
-  }
-
   protected static boolean equivalent(CacheContext a, CacheContext b) {
     return a.isCacheEnabled() == b.isCacheEnabled() &&
       a.getReadCache().equals(b.getReadCache()) &&

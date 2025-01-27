@@ -515,11 +515,12 @@ class InternalCheckVerifierTest {
   void context_root_working_directory_not_supported() {
     String rootWorkDir = "rootDir";
 
+    InternalCheckVerifier checkVerifier = InternalCheckVerifier.newInstance()
+      .onFile(TEST_FILE);
+
     Throwable e = catchThrowable(() -> {
-      InternalCheckVerifier.newInstance()
-        .onFile(TEST_FILE)
-        .withCheck(new CheckVerifierTestUtils.VerifyRootProjectWorkingDirectory(rootWorkDir))
-        .withRootDirectory(rootWorkDir);
+      checkVerifier
+        .withProjectLevelWorkDir(rootWorkDir);
     });
 
     assertThat(e)

@@ -37,6 +37,8 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
@@ -177,8 +179,13 @@ class JavaCheckVerifierTest {
     assertThatCode(() -> {
       JavaCheckVerifier.newInstance()
         .onFile(TEST_FILE)
-        .withCheck(new CheckVerifierTestUtils.VerifyRootProjectWorkingDirectory(rootWorkDir))
-        .withRootDirectory(rootWorkDir)
+        .withCheck(new JavaFileScanner() {
+          @Override
+          public void scanFile(JavaFileScannerContext context) {
+            assertThat(context.getRootProjectWorkingDirectory().getPath()).isEqualTo(rootWorkDir);
+          }
+        })
+        .withProjectLevelWorkDir(rootWorkDir)
         .verifyNoIssues();
     }).doesNotThrowAnyException();
   }

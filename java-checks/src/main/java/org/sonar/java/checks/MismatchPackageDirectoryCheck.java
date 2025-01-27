@@ -51,7 +51,7 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
     String fileDirectoryPath = fileDirectory.getPath();
     boolean packageNameIsSuffixOfDirPath = fileDirectoryPath.endsWith(packageName);
 
-    // In this case, path match package name.
+    // In this case, path matches package name.
     if (packageNameIsSuffixOfDirPath) {
       return;
     }
@@ -83,9 +83,7 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
     }
   }
 
-  private static String truncateFileDirectoryPath(File fileDirectory,
-    String rootProjectDirectoryName
-  ) {
+  private static String truncateFileDirectoryPath(File fileDirectory, String rootProjectDirectoryName) {
     List<String> path = new ArrayList<>();
 
     while (fileDirectory != null && !fileDirectory.getName().equals(rootProjectDirectoryName)) {
