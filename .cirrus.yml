@@ -86,7 +86,7 @@ build_task:
   build_script:
     - *log_develocity_url_script
     - source cirrus-env BUILD
-    - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws'
+    - regular_mvn_build_deploy_analyze -Ddevelocity.enabled=false -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws'
   cleanup_before_cache_script: cleanup_maven_repository
 
 test_analyze_task:
