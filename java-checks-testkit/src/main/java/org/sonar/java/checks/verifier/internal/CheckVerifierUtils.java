@@ -17,6 +17,7 @@
 package org.sonar.java.checks.verifier.internal;
 
 import com.sonar.sslr.api.RecognitionException;
+import java.io.File;
 import java.util.Collection;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.FileSystem;
@@ -38,7 +39,7 @@ public class CheckVerifierUtils {
   protected static final String CHECK_OR_CHECKS = "check(s)";
   protected static final String FILE_OR_FILES = "file(s)";
 
-  protected static SonarComponents sonarComponents(boolean isCacheEnabled, ReadCache readCache, WriteCache writeCache) {
+  protected static SonarComponents sonarComponents(boolean isCacheEnabled, ReadCache readCache, WriteCache writeCache, @Nullable File workingDirectory) {
     SensorContext sensorContext;
     if (isCacheEnabled) {
       sensorContext = new CacheEnabledSensorContext(readCache, writeCache);
@@ -60,6 +61,12 @@ public class CheckVerifierUtils {
       @Override
       public boolean canSkipUnchangedFiles() {
         return isCacheEnabled;
+      }
+
+      @Override
+      @Nullable
+      public File projectLevelWorkDir(){
+        return workingDirectory;
       }
     };
     sonarComponents.setSensorContext(sensorContext);

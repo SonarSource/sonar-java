@@ -34,7 +34,7 @@ class MismatchPackageDirectoryCheckTest {
   @Test
   void defaultPackage() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/mismatchPackage/DefaultPackage.java")
+      .onFile(mainCodeSourcesPath("checks/mismatchPackage/DefaultPackageCase.java"))
       .withCheck(new MismatchPackageDirectoryCheck())
       .verifyNoIssues();
   }
@@ -42,15 +42,33 @@ class MismatchPackageDirectoryCheckTest {
   @Test
   void mismatch() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/mismatchPackage/Mismatch.java")
+      .onFile(mainCodeSourcesPath("checks/mismatchPackage/Mismatch.java"))
       .withCheck(new MismatchPackageDirectoryCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void mismatch_with_root_directory() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/mismatchPackage/Mismatch.java"))
+      .withCheck(new MismatchPackageDirectoryCheck())
+      .withProjectLevelWorkDir("src")
+      .verifyIssues();
+  }
+
+  @Test
+  void mismatch_with_wrong_root_directory() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/mismatchPackage/Mismatch.java"))
+      .withCheck(new MismatchPackageDirectoryCheck())
+      .withProjectLevelWorkDir("notADirectory")
       .verifyIssues();
   }
 
   @Test
   void mismatchWithDots() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/mismatchPackage/with.dots/PackageWithDots.java")
+      .onFile(mainCodeSourcesPath("checks/mismatchPackage/with.dots/PackageWithDots.java"))
       .withCheck(new MismatchPackageDirectoryCheck())
       .verifyIssues();
   }

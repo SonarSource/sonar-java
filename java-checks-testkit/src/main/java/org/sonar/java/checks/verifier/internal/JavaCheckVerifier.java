@@ -95,6 +95,7 @@ public class JavaCheckVerifier implements CheckVerifier {
   CacheContext cacheContext = null;
   private ReadCache readCache;
   private WriteCache writeCache;
+  private File rootDirectory;
 
   private MultiFileVerifier createVerifier() {
     MultiFileVerifier verifier = MultiFileVerifier.create(Paths.get(files.get(0).uri()), UTF_8);
@@ -105,7 +106,7 @@ public class JavaCheckVerifier implements CheckVerifier {
     List<JavaFileScanner> visitors = new ArrayList<>(checks);
     CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
     visitors.add(commentLinesVisitor);
-    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache);
+    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory);
     VisitorsBridgeForTests visitorsBridge;
     if (withoutSemantic) {
       visitorsBridge = new VisitorsBridgeForTests(visitors, sonarComponents, actualVersion);
@@ -325,6 +326,12 @@ public class JavaCheckVerifier implements CheckVerifier {
       true,
       readCache == null ? new DummyCache() : new JavaReadCacheImpl(readCache),
       writeCache == null ? new DummyCache() : new JavaWriteCacheImpl(writeCache));
+    return this;
+  }
+
+  @Override
+  public CheckVerifier withProjectLevelWorkDir(String rootDirectory) {
+    this.rootDirectory = new File(rootDirectory);
     return this;
   }
 
